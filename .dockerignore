@@ -1,0 +1,40 @@
+# Version control
+.git/
+.gitignore
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# CI/CD and editor configs
+.github/
+.vscode/
+.idea/
+
+# Docker (avoid recursive context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation and non-runtime files (keep README.md and LICENSE -- needed by build)
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+examples/
+tests/

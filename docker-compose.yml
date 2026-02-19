@@ -1,0 +1,34 @@
+services:
+  # Core cohort library -- runs the default entrypoint (python -m cohort)
+  cohort:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - cohort-data:/home/cohort/data
+    restart: unless-stopped
+
+  # MCP server with Claude integration extras
+  cohort-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_EXTRAS: claude
+    ports:
+      - "5000:5000"
+    env_file: .env
+    volumes:
+      - cohort-data:/home/cohort/data
+    restart: unless-stopped
+    depends_on:
+      - cohort
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  cohort-data:
