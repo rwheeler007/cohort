@@ -62,29 +62,49 @@
                     </li>
                 </ul>
 
-                <div class="sidebar-nav__section-header">
-                    <h2 class="sidebar-nav__title">Channels</h2>
-                    <button class="sidebar-nav__add-btn" id="add-channel-btn" title="Create channel">+</button>
-                </div>
-                <ul class="sidebar-nav__channels" id="channel-list">
-                    <!-- Channel list populated by JS -->
-                </ul>
-
-                <div class="sidebar-nav__section-header">
-                    <h2 class="sidebar-nav__title">Folders</h2>
-                    <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder">+</button>
-                </div>
-                <div class="sidebar-nav__folders" id="folder-list">
-                    <!-- Folders populated by JS -->
+                <div class="sidebar-nav__section open" data-section="channels">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('channels')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Channels</h2>
+                        <button class="sidebar-nav__add-btn" id="add-channel-btn" title="Create channel" onclick="event.stopPropagation()">+</button>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__channels" id="channel-list">
+                        <!-- Channel list populated by JS -->
+                    </ul>
                 </div>
 
-                <div class="sidebar-nav__section-header">
-                    <h2 class="sidebar-nav__title">Sessions</h2>
-                    <button class="sidebar-nav__add-btn" id="add-session-btn" title="Create session">+</button>
+                <div class="sidebar-nav__section open" data-section="folders">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('folders')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Folders</h2>
+                        <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder" onclick="event.stopPropagation()">+</button>
+                    </div>
+                    <div class="sidebar-nav__section-body sidebar-nav__folders" id="folder-list">
+                        <!-- Folders populated by JS -->
+                    </div>
                 </div>
-                <ul class="sidebar-nav__sessions" id="session-list">
-                    <!-- Sessions populated by JS -->
-                </ul>
+
+                <div class="sidebar-nav__section open" data-section="tasks">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('tasks')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Tasks</h2>
+                        <button class="sidebar-nav__add-btn" id="sidebar-add-task-btn" title="Assign task" onclick="event.stopPropagation()">+</button>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__tasks" id="sidebar-task-list">
+                        <!-- Task list populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav__section open" data-section="sessions">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('sessions')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Sessions</h2>
+                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Create session" onclick="event.stopPropagation()">+</button>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__sessions" id="session-list">
+                        <!-- Sessions populated by JS -->
+                    </ul>
+                </div>
             </nav>
 
             <div class="sidebar__footer">
@@ -311,9 +331,9 @@
                                    placeholder="C:/Users/.../npm/claude.cmd">
                         </div>
                         <div class="form-group">
-                            <label for="settings-boss-root">BOSS Project Root</label>
-                            <input type="text" class="form-input form-input--mono" id="settings-boss-root"
-                                   placeholder="d:\Projects\...">
+                            <label for="settings-agents-root">Agents Root Directory</label>
+                            <input type="text" class="form-input form-input--mono" id="settings-agents-root"
+                                   placeholder="/path/to/agents/root">
                         </div>
                         <div class="form-group">
                             <label for="settings-response-timeout">Response Timeout (seconds)</label>

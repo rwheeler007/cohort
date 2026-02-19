@@ -16,3 +16,9 @@ build/
 *.key
 *.p12
 *.pfx
+
+# Runtime data (generated at startup)
+data/messages.json
+data/channels.json
+data/agents.json
+data/settings.json

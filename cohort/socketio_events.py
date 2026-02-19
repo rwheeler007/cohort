@@ -175,7 +175,7 @@ async def confirm_task(sid: str, data: dict) -> dict:
 
 
 # =====================================================================
-# Client -> Server events: Chat  (mirroring SMACK exactly)
+# Client -> Server events: Chat
 # =====================================================================
 
 @sio.event
@@ -239,7 +239,7 @@ async def send_message(sid: str, data: dict) -> dict:
         content=content,
     )
 
-    # Broadcast to all clients (SMACK pattern: new_message event)
+    # Broadcast to all clients
     msg_data = msg.to_dict()
     await sio.emit("new_message", msg_data)
 

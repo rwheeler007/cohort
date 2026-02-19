@@ -1,6 +1,6 @@
 """@mention-triggered agent response pipeline for Cohort.
 
-Replicates SMACK's proven pattern:
+Pipeline flow:
   message posted -> mentions extracted -> agents validated ->
   queue with priority -> background thread processes ->
   rate limiting + loop detection + depth limiting ->
@@ -21,11 +21,12 @@ from pathlib import Path
 from typing import Any
 
 from cohort.chat import parse_mentions
+from cohort.agent_store import AgentStore
 
 logger = logging.getLogger(__name__)
 
 # =====================================================================
-# Configuration constants (matching SMACK's proven values)
+# Configuration constants
 # =====================================================================
 
 RATE_LIMIT_SECONDS = 5
@@ -34,11 +35,11 @@ MAX_CONVERSATION_DEPTH = 5
 RESPONSE_TIMEOUT = 300  # 5 min timeout for Claude CLI
 CONTEXT_HISTORY_LIMIT = 10
 
-CLAUDE_CMD = "C:/Users/rwhee/AppData/Roaming/npm/claude.cmd"
+CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 
 # Known human senders -- never route to these
 HUMAN_USERS = frozenset({
-    "ryan_wheeler", "ryan", "admin", "user", "human", "system",
+    "admin", "user", "human", "system",
 })
 
 # =====================================================================
@@ -47,8 +48,6 @@ HUMAN_USERS = frozenset({
 
 AGENT_ALIASES: dict[str, str] = {
     # Leadership
-    "boss": "BOSS_agent",
-    "boss_agent": "BOSS_agent",
     "supervisor": "supervisor_agent",
     "coding": "coding_orchestrator",
     "orch": "coding_orchestrator",
@@ -85,7 +84,7 @@ AGENT_ALIASES: dict[str, str] = {
 
 
 # =====================================================================
-# In-memory state (matching smack_state.py pattern)
+# In-memory state
 # =====================================================================
 
 @dataclass
@@ -116,21 +115,24 @@ _chat: Any = None
 _sio: Any = None
 _orchestrator: Any = None
 _event_loop: asyncio.AbstractEventLoop | None = None
-BOSS_ROOT: Path | None = None
+_agent_store: AgentStore | None = None
+AGENTS_ROOT: Path | None = None
 
 
 def setup_agent_router(
     chat: Any,
     sio: Any,
-    boss_root: str | Path,
+    agents_root: str | Path,
     orchestrator: Any = None,
+    store: AgentStore | None = None,
 ) -> None:
     """Initialize the agent router.  Called once from server.py create_app()."""
-    global _chat, _sio, _state, BOSS_ROOT, _orchestrator, _event_loop  # noqa: PLW0603
+    global _chat, _sio, _state, AGENTS_ROOT, _orchestrator, _event_loop, _agent_store  # noqa: PLW0603
     _chat = chat
     _sio = sio
-    BOSS_ROOT = Path(boss_root)
+    AGENTS_ROOT = Path(agents_root)
     _orchestrator = orchestrator
+    _agent_store = store
     _state = _RouterState()
 
     # Capture the running event loop so the background thread can schedule coroutines
@@ -139,7 +141,7 @@ def setup_agent_router(
     except RuntimeError:
         _event_loop = None
 
-    logger.info("[OK] Agent router initialised (BOSS_ROOT=%s)", BOSS_ROOT)
+    logger.info("[OK] Agent router initialised (AGENTS_ROOT=%s)", AGENTS_ROOT)
 
 
 def set_orchestrator(orch: Any) -> None:
@@ -159,7 +161,7 @@ def apply_settings(settings: dict) -> None:
 
     Called on startup and whenever the user saves settings from the UI.
     """
-    global CLAUDE_CMD, RESPONSE_TIMEOUT, BOSS_ROOT  # noqa: PLW0603
+    global CLAUDE_CMD, RESPONSE_TIMEOUT, AGENTS_ROOT  # noqa: PLW0603
 
     if settings.get("claude_cmd"):
         CLAUDE_CMD = settings["claude_cmd"]
@@ -171,11 +173,11 @@ def apply_settings(settings: dict) -> None:
         except (TypeError, ValueError):
             pass
 
-    if settings.get("boss_root"):
-        new_root = Path(settings["boss_root"])
+    if settings.get("agents_root"):
+        new_root = Path(settings["agents_root"])
         if new_root.exists():
-            BOSS_ROOT = new_root
-            logger.info("[OK] BOSS_ROOT updated: %s", BOSS_ROOT)
+            AGENTS_ROOT = new_root
+            logger.info("[OK] AGENTS_ROOT updated: %s", AGENTS_ROOT)
 
 
 # =====================================================================
@@ -185,21 +187,27 @@ def apply_settings(settings: dict) -> None:
 def resolve_agent_id(mention: str) -> str | None:
     """Resolve a mention string to a canonical agent_id.
 
-    Checks alias map first, then filesystem as fallback.
+    Checks AgentStore first, then alias map, then filesystem as fallback.
     Returns None if the mention does not match any known agent.
     """
     normalized = mention.lower().replace("-", "_").replace(" ", "_")
 
-    # Alias lookup
+    # AgentStore lookup (preferred -- file-backed agent configs)
+    if _agent_store is not None:
+        config = _agent_store.get_by_alias(normalized)
+        if config:
+            return config.agent_id
+
+    # Legacy alias lookup
     if normalized in AGENT_ALIASES:
         return AGENT_ALIASES[normalized]
 
     # Direct match -- the mention IS the canonical id
-    if BOSS_ROOT and (BOSS_ROOT / "agents" / normalized / "agent_prompt.md").exists():
+    if AGENTS_ROOT and (AGENTS_ROOT / "agents" / normalized / "agent_prompt.md").exists():
         return normalized
 
-    # Try original casing (e.g. "BOSS_agent")
-    if BOSS_ROOT and (BOSS_ROOT / "agents" / mention / "agent_prompt.md").exists():
+    # Try original casing
+    if AGENTS_ROOT and (AGENTS_ROOT / "agents" / mention / "agent_prompt.md").exists():
         return mention
 
     return None
@@ -207,14 +215,21 @@ def resolve_agent_id(mention: str) -> str | None:
 
 def get_agent_prompt_path(agent_id: str) -> Path | None:
     """Return the absolute path to agent_prompt.md, or None."""
-    if BOSS_ROOT is None:
+    # Check AgentStore first (Cohort-managed agents)
+    if _agent_store is not None:
+        store_path = _agent_store.get_prompt_path(agent_id)
+        if store_path:
+            return store_path
+
+    # Fallback to agents root filesystem
+    if AGENTS_ROOT is None:
         return None
-    p = BOSS_ROOT / "agents" / agent_id / "agent_prompt.md"
+    p = AGENTS_ROOT / "agents" / agent_id / "agent_prompt.md"
     return p if p.exists() else None
 
 
 # =====================================================================
-# Rate limiting helpers (ported from smack_state.py)
+# Rate limiting helpers
 # =====================================================================
 
 def _is_rate_limited(agent_id: str) -> bool:
@@ -280,7 +295,7 @@ def _emit_sync(event: str, data: dict) -> None:
 
 
 # =====================================================================
-# Queue management (ported from smack_routes.py)
+# Queue management
 # =====================================================================
 
 def queue_agent_response(
@@ -442,7 +457,7 @@ def _invoke_agent_sync(item: dict) -> None:
     channel_context = build_channel_context(channel_id)
     thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
 
-    # Construct the full prompt (matching SMACK's format)
+    # Construct the full prompt
     full_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
@@ -469,7 +484,7 @@ def _invoke_agent_sync(item: dict) -> None:
             input=full_prompt,
             capture_output=True,
             text=True,
-            cwd=str(BOSS_ROOT) if BOSS_ROOT else None,
+            cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
             timeout=RESPONSE_TIMEOUT,
             shell=True,
             encoding="utf-8",
@@ -511,6 +526,22 @@ def _invoke_agent_sync(item: dict) -> None:
     _emit_sync("new_message", response_msg.to_dict())
 
     logger.info("[OK] %s responded in #%s (msg %s)", agent_id, channel_id, response_msg.id)
+
+    # Record to agent memory (if store is available)
+    if _agent_store is not None:
+        try:
+            from cohort.agent import WorkingMemoryEntry
+            from cohort.memory_manager import MemoryManager
+
+            mm = MemoryManager(_agent_store)
+            mm.add_working_memory(agent_id, WorkingMemoryEntry(
+                timestamp=response_msg.timestamp,
+                channel=channel_id,
+                input=message_content[:500],
+                response=response_content[:500],
+            ))
+        except Exception:
+            logger.debug("[!] Failed to record working memory for %s", agent_id)
 
     # Track conversation depth
     _set_conversation_depth(response_msg.id, thread_id)
@@ -559,7 +590,6 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
     """Route @mentions from a posted message to agent response queue.
 
     This is the main entry point, called after a message is posted and broadcast.
-    Mirrors SMACK's ``route_mentions_to_agents()`` from smack_routes.py.
     """
     if not mentions or _chat is None:
         return
@@ -590,9 +620,9 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         if mention_lower == sender.lower():
             continue
 
-        # Handle @all -> route to BOSS
+        # Handle @all -> route to orchestrator
         if mention_lower == "all":
-            mention = "boss"
+            mention = "coding_orchestrator"
 
         # Resolve alias
         resolved = resolve_agent_id(mention)
@@ -625,8 +655,8 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         priority = 50 - priority_boost
         priority_boost = max(priority_boost, 10)  # subsequent agents get lower priority
 
-        # BOSS gets extra priority for coordination messages
-        if resolved == "BOSS_agent":
+        # Orchestrator gets extra priority for coordination messages
+        if resolved == "coding_orchestrator":
             content_lower = message.content.lower()
             if any(w in content_lower for w in ("coordinate", "route", "task", "plan", "workflow")):
                 priority = max(5, priority - 20)

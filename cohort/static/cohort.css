@@ -1,6 +1,5 @@
 /* Cohort - Coding Team Dashboard
-   Forked from SMACK chat.css design token system
-   Same dark theme, BEM methodology */
+   Dark theme, BEM methodology */
 
 /* =============================================================================
    CSS Custom Properties (Design Tokens)
@@ -1191,7 +1190,7 @@ textarea.form-input {
 }
 
 /* =============================================================================
-   Message Styles (ported from SMACK)
+   Message Styles
    ============================================================================= */
 
 .message {
@@ -1720,8 +1719,36 @@ textarea.form-input {
 .sidebar-nav__section-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding-right: var(--space-3);
+    cursor: pointer;
+    user-select: none;
+}
+
+.sidebar-nav__section-header:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.sidebar-nav__toggle {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+    margin-left: var(--space-2);
+}
+
+.sidebar-nav__section.open .sidebar-nav__toggle {
+    transform: rotate(90deg);
+}
+
+.sidebar-nav__section-body {
+    display: none;
+}
+
+.sidebar-nav__section.open .sidebar-nav__section-body {
+    display: block;
 }
 
 .sidebar-nav__section-header .sidebar-nav__title {
@@ -1884,6 +1911,44 @@ textarea.form-input {
 
 .channel-item[draggable="true"]:active {
     cursor: grabbing;
+}
+
+/* =============================================================================
+   Task List (sidebar)
+   ============================================================================= */
+
+.sidebar-nav__tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-task-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sidebar-task-dot--idle {
+    background-color: var(--color-status-idle);
+}
+
+.sidebar-task-dot--busy {
+    background-color: var(--color-status-busy);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.sidebar-task-dot--briefing {
+    background-color: var(--color-accent);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.sidebar-task-agent {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    text-transform: capitalize;
 }
 
 /* =============================================================================

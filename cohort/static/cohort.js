@@ -2,7 +2,7 @@
  * Cohort - Coding Team Dashboard
  *
  * Socket.IO client connecting to the 8-event dashboard contract
- * plus SMACK-style chat events for roundtable discussions.
+ * plus chat events for roundtable discussions.
  */
 
 // =====================================================================
@@ -90,6 +90,8 @@ function initDom() {
         messageInput: $('#message-input'),
         channelList: $('#channel-list'),
         folderList: $('#folder-list'),
+        sidebarTaskList: $('#sidebar-task-list'),
+        sidebarAddTaskBtn: $('#sidebar-add-task-btn'),
         participantsList: $('#participants-list'),
         mentionDropdown: $('#mention-dropdown'),
 
@@ -116,7 +118,7 @@ function initDom() {
         settingsForm: $('#settings-form'),
         settingsApiKey: $('#settings-api-key'),
         settingsClaudeCmd: $('#settings-claude-cmd'),
-        settingsBossRoot: $('#settings-boss-root'),
+        settingsAgentsRoot: $('#settings-agents-root'),
         settingsResponseTimeout: $('#settings-response-timeout'),
         settingsExecBackend: $('#settings-exec-backend'),
         settingsConnectionDot: $('#settings-connection-dot'),
@@ -245,7 +247,7 @@ function updatePanelCount() {
 }
 
 // =====================================================================
-// Agent Profiles (ported from SMACK's getAgentProfile)
+// Agent Profiles
 // =====================================================================
 
 function getAgentProfile(senderId) {
@@ -287,7 +289,7 @@ async function fetchAgentRegistry() {
 }
 
 // =====================================================================
-// Message formatting (ported from SMACK's formatMessageContent)
+// Message formatting
 // =====================================================================
 
 function formatMessageContent(content) {
@@ -328,11 +330,30 @@ function formatMessageContent(content) {
 function formatTime(timestamp) {
     if (!timestamp) return '';
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const isToday = date.getFullYear() === now.getFullYear()
+        && date.getMonth() === now.getMonth()
+        && date.getDate() === now.getDate();
+
+    if (isToday) return `Today ${time}`;
+
+    const isYesterday = (() => {
+        const y = new Date(now);
+        y.setDate(y.getDate() - 1);
+        return date.getFullYear() === y.getFullYear()
+            && date.getMonth() === y.getMonth()
+            && date.getDate() === y.getDate();
+    })();
+
+    if (isYesterday) return `Yesterday ${time}`;
+
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + time;
 }
 
 // =====================================================================
-// Message rendering (ported from SMACK's renderMessages)
+// Message rendering
 // =====================================================================
 
 function renderMessages() {
@@ -422,6 +443,42 @@ function scrollToBottom() {
 }
 
 // =====================================================================
+// Sidebar task list rendering
+// =====================================================================
+
+function renderSidebarTasks() {
+    if (!dom.sidebarTaskList) return;
+
+    const tasks = state.tasks || [];
+    // Show active tasks (not complete) in the sidebar
+    const activeTasks = tasks.filter(t => t.status !== 'complete');
+
+    if (activeTasks.length === 0) {
+        dom.sidebarTaskList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active tasks</li>';
+        return;
+    }
+
+    dom.sidebarTaskList.innerHTML = activeTasks.map(task => {
+        const channelId = 'task-' + task.task_id;
+        const isActive = channelId === state.currentChannel;
+        const statusDot = task.status === 'briefing' ? 'briefing'
+            : task.status === 'in_progress' ? 'busy'
+            : 'idle';
+        const label = task.description.length > 30 ? task.description.slice(0, 30) + '...' : task.description;
+
+        return `
+            <li class="channel-item ${isActive ? 'active' : ''}"
+                data-channel="${escapeHtml(channelId)}"
+                onclick="switchChannel('${escapeHtml(channelId)}')"
+                title="${escapeHtml(task.description)}">
+                <span class="sidebar-task-dot sidebar-task-dot--${statusDot}"></span>
+                <span class="channel-item__name">${escapeHtml(label)}</span>
+                <span class="sidebar-task-agent">${escapeHtml(task.agent_id.split('_')[0])}</span>
+            </li>`;
+    }).join('');
+}
+
+// =====================================================================
 // Channel rendering
 // =====================================================================
 
@@ -475,6 +532,41 @@ function createFolder(name) {
     saveFolders();
     renderFolders();
     renderChannels();
+}
+
+// =====================================================================
+// Sidebar section collapse (localStorage-persisted)
+// =====================================================================
+
+function loadSidebarSectionState() {
+    try {
+        const raw = localStorage.getItem('cohort_sidebar_sections');
+        if (raw) return JSON.parse(raw);
+    } catch { /* ignore */ }
+    return {};  // default: all open
+}
+
+function saveSidebarSectionState(state) {
+    localStorage.setItem('cohort_sidebar_sections', JSON.stringify(state));
+}
+
+function toggleSidebarSection(sectionName) {
+    const el = document.querySelector(`.sidebar-nav__section[data-section="${sectionName}"]`);
+    if (!el) return;
+    const isOpen = el.classList.toggle('open');
+    const ss = loadSidebarSectionState();
+    ss[sectionName] = isOpen;
+    saveSidebarSectionState(ss);
+}
+
+function restoreSidebarSections() {
+    const ss = loadSidebarSectionState();
+    document.querySelectorAll('.sidebar-nav__section').forEach(el => {
+        const name = el.dataset.section;
+        if (name && ss[name] === false) {
+            el.classList.remove('open');
+        }
+    });
 }
 
 function toggleFolder(folderId) {
@@ -1434,6 +1526,7 @@ function connectSocket() {
             state.tasks.unshift(task);
         }
         renderQueue();
+        renderSidebarTasks();
         showToast(`Task assigned to ${task.agent_id}`, 'info');
     });
 
@@ -1442,6 +1535,7 @@ function connectSocket() {
         if (task) {
             Object.assign(task, data);
             renderQueue();
+            renderSidebarTasks();
         }
     });
 
@@ -1450,6 +1544,7 @@ function connectSocket() {
         if (task) {
             Object.assign(task, data);
             renderQueue();
+            renderSidebarTasks();
             renderOutputs();
             showToast(`Task completed: ${task.description || task.task_id}`, 'success');
         }
@@ -1481,7 +1576,7 @@ function connectSocket() {
         showToast(data.message || 'An error occurred', 'error');
     });
 
-    // -- Chat events (mirroring SMACK exactly) --
+    // -- Chat events --
 
     sock.on('channels_list', (data) => {
         state.channels = data.channels || [];
@@ -1507,7 +1602,7 @@ function connectSocket() {
     });
 
     sock.on('new_message', (message) => {
-        // Add to state with dedup (SMACK pattern)
+        // Add to state with dedup
         if (!state.messages[message.channel_id]) {
             state.messages[message.channel_id] = [];
         }
@@ -1731,7 +1826,7 @@ function openSettings() {
         .then(data => {
             if (dom.settingsApiKey) dom.settingsApiKey.value = data.api_key_masked || '';
             if (dom.settingsClaudeCmd) dom.settingsClaudeCmd.value = data.claude_cmd || '';
-            if (dom.settingsBossRoot) dom.settingsBossRoot.value = data.boss_root || '';
+            if (dom.settingsAgentsRoot) dom.settingsAgentsRoot.value = data.agents_root || '';
             if (dom.settingsResponseTimeout) dom.settingsResponseTimeout.value = data.response_timeout || 300;
             if (dom.settingsExecBackend) dom.settingsExecBackend.value = data.execution_backend || 'cli';
 
@@ -1755,7 +1850,7 @@ function saveSettings(e) {
 
     const payload = {
         claude_cmd: dom.settingsClaudeCmd ? dom.settingsClaudeCmd.value.trim() : '',
-        boss_root: dom.settingsBossRoot ? dom.settingsBossRoot.value.trim() : '',
+        agents_root: dom.settingsAgentsRoot ? dom.settingsAgentsRoot.value.trim() : '',
         response_timeout: dom.settingsResponseTimeout ? parseInt(dom.settingsResponseTimeout.value, 10) : 300,
         execution_backend: dom.settingsExecBackend ? dom.settingsExecBackend.value : 'cli',
     };
@@ -2081,6 +2176,7 @@ function toggleServiceKeyVisibility() {
 
 function init() {
     initDom();
+    restoreSidebarSections();
 
     // Nav panel switching
     dom.navItems.forEach((item) => {
@@ -2223,6 +2319,11 @@ function init() {
             dom.createFolderModal.hidden = true;
             showToast(`Folder "${name}" created`, 'success');
         });
+    }
+
+    // [+] Sidebar task button -- opens assign modal
+    if (dom.sidebarAddTaskBtn) {
+        dom.sidebarAddTaskBtn.addEventListener('click', () => openAssignForAgent(null));
     }
 
     // [+] Session button (placeholder -- show toast for now)

@@ -1,22 +1,23 @@
-"""
-Agent Registry - Centralized agent profiles for Cohort.
+"""Agent Registry -- Centralized agent profiles for Cohort.
 
-Contains avatars, nicknames, colors, and roles for all agents
-in the Cohort coding team dashboard.
+This module maintains a legacy static registry for backward
+compatibility, while delegating to :class:`~cohort.agent_store.AgentStore`
+when one is configured.  File-backed agent configs take priority over
+the static dict.
 """
 
-AGENT_REGISTRY: dict[str, dict[str, str]] = {
-    # ======================================================================
-    # HUMAN OPERATORS
-    # ======================================================================
-    "ryan_wheeler": {
-        "name": "Ryan Wheeler",
-        "nickname": "RyanW",
-        "avatar": "RW",
-        "color": "#008A00",
-        "role": "Token Human",
-        "group": "Operators",
-    },
+from __future__ import annotations
+
+from typing import Any
+
+from cohort.agent_store import AgentStore
+
+# =====================================================================
+# Legacy static registry (fallback for agents without config directories)
+# =====================================================================
+
+_LEGACY_REGISTRY: dict[str, dict[str, str]] = {
+    # -- Human operators --
     "user": {
         "name": "User",
         "nickname": "User",
@@ -34,18 +35,7 @@ AGENT_REGISTRY: dict[str, dict[str, str]] = {
         "group": "Operators",
     },
 
-    # ======================================================================
-    # LEADERSHIP / COORDINATION
-    # ======================================================================
-    "BOSS_agent": {
-        "name": "BOSS Agent",
-        "nickname": "BOSS",
-        "avatar": "B",
-        "color": "#FF6B6B",
-        "role": "Orchestrator",
-        "group": "Leadership",
-        "hidden": True,  # Backend-only -- not shown in UI
-    },
+    # -- Leadership --
     "supervisor_agent": {
         "name": "Supervisor",
         "nickname": "Supervisor",
@@ -63,9 +53,7 @@ AGENT_REGISTRY: dict[str, dict[str, str]] = {
         "group": "Leadership",
     },
 
-    # ======================================================================
-    # CORE DEVELOPERS
-    # ======================================================================
+    # -- Core developers --
     "python_developer": {
         "name": "Python Developer",
         "nickname": "PyDev",
@@ -99,9 +87,7 @@ AGENT_REGISTRY: dict[str, dict[str, str]] = {
         "group": "Core Developers",
     },
 
-    # ======================================================================
-    # SPECIALISTS
-    # ======================================================================
+    # -- Specialists --
     "database_developer": {
         "name": "Database Developer",
         "nickname": "DBDev",
@@ -143,9 +129,7 @@ AGENT_REGISTRY: dict[str, dict[str, str]] = {
         "group": "Specialists",
     },
 
-    # ======================================================================
-    # SUPPORT
-    # ======================================================================
+    # -- Support --
     "documentation_agent": {
         "name": "Documentation Agent",
         "nickname": "Docs",
@@ -164,33 +148,39 @@ AGENT_REGISTRY: dict[str, dict[str, str]] = {
     },
 }
 
+# Backward-compatible public name
+AGENT_REGISTRY = _LEGACY_REGISTRY
+
+# =====================================================================
+# Global store instance (lazy-initialized)
+# =====================================================================
+
+_store: AgentStore | None = None
+
+
+def set_store(store: AgentStore) -> None:
+    """Wire a global AgentStore.  Called by server.py during startup."""
+    global _store  # noqa: PLW0603
+    _store = store
+
+
+def _get_store() -> AgentStore:
+    """Return the global store, creating a fallback-only one if needed."""
+    global _store  # noqa: PLW0603
+    if _store is None:
+        _store = AgentStore(fallback_registry=_LEGACY_REGISTRY)
+    return _store
+
+
+# =====================================================================
+# Public API (unchanged signatures for backward compat)
+# =====================================================================
 
 def get_agent_profile(sender_id: str) -> dict[str, str]:
     """Return the visual profile for an agent, or a sensible default."""
-    normalized = sender_id.lower().replace(" ", "_").replace("-", "_")
-
-    # Exact match
-    if sender_id in AGENT_REGISTRY:
-        return AGENT_REGISTRY[sender_id]
-    if normalized in AGENT_REGISTRY:
-        return AGENT_REGISTRY[normalized]
-
-    # Prefix match
-    for key, profile in AGENT_REGISTRY.items():
-        if key.startswith(normalized):
-            return profile
-
-    # Default
-    initials = sender_id[:2].upper()
-    return {
-        "name": sender_id,
-        "nickname": sender_id[:10],
-        "avatar": initials,
-        "color": "#95A5A6",
-        "role": "Agent",
-    }
+    return _get_store().get_display_profile(sender_id)
 
 
 def get_all_agents() -> dict[str, dict[str, str]]:
     """Return the agent registry, excluding hidden agents."""
-    return {k: v for k, v in AGENT_REGISTRY.items() if not v.get("hidden")}
+    return _get_store().get_all_display_profiles()

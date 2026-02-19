@@ -26,6 +26,7 @@ import asyncio
 import json
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,7 @@ from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager
 from cohort.registry import JsonFileStorage
 
@@ -48,6 +50,7 @@ logger = logging.getLogger(__name__)
 
 _chat: ChatManager | None = None
 _data_layer: Any = None
+_agent_store: AgentStore | None = None
 
 # Paths
 _PACKAGE_DIR = Path(__file__).parent
@@ -263,8 +266,182 @@ async def get_agent_registry(request: Request) -> JSONResponse:
     return JSONResponse(get_all_agents())
 
 
+async def get_agent_detail(request: Request) -> JSONResponse:
+    """GET /api/agents/{agent_id} -- return full agent config."""
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    agent_id = request.path_params["agent_id"]
+    config = _agent_store.get(agent_id)
+    if config is None:
+        # Try alias resolution
+        config = _agent_store.get_by_alias(agent_id)
+    if config is None:
+        return JSONResponse({"error": f"Agent not found: {agent_id}"}, status_code=404)
+
+    return JSONResponse(config.to_dict())
+
+
+async def get_agent_memory(request: Request) -> JSONResponse:
+    """GET /api/agents/{agent_id}/memory -- return agent memory."""
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    agent_id = request.path_params["agent_id"]
+    memory = _agent_store.load_memory(agent_id)
+    if memory is None:
+        return JSONResponse({"error": f"No memory for agent: {agent_id}"}, status_code=404)
+
+    return JSONResponse(memory.to_dict())
+
+
+async def get_agent_prompt(request: Request) -> JSONResponse:
+    """GET /api/agents/{agent_id}/prompt -- return agent prompt text."""
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    agent_id = request.path_params["agent_id"]
+    prompt = _agent_store.get_prompt(agent_id)
+    if prompt is None:
+        return JSONResponse({"error": f"No prompt for agent: {agent_id}"}, status_code=404)
+
+    return JSONResponse({"agent_id": agent_id, "prompt": prompt})
+
+
+async def create_agent(request: Request) -> JSONResponse:
+    """POST /api/agents/create -- create a new agent from spec.
+
+    Expects JSON body with at minimum: ``name``, ``role``, ``primary_task``.
+    """
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    name = body.get("name")
+    role = body.get("role")
+    primary_task = body.get("primary_task", "")
+
+    if not name or not role:
+        return JSONResponse(
+            {"error": "Missing required fields: name, role"},
+            status_code=400,
+        )
+
+    try:
+        from cohort.agent_creator import AgentCreator, AgentSpec, AgentType
+
+        agent_type_str = body.get("agent_type", "specialist")
+        try:
+            agent_type = AgentType(agent_type_str)
+        except ValueError:
+            agent_type = AgentType.SPECIALIST
+
+        spec = AgentSpec(
+            name=name,
+            role=role,
+            primary_task=primary_task,
+            agent_type=agent_type,
+            personality=body.get("personality", ""),
+            capabilities=body.get("capabilities", []),
+            domain_expertise=body.get("domain_expertise", []),
+            triggers=body.get("triggers", []),
+            avatar=body.get("avatar", ""),
+            aliases=body.get("aliases", []),
+            nickname=body.get("nickname", ""),
+            color=body.get("color", "#95A5A6"),
+            group=body.get("group", "Agents"),
+        )
+
+        creator = AgentCreator(_agent_store)
+        config = creator.create_agent(spec)
+
+        logger.info("[OK] Created agent: %s", config.agent_id)
+        return JSONResponse({
+            "success": True,
+            "agent_id": config.agent_id,
+            "config": config.to_dict(),
+        })
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=409)
+    except Exception as exc:
+        logger.exception("Error creating agent")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def clean_agent_memory(request: Request) -> JSONResponse:
+    """POST /api/agents/{agent_id}/memory/clean -- trim working memory."""
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    agent_id = request.path_params["agent_id"]
+
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        body = {}
+
+    keep_last = body.get("keep_last", 10)
+    dry_run = body.get("dry_run", False)
+
+    try:
+        from cohort.memory_manager import MemoryManager
+
+        mm = MemoryManager(_agent_store, keep_last=keep_last)
+        result = mm.clean_agent(agent_id, keep_last=keep_last, dry_run=dry_run)
+        return JSONResponse({
+            "success": result.success,
+            "agent_id": result.agent_id,
+            "working_memory_removed": result.working_memory_removed,
+            "working_memory_kept": result.working_memory_kept,
+            "archive_path": str(result.archive_path) if result.archive_path else None,
+            "error": result.error,
+        })
+    except Exception as exc:
+        logger.exception("Error cleaning agent memory")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def add_agent_fact(request: Request) -> JSONResponse:
+    """POST /api/agents/{agent_id}/memory/facts -- add a learned fact."""
+    if _agent_store is None:
+        return JSONResponse({"error": "Agent store not initialised"}, status_code=500)
+
+    agent_id = request.path_params["agent_id"]
+
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    fact_text = body.get("fact")
+    if not fact_text:
+        return JSONResponse({"error": "Missing required field: fact"}, status_code=400)
+
+    try:
+        from cohort.agent import LearnedFact
+        from cohort.memory_manager import MemoryManager
+
+        fact = LearnedFact(
+            fact=fact_text,
+            learned_from=body.get("learned_from", "mcp"),
+            timestamp=body.get("timestamp", datetime.now().isoformat()),
+            confidence=body.get("confidence", "medium"),
+            session_id=body.get("session_id", ""),
+        )
+        mm = MemoryManager(_agent_store)
+        mm.add_learned_fact(agent_id, fact)
+        return JSONResponse({"success": True, "agent_id": agent_id, "fact": fact.to_dict()})
+    except Exception as exc:
+        logger.exception("Error adding learned fact")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
 # =====================================================================
-# Roundtable endpoints (mirroring SMACK's smack_routes.py)
+# Roundtable endpoints
 # =====================================================================
 
 _roundtable_orch = None
@@ -490,7 +667,7 @@ async def get_settings(request: Request) -> JSONResponse:
     return JSONResponse({
         "api_key_masked": masked,
         "claude_cmd": claude_cmd,
-        "boss_root": settings.get("boss_root", ""),
+        "agents_root": settings.get("agents_root", ""),
         "response_timeout": settings.get("response_timeout", 300),
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
@@ -511,8 +688,8 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["api_key"] = body["api_key"]
     if "claude_cmd" in body:
         settings["claude_cmd"] = body["claude_cmd"]
-    if "boss_root" in body:
-        settings["boss_root"] = body["boss_root"]
+    if "agents_root" in body:
+        settings["agents_root"] = body["agents_root"]
     if "response_timeout" in body:
         timeout = body["response_timeout"]
         if isinstance(timeout, int) and 30 <= timeout <= 600:
@@ -684,7 +861,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Directory for JSON file storage.  Defaults to the
         ``COHORT_DATA_DIR`` environment variable, or ``./data``.
     """
-    global _chat, _data_layer  # noqa: PLW0603
+    global _chat, _data_layer, _agent_store  # noqa: PLW0603
 
     global _settings_path  # noqa: PLW0603
 
@@ -696,9 +873,22 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
-    # -- Load agents from agents.json -----------------------------------
+    # -- Agent store (file-backed agent configs + memory) ---------------
+    from cohort.agent_registry import _LEGACY_REGISTRY, set_store
+
+    agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
+    agents_dir = Path(agents_dir_env) if agents_dir_env else Path(resolved_dir) / "agents"
+    _agent_store = AgentStore(
+        agents_dir=agents_dir if agents_dir.is_dir() else None,
+        fallback_registry=_LEGACY_REGISTRY,
+    )
+    set_store(_agent_store)
+
+    # -- Load agents (file-backed + legacy agents.json) -----------------
     agents = _load_agents_from_disk(resolved_dir)
-    logger.info("[OK] Loaded %d agents from agents.json", len(agents))
+    # Merge file-backed agents into the dict
+    agents.update(_agent_store.as_config_dict())
+    logger.info("[OK] Loaded %d agents (file-backed + legacy)", len(agents))
 
     # -- Socket.IO setup ------------------------------------------------
     from cohort.data_layer import CohortDataLayer
@@ -713,18 +903,17 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     # Load saved settings, fall back to defaults
     saved_settings = _load_settings()
-    boss_root = saved_settings.get("boss_root") or os.environ.get(
-        "BOSS_ROOT",
-        r"d:\Projects\PersonalAssistant\PersonalAssistant\BOSS",
+    agents_root = saved_settings.get("agents_root") or os.environ.get(
+        "COHORT_AGENTS_ROOT", "",
     )
-    setup_agent_router(chat=_chat, sio=sio, boss_root=boss_root)
+    setup_agent_router(chat=_chat, sio=sio, agents_root=agents_root, store=_agent_store)
     _apply_router_settings(saved_settings)
 
     # -- Task executor (briefing + execution layer) ---------------------
     from cohort.task_executor import TaskExecutor
     from cohort.socketio_events import setup_task_executor
 
-    executor_settings = {**saved_settings, "boss_root": str(boss_root)}
+    executor_settings = {**saved_settings, "agents_root": str(agents_root)}
     executor = TaskExecutor(data_layer, _chat, executor_settings)
     executor.set_sio(sio)
     setup_task_executor(executor)
@@ -739,6 +928,12 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channels/{channel_id}/condense", condense_channel, methods=["POST"]),
         Route("/api/agents", list_agents, methods=["GET"]),
         Route("/api/agents", register_agent, methods=["POST"]),
+        Route("/api/agents/create", create_agent, methods=["POST"]),
+        Route("/api/agents/{agent_id}", get_agent_detail, methods=["GET"]),
+        Route("/api/agents/{agent_id}/memory", get_agent_memory, methods=["GET"]),
+        Route("/api/agents/{agent_id}/prompt", get_agent_prompt, methods=["GET"]),
+        Route("/api/agents/{agent_id}/memory/clean", clean_agent_memory, methods=["POST"]),
+        Route("/api/agents/{agent_id}/memory/facts", add_agent_fact, methods=["POST"]),
         Route("/api/agent-registry", get_agent_registry, methods=["GET"]),
         Route("/api/settings", get_settings, methods=["GET"]),
         Route("/api/settings", post_settings, methods=["POST"]),
@@ -799,7 +994,7 @@ def serve(host: str = "0.0.0.0", port: int = 5100, data_dir: str = "data") -> No
     host:
         Bind address (default ``0.0.0.0``).
     port:
-        Port number (default ``5000``).
+        Port number (default ``5100``).
     data_dir:
         Directory for JSON file storage.
     """

@@ -1,0 +1,298 @@
+"""File-backed agent configuration and memory store for cohort.
+
+Replaces the static ``AGENT_REGISTRY`` dict with a rich, file-backed
+agent system.  Each agent lives in its own subdirectory under
+``agents_dir`` containing:
+
+- ``agent_config.json`` -- full configuration (identity, capabilities,
+  education, display metadata)
+- ``agent_prompt.md`` -- system prompt for Claude invocations
+- ``memory.json`` -- runtime state (learned facts, working memory,
+  collaborators)
+
+Provides a backward-compatible ``as_config_dict()`` method so existing
+code that expects ``dict[str, dict[str, Any]]`` continues to work.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
+from cohort.agent import AgentConfig, AgentMemory
+
+logger = logging.getLogger(__name__)
+
+
+class AgentStore:
+    """File-backed agent persistence with lazy loading.
+
+    Parameters
+    ----------
+    agents_dir:
+        Path to directory containing per-agent subdirectories.
+        Each subdirectory should have ``agent_config.json``.
+    fallback_registry:
+        Legacy display-metadata dict (from ``agent_registry.py``) used
+        when no config directory exists for a given agent.
+    """
+
+    def __init__(
+        self,
+        agents_dir: Path | None = None,
+        fallback_registry: dict[str, dict[str, str]] | None = None,
+    ) -> None:
+        self._agents_dir = Path(agents_dir) if agents_dir else None
+        self._fallback: dict[str, dict[str, str]] = fallback_registry or {}
+        self._cache: dict[str, AgentConfig] = {}
+        self._loaded_all: bool = False
+
+    # =====================================================================
+    # Loading
+    # =====================================================================
+
+    def _ensure_all_loaded(self) -> None:
+        """Scan agents_dir and load all agent configs (lazy, once)."""
+        if self._loaded_all:
+            return
+        if self._agents_dir and self._agents_dir.is_dir():
+            for child in sorted(self._agents_dir.iterdir()):
+                config_path = child / "agent_config.json"
+                if child.is_dir() and config_path.exists():
+                    agent_id = child.name
+                    if agent_id not in self._cache:
+                        try:
+                            self._cache[agent_id] = AgentConfig.from_config_file(config_path)
+                        except Exception as exc:
+                            logger.warning(
+                                "[!] Failed to load agent %s: %s", agent_id, exc
+                            )
+        self._loaded_all = True
+
+    def load_agent(self, agent_id: str) -> AgentConfig | None:
+        """Load a single agent from disk (cached after first load)."""
+        if agent_id in self._cache:
+            return self._cache[agent_id]
+        if self._agents_dir:
+            config_path = self._agents_dir / agent_id / "agent_config.json"
+            if config_path.exists():
+                try:
+                    config = AgentConfig.from_config_file(config_path)
+                    self._cache[agent_id] = config
+                    return config
+                except Exception as exc:
+                    logger.warning("[!] Failed to load agent %s: %s", agent_id, exc)
+        return None
+
+    def reload(self) -> None:
+        """Clear cache and re-scan from disk."""
+        self._cache.clear()
+        self._loaded_all = False
+
+    # =====================================================================
+    # Access
+    # =====================================================================
+
+    def get(self, agent_id: str) -> AgentConfig | None:
+        """Get an agent config by ID (loads from disk if needed)."""
+        return self.load_agent(agent_id)
+
+    def list_agents(self, include_hidden: bool = False) -> list[AgentConfig]:
+        """Return all loaded agents, optionally including hidden ones."""
+        self._ensure_all_loaded()
+        agents = list(self._cache.values())
+        if not include_hidden:
+            agents = [a for a in agents if not a.hidden]
+        return sorted(agents, key=lambda a: a.agent_id)
+
+    def get_by_alias(self, alias: str) -> AgentConfig | None:
+        """Resolve an @mention alias to an agent config.
+
+        Checks: exact agent_id match, then alias lists, then
+        case-insensitive agent_id match.
+        """
+        normalized = alias.lower().replace("-", "_").replace(" ", "_")
+
+        # Direct match
+        agent = self.load_agent(normalized)
+        if agent:
+            return agent
+
+        # Scan all agents for alias match
+        self._ensure_all_loaded()
+        for config in self._cache.values():
+            if normalized in [a.lower() for a in config.aliases]:
+                return config
+
+        # Original casing match
+        agent = self.load_agent(alias)
+        if agent:
+            return agent
+
+        return None
+
+    # =====================================================================
+    # Backward compatibility (dict-based interface)
+    # =====================================================================
+
+    def as_config_dict(self) -> dict[str, dict[str, Any]]:
+        """Return agents as ``dict[str, dict[str, Any]]`` for
+        backward compatibility with Orchestrator and CohortDataLayer.
+
+        Each entry contains ``triggers``, ``capabilities``, and other
+        fields that existing scoring functions expect.
+        """
+        self._ensure_all_loaded()
+        result: dict[str, dict[str, Any]] = {}
+        for agent_id, config in self._cache.items():
+            result[agent_id] = {
+                "name": config.name,
+                "role": config.role,
+                "triggers": config.triggers,
+                "capabilities": config.capabilities,
+                "domain_expertise": config.domain_expertise,
+                "agent_type": config.agent_type,
+                "status": config.status,
+            }
+        return result
+
+    # =====================================================================
+    # Display profiles (replaces agent_registry.py)
+    # =====================================================================
+
+    def get_display_profile(self, sender_id: str) -> dict[str, str]:
+        """Return display metadata for an agent, with fallback.
+
+        Matches the interface of ``agent_registry.get_agent_profile()``.
+        """
+        normalized = sender_id.lower().replace(" ", "_").replace("-", "_")
+
+        # Try from loaded configs
+        agent = self.get(sender_id) or self.get(normalized)
+        if agent:
+            return agent.display_profile()
+
+        # Check aliases
+        agent = self.get_by_alias(sender_id)
+        if agent:
+            return agent.display_profile()
+
+        # Fallback to legacy registry
+        if sender_id in self._fallback:
+            return dict(self._fallback[sender_id])
+        if normalized in self._fallback:
+            return dict(self._fallback[normalized])
+
+        # Prefix match against legacy
+        for key, profile in self._fallback.items():
+            if key.startswith(normalized):
+                return dict(profile)
+
+        # Default
+        initials = sender_id[:2].upper()
+        return {
+            "name": sender_id,
+            "nickname": sender_id[:10],
+            "avatar": initials,
+            "color": "#95A5A6",
+            "role": "Agent",
+            "group": "Agents",
+        }
+
+    def get_all_display_profiles(self) -> dict[str, dict[str, str]]:
+        """Return display profiles for all visible agents.
+
+        Merges file-backed agents with legacy fallback entries.
+        """
+        result: dict[str, dict[str, str]] = {}
+
+        # Legacy entries first (lower priority)
+        for key, profile in self._fallback.items():
+            if not profile.get("hidden"):
+                result[key] = dict(profile)
+
+        # File-backed agents override
+        self._ensure_all_loaded()
+        for agent_id, config in self._cache.items():
+            if not config.hidden:
+                result[agent_id] = config.display_profile()
+
+        return result
+
+    # =====================================================================
+    # Memory
+    # =====================================================================
+
+    def load_memory(self, agent_id: str) -> AgentMemory | None:
+        """Load an agent's memory from disk."""
+        if not self._agents_dir:
+            return None
+        mem_path = self._agents_dir / agent_id / "memory.json"
+        if not mem_path.exists():
+            # Agent dir may exist without memory -- create empty
+            agent_dir = self._agents_dir / agent_id
+            if agent_dir.is_dir():
+                return AgentMemory.create_empty(agent_id)
+            return None
+        return AgentMemory.load(mem_path)
+
+    def save_memory(self, agent_id: str, memory: AgentMemory) -> None:
+        """Save an agent's memory to disk."""
+        if not self._agents_dir:
+            return
+        mem_path = self._agents_dir / agent_id / "memory.json"
+        memory.save(mem_path)
+
+    # =====================================================================
+    # Prompt
+    # =====================================================================
+
+    def get_prompt(self, agent_id: str) -> str | None:
+        """Load an agent's prompt markdown from disk."""
+        path = self.get_prompt_path(agent_id)
+        if not path:
+            return None
+        try:
+            return path.read_text(encoding="utf-8")
+        except Exception as exc:
+            logger.warning("[!] Failed to read prompt for %s: %s", agent_id, exc)
+            return None
+
+    def get_prompt_path(self, agent_id: str) -> Path | None:
+        """Return the path to an agent's prompt file, or None."""
+        if not self._agents_dir:
+            return None
+        p = self._agents_dir / agent_id / "agent_prompt.md"
+        return p if p.exists() else None
+
+    # =====================================================================
+    # Registration
+    # =====================================================================
+
+    def register(self, config: AgentConfig) -> None:
+        """Add or update an agent in the store.
+
+        Writes config to disk if ``agents_dir`` is set.
+        """
+        self._cache[config.agent_id] = config
+        if self._agents_dir:
+            agent_dir = self._agents_dir / config.agent_id
+            agent_dir.mkdir(parents=True, exist_ok=True)
+            config_path = agent_dir / "agent_config.json"
+            config_path.write_text(
+                json.dumps(config.to_dict(), indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            logger.info("[OK] Registered agent %s", config.agent_id)
+
+    def unregister(self, agent_id: str) -> bool:
+        """Remove an agent from the in-memory cache.
+
+        Does NOT delete files from disk (safety measure).
+        """
+        if agent_id in self._cache:
+            del self._cache[agent_id]
+            return True
+        return False

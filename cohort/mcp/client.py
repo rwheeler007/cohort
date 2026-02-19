@@ -16,7 +16,7 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_URL = "http://127.0.0.1:5000"
+DEFAULT_URL = "http://127.0.0.1:5100"
 _TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 
 
@@ -114,6 +114,48 @@ class CohortClient:
             "POST",
             f"{self.base_url}/api/channels/{channel}/condense",
             json_body={"keep_last": keep_last},
+        )
+
+    # -- agents ----------------------------------------------------------
+
+    async def list_agents(self) -> list[dict[str, Any]] | None:
+        """GET /api/agents -> list of agent config dicts."""
+        return await _request("GET", f"{self.base_url}/api/agents")
+
+    async def get_agent(self, agent_id: str) -> dict[str, Any] | None:
+        """GET /api/agents/{agent_id} -> full agent config."""
+        return await _request("GET", f"{self.base_url}/api/agents/{agent_id}")
+
+    async def get_agent_memory(self, agent_id: str) -> dict[str, Any] | None:
+        """GET /api/agents/{agent_id}/memory -> agent memory."""
+        return await _request("GET", f"{self.base_url}/api/agents/{agent_id}/memory")
+
+    async def create_agent(self, spec: dict[str, Any]) -> dict[str, Any] | None:
+        """POST /api/agents/create -> create a new agent."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/agents/create",
+            json_body=spec,
+        )
+
+    async def clean_agent_memory(
+        self, agent_id: str, keep_last: int = 10, dry_run: bool = False
+    ) -> dict[str, Any] | None:
+        """POST /api/agents/{agent_id}/memory/clean -> trim working memory."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/agents/{agent_id}/memory/clean",
+            json_body={"keep_last": keep_last, "dry_run": dry_run},
+        )
+
+    async def add_agent_fact(
+        self, agent_id: str, fact: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        """POST /api/agents/{agent_id}/memory/facts -> add a learned fact."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/agents/{agent_id}/memory/facts",
+            json_body=fact,
         )
 
     # -- checklist (file-based) -----------------------------------------

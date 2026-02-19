@@ -66,9 +66,9 @@ RELEVANCE_DIMENSIONS: dict[str, float] = {
 COMPLEMENTARY_PAIRS: dict[str, list[str]] = {
     "javascript_developer": ["web_developer"],
     "web_developer": ["javascript_developer"],
-    "python_developer": ["supervisor_agent", "bug_hunter"],
+    "python_developer": ["supervisor_agent", "qa_agent"],
     "supervisor_agent": ["python_developer"],
-    "bug_hunter": ["python_developer"],
+    "qa_agent": ["python_developer"],
     "cpp_developer": ["system_coder"],
     "system_coder": ["cpp_developer"],
 }
@@ -96,11 +96,11 @@ DATA_SOURCES: dict[str, list[str]] = {
     "supervisor_agent": [
         "memory.json", "session_metrics", "monitoring_data", "compliance_reports",
     ],
-    "bug_hunter": ["bug_fixes.json", "past_issues", "root_causes"],
-    "agent_reviewer": [
+    "qa_agent": ["test_results", "past_issues", "root_causes"],
+    "code_archaeologist": [
         "validation_confidence", "quality_patterns", "success_rates",
     ],
-    "documentation_agent": ["bug_fixes.json", "changelogs", "learnings"],
+    "documentation_agent": ["changelogs", "learnings", "release_notes"],
 }
 
 TOPIC_SHIFT_THRESHOLD: float = 0.3
@@ -187,14 +187,17 @@ def calculate_novelty(
 def calculate_expertise_relevance(
     agent_config: dict[str, Any], topic_keywords: list[str]
 ) -> float:
-    """Match topic keywords to agent triggers/capabilities."""
+    """Match topic keywords to agent triggers/capabilities/domain_expertise."""
     triggers = agent_config.get("triggers", [])
     capabilities = agent_config.get("capabilities", [])
+    domain_expertise = agent_config.get("domain_expertise", [])
     agent_keywords: list[str] = []
     for trigger in triggers:
         agent_keywords.extend(extract_keywords(str(trigger)))
     for cap in capabilities:
         agent_keywords.extend(extract_keywords(str(cap)))
+    for exp in domain_expertise:
+        agent_keywords.extend(extract_keywords(str(exp)))
     if not agent_keywords:
         return 0.0
     return calculate_keyword_overlap(topic_keywords, agent_keywords)
@@ -281,14 +284,14 @@ def calculate_phase_alignment(
     """How relevant is the agent for the current workflow phase."""
     phase_relevance: dict[str, dict[str, list[str]]] = {
         "DISCOVER": {
-            "high": ["bug_hunter", "supervisor_agent", "documentation_agent"],
-            "medium": ["agent_reviewer"],
+            "high": ["qa_agent", "supervisor_agent", "documentation_agent"],
+            "medium": ["code_archaeologist"],
             "low": ["implementer", "developer"],
         },
         "PLAN": {
             "high": ["architect", "primary_developer"],
             "medium": ["designer", "technical_specialist"],
-            "low": ["bug_hunter", "reviewer"],
+            "low": ["qa_agent", "reviewer"],
         },
         "EXECUTE": {
             "high": [
@@ -299,8 +302,8 @@ def calculate_phase_alignment(
             "low": ["reviewer", "supervisor"],
         },
         "VALIDATE": {
-            "high": ["agent_reviewer", "supervisor_agent", "reviewer"],
-            "medium": ["tester", "quality_agent"],
+            "high": ["code_archaeologist", "supervisor_agent", "reviewer"],
+            "medium": ["tester", "qa_agent"],
             "low": ["implementer"],
         },
     }

@@ -504,6 +504,317 @@ async def update_checklist(params: UpdateChecklistInput) -> str:
 
 
 # =====================================================================
+# Tool 8: cohort_list_agents
+# =====================================================================
+
+class ListAgentsInput(BaseModel):
+    """Input for listing agents."""
+    model_config = ConfigDict(extra="forbid")
+
+    include_hidden: bool = Field(
+        False, description="Include hidden/inactive agents. Default False.",
+    )
+
+
+@mcp.tool(
+    name="cohort_list_agents",
+    annotations={
+        "title": "List Agents",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_list_agents(params: ListAgentsInput) -> str:
+    """List all agents with ID, role, status, and skills."""
+    agents = await _client.list_agents()
+    if agents is None:
+        return _error_msg(service_down=True)
+    if not agents:
+        return "No agents registered."
+
+    if not params.include_hidden:
+        agents = [a for a in agents if a.get("status", "active") != "hidden"]
+
+    lines = [f"## Agents ({len(agents)})", ""]
+    lines.append("| ID | Name | Role | Status | Skills |")
+    lines.append("|-----|------|------|--------|--------|")
+    for a in agents:
+        aid = a.get("agent_id", "?")
+        name = a.get("name", aid)
+        role = (a.get("role") or "")[:30]
+        status = a.get("status", "active")
+        edu = a.get("education", {})
+        skills = edu.get("skill_levels", {}) if isinstance(edu, dict) else {}
+        skill_str = ", ".join(f"{k}:{v}" for k, v in list(skills.items())[:3]) if skills else "-"
+        lines.append(f"| {aid} | {name} | {role} | {status} | {skill_str} |")
+
+    result = "\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 9: cohort_get_agent
+# =====================================================================
+
+class GetAgentInput(BaseModel):
+    """Input for getting a single agent's config."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID or alias (e.g. 'python_developer', 'pd')",
+        min_length=1, max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_get_agent",
+    annotations={
+        "title": "Get Agent Details",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_agent(params: GetAgentInput) -> str:
+    """Get full agent configuration by ID or alias."""
+    data = await _client.get_agent(params.agent_id)
+    if data is None:
+        return f"Agent '{params.agent_id}' not found or server unavailable."
+    if "error" in data:
+        return f"Error: {data['error']}"
+
+    lines = [f"## {data.get('name', params.agent_id)}"]
+    lines.append(f"**ID**: {data.get('agent_id', '?')}")
+    lines.append(f"**Role**: {data.get('role', '-')}")
+    lines.append(f"**Status**: {data.get('status', 'active')}")
+    if data.get("primary_task"):
+        lines.append(f"**Task**: {data['primary_task']}")
+    if data.get("capabilities"):
+        lines.append(f"**Capabilities**: {', '.join(data['capabilities'])}")
+    if data.get("domain_expertise"):
+        lines.append(f"**Expertise**: {', '.join(data['domain_expertise'])}")
+    if data.get("triggers"):
+        lines.append(f"**Triggers**: {', '.join(data['triggers'])}")
+    edu = data.get("education", {})
+    if isinstance(edu, dict) and edu.get("skill_levels"):
+        skills = ", ".join(f"{k}: {v}" for k, v in edu["skill_levels"].items())
+        lines.append(f"**Skills**: {skills}")
+
+    return "\n".join(lines)
+
+
+# =====================================================================
+# Tool 10: cohort_get_agent_memory
+# =====================================================================
+
+class GetAgentMemoryInput(BaseModel):
+    """Input for getting an agent's memory."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID (e.g. 'python_developer')",
+        min_length=1, max_length=100,
+    )
+    section: Optional[str] = Field(
+        None, description="Optional section: 'working_memory', 'learned_facts', or None for all.",
+    )
+
+
+@mcp.tool(
+    name="cohort_get_agent_memory",
+    annotations={
+        "title": "Get Agent Memory",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_agent_memory(params: GetAgentMemoryInput) -> str:
+    """Get an agent's memory (working memory, learned facts)."""
+    data = await _client.get_agent_memory(params.agent_id)
+    if data is None:
+        return f"Memory for '{params.agent_id}' not found or server unavailable."
+    if "error" in data:
+        return f"Error: {data['error']}"
+
+    lines = [f"## Memory: {params.agent_id}"]
+
+    working = data.get("working_memory", [])
+    facts = data.get("learned_facts", [])
+    lines.append(f"**Working memory**: {len(working)} entries | **Learned facts**: {len(facts)}")
+
+    if params.section in (None, "learned_facts") and facts:
+        lines.append("")
+        lines.append("### Learned Facts")
+        for f in facts[-20:]:
+            conf = f.get("confidence", "medium")
+            lines.append(f"- [{conf}] {f.get('fact', '?')} (from: {f.get('learned_from', '?')})")
+
+    if params.section in (None, "working_memory") and working:
+        lines.append("")
+        lines.append("### Recent Working Memory")
+        for w in working[-10:]:
+            ts = w.get("timestamp", "")
+            ch = w.get("channel", "?")
+            inp = (w.get("input") or "")[:80]
+            lines.append(f"- [{ts}] #{ch}: {inp}")
+
+    result = "\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 11: cohort_create_agent
+# =====================================================================
+
+class CreateAgentInput(BaseModel):
+    """Input for creating a new agent."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    name: str = Field(..., description="Agent display name (e.g. 'Python Developer')", min_length=1)
+    role: str = Field(..., description="Agent role (e.g. 'Senior Python Engineer')", min_length=1)
+    primary_task: str = Field("", description="Primary task description")
+    agent_type: str = Field("specialist", description="Type: specialist, orchestrator, infrastructure, utility")
+    capabilities: List[str] = Field(default_factory=list, description="List of capabilities")
+    domain_expertise: List[str] = Field(default_factory=list, description="List of domain expertise areas")
+    personality: str = Field("", description="Personality description")
+    triggers: List[str] = Field(default_factory=list, description="Trigger words for routing")
+    avatar: str = Field("", description="Two-letter avatar code")
+    color: str = Field("#95A5A6", description="Hex color code")
+    group: str = Field("Agents", description="Agent group/category")
+
+
+@mcp.tool(
+    name="cohort_create_agent",
+    annotations={
+        "title": "Create Agent",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_create_agent(params: CreateAgentInput) -> str:
+    """Create a new agent with directory structure, config, prompt, and memory."""
+    result = await _client.create_agent(params.model_dump())
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        aid = result.get("agent_id", "?")
+        return f"Created agent **{params.name}** (id: `{aid}`)"
+    return f"Error creating agent: {result.get('error', 'Unknown')}"
+
+
+# =====================================================================
+# Tool 12: cohort_clean_memory
+# =====================================================================
+
+class CleanMemoryInput(BaseModel):
+    """Input for cleaning an agent's working memory."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID (e.g. 'python_developer')",
+        min_length=1, max_length=100,
+    )
+    keep_last: int = Field(
+        10, description="Number of recent working memory entries to keep (default 10).",
+        ge=1, le=100,
+    )
+    dry_run: bool = Field(
+        False, description="If true, report what would be cleaned without actually cleaning.",
+    )
+
+
+@mcp.tool(
+    name="cohort_clean_memory",
+    annotations={
+        "title": "Clean Agent Memory",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_clean_memory(params: CleanMemoryInput) -> str:
+    """Trim an agent's working memory, archiving old entries."""
+    result = await _client.clean_agent_memory(
+        params.agent_id, keep_last=params.keep_last, dry_run=params.dry_run,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        removed = result.get("working_memory_removed", 0)
+        kept = result.get("working_memory_kept", 0)
+        prefix = "[DRY RUN] " if params.dry_run else ""
+        if removed == 0:
+            return f"{prefix}No trimming needed for {params.agent_id} ({kept} entries)."
+        return (
+            f"{prefix}Cleaned {params.agent_id}: removed {removed}, kept {kept} entries."
+        )
+    return f"Error: {result.get('error', 'Unknown')}"
+
+
+# =====================================================================
+# Tool 13: cohort_add_fact
+# =====================================================================
+
+class AddFactInput(BaseModel):
+    """Input for adding a learned fact to an agent's memory."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID (e.g. 'python_developer')",
+        min_length=1, max_length=100,
+    )
+    fact: str = Field(
+        ..., description="The fact or knowledge to record",
+        min_length=1,
+    )
+    learned_from: str = Field(
+        "mcp", description="Source of the knowledge (e.g. 'teacher', 'session', 'mcp')",
+    )
+    confidence: str = Field(
+        "medium", description="Confidence level: high, medium, or low",
+    )
+
+
+@mcp.tool(
+    name="cohort_add_fact",
+    annotations={
+        "title": "Add Learned Fact",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_add_fact(params: AddFactInput) -> str:
+    """Add a learned fact to an agent's memory."""
+    result = await _client.add_agent_fact(
+        params.agent_id,
+        {
+            "fact": params.fact,
+            "learned_from": params.learned_from,
+            "confidence": params.confidence,
+        },
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        return f"Added fact to {params.agent_id}: \"{params.fact}\" [{params.confidence}]"
+    return f"Error: {result.get('error', 'Unknown')}"
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

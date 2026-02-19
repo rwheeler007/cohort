@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import subprocess
 import threading
 from datetime import datetime
@@ -45,11 +46,11 @@ class TaskExecutor:
         self.execution_backend: str = settings.get("execution_backend", "cli")
         self.claude_cmd: str = settings.get(
             "claude_cmd",
-            "C:/Users/rwhee/AppData/Roaming/npm/claude.cmd",
+            os.environ.get("COHORT_CLAUDE_CMD", "claude"),
         )
         self.api_key: str = settings.get("api_key", "")
-        self.boss_root: Path | None = (
-            Path(settings["boss_root"]) if settings.get("boss_root") else None
+        self.agents_root: Path | None = (
+            Path(settings["agents_root"]) if settings.get("agents_root") else None
         )
         self.response_timeout: int = int(settings.get("response_timeout", 300))
 
@@ -69,10 +70,10 @@ class TaskExecutor:
             self.claude_cmd = settings["claude_cmd"]
         if settings.get("api_key"):
             self.api_key = settings["api_key"]
-        if settings.get("boss_root"):
-            p = Path(settings["boss_root"])
+        if settings.get("agents_root"):
+            p = Path(settings["agents_root"])
             if p.exists():
-                self.boss_root = p
+                self.agents_root = p
         if settings.get("response_timeout"):
             try:
                 self.response_timeout = int(settings["response_timeout"])
@@ -328,7 +329,7 @@ class TaskExecutor:
             import anthropic
             client = anthropic.Anthropic(api_key=self.api_key)
             response = client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=os.environ.get("COHORT_MODEL", "claude-sonnet-4-20250514"),
                 max_tokens=4096,
                 system=agent_prompt,
                 messages=[{"role": "user", "content": user_message}],
@@ -396,7 +397,7 @@ class TaskExecutor:
                 input=full_prompt,
                 capture_output=True,
                 text=True,
-                cwd=str(self.boss_root) if self.boss_root else None,
+                cwd=str(self.agents_root) if self.agents_root else None,
                 timeout=self.response_timeout,
                 shell=True,
                 encoding="utf-8",
