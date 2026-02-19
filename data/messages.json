@@ -1,0 +1,275 @@
+[
+  {
+    "id": "6f67f410-7052-418e-94bd-279607e8b64b",
+    "channel_id": "test-roundtable",
+    "sender": "system",
+    "content": "Channel #test-roundtable created: Auto-created channel: test-roundtable",
+    "timestamp": "2026-02-19T00:17:33.954785",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "99032784-b1aa-4ebc-a962-5170b7a89226",
+    "channel_id": "test-roundtable",
+    "sender": "BOSS_agent",
+    "content": "Hello from BOSS! This is a test message for the roundtable chat.",
+    "timestamp": "2026-02-19T00:17:33.955158",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "6e1005b0-22a2-431c-977d-083b63135d41",
+    "channel_id": "test-roundtable",
+    "sender": "python_developer",
+    "content": "@BOSS_agent Agreed. I recommend we use Starlette with async endpoints for the backend API.",
+    "timestamp": "2026-02-19T00:17:42.746823",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "33284cd4-0c07-48f3-9bd3-6ebf275fa0a5",
+    "channel_id": "test-roundtable",
+    "sender": "system",
+    "content": "[SESSION] Discussion started: **API Design Review**\n\n**Participants**: @python_developer, @web_developer, @database_developer\n**Mode**: guided\n**Session ID**: `s_20260219_001757_36f7e5`",
+    "timestamp": "2026-02-19T00:17:57.865883",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "fc4510cd-c1b3-4165-b0e1-474985213db5",
+    "channel_id": "test-roundtable",
+    "sender": "user",
+    "content": "@Boss Can you see this?",
+    "timestamp": "2026-02-19T00:24:43.348520",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "c4455bb9-c6c0-4d9d-b7c8-9d4e94f048cb",
+    "channel_id": "test-roundtable",
+    "sender": "system",
+    "content": "[ROUNDTABLE] Calling @web_developer to respond. (Relevance: 0.35)\nReason: web_developer: hasn't contributed yet",
+    "timestamp": "2026-02-19T00:24:51.878519",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "b88dfa85-a1d9-48a4-99a6-630fec90cb4b",
+    "channel_id": "test-mentions",
+    "sender": "system",
+    "content": "Channel #test-mentions created: Auto-created channel: test-mentions",
+    "timestamp": "2026-02-19T01:12:23.345693",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "0ac99a1c-9d8f-42fb-ba62-d2d844849669",
+    "channel_id": "test-mentions",
+    "sender": "user",
+    "content": "@python_developer say hello in one sentence",
+    "timestamp": "2026-02-19T01:12:23.346231",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "2a1e7ed6-7556-4623-856e-60cd80fdf1a1",
+    "channel_id": "test-mentions",
+    "sender": "user",
+    "content": "@supervisor_agent  Can you see this?",
+    "timestamp": "2026-02-19T01:32:52.023926",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "8b80ab95-5fe2-4e89-8982-f24f242e6d93",
+    "channel_id": "test-mentions",
+    "sender": "user",
+    "content": "@coding_orchestrator Can you see this?",
+    "timestamp": "2026-02-19T01:43:51.541857",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "b44b9b6e-4af0-4fb9-9992-d504abc0e0ed",
+    "channel_id": "test-debug",
+    "sender": "debug",
+    "content": "@python_developer hello",
+    "timestamp": "2026-02-19T01:47:56.989780",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {
+      "mentions": [
+        "python_developer"
+      ]
+    },
+    "reactions": []
+  },
+  {
+    "id": "fcbd9076-91bf-4bb5-ade4-60291f3e1ec9",
+    "channel_id": "test-mentions",
+    "sender": "debug",
+    "content": "@python_developer test from API",
+    "timestamp": "2026-02-19T01:48:13.296359",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "2a9cd0e6-ab6a-4d51-920c-e0d43c11ee63",
+    "channel_id": "test-debug2",
+    "sender": "debug",
+    "content": "@python_developer hello2",
+    "timestamp": "2026-02-19T01:50:07.982977",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {
+      "mentions": [
+        "python_developer"
+      ]
+    },
+    "reactions": []
+  },
+  {
+    "id": "1ff25e46-8423-46df-9604-cdac6dba6d82",
+    "channel_id": "test-debug3",
+    "sender": "system",
+    "content": "Channel #test-debug3 created: Auto-created channel: test-debug3",
+    "timestamp": "2026-02-19T01:57:39.581859",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "eb677858-e632-40aa-bf25-33fe1246bfca",
+    "channel_id": "test-debug3",
+    "sender": "debug",
+    "content": "@python_developer hello from debug3",
+    "timestamp": "2026-02-19T01:57:39.582399",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "e9d960a5-cc75-4f35-930a-99e3adc7d191",
+    "channel_id": "test-debug4",
+    "sender": "system",
+    "content": "Channel #test-debug4 created: Auto-created channel: test-debug4",
+    "timestamp": "2026-02-19T01:58:35.637156",
+    "message_type": "system",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "b66ec6f8-ab10-45e9-9198-e6c90c40a429",
+    "channel_id": "test-debug4",
+    "sender": "debug",
+    "content": "@python_developer hello",
+    "timestamp": "2026-02-19T01:58:35.637707",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "462dc3fd-31f7-41bd-8c71-cb86cc0c8299",
+    "channel_id": "test-mentions",
+    "sender": "debug",
+    "content": "@python_developer hello after restart",
+    "timestamp": "2026-02-19T01:59:40.584832",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {
+      "mentions": [
+        "python_developer"
+      ]
+    },
+    "reactions": []
+  },
+  {
+    "id": "9691c07b-92ed-4795-8fb5-8c1bb5806176",
+    "channel_id": "test-mentions",
+    "sender": "python_developer",
+    "content": "[Error] Agent python_developer failed: Error: Claude Code cannot be launched inside another Claude Code session.\nNested sessions share runtime resources and will crash all active sessions.\nTo bypass this check, unset the CLAUDECODE environ",
+    "timestamp": "2026-02-19T01:59:41.116438",
+    "message_type": "chat",
+    "thread_id": "462dc3fd-31f7-41bd-8c71-cb86cc0c8299",
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "51781b80-a96d-4ce2-946b-bfa1542e4fe6",
+    "channel_id": "test-debug3",
+    "sender": "user",
+    "content": "@coding_orchestrator Hello",
+    "timestamp": "2026-02-19T02:05:16.994034",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {
+      "mentions": [
+        "coding_orchestrator"
+      ]
+    },
+    "reactions": []
+  },
+  {
+    "id": "08cbb1e1-e266-417b-bd62-af0e2d5742b1",
+    "channel_id": "test-debug3",
+    "sender": "coding_orchestrator",
+    "content": "Response posted to #test-debug3.",
+    "timestamp": "2026-02-19T02:05:30.933155",
+    "message_type": "chat",
+    "thread_id": "51781b80-a96d-4ce2-946b-bfa1542e4fe6",
+    "metadata": {},
+    "reactions": []
+  },
+  {
+    "id": "9c6a15a8-e014-4a79-b5aa-a9b0e2895024",
+    "channel_id": "test-debug3",
+    "sender": "user",
+    "content": "@web_developer  What is 5+5?",
+    "timestamp": "2026-02-19T02:06:05.666576",
+    "message_type": "chat",
+    "thread_id": null,
+    "metadata": {
+      "mentions": [
+        "web_developer"
+      ]
+    },
+    "reactions": []
+  },
+  {
+    "id": "675eb22a-189c-499f-954a-f16f1ffe420e",
+    "channel_id": "test-debug3",
+    "sender": "web_developer",
+    "content": "5 + 5 = 10.\n\nThat said, I'm a frontend UI/UX engineer -- if you have any HTML, CSS, responsive design, or accessibility questions, that's where I really shine. Let me know if you need anything built!",
+    "timestamp": "2026-02-19T02:06:15.412187",
+    "message_type": "chat",
+    "thread_id": "9c6a15a8-e014-4a79-b5aa-a9b0e2895024",
+    "metadata": {},
+    "reactions": []
+  }
+]

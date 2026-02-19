@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cohort - Coding Team Dashboard">
+    <title>Cohort - Team Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/cohort.css">
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">&#9776;</button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <header class="sidebar__header">
+                <h1 class="sidebar__title">Cohort</h1>
+                <p class="sidebar__tagline">Coding Team Dashboard</p>
+                <span class="sidebar__status" id="connection-status">Connecting...</span>
+            </header>
+
+            <nav class="sidebar-nav" aria-label="Dashboard navigation">
+                <h2 class="sidebar-nav__title">Panels</h2>
+                <ul class="sidebar-nav__list" id="nav-list">
+                    <li>
+                        <button class="sidebar-nav__item active" data-panel="team" aria-current="true">
+                            <span class="sidebar-nav__icon">[T]</span>
+                            <span class="sidebar-nav__label">Team</span>
+                            <span class="sidebar-nav__badge" id="team-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="chat">
+                            <span class="sidebar-nav__icon">[C]</span>
+                            <span class="sidebar-nav__label">Chat</span>
+                            <span class="sidebar-nav__badge" id="chat-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="queue">
+                            <span class="sidebar-nav__icon">[Q]</span>
+                            <span class="sidebar-nav__label">Work Queue</span>
+                            <span class="sidebar-nav__badge" id="queue-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="output">
+                            <span class="sidebar-nav__icon">[O]</span>
+                            <span class="sidebar-nav__label">Output Review</span>
+                            <span class="sidebar-nav__badge" id="output-badge">0</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="sidebar-nav__section-header">
+                    <h2 class="sidebar-nav__title">Channels</h2>
+                    <button class="sidebar-nav__add-btn" id="add-channel-btn" title="Create channel">+</button>
+                </div>
+                <ul class="sidebar-nav__channels" id="channel-list">
+                    <!-- Channel list populated by JS -->
+                </ul>
+
+                <div class="sidebar-nav__section-header">
+                    <h2 class="sidebar-nav__title">Folders</h2>
+                    <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder">+</button>
+                </div>
+                <div class="sidebar-nav__folders" id="folder-list">
+                    <!-- Folders populated by JS -->
+                </div>
+
+                <div class="sidebar-nav__section-header">
+                    <h2 class="sidebar-nav__title">Sessions</h2>
+                    <button class="sidebar-nav__add-btn" id="add-session-btn" title="Create session">+</button>
+                </div>
+                <ul class="sidebar-nav__sessions" id="session-list">
+                    <!-- Sessions populated by JS -->
+                </ul>
+            </nav>
+
+            <div class="sidebar__footer">
+                <button class="btn btn--icon" id="refresh-btn" aria-label="Refresh" title="Refresh data">
+                    [R]
+                </button>
+                <button class="btn btn--icon" id="permissions-btn" aria-label="Permissions" title="Permissions">
+                    [P]
+                </button>
+                <button class="btn btn--icon" id="settings-btn" aria-label="Settings" title="Settings">
+                    [S]
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main" id="main-content">
+            <!-- Panel Header -->
+            <header class="panel-header">
+                <div class="panel-header__info">
+                    <h2 class="panel-header__name" id="panel-title">Team Dashboard</h2>
+                    <p class="panel-header__subtitle" id="panel-subtitle">Agent status and skills</p>
+                </div>
+                <div class="panel-header__actions">
+                    <div class="panel-header__filter" id="filter-container" style="display: none;">
+                        <select class="filter-select" id="filter-select">
+                            <option value="all">All</option>
+                            <option value="idle">Idle</option>
+                            <option value="busy">Busy</option>
+                            <option value="error">Error</option>
+                        </select>
+                    </div>
+                    <span class="panel-header__count" id="panel-count"></span>
+                </div>
+            </header>
+
+            <!-- Team Dashboard Panel -->
+            <section class="panel panel--team active" id="panel-team" role="region" aria-label="Team Dashboard">
+                <div class="agent-grid" id="agent-grid">
+                    <div class="empty-state" id="team-empty">
+                        <p class="empty-state__text">No agents connected</p>
+                        <p class="empty-state__hint">Agents will appear here when they join a session</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Panel -->
+            <section class="panel panel--chat" id="panel-chat" role="region" aria-label="Team Chat" style="display: none;">
+                <div class="chat-layout">
+                    <div class="chat-main">
+                        <!-- Messages area -->
+                        <div class="messages-container" id="messages-container">
+                            <div class="messages-list" id="messages-list">
+                                <!-- Messages rendered by JS -->
+                                <div class="empty-state" id="chat-empty">
+                                    <p class="empty-state__text">No messages yet</p>
+                                    <p class="empty-state__hint">Select a channel or send a message</p>
+                                </div>
+                            </div>
+                            <!-- Typing indicator -->
+                            <div id="typing-indicator" style="display: none;"></div>
+                        </div>
+
+                        <!-- Message Input -->
+                        <div class="message-input-area">
+                            <div class="mention-dropdown" id="mention-dropdown" style="display: none;"></div>
+                            <form class="message-form" id="message-form">
+                                <div class="message-input-wrapper">
+                                    <div class="message-input" id="message-input"
+                                         contenteditable="true"
+                                         role="textbox"
+                                         aria-label="Message input"
+                                         data-placeholder="Type a message... (use @agent to mention)"></div>
+                                </div>
+                                <button type="submit" class="btn btn--primary message-send-btn" id="send-btn">Send</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Channel members sidebar -->
+                    <aside class="participants-sidebar" id="participants-sidebar">
+                        <div class="participants-sidebar__header">
+                            <h3 class="participants-sidebar__title">Members</h3>
+                            <button class="sidebar-nav__add-btn" id="add-member-btn" title="Add member">+</button>
+                        </div>
+                        <div class="add-member-dropdown" id="add-member-dropdown" style="display: none;">
+                            <input type="text" class="add-member-dropdown__search" id="add-member-search" placeholder="Search agents...">
+                            <div class="add-member-dropdown__list" id="add-member-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="participants-list" id="participants-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Work Queue Panel -->
+            <section class="panel panel--queue" id="panel-queue" role="region" aria-label="Work Queue" style="display: none;">
+                <div class="task-list" id="task-list">
+                    <div class="empty-state" id="queue-empty">
+                        <p class="empty-state__text">No tasks in queue</p>
+                        <p class="empty-state__hint">Assign tasks from the Team panel or use the button below</p>
+                    </div>
+                </div>
+                <div class="queue-actions">
+                    <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
+                </div>
+            </section>
+
+            <!-- Output Review Panel -->
+            <section class="panel panel--output" id="panel-output" role="region" aria-label="Output Review" style="display: none;">
+                <div class="output-list" id="output-list">
+                    <div class="empty-state" id="output-empty">
+                        <p class="empty-state__text">No outputs to review</p>
+                        <p class="empty-state__hint">Completed task outputs will appear here for review</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Assign Task Modal -->
+    <div class="modal" id="assign-task-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Assign Task</h2>
+                <button class="btn btn--icon modal__close" id="assign-task-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="assign-task-form">
+                    <div class="form-group">
+                        <label for="task-agent-select">Agent</label>
+                        <select class="form-input" id="task-agent-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description-input">Task Description</label>
+                        <textarea class="form-input" id="task-description-input" rows="4" placeholder="Describe the task..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority-select">Priority</label>
+                        <select class="form-input" id="task-priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="assign-task-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Assign</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="review-modal" hidden>
+        <div class="modal__content modal__content--wide">
+            <header class="modal__header">
+                <h2>Review Output</h2>
+                <button class="btn btn--icon modal__close" id="review-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <div class="review-output" id="review-output-content"></div>
+                <form id="review-form">
+                    <input type="hidden" id="review-task-id">
+                    <div class="form-group">
+                        <label>Verdict</label>
+                        <div class="verdict-buttons">
+                            <button type="button" class="btn btn--success verdict-btn" data-verdict="approved">Approve</button>
+                            <button type="button" class="btn btn--warning verdict-btn" data-verdict="needs_work">Needs Work</button>
+                            <button type="button" class="btn btn--danger verdict-btn" data-verdict="rejected">Reject</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-notes-input">Notes (optional)</label>
+                        <textarea class="form-input" id="review-notes-input" rows="3" placeholder="Add review notes..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="review-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary" id="review-submit" disabled>Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Settings</h2>
+                <button class="btn btn--icon modal__close" id="settings-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="settings-form">
+                    <!-- API Key Section -->
+                    <div class="settings-section">
+                        <h3 class="settings-section__title">Anthropic API Key</h3>
+                        <p class="settings-section__desc">Required for direct API calls. Stored locally on the server.</p>
+                        <div class="form-group">
+                            <label for="settings-api-key">API Key</label>
+                            <div class="settings-secret-field">
+                                <input type="password" class="form-input" id="settings-api-key"
+                                       placeholder="sk-ant-..." autocomplete="off">
+                                <button type="button" class="btn btn--icon settings-toggle-vis" id="toggle-api-key-vis"
+                                        aria-label="Toggle visibility">[*]</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Claude Code Connection -->
+                    <div class="settings-section">
+                        <h3 class="settings-section__title">Claude Code Connection</h3>
+                        <p class="settings-section__desc">
+                            Connect to a running Claude Code CLI backend for agent responses.
+                            The CLI must be running and accessible on this machine.
+                        </p>
+                        <div class="form-group">
+                            <label for="settings-claude-cmd">Claude CLI Path</label>
+                            <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
+                                   placeholder="C:/Users/.../npm/claude.cmd">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-boss-root">BOSS Project Root</label>
+                            <input type="text" class="form-input form-input--mono" id="settings-boss-root"
+                                   placeholder="d:\Projects\...">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-response-timeout">Response Timeout (seconds)</label>
+                            <input type="number" class="form-input" id="settings-response-timeout"
+                                   min="30" max="600" value="300">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-exec-backend">Task Execution Backend</label>
+                            <select class="form-input" id="settings-exec-backend">
+                                <option value="cli">Claude CLI (subprocess)</option>
+                                <option value="api">Anthropic API (direct)</option>
+                                <option value="chat">Chat-routed (@mention)</option>
+                            </select>
+                        </div>
+                        <div class="settings-connection-status" id="settings-connection-status">
+                            <span class="settings-connection-dot" id="settings-connection-dot"></span>
+                            <span id="settings-connection-text">Not tested</span>
+                        </div>
+                        <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="settings-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions Modal -->
+    <div class="modal" id="permissions-modal" hidden>
+        <div class="modal__content modal__content--wide">
+            <header class="modal__header">
+                <h2>Permissions</h2>
+                <button class="btn btn--icon modal__close" id="permissions-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <!-- Tab bar -->
+                <div class="perm-tabs" id="perm-tabs">
+                    <button class="perm-tab active" data-perm-tab="services">Service Keys</button>
+                    <button class="perm-tab" data-perm-tab="agents">Agent Access</button>
+                </div>
+
+                <!-- Tab: Service Keys -->
+                <div class="perm-panel active" id="perm-panel-services">
+                    <p class="settings-section__desc">
+                        Add API keys and credentials for external services.
+                        Agents can only use services they have been granted access to.
+                    </p>
+                    <div id="service-keys-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button type="button" class="btn btn--secondary" id="add-service-key-btn">+ Add Service</button>
+                </div>
+
+                <!-- Tab: Agent Access -->
+                <div class="perm-panel" id="perm-panel-agents" style="display:none;">
+                    <p class="settings-section__desc">
+                        Toggle which services each agent can access.
+                        Only agents with a checkmark can use that service's API key.
+                    </p>
+                    <div class="perm-grid-wrapper">
+                        <table class="perm-grid" id="perm-grid">
+                            <thead id="perm-grid-head">
+                                <!-- Header row: Agent | Service1 | Service2 | ... -->
+                            </thead>
+                            <tbody id="perm-grid-body">
+                                <!-- One row per agent -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="permissions-cancel">Cancel</button>
+                    <button type="button" class="btn btn--primary" id="permissions-save">Save Permissions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal (sub-modal from Permissions) -->
+    <div class="modal" id="add-service-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Add Service</h2>
+                <button class="btn btn--icon modal__close" id="add-service-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="add-service-form">
+                    <div class="form-group">
+                        <label for="service-type-select">Service Type</label>
+                        <select class="form-input" id="service-type-select">
+                            <option value="youtube">YouTube Data API</option>
+                            <option value="rss">RSS Feed Reader</option>
+                            <option value="email_smtp">Email (SMTP)</option>
+                            <option value="email_imap">Email (IMAP)</option>
+                            <option value="github">GitHub API</option>
+                            <option value="slack">Slack Webhook</option>
+                            <option value="discord">Discord Webhook</option>
+                            <option value="openai">OpenAI API</option>
+                            <option value="google">Google Cloud API</option>
+                            <option value="aws">AWS Credentials</option>
+                            <option value="webhook">Custom Webhook</option>
+                            <option value="custom">Custom Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="service-custom-name-group" style="display:none;">
+                        <label for="service-custom-name">Service Name</label>
+                        <input type="text" class="form-input" id="service-custom-name" placeholder="e.g. My CRM API">
+                    </div>
+                    <div class="form-group">
+                        <label for="service-key-input">API Key / Token</label>
+                        <div class="settings-secret-field">
+                            <input type="password" class="form-input" id="service-key-input"
+                                   placeholder="Paste API key or token..." autocomplete="off">
+                            <button type="button" class="btn btn--icon settings-toggle-vis" id="toggle-service-key-vis">[*]</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-extra-input">Extra Config (optional)</label>
+                        <textarea class="form-input form-input--mono" id="service-extra-input" rows="3"
+                                  placeholder='{"endpoint": "...", "region": "us-east-1"}'></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="add-service-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Add Service</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Channel Modal -->
+    <div class="modal" id="create-channel-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Create Channel</h2>
+                <button class="btn btn--icon modal__close" id="create-channel-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="create-channel-form">
+                    <div class="form-group">
+                        <label for="new-channel-name">Channel Name</label>
+                        <input type="text" class="form-input" id="new-channel-name" placeholder="e.g. design-review" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="create-channel-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Folder Modal -->
+    <div class="modal" id="create-folder-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Create Folder</h2>
+                <button class="btn btn--icon modal__close" id="create-folder-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="create-folder-form">
+                    <div class="form-group">
+                        <label for="new-folder-name">Folder Name</label>
+                        <input type="text" class="form-input" id="new-folder-name" placeholder="e.g. Frontend" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="create-folder-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/cohort.js"></script>
+</body>
+</html>

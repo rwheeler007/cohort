@@ -1,0 +1,86 @@
+{
+  "BOSS_agent": {
+    "name": "BOSS Agent",
+    "triggers": ["orchestrate", "delegate", "workflow", "task", "assign", "coordinate"],
+    "capabilities": ["task orchestration", "agent delegation", "workflow management", "priority routing", "session coordination"],
+    "role": "orchestrator"
+  },
+  "supervisor_agent": {
+    "name": "Supervisor",
+    "triggers": ["review", "approve", "supervise", "quality", "oversight"],
+    "capabilities": ["code review", "quality assurance", "task approval", "agent oversight", "standards enforcement"],
+    "role": "supervisor"
+  },
+  "python_developer": {
+    "name": "Python Developer",
+    "triggers": ["python", "backend", "api", "flask", "starlette", "fastapi", "socketio", "async"],
+    "capabilities": ["backend architecture", "API design", "Socket.IO integration", "async programming", "data modeling"],
+    "role": "senior_developer"
+  },
+  "web_developer": {
+    "name": "Web Developer",
+    "triggers": ["html", "css", "javascript", "typescript", "frontend", "ui", "responsive", "accessibility"],
+    "capabilities": ["frontend development", "UI/UX implementation", "responsive design", "accessibility", "CSS architecture"],
+    "role": "frontend_developer"
+  },
+  "javascript_developer": {
+    "name": "JavaScript Developer",
+    "triggers": ["javascript", "node", "npm", "react", "vue", "express", "webpack"],
+    "capabilities": ["Node.js development", "React/Vue frameworks", "package management", "bundling", "full-stack JS"],
+    "role": "senior_developer"
+  },
+  "system_coder": {
+    "name": "System Coder",
+    "triggers": ["system", "architecture", "infrastructure", "cli", "tooling", "automation"],
+    "capabilities": ["system architecture", "CLI tooling", "build automation", "infrastructure code", "cross-platform development"],
+    "role": "senior_developer"
+  },
+  "database_developer": {
+    "name": "Database Developer",
+    "triggers": ["database", "sql", "schema", "migration", "storage", "persistence"],
+    "capabilities": ["database design", "schema modeling", "query optimization", "data persistence"],
+    "role": "database_specialist"
+  },
+  "qa_agent": {
+    "name": "QA Agent",
+    "triggers": ["testing", "qa", "validation", "coverage", "pytest", "integration"],
+    "capabilities": ["test strategy", "test automation", "integration testing", "coverage analysis"],
+    "role": "qa_specialist"
+  },
+  "security_agent": {
+    "name": "Security Agent",
+    "triggers": ["security", "auth", "encryption", "vulnerability", "audit", "secrets"],
+    "capabilities": ["security auditing", "authentication design", "vulnerability scanning", "secrets management"],
+    "role": "security_specialist"
+  },
+  "code_archaeologist": {
+    "name": "Code Archaeologist",
+    "triggers": ["refactor", "legacy", "codebase", "audit", "patterns", "technical-debt"],
+    "capabilities": ["codebase analysis", "refactoring", "pattern detection", "technical debt assessment"],
+    "role": "analyst"
+  },
+  "devops_agent": {
+    "name": "DevOps Agent",
+    "triggers": ["deploy", "ci", "cd", "docker", "pipeline", "monitoring", "infrastructure"],
+    "capabilities": ["CI/CD pipelines", "containerization", "deployment automation", "monitoring setup", "infrastructure management"],
+    "role": "devops_engineer"
+  },
+  "documentation_agent": {
+    "name": "Documentation Agent",
+    "triggers": ["docs", "readme", "documentation", "api-docs", "changelog", "wiki"],
+    "capabilities": ["technical writing", "API documentation", "README generation", "changelog management", "knowledge base"],
+    "role": "technical_writer"
+  },
+  "sdk_educator_research": {
+    "name": "SDK Educator",
+    "triggers": ["sdk", "tutorial", "education", "learning", "examples", "onboarding"],
+    "capabilities": ["SDK documentation", "tutorial creation", "developer education", "example projects", "onboarding guides"],
+    "role": "educator"
+  },
+  "coding_orchestrator": {
+    "name": "Coding Orchestrator",
+    "triggers": ["plan", "breakdown", "sprint", "epic", "story", "estimation"],
+    "capabilities": ["project planning", "task breakdown", "sprint management", "effort estimation", "dependency mapping"],
+    "role": "project_manager"
+  }
+}

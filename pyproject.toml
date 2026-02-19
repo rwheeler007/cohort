@@ -19,7 +19,7 @@ classifiers = [
 
 [project.optional-dependencies]
 claude = ["httpx>=0.27", "fastmcp>=0.1"]
-server = ["starlette>=0.37", "uvicorn[standard]>=0.29"]
+server = ["starlette>=0.37", "uvicorn[standard]>=0.29", "python-socketio[asyncio]>=5.10"]
 dev = ["pytest", "pytest-cov", "ruff", "mypy"]
 all = ["cohort[claude,server,dev]"]
 

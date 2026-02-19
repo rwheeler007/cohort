@@ -212,6 +212,13 @@ class ChatManager:
         thread_id: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> Message:
+        # Extract @mentions into metadata
+        mentions = parse_mentions(content)
+        if mentions:
+            if metadata is None:
+                metadata = {}
+            metadata.setdefault("mentions", mentions)
+
         msg_id = str(uuid.uuid4())
         msg = Message(
             id=msg_id,

@@ -17,7 +17,7 @@ def main() -> None:
 
     serve_parser = sub.add_parser("serve", help="Start the HTTP server")
     serve_parser.add_argument("--host", default="0.0.0.0", help="Bind address")
-    serve_parser.add_argument("--port", type=int, default=5000, help="Port")
+    serve_parser.add_argument("--port", type=int, default=5100, help="Port")
     serve_parser.add_argument("--data-dir", default="data", help="Data directory")
 
     args = parser.parse_args()
