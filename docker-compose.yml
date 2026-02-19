@@ -1,30 +1,40 @@
 services:
-  # Core cohort library -- runs the default entrypoint (python -m cohort)
-  cohort:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - cohort-data:/home/cohort/data
-    restart: unless-stopped
-
-  # MCP server with Claude integration extras
-  cohort-mcp:
+  # HTTP message bus -- shared state for multi-agent conversations
+  cohort-server:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        INSTALL_EXTRAS: claude
+        INSTALL_EXTRAS: server
+    command: ["python", "-m", "cohort", "serve", "--host", "0.0.0.0", "--port", "5000"]
+    ports:
+      - "5000:5000"
+    volumes:
+      - cohort-data:/home/cohort/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Full stack: server + MCP + Claude integration
+  cohort-full:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_EXTRAS: server,claude
+    command: ["python", "-m", "cohort", "serve", "--host", "0.0.0.0", "--port", "5000"]
     ports:
       - "5000:5000"
     env_file: .env
     volumes:
       - cohort-data:/home/cohort/data
     restart: unless-stopped
-    depends_on:
-      - cohort
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
       interval: 30s
       timeout: 5s
       retries: 3

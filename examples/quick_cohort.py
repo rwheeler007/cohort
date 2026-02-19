@@ -8,7 +8,7 @@ storage.create_channel("design-review", "API design review")
 
 agents = {
     "alice": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
-    "bob": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
+    "perry": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
 }
 
 orch = Orchestrator(storage, agents=agents)

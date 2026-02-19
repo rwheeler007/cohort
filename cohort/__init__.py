@@ -1,6 +1,6 @@
 """cohort -- Multi-agent orchestration with loop prevention and contribution scoring."""
 
-from cohort.chat import Channel, Message
+from cohort.chat import Channel, ChatManager, Message, parse_mentions
 from cohort.meeting import StakeholderStatus, should_agent_speak
 from cohort.orchestrator import Orchestrator, Session
 from cohort.registry import AgentProfile, JsonFileStorage, StorageBackend
@@ -16,5 +16,7 @@ __all__ = [
     "StakeholderStatus",
     "should_agent_speak",
     "Channel",
+    "ChatManager",
     "Message",
+    "parse_mentions",
 ]
