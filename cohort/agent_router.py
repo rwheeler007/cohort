@@ -516,37 +516,54 @@ def _invoke_agent_sync(item: dict) -> None:
     # Emit typing indicator
     _emit_sync("user_typing", {"sender": agent_id, "typing": True, "channel_id": channel_id})
 
-    logger.info("[>>] Invoking Claude CLI for %s in #%s", agent_id, channel_id)
-
+    # D5: Try local router first, fallback to Claude CLI transparently
+    response_content: str | None = None
     try:
-        # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
-        # when the server is launched from within a Claude Code session.
-        env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+        from cohort.local import LocalRouter
 
-        result = subprocess.run(
-            [CLAUDE_CMD, "-p", "-"],
-            input=full_prompt,
-            capture_output=True,
-            text=True,
-            cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
-            timeout=RESPONSE_TIMEOUT,
-            shell=True,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-        )
+        router = LocalRouter()
+        # Infer task type from message content (simple heuristic)
+        task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
+        response_content = router.route(full_prompt, task_type=task_type)
+        if response_content:
+            logger.info("[OK] Local router handled %s in #%s", agent_id, channel_id)
+    except Exception:
+        # Local routing failed -- fall through to Claude CLI
+        logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)
 
-        response_content = result.stdout.strip()
-        if result.returncode != 0 and not response_content:
-            response_content = f"[Error] Agent {agent_id} failed: {result.stderr.strip()[:200]}"
-            logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
+    # Fallback to Claude CLI if local routing failed or returned None
+    if not response_content:
+        logger.info("[>>] Invoking Claude CLI for %s in #%s", agent_id, channel_id)
 
-    except subprocess.TimeoutExpired:
-        response_content = f"[Timeout] Agent {agent_id} response timed out after {RESPONSE_TIMEOUT}s"
-        logger.error("[X] Claude CLI timeout for %s", agent_id)
-    except Exception as exc:
-        response_content = f"[Error] Agent {agent_id} invocation failed: {exc}"
-        logger.exception("[X] Claude CLI exception for %s", agent_id)
+        try:
+            # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
+            # when the server is launched from within a Claude Code session.
+            env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+
+            result = subprocess.run(
+                [CLAUDE_CMD, "-p", "-"],
+                input=full_prompt,
+                capture_output=True,
+                text=True,
+                cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                timeout=RESPONSE_TIMEOUT,
+                shell=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+            )
+
+            response_content = result.stdout.strip()
+            if result.returncode != 0 and not response_content:
+                response_content = f"[Error] Agent {agent_id} failed: {result.stderr.strip()[:200]}"
+                logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
+
+        except subprocess.TimeoutExpired:
+            response_content = f"[Timeout] Agent {agent_id} response timed out after {RESPONSE_TIMEOUT}s"
+            logger.error("[X] Claude CLI timeout for %s", agent_id)
+        except Exception as exc:
+            response_content = f"[Error] Agent {agent_id} invocation failed: {exc}"
+            logger.exception("[X] Claude CLI exception for %s", agent_id)
 
     # Stop typing indicator
     _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
