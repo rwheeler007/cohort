@@ -42,7 +42,7 @@ def data_dir(tmp_path: Path) -> Path:
     """Temporary data directory with required subdirectories."""
     (tmp_path / "agents.json").write_text("{}", encoding="utf-8")
     (tmp_path / "channels.json").write_text("{}", encoding="utf-8")
-    (tmp_path / "messages.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "messages.json").write_text("[]", encoding="utf-8")
     (tmp_path / "settings.json").write_text("{}", encoding="utf-8")
     return tmp_path
 
