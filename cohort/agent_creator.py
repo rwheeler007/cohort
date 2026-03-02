@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 class AgentType(Enum):
     SPECIALIST = "specialist"
     ORCHESTRATOR = "orchestrator"
+    SUPERVISOR = "supervisor"
     INFRASTRUCTURE = "infrastructure"
     UTILITY = "utility"
 
@@ -133,9 +134,42 @@ _ORCHESTRATOR_PROMPT = """\
 - Escalate ambiguous requests for clarification
 """
 
+_SUPERVISOR_PROMPT = """\
+# {name}
+
+## Role
+{role}
+
+## Primary Mission
+{primary_task}
+
+## Personality
+{personality}
+
+## Core Responsibilities
+- Oversee agent work quality and adherence to standards
+- Delegate tasks to appropriate agents and track completion
+- Approve or reject deliverables based on quality criteria
+- Manage workflow priorities and resolve blockers
+- Provide oversight across the full development lifecycle
+
+## Capabilities
+{capabilities_section}
+
+## Domain Expertise
+{expertise_section}
+
+## Supervision Guidelines
+- Review agent output for correctness and completeness
+- Escalate issues that require human decision-making
+- Balance quality standards with delivery timelines
+- Maintain visibility into active workstreams
+"""
+
 _TEMPLATES = {
     AgentType.SPECIALIST: _SPECIALIST_PROMPT,
     AgentType.ORCHESTRATOR: _ORCHESTRATOR_PROMPT,
+    AgentType.SUPERVISOR: _SUPERVISOR_PROMPT,
     AgentType.INFRASTRUCTURE: _SPECIALIST_PROMPT,
     AgentType.UTILITY: _SPECIALIST_PROMPT,
 }

@@ -15,7 +15,7 @@ def storage(tmp_path: Path) -> JsonFileStorage:
 class TestSaveAndGetMessages:
     def test_save_message_returns_id(self, storage: JsonFileStorage):
         msg_id = storage.save_message("general", {
-            "sender": "alice",
+            "sender": "agent_a",
             "content": "hello world",
         })
         assert isinstance(msg_id, str)

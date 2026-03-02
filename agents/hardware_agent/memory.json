@@ -1,0 +1,10 @@
+{
+  "agent_id": "hardware_agent",
+  "working_memory": [],
+  "learned_facts": [],
+  "learning_history": [],
+  "known_paths": {
+    "hardware_inventory": "data/hardware_inventory/inventory.yaml"
+  },
+  "collaborators": {}
+}

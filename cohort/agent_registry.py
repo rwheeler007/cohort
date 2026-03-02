@@ -36,6 +36,22 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
     },
 
     # -- Leadership --
+    "boss_agent": {
+        "name": "Boss Agent",
+        "nickname": "Boss",
+        "avatar": "BO",
+        "color": "#C0392B",
+        "role": "Supervisor",
+        "group": "Leadership",
+    },
+    "ceo_agent": {
+        "name": "CEO Agent",
+        "nickname": "CEO",
+        "avatar": "CE",
+        "color": "#8E44AD",
+        "role": "Executive",
+        "group": "Leadership",
+    },
     "supervisor_agent": {
         "name": "Supervisor",
         "nickname": "Supervisor",
@@ -128,7 +144,39 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "role": "DevOps Engineer",
         "group": "Specialists",
     },
+    "sales_agent": {
+        "name": "Sales Agent",
+        "nickname": "Sales",
+        "avatar": "SA",
+        "color": "#E74C3C",
+        "role": "Sales Specialist",
+        "group": "Specialists",
+    },
+    "marketing_agent": {
+        "name": "Marketing Strategist",
+        "nickname": "Marketing",
+        "avatar": "MKT",
+        "color": "#E74C3C",
+        "role": "Growth Strategist",
+        "group": "Specialists",
+    },
+    "content_strategy_agent": {
+        "name": "Content Strategy Agent",
+        "nickname": "Content",
+        "avatar": "CS",
+        "color": "#2ECC71",
+        "role": "Content Strategist",
+        "group": "Specialists",
+    },
 
+    "analytics_agent": {
+        "name": "Analytics Agent",
+        "nickname": "Analytics",
+        "avatar": "BI",
+        "color": "#3498DB",
+        "role": "BI & Analytics Specialist",
+        "group": "Specialists",
+    },
     # -- Support --
     "documentation_agent": {
         "name": "Documentation Agent",

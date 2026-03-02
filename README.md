@@ -37,8 +37,8 @@ chat.create_channel("design-review", "API design review")
 
 # 2. Define your agents (triggers and capabilities drive scoring)
 agents = {
-    "alice": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
-    "bob":   {"triggers": ["testing", "qa"],  "capabilities": ["test strategy"]},
+    "architect": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
+    "tester":    {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
 }
 
 # 3. Start a session -- Cohort picks the right speakers
@@ -51,7 +51,7 @@ print(f"Next speaker: {rec['recommended_speaker']}")
 print(f"Reason: {rec['reason']}")
 
 # 5. Record turns and let Cohort manage the flow
-orch.record_turn(session.session_id, "alice", "msg-001")
+orch.record_turn(session.session_id, "architect", "msg-001")
 ```
 
 ## Architecture
@@ -86,6 +86,94 @@ orch.record_turn(session.session_id, "alice", "msg-001")
 | Question | 15% | Was the agent directly asked something? |
 
 Agents move through stakeholder statuses: **active** -> **approved_silent** -> **observer** -> **dormant**. Each status has a higher threshold to speak, preventing agents from dominating after they've contributed.
+
+### Composite Relevance (5-Dimension Matrix)
+
+When using `calculate_composite_relevance` or `Orchestrator.get_next_speaker`, Cohort scores agents across a richer five-dimension matrix:
+
+| Dimension | Weight | What it measures |
+|-----------|--------|-----------------|
+| Domain expertise | 30% | Keyword overlap between topic and agent triggers/capabilities |
+| Complementary value | 25% | Are this agent's complementary partners active? |
+| Historical success | 20% | Past performance on similar topics |
+| Phase alignment | 15% | Is this the right agent for the current workflow phase? |
+| Data ownership | 10% | Does this agent own data relevant to the topic? |
+
+Three of these dimensions -- complementary value, phase alignment, and data ownership -- use **per-agent scoring metadata** that can be configured externally.
+
+### Scoring Metadata
+
+By default, Cohort includes built-in scoring metadata for common agent roles. You can override or extend this by adding three optional fields to any agent's config:
+
+```json
+{
+  "architect": {
+    "triggers": ["api", "design"],
+    "capabilities": ["backend architecture"],
+    "complementary_agents": ["tester", "developer"],
+    "data_sources": ["architecture_docs", "design_decisions"],
+    "phase_roles": {"PLAN": "high", "DISCOVER": "medium"}
+  }
+}
+```
+
+| Field | Type | Effect |
+|-------|------|--------|
+| `complementary_agents` | `list[str]` | Agent IDs that work well with this agent. Boosts score when partners are active. |
+| `data_sources` | `list[str]` | Data this agent owns. Boosts score when topic keywords match. |
+| `phase_roles` | `dict[str, str]` | Workflow phase relevance. Keys: `DISCOVER`, `PLAN`, `EXECUTE`, `VALIDATE`. Values: `high` (1.0), `medium` (0.6), `low` (0.2). |
+
+**Resolution order** (3-tier fallback):
+
+1. Explicit value in agent config (from `agents.json` or `AgentConfig`)
+2. Built-in defaults (for known agent roles like `python_developer`, `boss_agent`, etc.)
+3. Neutral fallback (unknown agents get 0.0 for complementary/ownership, 0.5 for phase alignment)
+
+This means zero-config works out of the box -- agents with no scoring metadata still participate with neutral scores.
+
+## CLI
+
+Cohort includes CLI commands for file-based collaboration. Agents in **any language** can participate by appending to a shared `.jsonl` file, with Cohort acting as the scoring referee.
+
+```bash
+# Append a message
+python -m cohort say --sender architect --channel review --file conv.jsonl \
+    --message "We should use pagination for the list endpoint"
+
+# Check if an agent should respond (exit 0 = speak, exit 1 = don't)
+python -m cohort gate --agent tester --channel review --file conv.jsonl \
+    --agents agents.json --format json
+
+# Rank who should speak next
+python -m cohort next-speaker --channel review --file conv.jsonl \
+    --agents agents.json --top 3
+```
+
+The `agents.json` file defines agent capabilities (and optional scoring metadata):
+
+```json
+{
+  "architect": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
+  "tester": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
+  "developer": {"triggers": ["python", "code"], "capabilities": ["implementation"]}
+}
+```
+
+### JSONL File Transport
+
+For programmatic use, `JsonlFileStorage` provides an append-only storage backend:
+
+```python
+from cohort import JsonlFileStorage
+from cohort.chat import ChatManager
+
+storage = JsonlFileStorage("conversation.jsonl")
+chat = ChatManager(storage)
+chat.create_channel("review", "API design review")
+chat.post_message("review", "architect", "Hello!")
+```
+
+Messages are stored as one JSON object per line. Channel metadata lives in a companion `{stem}_channels.json` file. Zero external dependencies.
 
 ## HTTP Server
 

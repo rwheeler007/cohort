@@ -22,6 +22,10 @@ from pathlib import Path
 from typing import Any
 
 from cohort.agent import AgentConfig, AgentMemory
+from cohort.personas import load_persona
+
+# httpx is optional (part of claude extra) -- imported lazily in _load_from_remote
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +47,13 @@ class AgentStore:
         self,
         agents_dir: Path | None = None,
         fallback_registry: dict[str, dict[str, str]] | None = None,
+        remote_url: str = "",
+        api_key: str = "",
     ) -> None:
         self._agents_dir = Path(agents_dir) if agents_dir else None
         self._fallback: dict[str, dict[str, str]] = fallback_registry or {}
+        self._remote_url = remote_url.rstrip("/") if remote_url else ""
+        self._api_key = api_key
         self._cache: dict[str, AgentConfig] = {}
         self._loaded_all: bool = False
 
@@ -64,7 +72,12 @@ class AgentStore:
                     agent_id = child.name
                     if agent_id not in self._cache:
                         try:
-                            self._cache[agent_id] = AgentConfig.from_config_file(config_path)
+                            config = AgentConfig.from_config_file(config_path)
+                            if not config.persona_text:
+                                persona = load_persona(agent_id)
+                                if persona:
+                                    config.persona_text = persona
+                            self._cache[agent_id] = config
                         except Exception as exc:
                             logger.warning(
                                 "[!] Failed to load agent %s: %s", agent_id, exc
@@ -72,7 +85,13 @@ class AgentStore:
         self._loaded_all = True
 
     def load_agent(self, agent_id: str) -> AgentConfig | None:
-        """Load a single agent from disk (cached after first load)."""
+        """Load a single agent by ID.
+
+        Resolution order:
+        1. In-memory cache
+        2. Local disk (agents_dir)
+        3. Remote Agent API (if configured)
+        """
         if agent_id in self._cache:
             return self._cache[agent_id]
         if self._agents_dir:
@@ -80,11 +99,123 @@ class AgentStore:
             if config_path.exists():
                 try:
                     config = AgentConfig.from_config_file(config_path)
+                    # Load persona text (lightweight prompt for chat mode)
+                    if not config.persona_text:
+                        persona = load_persona(agent_id)
+                        if persona:
+                            config.persona_text = persona
                     self._cache[agent_id] = config
                     return config
                 except Exception as exc:
                     logger.warning("[!] Failed to load agent %s: %s", agent_id, exc)
+        # Remote fallback: fetch from Agent API if configured
+        if self._remote_url and self._api_key:
+            config = self._load_from_remote(agent_id)
+            if config:
+                self._cache[agent_id] = config
+                return config
         return None
+
+    def _load_from_remote(self, agent_id: str) -> AgentConfig | None:
+        """Fetch agent config + prompt from the remote Agent API.
+
+        Downloads the agent profile and caches it to local disk so the
+        agent invocation pipeline (which reads files from disk) works
+        unchanged. User-specific data (memory, inventory) is never
+        overwritten if it already exists locally.
+        """
+        try:
+            import httpx
+        except ImportError:
+            logger.warning(
+                "[!] httpx not installed -- cannot fetch remote agents. "
+                "Install with: pip install cohort[claude]"
+            )
+            return None
+
+        url = f"{self._remote_url}/agents/{agent_id}/profile"
+        try:
+            resp = httpx.get(
+                url,
+                headers={"X-API-Key": self._api_key},
+                timeout=15,
+            )
+            if resp.status_code == 403:
+                logger.info(
+                    "[!] Agent '%s' requires a higher tier API key", agent_id
+                )
+                return None
+            if resp.status_code != 200:
+                logger.debug(
+                    "[!] Remote agent fetch failed for %s: HTTP %d",
+                    agent_id, resp.status_code,
+                )
+                return None
+
+            data = resp.json()
+            config_dict = data.get("config", {})
+            prompt_text = data.get("prompt")
+            remote_facts = data.get("recent_facts", [])
+
+            # Parse into AgentConfig
+            config = AgentConfig.from_dict(config_dict)
+
+            # Cache to local disk for the invocation pipeline
+            if self._agents_dir:
+                agent_dir = self._agents_dir / agent_id
+                agent_dir.mkdir(parents=True, exist_ok=True)
+
+                # Always overwrite config (get latest intelligence)
+                config_path = agent_dir / "agent_config.json"
+                config_path.write_text(
+                    json.dumps(config_dict, indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+
+                # Always overwrite prompt (get latest intelligence)
+                if prompt_text:
+                    prompt_path = agent_dir / "agent_prompt.md"
+                    prompt_path.write_text(prompt_text, encoding="utf-8")
+
+                # Merge remote facts into local memory (don't clobber user data)
+                mem_path = agent_dir / "memory.json"
+                if mem_path.exists():
+                    try:
+                        local_mem = json.loads(
+                            mem_path.read_text(encoding="utf-8")
+                        )
+                    except (json.JSONDecodeError, OSError):
+                        local_mem = {}
+                else:
+                    local_mem = {
+                        "agent_id": agent_id,
+                        "working_memory": [],
+                        "learned_facts": [],
+                        "known_paths": {},
+                    }
+
+                # Add remote facts that don't already exist locally
+                existing_facts = {
+                    f.get("fact", "") for f in local_mem.get("learned_facts", [])
+                }
+                for fact in remote_facts:
+                    if fact.get("fact", "") not in existing_facts:
+                        local_mem.setdefault("learned_facts", []).append(fact)
+
+                mem_path.write_text(
+                    json.dumps(local_mem, indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+
+            logger.info("[OK] Fetched agent '%s' from remote API", agent_id)
+            return config
+
+        except Exception as exc:
+            logger.warning(
+                "[!] Failed to fetch agent '%s' from remote: %s",
+                agent_id, exc,
+            )
+            return None
 
     def reload(self) -> None:
         """Clear cache and re-scan from disk."""
@@ -147,7 +278,7 @@ class AgentStore:
         self._ensure_all_loaded()
         result: dict[str, dict[str, Any]] = {}
         for agent_id, config in self._cache.items():
-            result[agent_id] = {
+            entry: dict[str, Any] = {
                 "name": config.name,
                 "role": config.role,
                 "triggers": config.triggers,
@@ -156,6 +287,10 @@ class AgentStore:
                 "agent_type": config.agent_type,
                 "status": config.status,
             }
+            # Include scoring metadata if present
+            if config.scoring_metadata:
+                entry.update(config.scoring_metadata)
+            result[agent_id] = entry
         return result
 
     # =====================================================================

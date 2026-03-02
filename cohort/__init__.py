@@ -3,6 +3,7 @@
 from cohort.agent import AgentConfig, AgentMemory
 from cohort.agent_store import AgentStore
 from cohort.chat import Channel, ChatManager, Message, parse_mentions
+from cohort.file_transport import JsonlFileStorage
 from cohort.meeting import StakeholderStatus, should_agent_speak
 from cohort.orchestrator import Orchestrator, Session
 from cohort.registry import AgentProfile, JsonFileStorage, StorageBackend
@@ -16,6 +17,7 @@ __all__ = [
     "AgentStore",
     "StorageBackend",
     "JsonFileStorage",
+    "JsonlFileStorage",
     "Orchestrator",
     "Session",
     "StakeholderStatus",

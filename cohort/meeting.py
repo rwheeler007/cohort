@@ -63,16 +63,6 @@ RELEVANCE_DIMENSIONS: dict[str, float] = {
     "data_ownership": 0.10,
 }
 
-COMPLEMENTARY_PAIRS: dict[str, list[str]] = {
-    "javascript_developer": ["web_developer"],
-    "web_developer": ["javascript_developer"],
-    "python_developer": ["supervisor_agent", "qa_agent"],
-    "supervisor_agent": ["python_developer"],
-    "qa_agent": ["python_developer"],
-    "cpp_developer": ["system_coder"],
-    "system_coder": ["cpp_developer"],
-}
-
 PHASE_KEYWORDS: dict[str, list[str]] = {
     "DISCOVER": [
         "research", "investigate", "find", "search", "past",
@@ -92,19 +82,107 @@ PHASE_KEYWORDS: dict[str, list[str]] = {
     ],
 }
 
-DATA_SOURCES: dict[str, list[str]] = {
-    "supervisor_agent": [
-        "memory.json", "session_metrics", "monitoring_data", "compliance_reports",
-    ],
-    "qa_agent": ["test_results", "past_issues", "root_causes"],
-    "code_archaeologist": [
-        "validation_confidence", "quality_patterns", "success_rates",
-    ],
-    "documentation_agent": ["changelogs", "learnings", "release_notes"],
-}
-
 TOPIC_SHIFT_THRESHOLD: float = 0.3
 TOPIC_LOOKBACK_MESSAGES: int = 5
+
+_TIER_SCORES: dict[str, float] = {"high": 1.0, "medium": 0.6, "low": 0.2}
+
+# Per-agent scoring metadata defaults.  These are the built-in BOSS
+# ecosystem values.  Deployers override them by adding
+# ``complementary_agents``, ``data_sources``, and/or ``phase_roles``
+# to each agent's config dict (e.g. in agents.json).
+_DEFAULT_SCORING_METADATA: dict[str, dict[str, Any]] = {
+    "javascript_developer": {
+        "complementary_agents": ["web_developer"],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "high"},
+    },
+    "web_developer": {
+        "complementary_agents": ["javascript_developer"],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "high"},
+    },
+    "python_developer": {
+        "complementary_agents": ["supervisor_agent", "qa_agent"],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "high", "DISCOVER": "low"},
+    },
+    "boss_agent": {
+        "complementary_agents": ["supervisor_agent", "coding_orchestrator"],
+        "data_sources": [
+            "workflow_sessions", "delegation_logs",
+            "task_assignments", "priority_routing",
+        ],
+        "phase_roles": {"DISCOVER": "high", "PLAN": "high", "VALIDATE": "high"},
+    },
+    "supervisor_agent": {
+        "complementary_agents": ["python_developer", "boss_agent"],
+        "data_sources": [
+            "memory.json", "session_metrics",
+            "monitoring_data", "compliance_reports",
+        ],
+        "phase_roles": {"DISCOVER": "high", "VALIDATE": "high", "EXECUTE": "low"},
+    },
+    "coding_orchestrator": {
+        "complementary_agents": ["boss_agent"],
+        "data_sources": [],
+        "phase_roles": {"PLAN": "high"},
+    },
+    "qa_agent": {
+        "complementary_agents": ["python_developer"],
+        "data_sources": ["test_results", "past_issues", "root_causes"],
+        "phase_roles": {"DISCOVER": "high", "PLAN": "low", "VALIDATE": "medium"},
+    },
+    "cpp_developer": {
+        "complementary_agents": ["system_coder"],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "high"},
+    },
+    "system_coder": {
+        "complementary_agents": ["cpp_developer"],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "medium"},
+    },
+    "code_archaeologist": {
+        "complementary_agents": [],
+        "data_sources": [
+            "validation_confidence", "quality_patterns", "success_rates",
+        ],
+        "phase_roles": {"DISCOVER": "medium", "VALIDATE": "high"},
+    },
+    "documentation_agent": {
+        "complementary_agents": [],
+        "data_sources": ["changelogs", "learnings", "release_notes"],
+        "phase_roles": {"DISCOVER": "high"},
+    },
+    "database_developer": {
+        "complementary_agents": [],
+        "data_sources": [],
+        "phase_roles": {"EXECUTE": "high"},
+    },
+}
+
+
+def _get_scoring_field(
+    agent_id: str,
+    agent_config: dict[str, Any],
+    field: str,
+    default: Any = None,
+) -> Any:
+    """Resolve a scoring metadata field with 3-tier fallback.
+
+    1. Explicit value in *agent_config* (from agents.json)
+    2. Built-in default in ``_DEFAULT_SCORING_METADATA``
+    3. Neutral *default* (caller-supplied)
+    """
+    val = agent_config.get(field)
+    if val is not None:
+        return val
+    defaults = _DEFAULT_SCORING_METADATA.get(agent_id, {})
+    val = defaults.get(field)
+    if val is not None:
+        return val
+    return default if default is not None else []
 
 
 # =====================================================================
@@ -234,16 +312,19 @@ def detect_current_phase(recent_messages: list[Message]) -> str:
 
 
 def calculate_complementary_value(
-    agent_id: str, meeting_context: dict[str, Any]
+    agent_id: str,
+    meeting_context: dict[str, Any],
+    agent_config: dict[str, Any] | None = None,
 ) -> float:
     """Score based on complementary agent pairs that are active."""
+    config = agent_config or {}
     stakeholder_status = meeting_context.get("stakeholder_status", {})
     active = [
         sid
         for sid, status in stakeholder_status.items()
         if status == StakeholderStatus.ACTIVE.value
     ]
-    complementary = COMPLEMENTARY_PAIRS.get(agent_id, [])
+    complementary = _get_scoring_field(agent_id, config, "complementary_agents", [])
     if not complementary:
         return 0.0
     active_comp = [c for c in complementary if c in active]
@@ -282,44 +363,23 @@ def calculate_phase_alignment(
     agent_id: str, current_phase: str, agent_config: dict[str, Any]
 ) -> float:
     """How relevant is the agent for the current workflow phase."""
-    phase_relevance: dict[str, dict[str, list[str]]] = {
-        "DISCOVER": {
-            "high": ["qa_agent", "supervisor_agent", "documentation_agent"],
-            "medium": ["code_archaeologist"],
-            "low": ["implementer", "developer"],
-        },
-        "PLAN": {
-            "high": ["architect", "primary_developer"],
-            "medium": ["designer", "technical_specialist"],
-            "low": ["qa_agent", "reviewer"],
-        },
-        "EXECUTE": {
-            "high": [
-                "python_developer", "javascript_developer", "web_developer",
-                "cpp_developer", "database_developer",
-            ],
-            "medium": ["system_coder"],
-            "low": ["reviewer", "supervisor"],
-        },
-        "VALIDATE": {
-            "high": ["code_archaeologist", "supervisor_agent", "reviewer"],
-            "medium": ["tester", "qa_agent"],
-            "low": ["implementer"],
-        },
-    }
-    phase_map = phase_relevance.get(current_phase, {})
-    for tier, agents in phase_map.items():
-        for pattern in agents:
-            if pattern in agent_id.lower():
-                return {"high": 1.0, "medium": 0.6, "low": 0.2}[tier]
+    phase_roles = _get_scoring_field(agent_id, agent_config, "phase_roles", {})
+    if not phase_roles:
+        return 0.5
+    tier = phase_roles.get(current_phase)
+    if tier and tier in _TIER_SCORES:
+        return _TIER_SCORES[tier]
     return 0.5
 
 
 def calculate_data_ownership(
-    agent_id: str, topic_keywords: list[str]
+    agent_id: str,
+    topic_keywords: list[str],
+    agent_config: dict[str, Any] | None = None,
 ) -> float:
     """Score based on unique operational data the agent owns."""
-    sources = DATA_SOURCES.get(agent_id, [])
+    config = agent_config or {}
+    sources = _get_scoring_field(agent_id, config, "data_sources", [])
     if not sources:
         return 0.0
     topic_set = set(topic_keywords)
@@ -345,14 +405,16 @@ def calculate_composite_relevance(
 
     scores: dict[str, float] = {
         "domain_expertise": calculate_expertise_relevance(agent_config, topic_kw),
-        "complementary_value": calculate_complementary_value(agent_id, meeting_context),
+        "complementary_value": calculate_complementary_value(
+            agent_id, meeting_context, agent_config
+        ),
         "historical_success": calculate_historical_success(
             agent_id, topic_kw, agent_profiles=agent_profiles
         ),
         "phase_alignment": calculate_phase_alignment(
             agent_id, current_phase, agent_config
         ),
-        "data_ownership": calculate_data_ownership(agent_id, topic_kw),
+        "data_ownership": calculate_data_ownership(agent_id, topic_kw, agent_config),
     }
 
     total = sum(scores[dim] * RELEVANCE_DIMENSIONS[dim] for dim in RELEVANCE_DIMENSIONS)

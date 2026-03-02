@@ -22,6 +22,8 @@ from typing import Any
 
 from cohort.chat import parse_mentions
 from cohort.agent_store import AgentStore
+from cohort.context_window import truncate_context
+from cohort.personas import load_persona
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,7 @@ MAX_RESPONSES_PER_MINUTE = 5
 MAX_CONVERSATION_DEPTH = 5
 RESPONSE_TIMEOUT = 300  # 5 min timeout for Claude CLI
 CONTEXT_HISTORY_LIMIT = 10
+CIRCUIT_BREAKER_CHAR_LIMIT = 15_000  # D5: reject prompts exceeding this
 
 CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 
@@ -48,6 +51,7 @@ HUMAN_USERS = frozenset({
 
 AGENT_ALIASES: dict[str, str] = {
     # Leadership
+    "boss": "boss_agent",
     "supervisor": "supervisor_agent",
     "coding": "coding_orchestrator",
     "orch": "coding_orchestrator",
@@ -405,6 +409,8 @@ def build_channel_context(channel_id: str) -> str:
 
     messages = _chat.get_channel_messages(channel_id, limit=CONTEXT_HISTORY_LIMIT)
     if messages:
+        # D6: Apply sliding window truncation to stay within char budget
+        messages = truncate_context(messages)
         parts.append("\n--- Recent Messages ---")
         for msg in messages:
             ts = msg.timestamp.split("T")[1][:8] if "T" in msg.timestamp else msg.timestamp
@@ -441,17 +447,37 @@ def _invoke_agent_sync(item: dict) -> None:
     thread_id = item["thread_id"]
     message_content = item["message_content"]
 
-    # Load agent prompt
-    prompt_path = get_agent_prompt_path(agent_id)
-    if not prompt_path:
-        logger.warning("[!] No prompt for %s, skipping", agent_id)
-        return
+    # D3/D4: Determine light vs heavy mode
+    use_full_prompt = os.environ.get("COHORT_FULL_PROMPT", "").strip() == "1"
 
-    try:
-        agent_prompt = prompt_path.read_text(encoding="utf-8")
-    except Exception:
-        logger.exception("[X] Failed to read prompt for %s", agent_id)
-        return
+    # Load agent prompt -- persona first (light mode), full prompt as fallback
+    agent_prompt: str | None = None
+
+    if not use_full_prompt:
+        # Light mode: try persona from AgentStore, then from personas/ loader
+        if _agent_store is not None:
+            config = _agent_store.get(agent_id)
+            if config and config.persona_text:
+                agent_prompt = config.persona_text
+        if not agent_prompt:
+            agent_prompt = load_persona(agent_id)
+
+    if not agent_prompt:
+        # Heavy mode or persona not found: load full agent_prompt.md
+        prompt_path = get_agent_prompt_path(agent_id)
+        if not prompt_path:
+            logger.warning("[!] No prompt for %s, skipping", agent_id)
+            return
+        try:
+            full_text = prompt_path.read_text(encoding="utf-8")
+        except Exception:
+            logger.exception("[X] Failed to read prompt for %s", agent_id)
+            return
+        if use_full_prompt:
+            agent_prompt = full_text
+        else:
+            # Truncated fallback: first 1000 chars of agent_prompt.md
+            agent_prompt = full_text[:1000]
 
     # Build context
     channel_context = build_channel_context(channel_id)
@@ -462,12 +488,30 @@ def _invoke_agent_sync(item: dict) -> None:
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
         f"---\n{agent_prompt}\n---\n\n"
-        f"RESPONSE LENGTH: Keep responses concise and focused. "
-        f"1-3 paragraphs unless a detailed analysis is specifically requested.\n\n"
         f"{channel_context}"
         f"{thread_context}"
         f"Now respond to this message:\n{message_content}"
     )
+
+    # D5: Circuit breaker -- reject oversized prompts
+    prompt_byte_len = len(full_prompt.encode("utf-8"))
+    if prompt_byte_len > CIRCUIT_BREAKER_CHAR_LIMIT:
+        error_msg = (
+            f"[!] Prompt for {agent_id} exceeds safety limit "
+            f"({prompt_byte_len:,} bytes > {CIRCUIT_BREAKER_CHAR_LIMIT:,}). "
+            f"Use `cohort clear` to reset context or set COHORT_FULL_PROMPT=1 "
+            f"for verbose mode."
+        )
+        logger.error(error_msg)
+        if _chat is not None:
+            err_response = _chat.post_message(
+                channel_id=channel_id,
+                sender="system",
+                content=error_msg,
+                thread_id=thread_id,
+            )
+            _emit_sync("new_message", err_response.to_dict())
+        return
 
     # Emit typing indicator
     _emit_sync("user_typing", {"sender": agent_id, "typing": True, "channel_id": channel_id})
@@ -620,9 +664,9 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         if mention_lower == sender.lower():
             continue
 
-        # Handle @all -> route to orchestrator
+        # Handle @all -> route to BOSS orchestrator
         if mention_lower == "all":
-            mention = "coding_orchestrator"
+            mention = "boss_agent"
 
         # Resolve alias
         resolved = resolve_agent_id(mention)
@@ -655,11 +699,27 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         priority = 50 - priority_boost
         priority_boost = max(priority_boost, 10)  # subsequent agents get lower priority
 
-        # Orchestrator gets extra priority for coordination messages
-        if resolved == "coding_orchestrator":
+        # BOSS orchestrator gets priority boost when directly invoked
+        if resolved == "boss_agent":
+            is_first_mention = mentions[0].lower().replace("-", "_") in ("boss_agent", "boss")
+            content_lower = message.content.lower()
+            has_coordination_keywords = any(w in content_lower for w in (
+                "coordinate", "route", "task", "plan", "workflow",
+                "delegate", "assign", "orchestrate",
+            ))
+
+            if is_first_mention and has_coordination_keywords:
+                priority = 1
+            elif is_first_mention:
+                priority = 2
+            elif has_coordination_keywords:
+                priority = 5
+
+        # Coding orchestrator gets extra priority for coordination messages
+        elif resolved == "coding_orchestrator":
             content_lower = message.content.lower()
             if any(w in content_lower for w in ("coordinate", "route", "task", "plan", "workflow")):
-                priority = max(5, priority - 20)
+                priority = max(10, priority - 20)
 
         queue_agent_response(
             agent_id=resolved,

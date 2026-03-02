@@ -42,7 +42,7 @@ class NotAnAgent:
 
 
 def test_duck_typed_agent_satisfies_protocol():
-    agent = SimpleAgent("alice", "developer", ["python", "api"])
+    agent = SimpleAgent("architect", "developer", ["python", "api"])
     assert isinstance(agent, AgentProfile)
 
 
@@ -61,12 +61,12 @@ def test_incomplete_class_does_not_satisfy():
 
 
 def test_relevance_score_returns_float():
-    agent = SimpleAgent("bob", "tester", ["testing", "qa"])
+    agent = SimpleAgent("tester", "tester", ["testing", "qa"])
     score = agent.relevance_score("testing strategy")
     assert isinstance(score, float)
     assert 0.0 <= score <= 1.0
 
 
 def test_can_contribute_returns_bool():
-    agent = SimpleAgent("carol", "designer", ["ui", "ux"])
+    agent = SimpleAgent("designer", "designer", ["ui", "ux"])
     assert agent.can_contribute({}) is True

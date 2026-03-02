@@ -11,8 +11,8 @@ def main():
 
     # Agent definitions -- triggers and capabilities drive scoring
     agents = {
-        "alice": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
-        "perry": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
+        "architect": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
+        "tester": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
     }
 
     # Start a session -- Cohort selects participants by relevance

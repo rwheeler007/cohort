@@ -124,6 +124,53 @@ async def list_channels(request: Request) -> JSONResponse:
         )
 
 
+async def create_channel_endpoint(request: Request) -> JSONResponse:
+    """POST /api/channels -- create a new channel.
+
+    Expects JSON body: ``{"name": "...", "description": "...", "members": [...], "is_private": false, "topic": ""}``.
+    """
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    name = body.get("name")
+    if not name:
+        return JSONResponse({"error": "Missing required field: name"}, status_code=400)
+
+    description = body.get("description", "")
+    members = body.get("members", [])
+    is_private = body.get("is_private", False)
+    topic = body.get("topic", "")
+
+    try:
+        chat = _get_chat()
+
+        # Check if channel already exists
+        existing = chat.get_channel(name)
+        if existing is not None:
+            return JSONResponse(
+                {"error": f"Channel '{name}' already exists"},
+                status_code=409,
+            )
+
+        channel = chat.create_channel(
+            name=name,
+            description=description,
+            members=members,
+            is_private=is_private,
+            topic=topic,
+        )
+        logger.info("Created channel: %s", name)
+        return JSONResponse({
+            "success": True,
+            "channel": channel.to_dict(),
+        })
+    except Exception as exc:
+        logger.exception("Error creating channel")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
 async def get_messages(request: Request) -> JSONResponse:
     """GET /api/messages?channel=X&limit=50 -- fetch channel messages."""
     channel = request.query_params.get("channel")
@@ -646,6 +693,49 @@ async def condense_channel(request: Request) -> JSONResponse:
 
 
 # =====================================================================
+# Tools endpoint (reads from boss_config.yaml)
+# =====================================================================
+
+async def list_tools(request: Request) -> JSONResponse:
+    """GET /api/tools -- return workflow tools from boss_config.yaml."""
+    settings = _load_settings()
+    agents_root = settings.get("agents_root", "")
+    if not agents_root:
+        agents_root = os.environ.get("COHORT_AGENTS_ROOT", "")
+
+    if not agents_root:
+        return JSONResponse({"tools": []})
+
+    config_path = Path(agents_root) / "config" / "boss_config.yaml"
+    if not config_path.exists():
+        return JSONResponse({"tools": []})
+
+    try:
+        import yaml
+
+        with open(config_path, encoding="utf-8") as f:
+            cfg = yaml.safe_load(f) or {}
+
+        raw_tools = cfg.get("boss", {}).get("tools", {})
+        tools = []
+        for tool_id, info in raw_tools.items():
+            tools.append({
+                "id": tool_id,
+                "name": tool_id.replace("_", " ").title(),
+                "description": info.get("description", ""),
+                "phases": info.get("phases", []),
+                "features": info.get("features", []),
+                "path": info.get("path", ""),
+                "implemented": bool(info.get("path")),
+            })
+
+        return JSONResponse({"tools": tools})
+    except Exception as exc:
+        logger.warning("Failed to load tools from boss_config.yaml: %s", exc)
+        return JSONResponse({"tools": []})
+
+
+# =====================================================================
 # Settings endpoints
 # =====================================================================
 
@@ -923,6 +1013,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/", index, methods=["GET"]),
         Route("/health", health, methods=["GET"]),
         Route("/api/channels", list_channels, methods=["GET"]),
+        Route("/api/channels", create_channel_endpoint, methods=["POST"]),
         Route("/api/messages", get_messages, methods=["GET"]),
         Route("/api/send", send_message, methods=["POST"]),
         Route("/api/channels/{channel_id}/condense", condense_channel, methods=["POST"]),
@@ -940,6 +1031,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/settings/test-connection", test_connection, methods=["POST"]),
         Route("/api/permissions", get_permissions, methods=["GET"]),
         Route("/api/permissions", post_permissions, methods=["POST"]),
+        Route("/api/tools", list_tools, methods=["GET"]),
         Route("/api/tasks", get_task_queue, methods=["GET"]),
         Route("/api/outputs", get_outputs, methods=["GET"]),
         # Roundtable endpoints

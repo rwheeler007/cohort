@@ -28,13 +28,13 @@ def chat(storage: JsonFileStorage) -> ChatManager:
 
 class TestParseMentions:
     def test_single_mention(self):
-        assert parse_mentions("Hey @alice check this") == ["alice"]
+        assert parse_mentions("Hey @agent_a check this") == ["agent_a"]
 
     def test_multiple_mentions(self):
-        assert parse_mentions("@alice and @bob please review") == ["alice", "bob"]
+        assert parse_mentions("@agent_a and @agent_b please review") == ["agent_a", "agent_b"]
 
     def test_deduplicates(self):
-        assert parse_mentions("@alice said @alice should do it") == ["alice"]
+        assert parse_mentions("@agent_a said @agent_a should do it") == ["agent_a"]
 
     def test_no_mentions(self):
         assert parse_mentions("No mentions here") == []
@@ -49,7 +49,7 @@ class TestParseMentions:
         assert parse_mentions("@web-dev respond") == ["web-dev"]
 
     def test_preserves_order(self):
-        assert parse_mentions("@charlie then @alice then @bob") == ["charlie", "alice", "bob"]
+        assert parse_mentions("@agent_c then @agent_a then @agent_b") == ["agent_c", "agent_a", "agent_b"]
 
     def test_empty_string(self):
         assert parse_mentions("") == []
@@ -64,14 +64,14 @@ class TestMessage:
         msg = Message(
             id="m1",
             channel_id="general",
-            sender="alice",
+            sender="agent_a",
             content="hello",
             timestamp="2026-01-01T00:00:00",
         )
         d = msg.to_dict()
         restored = Message.from_dict(d)
         assert restored.id == "m1"
-        assert restored.sender == "alice"
+        assert restored.sender == "agent_a"
         assert restored.content == "hello"
 
     def test_from_dict_legacy_channel_key(self):
@@ -79,7 +79,7 @@ class TestMessage:
         msg = Message.from_dict({
             "id": "m1",
             "channel": "general",
-            "sender": "alice",
+            "sender": "agent_a",
             "content": "hi",
             "timestamp": "2026-01-01T00:00:00",
         })
@@ -90,7 +90,7 @@ class TestMessage:
         msg = Message.from_dict({
             "id": "m1",
             "channel_id": "general",
-            "sender": "alice",
+            "sender": "agent_a",
             "content": "hi",
             "timestamp": "2026-01-01T00:00:00",
             "type": "system",
@@ -161,7 +161,7 @@ class TestChannel:
             description="desc",
             created_at="t",
             mode="meeting",
-            meeting_context={"stakeholder_status": {"alice": "active_stakeholder"}},
+            meeting_context={"stakeholder_status": {"agent_a": "active_stakeholder"}},
         )
         assert ch.mode == "meeting"
         assert ch.meeting_context is not None
@@ -209,20 +209,20 @@ class TestChatManager:
 
     def test_post_message(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
-        msg = chat.post_message("dev", "alice", "hello world")
-        assert msg.sender == "alice"
+        msg = chat.post_message("dev", "agent_a", "hello world")
+        assert msg.sender == "agent_a"
         assert msg.content == "hello world"
         assert msg.channel_id == "dev"
 
     def test_post_message_extracts_mentions(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
-        msg = chat.post_message("dev", "alice", "Hey @bob check this")
-        assert msg.metadata.get("mentions") == ["bob"]
+        msg = chat.post_message("dev", "agent_a", "Hey @agent_b check this")
+        assert msg.metadata.get("mentions") == ["agent_b"]
 
     def test_get_channel_messages(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
-        chat.post_message("dev", "alice", "msg1")
-        chat.post_message("dev", "bob", "msg2")
+        chat.post_message("dev", "agent_a", "msg1")
+        chat.post_message("dev", "agent_b", "msg2")
         # channel creation also posts a system message
         msgs = chat.get_channel_messages("dev")
         contents = [m.content for m in msgs]
@@ -232,28 +232,28 @@ class TestChatManager:
     def test_get_channel_messages_limit(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
         for i in range(10):
-            chat.post_message("dev", "alice", f"msg{i}")
+            chat.post_message("dev", "agent_a", f"msg{i}")
         msgs = chat.get_channel_messages("dev", limit=3)
         assert len(msgs) == 3
 
     def test_search_messages(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
-        chat.post_message("dev", "alice", "the API is broken")
-        chat.post_message("dev", "bob", "the tests pass")
+        chat.post_message("dev", "agent_a", "the API is broken")
+        chat.post_message("dev", "agent_b", "the tests pass")
         results = chat.search_messages("API")
         assert any("API" in m.content for m in results)
 
     def test_search_messages_case_insensitive(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
-        chat.post_message("dev", "alice", "Check the API")
+        chat.post_message("dev", "agent_a", "Check the API")
         results = chat.search_messages("api")
         assert len(results) >= 1
 
     def test_search_messages_specific_channel(self, chat: ChatManager):
         chat.create_channel("dev", "Dev")
         chat.create_channel("ops", "Ops")
-        chat.post_message("dev", "alice", "deploy API")
-        chat.post_message("ops", "bob", "deploy API")
+        chat.post_message("dev", "agent_a", "deploy API")
+        chat.post_message("ops", "agent_b", "deploy API")
         results = chat.search_messages("API", channel_id="dev")
         assert all(m.channel_id == "dev" for m in results)
 

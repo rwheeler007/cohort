@@ -7,6 +7,7 @@ from cohort.meeting import (
     SCORING_WEIGHTS,
     STAKEHOLDER_THRESHOLDS,
     StakeholderStatus,
+    _get_scoring_field,
     calculate_complementary_value,
     calculate_contribution_score,
     calculate_data_ownership,
@@ -30,7 +31,7 @@ from cohort.registry import JsonFileStorage
 # Helpers
 # =====================================================================
 
-def _msg(content: str, sender: str = "alice", channel: str = "ch") -> Message:
+def _msg(content: str, sender: str = "agent_a", channel: str = "ch") -> Message:
     """Create a test message."""
     return Message(
         id=f"m-{hash(content) % 10000}",
@@ -162,22 +163,22 @@ class TestExpertiseRelevance:
 
 class TestIsDirectlyQuestioned:
     def test_direct_question(self):
-        msgs = [_msg("@alice what do you think?")]
-        assert is_directly_questioned("alice", msgs) is True
+        msgs = [_msg("@agent_a what do you think?")]
+        assert is_directly_questioned("agent_a", msgs) is True
 
     def test_mention_without_question(self):
-        msgs = [_msg("@alice please review this.")]
-        assert is_directly_questioned("alice", msgs) is False
+        msgs = [_msg("@agent_a please review this.")]
+        assert is_directly_questioned("agent_a", msgs) is False
 
     def test_question_without_mention(self):
         msgs = [_msg("What do you think?")]
-        assert is_directly_questioned("alice", msgs) is False
+        assert is_directly_questioned("agent_a", msgs) is False
 
     def test_only_checks_last_3(self):
         old_msgs = [_msg(f"msg {i}") for i in range(5)]
-        old_msgs.insert(0, _msg("@alice what do you think?"))
+        old_msgs.insert(0, _msg("@agent_a what do you think?"))
         # The question is at index 0, beyond last 3
-        assert is_directly_questioned("alice", old_msgs) is False
+        assert is_directly_questioned("agent_a", old_msgs) is False
 
 
 # =====================================================================
@@ -223,30 +224,30 @@ class TestStakeholderThresholds:
 
 class TestContributionScore:
     def test_score_range(self):
-        ctx = initialize_meeting_context(["alice"])
+        ctx = initialize_meeting_context(["agent_a"])
         config = {"triggers": ["python"], "capabilities": ["backend"]}
         score = calculate_contribution_score(
-            "alice", "implement python backend", ctx, config, []
+            "agent_a", "implement python backend", ctx, config, []
         )
         assert 0.0 <= score <= 1.0
 
     def test_primary_stakeholder_bonus(self):
-        ctx = initialize_meeting_context(["alice"])
+        ctx = initialize_meeting_context(["agent_a"])
         config = {"triggers": [], "capabilities": []}
         score_primary = calculate_contribution_score(
-            "alice", "some message", ctx, config, []
+            "agent_a", "some message", ctx, config, []
         )
         score_non = calculate_contribution_score(
-            "bob", "some message", ctx, config, []
+            "agent_b", "some message", ctx, config, []
         )
         assert score_primary > score_non
 
     def test_question_bonus(self):
-        ctx = initialize_meeting_context(["alice"])
+        ctx = initialize_meeting_context(["agent_a"])
         config = {"triggers": [], "capabilities": []}
-        msgs_with_q = [_msg("@alice what do you think?")]
+        msgs_with_q = [_msg("@agent_a what do you think?")]
         score = calculate_contribution_score(
-            "alice", "response message", ctx, config, msgs_with_q
+            "agent_a", "response message", ctx, config, msgs_with_q
         )
         # Should get question bonus (0.15)
         assert score >= SCORING_WEIGHTS["question"]
@@ -317,7 +318,7 @@ class TestPhaseAlignment:
 
     def test_python_dev_in_discover(self):
         score = calculate_phase_alignment("python_developer", "DISCOVER", {})
-        # python_developer matches "developer" in DISCOVER low tier
+        # python_developer has DISCOVER: "low" in defaults
         assert score == 0.2
 
     def test_code_archaeologist_in_validate(self):
@@ -355,10 +356,10 @@ class TestInitializeMeetingContext:
         assert ctx["current_topic"]["keywords"] == []
 
     def test_with_agents(self):
-        ctx = initialize_meeting_context(["alice", "bob"])
-        assert ctx["stakeholder_status"]["alice"] == StakeholderStatus.ACTIVE.value
-        assert ctx["stakeholder_status"]["bob"] == StakeholderStatus.ACTIVE.value
-        assert "alice" in ctx["current_topic"]["primary_stakeholders"]
+        ctx = initialize_meeting_context(["agent_a", "agent_b"])
+        assert ctx["stakeholder_status"]["agent_a"] == StakeholderStatus.ACTIVE.value
+        assert ctx["stakeholder_status"]["agent_b"] == StakeholderStatus.ACTIVE.value
+        assert "agent_a" in ctx["current_topic"]["primary_stakeholders"]
 
 
 # =====================================================================
@@ -397,16 +398,16 @@ class TestTopicShift:
 class TestIdentifyStakeholders:
     def test_finds_matching_agents(self):
         agents = {
-            "alice": {"triggers": ["python", "backend"], "capabilities": ["api design"]},
-            "bob": {"triggers": ["javascript"], "capabilities": ["frontend"]},
+            "architect": {"triggers": ["python", "backend"], "capabilities": ["api design"]},
+            "tester": {"triggers": ["javascript"], "capabilities": ["frontend"]},
         }
         result = identify_stakeholders_for_topic(["python", "backend"], agents)
-        assert "alice" in result
+        assert "architect" in result
 
     def test_threshold_filtering(self):
         agents = {
-            "alice": {"triggers": ["python"], "capabilities": []},
-            "bob": {"triggers": ["javascript"], "capabilities": []},
+            "architect": {"triggers": ["python"], "capabilities": []},
+            "tester": {"triggers": ["javascript"], "capabilities": []},
         }
         # High threshold should exclude weak matches
         result = identify_stakeholders_for_topic(
@@ -422,26 +423,26 @@ class TestIdentifyStakeholders:
 
 class TestShouldAgentSpeak:
     def test_explicit_mention_always_speaks(self):
-        msg = _msg("@alice what do you think?")
+        msg = _msg("@agent_a what do you think?")
         ch = _channel(mode="meeting", meeting_context={
-            "stakeholder_status": {"alice": StakeholderStatus.DORMANT.value},
+            "stakeholder_status": {"agent_a": StakeholderStatus.DORMANT.value},
             "current_topic": {"keywords": [], "primary_stakeholders": []},
         })
-        assert should_agent_speak("alice", msg, ch) is True
+        assert should_agent_speak("agent_a", msg, ch) is True
 
     def test_chat_mode_always_speaks(self):
         msg = _msg("general discussion")
         ch = _channel(mode="chat", meeting_context=None)
-        assert should_agent_speak("alice", msg, ch) is True
+        assert should_agent_speak("agent_a", msg, ch) is True
 
     def test_dormant_agent_blocked(self):
         msg = _msg("general discussion about unrelated stuff")
         ch = _channel(mode="meeting", meeting_context={
-            "stakeholder_status": {"alice": StakeholderStatus.DORMANT.value},
+            "stakeholder_status": {"agent_a": StakeholderStatus.DORMANT.value},
             "current_topic": {"keywords": ["unrelated"], "primary_stakeholders": []},
         })
         # Dormant threshold is 1.0, score won't reach it without mention
-        assert should_agent_speak("alice", msg, ch) is False
+        assert should_agent_speak("agent_a", msg, ch) is False
 
 
 # =====================================================================
@@ -455,11 +456,11 @@ class TestUpdateStakeholderStatus:
         chat.create_channel("ch", "Test")
         ch = chat.get_channel("ch")
         ch.meeting_context = {
-            "stakeholder_status": {"alice": StakeholderStatus.ACTIVE.value},
+            "stakeholder_status": {"agent_a": StakeholderStatus.ACTIVE.value},
             "current_topic": {"keywords": [], "primary_stakeholders": []},
         }
-        update_stakeholder_status("alice", StakeholderStatus.APPROVED_SILENT, ch, chat)
-        assert ch.meeting_context["stakeholder_status"]["alice"] == StakeholderStatus.APPROVED_SILENT.value
+        update_stakeholder_status("agent_a", StakeholderStatus.APPROVED_SILENT, ch, chat)
+        assert ch.meeting_context["stakeholder_status"]["agent_a"] == StakeholderStatus.APPROVED_SILENT.value
 
     def test_creates_context_if_missing(self, tmp_path):
         storage = JsonFileStorage(tmp_path)
@@ -467,6 +468,109 @@ class TestUpdateStakeholderStatus:
         chat.create_channel("ch", "Test")
         ch = chat.get_channel("ch")
         ch.meeting_context = None
-        update_stakeholder_status("alice", StakeholderStatus.ACTIVE, ch, chat)
+        update_stakeholder_status("agent_a", StakeholderStatus.ACTIVE, ch, chat)
         assert ch.meeting_context is not None
-        assert ch.meeting_context["stakeholder_status"]["alice"] == StakeholderStatus.ACTIVE.value
+        assert ch.meeting_context["stakeholder_status"]["agent_a"] == StakeholderStatus.ACTIVE.value
+
+
+# =====================================================================
+# _get_scoring_field -- config resolution
+# =====================================================================
+
+class TestScoringMetadataResolution:
+    def test_explicit_config_takes_priority(self):
+        config = {"complementary_agents": ["custom_partner"]}
+        result = _get_scoring_field("python_developer", config, "complementary_agents", [])
+        assert result == ["custom_partner"]
+
+    def test_defaults_used_when_no_explicit(self):
+        result = _get_scoring_field("python_developer", {}, "complementary_agents", [])
+        assert result == ["supervisor_agent", "qa_agent"]
+
+    def test_neutral_fallback_for_unknown_agent(self):
+        result = _get_scoring_field("totally_new_agent", {}, "complementary_agents", [])
+        assert result == []
+
+    def test_phase_roles_from_config(self):
+        config = {"phase_roles": {"EXECUTE": "high"}}
+        result = _get_scoring_field("custom_agent", config, "phase_roles", {})
+        assert result == {"EXECUTE": "high"}
+
+    def test_data_sources_default(self):
+        result = _get_scoring_field("boss_agent", {}, "data_sources", [])
+        assert "workflow_sessions" in result
+
+    def test_data_sources_override(self):
+        config = {"data_sources": ["custom_logs"]}
+        result = _get_scoring_field("boss_agent", config, "data_sources", [])
+        assert result == ["custom_logs"]
+
+
+# =====================================================================
+# Config override -- complementary_value
+# =====================================================================
+
+class TestComplementaryValueConfigOverride:
+    def test_explicit_complementary_agents(self):
+        ctx = {
+            "stakeholder_status": {
+                "alpha": StakeholderStatus.ACTIVE.value,
+                "beta": StakeholderStatus.ACTIVE.value,
+            }
+        }
+        config = {"complementary_agents": ["beta"]}
+        score = calculate_complementary_value("alpha", ctx, config)
+        assert score == 1.0
+
+    def test_explicit_overrides_defaults(self):
+        ctx = {
+            "stakeholder_status": {
+                "python_developer": StakeholderStatus.ACTIVE.value,
+                "web_developer": StakeholderStatus.ACTIVE.value,
+            }
+        }
+        # Override python_developer's default complementary agents
+        config = {"complementary_agents": ["web_developer"]}
+        score = calculate_complementary_value("python_developer", ctx, config)
+        assert score == 1.0
+
+
+# =====================================================================
+# Config override -- phase_alignment
+# =====================================================================
+
+class TestPhaseAlignmentConfigOverride:
+    def test_explicit_phase_roles(self):
+        config = {"phase_roles": {"PLAN": "high", "EXECUTE": "medium"}}
+        score = calculate_phase_alignment("custom_agent", "PLAN", config)
+        assert score == 1.0
+
+    def test_explicit_overrides_defaults(self):
+        config = {"phase_roles": {"EXECUTE": "low"}}
+        score = calculate_phase_alignment("python_developer", "EXECUTE", config)
+        assert score == 0.2  # explicit "low" overrides default "high"
+
+    def test_unknown_phase_returns_neutral(self):
+        config = {"phase_roles": {"EXECUTE": "high"}}
+        score = calculate_phase_alignment("custom_agent", "DISCOVER", config)
+        assert score == 0.5
+
+
+# =====================================================================
+# Config override -- data_ownership
+# =====================================================================
+
+class TestDataOwnershipConfigOverride:
+    def test_explicit_data_sources(self):
+        config = {"data_sources": ["monitoring", "compliance_reports"]}
+        score = calculate_data_ownership(
+            "custom_agent", ["monitoring", "compliance"], config
+        )
+        assert score > 0.0
+
+    def test_explicit_overrides_defaults(self):
+        config = {"data_sources": ["custom_logs"]}
+        score = calculate_data_ownership(
+            "boss_agent", ["custom_logs"], config
+        )
+        assert score > 0.0

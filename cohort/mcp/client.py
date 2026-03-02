@@ -86,6 +86,27 @@ class CohortClient:
     async def get_channels(self) -> list[dict[str, Any]] | None:
         return await _request("GET", f"{self.base_url}/api/channels")
 
+    async def create_channel(
+        self,
+        name: str,
+        description: str = "",
+        members: list[str] | None = None,
+        is_private: bool = False,
+        topic: str = "",
+    ) -> dict[str, Any] | None:
+        """POST /api/channels -> create a new channel."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/channels",
+            json_body={
+                "name": name,
+                "description": description,
+                "members": members or [],
+                "is_private": is_private,
+                "topic": topic,
+            },
+        )
+
     async def get_messages(
         self, channel: str, limit: int = 50
     ) -> list[dict[str, Any]] | None:

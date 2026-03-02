@@ -20,8 +20,9 @@ classifiers = [
 [project.optional-dependencies]
 claude = ["httpx>=0.27", "fastmcp>=0.1"]
 server = ["starlette>=0.37", "uvicorn[standard]>=0.29", "python-socketio[asyncio]>=5.10"]
+agent-api = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "python-dotenv>=1.0", "pydantic>=2.0"]
 dev = ["pytest", "pytest-cov", "ruff", "mypy"]
-all = ["cohort[claude,server,dev]"]
+all = ["cohort[claude,server,agent-api,dev]"]
 
 [project.scripts]
 cohort = "cohort.__main__:main"

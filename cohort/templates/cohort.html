@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cohort - Coding Team Dashboard">
     <title>Cohort - Team Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Press Start 2P font: self-hosted via @font-face in cohort.css -->
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="stylesheet" href="/static/cohort.css">
 </head>
 <body>
@@ -70,6 +69,16 @@
                     </div>
                     <ul class="sidebar-nav__section-body sidebar-nav__channels" id="channel-list">
                         <!-- Channel list populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav__section open" data-section="tools">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('tools')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Tools</h2>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__tools" id="tool-list">
+                        <!-- Tool list populated by JS -->
                     </ul>
                 </div>
 

@@ -200,7 +200,7 @@ class AgentConfig:
     role: str
     primary_task: str = ""
     personality: str = ""
-    agent_type: str = "specialist"  # specialist | orchestrator | infrastructure | utility
+    agent_type: str = "specialist"  # specialist | orchestrator | supervisor | infrastructure | utility
 
     # -- Capabilities --
     capabilities: list[str] = field(default_factory=list)
@@ -228,6 +228,12 @@ class AgentConfig:
     # -- Optional --
     extended_personality: dict[str, Any] | None = None
     external_services: dict[str, Any] = field(default_factory=dict)
+
+    # -- Scoring metadata (optional, used by meeting.py) --
+    scoring_metadata: dict[str, Any] = field(default_factory=dict)
+
+    # -- Persona (light mode prompt, loaded from personas/ directory) --
+    persona_text: str = ""
 
     # -- Status --
     status: str = "active"  # active | inactive | training
@@ -298,6 +304,9 @@ class AgentConfig:
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["education"] = self.education.to_dict()
+        # Flatten scoring_metadata back to top level for config compatibility
+        sm = d.pop("scoring_metadata", {})
+        d.update(sm)
         return d
 
     @classmethod
@@ -310,6 +319,14 @@ class AgentConfig:
             d["name"] = d.pop("agent_name")
         elif "agent_name" in d:
             d.pop("agent_name")
+        # Collect scoring metadata into a single field
+        _scoring_keys = ("complementary_agents", "data_sources", "phase_roles")
+        scoring_md: dict[str, Any] = d.get("scoring_metadata", {})
+        for sk in _scoring_keys:
+            if sk in d:
+                scoring_md[sk] = d.pop(sk)
+        if scoring_md:
+            d["scoring_metadata"] = scoring_md
         # Parse education sub-object
         d["education"] = AgentEducation.from_dict(d.get("education", {}))
         # Drop unknown keys

@@ -30,6 +30,9 @@ const state = {
 
     // Channel members: { channelId: [agentId, ...] }
     channelMembers: {},
+
+    // Tools from boss_config.yaml
+    tools: [],
 };
 
 // =====================================================================
@@ -92,6 +95,7 @@ function initDom() {
         folderList: $('#folder-list'),
         sidebarTaskList: $('#sidebar-task-list'),
         sidebarAddTaskBtn: $('#sidebar-add-task-btn'),
+        sidebarToolList: $('#tool-list'),
         participantsList: $('#participants-list'),
         mentionDropdown: $('#mention-dropdown'),
 
@@ -476,6 +480,58 @@ function renderSidebarTasks() {
                 <span class="sidebar-task-agent">${escapeHtml(task.agent_id.split('_')[0])}</span>
             </li>`;
     }).join('');
+}
+
+// =====================================================================
+// Sidebar tools list rendering
+// =====================================================================
+
+async function fetchTools() {
+    try {
+        const resp = await fetch('/api/tools');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        state.tools = data.tools || [];
+        renderSidebarTools();
+    } catch (err) {
+        console.warn('Failed to fetch tools:', err);
+    }
+}
+
+function renderSidebarTools() {
+    if (!dom.sidebarToolList) return;
+
+    const tools = state.tools || [];
+    if (tools.length === 0) {
+        dom.sidebarToolList.innerHTML = '<li class="sidebar-tool-empty">No tools configured</li>';
+        return;
+    }
+
+    dom.sidebarToolList.innerHTML = tools.map(tool => {
+        const phases = tool.phases || [];
+        const phaseCount = phases.length;
+        return `
+            <li class="sidebar-tool-item" title="${escapeHtml(tool.description)}"
+                onclick="openToolDetail('${escapeHtml(tool.id)}')">
+                <span class="sidebar-tool-icon">[*]</span>
+                <span class="channel-item__name">${escapeHtml(tool.name)}</span>
+                ${phaseCount ? `<span class="sidebar-tool-phases">${phaseCount}ph</span>` : ''}
+            </li>`;
+    }).join('');
+}
+
+function openToolDetail(toolId) {
+    const tool = (state.tools || []).find(t => t.id === toolId);
+    if (!tool) return;
+
+    // Switch to chat panel and look for a tool help channel, or show a toast
+    const helpChannel = 'tool-' + toolId;
+    const exists = state.channels.some(ch => ch.id === helpChannel || ch.name === helpChannel);
+    if (exists) {
+        switchChannel(helpChannel);
+    } else {
+        showToast(tool.name + ': ' + tool.description, 'info');
+    }
 }
 
 // =====================================================================
@@ -1414,7 +1470,7 @@ function renderTeam() {
                     <span class="agent-group__count">${agents.length}</span>
                 </div>
                 <div class="agent-group__body">
-                    <div class="agent-grid">
+                    <div class="agent-grid${agents.length === 4 ? ' agent-grid--cols2' : ''}">
                         ${agents.map(renderAgentCard).join('')}
                     </div>
                 </div>
@@ -1497,6 +1553,7 @@ function connectSocket() {
         dom.connectionStatus.className = 'sidebar__status connected';
         sock.emit('join', {});
         sock.emit('get_channels', {});
+        fetchTools();
         showToast('Connected to Cohort', 'success');
     });
 

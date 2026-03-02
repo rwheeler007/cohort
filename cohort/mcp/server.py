@@ -306,6 +306,64 @@ async def list_channels(params: ListChannelsInput) -> str:
 
 
 # =====================================================================
+# Tool 3b: create_channel
+# =====================================================================
+
+class CreateChannelInput(BaseModel):
+    """Input for creating a new channel."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    name: str = Field(
+        ..., description="Channel name/ID (e.g. 'design-review', 'proj-api')",
+        min_length=1, max_length=100,
+    )
+    description: str = Field(
+        "", description="Channel description.",
+    )
+    members: List[str] = Field(
+        default_factory=list, description="Initial member agent IDs.",
+    )
+    is_private: bool = Field(
+        False, description="Whether the channel is private. Default False.",
+    )
+    topic: str = Field(
+        "", description="Channel topic.",
+    )
+
+
+@mcp.tool(
+    name="cohort_create_channel",
+    annotations={
+        "title": "Create Channel",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_create_channel(params: CreateChannelInput) -> str:
+    """Create a new chat channel with optional members and topic."""
+    result = await _client.create_channel(
+        name=params.name,
+        description=params.description,
+        members=params.members,
+        is_private=params.is_private,
+        topic=params.topic,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        ch = result.get("channel", {})
+        member_count = len(ch.get("members", []))
+        return (
+            f"Created channel **#{params.name}**"
+            + (f": {params.description}" if params.description else "")
+            + (f" ({member_count} members)" if member_count else "")
+        )
+    return f"Error creating channel: {result.get('error', 'Unknown')}"
+
+
+# =====================================================================
 # Tool 4: channel_summary
 # =====================================================================
 
@@ -682,7 +740,7 @@ class CreateAgentInput(BaseModel):
     name: str = Field(..., description="Agent display name (e.g. 'Python Developer')", min_length=1)
     role: str = Field(..., description="Agent role (e.g. 'Senior Python Engineer')", min_length=1)
     primary_task: str = Field("", description="Primary task description")
-    agent_type: str = Field("specialist", description="Type: specialist, orchestrator, infrastructure, utility")
+    agent_type: str = Field("specialist", description="Type: specialist, orchestrator, supervisor, infrastructure, utility")
     capabilities: List[str] = Field(default_factory=list, description="List of capabilities")
     domain_expertise: List[str] = Field(default_factory=list, description="List of domain expertise areas")
     personality: str = Field("", description="Personality description")
