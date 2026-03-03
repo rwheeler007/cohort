@@ -18,8 +18,8 @@ from cohort.local.config import (
     get_temperature,
 )
 from cohort.local.detect import HardwareInfo, detect_hardware
-from cohort.local.ollama import OllamaClient
-from cohort.local.router import LocalRouter
+from cohort.local.ollama import GenerateResult, OllamaClient
+from cohort.local.router import LocalRouter, RouteResult
 
 
 # =====================================================================
@@ -177,22 +177,27 @@ def test_ollama_list_models_server_down():
 
 
 def test_ollama_generate_success():
-    """Test successful text generation."""
+    """Test successful text generation returns GenerateResult."""
     client = OllamaClient()
 
     mock_response = MagicMock()
-    mock_response.read = Mock(return_value=b'{"response": "Hello world"}')
+    mock_response.read = Mock(return_value=b'{"response": "Hello world", "prompt_eval_count": 15, "eval_count": 8}')
     mock_response.__enter__ = Mock(return_value=mock_response)
     mock_response.__exit__ = Mock(return_value=False)
 
     with patch("urllib.request.urlopen", return_value=mock_response):
-        text = client.generate(
+        result = client.generate(
             model="qwen3:8b",
             prompt="Say hello",
             temperature=0.4,
         )
 
-    assert text == "Hello world"
+    assert result is not None
+    assert result.text == "Hello world"
+    assert result.model == "qwen3:8b"
+    assert result.tokens_in == 15
+    assert result.tokens_out == 8
+    assert result.elapsed_seconds >= 0.0
 
 
 def test_ollama_generate_failure():
@@ -297,13 +302,24 @@ def test_local_router_available():
     mock_client = Mock(spec=OllamaClient)
     mock_client.health_check.return_value = True
     mock_client.list_models.return_value = ["qwen3:30b-a3b"]
-    mock_client.generate.return_value = "Hello from local model"
+    mock_client.generate.return_value = GenerateResult(
+        text="Hello from local model",
+        model="qwen3:30b-a3b",
+        tokens_in=42,
+        tokens_out=5,
+        elapsed_seconds=1.2,
+    )
 
     with patch.object(router, "_detect_hardware", return_value=mock_hw_info):
         with patch("cohort.local.router.OllamaClient", return_value=mock_client):
             response = router.route("Say hello", task_type="general")
 
-    assert response == "Hello from local model"
+    assert isinstance(response, RouteResult)
+    assert response.text == "Hello from local model"
+    assert response.model == "qwen3:30b-a3b"
+    assert response.tier == 4  # 8GB+ VRAM tier
+    assert response.tokens_in == 42
+    assert response.tokens_out == 5
     mock_client.generate.assert_called_once()
 
 

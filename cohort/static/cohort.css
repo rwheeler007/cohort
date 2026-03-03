@@ -1264,6 +1264,24 @@ textarea.form-input {
     border-radius: var(--radius-sm);
 }
 
+.message__model-badge {
+    font-size: var(--font-size-xs);
+    color: #8b9dc3;
+    padding: 1px 6px;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+.message__token-badge {
+    font-size: var(--font-size-xs);
+    color: #7cb342;
+    padding: 1px 6px;
+    background-color: rgba(124, 179, 66, 0.1);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
 .message__time {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);

@@ -419,6 +419,32 @@ function renderMessages() {
                 </div>`;
         }
 
+        // Model info badge
+        let modelBadge = '';
+        if (message.metadata) {
+            const model = message.metadata.model;
+            const tier = message.metadata.tier;
+            if (model) {
+                const tierLabel = tier != null ? `T${tier}` : '';
+                const modelShort = model.length > 20 ? model.substring(0, 20) : model;
+                const elapsed = message.metadata.elapsed_seconds;
+                const elapsedStr = elapsed != null ? ` ${elapsed}s` : '';
+                modelBadge = `<span class="message__model-badge" title="Tier ${tier || '?'} - ${model}${elapsedStr}">${tierLabel} ${modelShort}${elapsedStr}</span>`;
+            }
+        }
+
+        // Token count badge
+        let tokenBadge = '';
+        if (message.metadata) {
+            const tokIn = message.metadata.tokens_in;
+            const tokOut = message.metadata.tokens_out;
+            if (tokIn != null || tokOut != null) {
+                const inStr = tokIn != null ? tokIn.toLocaleString() : '?';
+                const outStr = tokOut != null ? tokOut.toLocaleString() : '?';
+                tokenBadge = `<span class="message__token-badge" title="Tokens: ${inStr} in / ${outStr} out">${inStr}/${outStr} tok</span>`;
+            }
+        }
+
         return `
             <div class="message ${typeClass}" style="--agent-color: ${profile.color}" data-message-id="${message.id}">
                 <div class="message__avatar" title="${profile.name} - ${profile.role}">${profile.avatar}</div>
@@ -426,6 +452,8 @@ function renderMessages() {
                     <div class="message__header">
                         <span class="message__sender" style="color: ${profile.color}">${escapeHtml(profile.nickname)}</span>
                         <span class="message__role">${profile.role}</span>
+                        ${modelBadge}
+                        ${tokenBadge}
                         <span class="message__time">${time}</span>
                     </div>
                     ${threadIndicator}

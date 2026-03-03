@@ -13,11 +13,24 @@ Design philosophy:
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import Any
 
-from cohort.local.config import get_model_for_vram, get_temperature
+from cohort.local.config import get_model_for_vram, get_temperature, get_tier_for_model
 from cohort.local.detect import detect_hardware
 from cohort.local.ollama import OllamaClient
+
+
+@dataclass
+class RouteResult:
+    """Result from local routing with model metadata."""
+
+    text: str
+    model: str = ""
+    tier: int | None = None
+    tokens_in: int = 0
+    tokens_out: int = 0
+    elapsed_seconds: float = 0.0
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +98,7 @@ class LocalRouter:
         prompt: str,
         task_type: str | None = None,
         temperature: float | None = None,
-    ) -> str | None:
+    ) -> RouteResult | None:
         """Route prompt to local Ollama model.
 
         Args:
@@ -94,7 +107,7 @@ class LocalRouter:
             temperature: Override temperature (None = use task_type default)
 
         Returns:
-            Generated text or None on failure.
+            RouteResult with text and metadata, or None on failure.
 
         Never raises exceptions. Returns None if:
         - Ollama server is down
@@ -133,13 +146,24 @@ class LocalRouter:
             temp = temperature if temperature is not None else get_temperature(task_type)
 
             # Generate response
-            response = self._client.generate(
+            result = self._client.generate(
                 model=model,
                 prompt=prompt,
                 temperature=temp,
             )
 
-            return response
+            if result is None:
+                return None
+
+            tier = get_tier_for_model(model)
+            return RouteResult(
+                text=result.text,
+                model=result.model,
+                tier=tier,
+                tokens_in=result.tokens_in,
+                tokens_out=result.tokens_out,
+                elapsed_seconds=result.elapsed_seconds,
+            )
 
         except Exception:
             # D4: Catch-all safety net -- never propagate exceptions

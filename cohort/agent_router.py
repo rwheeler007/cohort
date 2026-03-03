@@ -518,15 +518,26 @@ def _invoke_agent_sync(item: dict) -> None:
 
     # D5: Try local router first, fallback to Claude CLI transparently
     response_content: str | None = None
+    response_metadata: dict[str, Any] = {}
     try:
         from cohort.local import LocalRouter
 
         router = LocalRouter()
         # Infer task type from message content (simple heuristic)
         task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
-        response_content = router.route(full_prompt, task_type=task_type)
-        if response_content:
-            logger.info("[OK] Local router handled %s in #%s", agent_id, channel_id)
+        route_result = router.route(full_prompt, task_type=task_type)
+        if route_result is not None and route_result.text:
+            response_content = route_result.text
+            response_metadata = {
+                "tier": route_result.tier,
+                "model": route_result.model,
+                "elapsed_seconds": route_result.elapsed_seconds,
+                "tokens_in": route_result.tokens_in,
+                "tokens_out": route_result.tokens_out,
+            }
+            logger.info("[OK] Local router handled %s in #%s (%s, %d/%d tok)",
+                        agent_id, channel_id, route_result.model,
+                        route_result.tokens_in, route_result.tokens_out)
     except Exception:
         # Local routing failed -- fall through to Claude CLI
         logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)
@@ -534,6 +545,7 @@ def _invoke_agent_sync(item: dict) -> None:
     # Fallback to Claude CLI if local routing failed or returned None
     if not response_content:
         logger.info("[>>] Invoking Claude CLI for %s in #%s", agent_id, channel_id)
+        cli_t0 = time.monotonic()
 
         try:
             # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
@@ -557,6 +569,18 @@ def _invoke_agent_sync(item: dict) -> None:
             if result.returncode != 0 and not response_content:
                 response_content = f"[Error] Agent {agent_id} failed: {result.stderr.strip()[:200]}"
                 logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
+            else:
+                cli_elapsed = round(time.monotonic() - cli_t0, 1)
+                # Estimate tokens from char counts (Claude CLI doesn't expose usage)
+                est_in = len(full_prompt) // 4
+                est_out = len(response_content) // 4 if response_content else 0
+                response_metadata = {
+                    "tier": 5,
+                    "model": "claude_code",
+                    "elapsed_seconds": cli_elapsed,
+                    "tokens_in": est_in,
+                    "tokens_out": est_out,
+                }
 
         except subprocess.TimeoutExpired:
             response_content = f"[Timeout] Agent {agent_id} response timed out after {RESPONSE_TIMEOUT}s"
@@ -581,6 +605,7 @@ def _invoke_agent_sync(item: dict) -> None:
         sender=agent_id,
         content=response_content,
         thread_id=thread_id,
+        metadata=response_metadata if response_metadata else None,
     )
 
     # Broadcast to all connected clients

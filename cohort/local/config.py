@@ -81,6 +81,21 @@ def get_model_for_vram(vram_mb: int) -> str:
     return VRAM_TIER_MODELS[0]["model"]
 
 
+def get_tier_for_model(model_name: str) -> int | None:
+    """Get the tier number for a model name.
+
+    Args:
+        model_name: Model name (e.g., "qwen3:8b")
+
+    Returns:
+        Tier number (1-4) or None if model not in mapping.
+    """
+    for mapping in VRAM_TIER_MODELS:
+        if mapping["model"] == model_name:
+            return mapping["tier"]
+    return None
+
+
 def get_temperature(task_type: str | None = None) -> float:
     """Get temperature for task type.
 

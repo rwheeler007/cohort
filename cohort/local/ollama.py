@@ -8,7 +8,19 @@ from __future__ import annotations
 import json
 import time
 import urllib.request
+from dataclasses import dataclass
 from typing import Any
+
+
+@dataclass
+class GenerateResult:
+    """Result from an Ollama generate call with token metadata."""
+
+    text: str = ""
+    model: str = ""
+    tokens_in: int = 0
+    tokens_out: int = 0
+    elapsed_seconds: float = 0.0
 
 
 class OllamaClient:
@@ -92,7 +104,7 @@ class OllamaClient:
         prompt: str,
         temperature: float = 0.4,
         options: dict[str, Any] | None = None,
-    ) -> str | None:
+    ) -> GenerateResult | None:
         """Generate text completion from Ollama model.
 
         Args:
@@ -102,11 +114,13 @@ class OllamaClient:
             options: Additional Ollama options (num_ctx, num_predict, etc.)
 
         Returns:
-            Generated text or None on failure.
+            GenerateResult with text and token metadata, or None on failure.
 
         Never raises exceptions -- returns None on any error.
         """
         try:
+            t0 = time.monotonic()
+
             # Build request body
             body = {
                 "model": model,
@@ -128,7 +142,14 @@ class OllamaClient:
 
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
-                return data.get("response", "")
+                elapsed = round(time.monotonic() - t0, 1)
+                return GenerateResult(
+                    text=data.get("response", ""),
+                    model=model,
+                    tokens_in=data.get("prompt_eval_count", 0),
+                    tokens_out=data.get("eval_count", 0),
+                    elapsed_seconds=elapsed,
+                )
 
         except Exception:
             # D4: Never raise exceptions -- graceful failure returns None
