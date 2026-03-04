@@ -8,7 +8,8 @@
     "intel_scheduler",
     "content_monitor_scheduler",
     "document_processor",
-    "health_monitor"
+    "health_monitor",
+    "llm_manager"
   ],
   "display_names": {
     "comms_service": "Email & Calendar",
@@ -17,6 +18,24 @@
     "intel_scheduler": "RSS & News Monitoring",
     "content_monitor_scheduler": "Social Media & Marketing",
     "document_processor": "Document Processing",
-    "health_monitor": "System Health Monitor"
+    "health_monitor": "System Health Monitor",
+    "llm_manager": "LLM Manager"
+  },
+  "descriptions": {
+    "comms_service": "Send emails, manage calendar events, and post to social media with human approval gates",
+    "web_search": "Search the internet for current information using SerpAPI or Serper",
+    "youtube_service": "Search YouTube videos, get metadata, and extract chapters",
+    "intel_scheduler": "Monitor RSS feeds for tech trends, score articles, and generate briefings",
+    "content_monitor_scheduler": "Discover content on Reddit and forums, draft social media posts for your brand",
+    "document_processor": "Summarize PDFs and analyze documents using local AI models",
+    "health_monitor": "Monitor system services, websites, and API connectivity with alerts",
+    "llm_manager": "Manage local AI models — install, remove, and monitor Ollama models"
+  },
+  "health_endpoints": {
+    "comms_service": "http://127.0.0.1:8001/health",
+    "web_search": "http://127.0.0.1:8005/health",
+    "youtube_service": "http://127.0.0.1:8002/health",
+    "health_monitor": "http://127.0.0.1:8400/health",
+    "llm_manager": "http://127.0.0.1:11434/api/tags"
   }
 }

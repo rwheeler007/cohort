@@ -152,6 +152,108 @@ class Orchestrator:
         return self._agents.get(agent_id, {"triggers": [], "capabilities": []})
 
     # =========================================================================
+    # SETUP HELPERS
+    # =========================================================================
+
+    def suggest_roundtable_config(
+        self,
+        text: str,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Parse natural language into roundtable configuration.
+
+        Uses keyword extraction and stakeholder identification to suggest
+        agents, topic, channel name, and max turns from a free-text
+        description.
+
+        Parameters
+        ----------
+        text:
+            User's natural language description.
+        context:
+            Optional prior config to refine (for iterative updates).
+        """
+        ctx = context or {}
+        keywords = extract_keywords(text)
+
+        # Detect explicit agent mentions (e.g. "with security and python")
+        explicit_agents: list[str] = []
+        text_lower = text.lower()
+        from cohort.agent_router import AGENT_ALIASES
+        for alias, agent_id in AGENT_ALIASES.items():
+            if alias in text_lower and agent_id not in explicit_agents:
+                explicit_agents.append(agent_id)
+        for agent_id in self._agents:
+            name_parts = agent_id.lower().replace("_", " ").split()
+            if any(part in text_lower for part in name_parts if len(part) > 2):
+                if agent_id not in explicit_agents:
+                    explicit_agents.append(agent_id)
+
+        # Auto-identify from topic keywords
+        auto_agents = identify_stakeholders_for_topic(
+            keywords, self._agents, relevance_threshold=0.3,
+        )[:8]
+
+        # Merge: explicit first, then auto-suggestions (deduped)
+        suggested = list(explicit_agents)
+        for a in auto_agents:
+            if a not in suggested:
+                suggested.append(a)
+        suggested = suggested[:8]
+
+        # Generate channel name from topic
+        topic = ctx.get("topic", text.strip())
+        # Clean filler phrases
+        import re
+        filler = re.compile(
+            r"^(i want to|i need to|let's|lets|we need to|we should|"
+            r"can we|could we|please|discuss|talk about|work on|"
+            r"figure out|review|set up a roundtable)\s+",
+            re.IGNORECASE,
+        )
+        clean_topic = filler.sub("", topic).strip()
+        if clean_topic:
+            topic = clean_topic
+
+        # Capitalize topic
+        topic = topic[0].upper() + topic[1:] if topic else "Discussion"
+
+        # Slugify for channel name
+        slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40]
+        channel_name = f"rt-{slug}"
+
+        # Detect max_turns override ("30 turns", "max 50")
+        max_turns = ctx.get("max_turns", 20)
+        turns_match = re.search(r"(\d+)\s*turns?", text_lower)
+        if turns_match:
+            max_turns = min(int(turns_match.group(1)), 100)
+
+        # Apply refinements from context
+        if ctx.get("suggested_agents"):
+            # Check for "add X" or "remove X" patterns
+            add_match = re.search(r"(?:add|include|bring in)\s+(.+)", text_lower)
+            remove_match = re.search(r"(?:remove|drop|exclude)\s+(.+)", text_lower)
+            if add_match and not remove_match:
+                # Keep existing + add new
+                suggested = list(ctx["suggested_agents"])
+                for a in explicit_agents:
+                    if a not in suggested:
+                        suggested.append(a)
+            elif remove_match:
+                suggested = [
+                    a for a in ctx["suggested_agents"]
+                    if a.lower().replace("_", " ") not in text_lower
+                ]
+
+        return {
+            "topic": topic,
+            "channel_name": channel_name,
+            "suggested_agents": suggested,
+            "max_turns": max_turns,
+            "keywords": keywords,
+        }
+
+    # =========================================================================
     # SESSION MANAGEMENT
     # =========================================================================
 

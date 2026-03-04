@@ -55,6 +55,8 @@ function initDom() {
         panelChat: $('#panel-chat'),
         panelQueue: $('#panel-queue'),
         panelOutput: $('#panel-output'),
+        panelTool: $('#panel-tool'),
+        toolPanelContent: $('#tool-panel-content'),
         panelTitle: $('#panel-title'),
         panelSubtitle: $('#panel-subtitle'),
         panelCount: $('#panel-count'),
@@ -95,6 +97,7 @@ function initDom() {
         messageForm: $('#message-form'),
         messageInput: $('#message-input'),
         channelList: $('#channel-list'),
+        agentChatList: $('#agent-chat-list'),
         folderList: $('#folder-list'),
         sidebarTaskList: $('#sidebar-task-list'),
         sidebarSessionList: $('#session-list'),
@@ -107,14 +110,6 @@ function initDom() {
         addChannelBtn: $('#add-channel-btn'),
         addFolderBtn: $('#add-folder-btn'),
         addSessionBtn: $('#add-session-btn'),
-        createSessionModal: $('#create-session-modal'),
-        createSessionClose: $('#create-session-close'),
-        createSessionCancel: $('#create-session-cancel'),
-        createSessionForm: $('#create-session-form'),
-        newSessionChannel: $('#new-session-channel'),
-        newSessionTopic: $('#new-session-topic'),
-        newSessionAgents: $('#new-session-agents'),
-        newSessionMaxTurns: $('#new-session-max-turns'),
         createChannelModal: $('#create-channel-modal'),
         createChannelClose: $('#create-channel-close'),
         createChannelCancel: $('#create-channel-cancel'),
@@ -214,6 +209,12 @@ const panelConfig = {
         panel: () => dom.panelOutput,
         filter: true,
     },
+    tool: {
+        title: 'Tool',
+        subtitle: '',
+        panel: () => dom.panelTool,
+        filter: false,
+    },
 };
 
 function switchPanel(panelName) {
@@ -228,7 +229,7 @@ function switchPanel(panelName) {
     });
 
     // Hide all panels
-    [dom.panelTeam, dom.panelChat, dom.panelQueue, dom.panelOutput].forEach((p) => {
+    [dom.panelTeam, dom.panelChat, dom.panelQueue, dom.panelOutput, dom.panelTool].forEach((p) => {
         if (p) {
             p.style.display = 'none';
             p.classList.remove('active');
@@ -440,6 +441,45 @@ function renderMessages() {
                 </div>`;
         }
 
+        // Detect roundtable setup cards
+        let roundtableCard = '';
+        const rtMatch = message.content.match(/---ROUNDTABLE_READY---\s*\n([\s\S]*?)\n\s*---END_ROUNDTABLE_READY---/);
+        if (rtMatch) {
+            const rtFields = {};
+            rtMatch[1].replace(/^(Topic|Channel|Agents|Turns)\s*:\s*(.+)/gm, (_, k, v) => {
+                rtFields[k.toLowerCase()] = v.trim();
+            });
+
+            const rtDataId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            window._pendingRoundtables = window._pendingRoundtables || {};
+            window._pendingRoundtables[rtDataId] = {
+                topic: rtFields.topic || '',
+                channel_name: rtFields.channel || '',
+                suggested_agents: (rtFields.agents || '').split(',').map(a => a.trim()).filter(Boolean),
+                max_turns: parseInt(rtFields.turns, 10) || 20,
+            };
+
+            const agentChips = (rtFields.agents || '').split(',').map(a => {
+                const agent = a.trim();
+                const profile = getAgentProfile(agent);
+                return `<span class="roundtable-agent-chip" style="--agent-color: ${profile.color}" title="${profile.name}">${profile.avatar} ${escapeHtml(agent)}</span>`;
+            }).join(' ');
+
+            roundtableCard = `
+                <div class="roundtable-setup-card">
+                    <div class="roundtable-setup-card__header">Roundtable Ready</div>
+                    <div class="roundtable-setup-card__fields">
+                        <div class="roundtable-setup-card__field"><strong>Topic:</strong> ${escapeHtml(rtFields.topic || '')}</div>
+                        <div class="roundtable-setup-card__field"><strong>Channel:</strong> <code>${escapeHtml(rtFields.channel || '')}</code></div>
+                        <div class="roundtable-setup-card__field"><strong>Agents:</strong> ${agentChips}</div>
+                        <div class="roundtable-setup-card__field"><strong>Max Turns:</strong> ${escapeHtml(rtFields.turns || '20')}</div>
+                    </div>
+                    <div class="roundtable-setup-card__actions">
+                        <button class="btn btn--primary btn--small" onclick="confirmRoundtableSetup(window._pendingRoundtables['${rtDataId}'])">Start Roundtable</button>
+                    </div>
+                </div>`;
+        }
+
         // Model info badge
         let modelBadge = '';
         if (message.metadata) {
@@ -480,6 +520,7 @@ function renderMessages() {
                     ${threadIndicator}
                     <div class="message__body">${formatMessageContent(message.content)}</div>
                     ${confirmationCard}
+                    ${roundtableCard}
                 </div>
             </div>
         `;
@@ -555,7 +596,7 @@ function renderSidebarSessions() {
     const activeSessions = sessions.filter(s => s.state !== 'completed');
 
     if (activeSessions.length === 0) {
-        dom.sidebarSessionList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active sessions</li>';
+        dom.sidebarSessionList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active roundtables</li>';
         return;
     }
 
@@ -580,6 +621,139 @@ function renderSidebarSessions() {
             </li>`;
     }).join('');
 }
+
+// =====================================================================
+// Roundtable guided setup
+// =====================================================================
+
+const ROUNDTABLE_SETUP_CHANNEL = 'roundtable-setup';
+
+// Current pending roundtable config (updated as user refines)
+let pendingRoundtableConfig = null;
+
+function startRoundtableSetup() {
+    // Switch to chat panel and open the setup channel
+    switchPanel('chat');
+
+    // Post greeting as system message (auto-creates channel)
+    if (state.socket && state.connected) {
+        state.socket.emit('send_message', {
+            channel_id: ROUNDTABLE_SETUP_CHANNEL,
+            sender: 'system',
+            content: (
+                '**Roundtable Setup**\n\n' +
+                'What would you like to discuss? Describe the topic naturally ' +
+                'and I\'ll suggest the right agents and set everything up.\n\n' +
+                '*Example: "Review our API authentication design with the security and python teams"*'
+            ),
+        });
+
+        // Give server a moment to create channel, then switch
+        state.socket.emit('get_channels', {});
+        setTimeout(() => {
+            switchChannel(ROUNDTABLE_SETUP_CHANNEL);
+        }, 400);
+    }
+
+    pendingRoundtableConfig = null;
+}
+
+async function handleRoundtableSetupMessage(content) {
+    // Parse user's message into roundtable config
+    try {
+        const resp = await fetch('/api/roundtable/setup-parse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: content,
+                context: pendingRoundtableConfig,
+            }),
+        });
+        const data = await resp.json();
+        if (!data.success || !data.config) {
+            return;
+        }
+
+        pendingRoundtableConfig = data.config;
+        const cfg = data.config;
+
+        // Build agent list display
+        const agentList = cfg.suggested_agents.map(a => `\`${a}\``).join(', ') || '_none identified_';
+
+        // Post the config as a system message with embedded card
+        const cardContent = (
+            `Here's what I've set up:\n\n` +
+            `---ROUNDTABLE_READY---\n` +
+            `Topic: ${cfg.topic}\n` +
+            `Channel: ${cfg.channel_name}\n` +
+            `Agents: ${cfg.suggested_agents.join(', ')}\n` +
+            `Turns: ${cfg.max_turns}\n` +
+            `---END_ROUNDTABLE_READY---\n\n` +
+            `**Topic:** ${cfg.topic}\n` +
+            `**Channel:** ${cfg.channel_name}\n` +
+            `**Agents:** ${agentList}\n` +
+            `**Max Turns:** ${cfg.max_turns}\n\n` +
+            `_You can refine this — try "add web_developer" or "make it 30 turns". ` +
+            `Or click **Start Roundtable** below when ready._`
+        );
+
+        state.socket.emit('send_message', {
+            channel_id: ROUNDTABLE_SETUP_CHANNEL,
+            sender: 'system',
+            content: cardContent,
+        });
+    } catch (err) {
+        console.warn('Roundtable setup parse failed:', err);
+    }
+}
+
+async function confirmRoundtableSetup(configOverride) {
+    const cfg = configOverride || pendingRoundtableConfig;
+    if (!cfg) {
+        showToast('No roundtable configuration ready', 'warning');
+        return;
+    }
+
+    try {
+        const resp = await fetch('/api/roundtable/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                channel_id: cfg.channel_name,
+                topic: cfg.topic,
+                initial_agents: cfg.suggested_agents,
+                max_turns: cfg.max_turns,
+            }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            // Clean up setup channel
+            deleteSetupChannel();
+            showToast('Roundtable started!', 'success');
+            fetchSessions();
+            // Switch to the new session channel
+            state.socket.emit('get_channels', {});
+            setTimeout(() => switchChannel(cfg.channel_name), 500);
+        } else {
+            showToast(data.error || 'Failed to start roundtable', 'error');
+        }
+    } catch (err) {
+        showToast('Error starting roundtable: ' + err.message, 'error');
+    }
+
+    pendingRoundtableConfig = null;
+}
+
+function deleteSetupChannel() {
+    // Remove from local state (server auto-created it, we just stop showing it)
+    state.channels = state.channels.filter(ch => (ch.id || ch.name) !== ROUNDTABLE_SETUP_CHANNEL);
+    delete state.messages[ROUNDTABLE_SETUP_CHANNEL];
+    renderChannels();
+    renderFolders();
+}
+
+// Expose to onclick handlers in rendered HTML
+window.confirmRoundtableSetup = confirmRoundtableSetup;
 
 // =====================================================================
 // Sidebar tools list rendering
@@ -607,14 +781,12 @@ function renderSidebarTools() {
     }
 
     dom.sidebarToolList.innerHTML = tools.map(tool => {
-        const phases = tool.phases || [];
-        const phaseCount = phases.length;
+        const isActive = state.currentTool === tool.id && state.currentPanel === 'tool';
         return `
-            <li class="sidebar-tool-item" title="${escapeHtml(tool.description)}"
+            <li class="sidebar-tool-item ${isActive ? 'active' : ''}" title="${escapeHtml(tool.description)}"
                 onclick="openToolDetail('${escapeHtml(tool.id)}')">
                 <span class="sidebar-tool-icon">[*]</span>
                 <span class="channel-item__name">${escapeHtml(tool.name)}</span>
-                ${phaseCount ? `<span class="sidebar-tool-phases">${phaseCount}ph</span>` : ''}
             </li>`;
     }).join('');
 }
@@ -623,13 +795,310 @@ function openToolDetail(toolId) {
     const tool = (state.tools || []).find(t => t.id === toolId);
     if (!tool) return;
 
-    // Switch to chat panel and look for a tool help channel, or show a toast
-    const helpChannel = 'tool-' + toolId;
-    const exists = state.channels.some(ch => ch.id === helpChannel || ch.name === helpChannel);
-    if (exists) {
-        switchChannel(helpChannel);
+    state.currentTool = toolId;
+    state.currentChannel = null;
+
+    // Update panel header with tool name
+    panelConfig.tool.title = tool.name;
+    panelConfig.tool.subtitle = tool.description || '';
+    switchPanel('tool');
+    renderSidebarTools();
+    renderChannels();
+    renderToolPanel(tool);
+}
+
+// =====================================================================
+// Tool panel renderers
+// =====================================================================
+
+async function renderToolPanel(tool) {
+    if (!dom.toolPanelContent) return;
+
+    const renderer = toolRenderers[tool.id];
+    if (renderer) {
+        dom.toolPanelContent.innerHTML = '<div class="tool-dashboard"><p style="color:var(--color-text-secondary)">Loading...</p></div>';
+        await renderer(tool);
     } else {
-        showToast(tool.name + ': ' + tool.description, 'info');
+        dom.toolPanelContent.innerHTML = renderGenericToolPanel(tool);
+    }
+}
+
+const toolRenderers = {
+    comms_service: renderCommsPanel,
+    web_search: renderWebSearchPanel,
+    youtube_service: renderYouTubePanel,
+    intel_scheduler: renderRSSPanel,
+    content_monitor_scheduler: renderContentMonitorPanel,
+    document_processor: renderDocProcessorPanel,
+    health_monitor: renderHealthMonitorPanel,
+    llm_manager: renderLLMManagerPanel,
+};
+
+function toolHeader(tool, statusHtml) {
+    return `
+        <div class="tool-dashboard__header">
+            <div class="tool-dashboard__icon">[*]</div>
+            <div>
+                <h2 class="tool-dashboard__title">${escapeHtml(tool.name)}</h2>
+                <p class="tool-dashboard__desc">${escapeHtml(tool.description || '')}</p>
+            </div>
+            <div class="tool-dashboard__status" id="tool-status">
+                ${statusHtml}
+            </div>
+        </div>`;
+}
+
+function configCard(label, value) {
+    const muteClass = value ? '' : ' tool-config-card__value--muted';
+    const display = value || 'Not configured';
+    return `
+        <div class="tool-config-card">
+            <p class="tool-config-card__label">${escapeHtml(label)}</p>
+            <p class="tool-config-card__value${muteClass}">${escapeHtml(display)}</p>
+        </div>`;
+}
+
+function configSection(title, cardsHtml) {
+    return `
+        <div class="tool-config-section">
+            <h3 class="tool-config-section__title">${escapeHtml(title)}</h3>
+            <div class="tool-config-grid">${cardsHtml}</div>
+        </div>`;
+}
+
+async function fetchServiceStatus(serviceId) {
+    try {
+        const resp = await fetch('/api/service-status/' + encodeURIComponent(serviceId));
+        if (!resp.ok) return { status: 'unknown' };
+        return await resp.json();
+    } catch { return { status: 'unknown' }; }
+}
+
+function statusDotHtml(status) {
+    const cls = status === 'up' ? 'up' : status === 'down' ? 'down' : 'unknown';
+    const label = status === 'up' ? 'Online' : status === 'down' ? 'Offline' : 'Unknown';
+    return `<span class="tool-status-dot tool-status-dot--${cls}"></span> ${label}`;
+}
+
+function renderGenericToolPanel(tool) {
+    return `<div class="tool-dashboard">
+        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--unknown"></span> --')}
+        ${configSection('About', configCard('Type', 'Agent capability'))}
+    </div>`;
+}
+
+async function renderCommsPanel(tool) {
+    const status = await fetchServiceStatus('comms_service');
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSection('Services',
+            configCard('Email Provider', 'Resend') +
+            configCard('Calendar', 'Google Calendar') +
+            configCard('Social Platforms', 'Twitter, LinkedIn, Facebook, Threads')
+        )}
+        ${configSection('Safety',
+            configCard('Approval Gate', 'All outbound messages require human approval') +
+            configCard('Audit Log', 'All actions logged')
+        )}
+    </div>`;
+}
+
+async function renderWebSearchPanel(tool) {
+    const status = await fetchServiceStatus('web_search');
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSection('Configuration',
+            configCard('Provider', 'SerpAPI / Serper') +
+            configCard('Port', '8005') +
+            configCard('Rate Limit', '30/min, 250/day')
+        )}
+    </div>`;
+}
+
+async function renderYouTubePanel(tool) {
+    const status = await fetchServiceStatus('youtube_service');
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSection('Configuration',
+            configCard('API', 'YouTube Data API v3') +
+            configCard('Port', '8002') +
+            configCard('Rate Limit', '30/min, 1000/day')
+        )}
+        ${configSection('Capabilities',
+            configCard('Video Search', 'Search by keyword with filters') +
+            configCard('Metadata', 'Video details, channel info') +
+            configCard('Chapters', 'Auto-extract timestamps from descriptions')
+        )}
+    </div>`;
+}
+
+async function renderRSSPanel(tool) {
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${configSection('Schedule',
+            configCard('RSS Fetch', 'Every 4 hours (8am-6pm)') +
+            configCard('Analysis', 'Weekdays at 7am') +
+            configCard('Briefing', 'Sundays at 6pm')
+        )}
+        ${configSection('Limits',
+            configCard('Max Fetches/Day', '6') +
+            configCard('Max Articles/Day', '200')
+        )}
+    </div>`;
+}
+
+async function renderContentMonitorPanel(tool) {
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${configSection('Schedule',
+            configCard('RSS Fetch', 'Every 2 hours (9am-9pm)') +
+            configCard('Analysis', 'Every 4 hours') +
+            configCard('Post Drafting', 'Weekdays at 8am') +
+            configCard('Weekly Digest', 'Sundays at 6pm')
+        )}
+        ${configSection('Limits',
+            configCard('Max Fetches/Day', '12') +
+            configCard('Max Articles/Day', '50') +
+            configCard('Max Drafts/Day', '5')
+        )}
+    </div>`;
+}
+
+async function renderDocProcessorPanel(tool) {
+    const ollamaStatus = await fetchServiceStatus('llm_manager');
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
+        ${configSection('Configuration',
+            configCard('Engine', 'Ollama (local AI)') +
+            configCard('Compression', '80-95% token reduction') +
+            configCard('Code Preservation', 'Keeps code blocks intact')
+        )}
+    </div>`;
+}
+
+async function renderHealthMonitorPanel(tool) {
+    const status = await fetchServiceStatus('health_monitor');
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSection('Monitoring',
+            configCard('Local Services', '11 services monitored') +
+            configCard('Websites', 'HTTP status checks') +
+            configCard('Schedulers', 'Staleness detection') +
+            configCard('API Credentials', 'Presence validation')
+        )}
+        ${configSection('Alerts',
+            configCard('Channel', '#system-health') +
+            configCard('Cooldown', '60 minute deduplication')
+        )}
+    </div>`;
+}
+
+async function renderLLMManagerPanel(tool) {
+    const data = await fetchLLMModels();
+    const isUp = data.status === 'up';
+    const models = data.models || [];
+
+    let modelsHtml = '';
+    if (!isUp) {
+        modelsHtml = '<p class="tool-config-card__value--muted" style="margin-top:var(--space-3)">Ollama is not running. Start it to manage models.</p>';
+    } else if (models.length === 0) {
+        modelsHtml = '<p class="tool-config-card__value--muted" style="margin-top:var(--space-3)">No models installed. Pull one below.</p>';
+    } else {
+        modelsHtml = `<div class="llm-model-list">${models.map(m => `
+            <div class="llm-model-item">
+                <div class="llm-model-item__info">
+                    <span class="llm-model-item__name">${escapeHtml(m.name)}</span>
+                    <span class="llm-model-item__size">${escapeHtml(m.size)}${m.parameter_size ? ' -- ' + escapeHtml(m.parameter_size) : ''}${m.quantization ? ' ' + escapeHtml(m.quantization) : ''}</span>
+                </div>
+                <div class="llm-model-item__actions">
+                    <button class="btn--danger btn--sm" onclick="deleteLLMModel('${escapeHtml(m.name)}')">Remove</button>
+                </div>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, statusDotHtml(isUp ? 'up' : 'down'))}
+        ${configSection('Installed Models (' + models.length + ')', modelsHtml)}
+        ${isUp ? `
+        <div class="tool-config-section">
+            <h3 class="tool-config-section__title">Pull New Model</h3>
+            <div class="llm-pull-form">
+                <input type="text" id="llm-pull-input" placeholder="e.g. llama3.2:1b, qwen3:8b, gemma3:4b">
+                <button class="btn btn--primary btn--sm" onclick="pullLLMModel()">Pull</button>
+            </div>
+            <div class="llm-pull-progress" id="llm-pull-progress"></div>
+        </div>` : ''}
+    </div>`;
+}
+
+async function fetchLLMModels() {
+    try {
+        const resp = await fetch('/api/llm/models');
+        if (!resp.ok) return { status: 'down', models: [] };
+        return await resp.json();
+    } catch { return { status: 'down', models: [] }; }
+}
+
+async function pullLLMModel() {
+    const input = $('#llm-pull-input');
+    const progress = $('#llm-pull-progress');
+    if (!input || !input.value.trim()) return;
+
+    const model = input.value.trim();
+    progress.textContent = 'Pulling ' + model + '...';
+
+    try {
+        const resp = await fetch('/api/llm/pull', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+            progress.textContent = 'Error: ' + data.error;
+        } else {
+            progress.textContent = 'Pull started for ' + model + '. This may take a few minutes...';
+            // Poll for completion
+            pollLLMPull(model);
+        }
+    } catch (err) {
+        progress.textContent = 'Failed to start pull: ' + err.message;
+    }
+}
+
+async function pollLLMPull(model) {
+    const progress = $('#llm-pull-progress');
+    const check = async () => {
+        const data = await fetchLLMModels();
+        const found = (data.models || []).some(m => m.name === model || m.name.startsWith(model.split(':')[0]));
+        if (found) {
+            progress.textContent = model + ' installed successfully.';
+            // Re-render to show updated list
+            const tool = (state.tools || []).find(t => t.id === 'llm_manager');
+            if (tool) renderLLMManagerPanel(tool);
+        } else {
+            progress.textContent = 'Pulling ' + model + '...';
+            setTimeout(check, 5000);
+        }
+    };
+    setTimeout(check, 5000);
+}
+
+async function deleteLLMModel(name) {
+    if (!confirm('Remove model "' + name + '"?')) return;
+    try {
+        const resp = await fetch('/api/llm/models/' + encodeURIComponent(name), { method: 'DELETE' });
+        const data = await resp.json();
+        if (data.error) {
+            showToast('Failed to remove: ' + data.error, 'error');
+        } else {
+            showToast('Removed ' + name, 'success');
+            const tool = (state.tools || []).find(t => t.id === 'llm_manager');
+            if (tool) renderLLMManagerPanel(tool);
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
     }
 }
 
@@ -662,6 +1131,31 @@ function renderChannels() {
                 onclick="switchChannel('${escapeHtml(ch.id)}')">
                 <span class="channel-item__name"># ${escapeHtml(ch.name || ch.id)}</span>
                 <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+            </li>`;
+    }).join('');
+}
+
+function renderAgentChats() {
+    if (!dom.agentChatList) return;
+
+    const dmChannels = state.channels.filter(ch => ch.id.startsWith('dm-'));
+
+    if (dmChannels.length === 0) {
+        dom.agentChatList.innerHTML = '<li style="padding: 8px 16px; color: var(--color-text-muted); font-size: 12px;">No agent chats yet</li>';
+        return;
+    }
+
+    dom.agentChatList.innerHTML = dmChannels.map(ch => {
+        const isActive = ch.id === state.currentChannel;
+        // Extract agent name from dm-agent_id, format nicely
+        const agentId = ch.id.replace(/^dm-/, '');
+        const profile = state.agentProfiles[agentId];
+        const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
+        return `
+            <li class="channel-item ${isActive ? 'active' : ''}"
+                data-channel="${escapeHtml(ch.id)}"
+                onclick="switchChannel('${escapeHtml(ch.id)}')">
+                <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
             </li>`;
     }).join('');
 }
@@ -760,7 +1254,8 @@ function removeChannelFromFolder(channelId) {
 function getUnfolderedChannels() {
     const folderedIds = new Set();
     state.folders.forEach(f => f.channelIds.forEach(id => folderedIds.add(id)));
-    return state.channels.filter(ch => !folderedIds.has(ch.id));
+    // Exclude dm-* channels (shown in Agent Chats section) and foldered channels
+    return state.channels.filter(ch => !folderedIds.has(ch.id) && !ch.id.startsWith('dm-'));
 }
 
 // =====================================================================
@@ -997,12 +1492,18 @@ function openEditMenu(btnEl, itemType, itemId) {
         if (action === 'delete') handleDeleteItem(itemType, itemId);
     });
 
-    // Position relative to button
-    const parent = btnEl.closest('.channel-item') || btnEl.closest('.folder-item__header');
-    if (parent) {
-        parent.style.position = 'relative';
-        parent.appendChild(menu);
-    }
+    // Position as fixed overlay near the button
+    const rect = btnEl.getBoundingClientRect();
+    document.body.appendChild(menu);
+    menu.style.top = rect.bottom + 2 + 'px';
+    menu.style.left = rect.left + 'px';
+    // Keep menu on screen if it overflows right edge
+    requestAnimationFrame(() => {
+        const menuRect = menu.getBoundingClientRect();
+        if (menuRect.right > window.innerWidth) {
+            menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+        }
+    });
     activeEditMenu = menu;
 
     // Close on outside click (deferred so this click doesn't close it)
@@ -1113,11 +1614,14 @@ function handleFolderDrop(e, folderId) {
 
 function switchChannel(channelId) {
     state.currentChannel = channelId;
+    state.currentTool = null;
 
     // Switch to chat panel if not already there
     if (state.currentPanel !== 'chat') {
         switchPanel('chat');
     }
+
+    renderSidebarTools();
 
     // Join channel via Socket.IO
     if (state.socket && state.connected) {
@@ -1125,6 +1629,7 @@ function switchChannel(channelId) {
     }
 
     renderChannels();
+    renderAgentChats();
     renderFolders();
     renderMessages();
     updateParticipants();
@@ -1749,6 +2254,7 @@ function connectSocket() {
     sock.on('channels_list', (data) => {
         state.channels = data.channels || [];
         renderChannels();
+        renderAgentChats();
         renderFolders();
     });
 
@@ -1843,25 +2349,21 @@ function insertMentionTag(agentId) {
 }
 
 function openChatForAgent(agentId) {
-    // Ensure a channel is selected -- pick current, first available, or create 'general'
-    if (!state.currentChannel) {
-        if (state.channels.length > 0) {
-            switchChannel(state.channels[0].id);
-        } else {
-            // Bootstrap a general channel
-            const defaultChannel = 'general';
-            state.currentChannel = defaultChannel;
-            if (state.socket && state.connected) {
-                state.socket.emit('join_channel', { channel_id: defaultChannel });
-                state.socket.emit('get_channels', {});
-            }
-            switchPanel('chat');
-        }
-    } else {
-        switchPanel('chat');
-    }
+    // Navigate to (or create) a dedicated individual channel for this agent
+    const channelId = `dm-${agentId}`;
 
-    insertMentionTag(agentId);
+    // Check if channel already exists in local state
+    const exists = state.channels.some((ch) => ch.id === channelId);
+
+    // switchChannel will join via Socket.IO (auto-creates on server if needed)
+    switchChannel(channelId);
+
+    if (!exists) {
+        // Refresh channel list so sidebar picks it up
+        if (state.socket && state.connected) {
+            state.socket.emit('get_channels', {});
+        }
+    }
 }
 
 function openAssignForAgent(agentId) {
@@ -2124,6 +2626,43 @@ const DEFAULT_SERVICE_PRESETS = [
     { type: 'discord',    name: 'Discord Webhook' },
 ];
 
+// Map common .env variable names to service types.
+// Keys are lowercased prefixes; first match wins.
+const ENV_KEY_MAP = [
+    { pattern: 'anthropic_api_key',       type: 'anthropic',  name: 'Anthropic API' },
+    { pattern: 'anthropic_key',           type: 'anthropic',  name: 'Anthropic API' },
+    { pattern: 'claude_api_key',          type: 'anthropic',  name: 'Anthropic API' },
+    { pattern: 'github_token',            type: 'github',     name: 'GitHub API' },
+    { pattern: 'github_api',              type: 'github',     name: 'GitHub API' },
+    { pattern: 'gh_token',               type: 'github',     name: 'GitHub API' },
+    { pattern: 'youtube_api',             type: 'youtube',    name: 'YouTube Data API' },
+    { pattern: 'youtube_key',             type: 'youtube',    name: 'YouTube Data API' },
+    { pattern: 'google_api_key',          type: 'google',     name: 'Google Cloud API' },
+    { pattern: 'google_cloud',            type: 'google',     name: 'Google Cloud API' },
+    { pattern: 'gcp_',                    type: 'google',     name: 'Google Cloud API' },
+    { pattern: 'openai_api_key',          type: 'openai',     name: 'OpenAI API' },
+    { pattern: 'openai_key',              type: 'openai',     name: 'OpenAI API' },
+    { pattern: 'linkedin_',              type: 'linkedin',   name: 'LinkedIn API' },
+    { pattern: 'cloudflare_api',          type: 'cloudflare', name: 'Cloudflare API' },
+    { pattern: 'cf_api',                  type: 'cloudflare', name: 'Cloudflare API' },
+    { pattern: 'aws_access_key',          type: 'aws',        name: 'AWS Credentials' },
+    { pattern: 'aws_secret',              type: 'aws',        name: 'AWS Credentials' },
+    { pattern: 'slack_webhook',           type: 'slack',      name: 'Slack Webhook' },
+    { pattern: 'slack_token',             type: 'slack',      name: 'Slack Webhook' },
+    { pattern: 'slack_bot',               type: 'slack',      name: 'Slack Webhook' },
+    { pattern: 'discord_webhook',         type: 'discord',    name: 'Discord Webhook' },
+    { pattern: 'discord_token',           type: 'discord',    name: 'Discord Webhook' },
+    { pattern: 'discord_bot',             type: 'discord',    name: 'Discord Webhook' },
+    { pattern: 'twitter_',               type: 'twitter',    name: 'Twitter/X API' },
+    { pattern: 'x_api',                   type: 'twitter',    name: 'Twitter/X API' },
+    { pattern: 'reddit_',                type: 'reddit',     name: 'Reddit API' },
+    { pattern: 'smtp_',                  type: 'email_smtp', name: 'Email (SMTP)' },
+    { pattern: 'email_smtp',             type: 'email_smtp', name: 'Email (SMTP)' },
+    { pattern: 'imap_',                  type: 'email_imap', name: 'Email (IMAP)' },
+    { pattern: 'email_imap',             type: 'email_imap', name: 'Email (IMAP)' },
+    { pattern: 'rss_',                   type: 'rss',        name: 'RSS Feed Reader' },
+];
+
 // Local state for permissions editor
 let permState = {
     services: [],       // [{ id, type, name, key_masked, has_key, extra }, ...]
@@ -2269,6 +2808,146 @@ function renderPermGrid() {
             ${cells}
         </tr>`;
     }).join('');
+}
+
+// --- .env file drag-and-drop import ---
+
+function parseEnvFile(text) {
+    // Parse KEY=VALUE lines from a .env file. Returns [{key, value}].
+    const entries = [];
+    for (const line of text.split(/\r?\n/)) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const eqIdx = trimmed.indexOf('=');
+        if (eqIdx < 1) continue;
+        const key = trimmed.substring(0, eqIdx).trim();
+        let value = trimmed.substring(eqIdx + 1).trim();
+        // Strip surrounding quotes
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.slice(1, -1);
+        }
+        if (key && value) entries.push({ key, value });
+    }
+    return entries;
+}
+
+function matchEnvKeyToService(envKey) {
+    // Match a .env variable name to a service type using ENV_KEY_MAP.
+    const lower = envKey.toLowerCase();
+    for (const mapping of ENV_KEY_MAP) {
+        if (lower.startsWith(mapping.pattern) || lower === mapping.pattern) {
+            return mapping;
+        }
+    }
+    return null;
+}
+
+function importEnvEntries(entries) {
+    // Merge parsed .env entries into permState.services.
+    // Updates existing services or creates new ones.
+    let matched = 0;
+    let skipped = 0;
+    const unmatched = [];
+
+    for (const { key, value } of entries) {
+        const mapping = matchEnvKeyToService(key);
+        if (!mapping) {
+            unmatched.push(key);
+            continue;
+        }
+
+        // Find existing service of this type
+        const existing = permState.services.find(s => s.type === mapping.type);
+        if (existing) {
+            // If this type already has a key and this is a secondary env var
+            // (e.g. AWS_SECRET_ACCESS_KEY when AWS_ACCESS_KEY_ID already set),
+            // append to extra rather than overwriting the key
+            if (existing.has_key && existing.new_key) {
+                const prev = existing.extra ? JSON.parse(existing.extra || '{}') : {};
+                prev[key] = value;
+                existing.extra = JSON.stringify(prev);
+            } else {
+                existing.new_key = value;
+                existing.has_key = true;
+                existing.key_masked = value.length > 8 ? '...' + value.slice(-4) : '...(set)';
+            }
+            matched++;
+        } else {
+            // Create a new service entry
+            permState.services.push({
+                id: mapping.type + '_' + Date.now() + '_' + matched,
+                type: mapping.type,
+                name: mapping.name,
+                new_key: value,
+                has_key: true,
+                key_masked: value.length > 8 ? '...' + value.slice(-4) : '...(set)',
+                extra: '',
+            });
+            matched++;
+        }
+    }
+
+    return { matched, skipped, unmatched };
+}
+
+function handleEnvDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const panel = dom.permPanelServices;
+    if (panel) panel.classList.remove('perm-panel--drag-over');
+
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+
+    // Accept .env files or any small text file
+    if (file.size > 100000) {
+        showToast('File too large -- .env files should be small', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        const entries = parseEnvFile(reader.result);
+        if (entries.length === 0) {
+            showToast('No KEY=VALUE entries found in file', 'error');
+            return;
+        }
+
+        const { matched, unmatched } = importEnvEntries(entries);
+        renderServiceKeys();
+        renderPermGrid();
+
+        let msg = matched + ' key' + (matched !== 1 ? 's' : '') + ' imported';
+        if (unmatched.length > 0) {
+            msg += ' (' + unmatched.length + ' unrecognized: ' + unmatched.slice(0, 3).join(', ');
+            if (unmatched.length > 3) msg += '...';
+            msg += ')';
+        }
+        showToast(msg + ' -- review and save', 'info');
+    };
+    reader.onerror = () => showToast('Failed to read file', 'error');
+    reader.readAsText(file);
+}
+
+function initEnvDropZone() {
+    const panel = dom.permPanelServices;
+    if (!panel) return;
+
+    panel.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        panel.classList.add('perm-panel--drag-over');
+    });
+    panel.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Only remove if leaving the panel itself (not entering a child)
+        if (!panel.contains(e.relatedTarget)) {
+            panel.classList.remove('perm-panel--drag-over');
+        }
+    });
+    panel.addEventListener('drop', handleEnvDrop);
 }
 
 function openAddService() {
@@ -2461,6 +3140,11 @@ function init() {
             // Immediately add sender + mentioned agents as members
             autoAddMembersFromMessage(state.currentChannel, outgoing);
 
+            // Intercept messages in the roundtable setup channel
+            if (state.currentChannel === ROUNDTABLE_SETUP_CHANNEL) {
+                handleRoundtableSetupMessage(content);
+            }
+
             clearInput();
             closeMentionDropdown();
         });
@@ -2527,61 +3211,10 @@ function init() {
         dom.sidebarAddTaskBtn.addEventListener('click', () => openAssignForAgent(null));
     }
 
-    // [+] Session button -- opens create-session modal
+    // [+] Session button -- opens guided roundtable setup chat
     if (dom.addSessionBtn) {
         dom.addSessionBtn.addEventListener('click', () => {
-            if (dom.createSessionModal) {
-                // Pre-populate channel dropdown with available channels
-                if (dom.newSessionChannel) {
-                    const opts = state.channels.map(ch =>
-                        `<option value="${escapeHtml(ch.id || ch.name)}">${escapeHtml(ch.name || ch.id)}</option>`
-                    ).join('');
-                    dom.newSessionChannel.innerHTML = '<option value="">-- Select channel --</option>' + opts;
-                }
-                dom.createSessionModal.hidden = false;
-            }
-        });
-    }
-    if (dom.createSessionClose) dom.createSessionClose.addEventListener('click', () => { dom.createSessionModal.hidden = true; });
-    if (dom.createSessionCancel) dom.createSessionCancel.addEventListener('click', () => { dom.createSessionModal.hidden = true; });
-    if (dom.createSessionForm) {
-        dom.createSessionForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const channelId = dom.newSessionChannel?.value?.trim();
-            const topic = dom.newSessionTopic?.value?.trim();
-            const agentsRaw = dom.newSessionAgents?.value?.trim();
-            const maxTurns = parseInt(dom.newSessionMaxTurns?.value, 10) || 20;
-
-            if (!channelId || !topic) {
-                showToast('Channel and topic are required', 'warning');
-                return;
-            }
-
-            const body = { channel_id: channelId, topic, max_turns: maxTurns };
-            if (agentsRaw) {
-                body.initial_agents = agentsRaw.split(',').map(a => a.trim()).filter(Boolean);
-            }
-
-            try {
-                const resp = await fetch('/api/roundtable/start', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
-                });
-                const data = await resp.json();
-                if (data.success) {
-                    dom.createSessionModal.hidden = true;
-                    dom.newSessionTopic.value = '';
-                    dom.newSessionAgents.value = '';
-                    showToast('Session started', 'success');
-                    fetchSessions();
-                    switchChannel(channelId);
-                } else {
-                    showToast(data.error || 'Failed to start session', 'error');
-                }
-            } catch (err) {
-                showToast('Error starting session: ' + err.message, 'error');
-            }
+            startRoundtableSetup();
         });
     }
 
@@ -2667,6 +3300,7 @@ function init() {
     if (dom.permissionsClose) dom.permissionsClose.addEventListener('click', closePermissions);
     if (dom.permissionsCancel) dom.permissionsCancel.addEventListener('click', closePermissions);
     if (dom.permissionsSave) dom.permissionsSave.addEventListener('click', savePermissions);
+    initEnvDropZone();
     if (dom.addServiceKeyBtn) dom.addServiceKeyBtn.addEventListener('click', openAddService);
     if (dom.addServiceClose) dom.addServiceClose.addEventListener('click', closeAddService);
     if (dom.addServiceCancel) dom.addServiceCancel.addEventListener('click', closeAddService);

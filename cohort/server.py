@@ -651,6 +651,23 @@ async def list_roundtable_sessions(request: Request) -> JSONResponse:
     return JSONResponse({"success": True, "sessions": sessions})
 
 
+async def roundtable_setup_parse(request: Request) -> JSONResponse:
+    """POST /api/roundtable/setup-parse -- parse natural language into config."""
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    message = body.get("message", "").strip()
+    if not message:
+        return JSONResponse({"error": "Message is required"}, status_code=400)
+
+    context = body.get("context")
+    orch = _get_roundtable_orch()
+    config = orch.suggest_roundtable_config(message, context=context)
+    return JSONResponse({"success": True, "config": config})
+
+
 async def pause_roundtable(request: Request) -> JSONResponse:
     """POST /api/roundtable/{session_id}/pause -- pause session."""
     session_id = request.path_params["session_id"]
@@ -791,6 +808,24 @@ async def list_tools(request: Request) -> JSONResponse:
                 "path": info.get("path", ""),
                 "implemented": bool(info.get("path")),
             })
+
+        # Inject Cohort-native tools not in boss_config (e.g. llm_manager)
+        if allowed_ids is not None:
+            tools_cfg = _load_tools_config()
+            native_descriptions = tools_cfg.get("descriptions", {})
+            existing_ids = {t["id"] for t in tools}
+            for tid in allowed_ids:
+                if tid not in existing_ids:
+                    name = display_names.get(tid) or tid.replace("_", " ").title()
+                    tools.append({
+                        "id": tid,
+                        "name": name,
+                        "description": native_descriptions.get(tid, ""),
+                        "phases": [],
+                        "features": [],
+                        "path": "",
+                        "implemented": True,
+                    })
 
         # Preserve curated ordering from cohort_tools.json
         if allowed_ids is not None:
@@ -1237,6 +1272,140 @@ def _save_agents_to_disk() -> None:
 
 
 # =====================================================================
+# Tool dashboard endpoints
+# =====================================================================
+
+def _load_tools_config() -> dict[str, Any]:
+    """Load the full cohort_tools.json config (descriptions, health endpoints, etc.)."""
+    if _settings_path is None:
+        return {}
+    filter_path = _settings_path.parent / "cohort_tools.json"
+    if not filter_path.exists():
+        return {}
+    try:
+        with open(filter_path, encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+async def get_service_status(request: Request) -> JSONResponse:
+    """GET /api/service-status/{service_id} -- proxy health check to a service."""
+    import urllib.request
+
+    service_id = request.path_params["service_id"]
+    tools_cfg = _load_tools_config()
+    endpoints = tools_cfg.get("health_endpoints", {})
+    url = endpoints.get(service_id)
+
+    if not url:
+        return JSONResponse({"status": "unknown", "detail": "No health endpoint configured"})
+
+    # Only allow localhost URLs
+    if "127.0.0.1" not in url and "localhost" not in url:
+        return JSONResponse({"status": "unknown", "detail": "Non-localhost endpoint rejected"})
+
+    try:
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            status = "up" if resp.status == 200 else "down"
+            try:
+                body = json.loads(resp.read().decode("utf-8"))
+            except Exception:
+                body = {}
+            return JSONResponse({"status": status, "detail": body})
+    except Exception:
+        return JSONResponse({"status": "down", "detail": "Connection failed"})
+
+
+async def get_tool_config(request: Request) -> JSONResponse:
+    """GET /api/tool-config/{tool_id} -- return tool description and metadata."""
+    tool_id = request.path_params["tool_id"]
+    tools_cfg = _load_tools_config()
+    descriptions = tools_cfg.get("descriptions", {})
+    display_names = tools_cfg.get("display_names", {})
+    has_health = tool_id in tools_cfg.get("health_endpoints", {})
+
+    return JSONResponse({
+        "id": tool_id,
+        "name": display_names.get(tool_id, tool_id.replace("_", " ").title()),
+        "description": descriptions.get(tool_id, ""),
+        "has_health_endpoint": has_health,
+    })
+
+
+async def llm_list_models(request: Request) -> JSONResponse:
+    """GET /api/llm/models -- list installed Ollama models with sizes."""
+    import urllib.request
+
+    try:
+        req = urllib.request.Request("http://127.0.0.1:11434/api/tags", method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            models = []
+            for m in data.get("models", []):
+                size_bytes = m.get("size", 0)
+                if size_bytes > 1_073_741_824:
+                    size_str = f"{size_bytes / 1_073_741_824:.1f} GB"
+                elif size_bytes > 1_048_576:
+                    size_str = f"{size_bytes / 1_048_576:.0f} MB"
+                else:
+                    size_str = f"{size_bytes} B"
+                models.append({
+                    "name": m.get("name", ""),
+                    "size": size_str,
+                    "size_bytes": size_bytes,
+                    "modified_at": m.get("modified_at", ""),
+                    "family": m.get("details", {}).get("family", ""),
+                    "parameter_size": m.get("details", {}).get("parameter_size", ""),
+                    "quantization": m.get("details", {}).get("quantization_level", ""),
+                })
+            return JSONResponse({"status": "up", "models": models})
+    except Exception:
+        return JSONResponse({"status": "down", "models": []})
+
+
+async def llm_pull_model(request: Request) -> JSONResponse:
+    """POST /api/llm/pull -- pull an Ollama model (streams progress via Socket.IO)."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    model = body.get("model", "").strip()
+    if not model:
+        return JSONResponse({"error": "model is required"}, status_code=400)
+
+    # Reuse existing streaming pull mechanism
+    asyncio.create_task(_stream_model_pull(model, sio))
+    return JSONResponse({"status": "pulling", "model": model})
+
+
+async def llm_delete_model(request: Request) -> JSONResponse:
+    """DELETE /api/llm/models/{name} -- delete an Ollama model."""
+    import urllib.request
+
+    model_name = request.path_params["name"]
+    if not model_name:
+        return JSONResponse({"error": "model name is required"}, status_code=400)
+
+    try:
+        body = json.dumps({"model": model_name}).encode("utf-8")
+        req = urllib.request.Request(
+            "http://127.0.0.1:11434/api/delete",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="DELETE",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                return JSONResponse({"status": "deleted", "model": model_name})
+            return JSONResponse({"error": f"Ollama returned {resp.status}"}, status_code=500)
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+# =====================================================================
 # App factory
 # =====================================================================
 
@@ -1346,6 +1515,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/save-config", setup_save_config, methods=["POST"]),
         # Roundtable endpoints
         Route("/api/roundtable/sessions", list_roundtable_sessions, methods=["GET"]),
+        Route("/api/roundtable/setup-parse", roundtable_setup_parse, methods=["POST"]),
         Route("/api/roundtable/start", start_roundtable, methods=["POST"]),
         Route("/api/roundtable/{session_id}/status", get_roundtable_status, methods=["GET"]),
         Route("/api/roundtable/{session_id}/next-speaker", get_next_speaker, methods=["GET"]),
@@ -1354,6 +1524,12 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/roundtable/{session_id}/resume", resume_roundtable, methods=["POST"]),
         Route("/api/roundtable/{session_id}/end", end_roundtable, methods=["POST"]),
         Route("/api/roundtable/channel/{channel_id}", get_channel_roundtable, methods=["GET"]),
+        # Tool dashboard endpoints
+        Route("/api/service-status/{service_id}", get_service_status, methods=["GET"]),
+        Route("/api/tool-config/{tool_id}", get_tool_config, methods=["GET"]),
+        Route("/api/llm/models", llm_list_models, methods=["GET"]),
+        Route("/api/llm/pull", llm_pull_model, methods=["POST"]),
+        Route("/api/llm/models/{name:path}", llm_delete_model, methods=["DELETE"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 

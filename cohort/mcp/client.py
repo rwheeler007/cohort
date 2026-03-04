@@ -179,6 +179,153 @@ class CohortClient:
             json_body=fact,
         )
 
+    # -- search & mentions -----------------------------------------------
+
+    async def search_messages(
+        self, query: str, channel: str | None = None, limit: int = 50
+    ) -> list[dict[str, Any]] | None:
+        """Search messages across channels by keyword (case-insensitive).
+
+        Fetches messages from the server and filters client-side since the
+        Cohort server has no dedicated search endpoint.
+        """
+        if channel:
+            messages = await self.get_messages(channel, limit=500)
+            if messages is None:
+                return None
+        else:
+            channels = await self.get_channels()
+            if channels is None:
+                return None
+            messages = []
+            for ch in channels:
+                ch_id = ch.get("id", "")
+                ch_msgs = await self.get_messages(ch_id, limit=200)
+                if ch_msgs:
+                    for m in ch_msgs:
+                        m["_channel"] = ch_id
+                    messages.extend(ch_msgs)
+
+        query_lower = query.lower()
+        matches = [
+            m for m in messages
+            if query_lower in (m.get("content") or "").lower()
+            or query_lower in (m.get("sender") or "").lower()
+        ]
+        return matches[-limit:]
+
+    async def get_mentions(
+        self, agent_id: str, limit: int = 50
+    ) -> list[dict[str, Any]] | None:
+        """Find messages that @mention a specific agent."""
+        channels = await self.get_channels()
+        if channels is None:
+            return None
+        mention_pattern = f"@{agent_id}"
+        matches: list[dict[str, Any]] = []
+        for ch in channels:
+            ch_id = ch.get("id", "")
+            ch_msgs = await self.get_messages(ch_id, limit=200)
+            if ch_msgs:
+                for m in ch_msgs:
+                    if mention_pattern in (m.get("content") or ""):
+                        m["_channel"] = ch_id
+                        matches.append(m)
+        return matches[-limit:]
+
+    # -- roundtable ------------------------------------------------------
+
+    async def start_roundtable(
+        self,
+        channel: str,
+        agents: list[str],
+        prompt: str,
+        sender: str = "claude_code",
+    ) -> dict[str, Any] | None:
+        """POST /api/roundtable/start -> start a roundtable session."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/roundtable/start",
+            json_body={
+                "channel": channel,
+                "agents": agents,
+                "prompt": prompt,
+                "sender": sender,
+            },
+        )
+
+    async def get_roundtable_status(
+        self, session_id: str
+    ) -> dict[str, Any] | None:
+        """GET /api/roundtable/{session_id}/status."""
+        return await _request(
+            "GET",
+            f"{self.base_url}/api/roundtable/{session_id}/status",
+        )
+
+    # -- agent persona ---------------------------------------------------
+
+    async def get_agent_persona(self, agent_id: str) -> str | None:
+        """GET /api/agents/{agent_id}/prompt -> agent prompt text.
+
+        Falls back to the config name/role if no prompt is available.
+        """
+        data = await _request(
+            "GET",
+            f"{self.base_url}/api/agents/{agent_id}/prompt",
+        )
+        if data is None:
+            return None
+        if isinstance(data, dict):
+            return data.get("prompt") or data.get("content") or None
+        if isinstance(data, str):
+            return data
+        return None
+
+    # -- channel checklists (file-based) ----------------------------------
+
+    def _channel_checklist_path(self, channel: str) -> Path | None:
+        """Resolve the checklist file path for a channel."""
+        if not self._checklist_path:
+            return None
+        base_dir = self._checklist_path.parent / "channel_checklists"
+        # Sanitize channel name
+        safe_ch = "".join(c for c in channel if c.isalnum() or c in "-_")
+        if not safe_ch:
+            return None
+        return base_dir / f"{safe_ch}.json"
+
+    async def read_channel_checklist(self, channel: str) -> dict[str, Any] | None:
+        """Read a channel-specific checklist from disk."""
+        path = self._channel_checklist_path(channel)
+        if not path:
+            return {"items": []}
+        try:
+            if not path.exists():
+                return {"items": []}
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.debug("[!] cohort client: channel checklist read error - %s", exc)
+            return None
+
+    async def write_channel_checklist(
+        self, channel: str, data: dict[str, Any]
+    ) -> bool:
+        """Write a channel-specific checklist to disk."""
+        path = self._channel_checklist_path(channel)
+        if not path:
+            return False
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(data, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            return True
+        except Exception as exc:
+            logger.debug("[!] cohort client: channel checklist write error - %s", exc)
+            return False
+
     # -- checklist (file-based) -----------------------------------------
 
     async def read_checklist(self) -> dict[str, Any] | None:

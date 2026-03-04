@@ -72,6 +72,16 @@
                     </ul>
                 </div>
 
+                <div class="sidebar-nav__section open" data-section="agent-chats">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('agent-chats')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Agent Chats</h2>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__agent-chats" id="agent-chat-list">
+                        <!-- Agent DM channels populated by JS -->
+                    </ul>
+                </div>
+
                 <div class="sidebar-nav__section open" data-section="tools">
                     <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('tools')">
                         <span class="sidebar-nav__toggle">></span>
@@ -107,8 +117,8 @@
                 <div class="sidebar-nav__section open" data-section="sessions">
                     <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('sessions')">
                         <span class="sidebar-nav__toggle">></span>
-                        <h2 class="sidebar-nav__title">Sessions</h2>
-                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Create session" onclick="event.stopPropagation()">+</button>
+                        <h2 class="sidebar-nav__title">Roundtable Sessions</h2>
+                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Start roundtable" onclick="event.stopPropagation()">+</button>
                     </div>
                     <ul class="sidebar-nav__section-body sidebar-nav__sessions" id="session-list">
                         <!-- Sessions populated by JS -->
@@ -231,6 +241,16 @@
                     <div class="empty-state" id="output-empty">
                         <p class="empty-state__text">No outputs to review</p>
                         <p class="empty-state__hint">Completed task outputs will appear here for review</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tool Dashboard Panel -->
+            <section class="panel panel--tool" id="panel-tool" role="region" aria-label="Tool Dashboard" style="display: none;">
+                <div id="tool-panel-content">
+                    <div class="empty-state">
+                        <p class="empty-state__text">Select a tool</p>
+                        <p class="empty-state__hint">Click a tool in the sidebar to view its status and configuration</p>
                     </div>
                 </div>
             </section>
@@ -405,6 +425,7 @@
                         <!-- Populated by JS -->
                     </div>
                     <button type="button" class="btn btn--secondary" id="add-service-key-btn">+ Add Service</button>
+                    <div class="perm-drop-hint">Drop a .env file here to import keys</div>
                 </div>
 
                 <!-- Tab: Agent Access -->
@@ -528,42 +549,6 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn--secondary" id="create-folder-cancel">Cancel</button>
                         <button type="submit" class="btn btn--primary">Create</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Create Session Modal -->
-    <div class="modal" id="create-session-modal" hidden>
-        <div class="modal__content">
-            <header class="modal__header">
-                <h2>Start Session</h2>
-                <button class="btn btn--icon modal__close" id="create-session-close">&times;</button>
-            </header>
-            <div class="modal__body">
-                <form id="create-session-form">
-                    <div class="form-group">
-                        <label for="new-session-channel">Channel</label>
-                        <select class="form-input" id="new-session-channel" required>
-                            <option value="">-- Select channel --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-session-topic">Topic</label>
-                        <input type="text" class="form-input" id="new-session-topic" placeholder="e.g. API design review" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-session-agents">Agents <span style="color: var(--color-text-muted); font-weight: normal;">(optional, comma-separated)</span></label>
-                        <input type="text" class="form-input" id="new-session-agents" placeholder="e.g. python_developer, web_developer">
-                    </div>
-                    <div class="form-group">
-                        <label for="new-session-max-turns">Max Turns</label>
-                        <input type="number" class="form-input" id="new-session-max-turns" value="20" min="1" max="100">
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn--secondary" id="create-session-cancel">Cancel</button>
-                        <button type="submit" class="btn btn--primary">Start</button>
                     </div>
                 </form>
             </div>

@@ -873,6 +873,457 @@ async def cohort_add_fact(params: AddFactInput) -> str:
 
 
 # =====================================================================
+# Tool 14: cohort_search_messages
+# =====================================================================
+
+class SearchMessagesInput(BaseModel):
+    """Input for searching messages across channels."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    query: str = Field(
+        ..., description="Search string (case-insensitive substring match).",
+        min_length=1, max_length=500,
+    )
+    channel: Optional[str] = Field(
+        None, description="Optional channel ID to restrict search. None = all channels.",
+        max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_search_messages",
+    annotations={
+        "title": "Search Messages",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_search_messages(params: SearchMessagesInput) -> str:
+    """Search messages across channels by keyword."""
+    matches = await _client.search_messages(
+        params.query, channel=params.channel, limit=50,
+    )
+    if matches is None:
+        return _error_msg(service_down=True)
+    if not matches:
+        scope = f"#{params.channel}" if params.channel else "all channels"
+        return f"No messages matching '{params.query}' in {scope}."
+
+    lines = [f"## Search: '{params.query}' ({len(matches)} results)"]
+    for m in matches:
+        sender = m.get("sender", "unknown")
+        content = (m.get("content") or "")[:200]
+        ts = m.get("timestamp", "")
+        if "T" in ts:
+            ts = ts.split("T")[1][:8]
+        ch = m.get("_channel") or m.get("channel_id", "?")
+        lines.append(f"**{sender}** in #{ch} ({ts}): {content}")
+
+    result = "\n\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 15: cohort_get_mentions
+# =====================================================================
+
+class GetMentionsInput(BaseModel):
+    """Input for getting @mentions for an agent."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID to look up mentions for (e.g. 'python_developer').",
+        min_length=1, max_length=100,
+    )
+    limit: int = Field(
+        20, description="Max mentions to return (1-100). Default 20.",
+        ge=1, le=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_get_mentions",
+    annotations={
+        "title": "Get Agent Mentions",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_mentions(params: GetMentionsInput) -> str:
+    """Get messages where an agent was @mentioned."""
+    matches = await _client.get_mentions(params.agent_id, limit=params.limit)
+    if matches is None:
+        return _error_msg(service_down=True)
+    if not matches:
+        return f"No @mentions found for {params.agent_id}."
+
+    lines = [f"## @{params.agent_id} mentions ({len(matches)} found)"]
+    for m in matches:
+        sender = m.get("sender", "unknown")
+        content = (m.get("content") or "")[:200]
+        ts = m.get("timestamp", "")
+        if "T" in ts:
+            ts = ts.split("T")[1][:8]
+        ch = m.get("_channel", "?")
+        lines.append(f"**{sender}** in #{ch} ({ts}): {content}")
+
+    result = "\n\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 16: cohort_get_channel_checklist
+# =====================================================================
+
+class GetChannelChecklistInput(BaseModel):
+    """Input for reading a channel's checklist."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    channel: str = Field(
+        ..., description="Channel ID (e.g. 'proj-my-project').",
+        min_length=1, max_length=100,
+    )
+    status: Optional[str] = Field(
+        None, description="Filter by status: 'pending', 'done', or None for all.",
+    )
+
+
+@mcp.tool(
+    name="cohort_get_channel_checklist",
+    annotations={
+        "title": "Get Channel Checklist",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_channel_checklist(params: GetChannelChecklistInput) -> str:
+    """Read a channel's task checklist."""
+    data = await _client.read_channel_checklist(params.channel)
+    if data is None:
+        return "Error: Could not read channel checklist."
+
+    items = data.get("items", [])
+    if not items:
+        return f"No checklist items for #{params.channel}."
+
+    if params.status == "pending":
+        items = [i for i in items if not i.get("checked", False)]
+    elif params.status == "done":
+        items = [i for i in items if i.get("checked", False)]
+    if not items:
+        return f"No {params.status or ''} tasks in #{params.channel} checklist."
+
+    lines = [f"## #{params.channel} Checklist ({len(items)} tasks)"]
+    for item in items:
+        check = "[x]" if item.get("checked") else "[ ]"
+        content = item.get("content", "?")
+        parts = []
+        if item.get("priority"):
+            parts.append(item["priority"].upper())
+        if item.get("assignee"):
+            parts.append(f"@{item['assignee']}")
+        suffix = f" ({', '.join(parts)})" if parts else ""
+        lines.append(f"- {check} {content}{suffix}")
+    return "\n".join(lines)
+
+
+# =====================================================================
+# Tool 17: cohort_update_channel_checklist
+# =====================================================================
+
+class UpdateChannelChecklistInput(BaseModel):
+    """Input for modifying a channel's checklist."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    channel: str = Field(
+        ..., description="Channel ID (e.g. 'proj-my-project').",
+        min_length=1, max_length=100,
+    )
+    action: ChecklistAction = Field(
+        ..., description="Action: 'add', 'complete', or 'remove'.",
+    )
+    content: str = Field(
+        ..., description="For 'add': task description. For 'complete'/'remove': text to match.",
+        min_length=1,
+    )
+    priority: Optional[str] = Field(
+        "medium", description="Priority for new tasks (add only): high, medium, or low.",
+    )
+    assignee: Optional[str] = Field(
+        None, description="Assignee for new tasks (add only).",
+    )
+    category: Optional[str] = Field(
+        None, description="Category for new tasks (add only).",
+    )
+
+
+@mcp.tool(
+    name="cohort_update_channel_checklist",
+    annotations={
+        "title": "Update Channel Checklist",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_update_channel_checklist(params: UpdateChannelChecklistInput) -> str:
+    """Add, complete, or remove a task on a channel's checklist."""
+    data = await _client.read_channel_checklist(params.channel)
+    if data is None:
+        return "Error: Could not read channel checklist."
+
+    items = data.get("items", [])
+
+    if params.action == ChecklistAction.ADD:
+        new_item = {
+            "id": str(uuid.uuid4())[:8],
+            "content": params.content,
+            "checked": False,
+            "priority": params.priority or "medium",
+            "category": params.category or "",
+            "assignee": params.assignee,
+            "due_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "mcp",
+            "completed_at": None,
+        }
+        items.append(new_item)
+        data["items"] = items
+        if await _client.write_channel_checklist(params.channel, data):
+            return f"Added to #{params.channel}: {params.content} (id: {new_item['id']})"
+        return "Error: Failed to write channel checklist."
+
+    search = params.content.lower()
+    match_idx = None
+    for idx, item in enumerate(items):
+        if search in item.get("content", "").lower():
+            match_idx = idx
+            break
+
+    if match_idx is None:
+        return f"No task matching '{params.content}' in #{params.channel}."
+
+    matched = items[match_idx]
+
+    if params.action == ChecklistAction.COMPLETE:
+        matched["checked"] = True
+        matched["completed_at"] = datetime.now(timezone.utc).isoformat()
+        data["items"] = items
+        if await _client.write_channel_checklist(params.channel, data):
+            return f"Completed in #{params.channel}: {matched['content']}"
+        return "Error: Failed to write channel checklist."
+
+    if params.action == ChecklistAction.REMOVE:
+        removed = items.pop(match_idx)
+        data["items"] = items
+        if await _client.write_channel_checklist(params.channel, data):
+            return f"Removed from #{params.channel}: {removed['content']}"
+        return "Error: Failed to write channel checklist."
+
+    return "Error: Unknown action."
+
+
+# =====================================================================
+# Tool 18: cohort_roundtable
+# =====================================================================
+
+class RoundtableInput(BaseModel):
+    """Input for running a roundtable discussion."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    channel: str = Field(
+        ..., description="Channel ID to run the roundtable in.",
+        min_length=1, max_length=100,
+    )
+    agents: List[str] = Field(
+        ..., description="List of agent IDs to solicit responses from.",
+        min_length=1,
+    )
+    prompt: str = Field(
+        ..., description="The question or topic to pose to all agents.",
+        min_length=1,
+    )
+    sender: str = Field(
+        "claude_code", description="Who is asking the question (default 'claude_code').",
+        max_length=100,
+    )
+    timeout_per_agent: int = Field(
+        90, description="Max seconds to wait for each agent's response (default 90, max 300).",
+        ge=10, le=300,
+    )
+
+
+@mcp.tool(
+    name="cohort_roundtable",
+    annotations={
+        "title": "Roundtable Discussion",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_roundtable(params: RoundtableInput) -> str:
+    """Run a roundtable discussion across multiple agents.
+
+    Posts the prompt with @mentions to the channel, starts a roundtable
+    session via the Cohort server, and returns the session details.
+    Agents respond asynchronously through the server's orchestrator.
+    """
+    import asyncio
+
+    # Post the prompt with @mentions
+    mentions = " ".join(f"@{a}" for a in params.agents)
+    full_message = f"{mentions}\n\n{params.prompt}"
+    post_result = await _client.post_message(
+        params.channel, params.sender, full_message,
+    )
+    if post_result is None:
+        return _error_msg(service_down=True)
+
+    # Start the roundtable session
+    result = await _client.start_roundtable(
+        channel=params.channel,
+        agents=params.agents,
+        prompt=params.prompt,
+        sender=params.sender,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success") and not result.get("session_id"):
+        return f"Error starting roundtable: {result.get('error', 'Unknown')}"
+
+    session_id = result.get("session_id", "?")
+
+    # Poll for completion (simplified -- check a few times)
+    final_status = None
+    for _ in range(params.timeout_per_agent // 5):
+        await asyncio.sleep(5)
+        status = await _client.get_roundtable_status(session_id)
+        if status is None:
+            continue
+        state = status.get("status") or status.get("state", "")
+        if state in ("completed", "ended", "done"):
+            final_status = status
+            break
+        # Check if all agents have responded
+        turns = status.get("turns", [])
+        responded = {t.get("agent_id") for t in turns if t.get("agent_id")}
+        if responded >= set(params.agents):
+            final_status = status
+            break
+
+    # Format results
+    if final_status:
+        turns = final_status.get("turns", [])
+        lines = [f"## Roundtable in #{params.channel} ({len(turns)} responses)"]
+        for turn in turns:
+            agent = turn.get("agent_id", "unknown")
+            content = (turn.get("content") or turn.get("response") or "")[:2000]
+            lines.append(f"\n### > {agent}:\n{content}")
+        result_text = "\n".join(lines)
+        if len(result_text) > CHARACTER_LIMIT:
+            result_text = result_text[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+        return result_text
+
+    return (
+        f"Roundtable started (session: {session_id}) but timed out waiting for responses. "
+        f"Check #{params.channel} for agent replies."
+    )
+
+
+# =====================================================================
+# Tool 19: cohort_adopt_persona
+# =====================================================================
+
+class AdoptPersonaInput(BaseModel):
+    """Input for loading an agent persona."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    agent_id: str = Field(
+        ..., description="Agent ID to adopt (e.g. 'python_developer', 'marketing_agent').",
+        min_length=1, max_length=100,
+    )
+    full: bool = Field(
+        False, description="If true, return full agent prompt instead of lightweight persona.",
+    )
+
+
+@mcp.tool(
+    name="cohort_adopt_persona",
+    annotations={
+        "title": "Adopt Agent Persona",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_adopt_persona(params: AdoptPersonaInput) -> str:
+    """Load an agent persona for use in the current conversation.
+
+    Returns the persona text that should be used as a system-level
+    identity for the rest of the conversation. Light mode returns
+    the compact persona (~500 tokens). Full mode returns the complete
+    agent prompt.
+    """
+    from cohort.personas import load_persona
+
+    if params.full:
+        # Full mode: get the complete agent prompt from the server
+        prompt = await _client.get_agent_persona(params.agent_id)
+        if prompt:
+            return (
+                f"## Adopted: {params.agent_id} (full mode)\n\n"
+                f"Use the following as your identity for this conversation:\n\n"
+                f"---\n{prompt}\n---"
+            )
+
+    # Light mode: load from local persona files
+    persona = load_persona(params.agent_id)
+    if persona:
+        return (
+            f"## Adopted: {params.agent_id}\n\n"
+            f"Use the following as your identity for this conversation:\n\n"
+            f"---\n{persona}\n---"
+        )
+
+    # Fallback: try server for config-based identity
+    agent_data = await _client.get_agent(params.agent_id)
+    if agent_data and not agent_data.get("error"):
+        name = agent_data.get("name", params.agent_id)
+        role = agent_data.get("role", "Agent")
+        personality = agent_data.get("personality", "")
+        caps = agent_data.get("capabilities", [])
+        return (
+            f"## Adopted: {params.agent_id}\n\n"
+            f"Use the following as your identity:\n\n"
+            f"---\n"
+            f"# {name}\n"
+            f"**Role**: {role}\n"
+            + (f"**Personality**: {personality}\n" if personality else "")
+            + (f"**Capabilities**: {', '.join(caps)}\n" if caps else "")
+            + "---"
+        )
+
+    return (
+        f"Agent '{params.agent_id}' not found. "
+        f"Use `cohort_list_agents` to see available agents."
+    )
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

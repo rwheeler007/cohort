@@ -199,6 +199,13 @@ async def join_channel(sid: str, data: dict | None = None) -> None:
     if not channel_id:
         return
 
+    # Auto-create channel if it doesn't exist (e.g. dm-<agent> from Chat button)
+    if _chat.get_channel(channel_id) is None:
+        _chat.create_channel(
+            name=channel_id,
+            description=f"Auto-created channel: {channel_id}",
+        )
+
     # Join the Socket.IO room for this channel
     sio.enter_room(sid, channel_id)
 
