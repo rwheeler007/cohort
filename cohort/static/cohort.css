@@ -2852,6 +2852,8 @@ textarea.form-input {
 }
 
 .tool-panel-scroll {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: var(--space-4);
 }
@@ -3305,6 +3307,7 @@ select.tool-config-card__input option {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: var(--space-3);
     margin-top: var(--space-3);
+    grid-column: 1 / -1;
 }
 
 .llm-model-item {

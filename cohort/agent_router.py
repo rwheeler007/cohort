@@ -167,6 +167,7 @@ class _RouterState:
     queue: list[dict[str, Any]] = field(default_factory=list)
     queue_lock: threading.Lock = field(default_factory=threading.Lock)
     processor_running: bool = False
+    processor_started_at: float = 0.0  # epoch time when processor last started
 
     # Rate limiting: agent_id -> epoch timestamp
     last_response_time: dict[str, float] = field(default_factory=dict)
@@ -430,7 +431,13 @@ def queue_agent_response(
 def _start_queue_processor() -> None:
     """Spawn background daemon thread if not already running."""
     if _state.processor_running:
-        return
+        # Safety: if processor has been "running" for over 10 minutes, it's stuck
+        elapsed = time.time() - _state.processor_started_at
+        if elapsed > 600:
+            logger.warning("[!] Processor stuck for %.0fs, resetting flag", elapsed)
+            _state.processor_running = False
+        else:
+            return
     thread = threading.Thread(target=_process_queue, daemon=True)
     thread.start()
 
@@ -438,6 +445,7 @@ def _start_queue_processor() -> None:
 def _process_queue() -> None:
     """Background thread: drain the queue with safety checks."""
     _state.processor_running = True
+    _state.processor_started_at = time.time()
     try:
         while True:
             with _state.queue_lock:
