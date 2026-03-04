@@ -556,7 +556,17 @@ def _broadcast_work_queue() -> None:
 async def get_agent_registry(request: Request) -> JSONResponse:
     """GET /api/agent-registry -- return all agent visual profiles (avatars, colors, nicknames)."""
     from cohort.agent_registry import get_all_agents
-    return JSONResponse(get_all_agents())
+    profiles = get_all_agents()
+
+    # Apply user display name from settings to the 'user' profile
+    settings = _load_settings()
+    user_name = settings.get("user_display_name", "")
+    if user_name and "user" in profiles:
+        profiles["user"]["name"] = user_name
+        profiles["user"]["nickname"] = user_name
+        profiles["user"]["avatar"] = user_name[:2].upper()
+
+    return JSONResponse(profiles)
 
 
 async def get_agent_detail(request: Request) -> JSONResponse:
@@ -737,29 +747,33 @@ async def add_agent_fact(request: Request) -> JSONResponse:
 # Roundtable endpoints
 # =====================================================================
 
-_roundtable_orch = None
+_session_orch = None
 
 
-def _get_roundtable_orch():
-    """Lazy-load roundtable orchestrator singleton."""
-    global _roundtable_orch  # noqa: PLW0603
-    if _roundtable_orch is None:
+def _get_session_orch():
+    """Lazy-load session orchestrator singleton."""
+    global _session_orch  # noqa: PLW0603
+    if _session_orch is None:
         from cohort.orchestrator import Orchestrator
         from cohort.socketio_events import orchestrator_event_bridge
         agents_config = _data_layer._agents if _data_layer else {}
-        _roundtable_orch = Orchestrator(
+        _session_orch = Orchestrator(
             _get_chat(),
             agents=agents_config,
             on_event=orchestrator_event_bridge,
         )
-        # Wire orchestrator into agent router for roundtable gating
+        # Wire orchestrator into agent router for session gating
         from cohort.agent_router import set_orchestrator
-        set_orchestrator(_roundtable_orch)
-    return _roundtable_orch
+        set_orchestrator(_session_orch)
+    return _session_orch
 
 
-async def start_roundtable(request: Request) -> JSONResponse:
-    """POST /api/roundtable/start -- start a new roundtable session."""
+# Deprecated alias
+_get_roundtable_orch = _get_session_orch
+
+
+async def start_session_endpoint(request: Request) -> JSONResponse:
+    """POST /api/sessions/start -- start a new discussion session."""
     try:
         body: dict[str, Any] = await request.json()
     except (json.JSONDecodeError, Exception):
@@ -777,16 +791,16 @@ async def start_roundtable(request: Request) -> JSONResponse:
 
     # Auto-create channel
     if chat.get_channel(channel_id) is None:
-        chat.create_channel(name=channel_id, description=f"Roundtable: {topic}")
+        chat.create_channel(name=channel_id, description=f"Discussion: {topic}")
 
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
 
     # Check no existing active session
     existing = orch.get_session_for_channel(channel_id)
     if existing:
         return JSONResponse({
             "success": False,
-            "error": f"Channel already has active roundtable: {existing.session_id}",
+            "error": f"Channel already has active session: {existing.session_id}",
         }, status_code=409)
 
     try:
@@ -802,14 +816,14 @@ async def start_roundtable(request: Request) -> JSONResponse:
             "session": session.to_dict(),
         })
     except Exception as exc:
-        logger.exception("Error starting roundtable")
+        logger.exception("Error starting session")
         return JSONResponse({"success": False, "error": str(exc)}, status_code=500)
 
 
-async def get_roundtable_status(request: Request) -> JSONResponse:
-    """GET /api/roundtable/{session_id}/status -- session status."""
+async def get_session_status(request: Request) -> JSONResponse:
+    """GET /api/sessions/{session_id}/status -- session status."""
     session_id = request.path_params["session_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     status = orch.get_status(session_id)
     if not status:
         return JSONResponse({"success": False, "error": "Session not found"}, status_code=404)
@@ -817,17 +831,17 @@ async def get_roundtable_status(request: Request) -> JSONResponse:
 
 
 async def get_next_speaker(request: Request) -> JSONResponse:
-    """GET /api/roundtable/{session_id}/next-speaker -- recommended speaker."""
+    """GET /api/sessions/{session_id}/next-speaker -- recommended speaker."""
     session_id = request.path_params["session_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     recommendation = orch.get_next_speaker(session_id)
     if not recommendation:
         return JSONResponse({"success": False, "error": "No speaker available"}, status_code=400)
     return JSONResponse({"success": True, "recommendation": recommendation})
 
 
-async def record_roundtable_turn(request: Request) -> JSONResponse:
-    """POST /api/roundtable/{session_id}/record-turn -- record agent turn."""
+async def record_session_turn(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/record-turn -- record agent turn."""
     session_id = request.path_params["session_id"]
     try:
         body: dict[str, Any] = await request.json()
@@ -839,7 +853,7 @@ async def record_roundtable_turn(request: Request) -> JSONResponse:
     if not speaker or not message_id:
         return JSONResponse({"success": False, "error": "speaker and message_id required"}, status_code=400)
 
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     success = orch.record_turn(
         session_id=session_id,
         speaker=speaker,
@@ -851,25 +865,25 @@ async def record_roundtable_turn(request: Request) -> JSONResponse:
     return JSONResponse({"success": True})
 
 
-async def end_roundtable(request: Request) -> JSONResponse:
-    """POST /api/roundtable/{session_id}/end -- end session."""
+async def end_session_endpoint(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/end -- end session."""
     session_id = request.path_params["session_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     summary = orch.end_session(session_id)
     if not summary:
         return JSONResponse({"success": False, "error": "Session not found"}, status_code=404)
     return JSONResponse({"success": True, "summary": summary})
 
 
-async def list_roundtable_sessions(request: Request) -> JSONResponse:
-    """GET /api/roundtable/sessions -- list all sessions."""
-    orch = _get_roundtable_orch()
+async def list_sessions_endpoint(request: Request) -> JSONResponse:
+    """GET /api/sessions -- list all sessions."""
+    orch = _get_session_orch()
     sessions = [s.to_dict() for s in orch.sessions.values()]
     return JSONResponse({"success": True, "sessions": sessions})
 
 
-async def roundtable_setup_parse(request: Request) -> JSONResponse:
-    """POST /api/roundtable/setup-parse -- parse natural language into config."""
+async def session_setup_parse(request: Request) -> JSONResponse:
+    """POST /api/sessions/setup-parse -- parse natural language into config."""
     try:
         body: dict[str, Any] = await request.json()
     except (json.JSONDecodeError, Exception):
@@ -880,35 +894,35 @@ async def roundtable_setup_parse(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Message is required"}, status_code=400)
 
     context = body.get("context")
-    orch = _get_roundtable_orch()
-    config = orch.suggest_roundtable_config(message, context=context)
+    orch = _get_session_orch()
+    config = orch.suggest_session_config(message, context=context)
     return JSONResponse({"success": True, "config": config})
 
 
-async def pause_roundtable(request: Request) -> JSONResponse:
-    """POST /api/roundtable/{session_id}/pause -- pause session."""
+async def pause_session_endpoint(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/pause -- pause session."""
     session_id = request.path_params["session_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     ok = orch.pause_session(session_id)
     if not ok:
         return JSONResponse({"success": False, "error": "Session not found or not active"}, status_code=404)
     return JSONResponse({"success": True})
 
 
-async def resume_roundtable(request: Request) -> JSONResponse:
-    """POST /api/roundtable/{session_id}/resume -- resume session."""
+async def resume_session_endpoint(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/resume -- resume session."""
     session_id = request.path_params["session_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     ok = orch.resume_session(session_id)
     if not ok:
         return JSONResponse({"success": False, "error": "Session not found or not paused"}, status_code=404)
     return JSONResponse({"success": True})
 
 
-async def get_channel_roundtable(request: Request) -> JSONResponse:
-    """GET /api/roundtable/channel/{channel_id} -- get active session for channel."""
+async def get_channel_session(request: Request) -> JSONResponse:
+    """GET /api/sessions/channel/{channel_id} -- get active session for channel."""
     channel_id = request.path_params["channel_id"]
-    orch = _get_roundtable_orch()
+    orch = _get_session_orch()
     session = orch.get_session_for_channel(channel_id)
     if not session:
         return JSONResponse({"success": True, "has_session": False, "session": None})
@@ -996,63 +1010,63 @@ async def list_tools(request: Request) -> JSONResponse:
     if not agents_root:
         return JSONResponse({"tools": []})
 
-    config_path = Path(agents_root) / "config" / "boss_config.yaml"
-    if not config_path.exists():
-        return JSONResponse({"tools": []})
+    tool_filter = _load_tool_filter()
+    allowed_ids = tool_filter[0] if tool_filter else None
+    display_names = tool_filter[1] if tool_filter else {}
+    tools_cfg = _load_tools_config()
+    native_descriptions = tools_cfg.get("descriptions", {})
 
-    try:
-        import yaml
+    config_path = Path(agents_root) / "config" / "boss_config.yaml" if agents_root else None
 
-        with open(config_path, encoding="utf-8") as f:
-            cfg = yaml.safe_load(f) or {}
+    tools: list[dict[str, Any]] = []
 
-        raw_tools = cfg.get("boss", {}).get("tools", {})
-        tool_filter = _load_tool_filter()
-        allowed_ids = tool_filter[0] if tool_filter else None
-        display_names = tool_filter[1] if tool_filter else {}
+    # Load from boss_config.yaml if available
+    if config_path and config_path.exists():
+        try:
+            import yaml
 
-        tools = []
-        for tool_id, info in raw_tools.items():
-            if allowed_ids is not None and tool_id not in allowed_ids:
-                continue
-            name = display_names.get(tool_id) or tool_id.replace("_", " ").title()
-            tools.append({
-                "id": tool_id,
-                "name": name,
-                "description": info.get("description", ""),
-                "phases": info.get("phases", []),
-                "features": info.get("features", []),
-                "path": info.get("path", ""),
-                "implemented": bool(info.get("path")),
-            })
+            with open(config_path, encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
 
-        # Inject Cohort-native tools not in boss_config (e.g. llm_manager)
-        if allowed_ids is not None:
-            tools_cfg = _load_tools_config()
-            native_descriptions = tools_cfg.get("descriptions", {})
-            existing_ids = {t["id"] for t in tools}
-            for tid in allowed_ids:
-                if tid not in existing_ids:
-                    name = display_names.get(tid) or tid.replace("_", " ").title()
-                    tools.append({
-                        "id": tid,
-                        "name": name,
-                        "description": native_descriptions.get(tid, ""),
-                        "phases": [],
-                        "features": [],
-                        "path": "",
-                        "implemented": True,
-                    })
+            raw_tools = cfg.get("boss", {}).get("tools", {})
+            for tool_id, info in raw_tools.items():
+                if allowed_ids is not None and tool_id not in allowed_ids:
+                    continue
+                name = display_names.get(tool_id) or tool_id.replace("_", " ").title()
+                tools.append({
+                    "id": tool_id,
+                    "name": name,
+                    "description": info.get("description", ""),
+                    "phases": info.get("phases", []),
+                    "features": info.get("features", []),
+                    "path": info.get("path", ""),
+                    "implemented": bool(info.get("path")),
+                })
+        except Exception as exc:
+            logger.warning("Failed to load tools from boss_config.yaml: %s", exc)
 
-        # Preserve curated ordering from cohort_tools.json
-        if allowed_ids is not None:
-            order = {tid: i for i, tid in enumerate(allowed_ids)}
-            tools.sort(key=lambda t: order.get(t["id"], 999))
+    # Fill in any tools from cohort_tools.json not already loaded
+    if allowed_ids is not None:
+        existing_ids = {t["id"] for t in tools}
+        for tid in allowed_ids:
+            if tid not in existing_ids:
+                name = display_names.get(tid) or tid.replace("_", " ").title()
+                tools.append({
+                    "id": tid,
+                    "name": name,
+                    "description": native_descriptions.get(tid, ""),
+                    "phases": [],
+                    "features": [],
+                    "path": "",
+                    "implemented": True,
+                })
 
-        return JSONResponse({"tools": tools})
-    except Exception as exc:
-        logger.warning("Failed to load tools from boss_config.yaml: %s", exc)
-        return JSONResponse({"tools": []})
+    # Preserve curated ordering from cohort_tools.json
+    if allowed_ids is not None:
+        order = {tid: i for i, tid in enumerate(allowed_ids)}
+        tools.sort(key=lambda t: order.get(t["id"], 999))
+
+    return JSONResponse({"tools": tools})
 
 
 # =====================================================================
@@ -1082,6 +1096,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
         "admin_mode": settings.get("admin_mode", False),
+        "user_display_name": settings.get("user_display_name", ""),
     })
 
 
@@ -1110,6 +1125,9 @@ async def post_settings(request: Request) -> JSONResponse:
             settings["execution_backend"] = body["execution_backend"]
     if "admin_mode" in body:
         settings["admin_mode"] = bool(body["admin_mode"])
+    if "user_display_name" in body:
+        name = str(body["user_display_name"]).strip()[:40]
+        settings["user_display_name"] = name
 
     _save_settings(settings)
 
@@ -1831,6 +1849,268 @@ async def llm_delete_model(request: Request) -> JSONResponse:
 
 
 # =====================================================================
+# Tool Dashboard Data Endpoints
+# =====================================================================
+
+def _boss_data_dir() -> Path:
+    """Resolve BOSS data directory.  Tries (in order):
+    1. BOSS_DATA_DIR env var
+    2. Sibling G:/BOSS/data
+    3. ../../BOSS/data relative to cohort root
+    """
+    env = os.environ.get("BOSS_DATA_DIR")
+    if env:
+        p = Path(env)
+        if p.is_dir():
+            return p
+
+    for candidate in [Path("G:/BOSS/data"), Path(__file__).resolve().parent.parent.parent / "BOSS" / "data"]:
+        if candidate.is_dir():
+            return candidate
+
+    return Path("G:/BOSS/data")  # fallback even if missing
+
+
+def _read_json_safe(path: Path) -> dict | list | None:
+    """Read a JSON file, returning None on any error."""
+    try:
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return None
+
+
+async def get_health_monitor_state(request: Request) -> JSONResponse:
+    """GET /api/health-monitor/state -- return full health monitor state."""
+    state_path = _boss_data_dir() / "health_monitor" / "state.json"
+    data = _read_json_safe(state_path)
+    if data is None:
+        return JSONResponse({"error": "Health monitor state not available", "services": [], "alerts": {}})
+    return JSONResponse(data)
+
+
+async def get_health_monitor_alerts(request: Request) -> JSONResponse:
+    """GET /api/health-monitor/alerts -- return recent alerts from today's log."""
+    limit = int(request.query_params.get("limit", "20"))
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_path = _boss_data_dir() / "health_monitor" / "logs" / f"{today}_alerts.log"
+
+    alerts = []
+    try:
+        if log_path.exists():
+            with open(log_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    # Parse lines like: [2026-03-04 10:49:59] [!] ALERT: Service DOWN: SMACK Chat
+                    alerts.append({"raw": line})
+    except Exception:
+        pass
+
+    # Return last N alerts (newest last)
+    return JSONResponse({"alerts": alerts[-limit:], "date": today})
+
+
+async def get_scheduler_recent_runs(request: Request) -> JSONResponse:
+    """GET /api/scheduler/recent-runs -- return recent scheduler runs."""
+    task = request.query_params.get("task", "")
+    source = request.query_params.get("source", "scheduler")  # scheduler or content_monitor
+    limit = int(request.query_params.get("limit", "10"))
+
+    now = datetime.now()
+    month_str = now.strftime("%Y%m")
+
+    if source == "content_monitor":
+        runs_path = _boss_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
+    else:
+        runs_path = _boss_data_dir() / "scheduler_logs" / f"runs_{month_str}.json"
+
+    data = _read_json_safe(runs_path)
+    if not isinstance(data, list):
+        return JSONResponse({"runs": []})
+
+    if task:
+        data = [r for r in data if r.get("task") == task]
+
+    return JSONResponse({"runs": data[-limit:]})
+
+
+async def get_comms_recent_activity(request: Request) -> JSONResponse:
+    """GET /api/comms/recent-activity -- return recent outbound communication logs."""
+    limit = int(request.query_params.get("limit", "10"))
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_path = _boss_data_dir() / "comms_service" / "webhook_logs" / f"{today}.json"
+
+    data = _read_json_safe(log_path)
+    if not isinstance(data, list):
+        return JSONResponse({"activity": [], "date": today})
+
+    return JSONResponse({"activity": data[-limit:], "date": today})
+
+
+async def get_intel_recent_articles(request: Request) -> JSONResponse:
+    """GET /api/intel/recent-articles -- return recent tech intel articles."""
+    limit = int(request.query_params.get("limit", "10"))
+    db_path = _boss_data_dir() / "tech_intel" / "articles_db.json"
+
+    data = _read_json_safe(db_path)
+    if not isinstance(data, list):
+        return JSONResponse({"articles": []})
+
+    # Sort by date descending, return last N
+    try:
+        data.sort(key=lambda a: a.get("fetched_at", a.get("published", "")), reverse=True)
+    except Exception:
+        pass
+
+    return JSONResponse({"articles": data[:limit]})
+
+
+async def get_llm_running(request: Request) -> JSONResponse:
+    """GET /api/llm/running -- return currently loaded Ollama models (via /api/ps)."""
+    import urllib.request
+
+    try:
+        req = urllib.request.Request("http://127.0.0.1:11434/api/ps", method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+            models = body.get("models", [])
+            result = []
+            for m in models:
+                size_bytes = m.get("size", 0)
+                vram_bytes = m.get("size_vram", 0)
+                result.append({
+                    "name": m.get("name", ""),
+                    "size_bytes": size_bytes,
+                    "vram_bytes": vram_bytes,
+                    "expires_at": m.get("expires_at", ""),
+                })
+            return JSONResponse({"status": "up", "models": result})
+    except Exception:
+        return JSONResponse({"status": "down", "models": []})
+
+
+async def get_llm_model_info(request: Request) -> JSONResponse:
+    """GET /api/llm/model-info/{name} -- return Ollama model details."""
+    import urllib.request
+
+    model_name = request.path_params["name"]
+    try:
+        body = json.dumps({"model": model_name}).encode("utf-8")
+        req = urllib.request.Request(
+            "http://127.0.0.1:11434/api/show",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return JSONResponse({
+                "name": model_name,
+                "modelfile": data.get("modelfile", ""),
+                "parameters": data.get("parameters", ""),
+                "template": data.get("template", ""),
+                "details": data.get("details", {}),
+                "model_info": {k: v for k, v in data.get("model_info", {}).items()
+                               if not k.startswith("tokenizer")},
+            })
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def get_content_monitor_pipeline(request: Request) -> JSONResponse:
+    """GET /api/content-monitor/pipeline-status -- aggregated content pipeline stats."""
+    now = datetime.now()
+    month_str = now.strftime("%Y%m")
+    runs_path = _boss_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
+
+    data = _read_json_safe(runs_path)
+    if not isinstance(data, list):
+        return JSONResponse({"stages": {}})
+
+    # Group by task, find latest of each + today's totals
+    today_str = now.strftime("%Y-%m-%d")
+    stages = {}
+    for run in data:
+        task = run.get("task", "unknown")
+        ts = run.get("timestamp", "")
+        result = run.get("result", {})
+
+        if task not in stages:
+            stages[task] = {"last_run": ts, "today_count": 0, "last_result": result}
+        else:
+            if ts > stages[task]["last_run"]:
+                stages[task]["last_run"] = ts
+                stages[task]["last_result"] = result
+
+        if ts.startswith(today_str):
+            stages[task]["today_count"] += 1
+
+    return JSONResponse({"stages": stages})
+
+
+async def web_search_test(request: Request) -> JSONResponse:
+    """POST /api/web-search/test -- proxy a test search to the web search service."""
+    import urllib.request
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    query = body.get("query", "").strip()
+    if not query:
+        return JSONResponse({"error": "query is required"}, status_code=400)
+    limit = body.get("limit", 3)
+
+    try:
+        payload = json.dumps({"query": query, "limit": limit}).encode("utf-8")
+        req = urllib.request.Request(
+            "http://127.0.0.1:8005/search",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return JSONResponse(data)
+    except Exception as exc:
+        return JSONResponse({"error": f"Web search service unavailable: {exc}"})
+
+
+async def youtube_search_test(request: Request) -> JSONResponse:
+    """POST /api/youtube/test -- proxy a test search to the YouTube service."""
+    import urllib.request
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    query = body.get("query", "").strip()
+    if not query:
+        return JSONResponse({"error": "query is required"}, status_code=400)
+    limit = body.get("limit", 3)
+
+    try:
+        payload = json.dumps({"query": query, "max_results": limit}).encode("utf-8")
+        req = urllib.request.Request(
+            "http://127.0.0.1:8002/search",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return JSONResponse(data)
+    except Exception as exc:
+        return JSONResponse({"error": f"YouTube service unavailable: {exc}"})
+
+
+# =====================================================================
 # App factory
 # =====================================================================
 
@@ -1898,7 +2178,7 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     data_layer = CohortDataLayer(chat=_chat, agents=agents)
     _data_layer = data_layer
-    setup_socketio(data_layer, chat=_chat)
+    setup_socketio(data_layer, chat=_chat, agent_store=_agent_store)
 
     # -- Agent router (@mention -> agent response pipeline) -------------
     from cohort.agent_router import setup_agent_router, apply_settings as _apply_router_settings
@@ -1970,17 +2250,28 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/detect-claude", setup_detect_claude, methods=["POST"]),
         Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
         Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
-        # Roundtable endpoints
-        Route("/api/roundtable/sessions", list_roundtable_sessions, methods=["GET"]),
-        Route("/api/roundtable/setup-parse", roundtable_setup_parse, methods=["POST"]),
-        Route("/api/roundtable/start", start_roundtable, methods=["POST"]),
-        Route("/api/roundtable/{session_id}/status", get_roundtable_status, methods=["GET"]),
+        # Session endpoints (canonical)
+        Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
+        Route("/api/sessions/setup-parse", session_setup_parse, methods=["POST"]),
+        Route("/api/sessions/start", start_session_endpoint, methods=["POST"]),
+        Route("/api/sessions/{session_id}/status", get_session_status, methods=["GET"]),
+        Route("/api/sessions/{session_id}/next-speaker", get_next_speaker, methods=["GET"]),
+        Route("/api/sessions/{session_id}/record-turn", record_session_turn, methods=["POST"]),
+        Route("/api/sessions/{session_id}/pause", pause_session_endpoint, methods=["POST"]),
+        Route("/api/sessions/{session_id}/resume", resume_session_endpoint, methods=["POST"]),
+        Route("/api/sessions/{session_id}/end", end_session_endpoint, methods=["POST"]),
+        Route("/api/sessions/channel/{channel_id}", get_channel_session, methods=["GET"]),
+        # Deprecated aliases (roundtable -> sessions)
+        Route("/api/roundtable/sessions", list_sessions_endpoint, methods=["GET"]),
+        Route("/api/roundtable/setup-parse", session_setup_parse, methods=["POST"]),
+        Route("/api/roundtable/start", start_session_endpoint, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/status", get_session_status, methods=["GET"]),
         Route("/api/roundtable/{session_id}/next-speaker", get_next_speaker, methods=["GET"]),
-        Route("/api/roundtable/{session_id}/record-turn", record_roundtable_turn, methods=["POST"]),
-        Route("/api/roundtable/{session_id}/pause", pause_roundtable, methods=["POST"]),
-        Route("/api/roundtable/{session_id}/resume", resume_roundtable, methods=["POST"]),
-        Route("/api/roundtable/{session_id}/end", end_roundtable, methods=["POST"]),
-        Route("/api/roundtable/channel/{channel_id}", get_channel_roundtable, methods=["GET"]),
+        Route("/api/roundtable/{session_id}/record-turn", record_session_turn, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/pause", pause_session_endpoint, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/resume", resume_session_endpoint, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/end", end_session_endpoint, methods=["POST"]),
+        Route("/api/roundtable/channel/{channel_id}", get_channel_session, methods=["GET"]),
         # Tool dashboard endpoints
         Route("/api/service-status/{service_id}", get_service_status, methods=["GET"]),
         Route("/api/tool-config/{tool_id}/values", get_tool_config_values, methods=["GET"]),
@@ -1989,6 +2280,17 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/llm/models", llm_list_models, methods=["GET"]),
         Route("/api/llm/pull", llm_pull_model, methods=["POST"]),
         Route("/api/llm/models/{name:path}", llm_delete_model, methods=["DELETE"]),
+        Route("/api/llm/running", get_llm_running, methods=["GET"]),
+        Route("/api/llm/model-info/{name:path}", get_llm_model_info, methods=["GET"]),
+        # Tool data endpoints (read from BOSS data directory)
+        Route("/api/health-monitor/state", get_health_monitor_state, methods=["GET"]),
+        Route("/api/health-monitor/alerts", get_health_monitor_alerts, methods=["GET"]),
+        Route("/api/scheduler/recent-runs", get_scheduler_recent_runs, methods=["GET"]),
+        Route("/api/comms/recent-activity", get_comms_recent_activity, methods=["GET"]),
+        Route("/api/intel/recent-articles", get_intel_recent_articles, methods=["GET"]),
+        Route("/api/content-monitor/pipeline-status", get_content_monitor_pipeline, methods=["GET"]),
+        Route("/api/web-search/test", web_search_test, methods=["POST"]),
+        Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 

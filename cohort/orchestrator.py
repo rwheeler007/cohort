@@ -155,12 +155,12 @@ class Orchestrator:
     # SETUP HELPERS
     # =========================================================================
 
-    def suggest_roundtable_config(
+    def suggest_session_config(
         self,
         text: str,
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Parse natural language into roundtable configuration.
+        """Parse natural language into session configuration.
 
         Uses keyword extraction and stakeholder identification to suggest
         agents, topic, channel name, and max turns from a free-text
@@ -208,7 +208,7 @@ class Orchestrator:
         filler = re.compile(
             r"^(i want to|i need to|let's|lets|we need to|we should|"
             r"can we|could we|please|discuss|talk about|work on|"
-            r"figure out|review|set up a roundtable)\s+",
+            r"figure out|review|set up a roundtable|set up a session)\s+",
             re.IGNORECASE,
         )
         clean_topic = filler.sub("", topic).strip()
@@ -220,7 +220,7 @@ class Orchestrator:
 
         # Slugify for channel name
         slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:40]
-        channel_name = f"rt-{slug}"
+        channel_name = f"ds-{slug}"
 
         # Detect max_turns override ("30 turns", "max 50")
         max_turns = ctx.get("max_turns", 20)
@@ -252,6 +252,9 @@ class Orchestrator:
             "max_turns": max_turns,
             "keywords": keywords,
         }
+
+    # Deprecated alias
+    suggest_roundtable_config = suggest_session_config
 
     # =========================================================================
     # SESSION MANAGEMENT
@@ -302,10 +305,9 @@ class Orchestrator:
 
         self.sessions[session_id] = session
 
-        # Update channel to session mode
+        # Populate meeting context (enables scoring engine on this channel)
         channel = self.chat.get_channel(channel_id)
         if channel:
-            channel.mode = "meeting"
             channel.meeting_context = {
                 "session_id": session_id,
                 "stakeholder_status": active_participants,
@@ -386,10 +388,9 @@ class Orchestrator:
         session.state = SessionState.COMPLETED.value
         summary = self._generate_summary(session)
 
-        # Reset channel mode
+        # Clear meeting context (disables scoring engine on this channel)
         channel = self.chat.get_channel(session.channel_id)
         if channel:
-            channel.mode = "chat"
             channel.meeting_context = None
 
         # Post summary

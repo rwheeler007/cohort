@@ -59,13 +59,15 @@ _data_layer: Any = None
 _chat: Any = None
 _task_executor: Any = None
 _work_queue: Any = None
+_agent_store: Any = None
 
 
-def setup_socketio(data_layer: Any, chat: Any = None) -> None:
+def setup_socketio(data_layer: Any, chat: Any = None, agent_store: Any = None) -> None:
     """Wire the data layer into the Socket.IO event handlers."""
-    global _data_layer, _chat  # noqa: PLW0603
+    global _data_layer, _chat, _agent_store  # noqa: PLW0603
     _data_layer = data_layer
     _chat = chat or (data_layer.chat if data_layer else None)
+    _agent_store = agent_store
     logger.info("[OK] Socket.IO event layer initialised")
 
 
@@ -206,6 +208,36 @@ async def confirm_task(sid: str, data: dict) -> dict:
 
 
 # =====================================================================
+# Helpers
+# =====================================================================
+
+def _post_agent_greeting(agent_id: str, channel_id: str) -> None:
+    """Post a short greeting from the agent when a DM channel is first created."""
+    if _chat is None:
+        return
+
+    name = agent_id.replace("_", " ").title()
+    role = ""
+
+    if _agent_store is not None:
+        config = _agent_store.get(agent_id)
+        if config is not None:
+            name = getattr(config, "name", name) or name
+            role = getattr(config, "role", "") or ""
+
+    if role:
+        greeting = f"Hey! I'm **{name}** ({role}). How can I help?"
+    else:
+        greeting = f"Hey! I'm **{name}**. How can I help?"
+
+    _chat.post_message(
+        channel_id=channel_id,
+        sender=agent_id,
+        content=greeting,
+    )
+
+
+# =====================================================================
 # Client -> Server events: Chat
 # =====================================================================
 
@@ -231,11 +263,17 @@ async def join_channel(sid: str, data: dict | None = None) -> None:
         return
 
     # Auto-create channel if it doesn't exist (e.g. dm-<agent> from Chat button)
-    if _chat.get_channel(channel_id) is None:
+    is_new = _chat.get_channel(channel_id) is None
+    if is_new:
         _chat.create_channel(
             name=channel_id,
             description=f"Auto-created channel: {channel_id}",
         )
+
+        # Post a greeting from the agent in DM channels
+        if channel_id.startswith("dm-"):
+            agent_id = channel_id[3:]
+            _post_agent_greeting(agent_id, channel_id)
 
     # Join the Socket.IO room for this channel
     sio.enter_room(sid, channel_id)
@@ -283,6 +321,15 @@ async def send_message(sid: str, data: dict) -> dict:
 
     # Route @mentions to agent response pipeline
     mentions = msg.metadata.get("mentions", [])
+
+    # Auto-route in DM channels: if this is a dm-<agent> channel and the
+    # sender is a human (not the agent itself), inject the agent as a mention
+    # so the routing pipeline fires without requiring an explicit @mention.
+    if channel_id.startswith("dm-") and sender != "system":
+        dm_agent = channel_id[3:]  # strip "dm-" prefix
+        if dm_agent and dm_agent != sender and dm_agent not in mentions:
+            mentions = list(mentions) + [dm_agent]
+
     if mentions:
         from cohort.agent_router import route_mentions
         route_mentions(msg, mentions)

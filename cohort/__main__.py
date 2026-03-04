@@ -58,10 +58,9 @@ def _cmd_gate(args: argparse.Namespace) -> int:
     if channel is None:
         channel = Channel(
             id=args.channel, name=args.channel, description="",
-            created_at="", mode="meeting", meeting_context=meeting_ctx,
+            created_at="", meeting_context=meeting_ctx,
         )
     else:
-        channel.mode = "meeting"
         channel.meeting_context = meeting_ctx
 
     agent_config = agents[args.agent]

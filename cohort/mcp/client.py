@@ -233,19 +233,19 @@ class CohortClient:
                         matches.append(m)
         return matches[-limit:]
 
-    # -- roundtable ------------------------------------------------------
+    # -- sessions ----------------------------------------------------------
 
-    async def start_roundtable(
+    async def start_session(
         self,
         channel: str,
         agents: list[str],
         prompt: str,
         sender: str = "claude_code",
     ) -> dict[str, Any] | None:
-        """POST /api/roundtable/start -> start a roundtable session."""
+        """POST /api/sessions/start -> start a discussion session."""
         return await _request(
             "POST",
-            f"{self.base_url}/api/roundtable/start",
+            f"{self.base_url}/api/sessions/start",
             json_body={
                 "channel": channel,
                 "agents": agents,
@@ -254,14 +254,20 @@ class CohortClient:
             },
         )
 
-    async def get_roundtable_status(
+    # Deprecated alias
+    start_roundtable = start_session
+
+    async def get_session_status(
         self, session_id: str
     ) -> dict[str, Any] | None:
-        """GET /api/roundtable/{session_id}/status."""
+        """GET /api/sessions/{session_id}/status."""
         return await _request(
             "GET",
-            f"{self.base_url}/api/roundtable/{session_id}/status",
+            f"{self.base_url}/api/sessions/{session_id}/status",
         )
+
+    # Deprecated alias
+    get_roundtable_status = get_session_status
 
     # -- agent persona ---------------------------------------------------
 

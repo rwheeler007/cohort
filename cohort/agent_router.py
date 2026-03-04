@@ -40,8 +40,8 @@ RATE_LIMIT_SECONDS = 5
 MAX_RESPONSES_PER_MINUTE = 5
 MAX_CONVERSATION_DEPTH = 5
 RESPONSE_TIMEOUT = 300  # 5 min timeout for Claude CLI
-CONTEXT_HISTORY_LIMIT = 10
-CIRCUIT_BREAKER_CHAR_LIMIT = 15_000  # D5: reject prompts exceeding this
+CONTEXT_HISTORY_LIMIT = int(os.environ.get("COHORT_HISTORY_LIMIT", "50"))
+CIRCUIT_BREAKER_CHAR_LIMIT = int(os.environ.get("COHORT_CIRCUIT_BREAKER", "240000"))
 
 CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 
@@ -517,7 +517,7 @@ def build_channel_context(channel_id: str) -> str:
         parts.append("\n--- Recent Messages ---")
         for msg in messages:
             ts = msg.timestamp.split("T")[1][:8] if "T" in msg.timestamp else msg.timestamp
-            parts.append(f"[{ts}] {msg.sender}: {msg.content[:300]}")
+            parts.append(f"[{ts}] {msg.sender}: {msg.content[:2000]}")
 
     parts.append("=== END CHANNEL CONTEXT ===\n")
     return "\n".join(parts)
@@ -538,7 +538,7 @@ def _build_thread_context(thread_id: str, channel_id: str) -> str:
 
     parts = ["--- Thread Context ---"]
     for msg in thread_msgs:
-        parts.append(f"{msg.sender}: {msg.content[:300]}")
+        parts.append(f"{msg.sender}: {msg.content[:2000]}")
     parts.append("--- End Thread ---\n")
     return "\n".join(parts)
 
@@ -803,9 +803,9 @@ def _invoke_agent_sync(item: dict) -> None:
 
     # Chain routing: if the agent's response contains @mentions, queue those too
     channel = _chat.get_channel(channel_id) if _chat else None
-    is_roundtable = channel and getattr(channel, "mode", "chat") == "roundtable"
+    has_active_session = channel and getattr(channel, "meeting_context", None) is not None
 
-    if not is_roundtable:
+    if not has_active_session:
         chain_mentions = parse_mentions(response_content)
         for mentioned in chain_mentions:
             # Skip self-mentions and the original sender
@@ -859,9 +859,9 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
     sender = getattr(message, "sender", "")
     channel_id = getattr(message, "channel_id", "")
 
-    # Check roundtable gating
+    # Check session gating (scoring engine gates agents when a session is active)
     channel = _chat.get_channel(channel_id) if channel_id else None
-    is_roundtable = channel and getattr(channel, "mode", "chat") == "roundtable"
+    has_active_session = channel and getattr(channel, "meeting_context", None) is not None
 
     priority_boost = 0  # first mentioned agent gets a boost
     for mention in mentions:
@@ -890,8 +890,8 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
             logger.info("[*] Skipping @%s -- no prompt file", resolved)
             continue
 
-        # Roundtable gating (if orchestrator is wired up)
-        if is_roundtable and _orchestrator:
+        # Session gating (if orchestrator is wired up and session is active)
+        if has_active_session and _orchestrator:
             session = _orchestrator.get_session_for_channel(channel_id)
             if session:
                 should_respond, reason = _orchestrator.should_agent_respond(

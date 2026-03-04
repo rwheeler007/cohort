@@ -35,12 +35,12 @@ logger = logging.getLogger(__name__)
 # =========================================================================
 
 MAX_AGENTS = 8
-TOKEN_BUDGET = 28000  # leave ~4K for output in 32K window
+TOKEN_BUDGET = 120_000  # ~120K input tokens; fits qwen3.5:9b's 262K with room for output
 CHARS_PER_TOKEN = 4
 DEFAULT_TEMPERATURE = 0.30
 DEFAULT_TIMEOUT = 180
-DEFAULT_NUM_PREDICT = 4096
-DEFAULT_NUM_CTX = 32768
+DEFAULT_NUM_PREDICT = 8192
+DEFAULT_NUM_CTX = 131_072  # 128K context — safe middle ground for 262K model
 
 
 # =========================================================================
@@ -141,7 +141,7 @@ def build_compiled_prompt(
 
     # Build system prompt
     system_parts = [
-        f"You are simulating a focused roundtable discussion between {len(agents)} specialist agents.",
+        f"You are simulating a focused multi-agent discussion between {len(agents)} specialist agents.",
         "Each agent has a distinct role, personality, and expertise. Stay in character for each one.",
         "Format every response block EXACTLY as shown:",
         "",
@@ -275,7 +275,7 @@ def parse_compiled_response(
     for agent_id in expected_agents:
         if agent_id not in agent_responses:
             logger.warning(
-                "[COMPILED-RT] Agent '%s' not found in response.",
+                "[COMPILED-DS] Agent '%s' not found in response.",
                 agent_id,
             )
 
@@ -390,7 +390,7 @@ def run_compiled_roundtable(
         )
 
     logger.info(
-        "[COMPILED-RT] Starting: %d agents, ~%d input tokens, model=%s",
+        "[COMPILED-DS] Starting: %d agents, ~%d input tokens, model=%s",
         len(agents), token_est, model or "auto",
     )
 
@@ -418,7 +418,7 @@ def run_compiled_roundtable(
     metadata["response_chars"] = len(response_text)
 
     logger.info(
-        "[COMPILED-RT] Done: %d/%d agents parsed, synthesis=%s, %dms",
+        "[COMPILED-DS] Done: %d/%d agents parsed, synthesis=%s, %dms",
         len(agent_responses), len(agents),
         "yes" if synthesis else "no",
         metadata.get("latency_ms", 0),

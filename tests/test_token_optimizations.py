@@ -5,7 +5,7 @@ Covers:
   D2: Persona loader with fallback chain
   D3: Light/heavy mode in prompt construction
   D4: COHORT_FULL_PROMPT env var escape hatch
-  D5: Circuit breaker at 15,000 chars
+  D5: Circuit breaker at 240,000 chars (sized for qwen3.5:9b 262K context)
   D6: Sliding window context truncation
   D7: Path traversal sanitization
 """
@@ -114,7 +114,7 @@ def test_circuit_breaker_constant_exists() -> None:
     """CIRCUIT_BREAKER_CHAR_LIMIT is defined in agent_router."""
     import cohort.agent_router as router_mod
     assert hasattr(router_mod, "CIRCUIT_BREAKER_CHAR_LIMIT")
-    assert router_mod.CIRCUIT_BREAKER_CHAR_LIMIT == 15_000
+    assert router_mod.CIRCUIT_BREAKER_CHAR_LIMIT == 240_000
 
 
 # =====================================================================

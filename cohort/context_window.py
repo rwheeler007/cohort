@@ -7,11 +7,13 @@ first while preserving the most recent ones.
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
-# Default budget: ~750 tokens at ~4 chars/token
-DEFAULT_CHAR_BUDGET = 3000
-DEFAULT_KEEP_RECENT = 5
+# Budget sized for qwen3.5:9b (262K context). 120K chars ~ 30K tokens,
+# leaving ample room for system prompt + persona + output.
+DEFAULT_CHAR_BUDGET = int(os.environ.get("COHORT_CHAR_BUDGET", "120000"))
+DEFAULT_KEEP_RECENT = int(os.environ.get("COHORT_KEEP_RECENT", "20"))
 
 
 def truncate_context(

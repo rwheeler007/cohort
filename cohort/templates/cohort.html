@@ -117,8 +117,8 @@
                 <div class="sidebar-nav__section open" data-section="sessions">
                     <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('sessions')">
                         <span class="sidebar-nav__toggle">></span>
-                        <h2 class="sidebar-nav__title">Roundtable Sessions</h2>
-                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Start roundtable" onclick="event.stopPropagation()">+</button>
+                        <h2 class="sidebar-nav__title">Sessions</h2>
+                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Start session" onclick="event.stopPropagation()">+</button>
                     </div>
                     <ul class="sidebar-nav__section-body sidebar-nav__sessions" id="session-list">
                         <!-- Sessions populated by JS -->
@@ -363,6 +363,20 @@
             </header>
             <div class="modal__body">
                 <form id="settings-form">
+                    <!-- User Identity -->
+                    <div class="settings-section">
+                        <h3 class="settings-section__title">Your Identity</h3>
+                        <p class="settings-section__desc">
+                            Your name as shown in chat. AI agents are labeled by their role &mdash;
+                            this keeps the distinction clear between human operators and AI assistants.
+                        </p>
+                        <div class="form-group">
+                            <label for="settings-user-name">Display Name</label>
+                            <input type="text" class="form-input" id="settings-user-name"
+                                   placeholder="Your name" maxlength="40">
+                        </div>
+                    </div>
+
                     <!-- API Key Section -->
                     <div class="settings-section">
                         <h3 class="settings-section__title">Anthropic API Key</h3>

@@ -1324,15 +1324,15 @@ async def cohort_assign_task(params: AssignTaskInput) -> str:
 
 
 # =====================================================================
-# Tool 18: cohort_roundtable
+# Tool 18: cohort_discussion (was cohort_roundtable)
 # =====================================================================
 
-class RoundtableInput(BaseModel):
-    """Input for running a roundtable discussion."""
+class DiscussionInput(BaseModel):
+    """Input for running a multi-agent discussion."""
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     channel: str = Field(
-        ..., description="Channel ID to run the roundtable in.",
+        ..., description="Channel ID to run the discussion in.",
         min_length=1, max_length=100,
     )
     agents: List[str] = Field(
@@ -1353,22 +1353,26 @@ class RoundtableInput(BaseModel):
     )
 
 
+# Deprecated alias
+RoundtableInput = DiscussionInput
+
+
 @mcp.tool(
-    name="cohort_roundtable",
+    name="cohort_discussion",
     annotations={
-        "title": "Roundtable Discussion",
+        "title": "Multi-Agent Discussion",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": False,
     },
 )
-async def cohort_roundtable(params: RoundtableInput) -> str:
-    """Run a roundtable discussion across multiple agents.
+async def cohort_discussion(params: DiscussionInput) -> str:
+    """Run a discussion across multiple agents.
 
-    Posts the prompt with @mentions to the channel, starts a roundtable
-    session via the Cohort server, and returns the session details.
-    Agents respond asynchronously through the server's orchestrator.
+    Posts the prompt with @mentions to the channel, starts a session
+    via the Cohort server, and returns the session details.
+    Agents respond sequentially through the server's orchestrator.
     """
     import asyncio
 
@@ -1381,8 +1385,8 @@ async def cohort_roundtable(params: RoundtableInput) -> str:
     if post_result is None:
         return _error_msg(service_down=True)
 
-    # Start the roundtable session
-    result = await _client.start_roundtable(
+    # Start the session
+    result = await _client.start_session(
         channel=params.channel,
         agents=params.agents,
         prompt=params.prompt,
@@ -1391,7 +1395,7 @@ async def cohort_roundtable(params: RoundtableInput) -> str:
     if result is None:
         return _error_msg(service_down=True)
     if not result.get("success") and not result.get("session_id"):
-        return f"Error starting roundtable: {result.get('error', 'Unknown')}"
+        return f"Error starting session: {result.get('error', 'Unknown')}"
 
     session_id = result.get("session_id", "?")
 
@@ -1399,7 +1403,7 @@ async def cohort_roundtable(params: RoundtableInput) -> str:
     final_status = None
     for _ in range(params.timeout_per_agent // 5):
         await asyncio.sleep(5)
-        status = await _client.get_roundtable_status(session_id)
+        status = await _client.get_session_status(session_id)
         if status is None:
             continue
         state = status.get("status") or status.get("state", "")
@@ -1416,7 +1420,7 @@ async def cohort_roundtable(params: RoundtableInput) -> str:
     # Format results
     if final_status:
         turns = final_status.get("turns", [])
-        lines = [f"## Roundtable in #{params.channel} ({len(turns)} responses)"]
+        lines = [f"## Discussion in #{params.channel} ({len(turns)} responses)"]
         for turn in turns:
             agent = turn.get("agent_id", "unknown")
             content = (turn.get("content") or turn.get("response") or "")[:2000]
@@ -1427,9 +1431,13 @@ async def cohort_roundtable(params: RoundtableInput) -> str:
         return result_text
 
     return (
-        f"Roundtable started (session: {session_id}) but timed out waiting for responses. "
+        f"Discussion started (session: {session_id}) but timed out waiting for responses. "
         f"Check #{params.channel} for agent replies."
     )
+
+
+# Deprecated alias
+cohort_roundtable = cohort_discussion
 
 
 # =====================================================================
@@ -1718,11 +1726,11 @@ async def cohort_partnership_graph(params: PartnershipGraphInput) -> str:
 
 
 # =====================================================================
-# Tool: cohort_compiled_roundtable
+# Tool: cohort_compiled_discussion (was cohort_compiled_roundtable)
 # =====================================================================
 
-class CompiledRoundtableInput(BaseModel):
-    """Input for compiled (single-call) roundtable discussion."""
+class CompiledDiscussionInput(BaseModel):
+    """Input for compiled (single-call) multi-agent discussion."""
     model_config = ConfigDict(extra="forbid")
 
     agents: List[str] = Field(
@@ -1759,18 +1767,22 @@ class CompiledRoundtableInput(BaseModel):
     )
 
 
+# Deprecated alias
+CompiledRoundtableInput = CompiledDiscussionInput
+
+
 @mcp.tool(
-    name="cohort_compiled_roundtable",
+    name="cohort_compiled_discussion",
     annotations={
-        "title": "Compiled Roundtable (Single-Call)",
+        "title": "Compiled Discussion (Single-Call)",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": True,
     },
 )
-async def cohort_compiled_roundtable(params: CompiledRoundtableInput) -> str:
-    """Run a compiled roundtable: all agent personas in a single LLM call.
+async def cohort_compiled_discussion(params: CompiledDiscussionInput) -> str:
+    """Run a compiled discussion: all agent personas in a single LLM call.
 
     ~90% token reduction vs separate per-agent calls. Best for 3-8 agent
     planning/review discussions. Uses local Ollama inference.
@@ -1790,11 +1802,11 @@ async def cohort_compiled_roundtable(params: CompiledRoundtableInput) -> str:
     )
 
     if result.error:
-        return f"Compiled roundtable failed: {result.error}"
+        return f"Compiled discussion failed: {result.error}"
 
     # Format output
     lines = [
-        f"## Compiled Roundtable ({len(result.agent_responses)}/{len(params.agents)} agents)",
+        f"## Compiled Discussion ({len(result.agent_responses)}/{len(params.agents)} agents)",
     ]
 
     if result.metadata:
@@ -1821,7 +1833,7 @@ async def cohort_compiled_roundtable(params: CompiledRoundtableInput) -> str:
         if result.synthesis:
             await _client.post_message(
                 params.channel, params.sender,
-                f"**Roundtable Synthesis:**\n{result.synthesis}",
+                f"**Discussion Synthesis:**\n{result.synthesis}",
             )
         lines.append(f"\n*Results posted to #{params.channel}*")
 
@@ -1834,6 +1846,10 @@ async def cohort_compiled_roundtable(params: CompiledRoundtableInput) -> str:
     if len(output) > CHARACTER_LIMIT:
         output = output[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
     return output
+
+
+# Deprecated alias
+cohort_compiled_roundtable = cohort_compiled_discussion
 
 
 # =====================================================================

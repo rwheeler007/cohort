@@ -137,6 +137,7 @@ function initDom() {
         settingsExecBackend: $('#settings-exec-backend'),
         settingsConnectionDot: $('#settings-connection-dot'),
         settingsConnectionText: $('#settings-connection-text'),
+        settingsUserName: $('#settings-user-name'),
         testConnectionBtn: $('#test-connection-btn'),
         toggleApiKeyVis: $('#toggle-api-key-vis'),
 
@@ -317,6 +318,30 @@ async function fetchAgentRegistry() {
     }
 }
 
+/** Apply the user's display name to the 'user' profile in the agent registry. */
+function applyUserDisplayName(displayName) {
+    if (!displayName) return;
+    if (!state.agentProfiles['user']) {
+        state.agentProfiles['user'] = {
+            name: displayName,
+            nickname: displayName,
+            avatar: displayName.substring(0, 2).toUpperCase(),
+            color: '#95E1D3',
+            role: 'Operator',
+            group: 'Operators',
+        };
+    } else {
+        state.agentProfiles['user'].name = displayName;
+        state.agentProfiles['user'].nickname = displayName;
+        state.agentProfiles['user'].avatar = displayName.substring(0, 2).toUpperCase();
+    }
+    // Re-render if currently viewing a channel (so existing messages update)
+    if (state.currentChannel) {
+        renderMessages();
+        updateParticipants();
+    }
+}
+
 // =====================================================================
 // Message formatting
 // =====================================================================
@@ -470,7 +495,7 @@ function renderMessages() {
 
             roundtableCard = `
                 <div class="roundtable-setup-card">
-                    <div class="roundtable-setup-card__header">Roundtable Ready</div>
+                    <div class="roundtable-setup-card__header">Session Ready</div>
                     <div class="roundtable-setup-card__fields">
                         <div class="roundtable-setup-card__field"><strong>Topic:</strong> ${escapeHtml(rtFields.topic || '')}</div>
                         <div class="roundtable-setup-card__field"><strong>Channel:</strong> <code>${escapeHtml(rtFields.channel || '')}</code></div>
@@ -478,7 +503,7 @@ function renderMessages() {
                         <div class="roundtable-setup-card__field"><strong>Max Turns:</strong> ${escapeHtml(rtFields.turns || '20')}</div>
                     </div>
                     <div class="roundtable-setup-card__actions">
-                        <button class="btn btn--primary btn--small" onclick="confirmRoundtableSetup(window._pendingRoundtables['${rtDataId}'])">Start Roundtable</button>
+                        <button class="btn btn--primary btn--small" onclick="confirmRoundtableSetup(window._pendingRoundtables['${rtDataId}'])">Start Session</button>
                     </div>
                 </div>`;
         }
@@ -581,7 +606,7 @@ function renderSidebarTasks() {
 
 async function fetchSessions() {
     try {
-        const resp = await fetch('/api/roundtable/sessions');
+        const resp = await fetch('/api/sessions/sessions');
         if (!resp.ok) return;
         const data = await resp.json();
         state.sessions = data.sessions || [];
@@ -599,7 +624,7 @@ function renderSidebarSessions() {
     const activeSessions = sessions.filter(s => s.state !== 'completed');
 
     if (activeSessions.length === 0) {
-        dom.sidebarSessionList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active roundtables</li>';
+        dom.sidebarSessionList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active sessions</li>';
         return;
     }
 
@@ -629,7 +654,7 @@ function renderSidebarSessions() {
 // Roundtable guided setup
 // =====================================================================
 
-const ROUNDTABLE_SETUP_CHANNEL = 'roundtable-setup';
+const SESSION_SETUP_CHANNEL = 'session-setup';
 
 // Current pending roundtable config (updated as user refines)
 let pendingRoundtableConfig = null;
@@ -641,10 +666,10 @@ function startRoundtableSetup() {
     // Post greeting as system message (auto-creates channel)
     if (state.socket && state.connected) {
         state.socket.emit('send_message', {
-            channel_id: ROUNDTABLE_SETUP_CHANNEL,
+            channel_id: SESSION_SETUP_CHANNEL,
             sender: 'system',
             content: (
-                '**Roundtable Setup**\n\n' +
+                '**Session Setup**\n\n' +
                 'What would you like to discuss? Describe the topic naturally ' +
                 'and I\'ll suggest the right agents and set everything up.\n\n' +
                 '*Example: "Review our API authentication design with the security and python teams"*'
@@ -654,7 +679,7 @@ function startRoundtableSetup() {
         // Give server a moment to create channel, then switch
         state.socket.emit('get_channels', {});
         setTimeout(() => {
-            switchChannel(ROUNDTABLE_SETUP_CHANNEL);
+            switchChannel(SESSION_SETUP_CHANNEL);
         }, 400);
     }
 
@@ -664,7 +689,7 @@ function startRoundtableSetup() {
 async function handleRoundtableSetupMessage(content) {
     // Parse user's message into roundtable config
     try {
-        const resp = await fetch('/api/roundtable/setup-parse', {
+        const resp = await fetch('/api/sessions/setup-parse', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -697,28 +722,28 @@ async function handleRoundtableSetupMessage(content) {
             `**Agents:** ${agentList}\n` +
             `**Max Turns:** ${cfg.max_turns}\n\n` +
             `_You can refine this — try "add web_developer" or "make it 30 turns". ` +
-            `Or click **Start Roundtable** below when ready._`
+            `Or click **Start Session** below when ready._`
         );
 
         state.socket.emit('send_message', {
-            channel_id: ROUNDTABLE_SETUP_CHANNEL,
+            channel_id: SESSION_SETUP_CHANNEL,
             sender: 'system',
             content: cardContent,
         });
     } catch (err) {
-        console.warn('Roundtable setup parse failed:', err);
+        console.warn('Session setup parse failed:', err);
     }
 }
 
 async function confirmRoundtableSetup(configOverride) {
     const cfg = configOverride || pendingRoundtableConfig;
     if (!cfg) {
-        showToast('No roundtable configuration ready', 'warning');
+        showToast('No session configuration ready', 'warning');
         return;
     }
 
     try {
-        const resp = await fetch('/api/roundtable/start', {
+        const resp = await fetch('/api/sessions/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -732,16 +757,16 @@ async function confirmRoundtableSetup(configOverride) {
         if (data.success) {
             // Clean up setup channel
             deleteSetupChannel();
-            showToast('Roundtable started!', 'success');
+            showToast('Session started!', 'success');
             fetchSessions();
             // Switch to the new session channel
             state.socket.emit('get_channels', {});
             setTimeout(() => switchChannel(cfg.channel_name), 500);
         } else {
-            showToast(data.error || 'Failed to start roundtable', 'error');
+            showToast(data.error || 'Failed to start session', 'error');
         }
     } catch (err) {
-        showToast('Error starting roundtable: ' + err.message, 'error');
+        showToast('Error starting session:' + err.message, 'error');
     }
 
     pendingRoundtableConfig = null;
@@ -749,8 +774,8 @@ async function confirmRoundtableSetup(configOverride) {
 
 function deleteSetupChannel() {
     // Remove from local state (server auto-created it, we just stop showing it)
-    state.channels = state.channels.filter(ch => (ch.id || ch.name) !== ROUNDTABLE_SETUP_CHANNEL);
-    delete state.messages[ROUNDTABLE_SETUP_CHANNEL];
+    state.channels = state.channels.filter(ch => (ch.id || ch.name) !== SESSION_SETUP_CHANNEL);
+    delete state.messages[SESSION_SETUP_CHANNEL];
     renderChannels();
     renderFolders();
 }
@@ -946,6 +971,126 @@ function configSection(title, cardsHtml) {
             <h3 class="tool-config-section__title">${escapeHtml(title)}</h3>
             <div class="tool-config-grid">${cardsHtml}</div>
         </div>`;
+}
+
+function configSectionFull(title, contentHtml) {
+    return `
+        <div class="tool-config-section">
+            <h3 class="tool-config-section__title">${escapeHtml(title)}</h3>
+            <div class="tool-config-grid--full">${contentHtml}</div>
+        </div>`;
+}
+
+/* ── Interactive tool components ── */
+
+function statCard(label, value, opts = {}) {
+    const cls = opts.color ? ` tool-stat-card__value--${opts.color}` : '';
+    const sub = opts.subtitle ? `<p class="tool-stat-card__sub">${escapeHtml(opts.subtitle)}</p>` : '';
+    return `<div class="tool-stat-card">
+        <p class="tool-stat-card__value${cls}">${escapeHtml(String(value))}</p>
+        <p class="tool-stat-card__label">${escapeHtml(label)}</p>
+        ${sub}
+    </div>`;
+}
+
+function statRow(cards) {
+    return `<div class="tool-stat-row">${cards}</div>`;
+}
+
+function statusGrid(items) {
+    if (!items || items.length === 0) return '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm);font-style:italic">No data available</p>';
+    return `<div class="tool-status-grid">${items.map(i => {
+        const dotCls = i.status || 'unknown';
+        const detail = i.detail ? `<span class="tool-status-item__detail">${escapeHtml(i.detail)}</span>` : '';
+        return `<div class="tool-status-item">
+            <span class="tool-status-item__dot tool-status-item__dot--${dotCls}"></span>
+            <span class="tool-status-item__name">${escapeHtml(i.name)}</span>
+            ${detail}
+        </div>`;
+    }).join('')}</div>`;
+}
+
+function activityLog(items, opts = {}) {
+    if (!items || items.length === 0) {
+        return `<div class="tool-activity-log"><div class="tool-activity-log__empty">${escapeHtml(opts.emptyMsg || 'No recent activity')}</div></div>`;
+    }
+    return `<div class="tool-activity-log">${items.map(i => {
+        const dotCls = i.status || 'info';
+        const clickable = i.detail ? ' tool-activity-log__item--clickable' : '';
+        const onclick = i.detail ? ' onclick="this.classList.toggle(\'tool-activity-log__item--expanded\')"' : '';
+        const detail = i.detail ? `<div class="tool-activity-log__detail">${escapeHtml(i.detail)}</div>` : '';
+        return `<div class="tool-activity-log__item${clickable}"${onclick}>
+            <span class="tool-activity-log__time">${escapeHtml(i.time || '')}</span>
+            <span class="tool-activity-log__dot tool-activity-log__dot--${dotCls}"></span>
+            <span class="tool-activity-log__msg">${escapeHtml(i.message || '')}${detail}</span>
+        </div>`;
+    }).join('')}</div>`;
+}
+
+function progressBar(current, max, opts = {}) {
+    const pct = max > 0 ? Math.min(100, Math.round((current / max) * 100)) : 0;
+    const colorCls = pct > 90 ? ' tool-progress__fill--error' : pct > 70 ? ' tool-progress__fill--warning' : ' tool-progress__fill--success';
+    const label = opts.label || '';
+    return `<div class="tool-progress">
+        <div class="tool-progress__label">
+            <span>${escapeHtml(label)}</span>
+            <span>${current} / ${max}${opts.suffix ? ' ' + escapeHtml(opts.suffix) : ''}</span>
+        </div>
+        <div class="tool-progress__bar">
+            <div class="tool-progress__fill${colorCls}" style="width:${pct}%"></div>
+        </div>
+    </div>`;
+}
+
+function actionButton(label, onclick, opts = {}) {
+    const disabled = opts.disabled ? ' disabled' : '';
+    const id = opts.id ? ` id="${escapeHtml(opts.id)}"` : '';
+    return `<button class="btn--tool-action"${id}${disabled} onclick="${escapeHtml(onclick)}">${escapeHtml(label)}</button>`;
+}
+
+function expandableRow(summary, detailHtml) {
+    return `<div class="tool-expandable">
+        <div class="tool-expandable__header" onclick="this.parentElement.classList.toggle('tool-expandable--open')">
+            <span class="tool-expandable__chevron">[>]</span>
+            <span>${escapeHtml(summary)}</span>
+        </div>
+        <div class="tool-expandable__body">${detailHtml}</div>
+    </div>`;
+}
+
+function alertBadge(level, text) {
+    const cls = level === 'critical' || level === 'error' ? 'critical' : level === 'warning' ? 'warning' : 'ok';
+    return `<span class="tool-alert-badge tool-alert-badge--${cls}">${escapeHtml(text || level)}</span>`;
+}
+
+function tryItBox(placeholder, toolId, searchFn) {
+    return `<div class="tool-try-it">
+        <div class="tool-try-it__form">
+            <input type="text" class="tool-try-it__input" id="${toolId}-try-input" placeholder="${escapeHtml(placeholder)}"
+                onkeydown="if(event.key==='Enter'){${searchFn}()}">
+            <button class="btn btn--primary btn--sm" onclick="${searchFn}()">Search</button>
+        </div>
+        <div class="tool-try-it__results" id="${toolId}-try-results"></div>
+    </div>`;
+}
+
+function timeAgo(isoStr) {
+    if (!isoStr) return '--';
+    const d = new Date(isoStr);
+    const now = new Date();
+    const secs = Math.floor((now - d) / 1000);
+    if (secs < 60) return 'just now';
+    if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+    if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+    return Math.floor(secs / 86400) + 'd ago';
+}
+
+function fmtTime(isoStr) {
+    if (!isoStr) return '--';
+    try {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch { return '--'; }
 }
 
 /* ── Inline config card editing ── */
@@ -1231,11 +1376,42 @@ function renderGenericToolPanel(tool) {
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_PRESETS = ['Weekdays', 'Daily', 'Weekends'];
 
+/* ── Email & Calendar ── */
+
 async function renderCommsPanel(tool) {
     const status = await fetchServiceStatus('comms_service');
     const tid = 'comms_service';
+
+    // Fetch recent activity in parallel
+    let activityHtml = '';
+    try {
+        const resp = await fetch('/api/comms/recent-activity?limit=8');
+        const data = await resp.json();
+        const items = (data.activity || []).reverse().map(a => {
+            const failed = (a.channels_failed || []).length > 0;
+            return {
+                time: fmtTime(a.timestamp),
+                status: failed ? 'error' : 'success',
+                message: (a.title || a.message || '').substring(0, 80),
+                detail: `Agent: ${a.agent_id || 'unknown'}\nChannels: ${(a.channels_sent || []).join(', ') || 'none'}\n\n${a.message || ''}`,
+            };
+        });
+
+        const sent = (data.activity || []).filter(a => (a.channels_sent || []).length > 0).length;
+        const failed = (data.activity || []).filter(a => (a.channels_failed || []).length > 0).length;
+
+        activityHtml = statRow(
+            statCard('Sent Today', sent, { color: 'success' }) +
+            statCard('Failed', failed, { color: failed > 0 ? 'error' : 'success' }) +
+            statCard('Total', (data.activity || []).length)
+        ) + configSectionFull('Recent Activity', activityLog(items, { emptyMsg: 'No outbound messages today' }));
+    } catch {
+        activityHtml = configSectionFull('Recent Activity', activityLog([], { emptyMsg: 'Could not load activity data' }));
+    }
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
+        ${activityHtml}
         ${configSection('Services',
             configAdminSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
             configAdminSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
@@ -1250,11 +1426,14 @@ async function renderCommsPanel(tool) {
     showToolHelpChat(tid);
 }
 
+/* ── Web Search ── */
+
 async function renderWebSearchPanel(tool) {
     const status = await fetchServiceStatus('web_search');
     const tid = 'web_search';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSectionFull('Try It', tryItBox('Search the web...', 'web_search', 'tryWebSearch'))}
         ${configSection('Configuration',
             configAdminSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider')
         )}
@@ -1267,11 +1446,42 @@ async function renderWebSearchPanel(tool) {
     showToolHelpChat(tid);
 }
 
+async function tryWebSearch() {
+    const input = $('#web_search-try-input');
+    const results = $('#web_search-try-results');
+    if (!input || !input.value.trim()) return;
+    results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching...</p>';
+    try {
+        const resp = await fetch('/api/web-search/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: input.value.trim(), limit: 3 }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+            results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">${escapeHtml(data.error)}</p>`;
+        } else if ((data.results || []).length === 0) {
+            results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
+        } else {
+            results.innerHTML = data.results.map(r => `
+                <div class="tool-try-it__result-item">
+                    <div class="tool-try-it__result-title"><a href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a></div>
+                    <div class="tool-try-it__result-snippet">${escapeHtml(r.snippet || '')}</div>
+                </div>`).join('');
+        }
+    } catch (err) {
+        results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Search failed: ${escapeHtml(err.message)}</p>`;
+    }
+}
+
+/* ── YouTube ── */
+
 async function renderYouTubePanel(tool) {
     const status = await fetchServiceStatus('youtube_service');
     const tid = 'youtube_service';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
+        ${configSectionFull('Try It', tryItBox('Search YouTube videos...', 'youtube', 'tryYouTubeSearch'))}
         ${configSection('Rate Limits',
             configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
             configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day') +
@@ -1287,10 +1497,88 @@ async function renderYouTubePanel(tool) {
     showToolHelpChat(tid);
 }
 
+async function tryYouTubeSearch() {
+    const input = $('#youtube-try-input');
+    const results = $('#youtube-try-results');
+    if (!input || !input.value.trim()) return;
+    results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching...</p>';
+    try {
+        const resp = await fetch('/api/youtube/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: input.value.trim(), limit: 3 }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+            results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">${escapeHtml(data.error)}</p>`;
+        } else if ((data.results || []).length === 0) {
+            results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
+        } else {
+            results.innerHTML = data.results.map(r => `
+                <div class="tool-try-it__result-item">
+                    <div class="tool-try-it__result-title"><a href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a></div>
+                    <div class="tool-try-it__result-snippet">${escapeHtml(r.channel || '')}${r.duration ? ' -- ' + escapeHtml(r.duration) : ''}</div>
+                </div>`).join('');
+        }
+    } catch (err) {
+        results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Search failed: ${escapeHtml(err.message)}</p>`;
+    }
+}
+
+/* ── RSS & News Monitoring ── */
+
 async function renderRSSPanel(tool) {
     const tid = 'intel_scheduler';
+
+    // Fetch live data in parallel
+    let runsData = { runs: [] };
+    let articlesData = { articles: [] };
+    try {
+        const [runsResp, articlesResp] = await Promise.all([
+            fetch('/api/scheduler/recent-runs?task=rss_fetch&limit=7&source=scheduler'),
+            fetch('/api/intel/recent-articles?limit=5'),
+        ]);
+        runsData = await runsResp.json();
+        articlesData = await articlesResp.json();
+    } catch {}
+
+    const runs = runsData.runs || [];
+    const lastRun = runs.length > 0 ? runs[runs.length - 1] : null;
+    const articles = articlesData.articles || [];
+
+    // Stats from last run
+    const lastRunResult = lastRun ? (lastRun.result || {}) : {};
+    const statsHtml = statRow(
+        statCard('Last Run', lastRun ? timeAgo(lastRun.timestamp) : '--', { subtitle: lastRun ? (lastRunResult.status || '') : 'No runs found' }) +
+        statCard('Articles Found', lastRunResult.new_articles != null ? lastRunResult.new_articles : '--') +
+        statCard('Feeds Processed', lastRunResult.feeds_processed != null ? lastRunResult.feeds_processed : '--') +
+        statCard('Errors', lastRunResult.errors ? lastRunResult.errors.length : 0, { color: (lastRunResult.errors || []).length > 0 ? 'error' : 'success' })
+    );
+
+    // Run history as activity log
+    const runItems = runs.reverse().map(r => {
+        const res = r.result || {};
+        return {
+            time: fmtTime(r.timestamp),
+            status: res.status === 'completed' ? 'success' : res.status === 'error' ? 'error' : 'info',
+            message: `${res.feeds_processed || 0} feeds, ${res.new_articles || 0} new articles`,
+            detail: (res.errors || []).length > 0 ? 'Errors:\n' + res.errors.join('\n') : null,
+        };
+    });
+
+    // Recent articles
+    const articleItems = articles.map(a => ({
+        time: fmtTime(a.fetched_at || a.published || ''),
+        status: 'info',
+        message: a.title || a.url || 'Untitled',
+        detail: a.url ? `Source: ${a.source_feed || 'unknown'}\nScore: ${a.relevance_score != null ? a.relevance_score : '--'}\nURL: ${a.url}` : null,
+    }));
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${statsHtml}
+        ${configSectionFull('Run History', activityLog(runItems, { emptyMsg: 'No recent runs' }))}
+        ${configSectionFull('Recent Articles', activityLog(articleItems, { emptyMsg: 'No recent articles' }))}
         ${configSection('RSS Fetch',
             configNumber('Interval', 4, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
             configNumber('Window Start', 8, 0, 23, tid, 'fetch_window_start', ':00') +
@@ -1317,10 +1605,44 @@ async function renderRSSPanel(tool) {
     showToolHelpChat(tid);
 }
 
+/* ── Social Media & Marketing ── */
+
 async function renderContentMonitorPanel(tool) {
     const tid = 'content_monitor_scheduler';
+
+    // Fetch pipeline status
+    let pipelineData = { stages: {} };
+    try {
+        const resp = await fetch('/api/content-monitor/pipeline-status');
+        pipelineData = await resp.json();
+    } catch {}
+
+    const stages = pipelineData.stages || {};
+    const fetchStage = stages.rss_fetch || {};
+    const analysisStage = stages.analysis || {};
+    const draftStage = stages.post_drafting || {};
+
+    const pipelineHtml = statRow(
+        statCard('Fetched', fetchStage.today_count || 0, { subtitle: fetchStage.last_run ? 'Last: ' + timeAgo(fetchStage.last_run) : 'No runs' }) +
+        statCard('Analyzed', analysisStage.today_count || 0, { subtitle: analysisStage.last_run ? 'Last: ' + timeAgo(analysisStage.last_run) : 'No runs' }) +
+        statCard('Drafted', draftStage.today_count || 0, { subtitle: draftStage.last_run ? 'Last: ' + timeAgo(draftStage.last_run) : 'No runs' })
+    );
+
+    // Build pipeline detail expandables
+    let stageDetails = '';
+    for (const [name, data] of Object.entries(stages)) {
+        const res = data.last_result || {};
+        const detailParts = Object.entries(res).map(([k, v]) => `${k}: ${v}`).join('\n');
+        stageDetails += expandableRow(
+            `${name} -- last run ${timeAgo(data.last_run)} (${data.today_count || 0} today)`,
+            `<pre style="margin:0;font-size:var(--font-size-xs);white-space:pre-wrap">${escapeHtml(detailParts || 'No details')}</pre>`
+        );
+    }
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${pipelineHtml}
+        ${stageDetails ? configSectionFull('Pipeline Stages', stageDetails) : ''}
         ${configSection('RSS Fetch',
             configNumber('Interval', 2, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
             configNumber('Window Start', 9, 0, 23, tid, 'fetch_window_start', ':00') +
@@ -1351,32 +1673,116 @@ async function renderContentMonitorPanel(tool) {
     showToolHelpChat(tid);
 }
 
+/* ── Document Processing ── */
+
 async function renderDocProcessorPanel(tool) {
     const tid = tool.id;
     const ollamaStatus = await fetchServiceStatus('llm_manager');
+    const isUp = ollamaStatus.status === 'up';
+
+    // Get model info if Ollama is running
+    let modelInfo = '';
+    if (isUp) {
+        try {
+            const resp = await fetch('/api/llm/models');
+            const data = await resp.json();
+            const models = data.models || [];
+            modelInfo = models.length > 0 ? models[0].name : 'No models installed';
+        } catch { modelInfo = 'Unknown'; }
+    }
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
-        ${configSection('Configuration',
-            configCard('Engine', 'Ollama (local AI)') +
-            configCard('Compression', '80-95% token reduction') +
-            configCard('Code Preservation', 'Keeps code blocks intact')
+        ${statRow(
+            statCard('Engine', isUp ? 'Ollama' : 'Offline', { color: isUp ? 'success' : 'error' }) +
+            statCard('Model', modelInfo || '--') +
+            statCard('Compression', '80-95%', { subtitle: 'token reduction' })
+        )}
+        ${configSection('Capabilities',
+            configCard('Summarization', 'Compress PDFs and long documents to key points') +
+            configCard('Code Preservation', 'Keeps code blocks intact during compression') +
+            configCard('Format', 'Works with PDF, text, and markdown files')
         )}
     </div>`;
     showToolHelpChat(tid);
 }
 
+/* ── System Health Monitor ── */
+
 async function renderHealthMonitorPanel(tool) {
     const tid = tool.id;
     const status = await fetchServiceStatus('health_monitor');
+
+    // Fetch real health data
+    let healthData = {};
+    try {
+        const resp = await fetch('/api/health-monitor/state');
+        healthData = await resp.json();
+    } catch {}
+
+    const targetStatus = healthData.target_status || {};
+    const lastAlerts = healthData.last_alerts || {};
+    const paused = healthData.paused || false;
+
+    // Categorize targets
+    const services = [];
+    const schedulers = [];
+    const websites = [];
+    const apis = [];
+
+    for (const [key, val] of Object.entries(targetStatus)) {
+        const name = key.replace(/^(service|scheduler|website|api):/, '');
+        const isHealthy = val.ok === true || val.status === 'healthy';
+        const isStale = val.status === 'stale';
+        const dotStatus = isHealthy ? 'up' : isStale ? 'stale' : 'down';
+        const detail = val.last_checked ? timeAgo(val.last_checked) : '';
+
+        if (key.startsWith('service:')) {
+            services.push({ name, status: dotStatus, detail });
+        } else if (key.startsWith('scheduler:')) {
+            const hrs = val.hours_since != null ? Math.round(val.hours_since) + 'h ago' : '';
+            schedulers.push({ name, status: dotStatus, detail: hrs });
+        } else if (key.startsWith('website:')) {
+            websites.push({ name, status: dotStatus, detail });
+        } else if (key.startsWith('api:')) {
+            apis.push({ name, status: dotStatus, detail });
+        }
+    }
+
+    // Count by status
+    const allItems = [...services, ...schedulers, ...websites, ...apis];
+    const upCount = allItems.filter(i => i.status === 'up').length;
+    const downCount = allItems.filter(i => i.status === 'down').length;
+    const staleCount = allItems.filter(i => i.status === 'stale').length;
+
+    // Active alerts as log items
+    const alertItems = Object.entries(lastAlerts)
+        .sort((a, b) => (b[1].timestamp || '').localeCompare(a[1].timestamp || ''))
+        .slice(0, 15)
+        .map(([key, alert]) => ({
+            time: fmtTime(alert.timestamp),
+            status: alert.severity === 'error' ? 'error' : 'warning',
+            message: (alert.message || '').replace(/^(Service DOWN|Scheduler stale|Scheduler never run|Website DOWN|API credential missing): /, ''),
+            detail: alert.message || '',
+        }));
+
+    const pausedBanner = paused ? '<div style="padding:var(--space-2) var(--space-3);background:rgba(250,166,26,0.15);border-radius:var(--radius-md);margin-bottom:var(--space-3);font-size:var(--font-size-sm);color:var(--color-warning)">[!] Health monitor is paused -- data may be stale</div>' : '';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
-        ${configSection('Monitoring',
-            configCard('Local Services', '11 services monitored') +
-            configCard('Websites', 'HTTP status checks') +
-            configCard('Schedulers', 'Staleness detection') +
-            configCard('API Credentials', 'Presence validation')
+        ${pausedBanner}
+        ${statRow(
+            statCard('Healthy', upCount, { color: 'success' }) +
+            statCard('Down', downCount, { color: downCount > 0 ? 'error' : 'success' }) +
+            statCard('Stale', staleCount, { color: staleCount > 0 ? 'warning' : 'success' }) +
+            statCard('Total', allItems.length)
         )}
-        ${configSection('Alerts',
+        ${services.length > 0 ? configSectionFull('Services (' + services.length + ')', statusGrid(services)) : ''}
+        ${schedulers.length > 0 ? configSectionFull('Schedulers (' + schedulers.length + ')', statusGrid(schedulers)) : ''}
+        ${websites.length > 0 ? configSectionFull('Websites (' + websites.length + ')', statusGrid(websites)) : ''}
+        ${apis.length > 0 ? configSectionFull('API Keys (' + apis.length + ')', statusGrid(apis)) : ''}
+        ${configSectionFull('Recent Alerts (' + alertItems.length + ')', activityLog(alertItems, { emptyMsg: 'No active alerts' }))}
+        ${configSection('Alert Settings',
             configCard('Channel', '#system-health') +
             configCard('Cooldown', '60 minute deduplication')
         )}
@@ -1384,11 +1790,39 @@ async function renderHealthMonitorPanel(tool) {
     showToolHelpChat(tid);
 }
 
+/* ── LLM Manager ── */
+
 async function renderLLMManagerPanel(tool) {
-    const data = await fetchLLMModels();
+    const [data, runningData] = await Promise.all([
+        fetchLLMModels(),
+        fetch('/api/llm/running').then(r => r.json()).catch(() => ({ status: 'down', models: [] })),
+    ]);
     const isUp = data.status === 'up';
     const models = data.models || [];
+    const runningModels = runningData.models || [];
 
+    // VRAM usage from running models
+    let vramHtml = '';
+    if (isUp && runningModels.length > 0) {
+        const totalVram = runningModels.reduce((sum, m) => sum + (m.vram_bytes || 0), 0);
+        const totalVramGB = (totalVram / 1073741824).toFixed(1);
+        const gpuVram = 12.0; // RTX 3080 default, could be dynamic
+        vramHtml = progressBar(parseFloat(totalVramGB), gpuVram, { label: 'GPU Memory', suffix: 'GB' });
+    } else if (isUp) {
+        vramHtml = `<div style="font-size:var(--font-size-sm);color:var(--color-text-muted);margin-bottom:var(--space-3)">No models loaded in memory</div>`;
+    }
+
+    // Running models indicator
+    let runningHtml = '';
+    if (runningModels.length > 0) {
+        runningHtml = configSectionFull('Running Now', statusGrid(runningModels.map(m => ({
+            name: m.name,
+            status: 'up',
+            detail: m.expires_at ? 'expires ' + timeAgo(m.expires_at) : '',
+        }))));
+    }
+
+    // Model list
     let modelsHtml = '';
     if (!isUp) {
         modelsHtml = '<p class="tool-config-card__value--muted" style="margin-top:var(--space-3)">Ollama is not running. Start it to manage models.</p>';
@@ -1400,10 +1834,11 @@ async function renderLLMManagerPanel(tool) {
             const params = m.parameter_size ? escapeHtml(m.parameter_size) : '';
             const quant = m.quantization ? escapeHtml(m.quantization) : '';
             const meta = [params, quant].filter(Boolean).join(' / ');
+            const isRunning = runningModels.some(r => r.name === m.name);
             return `
-            <div class="llm-model-item">
+            <div class="llm-model-item"${isRunning ? ' style="border-color:var(--color-success)"' : ''}>
                 <div class="llm-model-item__info">
-                    <span class="llm-model-item__name">${escapeHtml(m.name)}</span>
+                    <span class="llm-model-item__name">${escapeHtml(m.name)}${isRunning ? ' <span style="color:var(--color-success);font-size:var(--font-size-xs)">[LOADED]</span>' : ''}</span>
                     <span class="llm-model-item__size">${escapeHtml(m.size)}${family ? ' -- ' + family : ''}</span>
                     ${meta ? `<span class="llm-model-item__size">${meta}</span>` : ''}
                 </div>
@@ -1415,8 +1850,18 @@ async function renderLLMManagerPanel(tool) {
         </div>`;
     }
 
+    // Quick-pull suggestions
+    const quickPullHtml = isUp ? `<div class="tool-quick-pull">
+        <button class="tool-quick-pull__btn" onclick="document.getElementById('llm-pull-input').value='llama3.2:1b';pullLLMModel()">llama3.2:1b</button>
+        <button class="tool-quick-pull__btn" onclick="document.getElementById('llm-pull-input').value='qwen3.5:9b';pullLLMModel()">qwen3.5:9b</button>
+        <button class="tool-quick-pull__btn" onclick="document.getElementById('llm-pull-input').value='gemma3:4b';pullLLMModel()">gemma3:4b</button>
+        <button class="tool-quick-pull__btn" onclick="document.getElementById('llm-pull-input').value='qwen2.5-coder:7b';pullLLMModel()">qwen2.5-coder:7b</button>
+    </div>` : '';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(isUp ? 'up' : 'down'))}
+        ${vramHtml}
+        ${runningHtml}
         ${configSection('Installed Models (' + models.length + ')', modelsHtml)}
         ${isUp ? `
         <div class="tool-config-section">
@@ -1425,6 +1870,7 @@ async function renderLLMManagerPanel(tool) {
                 <input type="text" id="llm-pull-input" placeholder="e.g. llama3.2:1b, qwen3:8b, gemma3:4b">
                 <button class="btn btn--primary btn--sm" onclick="pullLLMModel()">Pull</button>
             </div>
+            ${quickPullHtml}
             <div class="llm-pull-progress" id="llm-pull-progress"></div>
         </div>` : ''}
     </div>`;
@@ -1457,7 +1903,6 @@ async function pullLLMModel() {
             progress.textContent = 'Error: ' + data.error;
         } else {
             progress.textContent = 'Pull started for ' + model + '. This may take a few minutes...';
-            // Poll for completion
             pollLLMPull(model);
         }
     } catch (err) {
@@ -1472,7 +1917,6 @@ async function pollLLMPull(model) {
         const found = (data.models || []).some(m => m.name === model || m.name.startsWith(model.split(':')[0]));
         if (found) {
             progress.textContent = model + ' installed successfully.';
-            // Re-render to show updated list
             const tool = (state.tools || []).find(t => t.id === 'llm_manager');
             if (tool) renderLLMManagerPanel(tool);
         } else {
@@ -2048,8 +2492,11 @@ function updateParticipants() {
     dom.participantsList.innerHTML = memberIds.map(agentId => {
         const profile = state.agentProfiles[agentId] || getAgentProfile(agentId);
         const agentState = state.agents.find(a => a.agent_id === agentId);
-        const status = agentState ? (agentState.status || 'Online') : 'Offline';
-        const isOnline = agentState != null;
+        // User (human operator) is always online since they're the one using the app.
+        // Agents are online if they exist in the team snapshot OR the agent registry.
+        const isHuman = agentId === 'user';
+        const isOnline = isHuman || agentState != null || !!state.agentProfiles[agentId];
+        const status = isHuman ? 'Online' : (agentState ? (agentState.status || 'Online') : (state.agentProfiles[agentId] ? 'Online' : 'Offline'));
         return `
             <div class="member-card" data-agent-id="${agentId}">
                 <div class="member-card__avatar" style="background-color: ${profile.color}">
@@ -2597,9 +3044,10 @@ function connectSocket() {
         sock.emit('get_channels', {});
         fetchTools();
         fetchSessions();
-        // Load admin mode state
+        // Load settings (admin mode + user display name)
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
+            applyUserDisplayName(d.user_display_name || '');
         }).catch(() => {});
         showToast('Connected to Cohort', 'success');
 
@@ -2834,6 +3282,10 @@ function openChatForAgent(agentId) {
     // Check if channel already exists in local state
     const exists = state.channels.some((ch) => ch.id === channelId);
 
+    // Auto-add both user and the target agent as members immediately
+    addChannelMember(channelId, 'user');
+    addChannelMember(channelId, agentId);
+
     // switchChannel will join via Socket.IO (auto-creates on server if needed)
     switchChannel(channelId);
 
@@ -2973,6 +3425,7 @@ function openSettings() {
     fetch('/api/settings')
         .then(r => r.json())
         .then(data => {
+            if (dom.settingsUserName) dom.settingsUserName.value = data.user_display_name || '';
             if (dom.settingsApiKey) dom.settingsApiKey.value = data.api_key_masked || '';
             if (dom.settingsClaudeCmd) dom.settingsClaudeCmd.value = data.claude_cmd || '';
             if (dom.settingsAgentsRoot) dom.settingsAgentsRoot.value = data.agents_root || '';
@@ -3004,6 +3457,7 @@ function saveSettings(e) {
 
     const adminToggle = document.getElementById('settings-admin-mode');
     const payload = {
+        user_display_name: dom.settingsUserName ? dom.settingsUserName.value.trim() : '',
         claude_cmd: dom.settingsClaudeCmd ? dom.settingsClaudeCmd.value.trim() : '',
         agents_root: dom.settingsAgentsRoot ? dom.settingsAgentsRoot.value.trim() : '',
         response_timeout: dom.settingsResponseTimeout ? parseInt(dom.settingsResponseTimeout.value, 10) : 300,
@@ -3026,6 +3480,7 @@ function saveSettings(e) {
         .then(data => {
             if (data.success) {
                 state.adminMode = payload.admin_mode;
+                applyUserDisplayName(payload.user_display_name);
                 showToast('Settings saved', 'success');
                 closeSettings();
                 // Re-render current tool panel if open (tier visibility may have changed)
@@ -3633,7 +4088,7 @@ function init() {
             autoAddMembersFromMessage(state.currentChannel, outgoing);
 
             // Intercept messages in the roundtable setup channel
-            if (state.currentChannel === ROUNDTABLE_SETUP_CHANNEL) {
+            if (state.currentChannel === SESSION_SETUP_CHANNEL) {
                 handleRoundtableSetupMessage(content);
             }
 
@@ -3703,7 +4158,7 @@ function init() {
         dom.sidebarAddTaskBtn.addEventListener('click', () => openAssignForAgent(null));
     }
 
-    // [+] Session button -- opens guided roundtable setup chat
+    // [+] Session button -- opens guided session setup chat
     if (dom.addSessionBtn) {
         dom.addSessionBtn.addEventListener('click', () => {
             startRoundtableSetup();

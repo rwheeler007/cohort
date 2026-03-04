@@ -76,7 +76,7 @@ class TestBuildCompiledPrompt:
         )
         assert "agent_a" in system
         assert "agent_b" in system
-        assert "roundtable" in system.lower()
+        assert "discussion" in system.lower()
         assert "Should we refactor?" in user
         assert tokens > 0
 

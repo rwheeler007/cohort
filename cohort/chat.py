@@ -71,9 +71,9 @@ class Message:
 class Channel:
     """A channel for organising conversations.
 
-    When ``mode="meeting"``, *meeting_context* tracks stakeholder
-    participation to prevent conversational loops while preserving
-    high-value contributions.
+    When *meeting_context* is populated (by starting an orchestrator
+    session), the scoring engine tracks stakeholder participation to
+    prevent conversational loops while preserving high-value contributions.
     """
 
     id: str
@@ -90,7 +90,7 @@ class Channel:
     is_locked: bool = False
     locked_by: str | None = None
     locked_at: str | None = None
-    mode: str = "chat"  # "chat" | "meeting" | "execute"
+    mode: str = "chat"  # Deprecated: kept for serialisation compat. Gating uses meeting_context.
     meeting_context: dict[str, Any] | None = field(default_factory=lambda: None)
     shared_plan: dict[str, Any] | None = field(default_factory=lambda: None)
     metadata: dict[str, Any] = field(default_factory=dict)
