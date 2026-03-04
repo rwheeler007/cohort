@@ -1,0 +1,11 @@
+{
+  "comms_service": {
+    "email_provider": "Resend"
+  },
+  "web_search": {
+    "provider": "SerpAPI"
+  },
+  "youtube_service": {
+    "rate_limit_per_min": "30"
+  }
+}

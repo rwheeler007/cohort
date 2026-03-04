@@ -282,49 +282,45 @@ class CohortClient:
             return data
         return None
 
-    # -- channel checklists (file-based) ----------------------------------
+    # -- work queue ------------------------------------------------------
 
-    def _channel_checklist_path(self, channel: str) -> Path | None:
-        """Resolve the checklist file path for a channel."""
-        if not self._checklist_path:
-            return None
-        base_dir = self._checklist_path.parent / "channel_checklists"
-        # Sanitize channel name
-        safe_ch = "".join(c for c in channel if c.isalnum() or c in "-_")
-        if not safe_ch:
-            return None
-        return base_dir / f"{safe_ch}.json"
+    async def get_task_queue(
+        self, status: str | None = None
+    ) -> list[dict[str, Any]] | None:
+        """GET /api/tasks -> task queue, optionally filtered by status."""
+        params: dict[str, Any] = {}
+        if status:
+            params["status"] = status
+        data = await _request(
+            "GET", f"{self.base_url}/api/tasks", params=params,
+        )
+        if data and "tasks" in data:
+            return data["tasks"]
+        return None
 
-    async def read_channel_checklist(self, channel: str) -> dict[str, Any] | None:
-        """Read a channel-specific checklist from disk."""
-        path = self._channel_checklist_path(channel)
-        if not path:
-            return {"items": []}
-        try:
-            if not path.exists():
-                return {"items": []}
-            return json.loads(path.read_text(encoding="utf-8"))
-        except Exception as exc:
-            logger.debug("[!] cohort client: channel checklist read error - %s", exc)
-            return None
+    async def get_outputs_for_review(self) -> list[dict[str, Any]] | None:
+        """GET /api/outputs -> completed tasks awaiting review."""
+        data = await _request("GET", f"{self.base_url}/api/outputs")
+        if data and "outputs" in data:
+            return data["outputs"]
+        return None
 
-    async def write_channel_checklist(
-        self, channel: str, data: dict[str, Any]
-    ) -> bool:
-        """Write a channel-specific checklist to disk."""
-        path = self._channel_checklist_path(channel)
-        if not path:
-            return False
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                json.dumps(data, indent=2, ensure_ascii=False),
-                encoding="utf-8",
-            )
-            return True
-        except Exception as exc:
-            logger.debug("[!] cohort client: channel checklist write error - %s", exc)
-            return False
+    async def create_task(
+        self,
+        agent_id: str,
+        description: str,
+        priority: str = "medium",
+    ) -> dict[str, Any] | None:
+        """POST /api/tasks -> create and assign a task."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/tasks",
+            json_body={
+                "agent_id": agent_id,
+                "description": description,
+                "priority": priority,
+            },
+        )
 
     # -- checklist (file-based) -----------------------------------------
 

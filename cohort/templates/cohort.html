@@ -55,7 +55,7 @@
                     <li>
                         <button class="sidebar-nav__item" data-panel="output">
                             <span class="sidebar-nav__icon">[O]</span>
-                            <span class="sidebar-nav__label">Output Review</span>
+                            <span class="sidebar-nav__label">Pending Review</span>
                             <span class="sidebar-nav__badge" id="output-badge">0</span>
                         </button>
                     </li>
@@ -235,8 +235,8 @@
                 </div>
             </section>
 
-            <!-- Output Review Panel -->
-            <section class="panel panel--output" id="panel-output" role="region" aria-label="Output Review" style="display: none;">
+            <!-- Pending Review Panel -->
+            <section class="panel panel--output" id="panel-output" role="region" aria-label="Pending Review" style="display: none;">
                 <div class="output-list" id="output-list">
                     <div class="empty-state" id="output-empty">
                         <p class="empty-state__text">No outputs to review</p>
@@ -251,6 +251,23 @@
                     <div class="empty-state">
                         <p class="empty-state__text">Select a tool</p>
                         <p class="empty-state__hint">Click a tool in the sidebar to view its status and configuration</p>
+                    </div>
+                </div>
+                <div class="tool-help-chat" id="tool-help-chat" style="display:none">
+                    <div class="tool-help-chat__toggle" onclick="toggleToolHelpChat()">
+                        <span class="tool-help-chat__label">[?] Need help configuring this tool?</span>
+                        <span class="tool-help-chat__arrow" id="tool-help-arrow">[v]</span>
+                    </div>
+                    <div class="tool-help-chat__body" id="tool-help-body" style="display:none">
+                        <div class="tool-help-chat__messages" id="tool-help-messages">
+                            <p class="tool-help-chat__empty">Ask Cohort a question about configuring this tool.</p>
+                        </div>
+                        <div class="tool-help-chat__typing" id="tool-help-typing" style="display:none"></div>
+                        <div class="tool-help-chat__input-area">
+                            <input type="text" class="tool-help-chat__input" id="tool-help-input"
+                                   placeholder="Ask a question about this tool..." />
+                            <button class="btn btn--primary btn--sm" onclick="sendToolHelpMessage()">Send</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -382,6 +399,22 @@
                             <span id="settings-connection-text">Not tested</span>
                         </div>
                         <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
+                    </div>
+
+                    <!-- Admin Mode -->
+                    <div class="settings-section">
+                        <h3 class="settings-section__title">Dashboard Mode</h3>
+                        <p class="settings-section__desc">
+                            Admin Mode reveals advanced settings like providers, API keys, and feed sources.
+                            Leave off for day-to-day use to keep the interface simple.
+                        </p>
+                        <div class="form-group">
+                            <label class="toggle-label" for="settings-admin-mode">
+                                <input type="checkbox" id="settings-admin-mode" class="toggle-input">
+                                <span class="toggle-switch"></span>
+                                Admin Mode
+                            </label>
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -596,6 +629,11 @@
                     <span class="setup-step__indicator" id="step-ind-5">5</span>
                     <span class="setup-step__label">Content</span>
                 </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="6">
+                    <span class="setup-step__indicator" id="step-ind-6">6</span>
+                    <span class="setup-step__label">Claude</span>
+                </button>
             </nav>
 
             <!-- Step Bodies -->
@@ -680,6 +718,57 @@
                             <button class="btn btn--secondary" id="setup-topic-back">Pick different topic</button>
                             <button class="btn btn--primary" id="setup-save-feeds">Save selected feeds</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Claude Code Connection (Optional) -->
+                <div class="setup-wizard__step" data-step="6" style="display:none">
+                    <h3>Connect Claude Code (Optional)</h3>
+                    <p class="text-muted">
+                        Claude Code is an AI coding assistant by Anthropic. Connecting it
+                        lets your agents use advanced reasoning and code generation.
+                        You can skip this if you only want local AI.
+                    </p>
+                    <div class="setup-wizard__card" id="setup-claude-result">
+                        <div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>
+                    </div>
+                    <div id="setup-claude-config" style="display:none">
+                        <div class="setup-wizard__card">
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-claude-cmd" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Claude CLI Path
+                                </label>
+                                <input type="text" class="form-input form-input--mono" id="setup-claude-cmd"
+                                       placeholder="C:/Users/.../npm/claude.cmd">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-agents-root" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Agents Root Directory
+                                </label>
+                                <input type="text" class="form-input form-input--mono" id="setup-agents-root"
+                                       placeholder="/path/to/cohort">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-exec-backend" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Execution Backend
+                                </label>
+                                <select class="form-input" id="setup-exec-backend">
+                                    <option value="cli">Claude CLI (subprocess)</option>
+                                    <option value="api">Anthropic API (direct)</option>
+                                    <option value="chat">Chat-routed (@mention)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3);align-items:center">
+                            <button class="btn btn--secondary" id="setup-claude-test-btn">Test Connection</button>
+                            <div class="settings-connection-status" id="setup-claude-status" style="margin-bottom:0">
+                                <span class="settings-connection-dot" id="setup-claude-dot"></span>
+                                <span id="setup-claude-text">Not tested</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary" id="setup-claude-save-btn" style="margin-top:var(--space-3)">
+                            Save Claude Settings
+                        </button>
                     </div>
                 </div>
             </div>

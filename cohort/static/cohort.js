@@ -33,6 +33,7 @@ const state = {
 
     // Tools from boss_config.yaml
     tools: [],
+    adminMode: false,
 
     // Roundtable sessions
     sessions: [],
@@ -204,8 +205,8 @@ const panelConfig = {
         filter: true,
     },
     output: {
-        title: 'Output Review',
-        subtitle: 'Code diffs and test results',
+        title: 'Pending Review',
+        subtitle: 'Task outputs awaiting approval',
         panel: () => dom.panelOutput,
         filter: true,
     },
@@ -814,6 +815,10 @@ function openToolDetail(toolId) {
 async function renderToolPanel(tool) {
     if (!dom.toolPanelContent) return;
 
+    // Hide help chat by default; renderers that use it will call showToolHelpChat()
+    const helpEl = document.getElementById('tool-help-chat');
+    if (helpEl) helpEl.style.display = 'none';
+
     const renderer = toolRenderers[tool.id];
     if (renderer) {
         dom.toolPanelContent.innerHTML = '<div class="tool-dashboard"><p style="color:var(--color-text-secondary)">Loading...</p></div>';
@@ -898,6 +903,39 @@ function configNumber(label, value, min, max, toolId, key, suffix) {
 function configText(label, value, toolId, key) {
     return _editableCardWrap(label, value, toolId, key,
         `<input type="text" class="tool-config-card__input" value="${escapeHtml(value || '')}" />`);
+}
+
+function configLocked(label, value) {
+    const muteClass = value ? '' : ' tool-config-card__value--muted';
+    const display = value || 'Not configured';
+    return `
+        <div class="tool-config-card tool-config-card--locked">
+            <div class="tool-config-card__header">
+                <p class="tool-config-card__label">${escapeHtml(label)}</p>
+                <button class="btn btn--icon btn--lock-config" title="Admin Mode required" onclick="onLockedFieldClick()">
+                    [lock]
+                </button>
+            </div>
+            <p class="tool-config-card__value tool-config-card__value--locked${muteClass}">${escapeHtml(display)}</p>
+        </div>`;
+}
+
+function onLockedFieldClick() {
+    showToast('Enable Admin Mode in Settings to edit this field', 'warning');
+    openSettings();
+}
+
+function configAdminSelect(label, value, options, toolId, key) {
+    return state.adminMode ? configSelect(label, value, options, toolId, key) : configLocked(label, value);
+}
+
+function configAdminNumber(label, value, min, max, toolId, key, suffix) {
+    const displayVal = suffix ? `${value} ${suffix}` : String(value);
+    return state.adminMode ? configNumber(label, value, min, max, toolId, key, suffix) : configLocked(label, displayVal);
+}
+
+function configAdminText(label, value, toolId, key) {
+    return state.adminMode ? configText(label, value, toolId, key) : configLocked(label, value);
 }
 
 function configSection(title, cardsHtml) {
@@ -1023,6 +1061,137 @@ async function saveConfigCard(btn) {
     }
 }
 
+/* ── Tool help chat ── */
+
+let _toolHelpChannel = null;
+let _toolHelpJoined = false;
+
+function showToolHelpChat(toolId) {
+    const el = document.getElementById('tool-help-chat');
+    if (el) {
+        el.style.display = '';
+        _toolHelpChannel = `tool-help-${toolId}`;
+        _toolHelpJoined = false;
+        // Collapse the body on tool switch
+        const body = document.getElementById('tool-help-body');
+        if (body) body.style.display = 'none';
+        const arrow = document.getElementById('tool-help-arrow');
+        if (arrow) arrow.textContent = '[v]';
+    }
+}
+
+function toggleToolHelpChat() {
+    const body = document.getElementById('tool-help-body');
+    const arrow = document.getElementById('tool-help-arrow');
+    if (!body) return;
+    const opening = body.style.display === 'none';
+    body.style.display = opening ? '' : 'none';
+    if (arrow) arrow.textContent = opening ? '[^]' : '[v]';
+
+    // Join channel on first open
+    if (opening && !_toolHelpJoined && _toolHelpChannel) {
+        _toolHelpJoined = true;
+        if (state.socket && state.connected) {
+            state.socket.emit('join_channel', { channel_id: _toolHelpChannel });
+
+            // Send context injection so setup_guide knows which tool we're on
+            const tool = (state.tools || []).find(t => t.id === state.currentTool);
+            if (tool) {
+                const configSummary = _buildToolConfigSummary(tool);
+                state.socket.emit('send_message', {
+                    channel_id: _toolHelpChannel,
+                    sender: 'system',
+                    content: `@setup_guide The user is viewing the **${tool.name}** configuration panel. ${configSummary}Help them configure this tool.`,
+                });
+            }
+        }
+        // Bind Enter key on input
+        const helpInput = document.getElementById('tool-help-input');
+        if (helpInput && !helpInput._toolHelpBound) {
+            helpInput._toolHelpBound = true;
+            helpInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendToolHelpMessage();
+                }
+            });
+        }
+        // Render existing messages if we have them
+        renderToolHelpMessages();
+    }
+}
+
+function sendToolHelpMessage() {
+    const input = document.getElementById('tool-help-input');
+    if (!input) return;
+    const content = input.value.trim();
+    if (!content || !_toolHelpChannel) return;
+    if (!state.socket || !state.connected) {
+        showToast('Not connected to server', 'warning');
+        return;
+    }
+
+    // Auto-mention setup_guide
+    const fullContent = content.includes('@setup_guide') ? content : `@setup_guide ${content}`;
+
+    state.socket.emit('send_message', {
+        channel_id: _toolHelpChannel,
+        sender: 'user',
+        content: fullContent,
+    });
+
+    input.value = '';
+}
+
+function renderToolHelpMessages() {
+    const container = document.getElementById('tool-help-messages');
+    if (!container || !_toolHelpChannel) return;
+
+    const allMsgs = state.messages[_toolHelpChannel] || [];
+    // Hide system context injection messages from the user
+    const msgs = allMsgs.filter(m => m.sender !== 'system');
+    if (msgs.length === 0) {
+        container.innerHTML = '<p class="tool-help-chat__empty">Ask Cohort a question about configuring this tool.</p>';
+        return;
+    }
+
+    container.innerHTML = msgs.map(m => {
+        const profile = typeof getAgentProfile === 'function' ? getAgentProfile(m.sender) : { avatar: '?', name: m.sender, color: '#95A5A6' };
+        // Strip @setup_guide mention from display — it's auto-added internally
+        const cleanContent = (m.content || '').replace(/^@setup_guide\s*/i, '');
+        const body = typeof formatMessageContent === 'function' ? formatMessageContent(cleanContent) : escapeHtml(cleanContent);
+        // Friendly display names for the help chat
+        const displayName = m.sender === 'setup_guide' ? 'Cohort' : m.sender === 'user' ? 'You' : profile.name;
+        return `<div class="tool-help-msg">
+            <div class="tool-help-msg__avatar" style="background-color: ${profile.color}">${profile.avatar}</div>
+            <div class="tool-help-msg__body">
+                <div class="tool-help-msg__sender" style="color: ${profile.color}">${escapeHtml(displayName)}</div>
+                <div class="tool-help-msg__text">${body}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+function _buildToolConfigSummary(tool) {
+    // Extract visible config values from the currently rendered cards
+    const cards = document.querySelectorAll('.tool-config-card');
+    if (!cards.length) return '';
+    const parts = [];
+    cards.forEach(card => {
+        const label = card.querySelector('.tool-config-card__label');
+        const value = card.querySelector('.tool-config-card__value');
+        if (label && value) {
+            const l = label.textContent.trim();
+            const v = value.textContent.trim();
+            if (l && v) parts.push(`${l}: ${v}`);
+        }
+    });
+    if (!parts.length) return '';
+    return `Current settings: ${parts.join(', ')}. `;
+}
+
 async function fetchServiceStatus(serviceId) {
     try {
         const resp = await fetch('/api/service-status/' + encodeURIComponent(serviceId));
@@ -1053,8 +1222,8 @@ async function renderCommsPanel(tool) {
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${configSection('Services',
-            configSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
-            configSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
+            configAdminSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
+            configAdminSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
             configCard('Social Platforms', 'Twitter, LinkedIn, Facebook, Threads')
         )}
         ${configSection('Safety',
@@ -1063,6 +1232,7 @@ async function renderCommsPanel(tool) {
         )}
     </div>`;
     applySavedConfigValues(tid);
+    showToolHelpChat(tid);
 }
 
 async function renderWebSearchPanel(tool) {
@@ -1071,8 +1241,7 @@ async function renderWebSearchPanel(tool) {
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${configSection('Configuration',
-            configSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider') +
-            configCard('Port', '8005')
+            configAdminSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider')
         )}
         ${configSection('Rate Limits',
             configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
@@ -1080,6 +1249,7 @@ async function renderWebSearchPanel(tool) {
         )}
     </div>`;
     applySavedConfigValues(tid);
+    showToolHelpChat(tid);
 }
 
 async function renderYouTubePanel(tool) {
@@ -1087,13 +1257,10 @@ async function renderYouTubePanel(tool) {
     const tid = 'youtube_service';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
-        ${configSection('Configuration',
-            configCard('API', 'YouTube Data API v3') +
-            configCard('Port', '8002')
-        )}
         ${configSection('Rate Limits',
             configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
-            configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day')
+            configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day') +
+            configNumber('Default Results', 10, 1, 50, tid, 'default_results')
         )}
         ${configSection('Capabilities',
             configCard('Video Search', 'Search by keyword with filters') +
@@ -1102,6 +1269,7 @@ async function renderYouTubePanel(tool) {
         )}
     </div>`;
     applySavedConfigValues(tid);
+    showToolHelpChat(tid);
 }
 
 async function renderRSSPanel(tool) {
@@ -1125,8 +1293,13 @@ async function renderRSSPanel(tool) {
             configNumber('Max Fetches/Day', 6, 1, 50, tid, 'max_fetches_day') +
             configNumber('Max Articles/Day', 200, 1, 1000, tid, 'max_articles_day')
         )}
+        ${state.adminMode ? configSection('Advanced',
+            configAdminNumber('Min Relevance', 5, 0, 10, tid, 'min_relevance') +
+            configAdminText('Feed Sources', 'Default feeds', tid, 'feed_sources')
+        ) : ''}
     </div>`;
     applySavedConfigValues(tid);
+    showToolHelpChat(tid);
 }
 
 async function renderContentMonitorPanel(tool) {
@@ -1154,11 +1327,17 @@ async function renderContentMonitorPanel(tool) {
             configNumber('Max Articles/Day', 50, 1, 500, tid, 'max_articles_day') +
             configNumber('Max Drafts/Day', 5, 1, 20, tid, 'max_drafts_day')
         )}
+        ${state.adminMode ? configSection('Advanced',
+            configAdminNumber('Min Relevance', 5, 0, 10, tid, 'min_relevance_for_draft') +
+            configAdminText('Feed Sources', 'Default feeds', tid, 'feed_sources')
+        ) : ''}
     </div>`;
     applySavedConfigValues(tid);
+    showToolHelpChat(tid);
 }
 
 async function renderDocProcessorPanel(tool) {
+    const tid = tool.id;
     const ollamaStatus = await fetchServiceStatus('llm_manager');
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
@@ -1168,9 +1347,11 @@ async function renderDocProcessorPanel(tool) {
             configCard('Code Preservation', 'Keeps code blocks intact')
         )}
     </div>`;
+    showToolHelpChat(tid);
 }
 
 async function renderHealthMonitorPanel(tool) {
+    const tid = tool.id;
     const status = await fetchServiceStatus('health_monitor');
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
@@ -1185,6 +1366,7 @@ async function renderHealthMonitorPanel(tool) {
             configCard('Cooldown', '60 minute deduplication')
         )}
     </div>`;
+    showToolHelpChat(tid);
 }
 
 async function renderLLMManagerPanel(tool) {
@@ -1198,16 +1380,23 @@ async function renderLLMManagerPanel(tool) {
     } else if (models.length === 0) {
         modelsHtml = '<p class="tool-config-card__value--muted" style="margin-top:var(--space-3)">No models installed. Pull one below.</p>';
     } else {
-        modelsHtml = `<div class="llm-model-list">${models.map(m => `
+        modelsHtml = `<div class="llm-model-list">${models.map(m => {
+            const family = m.family ? escapeHtml(m.family) : '';
+            const params = m.parameter_size ? escapeHtml(m.parameter_size) : '';
+            const quant = m.quantization ? escapeHtml(m.quantization) : '';
+            const meta = [params, quant].filter(Boolean).join(' / ');
+            return `
             <div class="llm-model-item">
                 <div class="llm-model-item__info">
                     <span class="llm-model-item__name">${escapeHtml(m.name)}</span>
-                    <span class="llm-model-item__size">${escapeHtml(m.size)}${m.parameter_size ? ' -- ' + escapeHtml(m.parameter_size) : ''}${m.quantization ? ' ' + escapeHtml(m.quantization) : ''}</span>
+                    <span class="llm-model-item__size">${escapeHtml(m.size)}${family ? ' -- ' + family : ''}</span>
+                    ${meta ? `<span class="llm-model-item__size">${meta}</span>` : ''}
                 </div>
                 <div class="llm-model-item__actions">
                     <button class="btn--danger btn--sm" onclick="deleteLLMModel('${escapeHtml(m.name)}')">Remove</button>
                 </div>
-            </div>`).join('')}
+            </div>`;
+        }).join('')}
         </div>`;
     }
 
@@ -2353,6 +2542,10 @@ function connectSocket() {
         sock.emit('get_channels', {});
         fetchTools();
         fetchSessions();
+        // Load admin mode state
+        fetch('/api/settings').then(r => r.json()).then(d => {
+            state.adminMode = !!d.admin_mode;
+        }).catch(() => {});
         showToast('Connected to Cohort', 'success');
 
         // Auto-show setup wizard on first run
@@ -2461,6 +2654,11 @@ function connectSocket() {
         if (data.channel_id === state.currentChannel) {
             renderMessages();
         }
+
+        // Render tool-help mini-chat if this is the active help channel
+        if (_toolHelpChannel && data.channel_id === _toolHelpChannel) {
+            renderToolHelpMessages();
+        }
         // Update chat badge with total message count
         let total = 0;
         for (const ch in state.messages) {
@@ -2485,10 +2683,37 @@ function connectSocket() {
             renderMessages();
             scrollToBottom();
         }
+
+        // Also render in tool-help mini-chat if matching
+        if (_toolHelpChannel && message.channel_id === _toolHelpChannel) {
+            renderToolHelpMessages();
+            const mc = document.getElementById('tool-help-messages');
+            if (mc) mc.scrollTop = mc.scrollHeight;
+            // Hide typing indicator when response arrives
+            const ti = document.getElementById('tool-help-typing');
+            if (ti) { ti.style.display = 'none'; ti.innerHTML = ''; }
+        }
     });
 
     // -- Typing indicator for agent responses --
     sock.on('user_typing', (data) => {
+        // Tool-help mini-chat typing indicator
+        if (_toolHelpChannel && data.channel_id === _toolHelpChannel) {
+            const ti = document.getElementById('tool-help-typing');
+            if (ti) {
+                if (data.typing) {
+                    const profile = getAgentProfile(data.sender);
+                    ti.innerHTML = `<span class="tool-help-typing__text">${escapeHtml(profile.nickname)} is thinking...</span>`;
+                    ti.style.display = 'block';
+                    const mc = document.getElementById('tool-help-messages');
+                    if (mc) mc.scrollTop = mc.scrollHeight;
+                } else {
+                    ti.style.display = 'none';
+                    ti.innerHTML = '';
+                }
+            }
+        }
+
         if (data.channel_id !== state.currentChannel) return;
         const indicator = document.getElementById('typing-indicator');
         if (!indicator) return;
@@ -2694,6 +2919,11 @@ function openSettings() {
             if (dom.settingsResponseTimeout) dom.settingsResponseTimeout.value = data.response_timeout || 300;
             if (dom.settingsExecBackend) dom.settingsExecBackend.value = data.execution_backend || 'cli';
 
+            // Admin mode toggle
+            state.adminMode = !!data.admin_mode;
+            const adminToggle = document.getElementById('settings-admin-mode');
+            if (adminToggle) adminToggle.checked = state.adminMode;
+
             // Show connection status
             updateSettingsConnectionStatus(data.claude_code_connected ? 'ok' : 'unknown',
                 data.claude_code_connected ? 'Claude CLI found' : 'Not tested');
@@ -2712,11 +2942,13 @@ function closeSettings() {
 function saveSettings(e) {
     e.preventDefault();
 
+    const adminToggle = document.getElementById('settings-admin-mode');
     const payload = {
         claude_cmd: dom.settingsClaudeCmd ? dom.settingsClaudeCmd.value.trim() : '',
         agents_root: dom.settingsAgentsRoot ? dom.settingsAgentsRoot.value.trim() : '',
         response_timeout: dom.settingsResponseTimeout ? parseInt(dom.settingsResponseTimeout.value, 10) : 300,
         execution_backend: dom.settingsExecBackend ? dom.settingsExecBackend.value : 'cli',
+        admin_mode: adminToggle ? adminToggle.checked : false,
     };
 
     // Only include API key if user typed a real value (not the masked placeholder)
@@ -2733,8 +2965,14 @@ function saveSettings(e) {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
+                state.adminMode = payload.admin_mode;
                 showToast('Settings saved', 'success');
                 closeSettings();
+                // Re-render current tool panel if open (tier visibility may have changed)
+                if (state.currentTool && state.currentPanel === 'tool') {
+                    const tool = (state.tools || []).find(t => t.id === state.currentTool);
+                    if (tool) renderToolPanel(tool.id);
+                }
             } else {
                 showToast(data.error || 'Failed to save settings', 'error');
             }
@@ -3543,13 +3781,14 @@ function init() {
 
 const setupWizard = {
     currentStep: 1,
-    totalSteps: 5,
+    totalSteps: 6,
     stepsDone: new Set(),
     hwData: null,
     ollamaData: null,
     topicsData: null,
     selectedTopic: null,
     selectedFeeds: [],
+    claudeData: null,
 
     show() {
         dom.setupWizard.hidden = false;
@@ -3594,6 +3833,13 @@ const setupWizard = {
 
         const saveFeedsBtn = $('#setup-save-feeds');
         if (saveFeedsBtn) saveFeedsBtn.onclick = () => this.saveFeeds();
+
+        // Step 6: Claude Code buttons
+        const claudeTestBtn = $('#setup-claude-test-btn');
+        if (claudeTestBtn) claudeTestBtn.onclick = () => this.testClaudeSetup();
+
+        const claudeSaveBtn = $('#setup-claude-save-btn');
+        if (claudeSaveBtn) claudeSaveBtn.onclick = () => this.saveClaudeSettings();
 
         // Re-run button in settings
         if (dom.setupRerunBtn) {
@@ -3653,6 +3899,7 @@ const setupWizard = {
             else if (next === 3) this.runStep3();
             else if (next === 4) this.runStep4Auto();
             else if (next === 5) this.runStep5();
+            else if (next === 6) this.runStep6();
         }
     },
 
@@ -3915,6 +4162,122 @@ const setupWizard = {
             showToast('Content pipeline configured!', 'success');
         } catch (e) {
             showToast('Failed to save content config', 'error');
+        }
+    },
+
+    // -- Step 6: Claude Code Connection --
+    async runStep6() {
+        const resultEl = $('#setup-claude-result');
+        const configEl = $('#setup-claude-config');
+        resultEl.innerHTML = '<div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>';
+        resultEl.style.display = '';
+        configEl.style.display = 'none';
+
+        try {
+            const resp = await fetch('/api/setup/detect-claude', { method: 'POST' });
+            const data = await resp.json();
+            this.claudeData = data;
+
+            if (data.found) {
+                resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
+                    + '[OK] Found Claude CLI!</div>'
+                    + '<div class="setup-wizard__info-grid">'
+                    + '<span class="text-muted">Path:</span><span>' + escapeHtml(data.claude_path) + '</span>'
+                    + (data.version ? '<span class="text-muted">Version:</span><span>' + escapeHtml(data.version) + '</span>' : '')
+                    + '</div>';
+            } else {
+                resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">'
+                    + '[!] Claude CLI not found on your system.</div>'
+                    + '<p class="text-muted" style="margin-top:var(--space-2)">'
+                    + 'Install it from <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">'
+                    + 'docs.anthropic.com</a>, or skip this step and configure it later in Settings.</p>';
+            }
+
+            // Pre-populate fields from detection or existing settings
+            const cmdInput = $('#setup-claude-cmd');
+            const rootInput = $('#setup-agents-root');
+            if (cmdInput) cmdInput.value = data.existing_claude_cmd || data.claude_path || '';
+            if (rootInput) rootInput.value = data.existing_agents_root || data.agents_root_detected || '';
+
+            configEl.style.display = '';
+        } catch (e) {
+            resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">'
+                + '[X] Could not check for Claude CLI.</div>';
+            configEl.style.display = '';
+        }
+    },
+
+    async testClaudeSetup() {
+        const dotEl = $('#setup-claude-dot');
+        const textEl = $('#setup-claude-text');
+        const cmdVal = ($('#setup-claude-cmd') || {}).value || '';
+
+        if (dotEl) dotEl.className = 'settings-connection-dot testing';
+        if (textEl) textEl.textContent = 'Testing...';
+
+        if (!cmdVal.trim()) {
+            if (dotEl) dotEl.className = 'settings-connection-dot error';
+            if (textEl) textEl.textContent = 'No CLI path specified';
+            return;
+        }
+
+        // Save fields first so test-connection can read from settings.json
+        await this._saveClaudeFieldsQuiet();
+
+        try {
+            const resp = await fetch('/api/settings/test-connection', { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                if (dotEl) dotEl.className = 'settings-connection-dot ok';
+                if (textEl) textEl.textContent = data.message || 'Connected';
+            } else {
+                if (dotEl) dotEl.className = 'settings-connection-dot error';
+                if (textEl) textEl.textContent = data.error || 'Connection failed';
+            }
+        } catch (err) {
+            if (dotEl) dotEl.className = 'settings-connection-dot error';
+            if (textEl) textEl.textContent = 'Request failed';
+        }
+    },
+
+    async _saveClaudeFieldsQuiet() {
+        const payload = {
+            claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
+            agents_root: ($('#setup-agents-root') || {}).value || '',
+            execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
+        };
+        try {
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+        } catch (e) { /* silent */ }
+    },
+
+    async saveClaudeSettings() {
+        const payload = {
+            claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
+            agents_root: ($('#setup-agents-root') || {}).value || '',
+            response_timeout: 300,
+            execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
+        };
+
+        try {
+            const resp = await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await resp.json();
+            if (data.success) {
+                this.markDone(6);
+                showToast('Claude Code settings saved!', 'success');
+            } else {
+                showToast(data.error || 'Failed to save', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to save Claude settings', 'error');
         }
     },
 

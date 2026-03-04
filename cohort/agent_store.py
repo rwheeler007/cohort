@@ -431,3 +431,21 @@ class AgentStore:
             del self._cache[agent_id]
             return True
         return False
+
+
+# =====================================================================
+# Module-level singleton accessor
+# =====================================================================
+
+_global_store: AgentStore | None = None
+
+
+def set_global_store(store: AgentStore) -> None:
+    """Set the module-level AgentStore singleton.  Called during server startup."""
+    global _global_store  # noqa: PLW0603
+    _global_store = store
+
+
+def get_store() -> AgentStore | None:
+    """Return the module-level AgentStore singleton, or None if not initialized."""
+    return _global_store

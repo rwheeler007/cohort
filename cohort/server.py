@@ -350,6 +350,83 @@ async def get_outputs(request: Request) -> JSONResponse:
     return JSONResponse({"outputs": outputs})
 
 
+async def create_task(request: Request) -> JSONResponse:
+    """POST /api/tasks -- create a task via HTTP (MCP-friendly).
+
+    Mirrors the Socket.IO ``assign_task`` event but over HTTP so MCP
+    tools can submit tasks without needing a WebSocket connection.
+    """
+    if _data_layer is None:
+        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    agent_id = body.get("agent_id")
+    description = body.get("description")
+    priority = body.get("priority", "medium")
+
+    if not agent_id or not description:
+        return JSONResponse(
+            {"error": "Missing required fields: agent_id, description"},
+            status_code=400,
+        )
+
+    task = _data_layer.assign_task(agent_id, description, priority)
+
+    # Broadcast via Socket.IO if available
+    try:
+        from cohort.socketio_events import sio
+        import asyncio
+        asyncio.create_task(sio.emit("cohort:task_assigned", task))
+    except Exception:
+        pass  # Socket.IO not available -- task still created
+
+    return JSONResponse({"success": True, "task": task})
+
+
+async def update_task(request: Request) -> JSONResponse:
+    """PATCH /api/tasks/{task_id} -- update task status/output (MCP-friendly).
+
+    Supports advancing tasks through the lifecycle and attaching output
+    for the review pipeline.
+    """
+    if _data_layer is None:
+        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+
+    task_id = request.path_params.get("task_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    status = body.get("status")
+    output = body.get("output")
+
+    if status == "complete":
+        task = _data_layer.complete_task(task_id, output=output)
+    elif status:
+        task = _data_layer.update_task_progress(task_id, status, progress=body.get("progress"))
+    else:
+        return JSONResponse({"error": "Missing 'status' field"}, status_code=400)
+
+    if task is None:
+        return JSONResponse({"error": f"Task '{task_id}' not found"}, status_code=404)
+
+    # Broadcast via Socket.IO
+    try:
+        from cohort.socketio_events import sio
+        import asyncio
+        event = "cohort:task_complete" if status == "complete" else "cohort:task_progress"
+        asyncio.create_task(sio.emit(event, task))
+    except Exception:
+        pass
+
+    return JSONResponse({"success": True, "task": task})
+
+
 async def get_agent_registry(request: Request) -> JSONResponse:
     """GET /api/agent-registry -- return all agent visual profiles (avatars, colors, nicknames)."""
     from cohort.agent_registry import get_all_agents
@@ -878,6 +955,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "response_timeout": settings.get("response_timeout", 300),
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
+        "admin_mode": settings.get("admin_mode", False),
     })
 
 
@@ -904,6 +982,8 @@ async def post_settings(request: Request) -> JSONResponse:
     if "execution_backend" in body:
         if body["execution_backend"] in ("cli", "api", "chat"):
             settings["execution_backend"] = body["execution_backend"]
+    if "admin_mode" in body:
+        settings["admin_mode"] = bool(body["admin_mode"])
 
     _save_settings(settings)
 
@@ -1250,6 +1330,49 @@ async def setup_save_config(request: Request) -> JSONResponse:
     return JSONResponse({"success": True})
 
 
+async def setup_detect_claude(request: Request) -> JSONResponse:
+    """POST /api/setup/detect-claude -- auto-detect Claude CLI and agents root."""
+    import shutil
+    import subprocess as _sp
+
+    # 1. Find Claude CLI on PATH
+    claude_path = shutil.which("claude")
+    found = claude_path is not None
+
+    # 2. If found, get version
+    version = ""
+    if found:
+        try:
+            result = _sp.run(
+                [claude_path, "--version"],
+                capture_output=True, text=True, timeout=10,
+                shell=True, encoding="utf-8", errors="replace",
+            )
+            if result.returncode == 0:
+                version = result.stdout.strip() or result.stderr.strip()
+        except Exception:
+            pass
+
+    # 3. Auto-detect agents root (look for agents/ dir relative to Cohort)
+    agents_root = ""
+    cohort_root = Path(__file__).resolve().parent.parent
+    if (cohort_root / "agents").is_dir():
+        agents_root = str(cohort_root)
+
+    # 4. Return existing saved values for pre-population
+    settings = _load_settings()
+
+    return JSONResponse({
+        "found": found,
+        "claude_path": claude_path or "",
+        "version": version,
+        "agents_root_detected": agents_root,
+        "existing_claude_cmd": settings.get("claude_cmd", ""),
+        "existing_agents_root": settings.get("agents_root", ""),
+        "platform": __import__("platform").system().lower(),
+    })
+
+
 # =====================================================================
 # Agent persistence helpers
 # =====================================================================
@@ -1496,6 +1619,7 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     # -- Agent store (file-backed agent configs + memory) ---------------
     from cohort.agent_registry import _LEGACY_REGISTRY, set_store
+    from cohort.agent_store import set_global_store
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
     agents_dir = Path(agents_dir_env) if agents_dir_env else Path(resolved_dir) / "agents"
@@ -1508,6 +1632,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         api_key=api_key,
     )
     set_store(_agent_store)
+    set_global_store(_agent_store)
 
     # -- Load tool permissions (central defaults) ----------------------
     from cohort.tool_permissions import load_central_permissions
@@ -1575,6 +1700,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/permissions", post_permissions, methods=["POST"]),
         Route("/api/tools", list_tools, methods=["GET"]),
         Route("/api/tasks", get_task_queue, methods=["GET"]),
+        Route("/api/tasks", create_task, methods=["POST"]),
+        Route("/api/tasks/{task_id}", update_task, methods=["PATCH"]),
         Route("/api/outputs", get_outputs, methods=["GET"]),
         # Setup wizard endpoints
         Route("/api/setup/status", setup_status, methods=["GET"]),
@@ -1584,6 +1711,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/verify", setup_verify_model, methods=["POST"]),
         Route("/api/setup/topics", setup_get_topics, methods=["GET"]),
         Route("/api/setup/save-config", setup_save_config, methods=["POST"]),
+        Route("/api/setup/detect-claude", setup_detect_claude, methods=["POST"]),
         # Roundtable endpoints
         Route("/api/roundtable/sessions", list_roundtable_sessions, methods=["GET"]),
         Route("/api/roundtable/setup-parse", roundtable_setup_parse, methods=["POST"]),

@@ -13,7 +13,8 @@
   "aliases": ["setup", "guide", "onboard"],
   "triggers": [
     "setup", "install", "onboard", "getting started", "first time",
-    "ollama", "gpu", "hardware", "new user", "help me start"
+    "ollama", "gpu", "hardware", "new user", "help me start",
+    "claude code", "claude cli", "connect claude"
   ],
   "capabilities": [
     "Hardware detection walkthrough (GPU, VRAM, CPU-only mode)",
@@ -22,7 +23,8 @@
     "Cohort CLI first-run experience",
     "Agent introduction and capability overview",
     "Troubleshooting common setup issues",
-    "Plain-English explanation of local LLM concepts"
+    "Plain-English explanation of local LLM concepts",
+    "Claude Code CLI connection and troubleshooting"
   ],
   "domain_expertise": [
     "Hardware detection output interpretation (detect_hardware())",
@@ -31,7 +33,9 @@
     "GPU vs CPU-only mode implications",
     "VRAM requirements for common models",
     "Cohort agent system overview",
-    "First-run troubleshooting patterns"
+    "First-run troubleshooting patterns",
+    "Claude Code CLI installation and connection",
+    "Execution backend selection (CLI vs API vs chat-routed)"
   ],
   "task_context": {
     "description": "Guide new users from zero to their first successful conversation with a Cohort agent running on local hardware",
@@ -40,13 +44,15 @@
       "Guide Ollama installation step by step",
       "Help pull an appropriate model for the user's hardware",
       "Verify the model works with a test chat",
-      "Introduce the 5 shipped agents and what each one does"
+      "Introduce the 5 shipped agents and what each one does",
+      "Guide Claude Code CLI connection (optional step)"
     ],
     "deliverables": [
       "Working Ollama installation",
       "At least one model pulled and verified",
       "User understands their hardware capabilities",
-      "User knows which agents are available and what they do"
+      "User knows which agents are available and what they do",
+      "User understands Claude Code is optional and how to configure it"
     ]
   },
   "environment": {
@@ -78,7 +84,8 @@
       "Hardware detection and GPU capabilities",
       "Local LLM model selection",
       "Cohort agent ecosystem",
-      "Non-technical user communication"
+      "Non-technical user communication",
+      "Claude Code CLI setup"
     ],
     "skill_levels": {
       "ollama_setup": 9,
@@ -90,7 +97,8 @@
       "agent_ecosystem_knowledge": 6,
       "advanced_gpu_config": 4,
       "linux_administration": 4,
-      "networking": 3
+      "networking": 3,
+      "claude_code_setup": 7
     }
   },
   "common_pitfalls": [
@@ -123,6 +131,11 @@
       "issue": "Pipe-to-shell without security caveat",
       "description": "Recommending 'curl | sh' install patterns without noting that users should verify the URL and source, normalizing insecure installation habits.",
       "solution": "When suggesting curl-pipe-to-shell installs, add: 'This is the official install script from ollama.com. Always verify URLs before piping to shell.'"
+    },
+    {
+      "issue": "Making Claude Code seem required",
+      "description": "Presenting the Claude Code connection as a mandatory step, causing confusion or frustration for users who only want local AI and don't have an Anthropic account.",
+      "solution": "Always emphasize that Claude Code is optional. Local Ollama inference works fully without it. Frame it as 'adding superpowers' not 'finishing setup'."
     }
   ],
   "partnerships": {

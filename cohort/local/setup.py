@@ -38,7 +38,17 @@ OLLAMA_WINDOWS_INSTALLER = (
 )
 OLLAMA_LINUX_SCRIPT = "https://ollama.com/install.sh"
 
-TOTAL_STEPS = 6
+TOTAL_STEPS = 7
+
+# MCP server config snippet for Claude Code settings
+MCP_SERVER_CONFIG: dict[str, Any] = {
+    "mcpServers": {
+        "local_llm": {
+            "command": "python",
+            "args": ["-m", "cohort.mcp.local_llm_server"],
+        }
+    }
+}
 
 # Curated RSS feeds by topic for Step 6
 TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
@@ -355,6 +365,63 @@ def _download_file(url: str, dest: str) -> bool:
 
 
 # =====================================================================
+# MCP helpers
+# =====================================================================
+
+def _check_mcp_deps() -> dict[str, bool]:
+    """Check if MCP-related packages are importable.
+
+    Returns dict with package name -> importable status.
+    Does NOT import at module level -- keeps wizard dependency-free.
+    """
+    results: dict[str, bool] = {}
+    for pkg in ("fastmcp", "mcp"):
+        try:
+            __import__(pkg)
+            results[pkg] = True
+        except ImportError:
+            results[pkg] = False
+    return results
+
+
+def _write_mcp_settings() -> bool:
+    """Write or merge MCP server config into .claude/settings.local.json.
+
+    Locates .claude/ in the current working directory (project-level).
+    If the file exists, merges mcpServers without clobbering other keys.
+    If it doesn't exist, creates the directory and file.
+
+    Returns True on success, False on any error.
+    """
+    claude_dir = Path.cwd() / ".claude"
+    settings_path = claude_dir / "settings.local.json"
+
+    try:
+        existing: dict[str, Any] = {}
+        if settings_path.exists():
+            try:
+                existing = json.loads(settings_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                _print_warn("Existing settings.local.json is invalid, creating fresh.")
+                existing = {}
+
+        if "mcpServers" not in existing:
+            existing["mcpServers"] = {}
+        existing["mcpServers"]["local_llm"] = MCP_SERVER_CONFIG["mcpServers"]["local_llm"]
+
+        claude_dir.mkdir(parents=True, exist_ok=True)
+        settings_path.write_text(
+            json.dumps(existing, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return True
+
+    except OSError as exc:
+        _print_fail(f"Write failed: {exc}")
+        return False
+
+
+# =====================================================================
 # Step 1: Hardware Detection
 # =====================================================================
 
@@ -624,11 +691,87 @@ def _step_verify(model: str) -> bool:
 
 
 # =====================================================================
-# Step 6: Content Pipeline
+# Step 6: MCP Server Setup
+# =====================================================================
+
+def _step_mcp_setup(model: str) -> bool:
+    """Step 6: Verify MCP server dependencies and show Claude Code config.
+
+    Checks fastmcp/mcp packages, Ollama reachability, and offers to write
+    the MCP server config into .claude/settings.local.json.
+
+    Returns True always (graceful -- never fails the wizard).
+    """
+    _print_step(6, "MCP Server Setup (Claude Code Integration)")
+
+    print("  The Cohort MCP server lets Claude Code use your local AI")
+    print("  model as a tool -- draft code, transform data, and more,")
+    print("  all running on your machine for free.")
+    print()
+
+    # --- Check 1: Package imports ---
+    _print_info("Checking for MCP dependencies...")
+    deps = _check_mcp_deps()
+
+    if all(deps.values()):
+        _print_ok("fastmcp and mcp packages found.")
+    else:
+        missing = [pkg for pkg, ok in deps.items() if not ok]
+        _print_warn(f"Missing packages: {', '.join(missing)}")
+        print()
+        print("  Install them with:")
+        print()
+        print("    pip install cohort[claude]")
+        print()
+        print("  This adds the MCP server capability. You can run")
+        print("  'cohort setup' again after installing to configure it.")
+        print()
+        return True  # Graceful -- don't fail the wizard
+
+    # --- Check 2: Ollama reachability ---
+    _print_info("Verifying Ollama is reachable for MCP server...")
+
+    if _is_ollama_running():
+        _print_ok("Ollama is reachable. MCP server will work.")
+    else:
+        _print_warn("Ollama is not responding. The MCP server needs Ollama running.")
+        _print_info("Make sure Ollama is running when you use Claude Code.")
+
+    # --- Check 3: Model availability ---
+    if _model_is_installed(model):
+        _print_ok(f"Model {model} is available for MCP inference.")
+    else:
+        _print_info(f"Model {model} not found -- pull it with: ollama pull {model}")
+
+    print()
+
+    # --- Show config snippet ---
+    print("  To use the MCP server with Claude Code, add this to your")
+    print("  project's .claude/settings.local.json:")
+    print()
+    snippet = json.dumps(MCP_SERVER_CONFIG, indent=2)
+    for line in snippet.split("\n"):
+        print(f"    {line}")
+    print()
+
+    # --- Offer to write config ---
+    if _ask_yes_no("Write this config to .claude/settings.local.json now?"):
+        if _write_mcp_settings():
+            _print_ok("MCP config written. Claude Code will detect it automatically.")
+        else:
+            _print_warn("Could not write config. Copy the snippet above manually.")
+    else:
+        _print_info("No problem -- paste the snippet into your settings when ready.")
+
+    return True
+
+
+# =====================================================================
+# Step 7: Content Pipeline
 # =====================================================================
 
 def _step_content_pipeline(data_dir: str = "data") -> bool:
-    _print_step(6, "Set Up Your Content Pipeline (Optional)")
+    _print_step(7, "Set Up Your Content Pipeline (Optional)")
 
     print("  Cohort can monitor RSS feeds and help you create content.")
     print("  Your Marketing Agent and Content Strategy Agent will use")
@@ -759,7 +902,12 @@ def _print_success(hw: HardwareInfo, model: str) -> None:
     print("    2. Open your browser:")
     print("       http://localhost:5100")
     print()
-    print("    3. Meet the team -- your agents are ready to work with you!")
+    print("    3. Claude Code integration:")
+    print("       If you set up the MCP server, Claude Code can now")
+    print("       use your local model as a tool. Just open a project")
+    print("       and start coding!")
+    print()
+    print("    4. Meet the team -- your agents are ready to work with you!")
     print()
     print("  Run 'cohort setup' anytime to re-check your configuration.")
     print("=" * 64)
@@ -795,7 +943,10 @@ def run_setup() -> int:
         if model_ok:
             _step_verify(model)
 
-        # Step 6: Content pipeline
+        # Step 6: MCP Server Setup
+        _step_mcp_setup(model)
+
+        # Step 7: Content pipeline
         _step_content_pipeline()
 
         # Success

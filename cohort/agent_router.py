@@ -254,6 +254,32 @@ def apply_settings(settings: dict) -> None:
 
 
 # =====================================================================
+# Dynamic agent type helpers
+# =====================================================================
+
+def _find_orchestrator_agent() -> str | None:
+    """Find the first registered orchestrator agent by type, not by name.
+
+    Returns the agent_id of the first agent with agent_type='orchestrator',
+    or None if none exists.
+    """
+    if _agent_store is None:
+        return None
+    for agent in _agent_store.list_agents():
+        if agent.agent_type == "orchestrator" and agent.status == "active":
+            return agent.agent_id
+    return None
+
+
+def _get_agent_type(agent_id: str) -> str | None:
+    """Look up an agent's type from the AgentStore."""
+    if _agent_store is None:
+        return None
+    config = _agent_store.get(agent_id)
+    return config.agent_type if config else None
+
+
+# =====================================================================
 # Agent resolution
 # =====================================================================
 
@@ -841,9 +867,9 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         if mention_lower == sender.lower():
             continue
 
-        # Handle @all -> route to BOSS orchestrator
+        # Handle @all -> route to the orchestrator agent (discovered dynamically)
         if mention_lower == "all":
-            mention = "boss_agent"
+            mention = _find_orchestrator_agent() or "cohort_orchestrator"
 
         # Resolve alias
         resolved = resolve_agent_id(mention)
@@ -876,10 +902,11 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
         priority = 50 - priority_boost
         priority_boost = max(priority_boost, 10)  # subsequent agents get lower priority
 
-        # BOSS orchestrator gets priority boost when directly invoked
-        if resolved == "boss_agent":
-            is_first_mention = mentions[0].lower().replace("-", "_") in ("boss_agent", "boss")
+        # Orchestrator agents get priority boost for coordination messages
+        agent_type = _get_agent_type(resolved)
+        if agent_type == "orchestrator":
             content_lower = message.content.lower()
+            is_first_mention = mentions[0].lower().replace("-", "_").replace(" ", "_") == resolved
             has_coordination_keywords = any(w in content_lower for w in (
                 "coordinate", "route", "task", "plan", "workflow",
                 "delegate", "assign", "orchestrate",
@@ -891,12 +918,6 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
                 priority = 2
             elif has_coordination_keywords:
                 priority = 5
-
-        # Coding orchestrator gets extra priority for coordination messages
-        elif resolved == "coding_orchestrator":
-            content_lower = message.content.lower()
-            if any(w in content_lower for w in ("coordinate", "route", "task", "plan", "workflow")):
-                priority = max(10, priority - 20)
 
         queue_agent_response(
             agent_id=resolved,

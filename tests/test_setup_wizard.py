@@ -16,9 +16,11 @@ import pytest
 from cohort.local.config import MODEL_DESCRIPTIONS, get_model_for_vram
 from cohort.local.detect import HardwareInfo
 from cohort.local.setup import (
+    MCP_SERVER_CONFIG,
     OLLAMA_BASE_URL,
     TOPIC_FEEDS,
     _ask_yes_no,
+    _check_mcp_deps,
     _format_vram,
     _is_ollama_on_path,
     _is_ollama_running,
@@ -27,9 +29,11 @@ from cohort.local.setup import (
     _pull_model_streaming,
     _step_content_pipeline,
     _step_detect_hardware,
+    _step_mcp_setup,
     _step_pull_model,
     _step_verify,
     _vram_quality,
+    _write_mcp_settings,
     run_setup,
 )
 
@@ -333,7 +337,221 @@ class TestStepVerify:
 
 
 # =====================================================================
-# Step 6: Content pipeline
+# Step 6: MCP Server Setup
+# =====================================================================
+
+
+class TestCheckMcpDeps:
+    def test_return_shape(self):
+        """Returns a dict with both package names as keys."""
+        results = _check_mcp_deps()
+        assert "fastmcp" in results
+        assert "mcp" in results
+        assert all(isinstance(v, bool) for v in results.values())
+
+    def test_missing_packages(self):
+        """When packages are not importable, returns False."""
+        real_import = __builtins__["__import__"] if isinstance(__builtins__, dict) else __builtins__.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name in ("fastmcp", "mcp"):
+                raise ImportError(f"No module named '{name}'")
+            return real_import(name, *args, **kwargs)
+
+        with patch("builtins.__import__", side_effect=mock_import):
+            results = _check_mcp_deps()
+        assert results["fastmcp"] is False
+        assert results["mcp"] is False
+
+    def test_partial_missing(self):
+        """When only one package is missing."""
+        real_import = __builtins__["__import__"] if isinstance(__builtins__, dict) else __builtins__.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "fastmcp":
+                raise ImportError("No module named 'fastmcp'")
+            return real_import(name, *args, **kwargs)
+
+        with patch("builtins.__import__", side_effect=mock_import):
+            results = _check_mcp_deps()
+        assert results["fastmcp"] is False
+
+
+class TestWriteMcpSettings:
+    def test_creates_new_file(self, tmp_path, monkeypatch):
+        """Creates .claude/settings.local.json when it doesn't exist."""
+        monkeypatch.chdir(tmp_path)
+        result = _write_mcp_settings()
+
+        assert result is True
+        settings_path = tmp_path / ".claude" / "settings.local.json"
+        assert settings_path.exists()
+        config = json.loads(settings_path.read_text())
+        assert config["mcpServers"]["local_llm"]["command"] == "python"
+        assert config["mcpServers"]["local_llm"]["args"] == ["-m", "cohort.mcp.local_llm_server"]
+
+    def test_merges_with_existing(self, tmp_path, monkeypatch):
+        """Preserves existing mcpServers entries when merging."""
+        monkeypatch.chdir(tmp_path)
+        claude_dir = tmp_path / ".claude"
+        claude_dir.mkdir()
+        existing = {
+            "mcpServers": {
+                "other_server": {"command": "node", "args": ["server.js"]}
+            },
+            "permissions": {"allow": ["Read"]},
+        }
+        (claude_dir / "settings.local.json").write_text(
+            json.dumps(existing), encoding="utf-8",
+        )
+
+        result = _write_mcp_settings()
+
+        assert result is True
+        config = json.loads((claude_dir / "settings.local.json").read_text())
+        assert "other_server" in config["mcpServers"]
+        assert "local_llm" in config["mcpServers"]
+        assert "permissions" in config
+
+    def test_overwrites_stale_local_llm(self, tmp_path, monkeypatch):
+        """Updates existing local_llm entry if it already exists."""
+        monkeypatch.chdir(tmp_path)
+        claude_dir = tmp_path / ".claude"
+        claude_dir.mkdir()
+        existing = {
+            "mcpServers": {
+                "local_llm": {"command": "old_python", "args": ["old_server.py"]}
+            }
+        }
+        (claude_dir / "settings.local.json").write_text(
+            json.dumps(existing), encoding="utf-8",
+        )
+
+        result = _write_mcp_settings()
+
+        assert result is True
+        config = json.loads((claude_dir / "settings.local.json").read_text())
+        assert config["mcpServers"]["local_llm"]["command"] == "python"
+
+    def test_handles_corrupt_json(self, tmp_path, monkeypatch, capsys):
+        """Recovers from corrupt existing settings file."""
+        monkeypatch.chdir(tmp_path)
+        claude_dir = tmp_path / ".claude"
+        claude_dir.mkdir()
+        (claude_dir / "settings.local.json").write_text(
+            "not json at all {{{", encoding="utf-8",
+        )
+
+        result = _write_mcp_settings()
+
+        assert result is True
+        config = json.loads((claude_dir / "settings.local.json").read_text())
+        assert "local_llm" in config["mcpServers"]
+        captured = capsys.readouterr()
+        assert "invalid" in captured.out.lower() or "creating fresh" in captured.out.lower()
+
+    def test_write_failure(self, tmp_path, monkeypatch, capsys):
+        """Returns False when the filesystem is unwritable."""
+        monkeypatch.chdir(tmp_path)
+        with patch("pathlib.Path.mkdir", side_effect=OSError("Permission denied")):
+            result = _write_mcp_settings()
+        assert result is False
+        captured = capsys.readouterr()
+        assert "Write failed" in captured.out
+
+
+class TestStepMcpSetup:
+    def test_deps_missing_shows_install_instructions(self, capsys):
+        """When MCP deps are missing, shows pip install instruction."""
+        with patch(
+            "cohort.local.setup._check_mcp_deps",
+            return_value={"fastmcp": False, "mcp": False},
+        ):
+            result = _step_mcp_setup("qwen3:8b")
+
+        assert result is True
+        captured = capsys.readouterr()
+        assert "pip install cohort[claude]" in captured.out
+        assert "Missing packages" in captured.out
+
+    def test_happy_path_user_declines_write(self, capsys):
+        """Deps installed, Ollama running, user declines config write."""
+        with (
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
+            patch("cohort.local.setup._is_ollama_running", return_value=True),
+            patch("cohort.local.setup._model_is_installed", return_value=True),
+            patch("builtins.input", return_value="n"),
+        ):
+            result = _step_mcp_setup("qwen3:8b")
+
+        assert result is True
+        captured = capsys.readouterr()
+        assert "fastmcp and mcp packages found" in captured.out
+        assert "Ollama is reachable" in captured.out
+        assert "mcpServers" in captured.out
+
+    def test_ollama_not_running_warns(self, capsys):
+        """Deps installed but Ollama is down -- warns but doesn't fail."""
+        with (
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
+            patch("cohort.local.setup._is_ollama_running", return_value=False),
+            patch("cohort.local.setup._model_is_installed", return_value=False),
+            patch("builtins.input", return_value="n"),
+        ):
+            result = _step_mcp_setup("qwen3:8b")
+
+        assert result is True
+        captured = capsys.readouterr()
+        assert "not responding" in captured.out
+
+    def test_user_accepts_config_write(self, tmp_path, monkeypatch, capsys):
+        """User accepts auto-write of MCP config."""
+        monkeypatch.chdir(tmp_path)
+
+        with (
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
+            patch("cohort.local.setup._is_ollama_running", return_value=True),
+            patch("cohort.local.setup._model_is_installed", return_value=True),
+            patch("builtins.input", return_value="y"),
+        ):
+            result = _step_mcp_setup("qwen3:8b")
+
+        assert result is True
+        settings_path = tmp_path / ".claude" / "settings.local.json"
+        assert settings_path.exists()
+        config = json.loads(settings_path.read_text())
+        assert "local_llm" in config["mcpServers"]
+
+    def test_shows_model_name(self, capsys):
+        """The model name from earlier steps is mentioned."""
+        with (
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
+            patch("cohort.local.setup._is_ollama_running", return_value=True),
+            patch("cohort.local.setup._model_is_installed", return_value=True),
+            patch("builtins.input", return_value="n"),
+        ):
+            _step_mcp_setup("qwen3:30b-a3b")
+
+        captured = capsys.readouterr()
+        assert "qwen3:30b-a3b" in captured.out
+
+
+class TestMcpServerConfig:
+    def test_config_structure(self):
+        """MCP_SERVER_CONFIG has the expected structure."""
+        assert "mcpServers" in MCP_SERVER_CONFIG
+        assert "local_llm" in MCP_SERVER_CONFIG["mcpServers"]
+        server = MCP_SERVER_CONFIG["mcpServers"]["local_llm"]
+        assert server["command"] == "python"
+        assert server["args"] == ["-m", "cohort.mcp.local_llm_server"]
+
+
+# =====================================================================
+# Step 7: Content pipeline
 # =====================================================================
 
 
@@ -451,12 +669,14 @@ class TestRunSetup:
         mock_client.generate.return_value = mock_generate
         mock_client.list_models.return_value = ["qwen3:30b-a3b"]
 
-        # Input: "n" to skip content pipeline
+        # Input: "n" to skip MCP write + content pipeline
         with (
             patch("cohort.local.setup.detect_hardware", return_value=mock_hw),
             patch("cohort.local.setup._is_ollama_running", return_value=True),
             patch("cohort.local.setup._model_is_installed", return_value=True),
             patch("cohort.local.setup.OllamaClient", return_value=mock_client),
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
             patch("builtins.input", return_value="n"),
         ):
             exit_code = run_setup()
@@ -483,6 +703,8 @@ class TestRunSetup:
             patch("cohort.local.setup._is_ollama_running", return_value=True),
             patch("cohort.local.setup._model_is_installed", return_value=True),
             patch("cohort.local.setup.OllamaClient", return_value=mock_client),
+            patch("cohort.local.setup._check_mcp_deps",
+                  return_value={"fastmcp": True, "mcp": True}),
             patch("builtins.input", return_value="n"),
         ):
             exit_code = run_setup()

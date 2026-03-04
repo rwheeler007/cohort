@@ -1,11 +1,13 @@
-"""Tests for cohort.agent_router -- BOSS-first routing and priority."""
+"""Tests for cohort.agent_router -- orchestrator-first routing and priority."""
 
+import json
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 import cohort.agent_router as router_mod
+from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager, Message
 from cohort.registry import JsonFileStorage
 
@@ -13,6 +15,15 @@ from cohort.registry import JsonFileStorage
 # =====================================================================
 # Fixtures
 # =====================================================================
+
+# Agent type declarations for test fixtures
+_TEST_AGENT_TYPES = {
+    "boss_agent": "orchestrator",
+    "ceo_agent": "strategic",
+    "python_developer": "specialist",
+    "coding_orchestrator": "orchestrator",
+}
+
 
 @pytest.fixture
 def storage(tmp_path: Path) -> JsonFileStorage:
@@ -26,7 +37,7 @@ def chat(storage: JsonFileStorage) -> ChatManager:
 
 @pytest.fixture
 def agents_root(tmp_path: Path) -> Path:
-    """Create a minimal agents directory with prompt files."""
+    """Create a minimal agents directory with prompt files and configs."""
     agents_dir = tmp_path / "agents"
     for agent_id in ("boss_agent", "ceo_agent", "python_developer", "coding_orchestrator"):
         agent_dir = agents_dir / agent_id
@@ -34,15 +45,30 @@ def agents_root(tmp_path: Path) -> Path:
         (agent_dir / "agent_prompt.md").write_text(
             f"You are {agent_id}.", encoding="utf-8"
         )
+        config = {
+            "agent_id": agent_id,
+            "name": agent_id.replace("_", " ").title(),
+            "role": "Test Agent",
+            "agent_type": _TEST_AGENT_TYPES.get(agent_id, "specialist"),
+        }
+        (agent_dir / "agent_config.json").write_text(
+            json.dumps(config), encoding="utf-8"
+        )
     return tmp_path
 
 
 @pytest.fixture(autouse=True)
 def _reset_router(chat: ChatManager, agents_root: Path):
-    """Reset router state before each test."""
-    router_mod.setup_agent_router(chat, sio=None, agents_root=agents_root)
+    """Reset router state before each test, wiring an AgentStore."""
+    store = AgentStore(agents_dir=agents_root / "agents")
+    router_mod.setup_agent_router(
+        chat, sio=None, agents_root=agents_root, store=store,
+    )
     yield
-    router_mod.setup_agent_router(chat, sio=None, agents_root=agents_root)
+    store = AgentStore(agents_dir=agents_root / "agents")
+    router_mod.setup_agent_router(
+        chat, sio=None, agents_root=agents_root, store=store,
+    )
 
 
 def _msg(
@@ -83,16 +109,16 @@ class TestBossAliasResolution:
 
 
 # =====================================================================
-# BOSS-first priority routing
+# Orchestrator-first priority routing
 # =====================================================================
 
-class TestBossFirstPriority:
-    """BOSS gets priority boost only when directly invoked (first mention)
-    or when coordination keywords are present. Otherwise follows normal
-    priority rules so more relevant agents can respond first."""
+class TestOrchestratorFirstPriority:
+    """Orchestrator-type agents get priority boost when directly invoked
+    (first mention) or when coordination keywords are present. Otherwise
+    follows normal priority rules so more relevant agents respond first."""
 
-    def test_boss_first_mention_responds_first(self, chat):
-        """Direct first-tag to BOSS gives it priority over other agents."""
+    def test_orchestrator_first_mention_responds_first(self, chat):
+        """Direct first-tag to an orchestrator gives it priority over other agents."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@boss_agent please get @ceo_agent and @python_developer input")
 
@@ -107,8 +133,8 @@ class TestBossFirstPriority:
         for entry in queue[1:]:
             assert entry["priority"] > queue[0]["priority"]
 
-    def test_boss_with_coordination_keywords_responds_first(self, chat):
-        """Coordination keywords boost BOSS even when not first mention."""
+    def test_orchestrator_with_coordination_keywords_responds_first(self, chat):
+        """Coordination keywords boost orchestrator even when not first mention."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@python_developer @ceo_agent @boss_agent help coordinate")
 
@@ -120,8 +146,8 @@ class TestBossFirstPriority:
         assert queue[0]["agent_id"] == "boss_agent"
         assert queue[0]["priority"] == 5
 
-    def test_boss_not_first_no_keywords_normal_priority(self, chat):
-        """BOSS mentioned last without keywords gets normal priority --
+    def test_orchestrator_not_first_no_keywords_normal_priority(self, chat):
+        """Orchestrator mentioned last without keywords gets normal priority --
         lets more relevant agents respond first."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@python_developer @boss_agent what do you think?")
@@ -138,8 +164,8 @@ class TestBossFirstPriority:
         pd_entry = next(e for e in queue if e["agent_id"] == "python_developer")
         assert boss_entry["priority"] == pd_entry["priority"] - 10
 
-    def test_boss_solo_mention_first_tag(self, chat):
-        """Solo BOSS mention = first tag, gets boost."""
+    def test_orchestrator_solo_mention_first_tag(self, chat):
+        """Solo orchestrator mention = first tag, gets boost."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@boss_agent what's the status?")
 
@@ -151,8 +177,8 @@ class TestBossFirstPriority:
         assert queue[0]["agent_id"] == "boss_agent"
         assert queue[0]["priority"] == 2
 
-    def test_boss_first_mention_gets_extra_boost(self, chat):
-        """Direct first-tag to BOSS gets priority 2."""
+    def test_orchestrator_first_mention_gets_extra_boost(self, chat):
+        """Direct first-tag to orchestrator gets priority 2."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@boss_agent get @python_developer to review this")
 

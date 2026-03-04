@@ -2816,6 +2816,17 @@ textarea.form-input {
     }
 }
 
+/* Tighter step indicators for 6 steps on narrow screens */
+@media (max-width: 680px) {
+    .setup-step__label {
+        display: none;
+    }
+
+    .setup-step__connector {
+        width: 12px;
+    }
+}
+
 /* =============================================================================
    Tool Dashboard Panel
    ============================================================================= */
@@ -2825,7 +2836,7 @@ textarea.form-input {
 }
 
 .tool-dashboard {
-    max-width: 800px;
+    width: 100%;
 }
 
 .tool-dashboard__header {
@@ -3052,33 +3063,256 @@ select.tool-config-card__input option {
     justify-content: flex-end;
 }
 
-/* LLM Manager specific */
-.llm-model-list {
+/* Locked config cards (Tier 2 when admin mode off) */
+.tool-config-card--locked {
+    opacity: 0.6;
+}
+
+.tool-config-card__value--locked {
+    font-style: italic;
+}
+
+.btn--lock-config {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted, #666);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    font-family: var(--font-family);
+    line-height: 1;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn--lock-config:hover {
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+}
+
+/* Admin mode toggle switch */
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 22px;
+    background: var(--color-bg-tertiary);
+    border-radius: 11px;
+    position: relative;
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-text-muted, #666);
+    top: 2px;
+    left: 2px;
+    transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.toggle-input:checked + .toggle-switch {
+    background: var(--color-accent);
+}
+
+.toggle-input:checked + .toggle-switch::after {
+    transform: translateX(18px);
+    background: white;
+}
+
+/* Tool help chat panel */
+.tool-help-chat {
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-4);
+}
+
+.tool-help-chat__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+}
+
+.tool-help-chat__toggle:hover {
+    color: var(--color-text-primary);
+}
+
+.tool-help-chat__label {
+    font-weight: 500;
+}
+
+.tool-help-chat__arrow {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.tool-help-chat__body {
+    border-top: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
+}
+
+.tool-help-chat__messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.tool-help-chat__empty {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+    margin: 0;
+    text-align: center;
+    padding: var(--space-4) 0;
+}
+
+.tool-help-msg {
+    display: flex;
     gap: var(--space-2);
+    align-items: flex-start;
+}
+
+.tool-help-msg__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+}
+
+.tool-help-msg__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.tool-help-msg__sender {
+    font-weight: 600;
+    font-size: var(--font-size-xs);
+    margin-bottom: 2px;
+}
+
+.tool-help-msg__text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.tool-help-msg__text code {
+    font-family: var(--font-family-mono, monospace);
+    background-color: var(--color-bg-primary);
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+}
+
+.tool-help-chat__typing {
+    padding: 0 var(--space-3) var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.tool-help-typing__text {
+    animation: pulse-fade 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-fade {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.tool-help-chat__input-area {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+}
+
+.tool-help-chat__input {
+    flex: 1;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+}
+
+.tool-help-chat__input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.tool-help-chat__input::placeholder {
+    color: var(--color-text-muted, #666);
+}
+
+/* LLM Manager specific */
+.llm-model-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-3);
     margin-top: var(--space-3);
 }
 
 .llm-model-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     background-color: var(--color-bg-primary);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-3);
+    gap: var(--space-2);
+    transition: border-color var(--transition-fast);
+}
+
+.llm-model-item:hover {
+    border-color: var(--color-cohort);
 }
 
 .llm-model-item__info {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
 }
 
 .llm-model-item__name {
     font-weight: 600;
     font-size: var(--font-size-base);
+    word-break: break-all;
 }
 
 .llm-model-item__size {
@@ -3089,12 +3323,14 @@ select.tool-config-card__input option {
 .llm-model-item__actions {
     display: flex;
     gap: var(--space-2);
+    margin-top: auto;
 }
 
 .llm-pull-form {
     display: flex;
     gap: var(--space-2);
     margin-top: var(--space-3);
+    max-width: 500px;
 }
 
 .llm-pull-form input {

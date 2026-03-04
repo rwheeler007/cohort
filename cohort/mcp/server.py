@@ -980,158 +980,175 @@ async def cohort_get_mentions(params: GetMentionsInput) -> str:
 
 
 # =====================================================================
-# Tool 16: cohort_get_channel_checklist
+# Tool 16: cohort_get_work_queue
 # =====================================================================
 
-class GetChannelChecklistInput(BaseModel):
-    """Input for reading a channel's checklist."""
+class GetWorkQueueInput(BaseModel):
+    """Input for reading the work queue."""
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    channel: str = Field(
-        ..., description="Channel ID (e.g. 'proj-my-project').",
-        min_length=1, max_length=100,
-    )
     status: Optional[str] = Field(
-        None, description="Filter by status: 'pending', 'done', or None for all.",
+        None,
+        description=(
+            "Filter by task status: 'briefing', 'assigned', 'in_progress', "
+            "'complete', or None for all."
+        ),
     )
 
 
 @mcp.tool(
-    name="cohort_get_channel_checklist",
+    name="cohort_get_work_queue",
     annotations={
-        "title": "Get Channel Checklist",
+        "title": "Get Work Queue",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": True,
         "openWorldHint": False,
     },
 )
-async def cohort_get_channel_checklist(params: GetChannelChecklistInput) -> str:
-    """Read a channel's task checklist."""
-    data = await _client.read_channel_checklist(params.channel)
-    if data is None:
-        return "Error: Could not read channel checklist."
+async def cohort_get_work_queue(params: GetWorkQueueInput) -> str:
+    """Read the work queue with optional status filtering.
 
-    items = data.get("items", [])
-    if not items:
-        return f"No checklist items for #{params.channel}."
+    Returns task cards showing agent, priority, status, and description.
+    Status lifecycle: briefing -> assigned -> in_progress -> complete.
+    """
+    tasks = await _client.get_task_queue(status=params.status)
+    if tasks is None:
+        return _error_msg(service_down=True)
+    if not tasks:
+        scope = f"(status={params.status})" if params.status else ""
+        return f"Work queue is empty {scope}".strip() + "."
 
-    if params.status == "pending":
-        items = [i for i in items if not i.get("checked", False)]
-    elif params.status == "done":
-        items = [i for i in items if i.get("checked", False)]
-    if not items:
-        return f"No {params.status or ''} tasks in #{params.channel} checklist."
+    lines = [f"## Work Queue ({len(tasks)} tasks)"]
+    for t in tasks:
+        task_id = t.get("task_id", "?")
+        agent = t.get("agent_id", "unassigned")
+        priority = (t.get("priority") or "medium").upper()
+        status = t.get("status", "?")
+        desc = (t.get("description") or "")[:120]
+        created = t.get("created_at", "")
+        if "T" in created:
+            created = created.split("T")[0]
 
-    lines = [f"## #{params.channel} Checklist ({len(items)} tasks)"]
-    for item in items:
-        check = "[x]" if item.get("checked") else "[ ]"
-        content = item.get("content", "?")
-        parts = []
-        if item.get("priority"):
-            parts.append(item["priority"].upper())
-        if item.get("assignee"):
-            parts.append(f"@{item['assignee']}")
-        suffix = f" ({', '.join(parts)})" if parts else ""
-        lines.append(f"- {check} {content}{suffix}")
-    return "\n".join(lines)
+        review = t.get("review")
+        review_str = ""
+        if review:
+            verdict = review.get("verdict", "?")
+            review_str = f" | review: {verdict}"
+
+        lines.append(
+            f"- **{task_id}** [{status}] @{agent} ({priority}) "
+            f"-- {desc} (created: {created}){review_str}"
+        )
+
+    result = "\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
 
 
 # =====================================================================
-# Tool 17: cohort_update_channel_checklist
+# Tool 17: cohort_get_outputs
 # =====================================================================
 
-class UpdateChannelChecklistInput(BaseModel):
-    """Input for modifying a channel's checklist."""
+@mcp.tool(
+    name="cohort_get_outputs",
+    annotations={
+        "title": "Get Outputs for Review",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_outputs() -> str:
+    """Get completed tasks awaiting human review.
+
+    Returns task outputs (diffs, content, summaries) that need
+    approval or rejection before being finalized.
+    """
+    outputs = await _client.get_outputs_for_review()
+    if outputs is None:
+        return _error_msg(service_down=True)
+    if not outputs:
+        return "No outputs pending review."
+
+    lines = [f"## Outputs Pending Review ({len(outputs)} tasks)"]
+    for t in outputs:
+        task_id = t.get("task_id", "?")
+        agent = t.get("agent_id", "?")
+        desc = (t.get("description") or "")[:100]
+        output = t.get("output") or {}
+        # Show a preview of the output
+        preview = (
+            output.get("summary")
+            or output.get("content", "")[:200]
+            or output.get("diff", "")[:200]
+            or "(no output content)"
+        )
+        lines.append(f"\n### {task_id} (@{agent})")
+        lines.append(f"**Task**: {desc}")
+        lines.append(f"**Output preview**: {preview}")
+
+    result = "\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 17b: cohort_assign_task
+# =====================================================================
+
+class AssignTaskInput(BaseModel):
+    """Input for assigning a task to an agent."""
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    channel: str = Field(
-        ..., description="Channel ID (e.g. 'proj-my-project').",
+    agent_id: str = Field(
+        ..., description="Agent ID to assign the task to (e.g. 'python_developer').",
         min_length=1, max_length=100,
     )
-    action: ChecklistAction = Field(
-        ..., description="Action: 'add', 'complete', or 'remove'.",
-    )
-    content: str = Field(
-        ..., description="For 'add': task description. For 'complete'/'remove': text to match.",
+    description: str = Field(
+        ..., description="What the task should accomplish.",
         min_length=1,
     )
-    priority: Optional[str] = Field(
-        "medium", description="Priority for new tasks (add only): high, medium, or low.",
-    )
-    assignee: Optional[str] = Field(
-        None, description="Assignee for new tasks (add only).",
-    )
-    category: Optional[str] = Field(
-        None, description="Category for new tasks (add only).",
+    priority: str = Field(
+        "medium", description="Priority: 'high', 'medium', or 'low'.",
     )
 
 
 @mcp.tool(
-    name="cohort_update_channel_checklist",
+    name="cohort_assign_task",
     annotations={
-        "title": "Update Channel Checklist",
+        "title": "Assign Task",
         "readOnlyHint": False,
         "destructiveHint": False,
         "idempotentHint": False,
         "openWorldHint": False,
     },
 )
-async def cohort_update_channel_checklist(params: UpdateChannelChecklistInput) -> str:
-    """Add, complete, or remove a task on a channel's checklist."""
-    data = await _client.read_channel_checklist(params.channel)
-    if data is None:
-        return "Error: Could not read channel checklist."
+async def cohort_assign_task(params: AssignTaskInput) -> str:
+    """Assign a task to an agent via the Work Queue.
 
-    items = data.get("items", [])
-
-    if params.action == ChecklistAction.ADD:
-        new_item = {
-            "id": str(uuid.uuid4())[:8],
-            "content": params.content,
-            "checked": False,
-            "priority": params.priority or "medium",
-            "category": params.category or "",
-            "assignee": params.assignee,
-            "due_date": None,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": "mcp",
-            "completed_at": None,
-        }
-        items.append(new_item)
-        data["items"] = items
-        if await _client.write_channel_checklist(params.channel, data):
-            return f"Added to #{params.channel}: {params.content} (id: {new_item['id']})"
-        return "Error: Failed to write channel checklist."
-
-    search = params.content.lower()
-    match_idx = None
-    for idx, item in enumerate(items):
-        if search in item.get("content", "").lower():
-            match_idx = idx
-            break
-
-    if match_idx is None:
-        return f"No task matching '{params.content}' in #{params.channel}."
-
-    matched = items[match_idx]
-
-    if params.action == ChecklistAction.COMPLETE:
-        matched["checked"] = True
-        matched["completed_at"] = datetime.now(timezone.utc).isoformat()
-        data["items"] = items
-        if await _client.write_channel_checklist(params.channel, data):
-            return f"Completed in #{params.channel}: {matched['content']}"
-        return "Error: Failed to write channel checklist."
-
-    if params.action == ChecklistAction.REMOVE:
-        removed = items.pop(match_idx)
-        data["items"] = items
-        if await _client.write_channel_checklist(params.channel, data):
-            return f"Removed from #{params.channel}: {removed['content']}"
-        return "Error: Failed to write channel checklist."
-
-    return "Error: Unknown action."
+    Creates a task in 'briefing' status. The agent will receive the
+    task and begin a conversational briefing to confirm scope before
+    starting work. Task lifecycle: briefing -> assigned -> in_progress -> complete.
+    """
+    result = await _client.create_task(
+        agent_id=params.agent_id,
+        description=params.description,
+        priority=params.priority,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        task = result.get("task", {})
+        task_id = task.get("task_id", "?")
+        return (
+            f"Task assigned to @{params.agent_id} (id: {task_id}, "
+            f"priority: {params.priority}, status: briefing)"
+        )
+    return f"Error assigning task: {result.get('error', 'Unknown')}"
 
 
 # =====================================================================
@@ -1321,6 +1338,211 @@ async def cohort_adopt_persona(params: AdoptPersonaInput) -> str:
         f"Agent '{params.agent_id}' not found. "
         f"Use `cohort_list_agents` to see available agents."
     )
+
+
+# =====================================================================
+# Capability Routing Tools
+# =====================================================================
+
+class RouteTaskInput(BaseModel):
+    """Input for dynamic task routing."""
+    model_config = ConfigDict(extra="forbid")
+    task_description: str = Field(
+        description="Description of the task to route to the best agent."
+    )
+    prefer_type: Optional[str] = Field(
+        default=None,
+        description="Prefer agents of this type (e.g. 'specialist', 'orchestrator').",
+    )
+
+
+class FindAgentsInput(BaseModel):
+    """Input for finding agents by topic."""
+    model_config = ConfigDict(extra="forbid")
+    topic: str = Field(
+        description="Topic or task description to match agents against."
+    )
+    max_results: int = Field(default=5, ge=1, le=20)
+    min_score: float = Field(default=0.1, ge=0.0, le=1.0)
+
+
+class PartnershipGraphInput(BaseModel):
+    """Input for partnership graph queries."""
+    model_config = ConfigDict(extra="forbid")
+    agent_id: Optional[str] = Field(
+        default=None,
+        description="Get partnerships for a specific agent. Omit for full graph.",
+    )
+
+
+@mcp.tool()
+async def cohort_route_task(params: RouteTaskInput) -> str:
+    """Route a task to the best-qualified agent based on capabilities.
+
+    Scores all active agents against the task description using their
+    declared triggers, capabilities, domain expertise, and skill levels.
+    Returns the best match with score breakdown.
+    """
+    from cohort.capability_router import find_agents_for_topic
+
+    agents_data = await _client.list_agents()
+    if not agents_data:
+        return "No agents registered."
+
+    # We need AgentConfig objects -- fetch full configs from server
+    from cohort.agent import AgentConfig
+    configs: list[AgentConfig] = []
+    for agent_info in agents_data:
+        agent_id = agent_info.get("agent_id", agent_info.get("id", ""))
+        if not agent_id:
+            continue
+        detail = await _client.get_agent(agent_id)
+        if detail and not detail.get("error"):
+            configs.append(AgentConfig.from_dict(detail))
+
+    if not configs:
+        return "No agent configs available for routing."
+
+    results = find_agents_for_topic(
+        configs,
+        params.task_description,
+        min_score=0.1,
+        max_results=5,
+        prefer_type=params.prefer_type,
+    )
+
+    if not results:
+        return f"No agents match: '{params.task_description}'"
+
+    lines = [f"## Task Routing: {params.task_description[:80]}", ""]
+    for i, (agent, score) in enumerate(results, 1):
+        marker = " [BEST]" if i == 1 else ""
+        lines.append(
+            f"{i}. **@{agent.agent_id}** ({agent.name}) -- "
+            f"score: {score:.2f}{marker}"
+        )
+        lines.append(f"   Role: {agent.role}")
+        if agent.partnerships:
+            partner_ids = list(agent.partnerships.keys())
+            lines.append(f"   Partnerships: {', '.join(partner_ids)}")
+
+    # Check consultations for the top pick
+    from cohort.capability_router import find_required_consultations
+    top_agent = results[0][0]
+    available = {c.agent_id: c for c in configs}
+    from cohort.capability_router import _extract_keywords
+    task_kw = _extract_keywords(params.task_description)
+    consults = find_required_consultations(top_agent, task_kw, available)
+    if consults:
+        lines.append("")
+        lines.append("### Required Consultations")
+        for c in consults:
+            lines.append(
+                f"- **@{c['partner_id']}**: {c['reason']}"
+            )
+            lines.append(f"  Protocol: {c['protocol']}")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+async def cohort_find_agents(params: FindAgentsInput) -> str:
+    """Find agents qualified for a topic, ranked by capability match.
+
+    Unlike route_task (which picks the best one), this returns all
+    agents above the score threshold for roundtable composition.
+    """
+    from cohort.capability_router import find_agents_for_topic
+    from cohort.agent import AgentConfig
+
+    agents_data = await _client.list_agents()
+    if not agents_data:
+        return "No agents registered."
+
+    configs: list[AgentConfig] = []
+    for agent_info in agents_data:
+        agent_id = agent_info.get("agent_id", agent_info.get("id", ""))
+        if not agent_id:
+            continue
+        detail = await _client.get_agent(agent_id)
+        if detail and not detail.get("error"):
+            configs.append(AgentConfig.from_dict(detail))
+
+    results = find_agents_for_topic(
+        configs,
+        params.topic,
+        min_score=params.min_score,
+        max_results=params.max_results,
+    )
+
+    if not results:
+        return f"No agents match topic: '{params.topic}'"
+
+    lines = [f"## Agents for: {params.topic[:80]}", ""]
+    lines.append("| Agent | Score | Type | Group |")
+    lines.append("|-------|-------|------|-------|")
+    for agent, score in results:
+        lines.append(
+            f"| @{agent.agent_id} | {score:.2f} | {agent.agent_type} | {agent.group} |"
+        )
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+async def cohort_partnership_graph(params: PartnershipGraphInput) -> str:
+    """View the partnership graph -- who consults whom and why.
+
+    Shows consultation protocols between agents. Only includes
+    partnerships where both agents exist in the current deployment.
+    """
+    from cohort.capability_router import build_partnership_graph, get_partnerships
+    from cohort.agent import AgentConfig
+
+    agents_data = await _client.list_agents()
+    if not agents_data:
+        return "No agents registered."
+
+    configs: list[AgentConfig] = []
+    for agent_info in agents_data:
+        agent_id = agent_info.get("agent_id", agent_info.get("id", ""))
+        if not agent_id:
+            continue
+        detail = await _client.get_agent(agent_id)
+        if detail and not detail.get("error"):
+            configs.append(AgentConfig.from_dict(detail))
+
+    if params.agent_id:
+        # Single agent's partnerships
+        target = next((c for c in configs if c.agent_id == params.agent_id), None)
+        if not target:
+            return f"Agent '{params.agent_id}' not found."
+        partnerships = get_partnerships(target)
+        if not partnerships:
+            return f"@{params.agent_id} has no declared partnerships."
+
+        available_ids = {c.agent_id for c in configs}
+        lines = [f"## Partnerships: @{params.agent_id}", ""]
+        for partner_id, details in partnerships.items():
+            exists = "[active]" if partner_id in available_ids else "[not deployed]"
+            lines.append(f"- **@{partner_id}** {exists}")
+            lines.append(f"  Relationship: {details.get('relationship', 'N/A')}")
+            lines.append(f"  Protocol: {details.get('protocol', 'N/A')}")
+        return "\n".join(lines)
+
+    # Full graph
+    graph = build_partnership_graph(configs)
+    if not graph:
+        return "No partnerships declared in any agent configs."
+
+    lines = ["## Partnership Graph", ""]
+    for agent_id, edges in sorted(graph.items()):
+        lines.append(f"### @{agent_id}")
+        for edge in edges:
+            lines.append(f"- -> @{edge['partner_id']}: {edge['relationship']}")
+        lines.append("")
+
+    return "\n".join(lines)
 
 
 # =====================================================================

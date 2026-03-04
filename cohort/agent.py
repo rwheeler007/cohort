@@ -235,6 +235,9 @@ class AgentConfig:
     # -- Tool permissions (optional, per-agent Claude CLI tool access) --
     tool_permissions: dict[str, Any] = field(default_factory=dict)
 
+    # -- Partnerships (optional, defines consultation protocols with other agents) --
+    partnerships: dict[str, dict[str, Any]] = field(default_factory=dict)
+
     # -- Scoring metadata (optional, used by meeting.py) --
     scoring_metadata: dict[str, Any] = field(default_factory=dict)
 

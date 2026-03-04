@@ -195,14 +195,30 @@ class TaskExecutor:
     ) -> None:
         """Run the task after the user confirms the briefing.
 
-        1. Update status to in_progress
-        2. Invoke agent via configured backend
-        3. Post result to task channel
-        4. Mark complete with output
+        1. Check acceptance criteria (if agent_store is available)
+        2. Update status to in_progress
+        3. Invoke agent via configured backend
+        4. Post result to task channel
+        5. Mark complete with output
         """
         task_id = task["task_id"]
         agent_id = task["agent_id"]
         channel_id = task.get("channel_id", f"task-{task_id}")
+
+        # Acceptance criteria gate: check if partnerships require consultation
+        consultations = self._check_consultations(task)
+        if consultations:
+            partners_list = ", ".join(f"@{c['partner_id']}" for c in consultations)
+            reasons = "; ".join(c["reason"] for c in consultations)
+            self._post_and_broadcast(
+                channel_id, "system",
+                f"**[Gate]** Before execution, consultation recommended:\n"
+                f"Partners: {partners_list}\n"
+                f"Reason: {reasons}\n\n"
+                f"Proceeding -- partners can review in this channel.",
+            )
+            # Attach consultation info to task for audit trail
+            task["consultations"] = consultations
 
         # Transition to in_progress
         updated = self.data_layer.update_task_progress(task_id, "in_progress")
@@ -384,6 +400,33 @@ class TaskExecutor:
     # =================================================================
     # Helpers
     # =================================================================
+
+    def _check_consultations(
+        self, task: dict[str, Any]
+    ) -> list[dict[str, Any]]:
+        """Check if the assigned agent's partnerships require pre-execution consultation.
+
+        Returns a list of required consultations, or empty list if none needed.
+        Only returns consultations for partners that exist in the current deployment.
+        """
+        try:
+            from cohort.agent_store import get_store
+            store = get_store()
+            if store is None:
+                return []
+
+            agent = store.get(task["agent_id"])
+            if agent is None:
+                return []
+
+            available = {a.agent_id: a for a in store.list_agents()}
+
+            from cohort.capability_router import find_required_consultations, _extract_keywords
+            task_kw = _extract_keywords(task.get("description", ""))
+            return find_required_consultations(agent, task_kw, available)
+        except Exception as exc:
+            logger.debug("Consultation check skipped: %s", exc)
+            return []
 
     def _load_agent_prompt(self, agent_id: str) -> str | None:
         """Load an agent's prompt file, return None if missing."""
