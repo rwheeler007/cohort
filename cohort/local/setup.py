@@ -1,0 +1,811 @@
+"""Interactive setup wizard for Cohort local LLM.
+
+Guides non-technical users through hardware detection, Ollama
+installation, model pulling, and content pipeline configuration.
+Zero pip dependencies -- stdlib only.
+
+Usage::
+
+    python -m cohort setup
+    cohort setup
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import platform
+import shutil
+import sys
+import time
+import urllib.error
+import urllib.request
+from pathlib import Path
+from typing import Any
+
+from cohort.local.config import MODEL_DESCRIPTIONS, get_model_for_vram
+from cohort.local.detect import HardwareInfo, detect_hardware
+from cohort.local.ollama import OllamaClient
+
+# =====================================================================
+# Constants
+# =====================================================================
+
+OLLAMA_BASE_URL = "http://127.0.0.1:11434"
+OLLAMA_DOWNLOAD_URL = "https://ollama.com/download"
+OLLAMA_WINDOWS_INSTALLER = (
+    "https://github.com/ollama/ollama/releases/latest/download/OllamaSetup.exe"
+)
+OLLAMA_LINUX_SCRIPT = "https://ollama.com/install.sh"
+
+TOTAL_STEPS = 6
+
+# Curated RSS feeds by topic for Step 6
+TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
+    "web development": [
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "Dev.to", "url": "https://dev.to/feed"},
+        {"name": "CSS-Tricks", "url": "https://css-tricks.com/feed/"},
+    ],
+    "python": [
+        {"name": "Real Python", "url": "https://realpython.com/atom.xml"},
+        {"name": "Planet Python", "url": "https://planetpython.org/rss20.xml"},
+        {"name": "PyCoders Weekly", "url": "https://pycoders.com/feed"},
+    ],
+    "javascript": [
+        {"name": "JavaScript Weekly", "url": "https://javascriptweekly.com/rss"},
+        {"name": "Node Weekly", "url": "https://nodeweekly.com/rss"},
+        {"name": "Dev.to #javascript", "url": "https://dev.to/feed/tag/javascript"},
+    ],
+    "ai": [
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "The Batch (deeplearning.ai)", "url": "https://www.deeplearning.ai/the-batch/feed/"},
+        {"name": "MIT Technology Review AI", "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed"},
+    ],
+    "machine learning": [
+        {"name": "Towards Data Science", "url": "https://towardsdatascience.com/feed"},
+        {"name": "ML Mastery", "url": "https://machinelearningmastery.com/feed/"},
+        {"name": "Papers With Code", "url": "https://paperswithcode.com/latest/feed"},
+    ],
+    "devops": [
+        {"name": "DevOps.com", "url": "https://devops.com/feed/"},
+        {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "cybersecurity": [
+        {"name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/"},
+        {"name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews"},
+        {"name": "Schneier on Security", "url": "https://www.schneier.com/feed/"},
+    ],
+    "startup": [
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "First Round Review", "url": "https://review.firstround.com/feed.xml"},
+    ],
+    "data science": [
+        {"name": "Towards Data Science", "url": "https://towardsdatascience.com/feed"},
+        {"name": "KDnuggets", "url": "https://www.kdnuggets.com/feed"},
+        {"name": "Data Science Central", "url": "https://www.datasciencecentral.com/feed/"},
+    ],
+    "cloud": [
+        {"name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/"},
+        {"name": "Google Cloud Blog", "url": "https://cloud.google.com/blog/rss"},
+        {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
+    ],
+    "mobile": [
+        {"name": "Android Developers Blog", "url": "https://android-developers.googleblog.com/atom.xml"},
+        {"name": "Swift by Sundell", "url": "https://www.swiftbysundell.com/rss"},
+        {"name": "React Native Blog", "url": "https://reactnative.dev/blog/rss.xml"},
+    ],
+    "gaming": [
+        {"name": "Gamasutra", "url": "https://www.gamedeveloper.com/rss.xml"},
+        {"name": "Game Developer", "url": "https://www.gamedeveloper.com/rss.xml"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "marketing": [
+        {"name": "HubSpot Blog", "url": "https://blog.hubspot.com/rss.xml"},
+        {"name": "Content Marketing Institute", "url": "https://contentmarketinginstitute.com/feed/"},
+        {"name": "Moz Blog", "url": "https://moz.com/blog/feed"},
+    ],
+    "design": [
+        {"name": "Smashing Magazine", "url": "https://www.smashingmagazine.com/feed/"},
+        {"name": "A List Apart", "url": "https://alistapart.com/main/feed/"},
+        {"name": "UX Collective", "url": "https://uxdesign.cc/feed"},
+    ],
+    "hardware": [
+        {"name": "AnandTech", "url": "https://www.anandtech.com/rss/"},
+        {"name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "finance": [
+        {"name": "Finextra", "url": "https://www.finextra.com/rss/headlines.aspx"},
+        {"name": "TechCrunch Fintech", "url": "https://techcrunch.com/category/fintech/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "saas": [
+        {"name": "SaaStr", "url": "https://www.saastr.com/feed/"},
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
+        {"name": "First Round Review", "url": "https://review.firstround.com/feed.xml"},
+    ],
+    "ecommerce": [
+        {"name": "Shopify Engineering", "url": "https://shopify.engineering/blog.atom"},
+        {"name": "Practical Ecommerce", "url": "https://www.practicalecommerce.com/feed"},
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
+    ],
+    "health": [
+        {"name": "Health IT News", "url": "https://www.healthcareitnews.com/feed"},
+        {"name": "STAT News", "url": "https://www.statnews.com/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+}
+
+
+# =====================================================================
+# Display helpers
+# =====================================================================
+
+def _print_banner() -> None:
+    print()
+    print("=" * 64)
+    print("  Cohort Setup Wizard")
+    print("=" * 64)
+    print()
+    print("  Let's get your local AI up and running. This takes about")
+    print("  5 minutes and you'll have AI agents running on your own")
+    print("  machine -- no cloud, no subscription, no data leaving")
+    print("  your computer.")
+    print()
+    print("=" * 64)
+    print()
+
+
+def _print_step(step_num: int, title: str) -> None:
+    print()
+    print(f"Step {step_num} of {TOTAL_STEPS}: {title}")
+    print("-" * (20 + len(title)))
+    print()
+
+
+def _print_ok(msg: str) -> None:
+    print(f"  [OK] {msg}")
+
+
+def _print_info(msg: str) -> None:
+    print(f"  [*] {msg}")
+
+
+def _print_warn(msg: str) -> None:
+    print(f"  [!] {msg}")
+
+
+def _print_fail(msg: str) -> None:
+    print(f"  [X] {msg}")
+
+
+def _print_progress_bar(
+    label: str, completed: int, total: int, width: int = 30,
+) -> None:
+    if total <= 0:
+        return
+    pct = min(completed / total, 1.0)
+    filled = int(width * pct)
+    bar = "=" * filled + ">" * (1 if filled < width else 0) + " " * (width - filled - 1)
+    # Show size in MB/GB
+    def _fmt(b: int) -> str:
+        if b >= 1_073_741_824:
+            return f"{b / 1_073_741_824:.1f} GB"
+        return f"{b / 1_048_576:.0f} MB"
+
+    sys.stdout.write(
+        f"\r  {label:30s} [{bar}] {pct:3.0%}  {_fmt(completed)} / {_fmt(total)}"
+    )
+    sys.stdout.flush()
+
+
+def _ask_yes_no(prompt: str, default: bool = True) -> bool:
+    hint = "[Y/n]" if default else "[y/N]"
+    while True:
+        try:
+            answer = input(f"  {prompt} {hint} ").strip().lower()
+        except EOFError:
+            return default
+        if answer == "":
+            return default
+        if answer in ("y", "yes"):
+            return True
+        if answer in ("n", "no"):
+            return False
+        print("  Please type y or n.")
+
+
+def _ask_input(prompt: str, default: str = "") -> str:
+    hint = f" [{default}]" if default else ""
+    try:
+        answer = input(f"  {prompt}{hint}: ").strip()
+    except EOFError:
+        return default
+    return answer if answer else default
+
+
+def _wait_for_enter(prompt: str = "Press Enter to continue...") -> None:
+    try:
+        input(f"  {prompt}")
+    except EOFError:
+        pass
+
+
+def _format_vram(vram_mb: int) -> str:
+    gb = vram_mb / 1024
+    if gb >= 1:
+        return f"{vram_mb:,} MB ({gb:.0f} GB)"
+    return f"{vram_mb:,} MB"
+
+
+def _vram_quality(vram_mb: int) -> str:
+    if vram_mb >= 8192:
+        return "that's excellent!"
+    if vram_mb >= 6144:
+        return "that's solid!"
+    if vram_mb >= 4096:
+        return "that'll work well!"
+    return "we'll make it work!"
+
+
+# =====================================================================
+# Ollama helpers
+# =====================================================================
+
+def _is_ollama_on_path() -> bool:
+    return shutil.which("ollama") is not None
+
+
+def _is_ollama_running() -> bool:
+    try:
+        req = urllib.request.Request(OLLAMA_BASE_URL, method="GET")
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            return "Ollama is running" in resp.read().decode()
+    except (urllib.error.URLError, OSError, ConnectionRefusedError):
+        return False
+
+
+def _wait_for_ollama(max_retries: int = 5, interval: float = 3.0) -> bool:
+    for i in range(max_retries):
+        if _is_ollama_running():
+            return True
+        if i < max_retries - 1:
+            _print_info(f"Waiting for Ollama to start... ({i + 1}/{max_retries})")
+            time.sleep(interval)
+    return False
+
+
+def _model_is_installed(model: str) -> bool:
+    client = OllamaClient(base_url=OLLAMA_BASE_URL, timeout=10)
+    installed = client.list_models()
+    # Check for exact match or base name match
+    base = model.split(":")[0]
+    for m in installed:
+        if m == model or m.startswith(base + ":"):
+            return True
+    return False
+
+
+def _pull_model_streaming(model: str) -> bool:
+    url = f"{OLLAMA_BASE_URL}/api/pull"
+    body = json.dumps({"model": model, "stream": True}).encode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=3600) as resp:
+            for raw_line in resp:
+                line = raw_line.decode("utf-8").strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+
+                status = data.get("status", "")
+                total = data.get("total", 0)
+                completed = data.get("completed", 0)
+
+                if "error" in data:
+                    print()
+                    _print_fail(data["error"])
+                    return False
+                elif total > 0 and completed > 0:
+                    _print_progress_bar(
+                        f"Downloading {model}", completed, total,
+                    )
+                else:
+                    # Status messages: pulling manifest, verifying, etc.
+                    sys.stdout.write(f"\r  {status:60s}")
+                    sys.stdout.flush()
+
+            print()  # newline after progress bar
+            return True
+
+    except (urllib.error.URLError, OSError) as exc:
+        print()
+        _print_fail(f"Download failed: {exc}")
+        _print_info("Run 'cohort setup' again to resume -- Ollama picks up where it left off.")
+        return False
+
+
+def _download_file(url: str, dest: str) -> bool:
+    def _hook(block_num: int, block_size: int, total_size: int) -> None:
+        if total_size > 0:
+            downloaded = block_num * block_size
+            _print_progress_bar("Downloading installer", downloaded, total_size)
+
+    try:
+        urllib.request.urlretrieve(url, dest, reporthook=_hook)
+        print()
+        return True
+    except (urllib.error.URLError, OSError) as exc:
+        print()
+        _print_fail(f"Download failed: {exc}")
+        return False
+
+
+# =====================================================================
+# Step 1: Hardware Detection
+# =====================================================================
+
+def _step_detect_hardware() -> HardwareInfo:
+    _print_step(1, "Checking Your Hardware")
+
+    hw = detect_hardware()
+    plat_name = {
+        "windows": "Windows PC",
+        "darwin": "Mac",
+        "linux": "Linux",
+    }.get(hw.platform, hw.platform)
+
+    if hw.cpu_only:
+        if hw.platform == "darwin":
+            _print_info("Mac detected -- Apple Silicon runs AI models efficiently")
+            _print_info("through Metal, even without a traditional graphics card.")
+        else:
+            _print_info("No dedicated graphics card detected -- and that's perfectly fine!")
+        print()
+        print(f"      Computer:  {plat_name}")
+        print(f"      Mode:      CPU-only")
+        print()
+        print("  Your computer will run AI using its main processor instead of")
+        print("  a graphics card. It's like driving a reliable sedan instead of")
+        print("  a sports car -- you'll get there, just at a steadier pace.")
+        print()
+        print("  We'll pick a lightweight model that runs great on CPU.")
+    else:
+        _print_ok("Detected your system:")
+        print()
+        print(f"      Computer:        {plat_name}")
+        print(f"      Graphics card:   {hw.gpu_name}")
+        print(f"      Graphics memory: {_format_vram(hw.vram_mb)} -- {_vram_quality(hw.vram_mb)}")
+        print()
+        print("  Your graphics card (GPU) is what runs AI models. Think of it")
+        print("  as a turbo engine for AI -- 10-50x faster than your regular")
+        print("  processor alone.")
+
+    return hw
+
+
+# =====================================================================
+# Step 2: Check Ollama
+# =====================================================================
+
+def _step_check_ollama() -> bool:
+    _print_step(2, "Checking for Ollama")
+
+    print("  Ollama is a free tool that runs AI models right on your computer.")
+    print()
+
+    _print_info("Looking for Ollama...")
+
+    # Check server first (may be running as a service even if not on PATH)
+    if _is_ollama_running():
+        _print_ok("Ollama is installed and running. Great!")
+        return True
+
+    # Check binary on PATH
+    if _is_ollama_on_path():
+        _print_info("Ollama is installed but the server isn't running.")
+        print()
+
+        plat = platform.system().lower()
+        if plat == "windows":
+            print("  Check your system tray -- Ollama may need to be started.")
+            print("  Or open a terminal and run:  ollama serve")
+        elif plat == "darwin":
+            print("  Open the Ollama app from your Applications folder,")
+            print("  or run in terminal:  ollama serve")
+        else:
+            print("  Start it with:  ollama serve &")
+
+        print()
+        _wait_for_enter("Start Ollama, then press Enter...")
+        print()
+
+        if _wait_for_ollama():
+            _print_ok("Ollama is running now. Great!")
+            return True
+        else:
+            _print_warn("Still can't reach Ollama. We'll try installing fresh.")
+            return False
+
+    _print_info("Ollama is not installed yet. No problem -- let's fix that.")
+    return False
+
+
+# =====================================================================
+# Step 3: Install Ollama
+# =====================================================================
+
+def _step_install_ollama(plat: str) -> bool:
+    _print_step(3, "Installing Ollama")
+
+    if plat == "windows":
+        return _install_ollama_windows()
+    elif plat == "darwin":
+        return _install_ollama_macos()
+    else:
+        return _install_ollama_linux()
+
+
+def _install_ollama_windows() -> bool:
+    if _ask_yes_no("Want me to download the Ollama installer for you?"):
+        downloads = Path.home() / "Downloads"
+        dest = str(downloads / "OllamaSetup.exe")
+        print()
+        if _download_file(OLLAMA_WINDOWS_INSTALLER, dest):
+            _print_ok(f"Downloaded to {dest}")
+            print()
+            _print_info("Opening the installer now. Follow its prompts, then come")
+            _print_info("back here when it's done.")
+            print()
+            try:
+                os.startfile(dest)  # type: ignore[attr-defined]
+            except OSError:
+                _print_warn(f"Couldn't open automatically. Double-click: {dest}")
+        else:
+            _print_info(f"Download the installer from: {OLLAMA_DOWNLOAD_URL}")
+    else:
+        print()
+        print(f"  No problem. Download the installer from:")
+        print(f"    {OLLAMA_DOWNLOAD_URL}")
+        print()
+        print("  Install it, then come back here.")
+
+    print()
+    _wait_for_enter("Press Enter when the installer finishes...")
+    return _verify_ollama_after_install()
+
+
+def _install_ollama_macos() -> bool:
+    if shutil.which("brew"):
+        print("  Homebrew detected! Run this in your terminal:")
+        print()
+        print("    brew install ollama")
+    else:
+        print(f"  Download the installer from:")
+        print(f"    {OLLAMA_DOWNLOAD_URL}")
+
+    print()
+    _wait_for_enter("Press Enter when you've installed Ollama...")
+    return _verify_ollama_after_install()
+
+
+def _install_ollama_linux() -> bool:
+    print("  Run this in your terminal:")
+    print()
+    print(f"    curl -fsSL {OLLAMA_LINUX_SCRIPT} | sh")
+    print()
+    _wait_for_enter("Press Enter when the install finishes...")
+    return _verify_ollama_after_install()
+
+
+def _verify_ollama_after_install() -> bool:
+    print()
+    _print_info("Checking...")
+
+    for attempt in range(3):
+        if _is_ollama_running():
+            _print_ok("Ollama is installed and running. Great job!")
+            return True
+
+        if _is_ollama_on_path():
+            _print_info("Binary found, waiting for server to start...")
+            if _wait_for_ollama(max_retries=3, interval=3.0):
+                _print_ok("Ollama is installed and running. Great job!")
+                return True
+
+        if attempt == 0:
+            _print_warn("Hmm, I can't find Ollama yet. Did the installer finish?")
+            _wait_for_enter("Press Enter to try again...")
+        elif attempt == 1:
+            _print_warn("Still not finding it. You may need to restart your terminal.")
+            _wait_for_enter("Press Enter to try again...")
+        else:
+            _print_fail("I'm still unable to detect Ollama.")
+            print()
+            print("  You can come back to this later by running 'cohort setup' again.")
+            print(f"  Manual install: {OLLAMA_DOWNLOAD_URL}")
+            return False
+
+    return False
+
+
+# =====================================================================
+# Step 4: Pull Model
+# =====================================================================
+
+def _step_pull_model(model: str, hw: HardwareInfo) -> bool:
+    _print_step(4, "Downloading Your AI Model")
+
+    # Check if already installed
+    if _model_is_installed(model):
+        _print_ok(f"{model} is already installed. Nice!")
+        return True
+
+    info = MODEL_DESCRIPTIONS.get(model, {})
+    size = info.get("size", "unknown size")
+    summary = info.get("summary", "")
+
+    if hw.cpu_only:
+        print("  For CPU-only mode, I recommend a lightweight model:")
+    else:
+        print("  Based on your hardware, I recommend:")
+
+    print()
+    print(f"      Model:  {model}")
+    print(f"      Size:   {size} download")
+    if summary:
+        print(f"      Why:    {summary}")
+    print()
+
+    if not _ask_yes_no("Ready to download?"):
+        _print_info("Skipped. You can pull the model later with:")
+        print(f"    ollama pull {model}")
+        return False
+
+    print()
+    success = _pull_model_streaming(model)
+    if success:
+        _print_ok("Model downloaded and verified.")
+    return success
+
+
+# =====================================================================
+# Step 5: Verify
+# =====================================================================
+
+def _step_verify(model: str) -> bool:
+    _print_step(5, "Testing Everything")
+
+    print("  Let's make sure it all works with a quick test...")
+    print()
+
+    client = OllamaClient(base_url=OLLAMA_BASE_URL, timeout=120)
+    test_prompt = "What makes a good code review? Answer in two sentences."
+
+    for attempt in range(2):
+        _print_info("Asking the model a quick question...")
+        result = client.generate(model=model, prompt=test_prompt, temperature=0.3)
+
+        if result is not None and result.text.strip():
+            print()
+            print(f'      > "{test_prompt}"')
+            print()
+            # Wrap response text
+            text = result.text.strip()
+            for line in text.split("\n"):
+                print(f"      {line}")
+            print()
+            _print_ok(f"Response generated in {result.elapsed_seconds:.1f} seconds. Everything works!")
+            return True
+
+        if attempt == 0:
+            _print_info("The model loaded but didn't respond. First run can be slow.")
+            _print_info("Trying once more...")
+            print()
+
+    _print_warn("Something's not quite right. Try running this in your terminal:")
+    print(f"    ollama run {model}")
+    print()
+    print("  The model is downloaded -- it may just need a moment to warm up.")
+    return False
+
+
+# =====================================================================
+# Step 6: Content Pipeline
+# =====================================================================
+
+def _step_content_pipeline(data_dir: str = "data") -> bool:
+    _print_step(6, "Set Up Your Content Pipeline (Optional)")
+
+    print("  Cohort can monitor RSS feeds and help you create content.")
+    print("  Your Marketing Agent and Content Strategy Agent will use")
+    print("  these feeds to find trends and draft posts for you.")
+    print()
+
+    if not _ask_yes_no("Want to set this up now?"):
+        _print_info("Skipped. You can configure feeds later in data/content_config.json")
+        return True
+
+    print()
+    print("  What topic or industry are you in?")
+    print()
+    topics = sorted(TOPIC_FEEDS.keys())
+    for i, topic in enumerate(topics, 1):
+        print(f"    {i:2d}. {topic}")
+    print()
+
+    choice = _ask_input("Pick a number, or type your own topic", "1")
+
+    # Resolve topic
+    selected_feeds: list[dict[str, str]] = []
+    try:
+        idx = int(choice) - 1
+        if 0 <= idx < len(topics):
+            topic_key = topics[idx]
+            selected_feeds = TOPIC_FEEDS[topic_key]
+            _print_ok(f"Great choice: {topic_key}")
+        else:
+            raise ValueError
+    except ValueError:
+        # Try fuzzy match on typed topic
+        typed = choice.lower().strip()
+        for key, feeds in TOPIC_FEEDS.items():
+            if typed in key or key in typed:
+                selected_feeds = feeds
+                topic_key = key
+                _print_ok(f"Matched: {topic_key}")
+                break
+        if not selected_feeds:
+            # Default to general tech
+            selected_feeds = TOPIC_FEEDS.get("web development", [])
+            topic_key = "web development"
+            _print_info(f"No exact match -- using {topic_key} as a starting point.")
+
+    if not selected_feeds:
+        _print_info("No feeds available for that topic. You can add them manually later.")
+        return True
+
+    print()
+    print("  Here are some feeds I'd suggest:")
+    print()
+    for i, feed in enumerate(selected_feeds, 1):
+        print(f"    {i}. {feed['name']:30s} {feed['url']}")
+    print()
+
+    pick = _ask_input("Which ones? (enter numbers like 1,3 or 'all')", "all")
+
+    if pick.lower() == "all":
+        chosen = selected_feeds
+    else:
+        chosen = []
+        for part in pick.split(","):
+            part = part.strip()
+            try:
+                idx = int(part) - 1
+                if 0 <= idx < len(selected_feeds):
+                    chosen.append(selected_feeds[idx])
+            except ValueError:
+                pass
+        if not chosen:
+            chosen = selected_feeds
+            _print_info("Couldn't parse selection -- using all feeds.")
+
+    # Write config
+    config = {
+        "feeds": [{"name": f["name"], "url": f["url"]} for f in chosen],
+        "topic": topic_key,
+        "check_interval_minutes": 60,
+        "max_articles_per_feed": 10,
+    }
+
+    config_dir = Path(data_dir)
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / "content_config.json"
+
+    try:
+        config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+        _print_ok(f"Saved content config to {config_path}")
+        print()
+        print("  Your Marketing Agent and Content Strategy Agent will use")
+        print("  these feeds to find trends and draft posts. Start the server")
+        print("  with 'cohort serve' to see it in action.")
+    except OSError as exc:
+        _print_warn(f"Couldn't save config: {exc}")
+        _print_info("You can create data/content_config.json manually later.")
+
+    return True
+
+
+# =====================================================================
+# Success Summary
+# =====================================================================
+
+def _print_success(hw: HardwareInfo, model: str) -> None:
+    print()
+    print("=" * 64)
+    print("  Setup Complete!")
+    print("=" * 64)
+    print()
+    print("  Here's what we set up:")
+    print()
+
+    if hw.cpu_only:
+        print("    Hardware:  CPU-only mode")
+    else:
+        gb = hw.vram_mb / 1024
+        print(f"    Hardware:  {hw.gpu_name} ({gb:.0f} GB VRAM)")
+
+    print(f"    Engine:    Ollama (running on localhost:11434)")
+    print(f"    Model:     {model}")
+    print()
+    print("  What's next:")
+    print()
+    print("    1. Start the Cohort server:")
+    print("       cohort serve")
+    print()
+    print("    2. Open your browser:")
+    print("       http://localhost:5100")
+    print()
+    print("    3. Meet the team -- your agents are ready to work with you!")
+    print()
+    print("  Run 'cohort setup' anytime to re-check your configuration.")
+    print("=" * 64)
+    print()
+
+
+# =====================================================================
+# Entry point
+# =====================================================================
+
+def run_setup() -> int:
+    """Run the interactive setup wizard. Returns exit code."""
+    try:
+        _print_banner()
+
+        # Step 1: Hardware
+        hw = _step_detect_hardware()
+        model = get_model_for_vram(hw.vram_mb)
+
+        # Step 2: Check Ollama
+        ollama_ok = _step_check_ollama()
+
+        # Step 3: Install (if needed)
+        if not ollama_ok:
+            ollama_ok = _step_install_ollama(hw.platform)
+            if not ollama_ok:
+                return 1
+
+        # Step 4: Pull model
+        model_ok = _step_pull_model(model, hw)
+
+        # Step 5: Verify
+        if model_ok:
+            _step_verify(model)
+
+        # Step 6: Content pipeline
+        _step_content_pipeline()
+
+        # Success
+        _print_success(hw, model)
+        return 0
+
+    except KeyboardInterrupt:
+        print()
+        print()
+        _print_info("Setup interrupted. Run 'cohort setup' anytime to continue")
+        _print_info("where you left off.")
+        print()
+        return 1

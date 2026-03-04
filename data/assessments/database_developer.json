@@ -1,0 +1,1613 @@
+{
+  "agent_id": "database_developer",
+  "source": "Senior DBA/PostgreSQL certification level (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "DB001",
+      "question": "What does the following SQL window function return for each row?\n\nSELECT employee_id, salary,\n       RANK() OVER (ORDER BY salary DESC) AS salary_rank\nFROM employees;",
+      "choices": {
+        "A": "The same rank for tied salaries, with no gaps after ties",
+        "B": "The same rank for tied salaries, with gaps after ties",
+        "C": "The row number within a partition, ignoring ties",
+        "D": "A unique sequential number for each row regardless of ties"
+      },
+      "answer": "B",
+      "explanation": "RANK() assigns the same rank to tied values but leaves gaps (e.g., 1, 1, 3). DENSE_RANK() would assign 1, 1, 2 with no gaps. ROW_NUMBER() assigns unique sequential numbers.",
+      "topic": "window_functions",
+      "topic_category": "sql_queries",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB002",
+      "question": "Which SQL clause filters the results of an aggregate function?",
+      "choices": {
+        "A": "QUALIFY applied during aggregation",
+        "B": "FILTER applied before GROUP BY",
+        "C": "WHERE applied after GROUP BY",
+        "D": "HAVING applied after GROUP BY"
+      },
+      "answer": "D",
+      "explanation": "HAVING filters groups after aggregation, while WHERE filters individual rows before grouping. HAVING can reference aggregate functions; WHERE cannot.",
+      "topic": "aggregate_filtering",
+      "topic_category": "sql_queries",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB003",
+      "question": "A table has columns (id, parent_id) forming a tree. Which SQL construct traverses the full hierarchy?",
+      "choices": {
+        "A": "A window function with PARTITION BY parent_id",
+        "B": "A subquery using EXISTS with a correlated reference",
+        "C": "A recursive CTE with a UNION ALL between anchor and recursive members",
+        "D": "A self-join repeated for each expected depth level"
+      },
+      "answer": "C",
+      "explanation": "Recursive CTEs (WITH RECURSIVE) define an anchor member for the base case and a recursive member that references the CTE itself, enabling traversal of arbitrary-depth hierarchies.",
+      "topic": "recursive_ctes",
+      "topic_category": "sql_queries",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB004",
+      "question": "What is the primary purpose of database normalization to Third Normal Form (3NF)?",
+      "choices": {
+        "A": "Guarantee that all multi-valued dependencies are resolved",
+        "B": "Ensure every non-key column depends on the key, the whole key, and nothing but the key",
+        "C": "Optimize read performance by pre-joining frequently accessed tables",
+        "D": "Eliminate all redundancy by storing each fact in exactly one place"
+      },
+      "answer": "B",
+      "explanation": "3NF requires that every non-key attribute depends on the primary key (1NF), the entire primary key (2NF), and has no transitive dependencies on non-key attributes (3NF). This is often summarized as 'the key, the whole key, and nothing but the key.'",
+      "topic": "normalization",
+      "topic_category": "schema_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB005",
+      "question": "In the ACID properties, what does the Isolation property guarantee?",
+      "choices": {
+        "A": "A transaction either fully completes or fully rolls back",
+        "B": "The database transitions from one valid state to another",
+        "C": "Concurrent transactions behave as if executed sequentially",
+        "D": "A transaction's changes are permanently saved after commit"
+      },
+      "answer": "C",
+      "explanation": "Isolation ensures concurrent transactions do not interfere with each other, producing results equivalent to some serial execution order. Durability covers permanence, atomicity covers all-or-nothing, and consistency covers valid state transitions.",
+      "topic": "acid_properties",
+      "topic_category": "transactions",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB006",
+      "question": "Which index type is most appropriate for exact-match lookups on a hash column with no range queries?",
+      "choices": {
+        "A": "GiST index",
+        "B": "BRIN index",
+        "C": "Hash index",
+        "D": "B-tree index"
+      },
+      "answer": "C",
+      "explanation": "Hash indexes are optimized for equality comparisons and have O(1) average lookup time. B-tree indexes handle both equality and range queries but have O(log n) lookup. Since no range queries are needed, hash is optimal.",
+      "topic": "index_types",
+      "topic_category": "indexing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB007",
+      "question": "What does the MERGE statement (also known as UPSERT) accomplish in a single atomic operation?",
+      "choices": {
+        "A": "Merges two databases into a single schema",
+        "B": "Combines the results of two SELECT statements like UNION",
+        "C": "Joins two tables and returns the combined result set",
+        "D": "Inserts a row if it does not exist, or updates it if it does"
+      },
+      "answer": "D",
+      "explanation": "MERGE (SQL standard) or INSERT ... ON CONFLICT (PostgreSQL) performs a conditional insert-or-update atomically. It checks for the existence of a matching row and either inserts a new row or updates the existing one.",
+      "topic": "merge_upsert",
+      "topic_category": "sql_queries",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB008",
+      "question": "Which isolation level allows dirty reads, where a transaction can see uncommitted changes from other transactions?",
+      "choices": {
+        "A": "READ COMMITTED",
+        "B": "SERIALIZABLE",
+        "C": "READ UNCOMMITTED",
+        "D": "REPEATABLE READ"
+      },
+      "answer": "C",
+      "explanation": "READ UNCOMMITTED is the lowest isolation level and permits dirty reads. READ COMMITTED prevents dirty reads, REPEATABLE READ also prevents non-repeatable reads, and SERIALIZABLE prevents all anomalies including phantom reads.",
+      "topic": "isolation_levels",
+      "topic_category": "transactions",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB009",
+      "question": "What is a covering index?",
+      "choices": {
+        "A": "An index that spans multiple tables via foreign keys",
+        "B": "An index that covers both ascending and descending sort orders",
+        "C": "An index automatically created on a primary key column",
+        "D": "An index that includes all columns needed by a query so the table itself is never accessed"
+      },
+      "answer": "D",
+      "explanation": "A covering index contains all columns referenced in a query (SELECT, WHERE, JOIN, ORDER BY), enabling an index-only scan that avoids the heap table lookup entirely. This can dramatically reduce I/O.",
+      "topic": "covering_indexes",
+      "topic_category": "optimization",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB010",
+      "question": "In PostgreSQL, what is the purpose of the VACUUM command?",
+      "choices": {
+        "A": "Reclaims storage from dead tuples left by updates and deletes under MVCC",
+        "B": "Compresses large TOAST values to save disk space",
+        "C": "Defragments table data files on disk for faster sequential scans",
+        "D": "Rebuilds all indexes on a table to reduce index bloat"
+      },
+      "answer": "A",
+      "explanation": "PostgreSQL's MVCC creates dead tuples when rows are updated or deleted. VACUUM marks that space as reusable. Without it, tables bloat indefinitely. REINDEX handles index rebuilding; TOAST handles large value compression automatically.",
+      "topic": "vacuum_autovacuum",
+      "topic_category": "postgresql",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB011",
+      "question": "Which of the following best describes the CAP theorem?",
+      "choices": {
+        "A": "A distributed system must sacrifice one of consistency, availability, or partition tolerance during a network partition",
+        "B": "Consistency and availability are always mutually exclusive regardless of network conditions",
+        "C": "Partition tolerance is optional if the system runs on a single node",
+        "D": "A distributed system can simultaneously provide consistency, availability, and partition tolerance"
+      },
+      "answer": "A",
+      "explanation": "The CAP theorem states that during a network partition, a distributed system must choose between consistency (all nodes see the same data) and availability (every request gets a response). When no partition exists, both can be provided.",
+      "topic": "cap_theorem",
+      "topic_category": "nosql",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB012",
+      "question": "What is the main risk of using the Entity-Attribute-Value (EAV) pattern in a relational database?",
+      "choices": {
+        "A": "It makes queries complex, prevents type safety, and defeats relational integrity constraints",
+        "B": "It doubles storage requirements compared to a traditional schema",
+        "C": "It requires a NoSQL database engine to function correctly",
+        "D": "It violates first normal form by storing repeating groups"
+      },
+      "answer": "A",
+      "explanation": "EAV stores attributes as rows rather than columns, losing type enforcement, foreign key constraints, and NOT NULL checks. Queries become complex pivots. It is generally an anti-pattern in relational databases unless truly dynamic attributes are needed.",
+      "topic": "eav_pattern",
+      "topic_category": "schema_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB013",
+      "question": "What is the primary defense against SQL injection attacks?",
+      "choices": {
+        "A": "Running the database with a read-only user account",
+        "B": "Escaping all single quotes in user input before concatenation",
+        "C": "Input validation using regular expressions to strip dangerous characters",
+        "D": "Using parameterized queries (prepared statements) that separate SQL logic from data"
+      },
+      "answer": "D",
+      "explanation": "Parameterized queries (prepared statements) ensure user input is always treated as data, never as executable SQL. Input validation and escaping are defense-in-depth measures but are insufficient alone. Read-only accounts limit damage but do not prevent injection.",
+      "topic": "sql_injection_prevention",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB014",
+      "question": "In a star schema, what is the role of a fact table?",
+      "choices": {
+        "A": "It contains measurable, quantitative data and foreign keys to dimension tables",
+        "B": "It serves as a bridge between many-to-many dimension relationships",
+        "C": "It maintains slowly changing dimension history",
+        "D": "It stores descriptive attributes about business entities"
+      },
+      "answer": "A",
+      "explanation": "Fact tables store measurements (revenue, quantity, duration) along with foreign keys referencing dimension tables. Dimension tables hold the descriptive context (who, what, where, when). This separation is fundamental to star schema design.",
+      "topic": "star_schema",
+      "topic_category": "data_modeling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB015",
+      "question": "What does a zero-downtime migration strategy require when adding a new NOT NULL column to a large production table?",
+      "choices": {
+        "A": "Add the column as nullable first, backfill data, then add the NOT NULL constraint",
+        "B": "Add the column as NOT NULL with a DEFAULT in a single ALTER TABLE statement",
+        "C": "Lock the table, add the column, and accept brief downtime",
+        "D": "Create a new table with the column, copy all data, then rename tables"
+      },
+      "answer": "A",
+      "explanation": "Adding a NOT NULL column without a default requires rewriting the entire table in many databases, causing a long lock. The safe pattern is: add nullable column (instant), backfill in batches (no lock), then add NOT NULL constraint (validates existing rows).",
+      "topic": "zero_downtime_migrations",
+      "topic_category": "migrations",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB016",
+      "question": "Which PostgreSQL data type is preferred for storing semi-structured JSON data that needs to be queried and indexed?",
+      "choices": {
+        "A": "HSTORE which stores key-value pairs as strings",
+        "B": "TEXT with application-level JSON parsing",
+        "C": "JSON type which stores an exact text copy",
+        "D": "JSONB which stores a decomposed binary format supporting indexing"
+      },
+      "answer": "D",
+      "explanation": "JSONB stores JSON in a decomposed binary format that supports GIN indexing, containment operators (@>), and efficient key lookup. The JSON type preserves whitespace but does not support indexing. HSTORE is limited to flat string key-value pairs.",
+      "topic": "jsonb_operators",
+      "topic_category": "postgresql",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB017",
+      "question": "When should you prefer a surrogate key (auto-increment integer) over a natural key (business identifier) as a primary key?",
+      "choices": {
+        "A": "Only when the table has no candidate key at all",
+        "B": "Never in OLTP systems, only in data warehouses",
+        "C": "When the natural key is composite, mutable, or has variable length",
+        "D": "Always, because surrogate keys are universally superior"
+      },
+      "answer": "C",
+      "explanation": "Surrogate keys are preferred when natural keys are composite (costly joins), mutable (cascading updates), or variable-length (inefficient indexing). Natural keys are fine when stable, single-column, and compact (e.g., ISO country codes).",
+      "topic": "surrogate_vs_natural_keys",
+      "topic_category": "schema_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB018",
+      "question": "What does EXPLAIN (without ANALYZE) show in PostgreSQL?",
+      "choices": {
+        "A": "The raw SQL after all view and rule expansions",
+        "B": "The estimated query plan with predicted costs and row counts",
+        "C": "The actual execution time and rows processed for each plan node",
+        "D": "A list of indexes that could improve the query"
+      },
+      "answer": "B",
+      "explanation": "EXPLAIN shows the planner's estimated execution plan including node types, estimated costs, and predicted row counts. EXPLAIN ANALYZE actually runs the query and shows real execution times and actual row counts alongside estimates.",
+      "topic": "explain_plans",
+      "topic_category": "optimization",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB019",
+      "question": "In Redis, what data structure would you use to implement a leaderboard that supports efficient rank lookups?",
+      "choices": {
+        "A": "A String with JSON-encoded score data",
+        "B": "A List maintained in sorted order via LINSERT",
+        "C": "A Hash mapping player IDs to scores",
+        "D": "A Sorted Set with scores as the sort value"
+      },
+      "answer": "D",
+      "explanation": "Redis Sorted Sets (ZSET) maintain elements ordered by score with O(log N) insertion and O(log N) rank lookups via ZRANK. Hashes lack ordering, Lists require O(N) for sorted insertion, and Strings require full deserialization.",
+      "topic": "redis_data_structures",
+      "topic_category": "nosql",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB020",
+      "question": "What is row-level security (RLS) in PostgreSQL?",
+      "choices": {
+        "A": "Encrypting individual rows with different keys based on sensitivity",
+        "B": "Policies that control which rows a user can see or modify based on their role or attributes",
+        "C": "Logging all row-level changes to an audit table automatically",
+        "D": "Restricting the number of rows a query can return per session"
+      },
+      "answer": "B",
+      "explanation": "Row-level security uses CREATE POLICY to define per-row access rules. When enabled on a table, every query is filtered through applicable policies. This provides fine-grained access control at the database level rather than the application level.",
+      "topic": "row_level_security",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DB021",
+      "question": "Given this query:\n\nSELECT department_id, employee_name, salary,\n       salary - LAG(salary) OVER (PARTITION BY department_id ORDER BY salary) AS gap_from_prev\nFROM employees;\n\nWhat does the gap_from_prev column represent?",
+      "choices": {
+        "A": "The difference between the current row's salary and the overall average salary",
+        "B": "The running total of salary differences across all departments",
+        "C": "The difference between the current salary and the next salary in global ordering",
+        "D": "The difference between the current row's salary and the previous row's salary within the same department ordered by salary"
+      },
+      "answer": "D",
+      "explanation": "LAG(salary) OVER (PARTITION BY department_id ORDER BY salary) returns the salary from the previous row within each department partition, ordered by salary. Subtracting it gives the gap between consecutive salaries in the same department.",
+      "topic": "window_functions",
+      "topic_category": "sql_queries",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB022",
+      "question": "What is the difference between a correlated subquery and a derived table (inline view)?",
+      "choices": {
+        "A": "A correlated subquery is executed once; a derived table is executed per outer row",
+        "B": "A derived table can only appear in the FROM clause; a correlated subquery can only appear in WHERE",
+        "C": "A correlated subquery references the outer query and executes per outer row; a derived table is evaluated independently once",
+        "D": "They are functionally identical; the optimizer always converts one to the other"
+      },
+      "answer": "C",
+      "explanation": "A correlated subquery references columns from the outer query and is conceptually re-evaluated for each outer row. A derived table (subquery in FROM) is self-contained and evaluated once. The optimizer may transform between them, but semantically they differ.",
+      "topic": "correlated_subqueries",
+      "topic_category": "sql_queries",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB023",
+      "question": "In MVCC (Multi-Version Concurrency Control), how are concurrent reads and writes handled?",
+      "choices": {
+        "A": "All operations are serialized through a single-threaded executor",
+        "B": "Writes are buffered in a WAL and only become visible after a checkpoint",
+        "C": "Writers create new versions of rows; readers see a consistent snapshot without blocking writers",
+        "D": "Readers acquire shared locks that block writers until the read completes"
+      },
+      "answer": "C",
+      "explanation": "MVCC maintains multiple versions of each row. Readers see a consistent snapshot based on their transaction's start time, while writers create new row versions. This eliminates read-write contention: readers never block writers and writers never block readers.",
+      "topic": "mvcc",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB024",
+      "question": "When does a PostgreSQL query planner choose a sequential scan over an index scan?",
+      "choices": {
+        "A": "When the query uses OR conditions, which always prevent index usage",
+        "B": "When the estimated selectivity is low enough that reading the whole table is cheaper than random I/O from index lookups",
+        "C": "Only when no index exists on the filtered columns",
+        "D": "When the table fits entirely in shared_buffers"
+      },
+      "answer": "B",
+      "explanation": "The planner compares estimated costs. Index scans incur random I/O per row; sequential scans read pages in order. When a query returns a large fraction of the table (low selectivity), sequential scan's cheaper sequential I/O wins. The threshold is often around 5-15% of the table.",
+      "topic": "sequential_vs_index_scan",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB025",
+      "question": "What anomaly does the REPEATABLE READ isolation level still permit that SERIALIZABLE prevents?",
+      "choices": {
+        "A": "Non-repeatable reads",
+        "B": "Dirty reads",
+        "C": "Phantom reads and serialization anomalies like write skew",
+        "D": "Lost updates"
+      },
+      "answer": "C",
+      "explanation": "REPEATABLE READ prevents dirty reads and non-repeatable reads but permits phantom reads (new rows matching a predicate) and write skew anomalies. SERIALIZABLE uses predicate locking or SSI (Serializable Snapshot Isolation) to prevent all anomalies.",
+      "topic": "isolation_levels",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB026",
+      "question": "What is a partial index in PostgreSQL?",
+      "choices": {
+        "A": "An index that stores only the indexed column, not the heap tuple pointer",
+        "B": "An index that is partially rebuilt during VACUUM instead of full REINDEX",
+        "C": "An index built on only the first N characters of a text column",
+        "D": "An index with a WHERE clause that only indexes rows matching the predicate"
+      },
+      "answer": "D",
+      "explanation": "A partial index uses CREATE INDEX ... WHERE <condition> to index only a subset of rows. For example, indexing only active orders (WHERE status = 'active') creates a smaller, faster index than indexing all rows. Queries must match the predicate to use it.",
+      "topic": "partial_indexes",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB027",
+      "question": "In a Slowly Changing Dimension (SCD) Type 2 implementation, how is historical data preserved?",
+      "choices": {
+        "A": "A temporal trigger copies the old row to an archive table before updating",
+        "B": "A new row is inserted for each change with effective_date/end_date columns and a current flag",
+        "C": "An additional column stores the previous value alongside the current value",
+        "D": "The old value is overwritten and a separate audit log table tracks changes"
+      },
+      "answer": "B",
+      "explanation": "SCD Type 2 preserves full history by inserting a new row for each change, marking validity periods (effective_start, effective_end) and a is_current flag. Type 1 overwrites, Type 3 adds a previous-value column.",
+      "topic": "slowly_changing_dimensions",
+      "topic_category": "data_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB028",
+      "question": "What is the purpose of the PostgreSQL WAL (Write-Ahead Log)?",
+      "choices": {
+        "A": "To record changes before they are applied to data files, ensuring durability and enabling point-in-time recovery",
+        "B": "To track table statistics for the query planner",
+        "C": "To cache frequently accessed query results for faster retrieval",
+        "D": "To log all SQL statements for auditing and compliance"
+      },
+      "answer": "A",
+      "explanation": "The WAL writes change records to a sequential log before modifying actual data pages. This ensures that committed transactions survive crashes (durability) and enables point-in-time recovery, streaming replication, and logical replication.",
+      "topic": "wal",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB029",
+      "question": "What is the key difference between optimistic and pessimistic locking?",
+      "choices": {
+        "A": "They differ only in lock granularity: pessimistic locks rows, optimistic locks pages",
+        "B": "Optimistic locking guarantees no conflicts; pessimistic allows conflicts but resolves them",
+        "C": "Optimistic locking uses database-level locks; pessimistic uses application-level locks",
+        "D": "Pessimistic locking acquires locks before reading; optimistic defers conflict detection to commit time using version checks"
+      },
+      "answer": "D",
+      "explanation": "Pessimistic locking (SELECT ... FOR UPDATE) acquires locks upfront, preventing concurrent modifications. Optimistic locking reads without locks and checks a version/timestamp at write time, retrying on conflict. Optimistic works well with low contention; pessimistic with high contention.",
+      "topic": "optimistic_vs_pessimistic_locking",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB030",
+      "question": "In PostgreSQL, what is TOAST (The Oversized-Attribute Storage Technique)?",
+      "choices": {
+        "A": "A compression algorithm for JSONB data that reduces storage by 70%",
+        "B": "A partitioning strategy that splits tables by row size",
+        "C": "An automatic mechanism that compresses and/or moves large field values to a separate storage area when they exceed roughly 2KB",
+        "D": "A replication feature that transfers only changed columns instead of full rows"
+      },
+      "answer": "C",
+      "explanation": "TOAST automatically handles oversized values (>~2KB) by first attempting compression, then out-of-line storage in a companion TOAST table. This keeps the main table's pages efficient while transparently supporting large TEXT, BYTEA, and JSONB values.",
+      "topic": "toast",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB031",
+      "question": "When designing a multi-column B-tree index on (a, b, c), which queries can efficiently use this index?",
+      "choices": {
+        "A": "Queries filtering on a; on a and b; or on a, b, and c (leftmost prefix rule)",
+        "B": "Only queries filtering on all three columns a, b, and c simultaneously",
+        "C": "Queries filtering on a and c, skipping b, because the index stores all three columns",
+        "D": "Any query filtering on any combination of a, b, or c in any order"
+      },
+      "answer": "A",
+      "explanation": "B-tree multi-column indexes follow the leftmost prefix rule. The index on (a, b, c) efficiently supports queries filtering on (a), (a, b), or (a, b, c). Filtering on (b, c) or (a, c) cannot use the full index efficiently because b is skipped.",
+      "topic": "multi_column_index_ordering",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB032",
+      "question": "Which join algorithm does the PostgreSQL planner typically select when both inputs are large and unsorted, and there is sufficient work_mem?",
+      "choices": {
+        "A": "Nested Loop Join",
+        "B": "Hash Join",
+        "C": "Cross Join with filtering",
+        "D": "Merge Join"
+      },
+      "answer": "B",
+      "explanation": "Hash Join builds a hash table from the smaller input and probes it with the larger input, requiring O(N+M) time. It excels when inputs are unsorted and fit in work_mem. Merge Join needs sorted inputs. Nested Loop is efficient only with a small outer set and indexed inner.",
+      "topic": "join_algorithms",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB033",
+      "question": "What is a deadlock in a database context, and how does PostgreSQL handle it?",
+      "choices": {
+        "A": "Two queries competing for CPU resources; PostgreSQL queues them by priority",
+        "B": "A single transaction holding too many locks; PostgreSQL forces a lock escalation",
+        "C": "A long-running query blocking DDL operations; PostgreSQL sets a timeout and cancels the DDL",
+        "D": "Two or more transactions each waiting for locks held by the other; PostgreSQL detects the cycle and aborts one transaction"
+      },
+      "answer": "D",
+      "explanation": "Deadlock occurs when transactions form a circular wait for locks. PostgreSQL's deadlock detector periodically checks the wait-for graph. When a cycle is found, it aborts the transaction with the least cost to break the cycle.",
+      "topic": "deadlock_detection",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB034",
+      "question": "What is the benefit of a GIN (Generalized Inverted Index) index in PostgreSQL?",
+      "choices": {
+        "A": "Reduced index size by storing only block ranges instead of individual row pointers",
+        "B": "Efficient for full-text search, array containment, and JSONB containment queries by indexing individual elements",
+        "C": "Optimal for range queries on numeric columns with sorted data",
+        "D": "Support for nearest-neighbor and distance-based spatial queries"
+      },
+      "answer": "B",
+      "explanation": "GIN indexes are inverted indexes that map each element (word, array element, JSON key) to the set of rows containing it. This makes them ideal for full-text search (tsvector), array @> operators, and JSONB containment queries.",
+      "topic": "gin_indexes",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB035",
+      "question": "In Alembic (SQLAlchemy's migration tool), what does the downgrade() function represent?",
+      "choices": {
+        "A": "A function that downgrades the database engine version",
+        "B": "The reverse operation that undoes the corresponding upgrade(), enabling rollback to the previous schema version",
+        "C": "A performance optimization that simplifies the schema",
+        "D": "A cleanup step that removes orphaned migration files"
+      },
+      "answer": "B",
+      "explanation": "Each Alembic migration has upgrade() and downgrade() functions. upgrade() applies the schema change; downgrade() reverses it. This enables rolling back migrations in order, which is critical for deployment failures and zero-downtime strategies.",
+      "topic": "alembic_patterns",
+      "topic_category": "migrations",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB036",
+      "question": "What is write skew, and which isolation level prevents it?",
+      "choices": {
+        "A": "Two transactions write to the same row simultaneously; REPEATABLE READ prevents it",
+        "B": "A transaction reads data that was written but not yet committed; READ COMMITTED prevents it",
+        "C": "A transaction's writes are reordered by the storage engine; no isolation level prevents it",
+        "D": "Two transactions read the same data and both write different rows based on what they read, violating an invariant; only SERIALIZABLE prevents it"
+      },
+      "answer": "D",
+      "explanation": "Write skew occurs when two transactions read overlapping data, make disjoint writes based on their reads, and together violate a constraint neither would violate alone. Classic example: two doctors read on-call count, both go off-call, leaving zero coverage. Only SERIALIZABLE prevents this.",
+      "topic": "write_skew",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB037",
+      "question": "Which PostgreSQL feature allows querying data from external databases (MySQL, Oracle, CSV files) as if they were local tables?",
+      "choices": {
+        "A": "Materialized views with periodic refresh",
+        "B": "Logical replication subscriptions",
+        "C": "Foreign Data Wrappers (FDW)",
+        "D": "COPY command with external file references"
+      },
+      "answer": "C",
+      "explanation": "Foreign Data Wrappers implement the SQL/MED standard, allowing PostgreSQL to define foreign tables that transparently query external data sources. postgres_fdw connects to other PostgreSQL instances; file_fdw reads CSV/text files; mysql_fdw connects to MySQL.",
+      "topic": "foreign_data_wrappers",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB038",
+      "question": "What is the difference between horizontal and vertical partitioning of a database table?",
+      "choices": {
+        "A": "Horizontal splits columns; vertical splits rows",
+        "B": "Horizontal splits rows across partitions; vertical splits columns across tables",
+        "C": "Horizontal is for OLTP; vertical is exclusively for OLAP",
+        "D": "They are synonyms for sharding and replication respectively"
+      },
+      "answer": "B",
+      "explanation": "Horizontal partitioning distributes rows across partitions (e.g., by date range or hash). Vertical partitioning splits a wide table into narrower tables with different column groups joined by key. Sharding is horizontal partitioning across different servers.",
+      "topic": "partitioning_sharding",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB039",
+      "question": "In the context of ORMs, what is the N+1 query problem?",
+      "choices": {
+        "A": "The ORM creates N+1 database connections for N concurrent requests",
+        "B": "An ORM generates N+1 tables for N entity relationships",
+        "C": "A schema migration requires N+1 steps for N table changes",
+        "D": "Loading a collection requires 1 query for the parent and N individual queries for each child, instead of a single joined query"
+      },
+      "answer": "D",
+      "explanation": "The N+1 problem occurs when lazy loading issues 1 query for the parent records and then N separate queries to fetch related records for each parent. Solutions include eager loading (JOIN), batch loading (IN clause), or subquery loading.",
+      "topic": "orm_n_plus_one",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB040",
+      "question": "What is a BRIN (Block Range Index) index best suited for in PostgreSQL?",
+      "choices": {
+        "A": "Multi-column composite indexes for complex WHERE clauses",
+        "B": "High-cardinality columns with uniformly random distribution",
+        "C": "Columns with strong physical correlation to their values, such as timestamps in append-only tables",
+        "D": "Full-text search across large document collections"
+      },
+      "answer": "C",
+      "explanation": "BRIN indexes store summary information (min/max) for ranges of physical table blocks. They are extremely compact and efficient when column values correlate with physical row order, as in time-series data where new rows are always appended chronologically.",
+      "topic": "brin_indexes",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB041",
+      "question": "What is the difference between logical and physical replication in PostgreSQL?",
+      "choices": {
+        "A": "Physical replication supports cross-database replication; logical does not",
+        "B": "Physical replication is synchronous; logical replication is always asynchronous",
+        "C": "Physical replication copies WAL records for exact byte-level copies; logical replication streams decoded row changes allowing selective table replication",
+        "D": "Logical replication requires the same PostgreSQL major version; physical does not"
+      },
+      "answer": "C",
+      "explanation": "Physical replication ships raw WAL segments for byte-identical standby servers (entire cluster). Logical replication decodes WAL into logical changes, enabling selective table replication, cross-version replication, and different index/schema structures on the subscriber.",
+      "topic": "logical_replication",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB042",
+      "question": "When using LATERAL joins in PostgreSQL, what capability do they provide over regular subqueries in the FROM clause?",
+      "choices": {
+        "A": "LATERAL joins bypass the query planner for faster execution",
+        "B": "The LATERAL subquery can reference columns from preceding FROM items, enabling correlated subqueries in the FROM clause",
+        "C": "LATERAL joins execute in parallel across multiple CPU cores",
+        "D": "They allow joining more than two tables in a single JOIN clause"
+      },
+      "answer": "B",
+      "explanation": "LATERAL allows a subquery in the FROM clause to reference columns from tables that appear earlier in the FROM list. This is equivalent to a correlated subquery but in the FROM clause, enabling patterns like top-N-per-group efficiently.",
+      "topic": "lateral_joins",
+      "topic_category": "sql_queries",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB043",
+      "question": "What is the purpose of pg_stat_statements in PostgreSQL?",
+      "choices": {
+        "A": "It stores the text of all DDL statements for schema change auditing",
+        "B": "It generates optimized execution plans for frequently run queries",
+        "C": "It tracks execution statistics (calls, total time, rows, blocks) for all SQL statements executed by the server",
+        "D": "It provides real-time lock monitoring for deadlock prevention"
+      },
+      "answer": "C",
+      "explanation": "pg_stat_statements is an extension that records aggregate statistics for each unique query: call count, total/min/max/mean execution time, rows returned, and buffer usage. It is essential for identifying slow queries and optimization targets.",
+      "topic": "pg_stat_statements",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB044",
+      "question": "In MongoDB's document model, what is the recommended approach for modeling a one-to-many relationship where the 'many' side has thousands of documents?",
+      "choices": {
+        "A": "Store the parent reference in each child document and query children by parent ID",
+        "B": "Embed all child documents in an array within the parent document",
+        "C": "Create a junction collection with parent_id and child_id pairs",
+        "D": "Store child document references (ObjectIds) in the parent and use application-level joins"
+      },
+      "answer": "A",
+      "explanation": "For high-cardinality one-to-many relationships, storing the parent reference in each child avoids the 16MB document size limit and unbounded array growth. Queries filter children by parent_id with an index. Embedding is only suitable for small, bounded collections.",
+      "topic": "document_model",
+      "topic_category": "nosql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB045",
+      "question": "What is an expression index (functional index) in PostgreSQL?",
+      "choices": {
+        "A": "An index built on the result of a function or expression applied to one or more columns, such as CREATE INDEX ON t (lower(email))",
+        "B": "An index that is only used when specific expressions appear in the query's WHERE clause",
+        "C": "An index type that supports regular expression pattern matching",
+        "D": "An index that stores precomputed expression results in a materialized column"
+      },
+      "answer": "A",
+      "explanation": "Expression indexes index the result of a function or expression. CREATE INDEX ON users (lower(email)) enables efficient lookups for WHERE lower(email) = '...'. The query must use the exact same expression for the planner to select the index.",
+      "topic": "expression_indexes",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB046",
+      "question": "What is a snowflake schema, and how does it differ from a star schema?",
+      "choices": {
+        "A": "A snowflake schema uses fact tables as dimensions; a star schema keeps them separate",
+        "B": "A snowflake schema denormalizes dimension tables for faster queries; a star schema normalizes them",
+        "C": "They are identical structures optimized for different database engines",
+        "D": "A snowflake schema normalizes dimension tables into sub-dimensions, reducing redundancy but requiring more joins than a star schema"
+      },
+      "answer": "D",
+      "explanation": "A snowflake schema normalizes dimension tables into sub-tables (e.g., product -> category -> department). This reduces data redundancy but increases join complexity compared to the star schema where dimensions are fully denormalized.",
+      "topic": "snowflake_schema",
+      "topic_category": "data_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB047",
+      "question": "What does the FILTER clause on an aggregate function do in PostgreSQL?\n\nSELECT\n  COUNT(*) AS total,\n  COUNT(*) FILTER (WHERE status = 'active') AS active_count\nFROM users;",
+      "choices": {
+        "A": "It applies a post-aggregation transformation to the result",
+        "B": "It filters the output rows based on the aggregate result",
+        "C": "It restricts which rows are included in that specific aggregate computation without affecting other aggregates in the same query",
+        "D": "It applies a WHERE clause after the GROUP BY, similar to HAVING"
+      },
+      "answer": "C",
+      "explanation": "The FILTER clause restricts which rows feed into a particular aggregate without affecting other aggregates in the SELECT list. In this example, total counts all rows, while active_count counts only rows with status='active'. This avoids CASE WHEN workarounds.",
+      "topic": "aggregate_filtering",
+      "topic_category": "sql_queries",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB048",
+      "question": "What is a bridge table in dimensional modeling?",
+      "choices": {
+        "A": "A table that bridges the gap between staging and production schemas during ETL",
+        "B": "A temporary table used during schema migrations to maintain backward compatibility",
+        "C": "A table that connects two different database instances for replication",
+        "D": "A table that resolves many-to-many relationships between a fact table and a multi-valued dimension"
+      },
+      "answer": "D",
+      "explanation": "A bridge table handles many-to-many relationships between facts and dimensions (e.g., a patient with multiple diagnoses). It contains the dimension key, a group key (linking to the fact), and optionally a weighting factor to allocate measures.",
+      "topic": "bridge_tables",
+      "topic_category": "data_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB049",
+      "question": "In Cassandra's wide-column data model, what determines how data is physically distributed across the cluster?",
+      "choices": {
+        "A": "The keyspace configuration, which maps tables to specific racks",
+        "B": "The clustering columns, which determine sort order within a partition",
+        "C": "The replication factor, which specifies how many copies exist",
+        "D": "The partition key, which is hashed to determine the node responsible for that data"
+      },
+      "answer": "D",
+      "explanation": "Cassandra hashes the partition key using consistent hashing to determine which node owns that partition. Clustering columns determine sort order within a partition. The replication factor determines how many copies exist but not the primary placement.",
+      "topic": "wide_column_model",
+      "topic_category": "nosql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB050",
+      "question": "What is the purpose of advisory locks in PostgreSQL?",
+      "choices": {
+        "A": "Locks that provide advisory warnings when queries exceed a time threshold",
+        "B": "Application-defined locks that use the database's lock manager for coordination without locking actual database objects",
+        "C": "Temporary locks placed during EXPLAIN ANALYZE to estimate lock contention",
+        "D": "Locks that the database recommends but does not enforce"
+      },
+      "answer": "B",
+      "explanation": "Advisory locks (pg_advisory_lock/pg_try_advisory_lock) use PostgreSQL's lock infrastructure for application-level coordination. They do not lock any table or row -- the meaning is entirely defined by the application. Common uses: preventing duplicate job execution, rate limiting.",
+      "topic": "advisory_locks",
+      "topic_category": "transactions",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB051",
+      "question": "What is a junk dimension in data warehouse design?",
+      "choices": {
+        "A": "A dimension created from data quality issues that should be cleaned",
+        "B": "A temporary dimension used during ETL processing that is dropped after loading",
+        "C": "A single dimension table that combines several low-cardinality flags and indicators to reduce fact table width",
+        "D": "A dimension table containing obsolete or deprecated attributes"
+      },
+      "answer": "C",
+      "explanation": "A junk dimension groups miscellaneous low-cardinality flags (yes/no indicators, status codes, boolean flags) that do not belong to any existing dimension. Instead of adding many flag columns to the fact table, they are combined into a single dimension with a surrogate key.",
+      "topic": "junk_dimensions",
+      "topic_category": "data_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB052",
+      "question": "What problem does connection pooling solve, and what is a common implementation?",
+      "choices": {
+        "A": "It distributes queries across read replicas; HAProxy is the standard tool",
+        "B": "It limits concurrent transactions to prevent resource exhaustion; built into the database engine",
+        "C": "It maintains a pool of reusable database connections to reduce the overhead of establishing new connections; PgBouncer is a common PostgreSQL implementation",
+        "D": "It pools query results for caching; common implementation is Redis"
+      },
+      "answer": "C",
+      "explanation": "Each database connection consumes memory for process/thread state, authentication, and SSL negotiation. Connection pooling reuses established connections across requests. PgBouncer (external) and pgpool-II are common for PostgreSQL; application-level pools (HikariCP, SQLAlchemy pool) also help.",
+      "topic": "connection_pooling",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB053",
+      "question": "What is the purpose of the RETURNING clause in PostgreSQL DML statements?",
+      "choices": {
+        "A": "It returns the query to the query planner for re-optimization",
+        "B": "It returns the affected rows (or specific columns) from INSERT, UPDATE, or DELETE operations without requiring a separate SELECT",
+        "C": "It returns the number of rows affected, equivalent to the ROW_COUNT variable",
+        "D": "It returns control flow to the calling function in PL/pgSQL"
+      },
+      "answer": "B",
+      "explanation": "RETURNING allows DML statements to return data from modified rows in a single round-trip. INSERT ... RETURNING id gets the generated ID; DELETE ... RETURNING * gets deleted rows for logging. This eliminates the need for a separate SELECT query.",
+      "topic": "returning_clause",
+      "topic_category": "sql_queries",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB054",
+      "question": "What is BCNF (Boyce-Codd Normal Form), and how does it differ from 3NF?",
+      "choices": {
+        "A": "BCNF eliminates all multi-valued dependencies; 3NF only eliminates transitive dependencies",
+        "B": "BCNF requires that every determinant is a candidate key, which is stricter than 3NF when a table has multiple overlapping candidate keys",
+        "C": "There is no practical difference; BCNF is simply an older name for 3NF",
+        "D": "BCNF applies only to tables with composite primary keys; 3NF applies to all tables"
+      },
+      "answer": "B",
+      "explanation": "BCNF strengthens 3NF by requiring that for every functional dependency X -> Y, X must be a superkey. 3NF allows exceptions when Y is a prime attribute (part of a candidate key). The difference manifests with overlapping composite candidate keys.",
+      "topic": "normalization_bcnf",
+      "topic_category": "schema_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB055",
+      "question": "In PostgreSQL, what does the range type (e.g., tstzrange) provide that two separate timestamp columns do not?",
+      "choices": {
+        "A": "Trigger-based validation that the end is always after the start",
+        "B": "Automatic timezone conversion between the start and end values",
+        "C": "Compression of the timestamp pair into a single 8-byte value",
+        "D": "Built-in operators for containment, overlap, adjacency checks, and exclusion constraint support via GiST indexes"
+      },
+      "answer": "D",
+      "explanation": "Range types provide native operators (@> containment, && overlap, -|- adjacency) and support exclusion constraints (EXCLUDE USING gist) that prevent overlapping ranges. Two columns require manual constraint logic and complex queries for overlap detection.",
+      "topic": "range_types",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB056",
+      "question": "What is the recommended strategy for a backward-compatible column rename in a production database?",
+      "choices": {
+        "A": "ALTER TABLE RENAME COLUMN in a single migration during off-peak hours",
+        "B": "Use an ORM alias to map the new name to the old column without schema changes",
+        "C": "Create a view with the new column name that references the old column",
+        "D": "Add the new column, dual-write to both, migrate reads to the new column, then drop the old column in a later migration"
+      },
+      "answer": "D",
+      "explanation": "Direct column rename breaks running application instances during deployment. The expand-migrate-contract pattern (add new column, dual-write, migrate reads, drop old) maintains backward compatibility throughout the rollout, essential for zero-downtime deployments.",
+      "topic": "backward_compatible_changes",
+      "topic_category": "migrations",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB057",
+      "question": "What is database encryption at rest, and what threat does it primarily defend against?",
+      "choices": {
+        "A": "Encrypting data in transit between client and server; defends against network eavesdropping",
+        "B": "Encrypting query parameters to prevent SQL injection",
+        "C": "Hashing all primary keys to prevent enumeration attacks",
+        "D": "Encrypting stored data files on disk; defends against physical media theft or unauthorized filesystem access"
+      },
+      "answer": "D",
+      "explanation": "Encryption at rest (Transparent Data Encryption or filesystem-level encryption) protects data files on disk from unauthorized access if storage media is stolen or improperly decommissioned. It does not protect against SQL injection or authenticated users with query access.",
+      "topic": "encryption_at_rest",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB058",
+      "question": "What is an index-only scan in PostgreSQL, and what condition must be met for it to occur?",
+      "choices": {
+        "A": "A scan that reads only the index without accessing the heap, possible when the index covers all required columns and the visibility map confirms all tuples are visible",
+        "B": "A scan that uses only the primary key index; requires no secondary indexes",
+        "C": "A scan where the index is fully cached in shared_buffers; requires sufficient memory allocation",
+        "D": "A scan that reads only the index root page; requires the index to be a single level deep"
+      },
+      "answer": "A",
+      "explanation": "An index-only scan retrieves all needed columns directly from the index, skipping the heap. It requires a covering index (all columns in the query) and relies on the visibility map to confirm tuple visibility without heap access. Regular VACUUM maintains the visibility map.",
+      "topic": "index_only_scans",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB059",
+      "question": "What is the purpose of the JSONB path query operators (@? and @@) introduced in PostgreSQL 12?",
+      "choices": {
+        "A": "They evaluate SQL/JSON path expressions against JSONB data for flexible querying of nested structures",
+        "B": "They create GIN index entries based on the path structure",
+        "C": "They convert JSONB to relational rows using path-based unpacking",
+        "D": "They perform JSON Schema validation against JSONB columns"
+      },
+      "answer": "A",
+      "explanation": "The @? operator checks if a JSON path expression returns any items; @@ checks if a path predicate evaluates to true. These SQL/JSON path operators enable expressive queries into deeply nested JSONB structures (e.g., '$.items[*] ? (@.price > 10)').",
+      "topic": "jsonb_path_queries",
+      "topic_category": "postgresql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB060",
+      "question": "In SQLAlchemy, what is the difference between Session.flush() and Session.commit()?",
+      "choices": {
+        "A": "They are aliases; both commit the current transaction immediately",
+        "B": "flush() commits the transaction; commit() also closes the session",
+        "C": "flush() sends pending SQL to the database without committing the transaction; commit() flushes and then commits the transaction",
+        "D": "flush() clears the identity map; commit() persists objects to the database"
+      },
+      "answer": "C",
+      "explanation": "flush() emits pending SQL INSERT/UPDATE/DELETE statements to the database but within the current transaction (changes visible via the connection but not yet permanent). commit() calls flush() then commits the transaction, making changes durable.",
+      "topic": "sqlalchemy_session",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB061",
+      "question": "What is the primary difference between GiST and GIN indexes in PostgreSQL?",
+      "choices": {
+        "A": "GIN is deprecated in favor of GiST in PostgreSQL 15+",
+        "B": "GiST is a generalized search tree supporting diverse operations (containment, overlap, nearest-neighbor); GIN is an inverted index optimized for lookups of composite values with many keys",
+        "C": "GiST indexes are always larger than GIN indexes for the same data",
+        "D": "GiST supports only text data; GIN supports only numeric data"
+      },
+      "answer": "B",
+      "explanation": "GiST (Generalized Search Tree) is a balanced tree supporting various search strategies (spatial, range, text similarity). GIN (Generalized Inverted Index) maps each key to a posting list of rows. GIN is faster for lookups but slower to update; GiST is more versatile but slower for exact containment.",
+      "topic": "gist_vs_gin",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB062",
+      "question": "What is a temporal table, and how does it track data changes over time?",
+      "choices": {
+        "A": "A table with system-managed valid_from and valid_to columns that automatically track current and historical row versions",
+        "B": "A table with a timestamp column used for ordering queries",
+        "C": "A table partitioned by time ranges for time-series storage",
+        "D": "A temporary table that persists only for the duration of a session"
+      },
+      "answer": "A",
+      "explanation": "Temporal tables (SQL:2011 standard) maintain automatic versioning. System-versioned temporal tables have system_time columns tracking when each row version was valid. Updates create new versions while old versions move to a history table, enabling AS OF queries for point-in-time data.",
+      "topic": "temporal_tables",
+      "topic_category": "schema_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB063",
+      "question": "How does the planner use table statistics (pg_statistic) to estimate query costs?",
+      "choices": {
+        "A": "Statistics store histograms of value distribution, most common values, and null fractions; the planner uses these to estimate selectivity and choose optimal join orders and access methods",
+        "B": "Statistics track query execution history; the planner replays the plan that performed best previously",
+        "C": "Statistics record exact row counts per value; the planner uses them to generate execution plans with guaranteed costs",
+        "D": "Statistics measure disk I/O latency per table; the planner routes queries to the fastest tablespace"
+      },
+      "answer": "A",
+      "explanation": "ANALYZE populates pg_statistic with per-column histograms, most common values (MCV) lists, distinct value counts, and null fractions. The planner uses these to estimate how many rows each operation produces (selectivity), driving join order, access method, and algorithm selection.",
+      "topic": "planner_statistics",
+      "topic_category": "optimization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB064",
+      "question": "What is a soft delete, and what are its trade-offs?",
+      "choices": {
+        "A": "Deleting data after a grace period; trades immediacy for safety",
+        "B": "Deleting only from replicas while keeping data on the primary; trades consistency for availability",
+        "C": "Cascading deletes that only remove leaf records; trades completeness for referential safety",
+        "D": "Marking rows as deleted (deleted_at timestamp) instead of physically removing them; preserves data for audit/undo but requires filtering deleted rows in every query and increases table bloat"
+      },
+      "answer": "D",
+      "explanation": "Soft deletes use a flag or timestamp column instead of DELETE. Benefits: audit trail, easy undo, referential integrity preserved. Drawbacks: every query needs WHERE deleted_at IS NULL, unique constraints must include the flag, table bloats, and the pattern is easy to forget.",
+      "topic": "soft_deletes",
+      "topic_category": "schema_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB065",
+      "question": "What is the purpose of a data migration as opposed to a schema migration?",
+      "choices": {
+        "A": "They are the same operation viewed from different perspectives",
+        "B": "Data migrations move data between different database engines (e.g., MySQL to PostgreSQL)",
+        "C": "Data migrations transform existing data to conform to schema changes, such as backfilling a new column or splitting a field; schema migrations only change the DDL structure",
+        "D": "Data migrations handle BLOB and binary data; schema migrations handle structured data"
+      },
+      "answer": "C",
+      "explanation": "Schema migrations alter the database structure (ADD COLUMN, CREATE INDEX). Data migrations transform existing data to match the new structure (backfill defaults, split 'name' into 'first_name'/'last_name', compute derived values). Both are typically version-controlled but serve different purposes.",
+      "topic": "data_migration_strategies",
+      "topic_category": "migrations",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB066",
+      "question": "What does polyglot persistence mean in system architecture?",
+      "choices": {
+        "A": "Using different database technologies for different data storage needs within the same application, choosing each for its strengths",
+        "B": "Replicating data across databases of different vendors for redundancy",
+        "C": "Using a single database that supports multiple query languages (SQL, GraphQL, REST)",
+        "D": "Translating queries between database dialects using an ORM abstraction layer"
+      },
+      "answer": "A",
+      "explanation": "Polyglot persistence means using the best-fit database for each use case: PostgreSQL for transactional data, Redis for caching, Elasticsearch for full-text search, Neo4j for graph relationships. This maximizes each store's strengths at the cost of operational complexity.",
+      "topic": "polyglot_persistence",
+      "topic_category": "nosql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB067",
+      "question": "What is index bloat in PostgreSQL, and how is it addressed?",
+      "choices": {
+        "A": "Dead index entries from MVCC that VACUUM cannot reclaim efficiently; addressed by REINDEX or pg_repack to rebuild the index without extended locking",
+        "B": "Unused indexes consuming disk space; addressed by identifying and dropping them via pg_stat_user_indexes",
+        "C": "An index growing larger than the table it indexes; addressed by dropping and recreating the index",
+        "D": "Oversized index entries from long text columns; addressed by using hash indexes instead"
+      },
+      "answer": "A",
+      "explanation": "MVCC leaves dead entries in indexes after updates/deletes. While VACUUM reclaims heap space effectively, B-tree pages that become empty are recycled slowly, causing bloat. REINDEX rebuilds cleanly but locks the table; pg_repack and REINDEX CONCURRENTLY avoid extended locks.",
+      "topic": "index_maintenance",
+      "topic_category": "indexing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB068",
+      "question": "What is the difference between blue-green and rolling database deployments?",
+      "choices": {
+        "A": "They are identical strategies with different naming conventions",
+        "B": "Blue-green is for application servers only and cannot apply to databases; rolling applies to databases",
+        "C": "Blue-green swaps between two complete environments atomically; rolling updates instances incrementally",
+        "D": "Blue-green uses two database schemas in the same instance; rolling creates new schemas one at a time"
+      },
+      "answer": "C",
+      "explanation": "Blue-green deployments maintain two complete environments and switch traffic atomically (requires the schema to be backward-compatible with both app versions during the switch). Rolling deployments update nodes incrementally, keeping most capacity available but requiring longer compatibility windows.",
+      "topic": "blue_green_deployments",
+      "topic_category": "migrations",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB069",
+      "question": "What is the role of a database audit log, and what should it capture?",
+      "choices": {
+        "A": "Performance metrics (query duration, I/O stats) for capacity planning",
+        "B": "A tamper-evident record of who accessed or modified data, capturing the user, timestamp, operation, affected rows, and old/new values",
+        "C": "A log of all DDL statements for schema change tracking",
+        "D": "A record of failed login attempts for intrusion detection only"
+      },
+      "answer": "B",
+      "explanation": "Audit logs record data access and modification events for compliance (HIPAA, SOX, GDPR) and forensics. They should capture: who (user/role), when (timestamp), what (operation type), which data (table, row identifiers), and the before/after values for changes. They should be tamper-resistant (append-only, separate storage).",
+      "topic": "audit_logging",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB070",
+      "question": "In graph databases like Neo4j, what query pattern are they optimized for that relational databases handle poorly?",
+      "choices": {
+        "A": "ACID transactions on structured tabular data",
+        "B": "Aggregations over large numeric datasets with GROUP BY",
+        "C": "Variable-length traversals of relationships between entities, such as shortest path and N-degree connections",
+        "D": "Full-text search across unstructured documents"
+      },
+      "answer": "C",
+      "explanation": "Graph databases store nodes and edges as first-class structures with pointer-based adjacency (index-free adjacency). This makes multi-hop traversals O(1) per hop rather than requiring expensive recursive joins. Pattern matching across variable-length paths is their primary strength.",
+      "topic": "graph_databases",
+      "topic_category": "nosql",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DB071",
+      "question": "A production PostgreSQL table 'orders' has 50M rows and this EXPLAIN ANALYZE output:\n\nSeq Scan on orders (cost=0.00..1250000.00 rows=50000000 width=120) (actual time=0.015..45230.112 rows=50000000 loops=1)\n  Filter: (status = 'pending' AND created_at > '2026-01-01')\n  Rows Removed by Filter: 49950000\n\nThe table has a B-tree index on (status) and a separate B-tree index on (created_at). Only ~50,000 rows match both conditions. What is the most effective single change?",
+      "choices": {
+        "A": "Create a partial index: CREATE INDEX ON orders (created_at) WHERE status = 'pending'",
+        "B": "Increase shared_buffers to cache the entire table in memory",
+        "C": "Set enable_seqscan = off to force the planner to use the existing individual indexes",
+        "D": "Create a composite index on (status, created_at) so both conditions use a single index scan"
+      },
+      "answer": "A",
+      "explanation": "A partial index on (created_at) WHERE status = 'pending' is the most effective: it indexes only the ~50K matching rows (tiny index), handles both conditions, and is much smaller than a full composite index on 50M rows. The planner chose seq scan because neither individual index is selective enough alone to beat sequential I/O.",
+      "topic": "partial_indexes",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB072",
+      "question": "You have a table with a SERIALIZABLE transaction that reads all doctors on-call, then removes one from on-call duty. Two concurrent transactions T1 and T2 both read 3 doctors on-call, then each sets one different doctor as off-call. Without SERIALIZABLE, both succeed leaving only 1 doctor on-call (minimum is 2). Under SERIALIZABLE isolation, what happens?",
+      "choices": {
+        "A": "Both transactions are aborted and the application must re-submit both",
+        "B": "The database detects the serialization anomaly (write skew) and aborts one transaction with a serialization failure error, requiring the application to retry",
+        "C": "Both transactions succeed because they modify different rows",
+        "D": "The second transaction blocks until the first commits, then executes with updated data"
+      },
+      "answer": "B",
+      "explanation": "PostgreSQL's SERIALIZABLE uses SSI (Serializable Snapshot Isolation) to detect dangerous dependency patterns. Both transactions read the same on-call set (rw-conflict) and write different rows (but both depend on the initial read). SSI detects this write skew and aborts one with ERROR: could not serialize access. The application should retry the aborted transaction.",
+      "topic": "serialization_anomalies",
+      "topic_category": "transactions",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB073",
+      "question": "A query joins three tables: customers (1M rows), orders (10M rows), and order_items (50M rows). The EXPLAIN plan shows:\n\nHash Join (cost=500000..2000000)\n  -> Seq Scan on order_items\n  -> Hash\n    -> Hash Join (cost=50000..200000)\n      -> Seq Scan on orders (Filter: order_date > '2025-01-01')\n      -> Hash\n        -> Seq Scan on customers (Filter: country = 'US')\n\nwork_mem is 64MB. The inner Hash on customers fits in memory, but the Hash on filtered orders (2M rows) spills to disk. What is the best optimization?",
+      "choices": {
+        "A": "Partition the order_items table by order_id to reduce the scan size",
+        "B": "Rewrite the query to use subqueries instead of joins to limit intermediate result sets",
+        "C": "Increase work_mem to 256MB to prevent hash spills, and add an index on orders(order_date)",
+        "D": "Add a composite index on orders(order_date, customer_id) and an index on order_items(order_id) to convert hash joins to nested loop joins with index lookups"
+      },
+      "answer": "D",
+      "explanation": "The hash spill happens because filtered orders are still 2M rows. Converting the outer hash join to a nested loop with index lookups on order_items(order_id) eliminates scanning 50M rows. The composite index on orders(order_date, customer_id) enables an index scan that provides customer_id for the join, and pre-filters by date. This changes the plan from three sequential scans to targeted index lookups.",
+      "topic": "join_optimization",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB074",
+      "question": "You need to implement a global sequence counter across a sharded PostgreSQL cluster (4 shards). The counter must be strictly monotonically increasing, gap-free, and support 10,000 inserts/second. Which approach is correct?",
+      "choices": {
+        "A": "Strictly monotonic gap-free sequences across shards are impractical at 10K/s; relax the requirement to monotonic-within-shard using shard-specific sequences with offset/step (shard1: 1,5,9; shard2: 2,6,10; etc.)",
+        "B": "Use a UUID v7 (timestamp-ordered) on each shard for approximately monotonic ordering without coordination",
+        "C": "Use Redis INCR as a distributed sequence generator with a write-through to each shard",
+        "D": "Use a single central database sequence with SELECT nextval() from all shards over a network call"
+      },
+      "answer": "A",
+      "explanation": "Strictly monotonic gap-free sequences require total ordering, which demands single-point coordination -- a bottleneck at 10K/s and a single point of failure. The offset/step approach (shard1=1,5,9; shard2=2,6,10; etc.) guarantees uniqueness and monotonicity within each shard without cross-shard coordination. UUID v7 provides approximate ordering but is not gap-free. Central sequences (option B) create a bottleneck. Redis INCR (option D) adds a failure point without solving the gap-free constraint under failures.",
+      "topic": "sharding_sequences",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB075",
+      "question": "A PostgreSQL table 'events' with 100M rows stores JSONB payloads. A common query is:\n\nSELECT * FROM events WHERE payload @> '{\"type\": \"purchase\", \"amount\": 100}';\n\nA GIN index exists on (payload). The query plan shows a Bitmap Index Scan followed by a Bitmap Heap Scan with 500,000 recheck rows but only 1,000 actual matches. What is causing the high recheck count, and what is the best optimization?",
+      "choices": {
+        "A": "The recheck is caused by work_mem being too low for the bitmap; increase work_mem to hold all TIDs exactly",
+        "B": "The GIN index is lossy for nested containment; create a B-tree index on (payload->>'type', (payload->>'amount')::int) for exact filtering",
+        "C": "The default GIN operator class (jsonb_ops) indexes every key-value pair, making the containment check match too many rows on common keys; switch to jsonb_path_ops which indexes only complete paths, dramatically reducing false positives",
+        "D": "GIN indexes do not support JSONB; replace with a GiST index for containment queries"
+      },
+      "answer": "C",
+      "explanation": "The default jsonb_ops GIN operator class indexes each key and value independently. The containment check @> for {type: purchase, amount: 100} finds rows with type=purchase AND rows with amount=100 separately, then intersects -- producing many false positives from rows with just one match. jsonb_path_ops indexes complete root-to-leaf paths, so only rows containing the exact path-value combination appear in the index, reducing rechecks from 500K to near the 1K actual matches.",
+      "topic": "gin_jsonb_optimization",
+      "topic_category": "indexing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB076",
+      "question": "You are designing a multi-tenant SaaS database. Each tenant's data must be isolated. Three approaches: (A) separate database per tenant, (B) shared database with separate schema per tenant, (C) shared schema with tenant_id column. You have 10,000 tenants, most with <1000 rows. Which approach is most appropriate and why?",
+      "choices": {
+        "A": "A hybrid: large tenants get dedicated schemas, small tenants share a pooled schema",
+        "B": "Shared schema with tenant_id column and row-level security: efficient connection pooling, simple migrations, and manageable operational overhead for 10K small tenants",
+        "C": "Separate schema per tenant: good isolation with shared database resources",
+        "D": "Separate database per tenant: maximum isolation and independent backup/restore per tenant"
+      },
+      "answer": "B",
+      "explanation": "With 10K small tenants, separate databases (10K pg instances) or schemas (10K sets of tables) create unmanageable operational overhead for migrations, connection pooling, and monitoring. Shared schema with tenant_id is operationally simple: one migration path, one connection pool, RLS for isolation. A composite index on (tenant_id, ...) ensures query performance. The data volume (10K tenants x 1K rows = 10M rows) is trivial for a single PostgreSQL instance.",
+      "topic": "multi_tenant_design",
+      "topic_category": "schema_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB077",
+      "question": "A recursive CTE computes an organizational hierarchy:\n\nWITH RECURSIVE org AS (\n  SELECT id, name, manager_id, 1 AS depth\n  FROM employees WHERE manager_id IS NULL\n  UNION ALL\n  SELECT e.id, e.name, e.manager_id, o.depth + 1\n  FROM employees e JOIN org o ON e.manager_id = o.id\n)\nSELECT * FROM org;\n\nThe query runs indefinitely because a data error created a cycle (employee A reports to B, B reports to A). What is the best fix?",
+      "choices": {
+        "A": "Use UNION instead of UNION ALL to automatically eliminate duplicate rows from cycles",
+        "B": "Add a CHECK constraint on the table to prevent manager_id = id",
+        "C": "Track visited nodes using an array accumulator and add a WHERE condition: e.id <> ALL(o.visited)",
+        "D": "Add LIMIT 1000 to the outer query to cap results"
+      },
+      "answer": "C",
+      "explanation": "Track visited nodes with an array: SELECT ..., ARRAY[id] AS visited in the anchor, then ARRAY_APPEND(o.visited, e.id) in the recursive member with WHERE e.id <> ALL(o.visited). This detects and terminates cycles. UNION (option B) only eliminates exact duplicate rows -- if depth differs, the rows are not duplicates. LIMIT caps output but the query still runs. The CHECK constraint (option D) only prevents self-reference, not multi-node cycles.",
+      "topic": "recursive_cte_cycle_detection",
+      "topic_category": "sql_queries",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB078",
+      "question": "You manage a time-series table 'sensor_readings' with 2 billion rows, partitioned by month. Queries typically filter by sensor_id and a time range spanning 2-3 partitions. The current index is a B-tree on (sensor_id, timestamp) per partition. EXPLAIN ANALYZE shows Index Scan with 50ms per partition. How would you reduce this to under 10ms per partition?",
+      "choices": {
+        "A": "Switch to hash partitioning by sensor_id instead of range partitioning by month",
+        "B": "Create a materialized view pre-aggregated by sensor_id and hour",
+        "C": "Add a covering index INCLUDE (value, unit) to enable index-only scans, eliminating heap lookups; also ensure the visibility map is current via regular VACUUM",
+        "D": "Replace B-tree indexes with BRIN indexes since the data is time-ordered within partitions"
+      },
+      "answer": "C",
+      "explanation": "The 50ms per partition likely includes heap fetches after index lookup (each requiring random I/O). A covering index with INCLUDE (value, unit) enables index-only scans: all needed data comes from the index, eliminating heap access. This requires the visibility map to be current (regular VACUUM). BRIN would be less precise than B-tree for selective sensor_id lookups. Hash partitioning breaks time-range queries. Materialized views add maintenance overhead and do not handle arbitrary time ranges.",
+      "topic": "covering_index_optimization",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB079",
+      "question": "A high-traffic application experiences intermittent deadlocks between two transaction patterns:\n\nPattern A: UPDATE accounts SET balance = balance - 100 WHERE id = 1; UPDATE accounts SET balance = balance + 100 WHERE id = 2;\nPattern B: UPDATE accounts SET balance = balance - 50 WHERE id = 2; UPDATE accounts SET balance = balance + 50 WHERE id = 1;\n\nWhat is the root cause, and what is the correct fix?",
+      "choices": {
+        "A": "Use READ COMMITTED isolation to prevent lock conflicts between the transactions",
+        "B": "Wrap each UPDATE in a separate sub-transaction using SAVEPOINT so locks are released incrementally",
+        "C": "The transactions lock rows in opposite orders (A: row1 then row2; B: row2 then row1); fix by establishing a canonical lock ordering where all transactions lock rows in ascending ID order",
+        "D": "Use SELECT ... FOR UPDATE NOWAIT before each UPDATE to detect and immediately fail on lock contention"
+      },
+      "answer": "C",
+      "explanation": "Classic deadlock: Pattern A locks row 1 then waits for row 2; Pattern B locks row 2 then waits for row 1. The fix is canonical lock ordering: always lock accounts in ascending ID order. Pattern B becomes: UPDATE id=1 then UPDATE id=2. With consistent ordering, no circular wait can form. SAVEPOINTs do not release row locks. NOWAIT avoids waiting but does not prevent the ordering issue. Isolation level does not affect row-level lock ordering.",
+      "topic": "deadlock_prevention",
+      "topic_category": "transactions",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB080",
+      "question": "You have a PostgreSQL table with a unique constraint on (email) and heavy concurrent INSERT traffic. Two sessions simultaneously attempt INSERT ... ON CONFLICT (email) DO UPDATE SET last_login = NOW(). Occasionally, one session gets ERROR: deadlock detected. The table has a trigger that updates a summary table on INSERT. What is the likely cause and fix?",
+      "choices": {
+        "A": "The ON CONFLICT upsert locks the target row, and the trigger's UPDATE on the summary table creates a secondary lock ordering conflict; fix by making the trigger DEFERRED or using advisory locks to serialize access to the summary table",
+        "B": "The unique index is corrupted; run REINDEX CONCURRENTLY to fix it",
+        "C": "The deadlock is from WAL contention on a synchronous standby; switch to asynchronous replication",
+        "D": "PostgreSQL cannot handle concurrent upserts on the same unique constraint; use application-level locking"
+      },
+      "answer": "A",
+      "explanation": "The upsert acquires a lock on the email row. The trigger then updates the summary table row. If two concurrent upserts target different email rows but the same summary row, they can deadlock: Session 1 holds email_A lock and waits for summary lock; Session 2 holds email_B lock, holds summary lock (for its earlier trigger), and waits for email_A. Fix by decoupling: use DEFERRED triggers, advisory locks on the summary row, or an async summary update pattern.",
+      "topic": "trigger_deadlock_analysis",
+      "topic_category": "transactions",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB081",
+      "question": "You need to add a NOT NULL column with a computed default to a 500M-row PostgreSQL table with zero downtime. The default value requires reading another column: new_col = LEFT(existing_col, 3). Which migration strategy avoids locking the table for minutes?",
+      "choices": {
+        "A": "1) ADD COLUMN new_col TEXT (nullable, instant). 2) Backfill in batches: UPDATE ... WHERE id BETWEEN x AND y. 3) ALTER TABLE ALTER COLUMN new_col SET NOT NULL after backfill completes",
+        "B": "ALTER TABLE ADD COLUMN new_col TEXT NOT NULL DEFAULT LEFT(existing_col, 3) in one statement",
+        "C": "Use a generated column: ALTER TABLE ADD COLUMN new_col TEXT GENERATED ALWAYS AS (LEFT(existing_col, 3)) STORED",
+        "D": "Create a new table with the column, INSERT INTO ... SELECT with the computed value, then rename tables"
+      },
+      "answer": "A",
+      "explanation": "Step 1: ADD COLUMN nullable is instant (no table rewrite). Step 2: Batched UPDATE avoids long locks and can run concurrently with production traffic. Step 3: SET NOT NULL validates existing data with a table scan but holds only a brief ACCESS EXCLUSIVE lock. Option A fails because DEFAULT with column references is not supported in ALTER TABLE. Option B requires downtime for the rename. Option D (generated column) triggers a full table rewrite on ADD COLUMN for STORED columns.",
+      "topic": "zero_downtime_migration_computed",
+      "topic_category": "migrations",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB082",
+      "question": "A PostgreSQL database has autovacuum running but a large table shows significant bloat (pg_stat_user_tables shows n_dead_tup = 5,000,000). Autovacuum logs show it starts but is canceled repeatedly. What is the most likely cause, and what is the fix?",
+      "choices": {
+        "A": "The table has too many indexes, making vacuum slow; drop unused indexes",
+        "B": "A long-running transaction or idle-in-transaction session is holding a snapshot that prevents vacuum from removing dead tuples; find and terminate the blocking session, then configure idle_in_transaction_session_timeout",
+        "C": "Autovacuum's cost delay is too aggressive, causing it to run too slowly; set autovacuum_vacuum_cost_delay = 0",
+        "D": "The table's fillfactor is set too low, leaving no room for HOT updates; increase fillfactor to 100"
+      },
+      "answer": "B",
+      "explanation": "PostgreSQL's MVCC requires dead tuples to remain until no active transaction's snapshot needs them. A long-running or idle-in-transaction session holds an old snapshot, preventing VACUUM from reclaiming any tuples newer than that snapshot. Fix: identify the session (pg_stat_activity where state = 'idle in transaction' and oldest xact_start), terminate it, and set idle_in_transaction_session_timeout to prevent recurrence. Then VACUUM will reclaim the 5M dead tuples.",
+      "topic": "vacuum_bloat_diagnosis",
+      "topic_category": "postgresql",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB083",
+      "question": "You are designing a real-time leaderboard for a game with 10M players. Requirements: update player scores at 50K/second, retrieve global top-100 in <5ms, retrieve a player's rank in <10ms. Which architecture meets all three requirements?",
+      "choices": {
+        "A": "PostgreSQL with an index on (score DESC) and LIMIT 100; rank via window function",
+        "B": "Elasticsearch with a terms aggregation on player_id, sorted by max score",
+        "C": "MongoDB with a capped collection sorted by score, with TTL indexes for stale entries",
+        "D": "Redis Sorted Set (ZADD for updates, ZREVRANGE for top-100, ZREVRANK for player rank) with asynchronous persistence to PostgreSQL for durability"
+      },
+      "answer": "D",
+      "explanation": "Redis Sorted Sets provide: ZADD at O(log N) = ~23 operations in memory for 10M members, handling 50K/s easily. ZREVRANGE 0 99 is O(log N + 100) for top-100. ZREVRANK is O(log N) for rank lookup. All sub-millisecond for in-memory operations. PostgreSQL alone cannot sustain 50K writes/second on an indexed column without significant contention. Async persistence to PostgreSQL provides durability for crash recovery.",
+      "topic": "leaderboard_architecture",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB084",
+      "question": "An EXPLAIN ANALYZE shows this plan for a query on a partitioned table (12 monthly partitions):\n\nAppend (actual time=0.050..320.000 rows=5000 loops=1)\n  -> Index Scan on orders_2025_01 (actual rows=0)\n  -> Index Scan on orders_2025_02 (actual rows=0)\n  ... (10 more empty partitions)\n  -> Index Scan on orders_2025_12 (actual rows=5000)\n\nThe query has WHERE order_date BETWEEN '2025-12-01' AND '2025-12-31'. All 12 partitions are scanned despite the date filter. What is wrong, and how do you fix it?",
+      "choices": {
+        "A": "The partitions are defined using CHECK constraints but the table uses declarative partitioning syntax, causing a conflict",
+        "B": "The partition key column type and the query literal type do not match (e.g., text vs date), preventing the planner from proving which partitions to skip; cast the literals to match the partition key type",
+        "C": "Partition pruning is disabled; SET enable_partition_pruning = on and ensure the constraint_exclusion setting includes partitions",
+        "D": "The query uses BETWEEN which prevents partition pruning; rewrite as >= AND <="
+      },
+      "answer": "B",
+      "explanation": "Partition pruning requires the planner to evaluate the partition bound constraints against the query predicates at plan time. If the query literal is a different type (e.g., text '2025-12-01' vs date partition bounds), the planner cannot eliminate partitions because implicit casts prevent compile-time evaluation. Fixing the type mismatch (WHERE order_date BETWEEN DATE '2025-12-01' AND DATE '2025-12-31') enables pruning. The Index Scan on each partition returning 0 rows confirms the data only exists in the December partition.",
+      "topic": "partition_pruning",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB085",
+      "question": "You need to implement a database-level audit trail that captures all changes to sensitive tables (patients, prescriptions). Requirements: tamper-resistant, captures old/new values, minimal performance impact, queryable for compliance reports. Which implementation is best?",
+      "choices": {
+        "A": "A PostgreSQL AFTER trigger on each table that inserts the OLD and NEW row values as JSONB into an append-only audit table in a separate schema with REVOKE DELETE/UPDATE from all application roles",
+        "B": "Logical replication to a subscriber that records all changes in a dedicated audit database",
+        "C": "Application-level logging that writes audit records to a separate log file before each database operation",
+        "D": "pgAudit extension configured to log all DML statements to the PostgreSQL log file"
+      },
+      "answer": "A",
+      "explanation": "AFTER triggers capture OLD/NEW values in the same transaction (atomicity guarantee), storing as JSONB enables flexible querying for compliance. Separate schema with REVOKE DELETE/UPDATE makes it tamper-resistant from application roles. pgAudit (option B) logs statements but not row values, and log files are not easily queryable. Application logging (A) can be bypassed. Logical replication (C) adds operational complexity and does not capture OLD values for UPDATEs by default.",
+      "topic": "audit_trail_implementation",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB086",
+      "question": "A data warehouse fact table 'sales_fact' has 2 billion rows with a star schema. Analysts report that a dashboard query joining 4 dimension tables takes 45 seconds. The EXPLAIN shows hash joins on all dimensions and a sequential scan on the fact table with no partition pruning (table is not partitioned). The query filters on dim_date.year = 2025 and dim_product.category = 'Electronics'. What is the multi-step optimization plan?",
+      "choices": {
+        "A": "1) Range-partition the fact table by date_key (monthly). 2) Create a composite index on (product_key) within each partition. 3) Use a bitmap index scan to combine the dimension filters. The partition pruning eliminates 90%+ of data, and the product_key index handles the remaining filter",
+        "B": "Create a materialized view pre-joining all dimensions, refreshed nightly",
+        "C": "Add B-tree indexes on all foreign key columns in the fact table, then increase shared_buffers",
+        "D": "Denormalize by copying year and category directly into the fact table, then add a composite index"
+      },
+      "answer": "A",
+      "explanation": "The sequential scan on 2B rows is the bottleneck. Partitioning by date_key enables pruning to ~12 monthly partitions for 2025 (~167M rows instead of 2B). Within those partitions, an index on product_key enables bitmap index scan to find Electronics rows efficiently. The remaining dimension joins on geography and customer are small (after the date+product filter reduces to ~1M rows). This approach reduces data scanned by >95% through partition pruning and index-based filtering in combination.",
+      "topic": "star_schema_optimization",
+      "topic_category": "data_modeling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB087",
+      "question": "You are implementing a distributed transaction across PostgreSQL (primary OLTP) and Elasticsearch (search index). An order insert must appear in both atomically. Two-phase commit is not available between them. What is the correct pattern?",
+      "choices": {
+        "A": "Write to Elasticsearch first (faster), then insert into PostgreSQL; use ES as the source of truth",
+        "B": "Insert into PostgreSQL first, then call Elasticsearch API; if ES fails, rollback PostgreSQL",
+        "C": "Use the transactional outbox pattern: write the order AND an outbox event in the same PostgreSQL transaction, then a separate process polls the outbox and publishes to Elasticsearch with at-least-once delivery and idempotent consumers",
+        "D": "Use a distributed transaction coordinator like Saga with compensating transactions"
+      },
+      "answer": "C",
+      "explanation": "The transactional outbox pattern guarantees atomicity without distributed transactions. Step 1: Within a single PostgreSQL transaction, INSERT the order AND an outbox record. Step 2: A polling publisher (or CDC via logical replication) reads the outbox and sends to Elasticsearch. Step 3: The ES consumer is idempotent (handles duplicates). This provides eventual consistency with guaranteed delivery. Option A fails because the ES call could succeed but PostgreSQL rollback leaves inconsistency. Saga compensations (D) are complex and ES does not support them natively.",
+      "topic": "transactional_outbox",
+      "topic_category": "transactions",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB088",
+      "question": "A PostgreSQL table uses UUID v4 as the primary key. With 100M rows, INSERT performance has degraded significantly compared to early operation. The index on the PK is 8GB and heavily fragmented. What is the root cause, and what are two mitigations?",
+      "choices": {
+        "A": "UUIDs are 16 bytes vs 4-byte integers, making the index 4x larger. Mitigations: (1) Compress the index, (2) use hash indexes instead of B-tree",
+        "B": "PostgreSQL's B-tree implementation does not support UUID types efficiently. Mitigations: (1) Switch to a BIGSERIAL PK, (2) move UUIDs to a secondary unique index",
+        "C": "The table's autovacuum threshold is too high for the insert rate. Mitigations: (1) Lower autovacuum_vacuum_threshold, (2) run manual VACUUM FULL weekly",
+        "D": "UUID v4's randomness causes random B-tree leaf page writes, fragmenting the index and defeating OS page cache prefetching. Mitigations: (1) Switch to UUID v7 (timestamp-prefixed) for sequential inserts, (2) use a FILLFACTOR of 90 on the index to accommodate page splits"
+      },
+      "answer": "D",
+      "explanation": "UUID v4 values are uniformly random, so each INSERT touches a random leaf page in the B-tree. This causes excessive page splits, poor cache utilization (the entire index must be in memory for reasonable performance), and high write amplification. UUID v7 (RFC 9562) embeds a timestamp prefix, making inserts append-mostly like SERIAL. FILLFACTOR <100 leaves room in pages for nearby inserts, reducing split frequency. The 16-byte size is a secondary issue; the random distribution is the primary problem.",
+      "topic": "uuid_index_performance",
+      "topic_category": "indexing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB089",
+      "question": "A table 'comments' has a polymorphic association pattern:\n\nCREATE TABLE comments (\n  id SERIAL PRIMARY KEY,\n  commentable_type TEXT,  -- 'Article', 'Video', 'Photo'\n  commentable_id INTEGER\n);\n\nThere is no foreign key constraint because the target table varies. This design has caused orphaned references and query complexity. What is the recommended schema refactoring?",
+      "choices": {
+        "A": "Both B and C are valid; B is simpler for few types while C is better for many types or when shared behavior is needed",
+        "B": "Create a shared base table that Article, Video, and Photo all inherit from, and make commentable_id a foreign key to the base table",
+        "C": "Add a CHECK constraint to ensure commentable_type matches one of the allowed values",
+        "D": "Replace the polymorphic association with separate nullable foreign key columns (article_id, video_id, photo_id) each with a proper FK constraint and a CHECK constraint ensuring exactly one is non-null"
+      },
+      "answer": "A",
+      "explanation": "Option B (exclusive arc with nullable FKs and a CHECK constraint) provides referential integrity and is simple for 2-4 target types. Option C (shared base table / table inheritance) is cleaner when there are many types or they share columns, using a single FK to the base table. Both eliminate orphans and enable database-enforced integrity. The choice depends on the number of types and whether they share attributes. A alone does not prevent orphans.",
+      "topic": "polymorphic_associations",
+      "topic_category": "schema_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB090",
+      "question": "You are implementing SCD Type 2 in a data warehouse. The source system sends daily full snapshots (5M rows). The dimension table has 20M rows (historical). You need to: (1) identify changed rows, (2) expire old versions, (3) insert new versions. A naive row-by-row comparison takes 4 hours. How do you optimize this to under 15 minutes?",
+      "choices": {
+        "A": "Materialize the snapshot into a temporary table and use EXCEPT to find differences",
+        "B": "Use MERGE (UPSERT) to handle all three operations in a single statement matching on the natural key",
+        "C": "Compute a hash (MD5/SHA) of all tracked columns in both source and target, then use a hash-based comparison to identify changes. Bulk expire changed rows with a single UPDATE, then bulk insert new versions. Process in parallel batches",
+        "D": "Use change data capture (CDC) from the source system to receive only deltas instead of full snapshots"
+      },
+      "answer": "C",
+      "explanation": "Hash-based comparison is the key optimization. Step 1: Compute MD5(col1||col2||...) on both the incoming snapshot and current dimension rows. Step 2: JOIN on natural key WHERE hashes differ to identify changes (this is an indexed equi-join, not row-by-row comparison). Step 3: Bulk UPDATE to set end_date and is_current=false on changed rows. Step 4: Bulk INSERT new versions. Hashing reduces column-by-column comparison to a single hash comparison. MERGE cannot handle SCD2's insert-new-expire-old pattern directly. CDC (option B) requires source system changes, which may not be available.",
+      "topic": "scd2_bulk_optimization",
+      "topic_category": "data_modeling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB091",
+      "question": "A PostgreSQL function in PL/pgSQL processes 1M rows in a loop, calling INSERT for each row. It takes 30 minutes. Profiling shows 95% of time is in function call overhead and individual INSERT round-trips. What is the correct refactoring to reduce this to under 1 minute?",
+      "choices": {
+        "A": "Use UNLOGGED tables to skip WAL writes during the bulk insert",
+        "B": "Replace the row-by-row loop with a single set-based INSERT ... SELECT statement that processes all rows in one operation, or use COPY for bulk loading from a staging table",
+        "C": "Increase work_mem and maintenance_work_mem to reduce sort and index build time during inserts",
+        "D": "Wrap the entire loop in a single BEGIN/COMMIT to reduce transaction overhead"
+      },
+      "answer": "B",
+      "explanation": "Row-by-row processing (RBAR - Row By Agonizing Row) incurs per-row overhead: function call dispatch, plan caching lookup, index maintenance per row, WAL writes per row. A set-based INSERT ... SELECT eliminates per-row overhead by processing all rows in a single plan with batch index updates and bulk WAL writes. For external data, COPY command is even faster. The 30-minute-to-1-minute improvement is typical when converting RBAR to set-based operations.",
+      "topic": "set_based_optimization",
+      "topic_category": "postgresql",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB092",
+      "question": "Your application uses SQLAlchemy with a connection pool (pool_size=5, max_overflow=10). Under load, users report intermittent TimeoutError: QueuePool limit reached. The database shows only 8 active connections from this application. What is the likely cause and fix?",
+      "choices": {
+        "A": "The connection pool's timeout is too short; increase pool_timeout to 60 seconds",
+        "B": "PostgreSQL's max_connections is too low; increase it to 500",
+        "C": "Application code is leaking connections by not properly closing sessions or using connections outside of managed scopes (e.g., missing session.close() in error paths); fix by using context managers (with Session() as session:) and enabling pool_pre_ping to recycle stale connections",
+        "D": "The pool_size is too small; increase to 50 to match expected concurrency"
+      },
+      "answer": "C",
+      "explanation": "With pool_size=5 and max_overflow=10, the pool allows 15 total connections. Only 8 active in the DB means 7 are checked out but idle in the application (leaked). Common causes: exception paths that skip session.close(), background threads holding connections, forgetting to return connections after raw connection.execute(). Fix: use context managers (with Session(engine) as session:) for automatic cleanup, add pool_pre_ping=True to detect dead connections, and audit all code paths for proper resource cleanup.",
+      "topic": "connection_pool_debugging",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB093",
+      "question": "You need to implement row-level security (RLS) in PostgreSQL for a multi-tenant application. Tenants should only see their own data. The application uses connection pooling (PgBouncer) with a shared database role. How do you securely set the tenant context per request?",
+      "choices": {
+        "A": "Use PostgreSQL's current_user function in RLS policies, mapping each tenant to a database role",
+        "B": "Pass the tenant_id as a query parameter in every SQL statement and include it in every WHERE clause",
+        "C": "Create a separate database role for each tenant and configure PgBouncer to route by tenant",
+        "D": "Use SET LOCAL to set a session variable (e.g., app.current_tenant) at the start of each transaction, then reference it in RLS policies with current_setting('app.current_tenant'). SET LOCAL is transaction-scoped and auto-resets, making it safe with connection pooling"
+      },
+      "answer": "D",
+      "explanation": "SET LOCAL app.current_tenant = 'tenant_123' is transaction-scoped: it automatically resets when the transaction ends, preventing tenant context from leaking to the next request on a pooled connection. RLS policies use current_setting('app.current_tenant') to filter rows. This is safe with PgBouncer's transaction-mode pooling. Per-tenant roles (A, D) do not scale to thousands of tenants with connection pooling. Query-level filtering (B) bypasses RLS's database-enforced guarantee.",
+      "topic": "rls_connection_pooling",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB094",
+      "question": "A PostgreSQL query uses a CTE that is referenced twice in the main query:\n\nWITH expensive_calc AS (\n  SELECT id, heavy_function(data) AS result FROM large_table\n)\nSELECT a.id, a.result, b.result\nFROM expensive_calc a\nJOIN expensive_calc b ON a.id = b.id - 1;\n\nIn PostgreSQL 11, the CTE is materialized (computed once). In PostgreSQL 12+, the planner may inline it, computing heavy_function twice. How do you ensure it materializes in PG 12+?",
+      "choices": {
+        "A": "Convert the CTE to a temporary table with CREATE TEMP TABLE AS SELECT",
+        "B": "Reference the CTE three or more times; PostgreSQL auto-materializes CTEs referenced 3+ times",
+        "C": "Use a subquery instead of a CTE; subqueries are always materialized",
+        "D": "Add the MATERIALIZED keyword: WITH expensive_calc AS MATERIALIZED (...)"
+      },
+      "answer": "D",
+      "explanation": "PostgreSQL 12 introduced CTE inlining: non-recursive CTEs referenced once may be inlined into the main query for optimization. When referenced multiple times, the planner decides based on cost. The AS MATERIALIZED hint forces materialization, guaranteeing heavy_function runs once. AS NOT MATERIALIZED forces inlining. Without the hint, the planner may inline even multiply-referenced CTEs if it estimates inlining is cheaper.",
+      "topic": "cte_materialization",
+      "topic_category": "sql_queries",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB095",
+      "question": "You are migrating a monolith's single PostgreSQL database to microservices. Service A owns 'users' and Service B owns 'orders'. Currently, orders has a FK to users. After the split, foreign keys across service boundaries are not possible. What is the correct data integrity strategy?",
+      "choices": {
+        "A": "Keep both tables in the same database but use separate schemas with cross-schema foreign keys",
+        "B": "Use a distributed database (CockroachDB/Spanner) that supports cross-shard foreign keys",
+        "C": "Remove the FK constraint. Service B stores user_id as a plain integer. Use eventual consistency: Service A publishes user deletion events, Service B subscribes and handles orphan cleanup asynchronously. Validate user existence at the API gateway level before creating orders",
+        "D": "Replicate the users table into Service B's database using logical replication and maintain a local FK"
+      },
+      "answer": "C",
+      "explanation": "In microservices, cross-service FKs couple deployments and create distributed transaction requirements. The correct pattern: remove the FK, store the reference as a plain value, validate at the application boundary (API call to Service A before creating an order), and use events for eventual consistency (user deletion event triggers order handling in Service B). This accepts eventual consistency in exchange for service autonomy. Replication (B) creates tight coupling. Same database (A) is not true microservice decomposition.",
+      "topic": "microservice_data_integrity",
+      "topic_category": "migrations",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB096",
+      "question": "A PostgreSQL table 'events' stores 500M rows with a JSONB column 'metadata'. A critical query:\n\nSELECT event_type, COUNT(*)\nFROM events\nWHERE metadata->>'source' = 'mobile'\n  AND created_at > NOW() - INTERVAL '7 days'\nGROUP BY event_type;\n\nEXPLAIN ANALYZE shows a parallel sequential scan taking 12 seconds. The table is range-partitioned by created_at (daily). What combination of indexes and query changes yields the best improvement?",
+      "choices": {
+        "A": "Extract 'source' into a materialized column using a generated column, then create a composite index on (source, created_at, event_type) for an index-only scan covering the GROUP BY",
+        "B": "Create a B-tree index on (created_at) and a GIN index on (metadata); the planner will use BitmapAnd to combine them",
+        "C": "Create an expression index: CREATE INDEX ON events ((metadata->>'source'), created_at) WHERE created_at > NOW() - INTERVAL '30 days'; this combines the JSONB extraction, date filter, and partial index pruning for maximum selectivity",
+        "D": "Increase max_parallel_workers_per_gather to use more parallel workers for the sequential scan"
+      },
+      "answer": "A",
+      "explanation": "This is a multi-step optimization. Step 1: A generated column (ALTER TABLE ADD COLUMN source TEXT GENERATED ALWAYS AS (metadata->>'source') STORED) materializes the JSON extraction at write time. Step 2: A composite index on (source, created_at, event_type) enables: equality on source, range on created_at, and covers event_type for the GROUP BY. Step 3: With partition pruning (daily partitions, 7-day filter), only 7 partitions are scanned. The index provides an index-only scan within those partitions. Expression indexes (B) work but cannot be INCLUDE'd for index-only scans as cleanly, and partial indexes with NOW() have plan caching issues.",
+      "topic": "jsonb_query_optimization",
+      "topic_category": "postgresql",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB097",
+      "question": "You need to implement a Flyway migration that renames a column used in 15 application queries, 3 views, and 2 stored procedures, with zero downtime and the ability to rollback. What is the correct multi-step migration plan?",
+      "choices": {
+        "A": "Use the ORM to alias the column name without any database changes",
+        "B": "Version 1: Add new column + trigger to sync old->new and new->old. Version 2: Deploy app using new column. Version 3: Migrate views and procedures to new column. Version 4: Drop trigger and old column. Rollback at any step: revert to previous version",
+        "C": "Version 1: Create a view that aliases old_name to new_name. Update application to use the view. Version 2: Rename the column and update the view. Rollback: restore original view",
+        "D": "Version 1: ALTER TABLE RENAME COLUMN old_name TO new_name. Rollback: rename back"
+      },
+      "answer": "B",
+      "explanation": "This expand-contract migration handles all dependencies safely. V1: Add new_name column with a bidirectional trigger (INSERT/UPDATE on old_name copies to new_name and vice versa). Both columns work simultaneously. V2: Deploy application code using new_name (old app instances still work via trigger). V3: ALTER views and procedures to use new_name (trigger keeps old_name populated for any remaining readers). V4: Drop trigger and old column after confirming all consumers migrated. Each version is independently reversible.",
+      "topic": "flyway_complex_migration",
+      "topic_category": "migrations",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB098",
+      "question": "A PostgreSQL database serves both OLTP (short transactions, row-level access) and OLAP (long analytical queries, full table scans) workloads. The OLAP queries cause autovacuum delays (long snapshots prevent dead tuple cleanup) and the OLTP queries experience increased latency during OLAP table scans. What is the architectural solution?",
+      "choices": {
+        "A": "Set up a streaming replica dedicated to OLAP queries, with hot_standby_feedback = on to prevent query cancellation. Route OLTP to the primary and OLAP to the replica. This isolates workloads while the primary's autovacuum runs unimpeded by long OLAP snapshots",
+        "B": "Schedule OLAP queries to run only during off-peak hours using pg_cron",
+        "C": "Partition all tables by access pattern: OLTP tables use B-tree indexes, OLAP tables use BRIN indexes",
+        "D": "Increase shared_buffers to cache both OLTP and OLAP data, and raise autovacuum_max_workers"
+      },
+      "answer": "A",
+      "explanation": "Workload isolation via read replica is the standard solution. OLAP queries on the replica do not hold snapshots on the primary, so autovacuum proceeds normally. hot_standby_feedback=on prevents the primary from vacuuming tuples still needed by the replica's queries (preventing query cancellation). The primary handles OLTP without OLAP I/O contention. The replica can have different configuration (larger work_mem, more parallel workers) tuned for analytical workloads.",
+      "topic": "oltp_olap_isolation",
+      "topic_category": "optimization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB099",
+      "question": "You need to prevent SQL injection in a dynamic query builder that constructs WHERE clauses based on user-selected filters. Some filters require dynamic column names (users choose which columns to filter on from a dropdown). Parameterized queries cannot parameterize column names. What is the secure approach?",
+      "choices": {
+        "A": "Use a whitelist: map user input to a predefined set of allowed column names. Only columns in the whitelist can be used. Combine with parameterized values for the filter values. Use quote_ident() for the column names as defense-in-depth",
+        "B": "Double-quote all column names to prevent SQL injection through identifier escaping",
+        "C": "Sanitize column names by removing all non-alphanumeric characters before string concatenation",
+        "D": "Use an ORM exclusively; ORMs are immune to SQL injection"
+      },
+      "answer": "A",
+      "explanation": "Whitelist validation is the only secure approach for dynamic identifiers. Step 1: Define allowed_columns = {'name', 'email', 'created_at'}. Step 2: Reject any user input not in the whitelist. Step 3: Use quote_ident() (PostgreSQL) or equivalent to properly escape the whitelisted column name. Step 4: Use parameterized values ($1, $2) for filter values. Sanitization (A) can miss edge cases. Double-quoting (B) alone does not prevent injection through value payloads. ORMs (C) are not immune when using raw SQL methods.",
+      "topic": "dynamic_query_injection_prevention",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DB100",
+      "question": "You are designing a schema versioning strategy for a team of 8 developers working on the same PostgreSQL database. Requirements: (1) migrations must be deterministic and repeatable, (2) parallel feature branches must not create conflicting migration ordering, (3) production rollbacks must be possible, (4) CI must validate migration safety before merge. What is the correct setup?",
+      "choices": {
+        "A": "Use a schema-as-code approach (Terraform for databases) that computes the diff between desired and actual state at deploy time",
+        "B": "Use timestamp-based migration filenames (V20260303120000) with Flyway/Alembic. Enforce a CI check that: (1) runs pending migrations against a fresh copy of the production schema, (2) validates each migration has a working downgrade/undo, (3) checks for destructive operations (DROP COLUMN, DROP TABLE) requiring manual approval, (4) detects migration filename conflicts in the PR diff",
+        "C": "Avoid migration files entirely; use ORM auto-migration (syncdb) to detect and apply schema changes automatically",
+        "D": "Use sequential integer version numbers (V1, V2, V3) with merge-order conflict resolution"
+      },
+      "answer": "B",
+      "explanation": "Timestamp-based naming (V20260303120000__add_orders_status.sql) minimizes branch conflicts because timestamps rarely collide (vs sequential integers which always conflict). CI validation ensures: migrations apply cleanly to production schema (catches missing dependencies), downgrades work (enables rollback), destructive operations get human review, and no filename conflicts exist. This provides determinism (versioned files), parallelism (timestamps), rollback (tested downgrades), and safety (CI gating). Auto-migration (D) is not deterministic. Schema-as-code (C) cannot generate safe data migrations.",
+      "topic": "schema_versioning_strategy",
+      "topic_category": "migrations",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

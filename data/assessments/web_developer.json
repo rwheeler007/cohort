@@ -1,0 +1,1613 @@
+{
+  "agent_id": "web_developer",
+  "source": "Senior Frontend/IAAP WAS certification level (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "WEB001",
+      "question": "Which HTML element is the most semantically appropriate for a site's primary navigation links?",
+      "choices": {
+        "A": "<div role=\"navigation\">",
+        "B": "<nav>",
+        "C": "<ul role=\"menubar\">",
+        "D": "<header>"
+      },
+      "answer": "B",
+      "explanation": "The <nav> element represents a section of navigation links and is the semantic equivalent of role=\"navigation\". While <div role=\"navigation\"> works, native semantics are preferred. <ul role=\"menubar\"> is for application-style menus, not page navigation.",
+      "topic": "landmark_roles",
+      "topic_category": "html_semantics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB002",
+      "question": "In CSS, what is the specificity of the selector `#main .card > h2:first-child`?",
+      "choices": {
+        "A": "0-1-1-2",
+        "B": "0-1-2-1",
+        "C": "0-1-1-1",
+        "D": "0-1-2-2"
+      },
+      "answer": "B",
+      "explanation": "Specificity is calculated as (inline, IDs, classes/attributes/pseudo-classes, elements/pseudo-elements). #main = 1 ID, .card + :first-child = 2 classes/pseudo-classes, h2 = 1 element. Result: 0-1-2-1.",
+      "topic": "specificity_calculation",
+      "topic_category": "css_architecture",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB003",
+      "question": "What does the CSS function `clamp(1rem, 2.5vw, 2rem)` achieve for font-size?",
+      "choices": {
+        "A": "Sets font-size to exactly 2.5vw at all viewport widths",
+        "B": "Sets font-size to 1rem on mobile and 2rem on desktop",
+        "C": "Transitions from 1rem to 2rem with an easing of 2.5vw",
+        "D": "Sets font-size to 2.5vw but never smaller than 1rem or larger than 2rem"
+      },
+      "answer": "D",
+      "explanation": "clamp(MIN, VAL, MAX) returns VAL clamped between MIN and MAX. The font-size scales with the viewport at 2.5vw but is bounded by 1rem (minimum) and 2rem (maximum), creating fluid typography without media queries.",
+      "topic": "fluid_typography",
+      "topic_category": "responsive_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB004",
+      "question": "Which WCAG 2.1 success criterion requires that all non-text content has a text alternative?",
+      "choices": {
+        "A": "1.1.1 Non-text Content",
+        "B": "1.3.1 Info and Relationships",
+        "C": "1.4.5 Images of Text",
+        "D": "2.4.4 Link Purpose (In Context)"
+      },
+      "answer": "A",
+      "explanation": "SC 1.1.1 Non-text Content (Level A) requires that all non-text content presented to the user has a text alternative that serves the equivalent purpose. SC 1.4.5 deals specifically with images of text, not all non-text content.",
+      "topic": "wcag_success_criteria",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB005",
+      "question": "What is the primary metric that Largest Contentful Paint (LCP) measures?",
+      "choices": {
+        "A": "Time until the page is fully interactive",
+        "B": "Time until the first pixel is painted to the screen",
+        "C": "Time until the largest visible content element finishes rendering in the viewport",
+        "D": "Total layout shift during the page load"
+      },
+      "answer": "C",
+      "explanation": "LCP measures the render time of the largest image or text block visible in the viewport relative to when the page first started loading. It is a Core Web Vital. First paint is FCP, interactivity is INP/TBT, and layout shift is CLS.",
+      "topic": "core_web_vitals",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB006",
+      "question": "What is the purpose of design tokens in a design system?",
+      "choices": {
+        "A": "To generate unique component IDs at build time",
+        "B": "To authenticate users across design tool plugins",
+        "C": "To store design decisions as platform-agnostic key-value pairs",
+        "D": "To define CSS animation keyframes programmatically"
+      },
+      "answer": "C",
+      "explanation": "Design tokens are the atomic values of a design system (colors, spacing, typography, etc.) stored as platform-agnostic data. They allow the same design decisions to be consumed by web CSS, iOS, Android, and other platforms from a single source of truth.",
+      "topic": "design_tokens",
+      "topic_category": "design_systems",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB007",
+      "question": "Which attribute correctly associates a form input with its label when the label does not wrap the input?",
+      "choices": {
+        "A": "The label's for attribute matches the input's id",
+        "B": "The label's name attribute matches the input's id",
+        "C": "The label's for attribute matches the input's name",
+        "D": "The label's id attribute matches the input's aria-labelledby"
+      },
+      "answer": "A",
+      "explanation": "The <label> element's for attribute must reference the id of the associated form control, not its name. Option D reverses the relationship -- aria-labelledby on the input should reference the label's id, but explicit <label for> is the preferred native mechanism.",
+      "topic": "form_association",
+      "topic_category": "html_semantics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB008",
+      "question": "What is the correct srcset syntax for providing the browser with density descriptors for a responsive image?",
+      "choices": {
+        "A": "<img src=\"photo.jpg\" srcset=\"photo-2x.jpg 2dpi, photo-3x.jpg 3dpi\">",
+        "B": "<img src=\"photo.jpg\" srcset=\"photo-2x.jpg 200w, photo-3x.jpg 300w\">",
+        "C": "<img src=\"photo.jpg\" srcset=\"photo-2x.jpg 2x, photo-3x.jpg 3x\">",
+        "D": "<img src=\"photo.jpg\" srcset=\"photo-2x.jpg @2x, photo-3x.jpg @3x\">"
+      },
+      "answer": "C",
+      "explanation": "Density descriptors use the Nx syntax (e.g., 2x, 3x). Width descriptors use Nw. The dpi and @Nx syntaxes are not valid srcset descriptors.",
+      "topic": "responsive_images",
+      "topic_category": "responsive_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB009",
+      "question": "Which ARIA role should be applied to a region of the page that receives dynamic content updates that should be announced by screen readers?",
+      "choices": {
+        "A": "Any of the above, depending on the urgency of the update",
+        "B": "role=\"log\"",
+        "C": "role=\"status\"",
+        "D": "role=\"alert\""
+      },
+      "answer": "A",
+      "explanation": "All three are live region roles. role=\"alert\" is assertive (interrupts), role=\"status\" is polite (announced at next pause), and role=\"log\" is for sequential information like chat. The correct choice depends on the update's urgency and context.",
+      "topic": "live_regions",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB010",
+      "question": "What does the CSS property `content-visibility: auto` do?",
+      "choices": {
+        "A": "Hides content visually but keeps it accessible to screen readers",
+        "B": "Enables lazy loading for images within the element",
+        "C": "Automatically adjusts the visibility of content based on contrast ratio",
+        "D": "Skips rendering of off-screen content until the user scrolls near it"
+      },
+      "answer": "D",
+      "explanation": "content-visibility: auto enables the browser to skip layout and paint for off-screen elements, significantly improving initial render performance. The browser still searches and tabs into the content. It requires containment and works best with contain-intrinsic-size.",
+      "topic": "content_visibility",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB011",
+      "question": "Which CSS feature allows you to detect whether a browser supports a specific CSS property before applying styles?",
+      "choices": {
+        "A": "@media",
+        "B": "@import",
+        "C": "@supports",
+        "D": "@charset"
+      },
+      "answer": "C",
+      "explanation": "@supports (feature queries) tests whether the browser supports a CSS property-value pair and conditionally applies styles. @media tests viewport/device characteristics, not CSS feature support.",
+      "topic": "feature_queries",
+      "topic_category": "cross_browser",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB012",
+      "question": "What is the minimum contrast ratio required for normal-sized text to meet WCAG 2.1 Level AA?",
+      "choices": {
+        "A": "4.5:1",
+        "B": "3:1",
+        "C": "7:1",
+        "D": "2:1"
+      },
+      "answer": "A",
+      "explanation": "WCAG SC 1.4.3 Contrast (Minimum) at Level AA requires a contrast ratio of at least 4.5:1 for normal text. Large text (18pt or 14pt bold) requires 3:1. Level AAA (SC 1.4.6) requires 7:1 for normal text.",
+      "topic": "wcag_success_criteria",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB013",
+      "question": "What is the purpose of the `fetchpriority` attribute on an `<img>` element?",
+      "choices": {
+        "A": "To specify the order in which images are decoded after download",
+        "B": "To set the maximum time the browser should wait for the image to load",
+        "C": "To hint to the browser whether to fetch the image with high, low, or auto priority",
+        "D": "To determine whether the image is fetched over HTTP/2 or HTTP/3"
+      },
+      "answer": "C",
+      "explanation": "The fetchpriority attribute (values: high, low, auto) provides a hint to the browser about the relative priority of fetching the resource. Setting fetchpriority=\"high\" on an LCP image helps it compete for bandwidth against other resources.",
+      "topic": "loading_priorities",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB014",
+      "question": "Which HTML element provides a native disclosure widget that can be toggled open and closed without JavaScript?",
+      "choices": {
+        "A": "<dialog>",
+        "B": "<fieldset> with <legend>",
+        "C": "<details> with <summary>",
+        "D": "<aside>"
+      },
+      "answer": "C",
+      "explanation": "The <details> element with a <summary> child creates a native disclosure widget. Clicking the summary toggles visibility of the remaining content. <dialog> is for modal/non-modal dialogs and requires JavaScript to show/close.",
+      "topic": "details_summary",
+      "topic_category": "html_semantics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB015",
+      "question": "In a design system, what is a spacing scale typically based on?",
+      "choices": {
+        "A": "Fibonacci sequence",
+        "B": "Percentage of the viewport width",
+        "C": "A base unit multiplied by consistent factors (e.g., 4px, 8px, 16px, 24px, 32px)",
+        "D": "The golden ratio applied to the root font size"
+      },
+      "answer": "C",
+      "explanation": "Most design systems use a base-unit spacing scale (commonly 4px or 8px) with consistent multipliers. This creates predictable, harmonious spacing. While Fibonacci and golden ratio are sometimes used, the base-unit approach is the industry standard for its simplicity and consistency.",
+      "topic": "spacing_scales",
+      "topic_category": "design_systems",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB016",
+      "question": "What does the `prefers-reduced-motion` media query detect?",
+      "choices": {
+        "A": "Whether the device has a low refresh rate display",
+        "B": "Whether the user has requested the system minimize non-essential motion",
+        "C": "Whether CSS animations are hardware-accelerated",
+        "D": "Whether the browser supports the Web Animations API"
+      },
+      "answer": "B",
+      "explanation": "prefers-reduced-motion detects the user's OS-level setting to reduce motion, important for users with vestibular disorders or motion sensitivity. When set to 'reduce', animations should be minimized or replaced with non-motion alternatives.",
+      "topic": "reduced_motion",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB017",
+      "question": "What is the effect of `will-change: transform` on an element?",
+      "choices": {
+        "A": "It applies a default transform to the element",
+        "B": "It hints to the browser to promote the element to its own compositing layer for upcoming transform changes",
+        "C": "It prevents the element from being transformed by parent elements",
+        "D": "It enables hardware acceleration only on mobile devices"
+      },
+      "answer": "B",
+      "explanation": "will-change informs the browser that an element's property will change, allowing it to set up optimizations in advance, typically promoting the element to its own compositor layer. Overuse wastes memory, so it should be applied sparingly and removed after animations complete.",
+      "topic": "compositing_layers",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB018",
+      "question": "Which viewport unit represents 1% of the smallest possible viewport height (with browser UI fully expanded)?",
+      "choices": {
+        "A": "vh",
+        "B": "dvh",
+        "C": "lvh",
+        "D": "svh"
+      },
+      "answer": "D",
+      "explanation": "svh (small viewport height) represents 1% of the viewport with the browser UI expanded (smallest possible viewport). lvh is the large viewport (UI retracted). dvh is the dynamic viewport that changes as UI shows/hides. Traditional vh behaves like lvh in most browsers.",
+      "topic": "viewport_units",
+      "topic_category": "responsive_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB019",
+      "question": "What is the correct way to visually hide content while keeping it accessible to screen readers?",
+      "choices": {
+        "A": "display: none",
+        "B": "visibility: hidden",
+        "C": "opacity: 0",
+        "D": "A CSS class using clip, position: absolute, and overflow: hidden to remove it from visual flow"
+      },
+      "answer": "D",
+      "explanation": "The 'visually hidden' / 'sr-only' pattern uses position: absolute, clip/clip-path, and overflow: hidden to remove content from visual rendering while keeping it in the accessibility tree. display: none and visibility: hidden remove content from the accessibility tree entirely.",
+      "topic": "screen_reader_behavior",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB020",
+      "question": "What is the `inert` attribute used for in HTML?",
+      "choices": {
+        "A": "To mark content as editable",
+        "B": "To make an element and all its descendants non-interactive, non-focusable, and hidden from assistive technology",
+        "C": "To prevent an element from being repositioned by CSS",
+        "D": "To disable animations within the element"
+      },
+      "answer": "B",
+      "explanation": "The inert attribute makes an element and its subtree non-interactive: clicks are ignored, focus is prevented, and the content is hidden from the accessibility tree. It is ideal for content behind modal dialogs or off-screen navigation panels.",
+      "topic": "inert_attribute",
+      "topic_category": "html_semantics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "WEB021",
+      "question": "Given the following CSS, what is the final color of the `.card` element?\n\n```css\n@layer base, theme, overrides;\n@layer base { .card { color: blue; } }\n@layer overrides { .card { color: red; } }\n@layer theme { .card { color: green; } }\n```",
+      "choices": {
+        "A": "blue",
+        "B": "red",
+        "C": "green",
+        "D": "The result depends on source order of the rules within each layer"
+      },
+      "answer": "B",
+      "explanation": "Cascade layers are prioritized by their declaration order in the @layer statement, not by source order of the layer blocks. The order is base, theme, overrides -- so 'overrides' has the highest priority and the color is red.",
+      "topic": "cascade_layers",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB022",
+      "question": "What does the CSS `:has()` selector in `article:has(> img)` match?",
+      "choices": {
+        "A": "Any <article> that contains a direct child <img>",
+        "B": "Any <img> that is a direct child of an <article>",
+        "C": "Any <article> that is adjacent to an <img>",
+        "D": "Any <article> that has an <img> anywhere in its subtree"
+      },
+      "answer": "A",
+      "explanation": ":has() is a relational pseudo-class that selects the subject (article) based on its contents. The > combinator restricts to direct children. Without >, it would match any descendant img. :has() is often called the 'parent selector' but it selects the subject, not the argument.",
+      "topic": "has_selector",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB023",
+      "question": "Which ARIA attribute should be used to indicate that a form field has an error and to reference the element containing the error message?",
+      "choices": {
+        "A": "aria-invalid=\"true\" and aria-describedby referencing the error element's id",
+        "B": "aria-invalid=\"true\" and aria-errormessage referencing the error element's id",
+        "C": "aria-required=\"true\" and aria-label with the error text",
+        "D": "aria-invalid=\"true\" and aria-live=\"assertive\" on the input"
+      },
+      "answer": "B",
+      "explanation": "aria-errormessage is the dedicated attribute for referencing error message elements and should be paired with aria-invalid=\"true\". While aria-describedby also works in practice, aria-errormessage is semantically correct per ARIA 1.2 and provides better programmatic association for assistive technology.",
+      "topic": "accessible_forms",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB024",
+      "question": "What is the difference between `<link rel=\"preload\">` and `<link rel=\"prefetch\">`?",
+      "choices": {
+        "A": "preload works only with HTTP/2; prefetch works with any protocol",
+        "B": "preload is for scripts only; prefetch is for any resource type",
+        "C": "preload caches resources in memory; prefetch caches them to disk",
+        "D": "preload fetches resources for the current page with high priority; prefetch fetches resources for future navigations with low priority"
+      },
+      "answer": "D",
+      "explanation": "preload tells the browser to fetch a resource needed for the current page with high priority (it is mandatory). prefetch hints that a resource will likely be needed for a future navigation and is fetched with low priority during idle time.",
+      "topic": "resource_hints",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB025",
+      "question": "In CSS container queries, what does the `container-type: inline-size` declaration do?",
+      "choices": {
+        "A": "Makes the element respond to the viewport's inline dimension",
+        "B": "Sets the element's width to match its container",
+        "C": "Restricts the element to only use inline layout",
+        "D": "Establishes the element as a containment context for queries against its inline (width) dimension"
+      },
+      "answer": "D",
+      "explanation": "container-type: inline-size establishes size containment on the inline axis, allowing descendant elements to use @container queries based on this element's width. It requires the browser to contain the element's inline size, enabling layout-independent queries.",
+      "topic": "container_queries",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB026",
+      "question": "What is the effect of CSS logical property `margin-inline-start: 1rem` in a left-to-right writing mode?",
+      "choices": {
+        "A": "Sets margin-top to 1rem",
+        "B": "Sets margin-left to 1rem",
+        "C": "Sets margin-right to 1rem",
+        "D": "Sets both margin-left and margin-right to 1rem"
+      },
+      "answer": "B",
+      "explanation": "Logical properties map to physical directions based on writing mode and directionality. In LTR, inline-start maps to left. In RTL, inline-start maps to right. This makes layouts automatically adapt to different writing directions without separate RTL stylesheets.",
+      "topic": "logical_properties",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB027",
+      "question": "According to WCAG 2.1 SC 2.4.7, what is required for keyboard focus indicators at Level AA?",
+      "choices": {
+        "A": "Focus indicators must use a specific color defined in the specification",
+        "B": "Focus indicators must have a minimum area of 1 CSS pixel",
+        "C": "Focus indicators are only required for links, not for buttons or form controls",
+        "D": "A visible focus indicator must be present when any user interface component receives keyboard focus"
+      },
+      "answer": "D",
+      "explanation": "SC 2.4.7 Focus Visible (Level AA) requires that the keyboard focus indicator is visible when any UI component receives focus. WCAG 2.2 adds SC 2.4.11 (Focus Not Obscured - Minimum) and SC 2.4.13 (Focus Appearance) with more specific requirements about area and contrast.",
+      "topic": "focus_management",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB028",
+      "question": "What does CSS `@scope (.card) to (.card-footer)` achieve?",
+      "choices": {
+        "A": "Creates an animation from .card to .card-footer",
+        "B": "Styles elements from .card up to but not including .card-footer and its descendants",
+        "C": "Moves .card-footer to be a child of .card",
+        "D": "Applies styles only when .card is followed by .card-footer"
+      },
+      "answer": "B",
+      "explanation": "@scope defines a scoping root and an optional scoping limit. Rules inside @scope (.card) to (.card-footer) apply to elements within .card but stop before .card-footer and its descendants. This creates 'donut scoping' -- styling a subtree while excluding an inner part.",
+      "topic": "scope_rule",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB029",
+      "question": "What is the primary purpose of the `<picture>` element compared to using `<img>` with `srcset`?",
+      "choices": {
+        "A": "To add caption text below images",
+        "B": "To improve image loading performance over srcset",
+        "C": "To enable lazy loading of images",
+        "D": "To provide art direction -- serving different image crops or entirely different images based on media conditions"
+      },
+      "answer": "D",
+      "explanation": "<picture> with <source> elements enables art direction: serving completely different images based on media queries, format support, or other conditions. <img srcset> is for resolution switching (same image, different sizes). <picture> wraps an <img> fallback.",
+      "topic": "responsive_images",
+      "topic_category": "responsive_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB030",
+      "question": "When should you use `aria-live=\"assertive\"` versus `aria-live=\"polite\"`?",
+      "choices": {
+        "A": "assertive for all dynamic content; polite is deprecated",
+        "B": "assertive for time-critical updates that must interrupt the user; polite for updates that can wait until the user pauses",
+        "C": "assertive for visible updates; polite for hidden updates",
+        "D": "assertive on the first update; polite on subsequent updates"
+      },
+      "answer": "B",
+      "explanation": "aria-live=\"assertive\" interrupts the current speech output to announce the update immediately -- use it only for critical alerts like errors. aria-live=\"polite\" waits for the screen reader to finish its current task before announcing -- use it for most status updates.",
+      "topic": "live_regions",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB031",
+      "question": "What causes Cumulative Layout Shift (CLS) and how is it primarily prevented?",
+      "choices": {
+        "A": "Unexpected layout changes from late-loading content; prevented by reserving space with explicit dimensions or aspect-ratio",
+        "B": "Slow JavaScript execution; prevented by code splitting",
+        "C": "Large DOM size; prevented by virtualizing lists",
+        "D": "Render-blocking CSS; prevented by inlining critical CSS"
+      },
+      "answer": "A",
+      "explanation": "CLS measures unexpected layout shifts during the page lifecycle. Common causes include images without dimensions, late-injected ads, and web fonts causing FOUT. Setting explicit width/height or aspect-ratio reserves space so content does not shift when resources load.",
+      "topic": "core_web_vitals",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB032",
+      "question": "How does CSS custom property inheritance differ from preprocessor variables (e.g., Sass variables)?",
+      "choices": {
+        "A": "Custom properties are scoped to the file; Sass variables are global",
+        "B": "Custom properties inherit through the DOM tree and can be overridden per-element; Sass variables are resolved at compile time and have no runtime inheritance",
+        "C": "Custom properties cannot store color values; Sass variables can store any value",
+        "D": "There is no meaningful difference; they are interchangeable"
+      },
+      "answer": "B",
+      "explanation": "CSS custom properties (--var) are live values that inherit through the DOM tree like other inherited properties. They can be overridden on any element and respond to media queries at runtime. Sass/LESS variables are compiled to static values and have no awareness of the DOM.",
+      "topic": "custom_properties_inheritance",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB033",
+      "question": "What is the correct method to make a data table accessible when it has complex multi-level headers?",
+      "choices": {
+        "A": "Use role=\"grid\" on the table element",
+        "B": "Use aria-label on each <td> with the full header text",
+        "C": "Use the `headers` attribute on <td> elements referencing the `id` values of all applicable <th> elements",
+        "D": "Nest tables for each header level"
+      },
+      "answer": "C",
+      "explanation": "For complex tables where scope is insufficient, the headers attribute on <td> explicitly lists the id values of all <th> cells that apply to that data cell. This allows screen readers to announce the correct row and column headers for each cell regardless of the table's complexity.",
+      "topic": "accessible_data_tables",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB034",
+      "question": "What is layout thrashing and how does it impact performance?",
+      "choices": {
+        "A": "When CSS Grid items overflow their tracks; solved with minmax()",
+        "B": "When too many elements use position: fixed; solved by reducing fixed elements",
+        "C": "When JavaScript alternates between reading layout properties and writing DOM changes, forcing the browser to recalculate layout multiple times synchronously",
+        "D": "When the browser paints elements that are off-screen; solved by content-visibility"
+      },
+      "answer": "C",
+      "explanation": "Layout thrashing (forced synchronous layouts) occurs when code reads a layout property (offsetHeight, getBoundingClientRect), then writes to the DOM, then reads again, forcing the browser to recalculate layout each cycle. Batch reads before writes to avoid it.",
+      "topic": "layout_thrashing",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB035",
+      "question": "What is the purpose of CSS `color-mix()` and how is it used?",
+      "choices": {
+        "A": "It generates a gradient between two colors",
+        "B": "It converts colors between different formats (hex, rgb, hsl)",
+        "C": "It blends two colors in a specified color space by given percentages, e.g., color-mix(in srgb, red 70%, blue 30%)",
+        "D": "It applies a color filter to background images"
+      },
+      "answer": "C",
+      "explanation": "color-mix() blends two colors in a specified color space (srgb, oklch, lab, etc.) at specified percentages. It is useful for generating tints, shades, and semi-transparent variants of design tokens without preprocessors. Example: color-mix(in oklch, var(--brand) 80%, white) creates a tint.",
+      "topic": "color_mix",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB036",
+      "question": "Which WCAG 2.1 success criterion addresses content reflow, requiring that content can be presented without horizontal scrolling at 320 CSS pixels wide?",
+      "choices": {
+        "A": "1.4.4 Resize Text",
+        "B": "1.4.10 Reflow",
+        "C": "1.4.12 Text Spacing",
+        "D": "1.3.4 Orientation"
+      },
+      "answer": "B",
+      "explanation": "SC 1.4.10 Reflow (Level AA) requires that content can be presented without loss of information or functionality, and without scrolling in two dimensions, at a width of 320 CSS pixels (equivalent to 400% zoom at 1280px). Exceptions exist for content requiring two-dimensional layout (data tables, maps).",
+      "topic": "wcag_success_criteria",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB037",
+      "question": "What is the difference between `contain: layout` and `contain: paint` in CSS?",
+      "choices": {
+        "A": "layout containment applies to block elements; paint containment applies to inline elements",
+        "B": "layout containment freezes the element's position; paint containment disables painting entirely",
+        "C": "They are aliases for the same behavior",
+        "D": "layout containment prevents the element from affecting external layout; paint containment prevents the element from painting outside its bounds"
+      },
+      "answer": "D",
+      "explanation": "contain: layout tells the browser that the element's internal layout cannot affect the rest of the page (no float escaping, no margin collapsing out). contain: paint clips the element's visual output to its padding box and creates a new stacking context. Both enable rendering optimizations.",
+      "topic": "paint_containment",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB038",
+      "question": "How should a modal dialog manage focus to comply with WCAG 2.1?",
+      "choices": {
+        "A": "Focus should remain on the trigger element while the dialog is open",
+        "B": "Focus management is not required if the dialog has role=\"alertdialog\"",
+        "C": "Focus should move into the dialog when it opens, be trapped within it, and return to the trigger element when the dialog closes",
+        "D": "Focus should move to the close button specifically"
+      },
+      "answer": "C",
+      "explanation": "Accessible modal dialogs require: (1) moving focus into the dialog on open (typically to the first focusable element or the dialog itself), (2) trapping focus within the dialog (Tab/Shift+Tab cycle), and (3) returning focus to the trigger element on close. The inert attribute on background content complements this.",
+      "topic": "accessible_modals",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB039",
+      "question": "What does CSS subgrid allow that regular nested grids do not?",
+      "choices": {
+        "A": "It provides automatic responsive column counts",
+        "B": "It allows grid items to span across multiple grid containers",
+        "C": "It enables grid items to overlap each other",
+        "D": "It allows a grid item to adopt its parent grid's track sizing for its own rows or columns"
+      },
+      "answer": "D",
+      "explanation": "subgrid allows a nested grid to use its parent grid's track definitions instead of creating independent tracks. This means child items can align with the outer grid's lines -- essential for card layouts where content (title, body, footer) must align across cards.",
+      "topic": "subgrid",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB040",
+      "question": "What is the primary benefit of the `font-display: swap` descriptor in a @font-face rule?",
+      "choices": {
+        "A": "It shows text immediately in a fallback font, then swaps to the custom font when loaded, avoiding invisible text (FOIT)",
+        "B": "It prevents any text from rendering until the custom font loads",
+        "C": "It disables font loading entirely for slow connections",
+        "D": "It swaps the font family order in the font stack"
+      },
+      "answer": "A",
+      "explanation": "font-display: swap gives the font face an extremely small block period (often 0) and an infinite swap period. Text renders immediately in the fallback font, and when the custom font loads, it swaps in. This avoids Flash of Invisible Text (FOIT) but may cause Flash of Unstyled Text (FOUT).",
+      "topic": "font_loading_strategies",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB041",
+      "question": "In a design system, what is the benefit of using a component API pattern with slots (or children) rather than configuration props?",
+      "choices": {
+        "A": "Slots are faster to render than props",
+        "B": "Slots provide composition flexibility, allowing consumers to inject custom content without the component needing to anticipate all use cases",
+        "C": "Slots reduce the component's CSS bundle size",
+        "D": "Slots eliminate the need for TypeScript typing"
+      },
+      "answer": "B",
+      "explanation": "Slot/children-based APIs follow the composition pattern, allowing consumers to pass arbitrary content into predefined areas. This is more flexible than config-prop APIs that require the component to expose a prop for every possible variation, leading to prop explosion and rigid components.",
+      "topic": "component_api_design",
+      "topic_category": "design_systems",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB042",
+      "question": "What is the correct ARIA pattern for a tooltip that appears on hover/focus of a trigger element?",
+      "choices": {
+        "A": "Use role=\"tooltip\" on the tooltip element and aria-describedby on the trigger referencing the tooltip's id",
+        "B": "Use role=\"dialog\" on the tooltip and aria-haspopup on the trigger",
+        "C": "Use aria-label on the trigger with the tooltip text and hide the tooltip from the accessibility tree",
+        "D": "Use role=\"tooltip\" on the trigger element itself"
+      },
+      "answer": "A",
+      "explanation": "Per WAI-ARIA Authoring Practices, tooltips use role=\"tooltip\" on the popup element with aria-describedby on the trigger referencing it. The tooltip provides supplementary description. aria-haspopup is for menus/dialogs, not tooltips. The tooltip must be visible on both hover and focus.",
+      "topic": "accessible_tooltips",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB043",
+      "question": "What does the CSS `aspect-ratio` property do, and what happens when both width and height are also set?",
+      "choices": {
+        "A": "aspect-ratio always overrides explicit width/height",
+        "B": "aspect-ratio sets a preferred aspect ratio; if both width and height are set, explicit dimensions take precedence over the ratio",
+        "C": "aspect-ratio only works on replaced elements like images",
+        "D": "aspect-ratio is ignored when the element has overflow: hidden"
+      },
+      "answer": "B",
+      "explanation": "aspect-ratio sets a preferred ratio that is used to calculate a missing dimension. If both width and height are explicitly set, the explicit values win. If only one dimension is set, the other is calculated from the ratio. It works on any element, not just replaced elements.",
+      "topic": "aspect_ratio",
+      "topic_category": "responsive_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB044",
+      "question": "How does CSS nesting (native, not Sass) differ from Sass nesting in terms of selector requirements?",
+      "choices": {
+        "A": "There is no difference; native CSS nesting works identically to Sass",
+        "B": "Native CSS nesting originally required nested selectors to start with a symbol (& or a combinator) but relaxed nesting now allows bare element selectors",
+        "C": "Native CSS nesting only supports one level of depth",
+        "D": "Native CSS nesting requires @nest before each nested rule"
+      },
+      "answer": "B",
+      "explanation": "The original CSS nesting spec required nested rules to start with & or a combinator so the parser could distinguish declarations from selectors. The relaxed nesting update (shipped in all browsers) removed this restriction, allowing bare element selectors like 'div { h1 { ... } }' without &.",
+      "topic": "css_nesting",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB045",
+      "question": "What is the correct way to implement skip navigation for accessibility?",
+      "choices": {
+        "A": "Provide a visible-on-focus link as the first focusable element that jumps to the main content area",
+        "B": "Add a hidden <nav> with links to all sections at the bottom of the page",
+        "C": "Use aria-hidden on the navigation to allow screen readers to skip it",
+        "D": "Add tabindex=\"-1\" to all navigation links"
+      },
+      "answer": "A",
+      "explanation": "Skip navigation is a visible-on-focus link (often using the sr-only/visually-hidden pattern that becomes visible on :focus) placed before the main navigation. It links to the main content landmark via an id, allowing keyboard users to bypass repetitive navigation blocks (WCAG SC 2.4.1).",
+      "topic": "skip_navigation",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB046",
+      "question": "What is Interaction to Next Paint (INP) and what did it replace?",
+      "choices": {
+        "A": "INP measures the paint time of the first frame; it replaced First Contentful Paint (FCP)",
+        "B": "INP measures network latency for API calls; it replaced Time to First Byte (TTFB)",
+        "C": "INP measures the time from interaction to the next visual update across all interactions during a page visit; it replaced First Input Delay (FID) as a Core Web Vital",
+        "D": "INP measures scroll performance; it replaced Cumulative Layout Shift (CLS)"
+      },
+      "answer": "C",
+      "explanation": "INP measures the latency of all interactions (clicks, taps, key presses) during a page visit and reports the worst (or near-worst) interaction latency. It replaced FID in March 2024 because FID only measured the first interaction's input delay, ignoring processing time and subsequent interactions.",
+      "topic": "core_web_vitals",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB047",
+      "question": "What is the HTML `popover` attribute and how does it differ from `<dialog>`?",
+      "choices": {
+        "A": "popover and dialog are identical features with different syntax",
+        "B": "popover is for tooltips only; dialog is for any overlay",
+        "C": "popover provides light-dismiss behavior (closes on outside click/Escape) without modal semantics; dialog is for modal/non-modal windows with focus trapping and backdrop",
+        "D": "popover works without JavaScript; dialog always requires JavaScript"
+      },
+      "answer": "C",
+      "explanation": "The popover attribute creates a top-layer element with light dismiss (Escape, click outside). It has no modal semantics, no focus trapping, and no backdrop by default. <dialog> provides modal semantics (showModal), focus trapping, ::backdrop, and the returnValue API. Popovers are for menus, tooltips, and pickers.",
+      "topic": "popover_api",
+      "topic_category": "html_semantics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB048",
+      "question": "How should a design system handle z-index management to prevent stacking context conflicts?",
+      "choices": {
+        "A": "Use very large z-index values (9999) to ensure elements always appear on top",
+        "B": "Avoid z-index entirely and use DOM order for all layering",
+        "C": "Define a z-index scale using design tokens with named tiers (e.g., dropdown: 100, modal: 200, toast: 300) and document stacking contexts",
+        "D": "Use isolation: isolate on every component"
+      },
+      "answer": "C",
+      "explanation": "A z-index token scale with named tiers creates predictable layering. Documenting which components create new stacking contexts (transform, opacity < 1, isolation) prevents the common bug where z-index: 9999 fails because it is in a lower stacking context. The scale should be part of the design token system.",
+      "topic": "z_index_management",
+      "topic_category": "design_systems",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB049",
+      "question": "What does the CSS `light-dark()` function do?",
+      "choices": {
+        "A": "It returns the first value when color-scheme is light, and the second value when color-scheme is dark",
+        "B": "It applies a gradient from light to dark",
+        "C": "It adjusts the lightness of a color by a percentage",
+        "D": "It enables automatic dark mode for all elements"
+      },
+      "answer": "A",
+      "explanation": "light-dark(lightValue, darkValue) is a CSS function that returns one of two values based on the element's computed color-scheme. It requires color-scheme to be set (e.g., color-scheme: light dark on :root). It simplifies theming by avoiding prefers-color-scheme media queries for every property.",
+      "topic": "light_dark",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB050",
+      "question": "What is the correct approach for accessible error identification in forms according to WCAG SC 3.3.1?",
+      "choices": {
+        "A": "Only change the border color of the invalid field to red",
+        "B": "Identify the error in text, describe what is wrong, and associate the error message with the form control programmatically",
+        "C": "Display a single alert at the top of the form without referencing specific fields",
+        "D": "Use only icons to indicate errors for language independence"
+      },
+      "answer": "B",
+      "explanation": "SC 3.3.1 Error Identification (Level A) requires that if an input error is automatically detected, the item in error is identified and the error is described to the user in text. Color alone is insufficient (SC 1.4.1). The error must be programmatically associated with the control (via aria-errormessage or aria-describedby).",
+      "topic": "error_identification",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB051",
+      "question": "When using CSS container queries, what is the key difference from media queries in terms of what they respond to?",
+      "choices": {
+        "A": "Container queries respond to the viewport; media queries respond to the element",
+        "B": "Container queries use pixels only; media queries support any unit",
+        "C": "Container queries only work with flexbox; media queries work with any layout",
+        "D": "Container queries respond to the size of a parent containment context; media queries respond to the viewport"
+      },
+      "answer": "D",
+      "explanation": "Media queries evaluate conditions against the viewport or device. Container queries (@container) evaluate conditions against a parent element that has container-type set. This allows components to adapt based on their available space rather than the overall viewport size.",
+      "topic": "container_queries_vs_media_queries",
+      "topic_category": "responsive_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB052",
+      "question": "What is the correct approach to making drag-and-drop interactions accessible?",
+      "choices": {
+        "A": "Add role=\"drag\" and role=\"drop\" to the respective elements",
+        "B": "Provide keyboard alternatives (e.g., select-then-move with arrow keys or a move action menu), add aria-grabbed/aria-dropeffect or use aria-roledescription, and announce state changes via live regions",
+        "C": "Make the drag handle focusable and that is sufficient",
+        "D": "Drag-and-drop is inherently inaccessible and should always be avoided"
+      },
+      "answer": "B",
+      "explanation": "Accessible drag-and-drop requires: keyboard-operable alternatives (not just mouse dragging), appropriate ARIA (aria-grabbed is deprecated but aria-roledescription can describe the interaction), live region announcements for state changes (item grabbed, moved, dropped), and clear instructions for keyboard users.",
+      "topic": "accessible_drag_and_drop",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB053",
+      "question": "What is critical CSS and how does it improve rendering performance?",
+      "choices": {
+        "A": "The minimal CSS required to render above-the-fold content, inlined in the <head> to avoid render-blocking stylesheet requests",
+        "B": "CSS that is loaded asynchronously after the page renders",
+        "C": "CSS that uses !important to override all other styles",
+        "D": "CSS that is compiled from TypeScript at build time"
+      },
+      "answer": "A",
+      "explanation": "Critical CSS is the subset of styles needed to render the visible viewport content (above-the-fold). Inlining it in <style> tags in the <head> eliminates the render-blocking request for the full stylesheet. The remaining CSS is loaded asynchronously. Tools like Critical/Critters automate extraction.",
+      "topic": "critical_css",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB054",
+      "question": "In progressive enhancement, what is the correct relationship between HTML, CSS, and JavaScript?",
+      "choices": {
+        "A": "JavaScript provides the base experience; CSS and HTML enhance it",
+        "B": "All three layers must be present for the page to function",
+        "C": "HTML provides the core content and functionality; CSS adds presentation; JavaScript adds enhanced interactivity -- each layer is optional and additive",
+        "D": "CSS provides the base experience; JavaScript overrides it for modern browsers"
+      },
+      "answer": "C",
+      "explanation": "Progressive enhancement builds from a solid HTML foundation (semantic markup, native form validation, links) that works without CSS or JS. CSS adds visual presentation. JavaScript adds enhanced interactions. Each layer degrades gracefully -- the content remains accessible even if upper layers fail.",
+      "topic": "progressive_enhancement",
+      "topic_category": "cross_browser",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB055",
+      "question": "What is the purpose of `CSS scroll-snap-type` and `scroll-snap-align`?",
+      "choices": {
+        "A": "scroll-snap-type enables snap scrolling on a scroll container; scroll-snap-align defines where child elements snap to within the container's snapport",
+        "B": "They create parallax scrolling effects",
+        "C": "They prevent scrolling beyond the element's bounds",
+        "D": "They synchronize scrolling between two containers"
+      },
+      "answer": "A",
+      "explanation": "scroll-snap-type on a container (e.g., scroll-snap-type: x mandatory) enables snap scrolling. scroll-snap-align on children (e.g., scroll-snap-align: start) defines the snap position. 'mandatory' always snaps; 'proximity' snaps only when near a snap point. Used for carousels, galleries, and paginated layouts.",
+      "topic": "css_scroll_snap",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB056",
+      "question": "What is the `forced-colors` media query used for, and when is it active?",
+      "choices": {
+        "A": "It detects when the browser is in incognito mode",
+        "B": "It detects when the user has enabled a system high-contrast mode (e.g., Windows High Contrast), allowing authors to adjust styles that the forced color scheme may break",
+        "C": "It forces the browser to use the author's color scheme",
+        "D": "It detects when CSS custom properties are unsupported"
+      },
+      "answer": "B",
+      "explanation": "The forced-colors: active media query detects when the operating system has imposed a limited color palette (like Windows High Contrast Mode). Authors can use it to adjust borders, outlines, and decorative elements that might become invisible when system colors override author styles.",
+      "topic": "forced_colors_mode",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB057",
+      "question": "What is the CSS `min()` function useful for in responsive design?",
+      "choices": {
+        "A": "It sets the element's min-width property dynamically",
+        "B": "It calculates the minimum width of the viewport",
+        "C": "It returns the smallest numeric value from a comma-separated list, useful for setting maximum constraints with fluid values (e.g., width: min(100%, 800px))",
+        "D": "It returns the smaller of two elements' computed heights"
+      },
+      "answer": "C",
+      "explanation": "min() returns the smallest of the provided values. width: min(100%, 800px) makes the element as wide as its container up to 800px -- effectively a max-width without a separate property. This is counterintuitive: min() sets a ceiling because the width is 'at most' the minimum of the candidates.",
+      "topic": "min_max_clamp",
+      "topic_category": "responsive_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB058",
+      "question": "According to WCAG 2.2, what does SC 2.4.11 Focus Not Obscured (Minimum) at Level AA require?",
+      "choices": {
+        "A": "Focus indicators must use a contrasting color",
+        "B": "Focus must always be visible without any scrolling",
+        "C": "When a user interface component receives keyboard focus, the component is not entirely hidden by author-created content",
+        "D": "Focus indicators must have a minimum thickness of 2px"
+      },
+      "answer": "C",
+      "explanation": "SC 2.4.11 Focus Not Obscured (Minimum) requires that when a component receives focus, it is not entirely hidden by sticky headers, footers, overlays, or other author-created content. Partially obscured is allowed at AA; SC 2.4.12 (AAA) requires that no part of the focus indicator is hidden.",
+      "topic": "focus_management",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB059",
+      "question": "What is the benefit of using CSS `content-visibility: auto` with `contain-intrinsic-size`?",
+      "choices": {
+        "A": "It allows the browser to skip rendering off-screen elements while maintaining correct scrollbar size by providing an estimated intrinsic size",
+        "B": "It compresses images within the element",
+        "C": "It animates the element's visibility on scroll",
+        "D": "It forces the element to have a fixed size regardless of content"
+      },
+      "answer": "A",
+      "explanation": "content-visibility: auto skips rendering off-screen content but collapses the element's size to 0, causing scrollbar jumping. contain-intrinsic-size provides a placeholder size so the browser can estimate the element's dimensions, maintaining stable scrollbar position and page height.",
+      "topic": "content_visibility",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB060",
+      "question": "In a design system's typography scale, what is a modular scale?",
+      "choices": {
+        "A": "A scale that only uses rem units",
+        "B": "A system where each component defines its own font size independently",
+        "C": "A set of font sizes based on a consistent ratio multiplied against a base size (e.g., 1rem * 1.25^n)",
+        "D": "A responsive system that changes the entire scale at each breakpoint"
+      },
+      "answer": "C",
+      "explanation": "A modular type scale uses a base size and a ratio (e.g., 1.25 major third, 1.333 perfect fourth) to generate a harmonious progression of sizes. Each step is base * ratio^n. This creates visual rhythm and hierarchy. Tools like type-scale.com help visualize different ratios.",
+      "topic": "typography_scales",
+      "topic_category": "design_systems",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB061",
+      "question": "What does the `@supports selector(:has(*))` feature query test?",
+      "choices": {
+        "A": "Whether the browser supports the :has() relational pseudo-class",
+        "B": "Whether the browser supports the * universal selector",
+        "C": "Whether the browser supports child selectors",
+        "D": "Whether the browser supports attribute selectors"
+      },
+      "answer": "A",
+      "explanation": "@supports selector() tests support for a specific selector syntax rather than a property-value pair. @supports selector(:has(*)) checks if the browser understands :has(), enabling progressive enhancement where :has()-based layouts fall back gracefully in unsupported browsers.",
+      "topic": "feature_queries",
+      "topic_category": "cross_browser",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB062",
+      "question": "What does WCAG 2.1 SC 1.3.4 Orientation (Level AA) require?",
+      "choices": {
+        "A": "Content must not restrict its view and operation to a single display orientation unless a specific orientation is essential",
+        "B": "Content must always display in landscape mode",
+        "C": "Content must respond to device gyroscope data",
+        "D": "Content must provide left-to-right and right-to-left layouts"
+      },
+      "answer": "A",
+      "explanation": "SC 1.3.4 Orientation requires that content is not locked to a single orientation (portrait or landscape) unless it is essential for the content's function (e.g., a piano app, a check deposit camera). Users who mount devices in fixed orientations must be able to access all content.",
+      "topic": "wcag_success_criteria",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB063",
+      "question": "What is the `preconnect` resource hint used for?",
+      "choices": {
+        "A": "To pre-establish a connection (DNS lookup, TCP handshake, TLS negotiation) to a third-party origin before the browser discovers the resource",
+        "B": "To preload a specific resource from a third-party origin",
+        "C": "To cache the entire response from a third-party origin",
+        "D": "To establish a WebSocket connection to a server"
+      },
+      "answer": "A",
+      "explanation": "preconnect (<link rel=\"preconnect\" href=\"https://example.com\">) hints the browser to perform DNS resolution, TCP handshake, and TLS negotiation with the specified origin before any resource from that origin is discovered in the HTML. This saves 100-300ms per connection for critical third-party resources.",
+      "topic": "resource_hints",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB064",
+      "question": "How does the HTML `<dialog>` element's `showModal()` method differ from its `show()` method?",
+      "choices": {
+        "A": "showModal() is asynchronous; show() is synchronous",
+        "B": "showModal() opens fullscreen; show() opens as a popup",
+        "C": "showModal() displays with a backdrop overlay, traps focus within the dialog, and is top-layer; show() displays inline without backdrop or focus trapping",
+        "D": "showModal() requires JavaScript; show() can be triggered by HTML alone"
+      },
+      "answer": "C",
+      "explanation": "showModal() places the dialog in the top layer with a ::backdrop pseudo-element, prevents interaction with content behind it (acts as modal), and traps Tab/Shift+Tab focus. show() opens the dialog as a non-modal element in normal document flow without backdrop or focus trapping.",
+      "topic": "dialog_element",
+      "topic_category": "html_semantics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB065",
+      "question": "What is CSS anchor positioning used for?",
+      "choices": {
+        "A": "Creating fixed navigation that scrolls with the page",
+        "B": "Linking footnotes to their reference points in text",
+        "C": "Anchoring images to the bottom of their container",
+        "D": "Positioning an element relative to another element (the anchor) anywhere in the DOM, without requiring them to be parent/child"
+      },
+      "answer": "D",
+      "explanation": "CSS anchor positioning (anchor-name, position-anchor, anchor()) allows an element to position itself relative to any other element designated as its anchor, regardless of DOM relationship. This is ideal for tooltips, popovers, and dropdowns that need to follow their trigger element.",
+      "topic": "anchor_positioning",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB066",
+      "question": "What cognitive accessibility concern does WCAG 2.2 SC 3.3.7 Redundant Entry (Level A) address?",
+      "choices": {
+        "A": "Users should not need to re-enter information that was previously provided in the same process, unless re-entering is essential",
+        "B": "Forms should not have redundant labels",
+        "C": "Error messages should not repeat the same text",
+        "D": "Users should not need to confirm their password"
+      },
+      "answer": "A",
+      "explanation": "SC 3.3.7 Redundant Entry requires that information previously entered by or provided to the user during a process is auto-populated or available for selection. This reduces cognitive load for users with memory difficulties. Exceptions include security re-entry and expired information.",
+      "topic": "cognitive_accessibility",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB067",
+      "question": "How does CSS `view-transition-name` enable view transitions between states?",
+      "choices": {
+        "A": "It adds animated borders to elements",
+        "B": "It creates a named scroll timeline for intersection-based animations",
+        "C": "It defines a CSS animation name for viewport-based triggers",
+        "D": "It assigns a unique identifier to an element so the View Transitions API can capture its state before and after a DOM change and animate between them"
+      },
+      "answer": "D",
+      "explanation": "view-transition-name assigns a transition identity to an element. When a view transition occurs (via document.startViewTransition()), the browser captures before/after snapshots of elements with matching view-transition-names and morphs between them. Each name must be unique on the page.",
+      "topic": "view_transitions",
+      "topic_category": "css_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB068",
+      "question": "In a design system's color system, why is it recommended to use semantic color tokens (e.g., --color-text-primary) rather than palette tokens (e.g., --color-blue-500) in components?",
+      "choices": {
+        "A": "Semantic tokens render faster in browsers",
+        "B": "Semantic tokens decouple components from specific color values, making theming (dark mode, high contrast, brand variants) possible without modifying component styles",
+        "C": "Semantic tokens reduce CSS file size",
+        "D": "Palette tokens are not supported in CSS custom properties"
+      },
+      "answer": "B",
+      "explanation": "Semantic tokens (--color-surface, --color-text-primary) abstract the intent from the value. Switching themes means remapping semantic tokens to different palette values (--color-text-primary: var(--gray-900) in light, var(--gray-50) in dark) without touching component CSS.",
+      "topic": "color_systems",
+      "topic_category": "design_systems",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB069",
+      "question": "What is the state of vendor prefixes in modern CSS (2024+)?",
+      "choices": {
+        "A": "Vendor prefixes are required for all new CSS features",
+        "B": "Vendor prefixes have been completely removed from all browsers",
+        "C": "Only -webkit- prefix is still needed; all others are deprecated",
+        "D": "Most modern CSS features ship unprefixed; vendor prefixes are a legacy concern, mainly relevant for older properties like -webkit-appearance, and new features use @supports or progressive enhancement instead"
+      },
+      "answer": "D",
+      "explanation": "Modern CSS features (container queries, :has(), subgrid, etc.) ship unprefixed behind flags or directly. Legacy prefixes like -webkit-appearance persist for backward compatibility. The CSS Working Group adopted a policy against new prefixed features, preferring flags and origin trials.",
+      "topic": "vendor_prefixes_state",
+      "topic_category": "cross_browser",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB070",
+      "question": "What is the difference between `intrinsic` and `extrinsic` sizing in CSS, and which CSS keywords correspond to intrinsic sizing?",
+      "choices": {
+        "A": "Intrinsic sizing uses the element's content to determine size (min-content, max-content, fit-content); extrinsic sizing uses external constraints (percentages, viewport units, fixed lengths)",
+        "B": "Intrinsic sizing uses viewport units; extrinsic sizing uses content-based sizing",
+        "C": "Intrinsic sizing only applies to replaced elements; extrinsic sizing applies to all elements",
+        "D": "There is no practical difference; both terms refer to auto sizing"
+      },
+      "answer": "A",
+      "explanation": "Intrinsic sizing derives dimensions from the element's content: min-content (smallest without overflow), max-content (no wrapping), fit-content (clamped max-content). Extrinsic sizing derives dimensions from external context: parent width, viewport, or fixed values. Understanding this distinction is key to flexible layouts.",
+      "topic": "intrinsic_sizing",
+      "topic_category": "responsive_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "WEB071",
+      "question": "Consider this CSS with cascade layers and unlayered styles:\n\n```css\n@layer base, components;\n@layer base { .btn { padding: 8px 16px; color: white; } }\n@layer components { .btn.primary { color: blue; } }\n.btn { color: red; }\n```\n\nWhat color is a `<button class=\"btn primary\">` element?",
+      "choices": {
+        "A": "red",
+        "B": "blue",
+        "C": "white",
+        "D": "It depends on the order of the class attributes"
+      },
+      "answer": "A",
+      "explanation": "Unlayered styles always have higher priority than any layered styles, regardless of specificity. The unlayered `.btn { color: red; }` beats the layered `.btn.primary { color: blue; }` even though .btn.primary has higher specificity. This is a key cascade layers principle that catches many developers off guard.",
+      "topic": "cascade_layers",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB072",
+      "question": "A screen reader user navigates to this form control:\n\n```html\n<div role=\"group\" aria-labelledby=\"addr-heading\">\n  <h3 id=\"addr-heading\">Shipping Address</h3>\n  <label for=\"street\">Street</label>\n  <input id=\"street\" type=\"text\" aria-required=\"true\" aria-invalid=\"true\" aria-errormessage=\"street-err\">\n  <span id=\"street-err\" role=\"alert\">Street address is required</span>\n</div>\n```\n\nWhat does NVDA announce when the user tabs to the street input?",
+      "choices": {
+        "A": "Street, edit, required",
+        "B": "Shipping Address, Street, text field",
+        "C": "Street, edit, invalid, alert Street address is required",
+        "D": "Shipping Address grouping, Street, edit, required, invalid entry, Street address is required"
+      },
+      "answer": "D",
+      "explanation": "Screen readers announce: the group label (Shipping Address), group role, the label (Street), the input role (edit), required state (from aria-required), invalid state (from aria-invalid), and the error message (from aria-errormessage referencing the error span). NVDA reads the full context chain including the group.",
+      "topic": "screen_reader_behavior",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB073",
+      "question": "Given this responsive image markup, which image file is loaded on a device with a 2x display and a 600px wide viewport where the image container is 50% of the viewport?\n\n```html\n<img srcset=\"small.jpg 400w, medium.jpg 800w, large.jpg 1200w\"\n     sizes=\"50vw\"\n     src=\"fallback.jpg\"\n     alt=\"Product\">\n```",
+      "choices": {
+        "A": "small.jpg",
+        "B": "large.jpg",
+        "C": "medium.jpg",
+        "D": "fallback.jpg"
+      },
+      "answer": "C",
+      "explanation": "Step 1: sizes=\"50vw\" at 600px viewport = 300px effective image width. Step 2: At 2x density, the browser needs 300 * 2 = 600 effective pixels. Step 3: From srcset, 800w is the closest candidate >= 600 without being excessively large. The browser selects medium.jpg (800w).",
+      "topic": "responsive_images",
+      "topic_category": "responsive_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB074",
+      "question": "Examine this CSS specificity battle:\n\n```css\n:where(.card) .title { color: green; }     /* Rule 1 */\n:is(.card) .title { color: blue; }          /* Rule 2 */\n.card .title { color: red; }                /* Rule 3 */\n```\n\nAll three rules target `<div class=\"card\"><h2 class=\"title\">...</h2></div>`. What is the final color, and why?",
+      "choices": {
+        "A": "green -- :where() has highest specificity",
+        "B": "blue -- :is() adds the specificity of its most specific argument, making Rule 2 equal to Rule 3; source order wins and Rule 2 comes first so Rule 3 wins with red. But wait -- they are equal so last one wins: red",
+        "C": "blue -- :is() increases specificity above a plain class selector",
+        "D": "red -- Rule 3 and Rule 2 have equal specificity (0-2-0), but Rule 3 comes last in source order"
+      },
+      "answer": "D",
+      "explanation": "Step 1: :where() contributes zero specificity, so Rule 1 is 0-0-1-0 (.title only). Step 2: :is(.card) takes the specificity of its argument (.card = 0-0-1-0), plus .title = 0-0-2-0. Step 3: .card .title = 0-0-2-0. Rules 2 and 3 tie at 0-0-2-0, so source order breaks the tie: Rule 3 (red) wins.",
+      "topic": "specificity_calculation",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB075",
+      "question": "A developer inlines critical CSS and defers the full stylesheet. The page has a web font loaded via @font-face with `font-display: swap`. The LCP element is a heading using this web font. In what order do these rendering events occur?\n\n1. First Contentful Paint with fallback font\n2. Web font download completes\n3. Layout shift from font swap\n4. LCP is recorded\n\nWhat is the correct sequence?",
+      "choices": {
+        "A": "1 -> 2 -> 3 -> 4",
+        "B": "1 -> 4 -> 2 -> 3",
+        "C": "1 -> 2 -> 3, and 4 occurs at step 3 (LCP updates to the swapped font render)",
+        "D": "2 -> 1 -> 4 -> 3"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Critical CSS enables FCP with the fallback font. Step 2: The web font downloads in the background. Step 3: font-display: swap triggers a repaint with the web font, causing a layout shift (CLS contribution). Step 4: LCP is recalculated -- if the heading re-renders larger with the web font, the LCP timestamp updates to this later paint. LCP can be reported multiple times until user interaction.",
+      "topic": "font_loading_strategies",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB076",
+      "question": "A developer creates this accessible table:\n\n```html\n<table>\n  <caption>Q3 Sales by Region</caption>\n  <thead>\n    <tr>\n      <th id=\"region\" scope=\"col\">Region</th>\n      <th id=\"q3\" scope=\"col\">Q3 2024</th>\n      <th id=\"q3-change\" scope=\"col\">Change</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th id=\"north\" scope=\"row\">North</th>\n      <td headers=\"north q3\">$2.4M</td>\n      <td headers=\"north q3-change\">\n        <span aria-label=\"increased 12 percent\" style=\"color: green;\">+12%</span>\n      </td>\n    </tr>\n  </tbody>\n</table>\n```\n\nWhich accessibility issue remains in this markup?",
+      "choices": {
+        "A": "The table caption is not programmatically associated",
+        "B": "scope=\"row\" should not be used with the headers attribute",
+        "C": "The headers attribute syntax is incorrect",
+        "D": "The color green for positive change relies on color alone to convey meaning, violating SC 1.4.1 Use of Color"
+      },
+      "answer": "D",
+      "explanation": "While aria-label provides text for screen readers, sighted users who cannot perceive color (color blindness, low vision) rely on the visual presentation alone. The green color is the only visual indicator of positive vs negative change, violating SC 1.4.1. A non-color indicator (icon, prefix text) is needed alongside color.",
+      "topic": "accessible_data_tables",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB077",
+      "question": "Given these CSS container query rules:\n\n```css\n.sidebar {\n  container-type: inline-size;\n  container-name: sidebar;\n}\n\n.main {\n  container-type: inline-size;\n  container-name: main;\n}\n\n@container sidebar (max-width: 300px) {\n  .widget { flex-direction: column; }\n}\n\n@container main (min-width: 600px) {\n  .widget { grid-template-columns: 1fr 1fr; }\n}\n```\n\nA `.widget` is inside `.sidebar` which is inside `.main`. The `.main` container is 900px wide and `.sidebar` is 250px wide. What styles apply to `.widget`?",
+      "choices": {
+        "A": "Only flex-direction: column",
+        "B": "Both flex-direction: column AND grid-template-columns: 1fr 1fr",
+        "C": "Only grid-template-columns: 1fr 1fr",
+        "D": "Neither rule applies because named containers cannot be nested"
+      },
+      "answer": "B",
+      "explanation": "Step 1: .widget is inside .sidebar (250px, named 'sidebar'). @container sidebar (max-width: 300px) matches because 250 < 300 -- flex-direction: column applies. Step 2: .sidebar is inside .main (900px, named 'main'). @container main (min-width: 600px) matches because 900 >= 600 -- grid-template-columns applies. Named container queries look up the ancestor chain for the matching name. Both conditions are true simultaneously.",
+      "topic": "container_queries",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB078",
+      "question": "A page has these performance characteristics:\n- LCP element: hero image (2.8s)\n- INP: button click handler runs heavy computation (380ms)\n- CLS: ad slot loads without reserved dimensions (0.18)\n\nAccording to Google's Core Web Vitals thresholds, which metrics PASS and which FAIL?",
+      "choices": {
+        "A": "All three pass",
+        "B": "LCP passes (< 2.5s threshold), INP fails (> 200ms), CLS passes (< 0.1)",
+        "C": "LCP fails (> 2.5s), INP fails (> 200ms), CLS fails (> 0.1)",
+        "D": "LCP fails (> 2.5s), INP passes (< 500ms), CLS fails (> 0.1)"
+      },
+      "answer": "C",
+      "explanation": "Step 1: LCP good threshold is <= 2.5s. 2.8s exceeds this -- FAIL. Step 2: INP good threshold is <= 200ms. 380ms exceeds this -- FAIL. Step 3: CLS good threshold is <= 0.1. 0.18 exceeds this -- FAIL. All three metrics are in the 'needs improvement' or 'poor' range.",
+      "topic": "core_web_vitals",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB079",
+      "question": "A developer implements a modal dialog:\n\n```html\n<button id=\"trigger\">Open Settings</button>\n<dialog id=\"settings-dialog\" aria-labelledby=\"dialog-title\">\n  <h2 id=\"dialog-title\">Settings</h2>\n  <form method=\"dialog\">\n    <label>Theme <select name=\"theme\"><option>Light</option><option>Dark</option></select></label>\n    <button type=\"submit\">Save</button>\n  </form>\n</dialog>\n<script>\ntrigger.addEventListener('click', () => settings-dialog.showModal());\n</script>\n```\n\nWhat accessibility issue exists with this implementation?",
+      "choices": {
+        "A": "The dialog lacks role=\"dialog\"",
+        "B": "The form method=\"dialog\" is not accessible",
+        "C": "There is no mechanism to close the dialog with Escape without JavaScript, and focus is not explicitly returned to the trigger button after closing",
+        "D": "The dialog correctly handles focus trapping via showModal() and Escape closes it natively, but focus return to the trigger must be implemented manually"
+      },
+      "answer": "D",
+      "explanation": "Step 1: <dialog> has implicit role=\"dialog\" -- no issue. Step 2: showModal() provides native focus trapping and Escape key closing -- these are built in. Step 3: However, the browser does NOT automatically return focus to the trigger element when the dialog closes. The developer must listen for the 'close' event and call trigger.focus(). This is a common oversight that breaks the focus restoration requirement.",
+      "topic": "accessible_modals",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB080",
+      "question": "Examine this CSS custom property pattern:\n\n```css\n:root { --spacing: 8px; }\n.card { --spacing: 16px; padding: var(--spacing); }\n.card .badge { margin: var(--spacing); }\n.card .badge.compact { --spacing: 4px; padding: var(--spacing); }\n```\n\nFor `<div class=\"card\"><span class=\"badge compact\">New</span></div>`, what are the padding of `.badge.compact` and the margin of `.badge`?",
+      "choices": {
+        "A": "padding: 4px, margin: 16px",
+        "B": "padding: 16px, margin: 16px",
+        "C": "padding: 4px, margin: 8px",
+        "D": "padding: 4px, margin: 4px"
+      },
+      "answer": "D",
+      "explanation": "Step 1: .badge.compact sets --spacing: 4px on itself, so its padding: var(--spacing) resolves to 4px. Step 2: The element is both .badge and .badge.compact. The .badge rule sets margin: var(--spacing). Since the element itself has --spacing: 4px (set by .badge.compact), the inherited value from .card (16px) is overridden. margin resolves to 4px. Custom properties inherit to the element first, then all declarations on that element use the element's resolved value.",
+      "topic": "custom_properties_inheritance",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB081",
+      "question": "A page loads a third-party analytics script, a web font, and hero image. The developer adds these resource hints:\n\n```html\n<link rel=\"preconnect\" href=\"https://analytics.example.com\">\n<link rel=\"preload\" href=\"/fonts/brand.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>\n<link rel=\"preload\" href=\"/hero.webp\" as=\"image\" fetchpriority=\"high\">\n```\n\nWhat mistake has the developer made?",
+      "choices": {
+        "A": "preconnect does not support HTTPS URLs",
+        "B": "The font preload is missing the crossorigin attribute",
+        "C": "preload for fonts requires the crossorigin attribute even for same-origin requests, which is correctly included, but preloading both the font AND the hero image at high priority may cause them to compete for bandwidth, potentially delaying the LCP image",
+        "D": "fetchpriority cannot be used with preload"
+      },
+      "answer": "C",
+      "explanation": "Step 1: The crossorigin attribute on the font preload is correct -- fonts always require CORS. Step 2: Both resources are preloaded with high priority (font preloads are high by default, hero has explicit fetchpriority=\"high\"). Step 3: If the font and hero image download simultaneously on a bandwidth-constrained connection, they compete. The font is not LCP-critical (font-display: swap handles it), so it should use fetchpriority=\"low\" or be loaded via @font-face without preload.",
+      "topic": "resource_hints",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB082",
+      "question": "Given this ARIA combobox pattern for an autocomplete search:\n\n```html\n<label for=\"search\">Search products</label>\n<input id=\"search\" role=\"combobox\" aria-expanded=\"true\"\n       aria-controls=\"results\" aria-activedescendant=\"opt-2\">\n<ul id=\"results\" role=\"listbox\">\n  <li id=\"opt-1\" role=\"option\">Widget A</li>\n  <li id=\"opt-2\" role=\"option\" aria-selected=\"true\">Widget B</li>\n  <li id=\"opt-3\" role=\"option\">Widget C</li>\n</ul>\n```\n\nWhat does a screen reader announce when the user presses the down arrow to move from Widget B to Widget C?",
+      "choices": {
+        "A": "Widget C",
+        "B": "Widget C, 3 of 3",
+        "C": "Widget C, option, 3 of 3",
+        "D": "Search products, combobox, Widget C"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Pressing down arrow updates aria-activedescendant to \"opt-3\" and moves aria-selected. Step 2: The screen reader announces the newly active option's text content. Step 3: For role=\"option\" inside role=\"listbox\", most screen readers (NVDA, JAWS) announce the option text and position in set (3 of 3, derived from the option count). The role name 'option' may or may not be spoken depending on verbosity settings.",
+      "topic": "aria_roles_states_properties",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB083",
+      "question": "A developer wants to implement a responsive layout that switches from a single column on narrow screens to a sidebar layout on wider screens using only CSS container queries (no media queries). The sidebar should appear when the main container is at least 700px wide. What is the correct implementation?\n\n```css\n/* Option A */\n.layout { container-type: inline-size; }\n@container (min-width: 700px) {\n  .layout { display: grid; grid-template-columns: 250px 1fr; }\n}\n\n/* Option B */\n.layout { container-type: inline-size; }\n@container (min-width: 700px) {\n  .layout__inner { display: grid; grid-template-columns: 250px 1fr; }\n}\n```",
+      "choices": {
+        "A": "Option A is correct -- the container can query and style itself",
+        "B": "Option B is correct -- a container cannot apply container-queried styles to itself, only to its descendants",
+        "C": "Both are valid approaches",
+        "D": "Neither works -- container queries require named containers"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Container queries only apply styles to descendants of the containment context, never to the container itself. Step 2: In Option A, .layout is both the container and the target -- this does not work. Step 3: Option B correctly targets .layout__inner (a child) based on .layout's width. The container defines the condition; descendants receive the styles.",
+      "topic": "container_queries",
+      "topic_category": "responsive_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB084",
+      "question": "A design system defines these tokens:\n\n```css\n:root {\n  --color-brand-500: oklch(0.65 0.25 250);\n  --color-surface: light-dark(white, oklch(0.2 0.02 250));\n  --color-text: light-dark(oklch(0.15 0.02 250), oklch(0.93 0.01 250));\n  --color-border: color-mix(in oklch, var(--color-text) 20%, transparent);\n  color-scheme: light dark;\n}\n```\n\nIn dark mode, what is the approximate visual appearance of `--color-border`?",
+      "choices": {
+        "A": "A nearly opaque dark border",
+        "B": "A solid white border",
+        "C": "An invisible transparent border",
+        "D": "A subtle, 20% opacity light-colored border (since --color-text resolves to a light color in dark mode, mixed at 20%)"
+      },
+      "answer": "D",
+      "explanation": "Step 1: In dark mode, --color-text resolves to oklch(0.93 0.01 250) -- a near-white, low-chroma color. Step 2: color-mix(in oklch, near-white 20%, transparent) produces a color that is 20% of the near-white text color mixed with 80% transparent. Step 3: This results in a subtle, semi-transparent light border -- visible enough for separation without being harsh in dark mode.",
+      "topic": "color_systems",
+      "topic_category": "design_systems",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB085",
+      "question": "A developer has a page with forced synchronous layout. Identify the problematic pattern:\n\n```javascript\nconst items = document.querySelectorAll('.item');\nitems.forEach(item => {\n  const height = item.offsetHeight;      // READ\n  item.style.height = height + 10 + 'px'; // WRITE\n});\n```\n\nHow many forced layouts does this cause for 100 items, and what is the fix?",
+      "choices": {
+        "A": "1 forced layout; no fix needed",
+        "B": "100 forced layouts; fix by using CSS transforms instead",
+        "C": "2 forced layouts; fix by using requestAnimationFrame",
+        "D": "100 forced layouts; fix by batching all reads first, then all writes"
+      },
+      "answer": "D",
+      "explanation": "Step 1: First iteration reads offsetHeight (triggers layout if dirty), then writes style.height (invalidates layout). Step 2: Second iteration reads offsetHeight -- layout is dirty from previous write, forcing a synchronous recalculation. Step 3: This repeats for every item: 100 read-write cycles = ~100 forced layouts. Fix: read all heights into an array first, then write all heights in a second loop. Or use ResizeObserver.",
+      "topic": "layout_thrashing",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB086",
+      "question": "Consider this heading hierarchy:\n\n```html\n<body>\n  <header>\n    <h1>Company Name</h1>\n    <nav aria-label=\"Main\">\n      <h2>Navigation</h2> <!-- visually hidden -->\n    </nav>\n  </header>\n  <main>\n    <h2>Products</h2>\n    <section>\n      <h4>Widget Pro</h4>  <!-- Issue here -->\n      <p>Description...</p>\n    </section>\n    <section>\n      <h3>Services</h3>\n      <h4>Consulting</h4>\n    </section>\n  </main>\n</body>\n```\n\nWhich WCAG success criterion is violated and why?",
+      "choices": {
+        "A": "SC 1.3.1 Info and Relationships -- the heading hierarchy skips from h2 to h4, breaking the logical outline",
+        "B": "SC 2.4.6 Headings and Labels -- the headings are not descriptive enough",
+        "C": "SC 1.3.1 Info and Relationships -- the visually hidden h2 in nav is not allowed",
+        "D": "No violation exists -- heading levels only need to be ordered within their section"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Under h2 'Products', the first section jumps to h4 'Widget Pro', skipping h3. Step 2: SC 1.3.1 requires that information and relationships conveyed through presentation are programmatically determinable. A skipped heading level breaks the logical document outline that screen reader users rely on for navigation. Step 3: The second section correctly uses h3 -> h4. The fix is to change Widget Pro's heading to h3.",
+      "topic": "heading_hierarchy",
+      "topic_category": "html_semantics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB087",
+      "question": "A developer implements a theming system with CSS custom properties and cascade layers:\n\n```css\n@layer tokens, base, components;\n\n@layer tokens {\n  :root {\n    --radius: 4px;\n    --spacing-md: 16px;\n  }\n  :root[data-theme=\"rounded\"] {\n    --radius: 12px;\n  }\n}\n\n@layer base {\n  * { box-sizing: border-box; }\n}\n\n@layer components {\n  .card {\n    border-radius: var(--radius);\n    padding: var(--spacing-md);\n  }\n}\n\n/* Theme override added later by a plugin */\n.card { border-radius: 0; }\n```\n\nWith `data-theme=\"rounded\"`, what border-radius does `.card` have?",
+      "choices": {
+        "A": "12px -- the custom property value from the rounded theme",
+        "B": "4px -- the default token value",
+        "C": "0 -- the unlayered plugin style overrides the layered component",
+        "D": "0 -- but only if the plugin loads after the layers are defined"
+      },
+      "answer": "C",
+      "explanation": "Step 1: The tokens layer sets --radius to 12px for the rounded theme. Step 2: The components layer applies border-radius: var(--radius), which resolves to 12px. Step 3: However, the unlayered `.card { border-radius: 0; }` has higher cascade priority than any layered style. The unlayered rule overrides with a hard-coded 0, ignoring the custom property entirely. This is a real-world pitfall with third-party CSS and cascade layers.",
+      "topic": "cascade_layers",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB088",
+      "question": "A WCAG 2.2 audit flags a violation of SC 2.5.8 Target Size (Minimum) at Level AA. The page has:\n\n- A 20x20 pixel icon button with no padding\n- A text link in a paragraph with normal line-height\n- A 44x44 pixel button with 2px spacing from adjacent buttons\n\nWhich element(s) violate SC 2.5.8?",
+      "choices": {
+        "A": "Only the 20x20 icon button",
+        "B": "The 20x20 icon button and the 44x44 button (insufficient spacing)",
+        "C": "All three elements violate the criterion",
+        "D": "Only the 20x20 icon button; the text link is exempt as an inline text target and the 44x44 button meets the 24x24 minimum"
+      },
+      "answer": "D",
+      "explanation": "Step 1: SC 2.5.8 requires a minimum target size of 24x24 CSS pixels, OR sufficient spacing from adjacent targets. Step 2: The 20x20 button is below 24x24 -- VIOLATION. Step 3: Inline text links within sentences are explicitly exempt from this SC. Step 4: The 44x44 button exceeds the 24x24 minimum and thus passes regardless of spacing. SC 2.5.5 (Level AAA) has the stricter 44x44 requirement.",
+      "topic": "wcag_success_criteria",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB089",
+      "question": "A developer creates a design system breakpoint token system:\n\n```css\n:root {\n  --bp-sm: 640px;\n  --bp-md: 768px;\n  --bp-lg: 1024px;\n}\n\n@media (min-width: var(--bp-md)) {\n  .sidebar { display: block; }\n}\n```\n\nWhy does this not work, and what is the correct approach?",
+      "choices": {
+        "A": "CSS custom properties cannot be used in media query conditions because media queries are evaluated before the cascade resolves custom property values; use Sass variables, CSS preprocessor tokens, or container queries instead",
+        "B": "Custom properties need to use calc() inside media queries",
+        "C": "The syntax is wrong -- it should be @media (min-width: #{var(--bp-md)})",
+        "D": "It works correctly in all modern browsers"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Media queries are evaluated by the CSS parser before custom property substitution occurs. Step 2: var() references in media queries are treated as unknown values and the query fails. Step 3: Alternatives include Sass/PostCSS variables (compile-time), CSS environment variables (env()), or replacing media queries with container queries (@container) where custom properties can be used in the container's styles.",
+      "topic": "breakpoint_tokens",
+      "topic_category": "design_systems",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB090",
+      "question": "Consider this paint optimization scenario:\n\n```css\n.scrollable-list {\n  contain: layout style paint;\n  content-visibility: auto;\n  contain-intrinsic-size: auto 500px;\n}\n\n.list-item {\n  will-change: transform;\n}\n\n.list-item:hover {\n  transform: scale(1.02);\n  box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n}\n```\n\nWhat performance issue does the `will-change: transform` on every list item create?",
+      "choices": {
+        "A": "No issue -- will-change is a harmless hint",
+        "B": "will-change conflicts with content-visibility",
+        "C": "Each list item is promoted to its own compositing layer, consuming significant GPU memory; in a list with hundreds of items, this can cause memory pressure, janky scrolling, and on mobile devices, GPU memory exhaustion",
+        "D": "will-change prevents the contain property from working"
+      },
+      "answer": "C",
+      "explanation": "Step 1: will-change: transform promotes each .list-item to its own compositor layer. Step 2: Each layer requires GPU texture memory (width * height * 4 bytes). Step 3: With hundreds of items, this creates hundreds of layers, potentially consuming hundreds of MB of GPU memory. Step 4: The fix is to apply will-change only on hover (or via JS on mouseenter) and remove it after the animation completes.",
+      "topic": "paint_optimization",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB091",
+      "question": "Evaluate this ARIA live region implementation for a chat application:\n\n```html\n<div role=\"log\" aria-live=\"polite\" aria-atomic=\"false\" aria-relevant=\"additions\">\n  <div class=\"message\">User: Hello</div>\n  <div class=\"message\">Bot: Hi there!</div>\n  <!-- New messages appended here -->\n</div>\n```\n\nA new message is dynamically appended. What gets announced, and why is the combination of attributes important?",
+      "choices": {
+        "A": "The entire log is re-read because aria-atomic=\"true\" is the default",
+        "B": "Only the last 3 messages are announced",
+        "C": "Nothing is announced because role=\"log\" overrides aria-live",
+        "D": "Only the new message is announced because aria-atomic=\"false\" prevents re-reading the whole region, aria-relevant=\"additions\" limits announcements to new nodes, and aria-live=\"polite\" queues the announcement without interrupting"
+      },
+      "answer": "D",
+      "explanation": "Step 1: role=\"log\" implies aria-live=\"polite\" (but explicit is better for clarity). Step 2: aria-atomic=\"false\" means only the changed/added node is announced, not the entire container. Step 3: aria-relevant=\"additions\" means only new nodes trigger announcements (not removals or text changes). Step 4: The polite politeness level queues the announcement after the screen reader finishes its current output. This combination prevents overwhelming users in active chat scenarios.",
+      "topic": "live_regions",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB092",
+      "question": "A developer uses CSS subgrid for a card grid where each card's header, body, and footer should align across cards:\n\n```css\n.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 24px;\n}\n\n.card {\n  display: grid;\n  grid-template-rows: subgrid;\n  grid-row: span 3;\n}\n```\n\nWhat is missing from the parent `.grid` for this to work?",
+      "choices": {
+        "A": "The parent needs explicit grid-template-rows defining at least 3 row tracks for the cards to span",
+        "B": "The parent needs container-type: inline-size",
+        "C": "The parent needs grid-auto-flow: dense",
+        "D": "Nothing is missing; implicit rows are sufficient for subgrid"
+      },
+      "answer": "A",
+      "explanation": "Step 1: subgrid causes the card to inherit its parent's row tracks. Step 2: grid-row: span 3 means each card spans 3 row tracks. Step 3: The parent has no explicit row tracks -- only implicit rows created by auto-placement. Step 4: subgrid requires explicit parent tracks to inherit. The fix is to add grid-template-rows: repeat(3, auto) or define the rows explicitly. Without explicit rows, the subgrid alignment across cards fails.",
+      "topic": "subgrid",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB093",
+      "question": "A site has this responsive image setup using the `<picture>` element:\n\n```html\n<picture>\n  <source media=\"(min-width: 1024px)\" srcset=\"hero-wide.avif\" type=\"image/avif\">\n  <source media=\"(min-width: 1024px)\" srcset=\"hero-wide.webp\" type=\"image/webp\">\n  <source media=\"(min-width: 640px)\" srcset=\"hero-medium.avif\" type=\"image/avif\">\n  <source media=\"(min-width: 640px)\" srcset=\"hero-medium.webp\" type=\"image/webp\">\n  <source srcset=\"hero-small.avif\" type=\"image/avif\">\n  <source srcset=\"hero-small.webp\" type=\"image/webp\">\n  <img src=\"hero-small.jpg\" alt=\"Product showcase\" width=\"800\" height=\"400\">\n</picture>\n```\n\nOn a 1200px viewport in Chrome (which supports both AVIF and WebP), which file is loaded?",
+      "choices": {
+        "A": "hero-wide.avif",
+        "B": "hero-wide.webp",
+        "C": "hero-medium.avif",
+        "D": "hero-small.jpg"
+      },
+      "answer": "A",
+      "explanation": "Step 1: The browser evaluates <source> elements in order. Step 2: First source: media (min-width: 1024px) matches (1200 >= 1024), type image/avif is supported by Chrome. Step 3: The browser uses the first matching source. hero-wide.avif is selected. The browser does not continue evaluating subsequent sources once a match is found.",
+      "topic": "responsive_images",
+      "topic_category": "responsive_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB094",
+      "question": "A developer implements a polyfill strategy for CSS `:has()`:\n\n```javascript\nif (!CSS.supports('selector(:has(*))')) {\n  // Load polyfill\n  import('css-has-pseudo').then(module => {\n    module.default(document);\n  });\n}\n```\n\nWhat potential issues exist with this polyfill approach?",
+      "choices": {
+        "A": "CSS.supports() does not accept selector() syntax",
+        "B": "The :has() polyfill must observe DOM mutations and re-evaluate selectors on every change, causing significant performance overhead; additionally, some :has() patterns (like subject-selecting with complex combinators) cannot be fully polyfilled without a CSS parser",
+        "C": "Dynamic imports are not supported in any browser that lacks :has()",
+        "D": "There are no issues; this is the recommended approach"
+      },
+      "answer": "B",
+      "explanation": "Step 1: CSS.supports('selector(:has(*))') is valid and correctly detects :has() support. Step 2: Dynamic import works in browsers that lack :has() (Safari < 15.4, older Chrome). Step 3: The fundamental issue is performance: :has() polyfills must use MutationObserver to watch the DOM and re-evaluate selectors on every mutation. For complex pages, this creates O(n*m) re-evaluation overhead. Some patterns involving sibling combinators or deep nesting are impossible to polyfill accurately.",
+      "topic": "polyfill_strategies",
+      "topic_category": "cross_browser",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB095",
+      "question": "A design system component has this theming architecture:\n\n```css\n.button {\n  --_bg: var(--button-bg, var(--color-primary));\n  --_text: var(--button-text, var(--color-on-primary));\n  --_radius: var(--button-radius, var(--radius-md));\n  \n  background: var(--_bg);\n  color: var(--_text);\n  border-radius: var(--_radius);\n}\n```\n\nWhat design pattern is this, and what is the advantage of the double-dash prefix convention (`--_`)?",
+      "choices": {
+        "A": "BEM naming; --_ indicates a modifier",
+        "B": "Private custom properties pattern: --_prefixed properties are internal to the component and resolve from public API properties (--button-bg) with system fallbacks (--color-primary); consumers customize via the public API without accessing internals",
+        "C": "CSS-in-JS scoping; --_ is automatically scoped by the bundler",
+        "D": "CSS Houdini registered properties; --_ triggers type checking"
+      },
+      "answer": "B",
+      "explanation": "Step 1: This is the 'private/public custom properties' pattern. Step 2: Public API properties (--button-bg, --button-text) are documented for consumers to override. Step 3: Private properties (--_bg, --_text) are internal resolved values used in declarations. Step 4: The fallback chain (consumer override -> system token -> hardcoded) allows customization at multiple levels. The --_ convention signals 'do not override directly' -- similar to Python's _ prefix for private members.",
+      "topic": "component_api_design",
+      "topic_category": "design_systems",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB096",
+      "question": "Consider this complex form with conditional ARIA:\n\n```html\n<fieldset>\n  <legend>Payment Method</legend>\n  <label><input type=\"radio\" name=\"pay\" value=\"card\" aria-controls=\"card-fields\"> Credit Card</label>\n  <label><input type=\"radio\" name=\"pay\" value=\"bank\" aria-controls=\"bank-fields\"> Bank Transfer</label>\n</fieldset>\n\n<div id=\"card-fields\" role=\"group\" aria-labelledby=\"card-heading\" hidden>\n  <h3 id=\"card-heading\">Credit Card Details</h3>\n  <label for=\"ccnum\">Card Number</label>\n  <input id=\"ccnum\" type=\"text\" inputmode=\"numeric\" pattern=\"[0-9]{16}\" \n         aria-describedby=\"cc-hint\" required>\n  <span id=\"cc-hint\">16-digit number on the front of your card</span>\n</div>\n```\n\nWhen the user selects 'Credit Card' and JavaScript removes the `hidden` attribute, what should the JavaScript also do for optimal accessibility?",
+      "choices": {
+        "A": "Nothing else -- removing hidden is sufficient",
+        "B": "Set aria-expanded=\"true\" on the radio button, but do NOT move focus -- the user's context should remain on the radio group; screen readers will discover the newly visible section when they continue navigating",
+        "C": "Move focus to the card-fields group and announce the change via a live region",
+        "D": "Set aria-expanded=\"true\" on the radio button and move focus to the first input in card-fields"
+      },
+      "answer": "B",
+      "explanation": "Step 1: aria-controls tells screen readers there is a relationship, but removing hidden reveals the content. Step 2: Setting aria-expanded=\"true\" on the radio communicates the state change. Step 3: Moving focus away from the radio group would be disorienting -- the user chose a radio option and expects to continue through the form sequentially. Step 4: The newly visible fields appear in the natural tab order after the radio group, so the user encounters them next when pressing Tab.",
+      "topic": "accessible_forms",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB097",
+      "question": "A developer needs to optimize a page where the LCP element is a hero image that is set as a CSS background-image:\n\n```css\n.hero { background-image: url('/hero-large.jpg'); height: 500px; }\n```\n\nWhat is the fundamental performance problem, and what is the multi-step fix?",
+      "choices": {
+        "A": "Add loading=\"eager\" to the CSS rule",
+        "B": "Add will-change: background-image to force GPU loading",
+        "C": "CSS background images load faster; no fix needed",
+        "D": "CSS background images are never LCP candidates; switch to an <img> element with fetchpriority=\"high\", add width/height for CLS prevention, use srcset for responsive variants, and preload the image for early discovery"
+      },
+      "answer": "D",
+      "explanation": "Step 1: CSS background-images ARE considered for LCP (contrary to common belief), but they are discovered late because the browser must parse CSS, build CSSOM, compute styles, and match selectors before requesting the image. Step 2: An <img> element is discovered during HTML parsing (much earlier). Step 3: fetchpriority=\"high\" boosts its network priority. Step 4: <link rel=\"preload\" as=\"image\" href=\"/hero-large.jpg\"> gives the earliest possible discovery. Step 5: srcset provides responsive sizing. This multi-step approach addresses discovery time, priority, and responsiveness.",
+      "topic": "core_web_vitals",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB098",
+      "question": "Given this CSS Houdini Paint Worklet usage:\n\n```css\n@supports (background: paint(something)) {\n  .decorated {\n    --dot-color: hotpink;\n    --dot-size: 4;\n    --dot-spacing: 20;\n    background: paint(dotPattern);\n  }\n}\n```\n\nWhat is the current (2024+) browser support reality for CSS Houdini Paint API, and what is the progressive enhancement fallback?",
+      "choices": {
+        "A": "Paint API is supported in Chromium browsers but not in Firefox or Safari; the @supports block provides progressive enhancement, and a static background-image or gradient should be the fallback outside the @supports block",
+        "B": "Paint API is universally supported in all modern browsers",
+        "C": "Paint API is deprecated and should not be used",
+        "D": "Paint API requires a polyfill in all browsers"
+      },
+      "answer": "A",
+      "explanation": "Step 1: CSS Houdini Paint API (registerPaint, paint() function) shipped in Chromium (Chrome 65+, Edge 79+) but is not implemented in Firefox or Safari as of 2024. Step 2: @supports (background: paint(something)) returns false in non-supporting browsers, so the paint styles are not applied. Step 3: A fallback background outside the @supports block (e.g., a CSS gradient or static image) ensures non-Chromium users get a reasonable visual treatment.",
+      "topic": "css_houdini",
+      "topic_category": "cross_browser",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB099",
+      "question": "An e-commerce checkout form has this validation flow:\n\n```html\n<form novalidate>\n  <div class=\"field\">\n    <label for=\"email\">Email</label>\n    <input id=\"email\" type=\"email\" required aria-describedby=\"email-error\">\n    <div id=\"email-error\" role=\"alert\" hidden>Please enter a valid email address</div>\n  </div>\n  <div class=\"field\">\n    <label for=\"phone\">Phone</label>\n    <input id=\"phone\" type=\"tel\" required aria-describedby=\"phone-error\">\n    <div id=\"phone-error\" role=\"alert\" hidden>Please enter your phone number</div>\n  </div>\n  <button type=\"submit\">Place Order</button>\n</form>\n```\n\nThe user submits with both fields empty. JavaScript removes `hidden` from both error elements simultaneously. What accessibility problem occurs?",
+      "choices": {
+        "A": "Using role=\"alert\" on multiple elements that become visible simultaneously causes screen readers to potentially drop or queue announcements unpredictably; a better pattern is a single error summary with role=\"alert\" at the top of the form listing all errors, plus inline error messages using aria-errormessage without role=\"alert\"",
+        "B": "No problem -- both errors are announced",
+        "C": "The errors are announced in reverse DOM order",
+        "D": "aria-describedby does not work with hidden elements"
+      },
+      "answer": "A",
+      "explanation": "Step 1: role=\"alert\" creates an assertive live region. Step 2: When multiple alerts fire simultaneously, screen readers may drop some (NVDA), queue them (JAWS), or only announce the last one. Step 3: The robust pattern is a single summary alert ('Please fix 2 errors:') with a list of error descriptions, plus inline errors associated via aria-errormessage. Step 4: Focus should move to the summary or the first invalid field for SC 3.3.1 compliance.",
+      "topic": "error_identification",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "WEB100",
+      "question": "A front-end architect is designing a CSS architecture for a large application. They propose this @layer structure:\n\n```css\n@layer reset, tokens, base, layouts, components, utilities;\n\n@layer reset { /* normalize/reset */ }\n@layer tokens { :root { --color-primary: blue; } }\n@layer base { body { font-family: system-ui; } }\n@layer layouts { .grid { display: grid; } }\n@layer components { .card { border: 1px solid; } }\n@layer utilities { .sr-only { /* visually hidden */ } }\n```\n\nA developer adds `.text-red { color: red !important; }` inside the utilities layer. A component has `.alert { color: green !important; }` inside the components layer. Both rules target the same element. What color is the text?",
+      "choices": {
+        "A": "red -- utilities layer has higher priority and both use !important",
+        "B": "It is undefined behavior to use !important across layers",
+        "C": "red -- !important always follows normal layer order",
+        "D": "green -- when !important is used, layer priority is REVERSED; lower-priority layers win with !important, so components (lower) beats utilities (higher)"
+      },
+      "answer": "D",
+      "explanation": "Step 1: In the normal cascade, higher layers win (utilities > components). Step 2: However, the CSS cascade specification inverts the layer order for !important declarations. Step 3: For !important rules, the LOWEST layer has the HIGHEST priority. This means components-layer !important beats utilities-layer !important. Step 4: The rationale is that lower layers (base/reset) need !important to be truly foundational and unoverridable by higher layers. The text is green.",
+      "topic": "cascade_layers",
+      "topic_category": "css_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

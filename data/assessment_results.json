@@ -1,0 +1,625 @@
+{
+  "timestamp": "2026-03-02T23:48:45",
+  "model": "qwen3:30b-a3b",
+  "passing_score": 70,
+  "results": [
+    {
+      "agent_id": "python_developer",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.15,
+      "total": 10,
+      "correct": 10,
+      "wrong": 0,
+      "errors": 0,
+      "score_pct": 100.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "PY01",
+          "topic": "mutable_defaults",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a function `func(a, b=[])` that appends `a` to the list `b` and returns it.\n The key point is that the default argument `b` is a mutable object (a list) and is created only once when the ",
+          "is_correct": true,
+          "elapsed_s": 53.1
+        },
+        {
+          "id": "PY02",
+          "topic": "concurrency",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about Python's GIL (Global Interpreter Lock).\n\nLet's evaluate each option:\n\nA) It prevents all forms of concurrent execution in Python\n\nThis is false. The GIL d",
+          "is_correct": true,
+          "elapsed_s": 55.9
+        },
+        {
+          "id": "PY03",
+          "topic": "exception_handling",
+          "correct_answer": "A",
+          "agent_answer": "A",
+          "agent_response": "We are given a code snippet and multiple choices.\n\nThe code:\ntry:\n    x = 1 / 0\nexcept ArithmeticError:\n    print('A')\nexcept ZeroDivisionError:\n    print('B')\n\nWe know that `ZeroDivisionError` is a s",
+          "is_correct": true,
+          "elapsed_s": 53.9
+        },
+        {
+          "id": "PY04",
+          "topic": "context_managers",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the correct way to open a file for reading in Python while ensuring it is properly closed.\n\nLet's analyze each option:\n\nOption A: \n  f = open('file.txt', ",
+          "is_correct": true,
+          "elapsed_s": 57.1
+        },
+        {
+          "id": "PY05",
+          "topic": "functional_programming",
+          "correct_answer": "A",
+          "agent_answer": "A",
+          "agent_response": "Okay, let's break this down. The question is asking for the output of a specific Python expression using map and filter.\n\nFirst, the code is: list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, rang",
+          "is_correct": true,
+          "elapsed_s": 55.1
+        },
+        {
+          "id": "PY06",
+          "topic": "oop",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are to choose the correct option that describes the difference between @staticmethod and @classmethod.\n\nLet's recall:\n\n- A `@staticmethod` is a method that does not receive an implicit first argume",
+          "is_correct": true,
+          "elapsed_s": 42.1
+        },
+        {
+          "id": "PY07",
+          "topic": "python_culture",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "Okay, let's see. The question is about what happens when you execute \"import this\" in Python.\n\nHmm, I remember that \"import this\" is a fun thing in Python. Wait, isn't there a Zen of Python? Like, the",
+          "is_correct": true,
+          "elapsed_s": 27.9
+        },
+        {
+          "id": "PY08",
+          "topic": "dict_comprehension",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "Okay, let's see. The question is about a dictionary comprehension. The given dictionary is d = {'a': 1, 'b': 2, 'c': 3}. Then the result is created with {v: k for k, v in d.items()}.\n\nHmm, so in a dic",
+          "is_correct": true,
+          "elapsed_s": 53.6
+        },
+        {
+          "id": "PY09",
+          "topic": "references_vs_copies",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a code snippet:\n\na = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)\n\nWe need to determine the output.\n\nLet's break it down:\n\n1. `a = [1, 2, 3]` creates a list and assigns it to variable `a`.\n2. `b ",
+          "is_correct": true,
+          "elapsed_s": 39.6
+        },
+        {
+          "id": "PY10",
+          "topic": "security",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given four options for making a SQL query safe from injection in Python.\n\nLet's analyze each option:\n\nOption A: `cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")`\n- This uses an f-st",
+          "is_correct": true,
+          "elapsed_s": 109.0
+        }
+      ]
+    },
+    {
+      "agent_id": "javascript_developer",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.15,
+      "total": 10,
+      "correct": 10,
+      "wrong": 0,
+      "errors": 0,
+      "score_pct": 100.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "JS01",
+          "topic": "type_system",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a question about the output of `console.log(typeof null);` with four options.\n\nLet's recall: In JavaScript, `typeof null` returns \"object\". This is a well-known quirk in JavaScript.\n\nWhy?",
+          "is_correct": true,
+          "elapsed_s": 36.1
+        },
+        {
+          "id": "JS02",
+          "topic": "const_vs_immutable",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a code snippet:\n\nconst arr = [1, 2, 3];\narr.push(4);\nconsole.log(arr.length);\n\nWe need to determine what the output is.\n\nLet's break it down:\n\n1. `const arr = [1, 2, 3];` - This creates a",
+          "is_correct": true,
+          "elapsed_s": 44.9
+        },
+        {
+          "id": "JS03",
+          "topic": "floating_point",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are going to analyze the expression: `0.1 + 0.2 === 0.3`\n\n In JavaScript, floating-point arithmetic can lead to precision issues because of the way numbers are represented in binary (IEEE 754 stand",
+          "is_correct": true,
+          "elapsed_s": 38.6
+        },
+        {
+          "id": "JS04",
+          "topic": "react_rendering",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about React's behavior when `setState` is called with the same value as the current state.\n\nThe options are:\nA) React always re-renders the component\nB) React b",
+          "is_correct": true,
+          "elapsed_s": 37.8
+        },
+        {
+          "id": "JS05",
+          "topic": "async_patterns",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are comparing Promise.all() and Promise.allSettled().\n\nLet's recall:\n\n- Promise.all(iterable) takes an iterable of promises and returns a single promise that resolves when all of the promises in th",
+          "is_correct": true,
+          "elapsed_s": 26.2
+        },
+        {
+          "id": "JS06",
+          "topic": "typescript",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a TypeScript code snippet and asked what it produces.\n\nThe code:\n```typescript\ninterface User { name: string; age?: number; }\nconst u: User = { name: 'Alice' };\nconsole.log(u.age);\n```\n\nL",
+          "is_correct": true,
+          "elapsed_s": 22.1
+        },
+        {
+          "id": "JS07",
+          "topic": "react_hooks",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about React hooks.\n\nThe question is: \"Which hook should you use to perform side effects (data fetching, subscriptions) in a React functional component?\"\n\nOption",
+          "is_correct": true,
+          "elapsed_s": 22.1
+        },
+        {
+          "id": "JS08",
+          "topic": "spread_immutability",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given the following code:\n\nconst a = [1, 2, 3];\nconst b = [...a];\nb.push(4);\nconsole.log(a.length, b.length);\n\nLet's break it down:\n\n1. `const a = [1, 2, 3];` creates an array `a` with three el",
+          "is_correct": true,
+          "elapsed_s": 22.5
+        },
+        {
+          "id": "JS09",
+          "topic": "strict_mode",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the 'use strict' directive in JavaScript.\n\nThe options are:\n\nA) Enables TypeScript-like type checking at runtime\nB) Prevents assigning to undeclared varia",
+          "is_correct": true,
+          "elapsed_s": 32.1
+        },
+        {
+          "id": "JS10",
+          "topic": "closures",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about closures in JavaScript.\n\nThe options are:\n\nA) A function that has been called and returned a value\nB) A function that retains access to variables from its",
+          "is_correct": true,
+          "elapsed_s": 24.4
+        }
+      ]
+    },
+    {
+      "agent_id": "web_developer",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.15,
+      "total": 10,
+      "correct": 9,
+      "wrong": 1,
+      "errors": 0,
+      "score_pct": 90.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "WEB01",
+          "topic": "wcag_contrast",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "Okay, the user is asking about the WCAG 2.1 Level AA minimum contrast ratio for normal-sized text. Let me recall the exact requirement. \n\nI remember that WCAG 2.1 has specific contrast ratios for text",
+          "is_correct": true,
+          "elapsed_s": 25.2
+        },
+        {
+          "id": "WEB02",
+          "topic": "semantic_html",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about the most semantically correct HTML element for a page's primary navigation.\n\nThe options are:\n\nA) <div class=\"nav\">\nB) <nav role=\"navigation\">\nC) <nav>\nD)",
+          "is_correct": true,
+          "elapsed_s": 38.1
+        },
+        {
+          "id": "WEB03",
+          "topic": "flexbox",
+          "correct_answer": "A",
+          "agent_answer": "A",
+          "agent_response": "We are given a multiple-choice question about CSS properties for creating a layout where child elements wrap to the next line when they exceed the container width.\n\nLet's analyze each option:\n\nA) disp",
+          "is_correct": true,
+          "elapsed_s": 24.7
+        },
+        {
+          "id": "WEB04",
+          "topic": "alt_text",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a question about the correct accessibility treatment for a purely decorative image (one that adds no information).\n\nThe options are:\nA) alt=\"decorative image\"\nB) Remove the alt attribute ",
+          "is_correct": true,
+          "elapsed_s": 39.9
+        },
+        {
+          "id": "WEB05",
+          "topic": "css_grid",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a CSS Grid property: `grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));`\n\nLet's break it down:\n\n- `repeat(auto-fit, ...)` means that the grid will try to fit as many columns as",
+          "is_correct": true,
+          "elapsed_s": 61.2
+        },
+        {
+          "id": "WEB06",
+          "topic": "aria_roles",
+          "correct_answer": "B",
+          "agent_answer": "A",
+          "agent_response": "We are given a multiple-choice question about ARIA roles for a modal dialog that requires user interaction.\n\nThe options are:\nA) role=\"dialog\"\nB) role=\"alertdialog\"\nC) role=\"alert\"\nD) role=\"tooltip\"\n\n",
+          "is_correct": false,
+          "elapsed_s": 71.0
+        },
+        {
+          "id": "WEB07",
+          "topic": "responsive_design",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the mobile-first approach to responsive design.\n\nThe options are:\n\nA) Design for desktop first, then use max-width media queries to override for mobile\nB)",
+          "is_correct": true,
+          "elapsed_s": 27.3
+        },
+        {
+          "id": "WEB08",
+          "topic": "focus_management",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about accessibility.\n\nThe question: A developer removes the default :focus outline on buttons with 'outline: none'. What accessibility problem does this create?",
+          "is_correct": true,
+          "elapsed_s": 31.5
+        },
+        {
+          "id": "WEB09",
+          "topic": "css_units",
+          "correct_answer": "A",
+          "agent_answer": "A",
+          "agent_response": "We are given a multiple-choice question about CSS units: 'rem' vs 'em'\n\nThe options are:\n\nA) rem is relative to the root element font-size; em is relative to the parent element font-size\n\nB) rem is fo",
+          "is_correct": true,
+          "elapsed_s": 31.5
+        },
+        {
+          "id": "WEB10",
+          "topic": "wcag_principles",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about the four principles of WCAG (POUR).\n\nThe question asks: \"Which of the following is NOT one of the four principles of WCAG (POUR)?\"\n\nThe options are:\nA) Pe",
+          "is_correct": true,
+          "elapsed_s": 19.4
+        }
+      ]
+    },
+    {
+      "agent_id": "security_agent",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.15,
+      "total": 10,
+      "correct": 10,
+      "wrong": 0,
+      "errors": 0,
+      "score_pct": 100.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "SEC01",
+          "topic": "access_control",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a scenario: Bob, a regular user, can delete user accounts by accessing a URL that takes a userId parameter (e.g., https://example.com/admin/deleteUser?userId=500). The problem states that",
+          "is_correct": true,
+          "elapsed_s": 42.7
+        },
+        {
+          "id": "SEC02",
+          "topic": "idor",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a scenario: User Alice (ID=100) changes her profile URL from `userId=100` to `userId=200` and sees Bob's private data.\n\nLet's break down the options:\n\nA) Vertical privilege escalation: Th",
+          "is_correct": true,
+          "elapsed_s": 39.3
+        },
+        {
+          "id": "SEC03",
+          "topic": "cryptography",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are evaluating the options for storing user passwords securely.\n\nLet's break down each option:\n\nA) SHA-256 hash of the password\n   - SHA-256 is a cryptographic hash function. However, it is designe",
+          "is_correct": true,
+          "elapsed_s": 42.5
+        },
+        {
+          "id": "SEC04",
+          "topic": "owasp_top10",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about the OWASP Top 10 category for SQL injection.\n\nThe options are:\nA) A01:2021 Broken Access Control\nB) A02:2021 Cryptographic Failures\nC) A03:2021 Injection\n",
+          "is_correct": true,
+          "elapsed_s": 25.8
+        },
+        {
+          "id": "SEC05",
+          "topic": "authz_vs_authn",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about a critical check that is most commonly missing in access control for a user profile endpoint.\n\nThe options are:\nA) Authentication check (is user logged in",
+          "is_correct": true,
+          "elapsed_s": 40.5
+        },
+        {
+          "id": "SEC06",
+          "topic": "csrf",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about the primary defense against CSRF.\n\nThe options are:\nA) Input validation on all form fields\nB) Using HTTPS for all requests\nC) Anti-CSRF tokens (synchroniz",
+          "is_correct": true,
+          "elapsed_s": 36.1
+        },
+        {
+          "id": "SEC07",
+          "topic": "injection",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about parameterized SQL queries and SQL injection.\n\nThe question: \"Is a parameterized SQL query completely safe from ALL injection attacks?\"\n\nOptions:\nA) Yes, c",
+          "is_correct": true,
+          "elapsed_s": 36.2
+        },
+        {
+          "id": "SEC08",
+          "topic": "secure_sdlc",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about which teams should include functional access control testing in unit and integration tests.\n\nThe options are:\nA) Only the security team\nB) Only QA enginee",
+          "is_correct": true,
+          "elapsed_s": 48.7
+        },
+        {
+          "id": "SEC09",
+          "topic": "code_injection",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the primary risk of using `eval()` or `exec()` with user-supplied input in Python.\n\nLet's break down the options:\n\nA) Performance degradation due to inter",
+          "is_correct": true,
+          "elapsed_s": 22.4
+        },
+        {
+          "id": "SEC10",
+          "topic": "supply_chain",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a requirements.txt that pins 'requests==2.28.0' which has a known CVE.\n The question asks for the BEST remediation approach.\n\n Let's evaluate the options:\n\n A) Remove the pin and use late",
+          "is_correct": true,
+          "elapsed_s": 38.0
+        }
+      ]
+    },
+    {
+      "agent_id": "qa_agent",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.2,
+      "total": 10,
+      "correct": 9,
+      "wrong": 1,
+      "errors": 0,
+      "score_pct": 90.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "QA01",
+          "topic": "testing_principles",
+          "correct_answer": "C",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about a good testing practice that applies regardless of the software development lifecycle (SDLC) being used.\n\nLet's evaluate each option:\n\nA) Prompt attendanc",
+          "is_correct": false,
+          "elapsed_s": 61.5
+        },
+        {
+          "id": "QA02",
+          "topic": "test_automation",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about a potential benefit of using a test automation tool.\n\nThe options are:\n\nA) The quality of defects will improve\n\nB) Ease of access to statistics about test",
+          "is_correct": true,
+          "elapsed_s": 30.6
+        },
+        {
+          "id": "QA03",
+          "topic": "agile_testing",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "Okay, the user is asking about what defines 'done' for testing in an Agile development model. The options are A) Project management approval, B) Entry criteria, C) Exit criteria, D) The expected test ",
+          "is_correct": true,
+          "elapsed_s": 32.3
+        },
+        {
+          "id": "QA04",
+          "topic": "testing_fundamentals",
+          "correct_answer": "A",
+          "agent_answer": "A",
+          "agent_response": "We are given a multiple-choice question about the key difference between verification and validation in testing.\n\nThe options are:\n\nA) Verification checks if we built the product right; validation che",
+          "is_correct": true,
+          "elapsed_s": 33.5
+        },
+        {
+          "id": "QA05",
+          "topic": "test_techniques",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a question about the most appropriate testing technique for a login form with specific character limits for username (1-50 chars) and password (8-128 chars).\n\nLet's evaluate the options:\n",
+          "is_correct": true,
+          "elapsed_s": 29.8
+        },
+        {
+          "id": "QA06",
+          "topic": "bug_reporting",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "Okay, let me tackle this QA question. The scenario is a tester finding a bug but not being able to consistently reproduce it. The options are A through D, and I need to pick the correct one based on Q",
+          "is_correct": true,
+          "elapsed_s": 29.0
+        },
+        {
+          "id": "QA07",
+          "topic": "regression",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about regression testing.\n\nThe options are:\nA) Testing new features before they are fully implemented\nB) Testing to confirm that recent code changes have not ad",
+          "is_correct": true,
+          "elapsed_s": 23.9
+        },
+        {
+          "id": "QA08",
+          "topic": "defect_triage",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a question about severity classification for a specific bug: \"The company logo on the About page is 2px off-center\"\n\nThe options are:\nA) Critical -- brand integrity issue\nB) High -- visua",
+          "is_correct": true,
+          "elapsed_s": 36.3
+        },
+        {
+          "id": "QA09",
+          "topic": "shift_left",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about the benefit of early stakeholder feedback during testing.\n\nThe options are:\n\nA) It can be gathered early and used after the product goes to production\n\nB)",
+          "is_correct": true,
+          "elapsed_s": 40.4
+        },
+        {
+          "id": "QA10",
+          "topic": "testing_fundamentals",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the difference between black-box and white-box testing.\n\nThe options are:\n\nA) Black-box tests internal code structure; white-box tests external behavior\n\n",
+          "is_correct": true,
+          "elapsed_s": 34.5
+        }
+      ]
+    },
+    {
+      "agent_id": "setup_guide",
+      "model": "qwen3:30b-a3b",
+      "temperature": 0.45,
+      "total": 10,
+      "correct": 10,
+      "wrong": 0,
+      "errors": 0,
+      "score_pct": 100.0,
+      "passed": true,
+      "details": [
+        {
+          "id": "SG01",
+          "topic": "model_selection",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given the hardware detection results: gpu_name='NVIDIA RTX 3060', vram_mb=12288.\n According to the table in Step 3:\n   - 12 GB+ (which is 12,000 MB or more) -> recommended model: `ollama pull l",
+          "is_correct": true,
+          "elapsed_s": 25.8
+        },
+        {
+          "id": "SG02",
+          "topic": "ollama_setup",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about verifying Ollama installation.\n\nThe question: \"After a user installs Ollama, what command should they run to verify the installation succeeded?\"\n\nOptions:",
+          "is_correct": true,
+          "elapsed_s": 13.1
+        },
+        {
+          "id": "SG03",
+          "topic": "troubleshooting",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a user error: \"Error: model requires more system memory (8.0 GiB) than is available (6.0 GiB)\"\n The options are:\n A) Install more RAM\n B) Try a smaller model like phi3:mini that fits in t",
+          "is_correct": true,
+          "elapsed_s": 43.0
+        },
+        {
+          "id": "SG04",
+          "topic": "hardware_concepts",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about VRAM and its importance for running local AI models.\n\nThe options are:\n\nA) Virtual Random Access Memory -- it determines download speed\nB) Video Random Ac",
+          "is_correct": true,
+          "elapsed_s": 37.1
+        },
+        {
+          "id": "SG05",
+          "topic": "communication_style",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about how to frame a hardware detection result where `cpu_only=True` to the user.\n\nThe options are:\n\nA) 'Your computer cannot run AI models. You need a GPU.'\nB)",
+          "is_correct": true,
+          "elapsed_s": 32.6
+        },
+        {
+          "id": "SG06",
+          "topic": "ollama_basics",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about Ollama. The question is: \"What is Ollama?\"\n\nThe options are:\nA) A cloud-based AI service that requires a subscription\nB) A tool for running large language",
+          "is_correct": true,
+          "elapsed_s": 20.8
+        },
+        {
+          "id": "SG07",
+          "topic": "ollama_commands",
+          "correct_answer": "C",
+          "agent_answer": "C",
+          "agent_response": "We are given a multiple-choice question about which command pulls a model in Ollama.\n\nThe options are:\nA) ollama install llama3.1:8b\nB) ollama download llama3.1:8b\nC) ollama pull llama3.1:8b\nD) pip in",
+          "is_correct": true,
+          "elapsed_s": 22.3
+        },
+        {
+          "id": "SG08",
+          "topic": "privacy",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about whether data is sent to the cloud when using Cohort with Ollama.\n\nThe question: \"Is my data sent to the cloud when I use Cohort with Ollama?\"\n\nOptions:\nA)",
+          "is_correct": true,
+          "elapsed_s": 23.5
+        },
+        {
+          "id": "SG09",
+          "topic": "onboarding_ux",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about the best approach to introduce Cohort's agents to a new user.\n\nThe options are:\nA) List all agents with full capability descriptions in one message\nB) Int",
+          "is_correct": true,
+          "elapsed_s": 108.5
+        },
+        {
+          "id": "SG10",
+          "topic": "setup_security",
+          "correct_answer": "B",
+          "agent_answer": "B",
+          "agent_response": "We are given a multiple-choice question about a security caveat for running a specific curl command on Linux.\n\nThe command in question is: `curl -fsSL https://ollama.com/install.sh | sh`\n\nThe options ",
+          "is_correct": true,
+          "elapsed_s": 33.4
+        }
+      ]
+    }
+  ]
+}

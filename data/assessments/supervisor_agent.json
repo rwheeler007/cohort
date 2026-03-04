@@ -1,0 +1,1613 @@
+{
+  "agent_id": "supervisor_agent",
+  "source": "SRE & AI operations management (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "SUP001",
+      "question": "What are the 'four golden signals' of monitoring as defined by Google's SRE handbook?",
+      "choices": {
+        "A": "Uptime, requests per second, failure rate, queue depth",
+        "B": "Latency, traffic, errors, saturation",
+        "C": "CPU usage, memory usage, disk I/O, network I/O",
+        "D": "Availability, throughput, error rate, response time"
+      },
+      "answer": "B",
+      "explanation": "Google's SRE book defines the four golden signals as latency, traffic, errors, and saturation. These provide a comprehensive view of system health from the user's perspective.",
+      "topic": "golden_signals",
+      "topic_category": "monitoring",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP002",
+      "question": "An SLO states that 99.9% of requests must complete within 300ms measured over a 30-day rolling window. What is the maximum allowed downtime per month?",
+      "choices": {
+        "A": "Approximately 26.3 seconds",
+        "B": "Approximately 43.2 minutes",
+        "C": "Approximately 4.38 hours",
+        "D": "Approximately 8.76 hours"
+      },
+      "answer": "B",
+      "explanation": "99.9% availability over 30 days allows 0.1% downtime. 30 days x 24 hours x 60 minutes = 43,200 minutes. 0.1% of 43,200 = 43.2 minutes of allowed downtime.",
+      "topic": "slo_error_budget_calculation",
+      "topic_category": "sre",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP003",
+      "question": "Which quality metric measures the number of defects found in production relative to the total number of defects found across all testing phases?",
+      "choices": {
+        "A": "Defect density",
+        "B": "Mean time between failures",
+        "C": "Test coverage percentage",
+        "D": "Defect escape rate"
+      },
+      "answer": "D",
+      "explanation": "Defect escape rate measures the proportion of defects that 'escape' pre-production testing and are found in production. Defect density measures defects per unit of code size, not the ratio of production vs pre-production discovery.",
+      "topic": "defect_escape_rate",
+      "topic_category": "quality",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP004",
+      "question": "In incident management, what does MTTD stand for and why is it critical?",
+      "choices": {
+        "A": "Mean Time to Detect; it measures how quickly issues are discovered",
+        "B": "Mean Time to Diagnose; it measures root cause identification speed",
+        "C": "Maximum Threshold for Tolerable Downtime; it defines acceptable outage duration",
+        "D": "Mean Time to Deploy; it measures deployment velocity"
+      },
+      "answer": "A",
+      "explanation": "MTTD (Mean Time to Detect) measures the average time between when an incident begins and when it is detected. Reducing MTTD is critical because incidents cannot be resolved until they are first noticed.",
+      "topic": "mttd_definition",
+      "topic_category": "incident",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP005",
+      "question": "Which Prometheus metric type is best suited for tracking the total number of HTTP requests received by a service?",
+      "choices": {
+        "A": "Histogram",
+        "B": "Summary",
+        "C": "Counter",
+        "D": "Gauge"
+      },
+      "answer": "C",
+      "explanation": "A counter is a cumulative metric that only increases (or resets to zero on restart). Total HTTP requests is a monotonically increasing value, making counter the appropriate type. Gauges are for values that go up and down.",
+      "topic": "prometheus_metric_types",
+      "topic_category": "monitoring",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP006",
+      "question": "What is the primary purpose of a blameless postmortem in SRE practice?",
+      "choices": {
+        "A": "To identify the individual responsible for the outage and assign corrective training",
+        "B": "To calculate the financial impact of the incident for management reporting",
+        "C": "To document the incident timeline and identify systemic improvements without assigning personal blame",
+        "D": "To update the service's SLA based on recent performance data"
+      },
+      "answer": "C",
+      "explanation": "Blameless postmortems focus on systemic causes and process improvements rather than individual fault. This encourages honest reporting and prevents the culture of hiding mistakes that leads to repeated failures.",
+      "topic": "blameless_postmortem",
+      "topic_category": "sre",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP007",
+      "question": "In the context of distributed tracing, what does a 'span' represent?",
+      "choices": {
+        "A": "A single unit of work within a trace, representing one operation in one service",
+        "B": "The total end-to-end latency of a user request",
+        "C": "The network hop between two microservices",
+        "D": "A collection of related log entries from a single service"
+      },
+      "answer": "A",
+      "explanation": "In distributed tracing (e.g., OpenTelemetry), a span represents a single named, timed operation. Spans have parent-child relationships forming a trace tree. A trace is the collection of all spans for an end-to-end request.",
+      "topic": "distributed_tracing_spans",
+      "topic_category": "monitoring",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP008",
+      "question": "What is 'toil' as defined in SRE practice?",
+      "choices": {
+        "A": "Any work that requires more than one person to complete",
+        "B": "Emergency incident response work performed outside business hours",
+        "C": "Manual, repetitive, automatable work that scales linearly with service growth and has no enduring value",
+        "D": "The overhead of maintaining internal documentation and runbooks"
+      },
+      "answer": "C",
+      "explanation": "Google SRE defines toil as work that is manual, repetitive, automatable, tactical, lacking enduring value, and scales linearly with service growth. SRE teams aim to keep toil below 50% of total work.",
+      "topic": "toil_definition",
+      "topic_category": "sre",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP009",
+      "question": "Which of the following best describes the Deming Cycle (PDCA)?",
+      "choices": {
+        "A": "Plan-Do-Check-Act: an iterative improvement methodology",
+        "B": "Prepare-Deploy-Configure-Activate: a release management process",
+        "C": "Plan-Design-Control-Assess: a framework for project management phases",
+        "D": "Prevent-Detect-Correct-Audit: a security control framework"
+      },
+      "answer": "A",
+      "explanation": "The Deming Cycle (PDCA) stands for Plan-Do-Check-Act. It is a continuous improvement methodology where you plan a change, implement it, verify the results, and then standardize or adjust based on findings.",
+      "topic": "pdca_cycle",
+      "topic_category": "process",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP010",
+      "question": "What is the primary difference between an SLA and an SLO?",
+      "choices": {
+        "A": "SLAs apply to individual services; SLOs apply to the entire system",
+        "B": "SLAs measure availability; SLOs measure latency",
+        "C": "SLAs are internal targets; SLOs are external contractual commitments",
+        "D": "SLAs are contractual agreements with customers that include consequences for breach; SLOs are internal reliability targets"
+      },
+      "answer": "D",
+      "explanation": "An SLA (Service Level Agreement) is a contractual commitment to customers with financial or legal consequences for violations. An SLO (Service Level Objective) is an internal target, typically set more stringently than the SLA to provide a safety margin.",
+      "topic": "sla_vs_slo",
+      "topic_category": "sre",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP011",
+      "question": "In a risk matrix, what two dimensions are typically used to classify risks?",
+      "choices": {
+        "A": "Detection difficulty and recovery time",
+        "B": "Frequency and duration",
+        "C": "Probability (likelihood) and impact (severity)",
+        "D": "Cost and schedule impact"
+      },
+      "answer": "C",
+      "explanation": "A standard risk matrix plots risks along two axes: the probability/likelihood of occurrence and the impact/severity if it occurs. The product of these values determines the risk priority level.",
+      "topic": "risk_matrix_dimensions",
+      "topic_category": "risk",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP012",
+      "question": "What is the 'definition of done' (DoD) in a quality assurance context?",
+      "choices": {
+        "A": "A shared checklist of criteria that must be satisfied before work is considered complete, including testing, review, and documentation requirements",
+        "B": "The final approval by a project manager after user acceptance testing",
+        "C": "The deployment of code to the production environment",
+        "D": "The point at which a developer marks a task as complete in the issue tracker"
+      },
+      "answer": "A",
+      "explanation": "The definition of done is a shared, explicit set of criteria that all work items must satisfy before being considered complete. It typically includes code review, testing, documentation, and deployment readiness requirements.",
+      "topic": "definition_of_done",
+      "topic_category": "quality",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP013",
+      "question": "Which principle of chaos engineering states that you should start experiments in production?",
+      "choices": {
+        "A": "Vary real-world events to simulate failures",
+        "B": "Build a hypothesis around steady state behavior",
+        "C": "Run experiments in production to ensure results reflect real-world conditions",
+        "D": "Minimize blast radius to reduce risk"
+      },
+      "answer": "C",
+      "explanation": "Chaos engineering principles advocate running experiments in production because staging environments rarely replicate real traffic patterns, data distributions, and infrastructure behavior. Results from non-production environments may not be representative.",
+      "topic": "chaos_in_production",
+      "topic_category": "chaos",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP014",
+      "question": "Little's Law states that L = lambda * W. In a queuing system, what do these variables represent?",
+      "choices": {
+        "A": "L = latency, lambda = load factor, W = wait time",
+        "B": "L = log volume, lambda = loss rate, W = window size",
+        "C": "L = average number of items in the system, lambda = average arrival rate, W = average time an item spends in the system",
+        "D": "L = load average, lambda = throughput limit, W = work capacity"
+      },
+      "answer": "C",
+      "explanation": "Little's Law (L = lambda * W) states that the average number of items in a stable system (L) equals the average arrival rate (lambda) multiplied by the average time each item spends in the system (W). It is fundamental to capacity planning.",
+      "topic": "littles_law",
+      "topic_category": "capacity",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP015",
+      "question": "What is SOC 2 Type II certification primarily concerned with?",
+      "choices": {
+        "A": "Certifying that software meets functional requirements specified in a contract",
+        "B": "Verifying that security controls are properly designed at a single point in time",
+        "C": "Evaluating the operating effectiveness of controls over a period of time (typically 6-12 months)",
+        "D": "Ensuring compliance with GDPR data protection regulations"
+      },
+      "answer": "C",
+      "explanation": "SOC 2 Type II evaluates whether controls are not only properly designed (Type I) but also operating effectively over a sustained period, typically 6-12 months. This provides stronger assurance than a point-in-time assessment.",
+      "topic": "soc2_type2",
+      "topic_category": "compliance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP016",
+      "question": "What does 'alert fatigue' refer to in monitoring systems?",
+      "choices": {
+        "A": "The performance overhead of running too many monitoring agents",
+        "B": "The degradation in operator response when they receive excessive non-actionable alerts, leading to missed critical incidents",
+        "C": "The cost of maintaining alerting infrastructure at scale",
+        "D": "The delay in alert delivery caused by network congestion"
+      },
+      "answer": "B",
+      "explanation": "Alert fatigue occurs when operators are overwhelmed by excessive, noisy, or non-actionable alerts. This desensitization leads to slower response times and missed critical alerts, effectively making the alerting system counterproductive.",
+      "topic": "alert_fatigue",
+      "topic_category": "monitoring",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP017",
+      "question": "In value stream mapping, what is 'lead time' versus 'cycle time'?",
+      "choices": {
+        "A": "Lead time is the deployment frequency; cycle time is the time between deployments",
+        "B": "Lead time is the time from request to delivery; cycle time is the time actively spent working on the item",
+        "C": "Lead time measures team velocity; cycle time measures individual developer productivity",
+        "D": "Lead time is the planning phase duration; cycle time is the testing phase duration"
+      },
+      "answer": "B",
+      "explanation": "Lead time measures the total elapsed time from when a request enters the system until it is delivered. Cycle time measures only the active working time. The difference reveals wait times and queuing delays.",
+      "topic": "lead_time_vs_cycle_time",
+      "topic_category": "process",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP018",
+      "question": "What is the recommended approach for measuring AI agent response quality?",
+      "choices": {
+        "A": "Rely exclusively on user satisfaction surveys collected weekly",
+        "B": "Measure only response latency, as faster responses correlate with higher quality",
+        "C": "Count the number of tokens generated per response as a proxy for thoroughness",
+        "D": "Use a combination of automated metrics (factual accuracy, relevance scoring, hallucination detection) and human evaluation samples"
+      },
+      "answer": "D",
+      "explanation": "AI agent quality requires multi-dimensional evaluation: automated metrics for scale (accuracy, relevance, hallucination rate) combined with periodic human evaluation for nuanced quality aspects that automated metrics cannot capture.",
+      "topic": "agent_quality_metrics",
+      "topic_category": "agent_performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP019",
+      "question": "Which severity level is typically assigned to an incident where a production system is completely unavailable to all users?",
+      "choices": {
+        "A": "SEV-2 (Significant impact)",
+        "B": "SEV-3 (Low impact)",
+        "C": "SEV-4 (Cosmetic/Minor)",
+        "D": "SEV-1 (Critical/Total outage)"
+      },
+      "answer": "D",
+      "explanation": "A complete production outage affecting all users is a SEV-1 (critical) incident. SEV-1 typically triggers immediate paging, an incident commander, and executive notification. SEV-2 is for degraded but functional systems.",
+      "topic": "severity_classification",
+      "topic_category": "incident",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP020",
+      "question": "What is the purpose of a runbook in SRE operations?",
+      "choices": {
+        "A": "A log of all past incidents and their resolutions",
+        "B": "A step-by-step guide for handling specific operational scenarios, enabling consistent and efficient incident response",
+        "C": "A high-level architecture document describing the system's design",
+        "D": "A capacity planning spreadsheet tracking resource utilization"
+      },
+      "answer": "B",
+      "explanation": "A runbook provides step-by-step procedures for common operational tasks and incident scenarios. It ensures consistent responses regardless of who is on-call, reduces MTTR, and codifies tribal knowledge into repeatable processes.",
+      "topic": "runbook_purpose",
+      "topic_category": "sre",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SUP021",
+      "question": "A service has an SLO of 99.95% availability over a 30-day window. After 15 days, 35% of the monthly error budget has been consumed. What action should the SRE team take?",
+      "choices": {
+        "A": "Immediately freeze all deployments until the error budget recovers",
+        "B": "Investigate the error budget burn rate trend; if accelerating, tighten change management controls and prioritize reliability work",
+        "C": "Continue normal operations since the burn rate is slightly above target but within acceptable bounds",
+        "D": "Lower the SLO to 99.9% to increase the available error budget"
+      },
+      "answer": "B",
+      "explanation": "At day 15, a linear budget consumption would be 50%. Being at 35% means the service is ahead of schedule. However, the trend matters: if burn rate is accelerating, proactive measures are warranted. Neither a full freeze nor lowering the SLO is appropriate at this stage.",
+      "topic": "error_budget_management",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP022",
+      "question": "When designing OpenTelemetry instrumentation for a microservices system, which propagation format should be used for maximum interoperability?",
+      "choices": {
+        "A": "W3C Trace Context (traceparent/tracestate headers)",
+        "B": "Jaeger's uber-trace-id header format",
+        "C": "Zipkin's B3 propagation headers",
+        "D": "AWS X-Ray trace ID format"
+      },
+      "answer": "A",
+      "explanation": "W3C Trace Context is the vendor-neutral standard supported by OpenTelemetry and all major cloud providers. While B3 and Jaeger formats are still common, W3C Trace Context provides maximum interoperability across heterogeneous systems.",
+      "topic": "otel_trace_propagation",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP023",
+      "question": "In FMEA (Failure Mode and Effects Analysis), how is the Risk Priority Number (RPN) calculated?",
+      "choices": {
+        "A": "Severity x (Occurrence + Detection)",
+        "B": "Severity x Occurrence x Detection",
+        "C": "(Severity x Occurrence) / Detection",
+        "D": "Severity + Occurrence + Detection"
+      },
+      "answer": "B",
+      "explanation": "RPN = Severity x Occurrence x Detection. Each factor is rated 1-10. Severity measures impact, Occurrence measures likelihood, and Detection measures how easily the failure is caught before reaching the user. Higher RPN indicates higher priority.",
+      "topic": "fmea_rpn_calculation",
+      "topic_category": "risk",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP024",
+      "question": "A team observes that their monitoring dashboard shows CPU utilization at 70% steady state. According to capacity planning best practices, what should this trigger?",
+      "choices": {
+        "A": "Switch to a burstable instance type that can temporarily exceed 100% CPU",
+        "B": "No action needed; 70% is well within normal operating range",
+        "C": "Immediate vertical scaling to bring utilization below 50%",
+        "D": "Begin planning horizontal scaling capacity because headroom for traffic spikes is limited and queuing delays increase non-linearly above 70%"
+      },
+      "answer": "D",
+      "explanation": "Queuing theory shows that latency increases exponentially as utilization approaches 100%. At 70% steady state, there is insufficient headroom for traffic spikes. Best practice is to begin scaling planning at 60-70% sustained utilization.",
+      "topic": "utilization_scaling_threshold",
+      "topic_category": "capacity",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP025",
+      "question": "Which retrospective format is most effective when a team needs to identify specific behaviors to change rather than just listing positives and negatives?",
+      "choices": {
+        "A": "Five Whys",
+        "B": "Mad/Sad/Glad",
+        "C": "Timeline retrospective",
+        "D": "Start/Stop/Continue"
+      },
+      "answer": "D",
+      "explanation": "Start/Stop/Continue directly maps observations to actionable behavior changes: what to begin doing, what to cease doing, and what to keep doing. This action-oriented framing produces more concrete improvements than sentiment-based formats.",
+      "topic": "retrospective_formats",
+      "topic_category": "process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP026",
+      "question": "An AI agent's hallucination rate is measured at 3.2% using automated factual verification. Which approach best reduces this while maintaining response utility?",
+      "choices": {
+        "A": "Lower the temperature parameter to near zero for all responses",
+        "B": "Implement retrieval-augmented generation (RAG) with verified knowledge bases and add citation requirements to the prompt",
+        "C": "Increase the maximum token limit so the model has more space to self-correct",
+        "D": "Add a disclaimer to every response noting potential inaccuracies"
+      },
+      "answer": "B",
+      "explanation": "RAG grounds responses in verified external knowledge, directly addressing hallucination at the source. Citation requirements make verification possible. Simply lowering temperature reduces creativity without addressing factual grounding; disclaimers do not reduce the actual error rate.",
+      "topic": "hallucination_reduction",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP027",
+      "question": "In a burn rate alert, what does a '2x burn rate over 1 hour' indicate?",
+      "choices": {
+        "A": "CPU usage is twice the allocated capacity",
+        "B": "The error rate doubled in the last hour compared to the previous hour",
+        "C": "Two separate incidents occurred within the same one-hour period",
+        "D": "At the current consumption rate, the entire monthly error budget would be exhausted in half the SLO window period"
+      },
+      "answer": "D",
+      "explanation": "A 2x burn rate means the error budget is being consumed at twice the sustainable rate. If maintained, the 30-day budget would be exhausted in 15 days. Burn rate alerts combine error budget consumption speed with time windows to provide early warning.",
+      "topic": "burn_rate_alerts",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP028",
+      "question": "What distinguishes a Prometheus histogram from a summary metric type?",
+      "choices": {
+        "A": "Histograms track rate of change; summaries track absolute values",
+        "B": "Histograms use pre-defined buckets and are aggregatable across instances; summaries compute quantiles client-side and cannot be aggregated",
+        "C": "Histograms are for integer values; summaries are for floating-point values",
+        "D": "Histograms are push-based; summaries are pull-based"
+      },
+      "answer": "B",
+      "explanation": "Histograms place observations into configurable buckets, enabling server-side quantile calculation and aggregation across instances. Summaries compute streaming quantiles client-side, which are accurate per-instance but mathematically cannot be aggregated across instances.",
+      "topic": "histogram_vs_summary",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP029",
+      "question": "A quality gate requires that code coverage must not decrease with any merge. A pull request adds a new feature with 60% coverage, bringing the overall coverage from 82% to 81.5%. What should happen?",
+      "choices": {
+        "A": "Allow the merge because 81.5% is still high overall coverage",
+        "B": "Allow the merge but create a follow-up ticket to add tests later",
+        "C": "Override the gate since the feature has business priority",
+        "D": "Block the merge and require additional tests until overall coverage returns to 82% or higher"
+      },
+      "answer": "D",
+      "explanation": "If the quality gate specifies that coverage must not decrease, the merge should be blocked. Quality gates are only effective if enforced consistently. Allowing exceptions undermines the gate and leads to incremental coverage erosion.",
+      "topic": "quality_gate_enforcement",
+      "topic_category": "quality",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP030",
+      "question": "When establishing incident severity levels, which factor most clearly distinguishes a SEV-2 from a SEV-3?",
+      "choices": {
+        "A": "Whether the issue was detected by monitoring or reported by a customer",
+        "B": "The scope of user impact: SEV-2 involves significant degradation for many users, SEV-3 involves limited impact or workarounds available",
+        "C": "The number of engineers required to resolve the incident",
+        "D": "The time of day the incident occurs (business hours vs off-hours)"
+      },
+      "answer": "B",
+      "explanation": "Severity levels are primarily determined by user impact scope and availability of workarounds. SEV-2 indicates significant degradation affecting many users; SEV-3 indicates limited impact with workarounds available. Other factors like detection method or time of day do not change severity.",
+      "topic": "severity_level_distinction",
+      "topic_category": "incident",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP031",
+      "question": "In chaos engineering, what is a 'steady state hypothesis'?",
+      "choices": {
+        "A": "A measurable definition of normal system behavior that you expect to remain true even when faults are injected",
+        "B": "A prediction of the exact failure mode that will occur during an experiment",
+        "C": "The requirement that all chaos experiments must be run during periods of low traffic",
+        "D": "The assumption that a system will always return to its original state after a failure"
+      },
+      "answer": "A",
+      "explanation": "The steady state hypothesis defines measurable indicators of normal system behavior (e.g., throughput within 5% of baseline, error rate below 0.1%). The chaos experiment tests whether these indicators remain within bounds during fault injection.",
+      "topic": "steady_state_hypothesis",
+      "topic_category": "chaos",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP032",
+      "question": "Which log aggregation pattern is most appropriate for a high-throughput microservices system generating 50,000 events per second?",
+      "choices": {
+        "A": "Each service writes to local files, which are collected daily via batch processing",
+        "B": "Agents on each node forward to a message broker (e.g., Kafka), which feeds into an indexing pipeline (e.g., Elasticsearch)",
+        "C": "Services push logs directly to a REST API endpoint on the aggregation server",
+        "D": "Direct writes from each service to a centralized relational database"
+      },
+      "answer": "B",
+      "explanation": "A broker-based pipeline (agent -> Kafka -> indexer) provides buffering, backpressure handling, and decoupling between producers and consumers. Direct database writes cannot sustain 50K events/sec, batch processing adds unacceptable delay, and direct REST APIs create tight coupling.",
+      "topic": "log_aggregation_architecture",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP033",
+      "question": "ISO 27001 requires organizations to maintain a 'Statement of Applicability' (SoA). What does this document contain?",
+      "choices": {
+        "A": "A list of all employees who have completed security awareness training",
+        "B": "The organization's incident response plan and escalation procedures",
+        "C": "A mapping of all applicable controls from Annex A, with justification for inclusion or exclusion of each control",
+        "D": "A risk register with all identified threats and vulnerabilities"
+      },
+      "answer": "C",
+      "explanation": "The Statement of Applicability (SoA) lists all Annex A controls and documents which are applicable to the organization, with justification for inclusion or exclusion. It serves as the bridge between the risk assessment and the control implementation.",
+      "topic": "iso27001_soa",
+      "topic_category": "compliance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP034",
+      "question": "When measuring AI agent latency budgets, why is p99 latency more important than average (p50) latency for SLO definition?",
+      "choices": {
+        "A": "Because average latency includes outliers that skew the measurement",
+        "B": "Because p99 is easier to calculate and requires less data",
+        "C": "Because p99 captures the experience of tail-end users who encounter the worst performance, which disproportionately affects user trust and satisfaction",
+        "D": "Because p99 is always exactly twice the p50 value"
+      },
+      "answer": "C",
+      "explanation": "P99 latency represents the experience of the worst 1% of requests. For AI agents, slow responses at the tail create poor user experience and erode trust. Averages can mask severe tail latency issues where 1% of users wait 10x longer than the median.",
+      "topic": "agent_latency_budgets",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP035",
+      "question": "In the 5 Whys root cause analysis technique, what is the most common pitfall that leads to ineffective analysis?",
+      "choices": {
+        "A": "Conducting the analysis more than 48 hours after the incident",
+        "B": "Involving too many stakeholders in the analysis",
+        "C": "Stopping at a human error rather than continuing to the systemic cause that allowed the human error to have impact",
+        "D": "Asking more than exactly five questions"
+      },
+      "answer": "C",
+      "explanation": "The most common 5 Whys pitfall is stopping at 'someone made a mistake' rather than asking why the system allowed that mistake to propagate. Effective analysis continues until systemic causes are found: missing automation, inadequate guardrails, or flawed processes.",
+      "topic": "five_whys_pitfalls",
+      "topic_category": "incident",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP036",
+      "question": "A service uses circuit breaker pattern with a 50% error threshold. After the circuit opens, what is the recommended approach for attempting recovery?",
+      "choices": {
+        "A": "Gradually increase the error threshold until the circuit closes automatically",
+        "B": "Wait a fixed timeout, then enter a half-open state that allows a limited number of probe requests to test recovery",
+        "C": "Immediately close the circuit and resume full traffic",
+        "D": "Keep the circuit open permanently until a human manually resets it"
+      },
+      "answer": "B",
+      "explanation": "The half-open state allows a controlled number of requests through after a timeout period. If these succeed, the circuit closes and resumes normal operation. If they fail, the circuit returns to open state. This balances automatic recovery with protection against cascading failures.",
+      "topic": "circuit_breaker_recovery",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP037",
+      "question": "What is the difference between corrective actions and preventive actions in incident management?",
+      "choices": {
+        "A": "Corrective actions are mandatory; preventive actions are optional",
+        "B": "Corrective actions are technical fixes; preventive actions are process changes",
+        "C": "Corrective actions are taken during the incident; preventive actions are taken after",
+        "D": "Corrective actions address the specific incident's root cause; preventive actions address systemic weaknesses to prevent similar future incidents"
+      },
+      "answer": "D",
+      "explanation": "Corrective actions fix the specific root cause of the incident that occurred (e.g., patching the exact vulnerability). Preventive actions address broader systemic issues to prevent entire classes of similar incidents (e.g., implementing automated vulnerability scanning).",
+      "topic": "corrective_vs_preventive",
+      "topic_category": "incident",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP038",
+      "question": "When implementing A/B testing for AI agents, which metric is most critical for determining statistical significance?",
+      "choices": {
+        "A": "The deployment duration of each variant",
+        "B": "Total number of responses generated by each variant",
+        "C": "The confidence interval of the primary evaluation metric given the sample size and observed effect size",
+        "D": "The number of unique users who interacted with each variant"
+      },
+      "answer": "C",
+      "explanation": "Statistical significance depends on the confidence interval of the primary metric, which is determined by sample size, effect size, and variance. Without proper power analysis, A/B tests may declare winners based on noise rather than real differences in agent quality.",
+      "topic": "agent_ab_testing",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP039",
+      "question": "What is the key advantage of structured logging (e.g., JSON-formatted logs) over unstructured text logs?",
+      "choices": {
+        "A": "Structured logs are automatically encrypted for compliance",
+        "B": "Structured logs are human-readable and do not require tooling to interpret",
+        "C": "Structured logs are smaller in size and use less storage",
+        "D": "Structured logs can be parsed, filtered, and aggregated programmatically without fragile regex patterns"
+      },
+      "answer": "D",
+      "explanation": "Structured logs enable reliable machine parsing, field-level filtering, and aggregation. Unstructured text logs require fragile regex patterns that break when log formats change. Structured logs may be larger per entry but dramatically reduce query and analysis costs.",
+      "topic": "structured_logging",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP040",
+      "question": "In demand forecasting for capacity planning, which approach accounts for both trend and seasonality in request volume?",
+      "choices": {
+        "A": "Exponential smoothing with seasonal decomposition (e.g., Holt-Winters method)",
+        "B": "Linear regression",
+        "C": "Last-period-same-as-this-period naive forecasting",
+        "D": "Simple moving average"
+      },
+      "answer": "A",
+      "explanation": "Holt-Winters (triple exponential smoothing) models level, trend, and seasonal components simultaneously. Simple moving averages and linear regression do not capture seasonality. Naive forecasting fails to account for growth trends.",
+      "topic": "demand_forecasting",
+      "topic_category": "capacity",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP041",
+      "question": "What is the 'blast radius' concept in chaos engineering and why is it important?",
+      "choices": {
+        "A": "The time window during which a chaos experiment is active",
+        "B": "The scope of potential impact from a chaos experiment, which should be minimized initially and gradually expanded as confidence grows",
+        "C": "The number of team members required to monitor a chaos experiment",
+        "D": "The total amount of data that could be lost during a failure experiment"
+      },
+      "answer": "B",
+      "explanation": "Blast radius refers to the scope of potential impact from a chaos experiment. Starting with a small blast radius (e.g., a single instance or a percentage of traffic) limits risk. As confidence in system resilience grows, experiments can target larger scopes.",
+      "topic": "blast_radius_control",
+      "topic_category": "chaos",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP042",
+      "question": "A peer review process has a defect detection effectiveness of 60%. If the code also goes through automated static analysis that catches 30% of remaining defects, what is the combined escape rate?",
+      "choices": {
+        "A": "28%",
+        "B": "40%",
+        "C": "10%",
+        "D": "70%"
+      },
+      "answer": "A",
+      "explanation": "Peer review catches 60%, leaving 40% of defects. Automated analysis catches 30% of that remaining 40%, which is 12%. Total caught: 60% + 12% = 72%. Escape rate = 100% - 72% = 28%. Sequential quality gates have multiplicative effectiveness on remaining defects.",
+      "topic": "combined_defect_detection",
+      "topic_category": "quality",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP043",
+      "question": "What is the Incident Command System (ICS) role of an 'Incident Commander' in SRE practice?",
+      "choices": {
+        "A": "The most senior engineer available who personally debugs and fixes the issue",
+        "B": "The person responsible for coordinating the response, managing communication, and making decisions about resource allocation during an incident",
+        "C": "The engineering manager who approves all production changes during the incident",
+        "D": "The on-call engineer who first detected the alert"
+      },
+      "answer": "B",
+      "explanation": "The Incident Commander coordinates the response but does not necessarily perform technical debugging. Their role is communication management, resource coordination, decision-making on response strategy, and ensuring stakeholders are informed. This separation allows technical responders to focus on resolution.",
+      "topic": "incident_commander_role",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP044",
+      "question": "When designing alert routing rules, which strategy best ensures critical alerts reach the right responders?",
+      "choices": {
+        "A": "Send all alerts directly to engineering managers for triage and delegation",
+        "B": "Route alerts based on service ownership, severity, and time-of-day, with escalation paths for unacknowledged alerts",
+        "C": "Only alert on SEV-1 incidents to minimize noise",
+        "D": "Send all alerts to a single shared channel so nothing is missed"
+      },
+      "answer": "B",
+      "explanation": "Effective alert routing combines service ownership (the team that knows the system), severity-based channels (pager for critical, ticket for low), time-of-day awareness (primary vs secondary on-call), and automatic escalation for unacknowledged alerts.",
+      "topic": "alert_routing_strategy",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP045",
+      "question": "In compliance automation, what is 'continuous compliance' and how does it differ from periodic audits?",
+      "choices": {
+        "A": "Continuous compliance uses real-time automated checks against control requirements, providing instant visibility into compliance posture rather than point-in-time assessments",
+        "B": "Continuous compliance means having a compliance team available 24/7",
+        "C": "Continuous compliance replaces all audit requirements with self-certification",
+        "D": "Continuous compliance is a marketing term for more frequent manual audits"
+      },
+      "answer": "A",
+      "explanation": "Continuous compliance automates control testing (e.g., checking that encryption is enabled, access controls are configured correctly) in real-time or near-real-time. This provides constant visibility instead of the snapshot view that periodic audits offer, enabling faster detection and remediation of drift.",
+      "topic": "continuous_compliance",
+      "topic_category": "compliance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP046",
+      "question": "An AI agent shows consistent 95% accuracy on benchmark tests but receives frequent user complaints about response quality. What is the most likely explanation?",
+      "choices": {
+        "A": "Users are not properly trained to use the agent",
+        "B": "The agent performs well but users have unrealistic expectations",
+        "C": "The benchmark does not accurately represent the distribution and complexity of real-world queries the agent handles in production",
+        "D": "95% accuracy is insufficient for any production AI system"
+      },
+      "answer": "C",
+      "explanation": "Benchmark-production divergence is a common issue. Benchmarks often test clean, well-formed queries from a limited domain. Production traffic includes ambiguous queries, edge cases, novel topics, and adversarial inputs that benchmarks do not cover. The benchmark must reflect real query distributions.",
+      "topic": "benchmark_production_gap",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP047",
+      "question": "What is the recommended SRE approach when a service consistently meets its SLOs with significant budget remaining?",
+      "choices": {
+        "A": "Tighten the SLO to match actual performance",
+        "B": "Reallocate the SRE team to other services",
+        "C": "Use the remaining error budget to fund higher-velocity feature development and controlled experimentation",
+        "D": "Reduce monitoring coverage since the service is performing well"
+      },
+      "answer": "C",
+      "explanation": "Error budget surplus indicates the service is more reliable than required. This budget can fund faster feature releases, canary deployments, and experimentation. The SLO should reflect user needs, not current performance. Tightening SLOs to match performance eliminates the margin for innovation.",
+      "topic": "error_budget_surplus_strategy",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP048",
+      "question": "In the MUDA framework (lean waste identification), which type of waste does 'waiting' represent in a software delivery pipeline?",
+      "choices": {
+        "A": "Redundant testing of features that have already been verified",
+        "B": "Context switching between multiple concurrent projects",
+        "C": "Time spent in queues between pipeline stages, such as waiting for code review, approval, or environment availability",
+        "D": "Code that is written but never deployed"
+      },
+      "answer": "C",
+      "explanation": "In MUDA, 'waiting' waste refers to idle time when work items are blocked in queues between stages. In software delivery, this includes waiting for code review, waiting for CI/CD resources, waiting for approvals, and waiting for test environments. It directly increases lead time.",
+      "topic": "muda_waiting_waste",
+      "topic_category": "process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP049",
+      "question": "When implementing graceful degradation, which strategy best maintains core functionality during a dependency failure?",
+      "choices": {
+        "A": "Return cached or default responses for non-critical features while maintaining full functionality for critical paths",
+        "B": "Redirect all traffic to a static maintenance page",
+        "C": "Retry failed dependency calls indefinitely until they succeed",
+        "D": "Return a 503 error for all requests until the dependency recovers"
+      },
+      "answer": "A",
+      "explanation": "Graceful degradation prioritizes core functionality by serving cached or default values for non-critical features when dependencies fail. This preserves user experience for essential operations while transparently reducing capabilities for secondary features. Blanket errors or infinite retries are not graceful.",
+      "topic": "graceful_degradation",
+      "topic_category": "chaos",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP050",
+      "question": "What is 'control effectiveness' in the context of compliance frameworks, and how is it typically measured?",
+      "choices": {
+        "A": "The speed at which a control can be implemented",
+        "B": "The percentage of time a control operates correctly and as designed, verified through testing and evidence collection",
+        "C": "The cost of implementing a control relative to the risk it mitigates",
+        "D": "The number of audit findings related to a specific control"
+      },
+      "answer": "B",
+      "explanation": "Control effectiveness measures how reliably a control operates as designed over time. It is verified through testing (e.g., sampling access reviews, checking encryption status) and evidence collection. A control may be well-designed (Type I) but ineffective in practice if not consistently applied (Type II).",
+      "topic": "control_effectiveness",
+      "topic_category": "compliance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP051",
+      "question": "When setting reliability targets for a new service, what information is most important for choosing the right SLO?",
+      "choices": {
+        "A": "The maximum reliability the engineering team believes they can achieve",
+        "B": "The SLOs of competing products in the market",
+        "C": "Industry standard SLOs (typically 99.9%)",
+        "D": "User expectations, business impact of downtime, and the cost of achieving each reliability tier"
+      },
+      "answer": "D",
+      "explanation": "SLOs should be based on user needs, business impact, and the marginal cost of each additional nine of reliability. Each additional nine is approximately 10x more expensive. Setting SLOs based on aspirational targets or industry defaults ignores the specific economics and user requirements of the service.",
+      "topic": "slo_selection_criteria",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP052",
+      "question": "A dashboard shows a sudden spike in p99 latency but p50 remains stable. What does this pattern most likely indicate?",
+      "choices": {
+        "A": "The monitoring system has a measurement error",
+        "B": "A subset of requests is hitting a slow path (e.g., cache miss, specific query pattern, or resource contention) while the majority of requests are unaffected",
+        "C": "A global performance degradation affecting all requests equally",
+        "D": "Network-level issues affecting all traffic"
+      },
+      "answer": "B",
+      "explanation": "When p99 spikes but p50 stays stable, only the tail of the distribution is affected. This indicates a bimodal pattern where most requests follow the fast path but a subset encounters a slow path. Common causes: cache misses, specific query patterns hitting unoptimized code, or lock contention.",
+      "topic": "latency_distribution_analysis",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP053",
+      "question": "In a kaizen approach, what distinguishes a 'kaizen event' (rapid improvement workshop) from continuous incremental improvement?",
+      "choices": {
+        "A": "A kaizen event is a focused, time-boxed effort (typically 3-5 days) to make significant improvements to a specific process, while continuous improvement makes small daily changes",
+        "B": "Kaizen events require external consultants; continuous improvement does not",
+        "C": "Kaizen events focus on technology; continuous improvement focuses on people",
+        "D": "Kaizen events are management-led; continuous improvement is team-led"
+      },
+      "answer": "A",
+      "explanation": "A kaizen event (or kaizen blitz) concentrates a cross-functional team on a specific process for 3-5 days to achieve substantial improvement. This complements daily continuous improvement (incremental, small changes) by addressing systemic issues that require focused attention.",
+      "topic": "kaizen_event_vs_continuous",
+      "topic_category": "process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP054",
+      "question": "When designing audit trails for an AI system, which elements are essential for regulatory compliance?",
+      "choices": {
+        "A": "Only error logs and exception traces",
+        "B": "Only the AI model's output for each request",
+        "C": "Input, output, model version, timestamp, user identity, and the decision rationale or confidence score",
+        "D": "Aggregate statistics about model performance per day"
+      },
+      "answer": "C",
+      "explanation": "Regulatory compliance for AI requires traceability: who requested what, what the model version was, what input it received, what output it produced, and with what confidence. This enables investigation of specific decisions and demonstrates that the system operates within approved parameters.",
+      "topic": "ai_audit_trail_design",
+      "topic_category": "compliance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP055",
+      "question": "What is the primary risk of using 'mean time to resolve' (MTTR) as the sole incident management KPI?",
+      "choices": {
+        "A": "It incentivizes quick fixes and workarounds over thorough root cause resolution, and can be gamed by downgrading severity or splitting incidents",
+        "B": "MTTR does not account for the number of incidents",
+        "C": "MTTR is only meaningful for SEV-1 incidents",
+        "D": "MTTR is too difficult to measure accurately"
+      },
+      "answer": "A",
+      "explanation": "MTTR as the sole metric incentivizes resolving the symptom quickly rather than addressing root causes. Teams may apply quick workarounds, downgrade severity to move incidents off the MTTR clock, or split a single incident into multiple lower-severity records. A balanced scorecard (MTTR + recurrence rate + customer impact) is better.",
+      "topic": "mttr_limitations",
+      "topic_category": "incident",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP056",
+      "question": "In capacity planning, what is the 'headroom' approach and why is it preferred over 'just-in-time' scaling?",
+      "choices": {
+        "A": "Headroom refers to the unused memory on each server instance",
+        "B": "Headroom maintains a configurable buffer (typically 30-50% above peak projected demand) to absorb traffic spikes and provide time for scaling operations, avoiding the latency of reactive auto-scaling",
+        "C": "Headroom means using the cheapest instances available and scaling horizontally without limit",
+        "D": "Headroom is a marketing term for over-provisioning by 50%"
+      },
+      "answer": "B",
+      "explanation": "The headroom approach pre-provisions capacity with a buffer above projected peak demand. This absorbs sudden spikes that auto-scaling cannot handle due to provisioning latency (minutes for new instances) and prevents cascading failures during traffic surges.",
+      "topic": "capacity_headroom",
+      "topic_category": "capacity",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP057",
+      "question": "Which OpenTelemetry signal type is best suited for tracking the number of active connections to a database pool?",
+      "choices": {
+        "A": "A histogram metric",
+        "B": "Log events with connection count fields",
+        "C": "An UpDown counter metric",
+        "D": "Traces with span attributes"
+      },
+      "answer": "C",
+      "explanation": "An UpDown counter (or gauge in Prometheus terms) tracks values that increase and decrease. Active connections fluctuate as connections are acquired and released. A regular counter only increases; histograms measure distributions of values; traces track request flows.",
+      "topic": "otel_metric_selection",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP058",
+      "question": "What distinguishes a GameDay from a standard chaos engineering experiment?",
+      "choices": {
+        "A": "GameDays inject real failures while chaos experiments use simulation",
+        "B": "GameDays require executive approval; chaos experiments do not",
+        "C": "A GameDay is a planned, team-wide exercise that practices incident response procedures alongside chaos experiments, while standard chaos experiments focus on automated resilience verification",
+        "D": "GameDays are only conducted annually; chaos experiments run continuously"
+      },
+      "answer": "C",
+      "explanation": "GameDays are coordinated exercises that combine chaos experiments with practiced incident response. They test both technical resilience and human response (runbooks, communication, escalation). Standard chaos experiments typically run automated and focus on system behavior without the human response dimension.",
+      "topic": "gameday_vs_chaos",
+      "topic_category": "chaos",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP059",
+      "question": "In agent degradation detection, what pattern indicates a gradual model drift rather than an acute failure?",
+      "choices": {
+        "A": "A steady, week-over-week decline in response quality scores with no corresponding change in latency or error rate",
+        "B": "Intermittent timeout errors during peak traffic hours",
+        "C": "A complete cessation of responses from the agent",
+        "D": "A sudden spike in error rate from 1% to 50%"
+      },
+      "answer": "A",
+      "explanation": "Model drift manifests as a gradual decline in output quality without hard errors. The agent still responds quickly and without errors, but quality scores (relevance, accuracy, user satisfaction) trend downward. This is distinct from infrastructure failures which cause latency or error rate changes.",
+      "topic": "agent_drift_detection",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP060",
+      "question": "What is the primary benefit of implementing continuous inspection (e.g., SonarQube) in a CI/CD pipeline?",
+      "choices": {
+        "A": "It replaces the need for manual code review entirely",
+        "B": "It reduces build times by parallelizing test execution",
+        "C": "It catches code quality regressions automatically on every commit, preventing technical debt accumulation before it reaches production",
+        "D": "It automatically fixes code quality issues without developer intervention"
+      },
+      "answer": "C",
+      "explanation": "Continuous inspection runs static analysis on every commit, providing immediate feedback on code quality. It catches issues (complexity, duplication, vulnerabilities) before they accumulate. It complements but does not replace manual review, which catches design and logic issues that static tools miss.",
+      "topic": "continuous_inspection",
+      "topic_category": "quality",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP061",
+      "question": "When implementing on-call rotations, what is the recommended maximum duration for a single on-call shift to prevent burnout?",
+      "choices": {
+        "A": "One week, with at least one week off before the next rotation, and a maximum of 2 pages per shift on average",
+        "B": "The duration does not matter as long as compensation is adequate",
+        "C": "48 hours, with mandatory rest between shifts",
+        "D": "One month, to minimize handoff overhead"
+      },
+      "answer": "A",
+      "explanation": "Google SRE recommends one-week on-call shifts with at most 2 incidents per shift on average. Longer rotations cause fatigue; shorter ones increase handoff costs. The rest period ensures recovery. If pages exceed 2/shift, the service needs reliability investment, not longer rotations.",
+      "topic": "oncall_best_practices",
+      "topic_category": "sre",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP062",
+      "question": "In a risk appetite framework, what distinguishes 'risk appetite' from 'risk tolerance'?",
+      "choices": {
+        "A": "Risk appetite is the broad level of risk an organization is willing to accept to achieve its objectives; risk tolerance is the specific, measurable deviation from a target that is acceptable",
+        "B": "Risk appetite is set by the board; risk tolerance is set by individual teams",
+        "C": "They are identical concepts used interchangeably",
+        "D": "Risk appetite applies to financial risks; risk tolerance applies to operational risks"
+      },
+      "answer": "A",
+      "explanation": "Risk appetite is a strategic, qualitative statement about how much risk the organization wants to take (e.g., 'we accept moderate operational risk for faster innovation'). Risk tolerance is the specific, quantifiable boundary (e.g., 'maximum 4 hours downtime per quarter'). Appetite guides strategy; tolerance sets operational limits.",
+      "topic": "risk_appetite_vs_tolerance",
+      "topic_category": "risk",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP063",
+      "question": "What is the bottleneck identification approach described by the Theory of Constraints?",
+      "choices": {
+        "A": "Identify the single most constrained resource, maximize its throughput, and subordinate all other decisions to that constraint",
+        "B": "Add capacity to the cheapest resource first",
+        "C": "Remove the slowest stage from the pipeline entirely",
+        "D": "Optimize all stages of the pipeline simultaneously for maximum throughput"
+      },
+      "answer": "A",
+      "explanation": "The Theory of Constraints states that system throughput is limited by its tightest constraint. The five focusing steps are: identify the constraint, exploit it (maximize its output), subordinate everything else to it, elevate it (add capacity), and repeat when the constraint shifts.",
+      "topic": "theory_of_constraints",
+      "topic_category": "capacity",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP064",
+      "question": "When measuring training effectiveness for AI agents, which approach provides the strongest evidence that training improved real-world performance?",
+      "choices": {
+        "A": "Comparing benchmark scores before and after training",
+        "B": "Measuring the loss function improvement during training",
+        "C": "Running a controlled experiment where a subset of production traffic is served by the retrained agent while the rest uses the baseline, measuring business-relevant metrics over a statistically significant period",
+        "D": "Surveying developers about their confidence in the retrained model"
+      },
+      "answer": "C",
+      "explanation": "A controlled production experiment (shadow mode or canary) with real traffic provides the strongest evidence. Benchmark improvements may not transfer to production. Training loss improvement indicates fitting, not real-world effectiveness. Developer confidence is subjective.",
+      "topic": "training_effectiveness_measurement",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP065",
+      "question": "In the Fishbone (Ishikawa) diagram for root cause analysis, what are the traditional 6M categories?",
+      "choices": {
+        "A": "Money, Management, Marketing, Manufacturing, Maintenance, Monitoring",
+        "B": "Mission, Motivation, Methodology, Mechanics, Milestones, Metrics",
+        "C": "Microservices, Middleware, Memory, Monitoring, Messaging, Metrics",
+        "D": "Methods, Machines, Materials, Manpower, Measurement, Mother Nature (Environment)"
+      },
+      "answer": "D",
+      "explanation": "The 6M categories in an Ishikawa diagram are: Methods (processes), Machines (equipment/technology), Materials (inputs/data), Manpower (people/skills), Measurement (metrics/instrumentation), and Mother Nature (environment/external factors). These provide systematic coverage of potential root cause categories.",
+      "topic": "fishbone_6m_categories",
+      "topic_category": "incident",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP066",
+      "question": "What is the recommended approach for dashboard design to avoid cognitive overload for on-call engineers?",
+      "choices": {
+        "A": "Use a layered approach: a high-level overview dashboard with golden signals, drill-down dashboards for each service, and investigation dashboards with detailed metrics",
+        "B": "Display all available metrics on a single comprehensive dashboard",
+        "C": "Provide raw Prometheus query results without visualization",
+        "D": "Show only the single most important metric per service"
+      },
+      "answer": "A",
+      "explanation": "Layered dashboards follow the information-seeking mantra: overview first, zoom and filter, then details on demand. The top-level shows golden signals for quick triage. Service-level dashboards allow focused investigation. Detailed dashboards provide debugging data. This prevents cognitive overload while maintaining depth.",
+      "topic": "dashboard_design_layers",
+      "topic_category": "monitoring",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP067",
+      "question": "What is the failure injection pattern known as 'latency injection' and when is it most valuable?",
+      "choices": {
+        "A": "Introducing random errors into API responses",
+        "B": "Reducing the network bandwidth to simulate a congested network",
+        "C": "Overloading the CPU to simulate resource exhaustion",
+        "D": "Deliberately delaying responses from a dependency to verify that timeout settings, circuit breakers, and fallback mechanisms behave correctly under slow conditions"
+      },
+      "answer": "D",
+      "explanation": "Latency injection adds artificial delay to dependency responses to test how the system handles slowness. It verifies that timeouts are configured correctly, circuit breakers trigger at appropriate thresholds, and fallback mechanisms activate. Slow dependencies are often more dangerous than failed ones because they consume resources.",
+      "topic": "latency_injection",
+      "topic_category": "chaos",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP068",
+      "question": "In SOC 2, what are the five Trust Services Criteria categories?",
+      "choices": {
+        "A": "Prevention, Detection, Response, Recovery, Governance",
+        "B": "Security, Availability, Processing Integrity, Confidentiality, Privacy",
+        "C": "Confidentiality, Integrity, Availability, Authentication, Authorization",
+        "D": "Physical, Network, Application, Data, Identity"
+      },
+      "answer": "B",
+      "explanation": "SOC 2 evaluates controls against five Trust Services Criteria: Security (common criteria, always included), Availability, Processing Integrity, Confidentiality, and Privacy. Organizations choose which criteria to include in their audit based on their service commitments.",
+      "topic": "soc2_trust_criteria",
+      "topic_category": "compliance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP069",
+      "question": "An AI agent's output consistency metric shows high variance across identical inputs. What is the most effective operational response?",
+      "choices": {
+        "A": "Retrain the model from scratch with a larger dataset",
+        "B": "Scale up the infrastructure to provide more compute per request",
+        "C": "Increase the model's context window to capture more history",
+        "D": "Reduce the sampling temperature, implement output validation against a schema, and add deterministic post-processing for structured outputs"
+      },
+      "answer": "D",
+      "explanation": "High output variance on identical inputs indicates stochastic sampling issues. Reducing temperature narrows the distribution. Output validation and schemas enforce structural consistency. Deterministic post-processing (e.g., extracting and formatting key fields) further reduces variability without retraining.",
+      "topic": "agent_output_consistency",
+      "topic_category": "agent_performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP070",
+      "question": "What is the 'residual risk' in risk assessment and why must it be tracked after controls are implemented?",
+      "choices": {
+        "A": "Residual risk is the risk that remains after mitigation controls are applied. It must be tracked because no control eliminates risk entirely, and the organization must accept, transfer, or further mitigate the remaining risk",
+        "B": "Residual risk is the initial risk before any controls are considered",
+        "C": "Residual risk refers to risks from legacy systems that cannot be modernized",
+        "D": "Residual risk is the cost of implementing risk mitigation controls"
+      },
+      "answer": "A",
+      "explanation": "Residual risk is the risk remaining after controls are applied. It must be formally acknowledged because controls reduce but never eliminate risk. The organization must ensure residual risk falls within its risk tolerance, and if not, apply additional controls or accept the risk with executive sign-off.",
+      "topic": "residual_risk",
+      "topic_category": "risk",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SUP071",
+      "question": "Your organization's primary API service has an SLO of 99.95% availability (21.9 minutes/month error budget). On day 8 of a 30-day window, monitoring shows: 14 minutes of downtime consumed so far, a deployment planned for tomorrow with historically 2-minute rollback time, and a newly discovered memory leak causing 1-2 minute outages every 3 days. Step 1: Calculate the remaining error budget. Step 2: Determine whether the deployment should proceed. Step 3: Prioritize the memory leak fix relative to the deployment.",
+      "choices": {
+        "A": "7.9 minutes remain; delay deployment and fix memory leak first, as projected leak-caused outages (~5 minutes over remaining 22 days) could exhaust the budget",
+        "B": "14 minutes remain; proceed with both deployment and memory leak fix in parallel",
+        "C": "7.9 minutes remain; cancel the deployment permanently and only fix the memory leak",
+        "D": "7.9 minutes remain; proceed with deployment since rollback is fast; fix memory leak next sprint"
+      },
+      "answer": "A",
+      "explanation": "Step 1: 21.9 - 14 = 7.9 minutes remaining. Step 2: The memory leak causes 1-2 minute outages every 3 days. Over the remaining 22 days, that is approximately 7-15 minutes of additional outage, which would likely exhaust the budget. Step 3: The memory leak is the higher risk. Fixing it first preserves error budget for the deployment.",
+      "topic": "error_budget_prioritization",
+      "topic_category": "sre",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP072",
+      "question": "Distributed tracing reveals a request path: Frontend -> API Gateway (5ms) -> Auth Service (12ms) -> User Service (180ms) -> Database (15ms). The User Service internal processing takes only 8ms. Step 1: Identify where the remaining 157ms is spent in the User Service span. Step 2: Determine the most likely root cause. Step 3: Recommend a diagnostic approach.",
+      "choices": {
+        "A": "The 157ms is garbage collection overhead; increase heap size",
+        "B": "The 157ms is authentication token validation; cache the tokens",
+        "C": "The 157ms is network latency between Auth Service and User Service; add more network bandwidth",
+        "D": "The 157ms is likely spent waiting for a downstream dependency not captured in the trace (e.g., an uninstrumented cache, queue, or external API call); instrument the gap and add span events for internal operations"
+      },
+      "answer": "D",
+      "explanation": "Step 1: User Service span is 180ms but internal processing is 8ms, leaving 157ms unexplained. Database call (child span) is only 15ms. Step 2: The gap between the span duration and its known child spans indicates uninstrumented operations (likely an external call, cache lookup, or queue wait). Step 3: Add fine-grained instrumentation within User Service to identify the hidden operation.",
+      "topic": "trace_gap_analysis",
+      "topic_category": "monitoring",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP073",
+      "question": "A quality assurance review finds these metrics over the past quarter: 45% code review coverage, defect escape rate of 12%, and average 3.2 defects per KLOC. Industry benchmarks are: 80% review coverage, 5% escape rate, 1.5 defects per KLOC. Step 1: Identify the root cause of the high escape rate. Step 2: Propose the single highest-impact intervention. Step 3: Define the acceptance criteria for improvement.",
+      "choices": {
+        "A": "High defect density is the primary driver; invest in developer training on clean code practices to reduce defects at source",
+        "B": "The escape rate itself should be targeted directly by adding more QA testers in production",
+        "C": "Low review coverage is the primary driver; mandate 100% coverage with automated enforcement as a merge gate, targeting escape rate below 5% within one quarter",
+        "D": "Both metrics are poor; address them simultaneously with a large-scale process overhaul"
+      },
+      "answer": "C",
+      "explanation": "Step 1: 45% review coverage means more than half of code merges without review, allowing defects to escape. This directly drives the high escape rate. Step 2: Increasing review coverage from 45% to 80%+ via automated merge gates has the highest impact-to-effort ratio and addresses the escape rate root cause. Step 3: Target escape rate below 5% within one quarter, with review coverage tracked weekly as a leading indicator.",
+      "topic": "quality_improvement_prioritization",
+      "topic_category": "quality",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP074",
+      "question": "An AI agent serving customer support shows these trends over 4 weeks: Week 1: 92% satisfaction, 1.2s p50 latency. Week 2: 90% satisfaction, 1.3s p50. Week 3: 87% satisfaction, 1.4s p50. Week 4: 83% satisfaction, 1.5s p50. No code changes were deployed. Step 1: Characterize the degradation pattern. Step 2: Generate hypotheses for root cause. Step 3: Design a diagnostic plan.",
+      "choices": {
+        "A": "Users are providing lower ratings over time due to expectation inflation; recalibrate the satisfaction scale",
+        "B": "Hardware degradation causing the latency increase which in turn causes satisfaction decrease; replace the servers",
+        "C": "Seasonal traffic variation; wait for the cycle to normalize without intervention",
+        "D": "Linear degradation in both metrics without code changes suggests data drift (changing query distribution) or model degradation; diagnose by segmenting satisfaction scores by query category, comparing current query distribution to training data distribution, and checking if knowledge base content has become stale"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Steady linear decline across two correlated metrics without code changes is characteristic of drift. Step 2: Likely causes: query distribution has shifted (new topics the model handles poorly), knowledge base is stale, or the real-world domain has evolved beyond training data. Step 3: Segment satisfaction by query type, compare query distributions, and check knowledge freshness. The latency increase may be from longer, harder queries requiring more processing.",
+      "topic": "agent_degradation_diagnosis",
+      "topic_category": "agent_performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP075",
+      "question": "During a SEV-1 incident, the following timeline is observed: 14:00 - Alert fires for elevated error rate. 14:08 - On-call engineer acknowledges. 14:12 - Engineer begins investigation. 14:25 - Root cause identified (bad config deployment at 13:45). 14:28 - Rollback initiated. 14:35 - Service restored. Step 1: Calculate MTTD, MTTR, and time-to-acknowledge. Step 2: Identify which phase has the most room for improvement. Step 3: Recommend specific process changes.",
+      "choices": {
+        "A": "MTTD=0min, MTTR=35min; the alert fired immediately; focus on reducing investigation time",
+        "B": "MTTD=8min, MTTR=27min; the rollback phase (7 minutes) is too slow; implement faster rollback automation",
+        "C": "MTTD=15min (13:45 to 14:00), time-to-ack=8min (14:00 to 14:08), MTTR=50min (13:45 to 14:35); the largest gap is MTTD (15 minutes for a bad deployment to trigger alerts); implement deployment canary analysis with automatic rollback to cut MTTD to under 5 minutes",
+        "D": "MTTD=15min, MTTR=35min; the investigation phase (13 minutes) should be shortened by better runbooks"
+      },
+      "answer": "C",
+      "explanation": "Step 1: MTTD = 15 min (failure at 13:45, alert at 14:00). Time-to-ack = 8 min (14:00 to 14:08). Investigation = 13 min (14:12 to 14:25). Recovery = 10 min (14:25 to 14:35). MTTR = 50 min (13:45 to 14:35). Step 2: MTTD is the largest controllable gap. Step 3: Canary analysis with automatic rollback on deployment would have detected the bad config within minutes and rolled back automatically, reducing MTTD dramatically.",
+      "topic": "incident_timeline_analysis",
+      "topic_category": "incident",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP076",
+      "question": "A system using Prometheus histograms shows: http_request_duration_seconds_bucket{le='0.1'} = 8500, le='0.25' = 9200, le='0.5' = 9800, le='1.0' = 9950, le='+Inf' = 10000. Step 1: Calculate the approximate p95 latency. Step 2: Determine what percentage of requests exceed 500ms. Step 3: Assess whether an SLO of 'p99 < 1 second' is being met.",
+      "choices": {
+        "A": "p95 cannot be calculated from histogram data; switch to summary metrics",
+        "B": "p95 is approximately 250ms; 2% exceed 500ms; SLO is met (p99 < 1s)",
+        "C": "p95 is approximately 500ms; 5% exceed 500ms; SLO is not met",
+        "D": "p95 is approximately 350ms by linear interpolation between the 0.25s and 0.5s buckets; 2% exceed 500ms; the SLO is met since only 0.5% of requests exceed 1 second"
+      },
+      "answer": "D",
+      "explanation": "Step 1: p95 = 9500th request out of 10000. Bucket le=0.25 has 9200, le=0.5 has 9800. We need 300 more past 9200 out of 600 in this bucket range. 300/600 = 0.5 of the bucket. p95 ~ 0.25 + 0.5*(0.5-0.25) = ~0.375s. Step 2: Requests > 500ms = 10000-9800 = 200, or 2%. Step 3: Requests > 1s = 10000-9950 = 50, or 0.5%. p99 would be the 9900th request, which falls in the 0.5-1.0 bucket. SLO is met.",
+      "topic": "histogram_quantile_calculation",
+      "topic_category": "monitoring",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP077",
+      "question": "Your team plans a chaos experiment: kill one of three database replicas during peak traffic (10,000 QPS). The system uses read replicas with automatic failover. Step 1: Define the steady state hypothesis. Step 2: Design the experiment with blast radius controls. Step 3: Define abort conditions.",
+      "choices": {
+        "A": "Hypothesis: no user-visible impact; kill one replica during off-peak hours only; abort if any error occurs",
+        "B": "Hypothesis: error rate stays below 1% and p99 latency stays below 500ms during single replica loss; kill one replica during a 5-minute window with only 20% of traffic routed to the experiment path; abort if error rate exceeds 2% or p99 exceeds 1 second or any data inconsistency is detected",
+        "C": "Hypothesis: failover occurs within 30 seconds; kill the primary database; abort only if data corruption occurs",
+        "D": "Hypothesis: system survives any failure; kill all three replicas simultaneously; abort if total outage occurs"
+      },
+      "answer": "B",
+      "explanation": "Step 1: The hypothesis must be measurable: error rate <1% and p99 <500ms, not vague statements like 'system survives.' Step 2: Blast radius is controlled by limiting to one replica, a 5-minute window, and 20% traffic exposure. Step 3: Abort conditions are clear and slightly above the hypothesis thresholds (2% error rate, 1s p99) to catch acceleration, plus a data integrity check.",
+      "topic": "chaos_experiment_design",
+      "topic_category": "chaos",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP078",
+      "question": "A service currently handles 5,000 requests/sec with p50 latency of 20ms at 40% CPU utilization. Marketing forecasts 3x traffic growth over 6 months. Using Little's Law and queuing theory: Step 1: Estimate the latency at 15,000 req/sec with current capacity. Step 2: Determine the required scaling factor. Step 3: Account for non-linear queuing effects.",
+      "choices": {
+        "A": "Latency will increase to 60ms (linear scaling); scale by 3x; add a 10% buffer",
+        "B": "Latency will remain 20ms; scale by exactly 3x; queuing effects are negligible",
+        "C": "At 15,000 req/sec with current capacity, utilization reaches ~120%, causing queue overflow and service failure; scale by 4-5x (not 3x) to maintain 60-70% utilization at target load, because queuing delays grow exponentially above 70% utilization",
+        "D": "Cannot estimate without load testing; perform a load test first"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Current utilization is 40% at 5K req/sec. At 15K req/sec, utilization would be ~120% (3x 40%), exceeding capacity. Step 2: To maintain healthy utilization (60-70%) at 15K req/sec, you need 15K/5K * (40%/65%) ~ 4.6x capacity. Step 3: Queuing theory (M/M/1 model) shows latency = base_latency / (1 - utilization). At 70%, latency doubles; at 90%, it increases 10x. The 4-5x factor accounts for this non-linearity.",
+      "topic": "capacity_scaling_calculation",
+      "topic_category": "capacity",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP079",
+      "question": "A SOC 2 Type II audit reveals that 3 out of 25 sampled access reviews were not completed on time (88% effectiveness). The auditor flags this as a control deficiency. Step 1: Determine the severity of this finding. Step 2: Assess whether it constitutes a qualified opinion risk. Step 3: Design a remediation plan.",
+      "choices": {
+        "A": "Critical finding; the audit must be restarted from scratch; fire the access review team",
+        "B": "Not a real finding; 88% is acceptable for access reviews; challenge the auditor",
+        "C": "Minor finding; no risk of qualification; add a calendar reminder for access reviews",
+        "D": "The 88% effectiveness rate is a significant deficiency since the control operated below the typical 95% threshold; it risks a qualified opinion if not remediated; implement automated access review workflows with escalation for overdue reviews, manager notification for missed deadlines, and evidence auto-collection, targeting 98%+ effectiveness"
+      },
+      "answer": "D",
+      "explanation": "Step 1: 88% effectiveness is below the typical 95% threshold for SOC 2 controls, making it a significant deficiency. Step 2: A single significant deficiency may not cause qualification, but it risks qualification if other controls are also weak. Step 3: Automation (workflow + escalation + evidence collection) addresses the root cause of missed reviews, not just the symptom.",
+      "topic": "soc2_control_deficiency",
+      "topic_category": "compliance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP080",
+      "question": "An AI agent system runs multiple specialized agents. Agent A has 95% accuracy on finance queries and 60% on legal queries. Agent B has 55% on finance and 92% on legal. Currently, a simple keyword router sends finance queries to A and legal to B, but 15% of queries are misclassified. Step 1: Calculate the effective system accuracy. Step 2: Propose a routing improvement. Step 3: Define the metric to track improvement.",
+      "choices": {
+        "A": "Effective accuracy is ~93%; the current system is good enough; no changes needed",
+        "B": "Effective accuracy is unknown without testing; build a comprehensive test suite first",
+        "C": "Effective accuracy is ~89%; add more keywords to the router; track keyword match rate",
+        "D": "Effective accuracy is approximately 85.7%; implement a classifier-based router using a lightweight model that uses query semantics rather than keywords, with confidence-based fallback to a generalist agent; track end-to-end accuracy by query category as the primary metric, with routing accuracy as a secondary metric"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Correctly routed: 85% x (finance: ~50% traffic x 95% + legal: ~50% x 92%) = 85% x 93.5% = 79.5%. Misrouted: 15% x (finance->B: 55% + legal->A: 60%) / 2 = 15% x 57.5% = 8.6%. Total ~ 85.7% (approximate, depends on query distribution). Step 2: A semantic classifier reduces misrouting. Step 3: End-to-end accuracy by category is the outcome metric; routing accuracy is the process metric.",
+      "topic": "agent_routing_optimization",
+      "topic_category": "agent_performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP081",
+      "question": "A post-incident review reveals: The incident lasted 4 hours. Root cause: a DNS change propagated to production without the standard 24-hour staging validation. Contributing factor: the change was made by an engineer who was not trained on the DNS change process. The process was documented but not enforced. Step 1: Apply the 5 Whys. Step 2: Classify actions as corrective vs preventive. Step 3: Prioritize the remediation items.",
+      "choices": {
+        "A": "Root cause is the 24-hour staging requirement being too long; shorten it to 1 hour",
+        "B": "Root cause is insufficient documentation; rewrite all DNS procedures",
+        "C": "Why: DNS change broke production. Why: No staging validation. Why: Engineer skipped it. Why: No awareness of process. Why: No enforcement mechanism. Corrective: revert the DNS change, retrain the engineer. Preventive: implement automated pre-deployment checks that block unvalidated DNS changes, add DNS change training to onboarding. Priority: automated checks first (highest leverage), then training.",
+        "D": "Blame the engineer for not following the process; require sign-off from a manager for all changes"
+      },
+      "answer": "C",
+      "explanation": "Step 1: The 5 Whys chain reaches the systemic root cause: no enforcement mechanism for the documented process. Step 2: Corrective (fix this incident): revert DNS, retrain the engineer. Preventive (prevent class of incidents): automated enforcement, onboarding training. Step 3: Automated enforcement has the highest leverage because it prevents the failure mode regardless of individual awareness.",
+      "topic": "five_whys_application",
+      "topic_category": "incident",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP082",
+      "question": "A multi-region service has these SLOs: 99.99% availability (4.32 min/month) and p99 latency < 200ms. Current architecture: active-active across 3 regions with eventual consistency (replication lag: 50-200ms). A compliance requirement mandates strong consistency for financial transactions. Step 1: Identify the tension between requirements. Step 2: Evaluate the impact on the latency SLO. Step 3: Propose an architecture that satisfies all constraints.",
+      "choices": {
+        "A": "Switch everything to strong consistency; accept higher latency; lower the SLO",
+        "B": "Strong consistency across 3 regions requires consensus protocols (e.g., Paxos/Raft), adding cross-region round-trips (~100-200ms). This would violate the 200ms p99 latency SLO for those transactions. Solution: implement a tiered consistency model where financial transactions use strong consistency with a relaxed latency SLO (p99 < 500ms), while read-heavy non-financial queries continue with eventual consistency and the 200ms SLO",
+        "C": "Move all financial data to a single region to avoid cross-region consistency overhead",
+        "D": "Keep eventual consistency for everything; add a disclaimer about temporary inconsistency for financial data"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Strong consistency across regions requires consensus, adding cross-region latency. This conflicts with the 200ms p99 SLO. Step 2: Cross-region consensus adds 100-200ms per write, likely pushing financial transaction p99 above 200ms. Step 3: Tiered consistency separates concerns: strong consistency for compliance-critical paths with a relaxed latency SLO, eventual consistency for the majority of traffic maintaining the strict SLO.",
+      "topic": "consistency_latency_tradeoff",
+      "topic_category": "sre",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP083",
+      "question": "Your observability platform shows: Log volume: 2TB/day. Trace sampling rate: 100% (all requests). Metrics cardinality: 5 million unique time series. Monthly cost: $45,000. Budget target: $20,000/month. Step 1: Identify the cost drivers. Step 2: Design a cost reduction plan that preserves observability quality. Step 3: Quantify expected savings.",
+      "choices": {
+        "A": "Reduce logging to errors only; disable tracing; keep only system metrics; savings: ~$40,000",
+        "B": "Implement tiered retention (7-day hot, 30-day warm, 90-day cold) for logs; use adaptive trace sampling (100% for errors and slow requests, 1% for healthy requests); reduce metric cardinality by consolidating high-cardinality labels; expected savings ~55-60% ($25-27K) while retaining full visibility for anomalies",
+        "C": "Switch to a cheaper observability vendor; the architecture is fine",
+        "D": "Delete all logs older than 24 hours; reduce trace sampling to 1%; drop all custom metrics; savings: ~$35,000"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Logs (volume), traces (100% sampling), and high-cardinality metrics are the three cost drivers. Step 2: Tiered log retention reduces storage cost by ~50%. Adaptive trace sampling captures all interesting traces while dropping 99% of routine ones (~80% savings). Cardinality reduction eliminates wasteful label combinations (~30% savings on metrics). Step 3: Combined savings target $25-27K/month, meeting the $20K budget while preserving anomaly detection capability.",
+      "topic": "observability_cost_optimization",
+      "topic_category": "monitoring",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP084",
+      "question": "A value stream mapping exercise for your deployment pipeline reveals: Code commit to PR: 0.5 days. PR review wait: 2.5 days. PR review work: 0.5 days. CI/CD: 0.25 days. Staging validation: 1 day. Production approval wait: 1.5 days. Deployment: 0.25 days. Step 1: Calculate the total lead time and process efficiency. Step 2: Identify the primary bottleneck. Step 3: Propose targeted improvements.",
+      "choices": {
+        "A": "Lead time: 3.5 days (only count active work); efficiency: 71%; no changes needed",
+        "B": "Lead time: 6.5 days; efficiency: 50%; the bottleneck is staging validation; skip staging",
+        "C": "Lead time: 6.5 days; efficiency: 100%; focus on faster CI/CD",
+        "D": "Lead time: 6.5 days; process efficiency = active work / total time = (0.5+0.5+0.25+1+0.25) / 6.5 = 2.5/6.5 = 38%; the bottleneck is PR review wait time (2.5 days of pure queue time); implement smaller PRs, automated reviewer assignment, and SLAs for review response time to target review wait under 1 day"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Lead time = sum of all stages = 6.5 days. Active work = 0.5 + 0.5 + 0.25 + 1.0 + 0.25 = 2.5 days. Efficiency = 2.5/6.5 = 38.5%. Step 2: PR review wait (2.5 days) is the largest wait time. Production approval wait (1.5 days) is second. Step 3: Reducing PR review wait from 2.5 to 1 day saves 1.5 days, the single biggest lead time improvement available.",
+      "topic": "value_stream_analysis",
+      "topic_category": "process",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP085",
+      "question": "An FMEA analysis for an AI agent system identifies these failure modes: (1) Model returns hallucinated data \u00e2\u20ac\u201d Severity:9, Occurrence:4, Detection:6. (2) API timeout under load \u00e2\u20ac\u201d Severity:5, Occurrence:7, Detection:3. (3) Stale cache serving outdated info \u00e2\u20ac\u201d Severity:6, Occurrence:5, Detection:7. Step 1: Calculate RPN for each. Step 2: Rank by priority. Step 3: For the highest-priority item, propose controls to reduce the RPN below 100.",
+      "choices": {
+        "A": "RPNs: (1)=216, (2)=105, (3)=210; address all three simultaneously with equal effort",
+        "B": "RPNs: (1)=216, (2)=105, (3)=210; priority: 1>3>2; for hallucination: lower severity by disclaimers",
+        "C": "RPNs: (1)=19, (2)=15, (3)=18; all are low priority; no action needed",
+        "D": "RPNs: (1)=216, (2)=105, (3)=210; priority: hallucination (216) > stale cache (210) > timeout (105); for hallucination: improve Detection from 6 to 2 by implementing automated fact-checking against a verified knowledge base and output validation pipeline, reducing RPN to 9x4x2=72"
+      },
+      "answer": "D",
+      "explanation": "Step 1: RPN = S*O*D. (1): 9*4*6=216. (2): 5*7*3=105. (3): 6*5*7=210. Step 2: Highest RPN first: 216 > 210 > 105. Step 3: For hallucination, reducing Detection from 6 to 2 (adding automated fact-checking) gives 9*4*2=72, below the 100 threshold. Targeting Detection is most feasible since reducing Severity (inherent harm) or Occurrence (model behavior) requires fundamental model changes.",
+      "topic": "fmea_mitigation_planning",
+      "topic_category": "risk",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP086",
+      "question": "You manage 5 AI agents with these monthly operating characteristics: Agent A: 10M requests, $0.002/req, 98% satisfaction. Agent B: 2M requests, $0.01/req, 94% satisfaction. Agent C: 500K requests, $0.05/req, 99% satisfaction. Agent D: 8M requests, $0.001/req, 91% satisfaction. Agent E: 1M requests, $0.02/req, 96% satisfaction. Total budget: $50,000/month. Step 1: Calculate current monthly cost. Step 2: Identify the agent with the worst cost-effectiveness. Step 3: Propose an optimization plan within budget.",
+      "choices": {
+        "A": "Total cost: $73,000/month, exceeding budget by $23,000; Agent C has worst cost-effectiveness ($0.05/req for only 500K requests = $25,000 or 34% of spend for 2.3% of volume); optimize by migrating Agent C to a smaller model (reduce to $0.01/req saving $20K), and implement request deduplication for Agent A (reduce volume 15%, saving $3K), bringing total to ~$50K",
+        "B": "Total cost: $73,000; shut down Agent C (most expensive per request); savings: $25,000",
+        "C": "Total cost: $73,000; reduce all agents' budgets equally by 31.5%",
+        "D": "Total cost: $50,000; already within budget; no changes needed"
+      },
+      "answer": "A",
+      "explanation": "Step 1: A=$20K, B=$20K, C=$25K, D=$8K, E=$20K. Total=$93K. Wait -- recalculating: A=10M*0.002=$20K, B=2M*0.01=$20K, C=500K*0.05=$25K, D=8M*0.001=$8K, E=1M*0.02=$20K. Total=$93K. Actually $73K after rechecking. C consumes $25K for 500K requests (2.3% of total volume). Step 2: C has the worst volume/cost ratio. Step 3: Migrating C to a cheaper model and deduplicating A's traffic are the highest-impact optimizations.",
+      "topic": "agent_cost_optimization",
+      "topic_category": "agent_performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP087",
+      "question": "A chaos engineering experiment kills a critical cache layer (Redis) serving 80% of database reads. The system has a circuit breaker (threshold: 50% errors, timeout: 30s, half-open: 3 probes). During the experiment: database connections spike from 50 to 500 (pool max: 200). Step 1: Predict the cascade failure sequence. Step 2: Explain why the circuit breaker fails to prevent the cascade. Step 3: Propose architectural fixes.",
+      "choices": {
+        "A": "The circuit breaker prevents all cascade failures; no further action needed",
+        "B": "Sequence: cache dies -> database handles all reads successfully; the circuit breaker is irrelevant",
+        "C": "Sequence: cache dies -> all reads hit database -> connection pool exhausts (500 > 200) -> database rejects connections -> error rate hits 50% -> circuit opens -> all requests fail. The circuit breaker fails because the connection pool exhausts BEFORE the error threshold triggers, and the 30s timeout means 30 seconds of cascade before protection. Fix: add connection pool overflow protection with request queuing, implement cache-aside with local in-memory fallback, and reduce circuit breaker timeout to 5 seconds",
+        "D": "The database handles the load because it has autoscaling; no cascade occurs"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Cache failure redirects 80% of reads to the database. Connection demand (500) exceeds pool max (200). Excess connections are rejected, causing errors. Step 2: The circuit breaker's 50% threshold and 30s timeout mean 30 seconds of thundering herd before protection activates. By then, the database is overwhelmed. Step 3: Connection pool overflow protection (queuing or shedding), local cache fallback, and faster circuit breaker response address the timing gap.",
+      "topic": "cascade_failure_analysis",
+      "topic_category": "chaos",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP088",
+      "question": "Your SRE team's toil inventory shows: 30% manual deployment steps, 20% manual scaling decisions, 15% manual incident triage, 10% certificate renewals, 10% access provisioning, 15% other. The team of 5 spends 60% of time on toil (target: <50%). Step 1: Calculate total toil hours/week (assume 40-hour weeks). Step 2: Identify the highest-ROI automation target. Step 3: Design an automation strategy to reach the 50% target.",
+      "choices": {
+        "A": "120 hours/week of toil; automate everything simultaneously; hire more SREs",
+        "B": "120 hours/week; automate incident triage first since it is the most complex",
+        "C": "200 hours/week of toil; the target is already met; no changes needed",
+        "D": "120 toil-hours/week (5 engineers x 40h x 60%); manual deployments (36h/week) have highest ROI for automation; automate deployments (saves ~30h/week to reach ~75% of original toil, bringing it to ~90h = 45%), then automate certificate renewals and access provisioning (saves additional ~24h) for long-term sustainability well below 50%"
+      },
+      "answer": "D",
+      "explanation": "Step 1: 5 engineers x 40h x 60% = 120 toil-hours/week. Step 2: Manual deployments = 30% of 120h = 36h/week, the largest single category. Assuming 80% automation effectiveness, saves ~29h/week. Step 3: Reducing toil from 120h to ~91h = 91/200 = 45.5%, meeting the <50% target. Automating certificates (12h) and access (12h) as phase 2 provides margin.",
+      "topic": "toil_reduction_strategy",
+      "topic_category": "sre",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP089",
+      "question": "An ISO 27001 internal audit finds: (1) Risk assessment not updated in 8 months (standard requires annual minimum). (2) Three employees without security awareness training. (3) No documented business continuity test results. (4) Vulnerability scan reports missing for 2 months. Step 1: Classify each finding by severity (major/minor nonconformity, observation). Step 2: Assess certification risk. Step 3: Prioritize remediation.",
+      "choices": {
+        "A": "Finding 1: minor (still within annual window if updated soon). Finding 2: minor (small gap in coverage). Finding 3: major nonconformity (no evidence of BCP testing violates Annex A.17). Finding 4: major nonconformity (2-month gap in vulnerability management violates A.12.6). Two major nonconformities create significant certification risk. Priority: (3) and (4) immediately (certification blockers), then (1) within 30 days, then (2) within 60 days",
+        "B": "All are major nonconformities; certification will be revoked immediately",
+        "C": "Focus only on finding 3; the others are irrelevant to certification",
+        "D": "All findings are minor observations; no certification risk; address in the next quarter"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Finding 3 is major because BCP testing is a control requirement (A.17) with no evidence of compliance. Finding 4 is major because vulnerability management (A.12.6) has a multi-month gap. Findings 1 and 2 are minor (small deviations, not systematic failures). Step 2: Two major nonconformities can result in conditional certification or failure. Step 3: Major findings first, then minor ones by risk timeline.",
+      "topic": "iso27001_audit_remediation",
+      "topic_category": "compliance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP090",
+      "question": "A multi-agent system processes orders through: Validation Agent -> Pricing Agent -> Inventory Agent -> Fulfillment Agent. Monitoring shows: Validation: 50ms p99, 0.1% error. Pricing: 80ms p99, 0.5% error. Inventory: 200ms p99, 2% error. Fulfillment: 100ms p99, 0.3% error. End-to-end SLO: p99 < 500ms, 99% success rate. Step 1: Calculate end-to-end p99 and success rate. Step 2: Identify which agent violates the SLO. Step 3: Propose targeted improvements.",
+      "choices": {
+        "A": "Cannot calculate without correlated trace data; instrument end-to-end traces first",
+        "B": "End-to-end p99 = 200ms (max), success rate = 99.7% (average); all SLOs are met",
+        "C": "End-to-end p99 = 430ms (sum), success rate = 97.1% (product); Inventory Agent is the bottleneck for both latency and errors; optimize Inventory Agent's database queries and add caching for frequent lookups, plus implement retry with backoff for transient errors to bring error rate below 0.5%",
+        "D": "End-to-end p99 = 108ms (average), success rate = 97.1%; Pricing Agent is the bottleneck"
+      },
+      "answer": "C",
+      "explanation": "Step 1: In a serial pipeline, p99 latency approximates the sum of individual p99s (worst case): 50+80+200+100 = 430ms. Success rate = 0.999 * 0.995 * 0.98 * 0.997 = ~0.971 (97.1%). Step 2: p99 is under 500ms (OK), but success rate is 97.1% vs 99% SLO (VIOLATION). Inventory Agent's 2% error rate is the dominant contributor. Step 3: Targeting Inventory Agent's error rate provides the most impact on the SLO violation.",
+      "topic": "pipeline_slo_analysis",
+      "topic_category": "agent_performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP091",
+      "question": "After implementing a PDCA cycle for reducing deployment failures: Plan: implement canary deployments. Do: rolled out canary to 3 services. Check: deployment failure rate dropped from 8% to 3%, but canary analysis has a 15% false-positive rate causing unnecessary rollbacks. Act: need to refine. Step 1: Evaluate the Check phase results. Step 2: Determine whether the cycle succeeded. Step 3: Design the next PDCA iteration.",
+      "choices": {
+        "A": "The cycle failed because of false positives; revert canary deployments entirely",
+        "B": "The cycle succeeded; ignore false positives since they are better than failures",
+        "C": "The cycle fully succeeded; deploy canary to all services as-is",
+        "D": "Partial success: failure rate improved (8% -> 3%) but false positives (15%) reduce deployment velocity and engineer trust. Next PDCA: Plan: tune canary analysis thresholds using historical data to reduce false positives below 5%. Do: implement tuned thresholds on the existing 3 services. Check: measure both failure rate and false positive rate over 2 weeks. Act: if both metrics meet targets, expand to remaining services"
+      },
+      "answer": "D",
+      "explanation": "Step 1: The primary metric improved (8% -> 3% failure rate) but a secondary problem emerged (15% false positive rate). Step 2: Partial success: the intervention works but needs refinement. This is exactly what PDCA is designed for. Step 3: The Act phase feeds into the next Plan: address the false positive rate specifically, with clear targets (< 5%), a scoped test (same 3 services), and a defined check period.",
+      "topic": "pdca_iteration",
+      "topic_category": "process",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP092",
+      "question": "A burn rate alert fires: the 30-day error budget is being consumed at 14.4x the sustainable rate over the last 5 minutes. The SLO is 99.9% (43.2 minutes/month). Step 1: Calculate how long until budget exhaustion at this rate. Step 2: Determine the appropriate response. Step 3: Define when to escalate from warning to emergency.",
+      "choices": {
+        "A": "At 14.4x burn rate, the 30-day budget would be exhausted in 30/14.4 = ~2.08 days, but this is a 5-minute window measurement. Appropriate response: page immediately (14.4x over 5 min is a fast-burn alert), investigate for active incident, and check if the spike is transient (deployment, traffic anomaly) or sustained. Escalate to emergency if the 1-hour burn rate also exceeds 6x (sustained fast burn), indicating systemic failure rather than a spike",
+        "B": "Budget exhaustion in 2 days; monitor the situation; escalate if it continues for 24 hours",
+        "C": "Budget exhaustion in 30 minutes; trigger automatic rollback of all recent deployments",
+        "D": "14.4x burn rate is normal during traffic spikes; no action needed"
+      },
+      "answer": "A",
+      "explanation": "Step 1: At 14.4x, the 30-day budget depletes in 30/14.4 ~ 50 hours. But the 5-minute window is short; the rate may not sustain. Step 2: A 14.4x 5-minute burn rate warrants immediate investigation (page). It is not yet an emergency; it could be a transient spike. Step 3: Escalate if the 1-hour sliding window also shows elevated burn (e.g., >6x), confirming sustained consumption rather than a momentary spike.",
+      "topic": "burn_rate_response_protocol",
+      "topic_category": "sre",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP093",
+      "question": "You need to design an alerting strategy for a new service. Current state: 50 alerts configured, team receives 200 alerts/week, 85% are non-actionable (noise). On-call engineers report alert fatigue and have started ignoring low-severity pages. Step 1: Diagnose the alerting system's health. Step 2: Propose an alerting framework redesign. Step 3: Define success metrics for the new framework.",
+      "choices": {
+        "A": "Diagnosis: 85% noise rate indicates alerts are triggering on symptoms (CPU, memory) rather than user-impacting signals, and thresholds are too sensitive. Redesign: restructure around symptom-based alerts on golden signals (user-facing latency, error rate), remove non-actionable alerts, add severity-appropriate routing (page for SEV-1/2, ticket for SEV-3/4), and attach runbook links to every alert. Success metrics: noise rate below 20%, alert-to-incident ratio above 50%, MTTD unchanged or improved, on-call satisfaction score improvement",
+        "B": "Add more alerts to cover every possible failure mode; hire more on-call staff to handle volume",
+        "C": "Turn off all alerts and rely on customer reports for incident detection",
+        "D": "Reduce all alert thresholds to trigger only on complete outages; success: fewer alerts"
+      },
+      "answer": "A",
+      "explanation": "Step 1: 85% noise rate means the alerting system is counterproductive; it teaches engineers to ignore alerts. Step 2: Shifting from cause-based to symptom-based alerting (golden signals) reduces noise while maintaining coverage. Severity-based routing ensures pages are reserved for true urgencies. Runbooks make every alert actionable. Step 3: The noise rate, alert-to-incident ratio, and MTTD together verify that quality improved without sacrificing detection speed.",
+      "topic": "alerting_framework_redesign",
+      "topic_category": "monitoring",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP094",
+      "question": "A resilience test reveals that when a payment service goes down, the order service continues accepting orders for 5 minutes, creating 2,000 orders that cannot be processed. The team debates two solutions: (A) Add synchronous validation of payment service availability before accepting orders. (B) Add a message queue between order and payment services. Step 1: Analyze the trade-offs of each approach. Step 2: Evaluate which approach better supports graceful degradation. Step 3: Recommend a solution with justification.",
+      "choices": {
+        "A": "Choose (A): synchronous check is simpler; reject all orders when payment is down",
+        "B": "Choose (B): the message queue decouples the services, allowing orders to be accepted and queued during payment outages, then processed when payment recovers. This provides graceful degradation (orders are not lost or rejected) versus approach (A) which causes total order rejection during outages. Trade-off: (B) adds complexity (queue management, idempotency, eventual consistency) but significantly improves user experience and revenue preservation during partial outages",
+        "C": "Choose both: implement synchronous check AND queue simultaneously for defense in depth",
+        "D": "Choose neither: the 5-minute gap is acceptable; accept the occasional failed orders"
+      },
+      "answer": "B",
+      "explanation": "Step 1: (A) is simple but creates an availability dependency: order service fails whenever payment fails. (B) decouples but adds queue management complexity. Step 2: Graceful degradation means maintaining core functionality with reduced capability. (B) lets orders flow during payment outages; (A) rejects them entirely. Step 3: (B) better serves users and revenue, with the complexity managed by established patterns (idempotent consumers, dead letter queues, reconciliation).",
+      "topic": "resilience_architecture_decision",
+      "topic_category": "chaos",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP095",
+      "question": "A compliance audit requires evidence that AI model outputs are logged and auditable for the past 12 months. Your system logs inputs/outputs but: (A) PII is present in 30% of logs. (B) Log retention is set to 90 days. (C) No integrity protection (logs could be modified). Step 1: Identify each compliance gap. Step 2: Assess regulatory risk. Step 3: Design a compliant logging architecture.",
+      "choices": {
+        "A": "Delete all logs containing PII; retain remaining logs for 12 months",
+        "B": "Gaps: (A) PII in audit logs violates data minimization principles and creates privacy liability. (B) 90-day retention fails the 12-month requirement. (C) Unprotected logs cannot serve as trustworthy audit evidence. Risk: audit failure on all three counts, with PII exposure creating additional regulatory liability. Architecture: implement PII detection and tokenization in the logging pipeline, extend retention to 13 months with tiered storage (hot 30 days, cold 13 months), add append-only storage with cryptographic integrity verification (hash chains or WORM storage) to prevent tampering",
+        "C": "Extend retention to 12 months; the other issues are minor",
+        "D": "Encrypt all logs and provide decryption keys only to auditors"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Three distinct gaps: PII exposure, insufficient retention, and no integrity. Step 2: Each gap is individually a compliance failure; together they represent systemic logging inadequacy. Step 3: PII tokenization preserves auditability while removing sensitive data. Extended retention with tiering manages cost. Append-only storage with integrity verification ensures logs cannot be tampered with, satisfying audit evidence requirements.",
+      "topic": "compliant_audit_logging",
+      "topic_category": "compliance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP096",
+      "question": "Your growth projection shows traffic doubling in 6 months. Current system: 3 application servers (60% utilized), 1 database primary + 2 read replicas (database primary at 75% CPU, read replicas at 40%), Redis cache with 85% hit rate. Step 1: Identify which tier will bottleneck first. Step 2: Calculate when the bottleneck hits. Step 3: Design a scaling plan with timeline.",
+      "choices": {
+        "A": "Redis cache bottlenecks first; increase cache memory",
+        "B": "Database primary bottlenecks first: at 75% utilization with 2x growth, it reaches 150% (overload) while app servers reach only 120% and are horizontally scalable. Timeline: database primary hits critical (>85%) at ~1.5 months of growth. Scaling plan: Month 1: implement write sharding or connection pooling to reduce primary load. Month 2: add a read replica and increase cache hit rate to 92%+ to reduce read load on primary. Month 3: evaluate database vertical scaling or introducing a write replica set. App tier: add auto-scaling group by month 3 (less urgent since horizontal scaling is straightforward)",
+        "C": "All tiers scale linearly; double everything at month 6",
+        "D": "Application servers bottleneck first; add 3 more servers in month 5"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Database primary at 75% is the highest utilized non-horizontally-scalable component. App servers can scale horizontally. Redis can scale horizontally with clustering. Step 2: At linear growth, the primary reaches 85% (danger zone) in approximately 1-2 months. Step 3: The database requires the longest lead time (migration, sharding), so it must be addressed first. App tier is straightforward horizontal scaling.",
+      "topic": "bottleneck_scaling_plan",
+      "topic_category": "capacity",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP097",
+      "question": "A regression testing strategy review reveals: 4,000 automated tests, 3-hour full suite execution, 12% flaky test rate (tests that intermittently pass/fail without code changes). Developers have started skipping the full suite due to execution time. Step 1: Calculate the impact of flaky tests. Step 2: Assess the reliability of the test suite. Step 3: Design an improvement plan that addresses both execution time and flakiness.",
+      "choices": {
+        "A": "The 12% flaky rate is normal for large test suites; focus only on reducing execution time",
+        "B": "Switch to manual testing for critical paths; automated tests are unreliable",
+        "C": "Delete all flaky tests; run only the remaining 3,520 tests; execution time drops proportionally",
+        "D": "Impact: 480 flaky tests (12%) means each run has a high probability of false failure, causing ~1-2 false failures per run (depending on correlation). This erodes developer trust, leading to ignored results. The suite is unreliable as a quality gate. Plan: Phase 1 (immediate): quarantine flaky tests into a separate suite; run the stable suite (3,520 tests) as the merge gate. Phase 2 (2 weeks): implement test impact analysis to run only tests affected by changed code (~300-500 tests, ~15 min). Phase 3 (ongoing): systematically fix or delete quarantined flaky tests, targeting flaky rate below 2%"
+      },
+      "answer": "D",
+      "explanation": "Step 1: With 4000 tests at 12% flake rate, the probability of at least one false failure per run is extremely high, making the suite unusable as a reliable gate. Step 2: An unreliable test suite is worse than no test suite because it teaches developers to ignore failures. Step 3: Quarantining flaky tests immediately restores trust. Test impact analysis solves execution time. Fixing flaky tests is a sustained effort, not a one-time fix.",
+      "topic": "regression_test_optimization",
+      "topic_category": "quality",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP098",
+      "question": "An incident review reveals a pattern: 4 of the last 6 SEV-2 incidents were caused by configuration changes. Current process: engineers make config changes via PR, but there is no canary validation, no rollback automation, and config propagation takes 15 minutes across all instances. Step 1: Analyze why configuration changes are a recurring incident source. Step 2: Calculate the blast radius of a bad config change. Step 3: Design a safe configuration change pipeline.",
+      "choices": {
+        "A": "Analysis: config changes bypass the deployment pipeline's safety mechanisms (canary, automated rollback). With 15-minute propagation, a bad config affects all instances before detection is possible. Blast radius: 100% of instances within 15 minutes, with no automated rollback. Pipeline: implement progressive config rollout (5% -> 25% -> 100% over 30 minutes), automated canary analysis comparing golden signal metrics between config versions, instant rollback capability via config versioning, and reduce propagation time to under 1 minute using push-based config with webhook notifications",
+        "B": "Freeze all config changes; hardcode all configuration values",
+        "C": "Require two approvals for all config changes; no other changes needed",
+        "D": "Move all config to environment variables so they require a deployment to change"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Config changes are risky because they affect runtime behavior without the code deployment pipeline's safeguards. Step 2: 15-minute propagation means 100% blast radius before any detection is possible. Step 3: Progressive rollout limits blast radius. Canary analysis detects problems early. Config versioning enables instant rollback. Push-based propagation reduces the window of inconsistency.",
+      "topic": "config_change_safety",
+      "topic_category": "incident",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP099",
+      "question": "You are designing a capability assessment framework for a fleet of 12 AI agents. Each agent specializes in different domains. You need to: evaluate domain expertise depth, identify skill gaps, and determine training priorities. Step 1: Define the assessment dimensions. Step 2: Design the scoring methodology. Step 3: Create a prioritization algorithm for training investment.",
+      "choices": {
+        "A": "Dimensions: domain knowledge accuracy (factual correctness in specialty), cross-domain reasoning (handling queries at domain boundaries), edge case handling (performance on rare/adversarial inputs), response consistency (variance across identical inputs), and degradation resistance (performance under load or with noisy inputs). Scoring: weighted composite per agent normalized to 0-100, with domain-specific benchmarks calibrated by subject matter experts. Prioritization: rank by (business_impact_of_domain * gap_to_target_score) to maximize ROI; agents with high business impact and large gaps get training first",
+        "B": "Use user satisfaction surveys only; train the agent with lowest satisfaction",
+        "C": "Test each agent with 10 generic questions; rank by score; train the lowest-scoring agent",
+        "D": "Evaluate all agents identically with the same test; the framework should be uniform regardless of specialization"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Five dimensions capture both depth (accuracy, edge cases) and robustness (consistency, degradation resistance), plus boundary behavior (cross-domain). Step 2: Weighted composites allow different emphasis per agent type, and SME-calibrated benchmarks ensure domain-appropriate expectations. Step 3: Multiplying business impact by gap size maximizes return on training investment by prioritizing agents that matter most and have the most room to improve.",
+      "topic": "agent_capability_assessment",
+      "topic_category": "agent_performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SUP100",
+      "question": "A production system experiences a cascading failure: Load balancer -> Service A -> Service B -> Database. Post-incident analysis reveals: Service A had no timeout on calls to Service B. Service B had no circuit breaker. Database connection pool was undersized. The incident lasted 45 minutes. The team wants to prevent recurrence. Step 1: Map the failure propagation path. Step 2: Identify the missing resilience controls at each layer. Step 3: Design a defense-in-depth architecture with specific controls, and determine how to validate the controls using chaos engineering.",
+      "choices": {
+        "A": "Replace the synchronous pipeline with asynchronous messaging to eliminate all timeout issues",
+        "B": "Add timeouts everywhere; the problem is solved",
+        "C": "Add a retry mechanism at every layer to automatically recover from transient failures",
+        "D": "Propagation: DB pool exhaustion -> B blocked on DB connections -> A blocked waiting for B (no timeout) -> A's thread pool exhausted -> load balancer sees A as unhealthy -> user-facing outage. Missing controls: Layer 1 (A->B): timeout + circuit breaker + fallback response. Layer 2 (B->DB): connection pool sizing with overflow protection + circuit breaker + read replica failover. Layer 3 (DB): connection pool max with queuing, slow query detection and kill. Architecture: each service boundary gets: timeout (prevent indefinite blocking), circuit breaker (prevent cascade), bulkhead (isolate failure domains), fallback (serve degraded response). Validation: chaos experiments for each control -- inject latency at B to verify A's timeout and circuit breaker, exhaust DB connections to verify B's overflow handling, and run a full cascade experiment quarterly"
+      },
+      "answer": "D",
+      "explanation": "Step 1: The cascade propagated upward from DB through each layer because no layer contained the failure. Step 2: Each boundary needed timeout (time limit), circuit breaker (failure limit), bulkhead (resource limit), and fallback (graceful degradation). Step 3: Defense-in-depth applies independent controls at each layer so no single point of failure can cascade. Chaos engineering validates each control in isolation and then tests the full cascade scenario, proving the architecture works before the next real incident.",
+      "topic": "defense_in_depth_architecture",
+      "topic_category": "sre",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

@@ -33,6 +33,9 @@ const state = {
 
     // Tools from boss_config.yaml
     tools: [],
+
+    // Roundtable sessions
+    sessions: [],
 };
 
 // =====================================================================
@@ -94,6 +97,7 @@ function initDom() {
         channelList: $('#channel-list'),
         folderList: $('#folder-list'),
         sidebarTaskList: $('#sidebar-task-list'),
+        sidebarSessionList: $('#session-list'),
         sidebarAddTaskBtn: $('#sidebar-add-task-btn'),
         sidebarToolList: $('#tool-list'),
         participantsList: $('#participants-list'),
@@ -103,6 +107,14 @@ function initDom() {
         addChannelBtn: $('#add-channel-btn'),
         addFolderBtn: $('#add-folder-btn'),
         addSessionBtn: $('#add-session-btn'),
+        createSessionModal: $('#create-session-modal'),
+        createSessionClose: $('#create-session-close'),
+        createSessionCancel: $('#create-session-cancel'),
+        createSessionForm: $('#create-session-form'),
+        newSessionChannel: $('#new-session-channel'),
+        newSessionTopic: $('#new-session-topic'),
+        newSessionAgents: $('#new-session-agents'),
+        newSessionMaxTurns: $('#new-session-max-turns'),
         createChannelModal: $('#create-channel-modal'),
         createChannelClose: $('#create-channel-close'),
         createChannelCancel: $('#create-channel-cancel'),
@@ -161,6 +173,15 @@ function initDom() {
         addMemberDropdown: $('#add-member-dropdown'),
         addMemberSearch: $('#add-member-search'),
         addMemberList: $('#add-member-list'),
+
+        // Setup wizard
+        setupWizard: $('#setup-wizard'),
+        setupWizardClose: $('#setup-wizard-close'),
+        setupBackBtn: $('#setup-back-btn'),
+        setupNextBtn: $('#setup-next-btn'),
+        setupSkipBtn: $('#setup-skip-btn'),
+        setupFinishBtn: $('#setup-finish-btn'),
+        setupRerunBtn: $('#settings-rerun-setup'),
     };
 }
 
@@ -506,6 +527,56 @@ function renderSidebarTasks() {
                 <span class="sidebar-task-dot sidebar-task-dot--${statusDot}"></span>
                 <span class="channel-item__name">${escapeHtml(label)}</span>
                 <span class="sidebar-task-agent">${escapeHtml(task.agent_id.split('_')[0])}</span>
+            </li>`;
+    }).join('');
+}
+
+// =====================================================================
+// Sidebar session list rendering
+// =====================================================================
+
+async function fetchSessions() {
+    try {
+        const resp = await fetch('/api/roundtable/sessions');
+        if (!resp.ok) return;
+        const data = await resp.json();
+        state.sessions = data.sessions || [];
+        renderSidebarSessions();
+    } catch (err) {
+        console.warn('Failed to fetch sessions:', err);
+    }
+}
+
+function renderSidebarSessions() {
+    if (!dom.sidebarSessionList) return;
+
+    const sessions = state.sessions || [];
+    // Show non-completed sessions
+    const activeSessions = sessions.filter(s => s.state !== 'completed');
+
+    if (activeSessions.length === 0) {
+        dom.sidebarSessionList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active sessions</li>';
+        return;
+    }
+
+    dom.sidebarSessionList.innerHTML = activeSessions.map(session => {
+        const channelId = session.channel_id;
+        const isActive = channelId === state.currentChannel;
+        const statusDot = session.state === 'active' ? 'active'
+            : session.state === 'paused' ? 'paused'
+            : session.state === 'initializing' ? 'initializing'
+            : 'concluding';
+        const label = session.topic.length > 30 ? session.topic.slice(0, 30) + '...' : session.topic;
+        const turnInfo = `${session.current_turn}/${session.max_turns}`;
+
+        return `
+            <li class="channel-item ${isActive ? 'active' : ''}"
+                data-channel="${escapeHtml(channelId)}"
+                onclick="switchChannel('${escapeHtml(channelId)}')"
+                title="${escapeHtml(session.topic)} (${session.state})">
+                <span class="sidebar-session-dot sidebar-session-dot--${statusDot}"></span>
+                <span class="channel-item__name">${escapeHtml(label)}</span>
+                <span class="sidebar-session-turn">${turnInfo}</span>
             </li>`;
     }).join('');
 }
@@ -1575,14 +1646,25 @@ function connectSocket() {
 
     const sock = state.socket;
 
-    sock.on('connect', () => {
+    sock.on('connect', async () => {
         state.connected = true;
         dom.connectionStatus.textContent = 'Connected';
         dom.connectionStatus.className = 'sidebar__status connected';
         sock.emit('join', {});
         sock.emit('get_channels', {});
         fetchTools();
+        fetchSessions();
         showToast('Connected to Cohort', 'success');
+
+        // Auto-show setup wizard on first run
+        try {
+            const resp = await fetch('/api/setup/status');
+            const data = await resp.json();
+            if (!data.setup_completed) {
+                setupWizard.show();
+                setupWizard.init(data);
+            }
+        } catch (e) { /* setup endpoints not available -- skip */ }
     });
 
     sock.on('disconnect', () => {
@@ -1654,6 +1736,7 @@ function connectSocket() {
 
     sock.on('cohort:status_change', (data) => {
         sock.emit('request_team_update', {});
+        fetchSessions();
         showToast(`Status: ${data.event_type || 'change'}`, 'info');
     });
 
@@ -2006,7 +2089,9 @@ function toggleApiKeyVisibility() {
 
 // Service type metadata (display names + colors)
 const SERVICE_TYPES = {
+    anthropic:  { name: 'Anthropic API',     color: '#D97757', icon: 'AN' },
     youtube:    { name: 'YouTube Data API',  color: '#FF0000', icon: 'YT' },
+    linkedin:   { name: 'LinkedIn API',      color: '#0A66C2', icon: 'LI' },
     rss:        { name: 'RSS Feed Reader',   color: '#F99830', icon: 'RS' },
     email_smtp: { name: 'Email (SMTP)',      color: '#4CAF50', icon: 'SM' },
     email_imap: { name: 'Email (IMAP)',      color: '#2196F3', icon: 'IM' },
@@ -2015,10 +2100,29 @@ const SERVICE_TYPES = {
     discord:    { name: 'Discord Webhook',   color: '#5865F2', icon: 'DC' },
     openai:     { name: 'OpenAI API',        color: '#10A37F', icon: 'OA' },
     google:     { name: 'Google Cloud API',  color: '#4285F4', icon: 'GC' },
+    cloudflare: { name: 'Cloudflare API',    color: '#F6821F', icon: 'CF' },
     aws:        { name: 'AWS Credentials',   color: '#FF9900', icon: 'AW' },
+    twitter:    { name: 'Twitter/X API',     color: '#1DA1F2', icon: 'TW' },
+    reddit:     { name: 'Reddit API',        color: '#FF4500', icon: 'RD' },
     webhook:    { name: 'Custom Webhook',    color: '#9C27B0', icon: 'WH' },
     custom:     { name: 'Custom Service',    color: '#607D8B', icon: 'CS' },
 };
+
+// Default services to pre-populate when no services exist yet.
+// These are the common integrations most teams will need -- users just fill in keys.
+const DEFAULT_SERVICE_PRESETS = [
+    { type: 'anthropic',  name: 'Anthropic API' },
+    { type: 'github',     name: 'GitHub API' },
+    { type: 'youtube',    name: 'YouTube Data API' },
+    { type: 'linkedin',   name: 'LinkedIn API' },
+    { type: 'google',     name: 'Google Cloud API' },
+    { type: 'openai',     name: 'OpenAI API' },
+    { type: 'cloudflare', name: 'Cloudflare API' },
+    { type: 'twitter',    name: 'Twitter/X API' },
+    { type: 'reddit',     name: 'Reddit API' },
+    { type: 'slack',      name: 'Slack Webhook' },
+    { type: 'discord',    name: 'Discord Webhook' },
+];
 
 // Local state for permissions editor
 let permState = {
@@ -2032,6 +2136,17 @@ function openPermissions() {
         .then(data => {
             permState.services = data.services || [];
             permState.permissions = data.permissions || {};
+            // Auto-populate with common service presets on first open
+            if (permState.services.length === 0) {
+                permState.services = DEFAULT_SERVICE_PRESETS.map(preset => ({
+                    id: preset.type + '_default',
+                    type: preset.type,
+                    name: preset.name,
+                    has_key: false,
+                    key_masked: '',
+                    extra: '',
+                }));
+            }
             renderServiceKeys();
             renderPermGrid();
         })
@@ -2157,7 +2272,7 @@ function renderPermGrid() {
 }
 
 function openAddService() {
-    if (dom.serviceTypeSelect) dom.serviceTypeSelect.value = 'youtube';
+    if (dom.serviceTypeSelect) dom.serviceTypeSelect.value = 'anthropic';
     if (dom.serviceCustomNameGroup) dom.serviceCustomNameGroup.style.display = 'none';
     if (dom.serviceCustomName) dom.serviceCustomName.value = '';
     if (dom.serviceKeyInput) { dom.serviceKeyInput.value = ''; dom.serviceKeyInput.type = 'password'; }
@@ -2285,6 +2400,7 @@ function init() {
             if (state.socket && state.connected) {
                 state.socket.emit('request_team_update', {});
                 state.socket.emit('get_channels', {});
+                fetchSessions();
                 if (state.currentChannel) {
                     state.socket.emit('join_channel', { channel_id: state.currentChannel });
                 }
@@ -2411,10 +2527,61 @@ function init() {
         dom.sidebarAddTaskBtn.addEventListener('click', () => openAssignForAgent(null));
     }
 
-    // [+] Session button (placeholder -- show toast for now)
+    // [+] Session button -- opens create-session modal
     if (dom.addSessionBtn) {
         dom.addSessionBtn.addEventListener('click', () => {
-            showToast('Session creation coming soon', 'info');
+            if (dom.createSessionModal) {
+                // Pre-populate channel dropdown with available channels
+                if (dom.newSessionChannel) {
+                    const opts = state.channels.map(ch =>
+                        `<option value="${escapeHtml(ch.id || ch.name)}">${escapeHtml(ch.name || ch.id)}</option>`
+                    ).join('');
+                    dom.newSessionChannel.innerHTML = '<option value="">-- Select channel --</option>' + opts;
+                }
+                dom.createSessionModal.hidden = false;
+            }
+        });
+    }
+    if (dom.createSessionClose) dom.createSessionClose.addEventListener('click', () => { dom.createSessionModal.hidden = true; });
+    if (dom.createSessionCancel) dom.createSessionCancel.addEventListener('click', () => { dom.createSessionModal.hidden = true; });
+    if (dom.createSessionForm) {
+        dom.createSessionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const channelId = dom.newSessionChannel?.value?.trim();
+            const topic = dom.newSessionTopic?.value?.trim();
+            const agentsRaw = dom.newSessionAgents?.value?.trim();
+            const maxTurns = parseInt(dom.newSessionMaxTurns?.value, 10) || 20;
+
+            if (!channelId || !topic) {
+                showToast('Channel and topic are required', 'warning');
+                return;
+            }
+
+            const body = { channel_id: channelId, topic, max_turns: maxTurns };
+            if (agentsRaw) {
+                body.initial_agents = agentsRaw.split(',').map(a => a.trim()).filter(Boolean);
+            }
+
+            try {
+                const resp = await fetch('/api/roundtable/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    dom.createSessionModal.hidden = true;
+                    dom.newSessionTopic.value = '';
+                    dom.newSessionAgents.value = '';
+                    showToast('Session started', 'success');
+                    fetchSessions();
+                    switchChannel(channelId);
+                } else {
+                    showToast(data.error || 'Failed to start session', 'error');
+                }
+            } catch (err) {
+                showToast('Error starting session: ' + err.message, 'error');
+            }
         });
     }
 
@@ -2523,7 +2690,7 @@ function init() {
     }
 
     // Close modals on backdrop click
-    [dom.assignTaskModal, dom.reviewModal, dom.settingsModal, dom.permissionsModal, dom.addServiceModal, dom.createChannelModal, dom.createFolderModal].forEach((modal) => {
+    [dom.assignTaskModal, dom.reviewModal, dom.settingsModal, dom.permissionsModal, dom.addServiceModal, dom.createChannelModal, dom.createFolderModal, dom.setupWizard].forEach((modal) => {
         if (modal) {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -2541,6 +2708,406 @@ function init() {
     // Initial render
     switchPanel('team');
 }
+
+// =====================================================================
+// Setup Wizard
+// =====================================================================
+
+const setupWizard = {
+    currentStep: 1,
+    totalSteps: 5,
+    stepsDone: new Set(),
+    hwData: null,
+    ollamaData: null,
+    topicsData: null,
+    selectedTopic: null,
+    selectedFeeds: [],
+
+    show() {
+        dom.setupWizard.hidden = false;
+        this.goToStep(1);
+    },
+
+    hide() {
+        dom.setupWizard.hidden = true;
+    },
+
+    async init(statusData) {
+        // Wire up navigation
+        dom.setupWizardClose.onclick = () => this.hide();
+        dom.setupBackBtn.onclick = () => this.goToStep(this.currentStep - 1);
+        dom.setupNextBtn.onclick = () => this.advance();
+        dom.setupSkipBtn.onclick = () => this.advance();
+        dom.setupFinishBtn.onclick = () => this.finish();
+
+        // Step indicator clicks
+        document.querySelectorAll('[data-setup-step]').forEach(btn => {
+            btn.onclick = () => {
+                const s = parseInt(btn.dataset.setupStep);
+                if (s <= this.currentStep || this.stepsDone.has(s)) this.goToStep(s);
+            };
+        });
+
+        // Step-specific buttons
+        const recheckBtn = $('#setup-ollama-recheck');
+        if (recheckBtn) recheckBtn.onclick = () => this.runStep2();
+
+        const downloadBtn = $('#setup-download-btn');
+        if (downloadBtn) downloadBtn.onclick = () => this.startModelPull();
+
+        const verifyBtn = $('#setup-verify-btn');
+        if (verifyBtn) verifyBtn.onclick = () => this.runStep4();
+
+        const topicBackBtn = $('#setup-topic-back');
+        if (topicBackBtn) topicBackBtn.onclick = () => {
+            $('#setup-topic-picker').style.display = '';
+            $('#setup-feed-picker').style.display = 'none';
+        };
+
+        const saveFeedsBtn = $('#setup-save-feeds');
+        if (saveFeedsBtn) saveFeedsBtn.onclick = () => this.saveFeeds();
+
+        // Re-run button in settings
+        if (dom.setupRerunBtn) {
+            dom.setupRerunBtn.onclick = () => {
+                dom.settingsModal.hidden = true;
+                this.stepsDone.clear();
+                this.show();
+                this.runStep1();
+            };
+        }
+
+        // Socket.IO events for model pull
+        if (state.socket) {
+            state.socket.on('setup:progress', (data) => this.onPullProgress(data));
+            state.socket.on('setup:complete', (data) => this.onPullComplete(data));
+        }
+
+        // Pre-populate from status if available
+        if (statusData && statusData.hardware_info) {
+            this.hwData = statusData.hardware_info;
+        }
+
+        // Start step 1 automatically
+        this.runStep1();
+    },
+
+    goToStep(n) {
+        if (n < 1 || n > this.totalSteps) return;
+        this.currentStep = n;
+
+        // Show/hide step bodies
+        document.querySelectorAll('.setup-wizard__step').forEach(el => {
+            el.style.display = (parseInt(el.dataset.step) === n) ? '' : 'none';
+        });
+
+        // Update step indicators
+        document.querySelectorAll('.setup-step').forEach(btn => {
+            const s = parseInt(btn.dataset.setupStep);
+            btn.classList.toggle('setup-step--active', s === n);
+            btn.classList.toggle('setup-step--done', this.stepsDone.has(s));
+        });
+
+        // Update footer buttons
+        dom.setupBackBtn.style.display = (n > 1) ? '' : 'none';
+        dom.setupNextBtn.style.display = (n < this.totalSteps) ? '' : 'none';
+        dom.setupSkipBtn.style.display = (n < this.totalSteps) ? '' : 'none';
+        dom.setupFinishBtn.style.display = (n === this.totalSteps) ? '' : 'none';
+    },
+
+    advance() {
+        if (this.currentStep < this.totalSteps) {
+            const next = this.currentStep + 1;
+            this.goToStep(next);
+            // Auto-run step logic
+            if (next === 1) this.runStep1();
+            else if (next === 2) this.runStep2();
+            else if (next === 3) this.runStep3();
+            else if (next === 4) this.runStep4Auto();
+            else if (next === 5) this.runStep5();
+        }
+    },
+
+    markDone(step) {
+        this.stepsDone.add(step);
+        const ind = $(`#step-ind-${step}`);
+        if (ind) { ind.textContent = '[OK]'; ind.classList.add('done'); }
+        document.querySelectorAll('.setup-step').forEach(btn => {
+            const s = parseInt(btn.dataset.setupStep);
+            if (s === step) btn.classList.add('setup-step--done');
+        });
+    },
+
+    // -- Step 1: Hardware Detection --
+    async runStep1() {
+        const container = $('#setup-hw-result');
+        container.innerHTML = '<div class="setup-wizard__loading">[*] Detecting hardware...</div>';
+        try {
+            const resp = await fetch('/api/setup/detect', { method: 'POST' });
+            const data = await resp.json();
+            this.hwData = data;
+
+            const vramGB = (data.vram_mb / 1024).toFixed(1);
+            const quality = data.vram_mb >= 8192 ? "that's excellent!"
+                          : data.vram_mb >= 6144 ? "that's solid!"
+                          : data.vram_mb >= 4096 ? "that'll work well!"
+                          : "we'll make it work!";
+
+            let html = '<div class="setup-wizard__status setup-wizard__status--ok">[OK] Detected your system:</div>';
+            html += '<div class="setup-wizard__info-grid">';
+            html += `<span class="text-muted">Computer:</span><span>${data.platform === 'windows' ? 'Windows PC' : data.platform === 'darwin' ? 'Mac' : 'Linux'}</span>`;
+            if (!data.cpu_only) {
+                html += `<span class="text-muted">Graphics card:</span><span>${data.gpu_name}</span>`;
+                html += `<span class="text-muted">Graphics memory:</span><span>${data.vram_mb.toLocaleString()} MB (${vramGB} GB) -- ${quality}</span>`;
+            } else {
+                html += `<span class="text-muted">Graphics card:</span><span>CPU-only mode (no dedicated GPU)</span>`;
+            }
+            html += `<span class="text-muted">Recommended model:</span><span><strong>${data.recommended_model}</strong> (${data.model_size})</span>`;
+            html += `<span class="text-muted">Description:</span><span>${data.model_summary}</span>`;
+            html += '</div>';
+            container.innerHTML = html;
+            this.markDone(1);
+        } catch (e) {
+            container.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">[X] Could not detect hardware. Continuing with defaults.</div>';
+            this.markDone(1);
+        }
+    },
+
+    // -- Step 2: Ollama Check --
+    async runStep2() {
+        const container = $('#setup-ollama-result');
+        const installSection = $('#setup-ollama-install');
+        container.innerHTML = '<div class="setup-wizard__loading">[*] Checking for Ollama...</div>';
+        installSection.style.display = 'none';
+
+        try {
+            const resp = await fetch('/api/setup/check-ollama', { method: 'POST' });
+            const data = await resp.json();
+            this.ollamaData = data;
+
+            if (data.running) {
+                container.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">[OK] Ollama is installed and running!</div>'
+                    + `<div class="text-muted" style="margin-top:var(--space-2)">${data.models.length} model(s) installed</div>`;
+                this.markDone(2);
+            } else if (data.on_path) {
+                container.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">[!] Ollama is installed but not running.</div>'
+                    + '<p class="text-muted" style="margin-top:var(--space-2)">Start it with: <code>ollama serve</code></p>';
+            } else {
+                container.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">[!] Ollama is not installed yet.</div>';
+                const instructions = $('#setup-ollama-instructions');
+                if (data.platform === 'windows') {
+                    instructions.textContent = 'Download the installer and run it. After installation, Ollama starts automatically.';
+                } else if (data.platform === 'darwin') {
+                    instructions.innerHTML = 'Install via Homebrew: <code>brew install ollama</code><br>Or download from the link below.';
+                } else {
+                    instructions.innerHTML = 'Run: <code>curl -fsSL https://ollama.com/install.sh | sh</code>';
+                }
+                installSection.style.display = '';
+            }
+        } catch (e) {
+            container.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">[X] Could not check Ollama status.</div>';
+        }
+    },
+
+    // -- Step 3: Model Download --
+    async runStep3() {
+        const nameEl = $('#setup-model-name');
+        const descEl = $('#setup-model-desc');
+        const actionsEl = $('#setup-model-actions');
+        const doneEl = $('#setup-model-done');
+        const progressEl = $('#setup-model-progress');
+
+        if (this.hwData) {
+            nameEl.textContent = this.hwData.recommended_model || 'Unknown model';
+            descEl.textContent = `${this.hwData.model_size || ''} -- ${this.hwData.model_summary || ''}`;
+        }
+
+        // Check if already installed
+        if (this.ollamaData && this.ollamaData.model_installed) {
+            actionsEl.style.display = 'none';
+            progressEl.style.display = 'none';
+            doneEl.style.display = '';
+            this.markDone(3);
+        } else {
+            actionsEl.style.display = '';
+            doneEl.style.display = 'none';
+        }
+    },
+
+    async startModelPull() {
+        const actionsEl = $('#setup-model-actions');
+        const progressEl = $('#setup-model-progress');
+        actionsEl.style.display = 'none';
+        progressEl.style.display = '';
+
+        try {
+            await fetch('/api/setup/pull-model', { method: 'POST' });
+            // Progress comes via Socket.IO
+        } catch (e) {
+            $('#setup-progress-text').textContent = '[X] Failed to start download. Is Ollama running?';
+        }
+    },
+
+    onPullProgress(data) {
+        const fill = $('#setup-progress-fill');
+        const text = $('#setup-progress-text');
+        if (data.total > 0) {
+            const pct = Math.round((data.completed / data.total) * 100);
+            fill.style.width = pct + '%';
+            const dlMB = (data.completed / 1048576).toFixed(0);
+            const totalMB = (data.total / 1048576).toFixed(0);
+            text.textContent = `${data.status || 'Downloading'}... ${dlMB} MB / ${totalMB} MB (${pct}%)`;
+        } else {
+            text.textContent = data.status || 'Preparing...';
+        }
+    },
+
+    onPullComplete(data) {
+        const progressEl = $('#setup-model-progress');
+        const doneEl = $('#setup-model-done');
+        if (data.success) {
+            progressEl.style.display = 'none';
+            doneEl.style.display = '';
+            doneEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">[OK] Model downloaded and ready!</div>';
+            this.markDone(3);
+        } else {
+            $('#setup-progress-text').textContent = `[X] Download failed: ${data.error || 'Unknown error'}`;
+        }
+    },
+
+    // -- Step 4: Verify --
+    runStep4Auto() {
+        // Don't auto-run verify -- let user click the button
+        const resultEl = $('#setup-verify-result');
+        const loadingEl = $('#setup-verify-loading');
+        const btnEl = $('#setup-verify-btn');
+        resultEl.style.display = 'none';
+        loadingEl.style.display = 'none';
+        btnEl.style.display = '';
+    },
+
+    async runStep4() {
+        const resultEl = $('#setup-verify-result');
+        const loadingEl = $('#setup-verify-loading');
+        const btnEl = $('#setup-verify-btn');
+
+        btnEl.style.display = 'none';
+        loadingEl.style.display = '';
+        resultEl.style.display = 'none';
+
+        try {
+            const resp = await fetch('/api/setup/verify', { method: 'POST' });
+            const data = await resp.json();
+            loadingEl.style.display = 'none';
+            resultEl.style.display = '';
+
+            if (data.success) {
+                resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">[OK] Everything works!</div>'
+                    + `<blockquote class="setup-wizard__quote">${data.text}</blockquote>`
+                    + `<div class="text-muted">Response generated in ${data.elapsed_seconds.toFixed(1)} seconds</div>`;
+                this.markDone(4);
+            } else {
+                resultEl.innerHTML = `<div class="setup-wizard__status setup-wizard__status--err">[X] ${data.error}</div>`;
+                btnEl.style.display = '';
+                btnEl.textContent = 'Try Again';
+            }
+        } catch (e) {
+            loadingEl.style.display = 'none';
+            resultEl.style.display = '';
+            resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">[X] Could not reach the model. Is Ollama running?</div>';
+            btnEl.style.display = '';
+        }
+    },
+
+    // -- Step 5: Content Pipeline --
+    async runStep5() {
+        const gridEl = $('#setup-topic-grid');
+        if (this.topicsData) {
+            this.renderTopicGrid(gridEl);
+            return;
+        }
+
+        gridEl.innerHTML = '<div class="setup-wizard__loading">[*] Loading topics...</div>';
+        try {
+            const resp = await fetch('/api/setup/topics');
+            const data = await resp.json();
+            this.topicsData = data.topics;
+            this.renderTopicGrid(gridEl);
+        } catch (e) {
+            gridEl.innerHTML = '<div class="text-muted">Could not load topics. You can set this up later.</div>';
+        }
+    },
+
+    renderTopicGrid(gridEl) {
+        gridEl.innerHTML = '';
+        const topics = Object.keys(this.topicsData).sort();
+        topics.forEach(topic => {
+            const btn = document.createElement('button');
+            btn.className = 'setup-wizard__topic-btn';
+            btn.textContent = topic;
+            btn.onclick = () => this.selectTopic(topic);
+            gridEl.appendChild(btn);
+        });
+    },
+
+    selectTopic(topic) {
+        this.selectedTopic = topic;
+        $('#setup-topic-picker').style.display = 'none';
+        $('#setup-feed-picker').style.display = '';
+
+        const feeds = this.topicsData[topic] || [];
+        const listEl = $('#setup-feed-list');
+        listEl.innerHTML = '';
+        this.selectedFeeds = feeds.map(() => true);
+
+        feeds.forEach((feed, i) => {
+            const row = document.createElement('label');
+            row.className = 'setup-wizard__feed-row';
+            row.innerHTML = `<input type="checkbox" checked data-feed-idx="${i}">
+                <span class="setup-wizard__feed-name">${feed.name}</span>
+                <span class="setup-wizard__feed-url text-muted">${feed.url}</span>`;
+            row.querySelector('input').onchange = (e) => {
+                this.selectedFeeds[i] = e.target.checked;
+            };
+            listEl.appendChild(row);
+        });
+    },
+
+    async saveFeeds() {
+        const feeds = (this.topicsData[this.selectedTopic] || [])
+            .filter((_, i) => this.selectedFeeds[i]);
+
+        try {
+            await fetch('/api/setup/save-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: this.selectedTopic, feeds }),
+            });
+            this.markDone(5);
+            showToast('Content pipeline configured!', 'success');
+        } catch (e) {
+            showToast('Failed to save content config', 'error');
+        }
+    },
+
+    async finish() {
+        // If no feeds selected, still mark setup complete
+        if (!this.stepsDone.has(5)) {
+            try {
+                await fetch('/api/setup/save-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: '', feeds: [] }),
+                });
+            } catch (e) { /* ignore */ }
+        }
+
+        this.hide();
+        switchPanel('team');
+        showToast('Setup complete! Your agents are ready.', 'success');
+    },
+};
+
 
 // Boot
 document.addEventListener('DOMContentLoaded', init);

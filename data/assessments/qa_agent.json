@@ -1,0 +1,1613 @@
+{
+  "agent_id": "qa_agent",
+  "source": "ISTQB CTFL/CTAL + Senior QA certification level (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "QA001",
+      "question": "In the test pyramid model, which layer should contain the largest number of tests?",
+      "choices": {
+        "A": "End-to-end UI tests",
+        "B": "Unit tests",
+        "C": "Integration tests",
+        "D": "Manual exploratory tests"
+      },
+      "answer": "B",
+      "explanation": "The test pyramid places unit tests at the base, meaning they should be the most numerous. They are fast, cheap, and provide the earliest feedback. UI tests sit at the top and should be fewest due to their brittleness and execution cost.",
+      "topic": "test_pyramid",
+      "topic_category": "test_strategy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA002",
+      "question": "A tester finds a defect that crashes the application but only occurs in a rarely used admin configuration screen. How should severity and priority be classified?",
+      "choices": {
+        "A": "Low severity, low priority",
+        "B": "Low severity, high priority",
+        "C": "High severity, low priority",
+        "D": "High severity, high priority"
+      },
+      "answer": "C",
+      "explanation": "Severity reflects the impact of the defect (a crash is high severity regardless of context). Priority reflects the business urgency of fixing it. Since the screen is rarely used, the business urgency to fix is low, making it high severity but low priority.",
+      "topic": "severity_vs_priority",
+      "topic_category": "bug_reporting",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA003",
+      "question": "Which ISTQB testing principle states that repeating the same tests will eventually stop finding new defects?",
+      "choices": {
+        "A": "Pesticide paradox",
+        "B": "Defect clustering",
+        "C": "Absence of errors fallacy",
+        "D": "Exhaustive testing is impossible"
+      },
+      "answer": "A",
+      "explanation": "The pesticide paradox states that if the same tests are repeated over and over, they will no longer find new defects -- just as pesticides lose effectiveness over time. Tests must be regularly reviewed and revised. Defect clustering is about defects concentrating in a few modules.",
+      "topic": "pesticide_paradox",
+      "topic_category": "istqb",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA004",
+      "question": "A REST API endpoint returns HTTP 204. What does this status code indicate?",
+      "choices": {
+        "A": "The resource was not found",
+        "B": "The request is malformed",
+        "C": "The request was successful but there is no content to return",
+        "D": "The server encountered an internal error"
+      },
+      "answer": "C",
+      "explanation": "HTTP 204 No Content means the server successfully processed the request but is not returning any content. It is commonly used for DELETE operations or PUT operations where the client does not need a response body. 404 is not found, 400 is bad request, 500 is internal server error.",
+      "topic": "status_code_validation",
+      "topic_category": "api_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA005",
+      "question": "What is the primary difference between statement coverage and branch coverage?",
+      "choices": {
+        "A": "Statement coverage measures executed lines; branch coverage measures executed decision outcomes",
+        "B": "Branch coverage only applies to loops",
+        "C": "Statement coverage is always higher than branch coverage",
+        "D": "They are equivalent metrics with different names"
+      },
+      "answer": "A",
+      "explanation": "Statement coverage measures the percentage of executable statements that have been exercised. Branch coverage measures whether each decision point (e.g., if/else) has been evaluated to both true and false outcomes. 100% branch coverage implies 100% statement coverage, but not vice versa.",
+      "topic": "coverage_metrics",
+      "topic_category": "coverage_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA006",
+      "question": "During a load test, you observe that response times are acceptable at 500 concurrent users but degrade sharply at 600. What type of testing would you perform next to characterize the failure behavior?",
+      "choices": {
+        "A": "Spike testing",
+        "B": "Baseline testing",
+        "C": "Stress testing",
+        "D": "Soak testing"
+      },
+      "answer": "C",
+      "explanation": "Stress testing pushes the system beyond its normal operational capacity to determine how it handles overload and at what point it fails. Since the threshold was identified around 500-600 users, stress testing will characterize the degradation and failure behavior. Soak testing is for endurance over time, spike testing for sudden bursts, and baseline testing establishes reference metrics.",
+      "topic": "load_vs_stress_testing",
+      "topic_category": "performance_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA007",
+      "question": "In boundary value analysis using the two-value technique, which values would you test for a field that accepts integers from 1 to 100 inclusive?",
+      "choices": {
+        "A": "0, 1, 50, 100, 101",
+        "B": "1, 50, 100",
+        "C": "0, 1, 100, 101",
+        "D": "-1, 0, 1, 99, 100, 101"
+      },
+      "answer": "C",
+      "explanation": "The two-value boundary value analysis technique tests the boundary value and the value just outside the boundary. For a range of 1-100, this means testing 0 (just below lower), 1 (lower boundary), 100 (upper boundary), and 101 (just above upper). The three-value technique would also include values just inside the boundary.",
+      "topic": "boundary_value_analysis",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA008",
+      "question": "Which defect lifecycle state indicates that a developer has fixed the defect and it is awaiting verification by a tester?",
+      "choices": {
+        "A": "Assigned",
+        "B": "Deferred",
+        "C": "Closed",
+        "D": "Resolved"
+      },
+      "answer": "D",
+      "explanation": "In the standard defect lifecycle, 'Resolved' (or 'Fixed') means the developer has applied a fix and the defect is ready for re-testing by QA. 'Closed' means verification is complete and the fix is confirmed. 'Deferred' means the fix is postponed, and 'Assigned' means it has been allocated to a developer but work has not been completed.",
+      "topic": "defect_lifecycle",
+      "topic_category": "bug_reporting",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA009",
+      "question": "What is the key difference between consumer-driven contract testing and provider-driven contract testing?",
+      "choices": {
+        "A": "Consumer-driven testing tests the UI; provider-driven tests the backend",
+        "B": "Consumer-driven testing is manual; provider-driven is automated",
+        "C": "Consumer-driven tests are written by the API consumer defining expected interactions; provider-driven tests are written by the API provider defining the contract",
+        "D": "There is no meaningful difference; they are interchangeable terms"
+      },
+      "answer": "C",
+      "explanation": "In consumer-driven contract testing, each consumer defines a contract describing the interactions it expects from the provider. The provider then verifies it can meet all consumer contracts. In provider-driven testing, the provider publishes its contract and consumers verify compatibility. Consumer-driven is preferred when consumers have varying needs from the same provider.",
+      "topic": "contract_testing",
+      "topic_category": "api_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA010",
+      "question": "A test team discovers that 80% of defects are concentrated in 20% of the modules. Which ISTQB principle does this illustrate?",
+      "choices": {
+        "A": "Defect clustering",
+        "B": "Exhaustive testing is impossible",
+        "C": "Early testing saves time and money",
+        "D": "Testing shows the presence of defects, not their absence"
+      },
+      "answer": "A",
+      "explanation": "Defect clustering is the ISTQB principle that a small number of modules usually contain most of the defects found during pre-release testing. This follows the Pareto principle (80/20 rule) and informs risk-based testing strategies by directing more testing effort toward historically defect-dense modules.",
+      "topic": "defect_clustering",
+      "topic_category": "istqb",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA011",
+      "question": "In a release readiness checklist, what is the most critical criterion for determining go/no-go?",
+      "choices": {
+        "A": "The development team has signed off",
+        "B": "All exit criteria defined in the test plan are met",
+        "C": "No open defects of any severity remain",
+        "D": "All planned features are implemented"
+      },
+      "answer": "B",
+      "explanation": "Exit criteria defined in the test plan represent the agreed-upon quality thresholds that must be met before release. These criteria are objective and measurable. Requiring zero defects is unrealistic, developer sign-off alone is insufficient, and feature completeness does not address quality.",
+      "topic": "release_readiness",
+      "topic_category": "release_management",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA012",
+      "question": "What distinguishes fuzzing from traditional negative testing?",
+      "choices": {
+        "A": "Fuzzing is manual; negative testing is automated",
+        "B": "Fuzzing is only for security testing, while negative testing is for functional testing",
+        "C": "Fuzzing requires source code access; negative testing does not",
+        "D": "Fuzzing uses randomly generated or mutated inputs at scale, while negative testing uses deliberately crafted invalid inputs"
+      },
+      "answer": "D",
+      "explanation": "Fuzzing (fuzz testing) automatically generates large volumes of random, malformed, or unexpected inputs to find crashes, memory leaks, and vulnerabilities. Traditional negative testing involves manually designing specific invalid inputs to verify error handling. Fuzzing can be applied beyond security (e.g., protocol testing) and does not require source code (black-box fuzzing).",
+      "topic": "fuzzing_concepts",
+      "topic_category": "security_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA013",
+      "question": "What is the primary purpose of a test charter in session-based test management (SBTM)?",
+      "choices": {
+        "A": "To assign test cases to individual testers",
+        "B": "To provide a detailed step-by-step test script",
+        "C": "To document test results after execution",
+        "D": "To define a mission and scope for a time-boxed exploratory testing session"
+      },
+      "answer": "D",
+      "explanation": "A test charter in SBTM defines the purpose, scope, and focus area for an exploratory testing session. It provides enough guidance to direct the tester without constraining the exploration. It is not a detailed script (that would be scripted testing) nor a results document (that is the session report).",
+      "topic": "session_based_testing",
+      "topic_category": "test_strategy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA014",
+      "question": "In the context of CI/CD, what is a flaky test?",
+      "choices": {
+        "A": "A test that passes and fails intermittently without code changes",
+        "B": "A test that always fails",
+        "C": "A test that is too slow to run in the pipeline",
+        "D": "A test that has been deprecated but not removed"
+      },
+      "answer": "A",
+      "explanation": "A flaky test produces inconsistent results -- sometimes passing and sometimes failing -- on the same code without any changes. Common causes include timing dependencies, shared state, non-deterministic data, or environmental differences. Flaky tests erode confidence in the test suite and require dedicated management strategies.",
+      "topic": "flaky_test_management",
+      "topic_category": "test_process",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA015",
+      "question": "Which testing quadrant from the Agile Testing Quadrants model focuses on tests that critique the product using business-facing tests?",
+      "choices": {
+        "A": "Q4 (technology-facing, critiquing the product)",
+        "B": "Q3 (business-facing, critiquing the product)",
+        "C": "Q2 (business-facing, supporting the team)",
+        "D": "Q1 (technology-facing, supporting the team)"
+      },
+      "answer": "B",
+      "explanation": "Quadrant 3 contains business-facing tests that critique the product, including exploratory testing, usability testing, and user acceptance testing. Q1 is unit/component tests, Q2 is functional/story tests, and Q4 is performance and security testing.",
+      "topic": "testing_quadrants",
+      "topic_category": "test_strategy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA016",
+      "question": "What is the main advantage of equivalence partitioning as a test design technique?",
+      "choices": {
+        "A": "It guarantees 100% path coverage",
+        "B": "It reduces the number of test cases while maintaining reasonable coverage by grouping inputs that should be treated the same",
+        "C": "It is only applicable to numeric input fields",
+        "D": "It eliminates the need for boundary value analysis"
+      },
+      "answer": "B",
+      "explanation": "Equivalence partitioning divides the input domain into classes where all values in a class are expected to be processed the same way. Testing one representative value from each partition provides reasonable coverage without testing every possible input. It complements (not replaces) boundary value analysis and applies to all input types, not just numeric.",
+      "topic": "equivalence_partitioning",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA017",
+      "question": "An Apdex score of 0.85 for a web application indicates what about user satisfaction?",
+      "choices": {
+        "A": "Excellent -- virtually all users are satisfied",
+        "B": "Good -- most users are satisfied with performance",
+        "C": "Poor -- significant performance issues",
+        "D": "Unacceptable -- most users are frustrated"
+      },
+      "answer": "B",
+      "explanation": "Apdex (Application Performance Index) scores range from 0 to 1. An Apdex of 0.85 falls in the 'Good' range (0.75-0.93). Scores above 0.94 are 'Excellent', 0.50-0.74 is 'Fair', and below 0.50 is 'Unacceptable'. The score represents the ratio of satisfied and tolerating users to total samples.",
+      "topic": "apdex_scoring",
+      "topic_category": "performance_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA018",
+      "question": "What is the test oracle problem?",
+      "choices": {
+        "A": "The difficulty of finding testers with domain expertise",
+        "B": "The challenge of determining the expected result for a given test input when no reliable reference exists",
+        "C": "The challenge of running tests on Oracle databases",
+        "D": "The problem of test scripts becoming outdated"
+      },
+      "answer": "B",
+      "explanation": "The test oracle problem refers to the difficulty of determining what the correct output should be for a given input, especially in complex systems where no specification, reference implementation, or prior version exists to compare against. It is a fundamental challenge in testing, particularly for AI/ML systems and novel algorithms.",
+      "topic": "test_oracle_problem",
+      "topic_category": "istqb",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA019",
+      "question": "Which approach to test estimation uses historical data from similar projects to predict testing effort?",
+      "choices": {
+        "A": "Three-point estimation",
+        "B": "Work breakdown structure",
+        "C": "Analogy-based estimation",
+        "D": "Expert judgment"
+      },
+      "answer": "C",
+      "explanation": "Analogy-based estimation derives effort predictions by comparing the current project to similar past projects, adjusting for differences in scope and complexity. Expert judgment relies on individual experience, work breakdown structure decomposes work into tasks, and three-point estimation uses optimistic/pessimistic/most likely values.",
+      "topic": "test_estimation",
+      "topic_category": "test_strategy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA020",
+      "question": "In threat modeling for testers, what does the STRIDE model stand for?",
+      "choices": {
+        "A": "Security, Testing, Risk, Integration, Deployment, Execution",
+        "B": "System, Target, Review, Identify, Defend, Evaluate",
+        "C": "Strategy, Threat, Response, Impact, Detection, Elimination",
+        "D": "Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege"
+      },
+      "answer": "D",
+      "explanation": "STRIDE is Microsoft's threat modeling framework. Each letter represents a category of security threat: Spoofing identity, Tampering with data, Repudiation (denying actions), Information disclosure, Denial of service, and Elevation of privilege. Testers use STRIDE to systematically identify potential security threats during test planning.",
+      "topic": "threat_modeling",
+      "topic_category": "security_testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "QA021",
+      "question": "A system has three boolean input conditions that control output behavior. How many test cases are required to achieve 100% Modified Condition/Decision Coverage (MC/DC)?",
+      "choices": {
+        "A": "4",
+        "B": "8",
+        "C": "6",
+        "D": "3"
+      },
+      "answer": "A",
+      "explanation": "MC/DC requires N+1 test cases for N conditions, where each condition is shown to independently affect the decision outcome. For 3 boolean conditions, the minimum is 3+1=4 test cases. Full decision table coverage would require 2^3=8 cases, but MC/DC is more efficient while still demonstrating each condition's independent effect.",
+      "topic": "mcdc_coverage",
+      "topic_category": "coverage_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA022",
+      "question": "You are designing tests for a state machine with 5 states and 8 transitions. To achieve 0-switch coverage (all valid transitions), what is the minimum number of test cases required if the system has one start state and one end state?",
+      "choices": {
+        "A": "The number depends on the specific transition graph topology",
+        "B": "5",
+        "C": "8",
+        "D": "1 test case that traverses all transitions"
+      },
+      "answer": "A",
+      "explanation": "The minimum number of test cases for 0-switch coverage (covering all transitions) depends on the graph structure, specifically how many transitions can be chained into single paths from start to end. An Euler path exists only if at most two nodes have odd degree. The answer cannot be determined without knowing the specific topology.",
+      "topic": "state_transition_testing",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA023",
+      "question": "A team uses pairwise (all-pairs) testing for a form with 4 parameters, each having 3 possible values. Full combinatorial testing would require 81 test cases. What is the approximate number of test cases needed for pairwise coverage?",
+      "choices": {
+        "A": "54-60",
+        "B": "27-36",
+        "C": "9-12",
+        "D": "4-6"
+      },
+      "answer": "C",
+      "explanation": "Pairwise testing ensures every pair of parameter values is tested together at least once. For 4 parameters with 3 values each, pairwise coverage typically requires 9-12 test cases (orthogonal arrays or covering arrays). This is a dramatic reduction from the 3^4=81 cases needed for full combinatorial coverage while catching most interaction defects.",
+      "topic": "pairwise_testing",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA024",
+      "question": "When testing an API that supports pagination, which of the following is the most commonly overlooked edge case?",
+      "choices": {
+        "A": "Concurrent requests modifying the dataset between page fetches, causing items to be duplicated or skipped",
+        "B": "Requesting a page number beyond the total number of pages",
+        "C": "Requesting page 1 with the default page size",
+        "D": "Requesting page 1 with page size equal to total items"
+      },
+      "answer": "A",
+      "explanation": "While testers commonly test boundary pages (first, last, beyond-last), the most insidious pagination bug involves data consistency during concurrent modifications. If items are inserted or deleted between page requests, cursor-based pagination may skip items or return duplicates. This is a real-world concurrency edge case that offset-based pagination is especially vulnerable to.",
+      "topic": "pagination_testing",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA025",
+      "question": "In mutation testing, what does a 'survived mutant' indicate?",
+      "choices": {
+        "A": "The mutant was equivalent to the original program",
+        "B": "The test suite failed to detect the introduced fault, indicating a gap in test effectiveness",
+        "C": "The mutation was syntactically invalid and could not compile",
+        "D": "The test suite detected and killed the mutation"
+      },
+      "answer": "B",
+      "explanation": "A survived mutant means a deliberate fault (mutation) was injected into the code, but no existing test case detected it -- all tests still passed. This reveals a weakness in the test suite's fault-detection capability. Equivalent mutants (option D) are a separate concern where the mutation produces identical behavior and cannot be detected by any test.",
+      "topic": "mutation_testing",
+      "topic_category": "coverage_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA026",
+      "question": "A QA engineer is reviewing a bug report that states: 'The application crashes sometimes.' What is the most critical improvement needed in this report?",
+      "choices": {
+        "A": "Include reproducible steps with specific preconditions, input data, and the frequency of occurrence",
+        "B": "Assign a higher severity",
+        "C": "Add the build number",
+        "D": "Add a screenshot"
+      },
+      "answer": "A",
+      "explanation": "The most critical gap in 'crashes sometimes' is the lack of reproducibility information. Without specific steps, preconditions, and data that trigger the crash, developers cannot diagnose or fix the issue. While screenshots and build numbers are helpful, reproducible steps are the single most important element of a useful bug report per IEEE 829 standards.",
+      "topic": "bug_report_quality",
+      "topic_category": "bug_reporting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA027",
+      "question": "Which technique is most appropriate for testing business rules with multiple interacting conditions where the output depends on combinations of those conditions?",
+      "choices": {
+        "A": "Boundary value analysis",
+        "B": "Use case testing",
+        "C": "State transition testing",
+        "D": "Decision table testing"
+      },
+      "answer": "D",
+      "explanation": "Decision table testing is designed specifically for systems where the output depends on combinations of conditions. Each column represents a rule (a unique combination of condition values and their corresponding actions). Boundary value analysis addresses single-variable boundaries, state transition tests sequential behavior, and use case testing validates user workflows.",
+      "topic": "decision_tables",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA028",
+      "question": "In risk-based testing, how should test priority be determined when risk likelihood is high but impact is low?",
+      "choices": {
+        "A": "Lowest priority -- low impact means minimal business consequence",
+        "B": "Skip testing -- if impact is low, the defect is acceptable",
+        "C": "Medium priority -- risk is the product of likelihood and impact, so a high-low combination yields medium risk",
+        "D": "Highest priority -- likelihood always trumps impact"
+      },
+      "answer": "C",
+      "explanation": "Risk-based testing calculates risk as likelihood multiplied by impact. A high likelihood with low impact produces a medium overall risk level, which should receive medium testing priority. Neither dimension alone determines priority; both must be considered together. Skipping testing based on low impact alone ignores the frequency of occurrence.",
+      "topic": "risk_based_testing",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA029",
+      "question": "You are testing a webhook integration. The receiving endpoint must respond within 5 seconds or the sending system retries. What is the most important test scenario beyond basic functionality?",
+      "choices": {
+        "A": "Testing with HTTP/2 vs HTTP/1.1",
+        "B": "Testing idempotency of the receiving endpoint under retry conditions",
+        "C": "Testing with very large request headers",
+        "D": "Testing with different HTTP methods (GET, POST, PUT)"
+      },
+      "answer": "B",
+      "explanation": "When a webhook system retries due to timeout, the receiving endpoint may process the same event multiple times. Testing idempotency -- ensuring that duplicate deliveries produce the same result as a single delivery -- is critical to prevent duplicate transactions, charges, or state corruption. This is the most impactful real-world failure mode for webhook integrations.",
+      "topic": "webhook_testing",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA030",
+      "question": "What distinguishes a canary deployment testing strategy from a blue-green deployment testing strategy?",
+      "choices": {
+        "A": "Blue-green is for production; canary is for staging only",
+        "B": "They are identical strategies with different names in different organizations",
+        "C": "Canary routes a small percentage of traffic to the new version while monitoring; blue-green switches all traffic at once between two identical environments",
+        "D": "Canary requires feature flags; blue-green does not"
+      },
+      "answer": "C",
+      "explanation": "Canary deployment gradually routes a small percentage of production traffic (e.g., 5%) to the new version, monitors for errors, and incrementally increases traffic if metrics are healthy. Blue-green maintains two identical environments and switches all traffic from blue (current) to green (new) at once. Canary provides more granular risk management; blue-green provides simpler rollback.",
+      "topic": "deployment_testing",
+      "topic_category": "release_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA031",
+      "question": "During performance testing, you observe that the p95 response time is 1.2 seconds and the p99 response time is 8.5 seconds. What does this large gap indicate?",
+      "choices": {
+        "A": "The test tool is misconfigured",
+        "B": "The server needs more memory",
+        "C": "There is a long-tail latency problem where a small percentage of requests encounter significantly slower processing paths",
+        "D": "The average response time is too high"
+      },
+      "answer": "C",
+      "explanation": "A large gap between p95 and p99 indicates long-tail latency: while most requests complete quickly, approximately 4% of requests hit a much slower path (possibly garbage collection pauses, cache misses, database lock contention, or resource exhaustion). This disproportionately affects user experience because affected users see 7x worse performance than the typical request.",
+      "topic": "response_time_percentiles",
+      "topic_category": "performance_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA032",
+      "question": "In the context of the OWASP API Security Top 10, what is Broken Object Level Authorization (BOLA)?",
+      "choices": {
+        "A": "An API that allows a user to access or modify resources belonging to other users by manipulating object identifiers",
+        "B": "Using HTTP Basic Auth instead of OAuth",
+        "C": "Missing authentication on API endpoints",
+        "D": "Failing to rate-limit API requests"
+      },
+      "answer": "A",
+      "explanation": "BOLA (also known as Insecure Direct Object Reference / IDOR) occurs when an API does not verify that the requesting user has authorization to access the specific object identified in the request. For example, changing /api/orders/123 to /api/orders/124 might expose another user's order. It is the #1 risk in the OWASP API Security Top 10.",
+      "topic": "owasp_api_top10",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA033",
+      "question": "A team achieves 100% statement coverage but a defect is found in production. Which coverage limitation does this illustrate?",
+      "choices": {
+        "A": "100% statement coverage does not guarantee all decision branches or condition combinations have been tested",
+        "B": "Statement coverage only applies to unit tests",
+        "C": "Statement coverage does not test exception paths",
+        "D": "The coverage tool measured incorrectly"
+      },
+      "answer": "A",
+      "explanation": "100% statement coverage means every line of code was executed at least once, but it does not ensure all branches of conditional statements were taken. A decision with an if-else might only be tested for the true path, achieving statement coverage of both branches' code through other paths, while the specific false branch logic remains untested for that condition.",
+      "topic": "coverage_limitations",
+      "topic_category": "coverage_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA034",
+      "question": "When organizing a bug bash, which factor most significantly impacts its effectiveness?",
+      "choices": {
+        "A": "Using the most expensive bug tracking tool",
+        "B": "Ensuring only QA engineers participate",
+        "C": "Providing focused areas and clear test charters to participants with diverse perspectives",
+        "D": "Having the longest possible time window"
+      },
+      "answer": "C",
+      "explanation": "Bug bash effectiveness depends on focused charters (so effort is directed, not random clicking) combined with diverse perspectives (developers, designers, PMs, support staff see different types of issues). Time beyond 2-3 hours shows diminishing returns. Limiting participants to QA only defeats the purpose of fresh eyes from cross-functional team members.",
+      "topic": "bug_bash_organization",
+      "topic_category": "bug_reporting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA035",
+      "question": "What is the relationship between the V-model and Agile testing approaches?",
+      "choices": {
+        "A": "The V-model is incompatible with Agile and should never be referenced",
+        "B": "The V-model's test levels (unit, integration, system, acceptance) still apply in Agile, but the phases overlap and execute iteratively within sprints rather than sequentially",
+        "C": "The V-model is used for planning sprints in Agile",
+        "D": "Agile replaces all V-model concepts with exploratory testing"
+      },
+      "answer": "B",
+      "explanation": "While the V-model's sequential lifecycle does not fit Agile's iterative approach, its test levels remain relevant. In Agile, unit, integration, system, and acceptance testing still occur, but they happen concurrently within each iteration rather than as sequential phases. The test types and their purposes are universal; the timing and feedback loops differ.",
+      "topic": "v_model_vs_agile",
+      "topic_category": "istqb",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA036",
+      "question": "A GraphQL API returns a 200 OK status even when the query contains errors. Why does this make testing GraphQL APIs more challenging than REST APIs?",
+      "choices": {
+        "A": "GraphQL does not support error handling",
+        "B": "Testers cannot rely on HTTP status codes to detect failures and must parse the response body for an 'errors' array",
+        "C": "GraphQL APIs are always slower than REST APIs",
+        "D": "GraphQL uses a different protocol than HTTP"
+      },
+      "answer": "B",
+      "explanation": "GraphQL returns HTTP 200 for all responses, including those with partial or complete errors. Errors are reported in an 'errors' array within the response body, and a response can contain both valid data and errors simultaneously (partial success). This means traditional HTTP status code assertions are insufficient; testers must validate both the 'data' and 'errors' fields in every response.",
+      "topic": "graphql_testing",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA037",
+      "question": "In test data management, what is the primary risk of using production data in test environments?",
+      "choices": {
+        "A": "Production data is too large for test environments",
+        "B": "Production data creates flaky tests",
+        "C": "Exposure of personally identifiable information (PII) and sensitive data, violating data protection regulations like GDPR",
+        "D": "Production data makes tests run slower"
+      },
+      "answer": "C",
+      "explanation": "Using production data in test environments risks exposing PII, financial data, and health records, potentially violating GDPR, HIPAA, PCI-DSS, and similar regulations. Data masking, anonymization, or synthetic data generation should be used instead. While volume and performance are considerations, the compliance and privacy risk is the primary concern.",
+      "topic": "test_data_management",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA038",
+      "question": "What is the key difference between static analysis and dynamic analysis in security testing?",
+      "choices": {
+        "A": "Static analysis finds functional bugs; dynamic analysis finds security bugs",
+        "B": "Static analysis examines code without executing it; dynamic analysis tests the application while it is running",
+        "C": "Static analysis tests running applications; dynamic analysis reviews source code",
+        "D": "Static analysis is automated; dynamic analysis is manual"
+      },
+      "answer": "B",
+      "explanation": "Static analysis (SAST) examines source code, bytecode, or binary without executing the program, looking for patterns that indicate vulnerabilities. Dynamic analysis (DAST) tests the running application by sending inputs and observing behavior. Both can be automated, both find security issues, and both are complementary -- SAST catches code-level flaws, DAST catches runtime and configuration issues.",
+      "topic": "static_vs_dynamic_analysis",
+      "topic_category": "security_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA039",
+      "question": "A tester discovers that a date field accepts February 30th without validation. Which category of edge case testing does this fall under?",
+      "choices": {
+        "A": "Boundary value analysis",
+        "B": "Date/time domain-specific edge case testing",
+        "C": "Error guessing based on UI layout",
+        "D": "Equivalence partitioning"
+      },
+      "answer": "B",
+      "explanation": "Invalid calendar dates (Feb 30, Feb 29 in non-leap years, Apr 31) are domain-specific edge cases unique to date/time handling. While boundary value analysis tests numeric boundaries, date validation requires understanding of calendar semantics -- varying month lengths, leap year rules, and timezone-dependent date boundaries. This is a separate category from generic numeric boundaries.",
+      "topic": "date_time_edge_cases",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA040",
+      "question": "In the TMMi (Test Maturity Model Integration), what characterizes Level 3 'Defined'?",
+      "choices": {
+        "A": "Testing is measured and controlled using statistical techniques",
+        "B": "A standard test process is defined, documented, and institutionalized across the organization",
+        "C": "Testing processes are continuously optimized based on quantitative understanding",
+        "D": "Testing is ad hoc and chaotic"
+      },
+      "answer": "B",
+      "explanation": "TMMi Level 3 (Defined) means the organization has a standardized test process that is documented, trained, and consistently applied across projects. Level 1 is Initial (ad hoc), Level 2 is Managed (per-project policies), Level 4 is Measured (quantitative management), and Level 5 is Optimization (continuous improvement driven by metrics).",
+      "topic": "test_maturity_models",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA041",
+      "question": "When testing feature flags, which scenario is most likely to cause production incidents?",
+      "choices": {
+        "A": "A feature flag with a descriptive name",
+        "B": "A feature flag that is enabled for all users",
+        "C": "A feature flag that is disabled for all users",
+        "D": "Interactions between multiple feature flags where the combination of enabled/disabled states creates untested code paths"
+      },
+      "answer": "D",
+      "explanation": "Feature flag interactions create a combinatorial explosion of possible states. If a system has 10 feature flags, there are 2^10 = 1024 possible combinations. Untested combinations can create unexpected code paths, null references, or contradictory behaviors. This is why feature flag testing should include combinatorial analysis of interacting flags, not just individual on/off testing.",
+      "topic": "feature_flag_testing",
+      "topic_category": "release_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA042",
+      "question": "What is the 'absence-of-errors' fallacy in software testing?",
+      "choices": {
+        "A": "The misconception that finding and fixing all defects guarantees the software meets user needs and business requirements",
+        "B": "The idea that testing can prove the absence of all defects",
+        "C": "The belief that a system with no bugs will be rejected by users",
+        "D": "The assumption that zero bugs means the test suite is comprehensive"
+      },
+      "answer": "A",
+      "explanation": "The absence-of-errors fallacy is the ISTQB principle that finding and fixing defects does not help if the system built is unusable or does not meet user needs. A bug-free system that solves the wrong problem or has poor usability is still a failure. This principle reminds testers that quality includes fitness for purpose, not just absence of defects.",
+      "topic": "absence_of_errors_fallacy",
+      "topic_category": "istqb",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA043",
+      "question": "A tester needs to verify that an API correctly handles rate limiting. Which test approach provides the most thorough validation?",
+      "choices": {
+        "A": "Only test that HTTP 429 is returned when the limit is exceeded",
+        "B": "Send one request and verify the rate limit headers in the response",
+        "C": "Test with a single user account only",
+        "D": "Send requests at a rate just below, at, and just above the documented limit, verifying response codes, headers (X-RateLimit-Remaining, Retry-After), and behavior after the limit resets"
+      },
+      "answer": "D",
+      "explanation": "Thorough rate limit testing requires boundary testing around the limit threshold: just below (should succeed), at the limit (should succeed), and just above (should return 429). Additionally, verifying rate limit headers, the Retry-After behavior, the sliding/fixed window reset, and that normal service resumes after the window expires provides complete validation.",
+      "topic": "rate_limiting_testing",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA044",
+      "question": "What is test debt, and how does it differ from technical debt?",
+      "choices": {
+        "A": "Test debt refers to accumulated shortcuts in testing (missing tests, outdated tests, insufficient coverage) that increase future quality risk; technical debt refers to shortcuts in code design",
+        "B": "Test debt is the cost of test tools; technical debt is the cost of development tools",
+        "C": "They are the same concept applied to different teams",
+        "D": "Test debt only applies to automated tests; technical debt applies to manual tests"
+      },
+      "answer": "A",
+      "explanation": "Test debt encompasses accumulated deficiencies in the test suite: missing test cases for features, outdated tests that no longer reflect requirements, inadequate coverage of critical paths, unmaintained test infrastructure, and unaddressed flaky tests. Like technical debt, test debt compounds over time and increases the cost and risk of future changes.",
+      "topic": "test_debt",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA045",
+      "question": "When performing regression testing for a hotfix, what is the optimal scope?",
+      "choices": {
+        "A": "Skip regression since it is a small change",
+        "B": "Run the full regression suite to be safe",
+        "C": "Run targeted regression on the fixed area plus impact analysis to identify and test areas that interact with or depend on the changed code",
+        "D": "Test only the exact fix"
+      },
+      "answer": "C",
+      "explanation": "Hotfix regression should be risk-based: test the fix itself, then use impact analysis (code dependency graphs, change history, architecture knowledge) to identify components that interact with the changed area. A full regression suite is too time-consuming for hotfix urgency, testing only the fix misses side effects, and skipping regression for 'small changes' is how regressions escape to production.",
+      "topic": "regression_scope",
+      "topic_category": "release_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA046",
+      "question": "What is the classification tree method in test design?",
+      "choices": {
+        "A": "A systematic technique that partitions the input domain into a tree structure of classifications and classes, then combines selections from each classification into test cases",
+        "B": "A method for organizing test cases into folders",
+        "C": "A way to classify defects by root cause",
+        "D": "A machine learning technique for predicting defects"
+      },
+      "answer": "A",
+      "explanation": "The classification tree method (CTM) structures the input domain as a tree where each 'classification' represents an input parameter and 'classes' represent the possible partitions of that parameter. Test cases are formed by selecting one class from each classification, often visualized in a combination table beneath the tree. It systematically applies equivalence partitioning across multiple parameters.",
+      "topic": "classification_tree_method",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA047",
+      "question": "A defect density metric shows 2.5 defects per KLOC (thousand lines of code) in Module A and 0.3 defects per KLOC in Module B. Both modules are critical. What conclusion should the QA team draw?",
+      "choices": {
+        "A": "Module A may need more testing investment, but the metric alone cannot determine whether Module A has more latent defects or simply received more thorough testing",
+        "B": "Module A has poor code quality and Module B has excellent code quality",
+        "C": "Module A should be rewritten",
+        "D": "Module B should be deprioritized for further testing"
+      },
+      "answer": "A",
+      "explanation": "Defect density is ambiguous: a high value might indicate poor code quality with many defects remaining, or it might indicate thorough testing that found more issues. Similarly, Module B's low density could mean high quality or insufficient testing. Additional analysis (code complexity, test coverage, test effort metrics) is needed to interpret defect density meaningfully.",
+      "topic": "defect_density_metrics",
+      "topic_category": "bug_reporting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA048",
+      "question": "In continuous testing within a CI/CD pipeline, what is the primary purpose of a quality gate?",
+      "choices": {
+        "A": "To run only smoke tests",
+        "B": "To generate test reports for management",
+        "C": "To automatically block a build from progressing if predefined quality thresholds (coverage, defect count, performance) are not met",
+        "D": "To slow down the pipeline to allow manual review"
+      },
+      "answer": "C",
+      "explanation": "Quality gates are automated checkpoints in the CI/CD pipeline that enforce minimum quality standards. If thresholds (e.g., minimum 80% code coverage, zero critical defects, p95 response time under 500ms) are not met, the pipeline blocks promotion to the next stage. This prevents low-quality code from reaching production without relying on manual intervention.",
+      "topic": "continuous_testing",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA049",
+      "question": "When testing an API with versioning (e.g., /v1/users and /v2/users), which test consideration is most frequently missed?",
+      "choices": {
+        "A": "Load testing the new version",
+        "B": "Testing that v2 works correctly",
+        "C": "Testing backward compatibility: ensuring v1 clients continue to work correctly when v2 is deployed, and that v1 responses are not inadvertently affected by v2 changes",
+        "D": "Security testing the new version"
+      },
+      "answer": "C",
+      "explanation": "API versioning testing must verify that existing clients using older versions are not broken by the deployment of newer versions. This includes verifying that v1 response schemas, behavior, and error handling remain unchanged, that shared backend state is compatible across versions, and that v1 deprecation notices are properly communicated if applicable.",
+      "topic": "api_versioning_testing",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA050",
+      "question": "What is the fundamental difference between a penetration test and a vulnerability scan?",
+      "choices": {
+        "A": "Penetration tests are automated; vulnerability scans are manual",
+        "B": "Vulnerability scans are more thorough than penetration tests",
+        "C": "They test different types of applications",
+        "D": "A vulnerability scan identifies known weaknesses using automated tools; a penetration test actively attempts to exploit vulnerabilities to determine real-world impact"
+      },
+      "answer": "D",
+      "explanation": "Vulnerability scans use automated tools to identify known weaknesses by checking against databases of known issues (CVEs, misconfigurations). Penetration tests go further by attempting to actively exploit discovered vulnerabilities to determine if they can be chained together and what actual damage an attacker could achieve. Pen tests include manual analysis and creative attack paths that automated scans cannot replicate.",
+      "topic": "pentest_vs_vuln_scan",
+      "topic_category": "security_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA051",
+      "question": "During test planning, you must choose between requirements-based testing and experience-based testing for a new e-commerce checkout flow. The requirements are detailed but the domain is complex. What is the best approach?",
+      "choices": {
+        "A": "Use requirements-based testing as the foundation for systematic coverage, supplemented by experience-based testing to catch scenarios that requirements may not anticipate",
+        "B": "Use only experience-based testing since the domain is complex",
+        "C": "Alternate between the two approaches on different sprints",
+        "D": "Use only requirements-based testing since requirements are detailed"
+      },
+      "answer": "A",
+      "explanation": "The optimal strategy combines both approaches. Requirements-based testing provides systematic coverage of documented functionality and creates traceability. Experience-based testing (including exploratory testing and error guessing) leverages tester domain knowledge to find defects in areas that requirements often miss: usability issues, implicit requirements, and real-world usage patterns.",
+      "topic": "requirements_vs_experience_testing",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA052",
+      "question": "You notice that your test automation suite has a 15% flaky test rate. Which strategy is most effective for managing flaky tests?",
+      "choices": {
+        "A": "Rerun failed tests automatically and mark them as passed if they succeed on retry",
+        "B": "Delete all flaky tests to maintain pipeline reliability",
+        "C": "Quarantine flaky tests into a separate suite, track them with tickets, and fix root causes systematically while preventing them from blocking the CI pipeline",
+        "D": "Increase the timeout for all tests to reduce flakiness"
+      },
+      "answer": "C",
+      "explanation": "Quarantining separates flaky tests from the reliable suite so they do not block builds, while tracking and fixing them prevents the quarantine from growing indefinitely. Auto-retry masks the root cause (timing issues, shared state, environmental assumptions), deleting tests loses coverage, and increasing timeouts only addresses one cause of flakiness while slowing the entire suite.",
+      "topic": "flaky_test_management",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA053",
+      "question": "In context-driven testing, which statement best captures the first principle?",
+      "choices": {
+        "A": "Automated testing is always preferable to manual testing",
+        "B": "Testing should always follow a defined process",
+        "C": "The best practices should be applied uniformly to all projects",
+        "D": "The value of any practice depends on its context -- there are no best practices, only good practices in context"
+      },
+      "answer": "D",
+      "explanation": "Context-driven testing's first principle states that the value of any practice depends on its context. What works well in one project (safety-critical medical device) may be inappropriate for another (startup MVP). Context-driven testers reject universal 'best practices' in favor of choosing practices that fit the specific project's constraints, risks, and stakeholder needs.",
+      "topic": "context_driven_testing",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA054",
+      "question": "A Unicode string containing a zero-width joiner (ZWJ) character is entered into a search field. What type of edge case does this represent and why is it significant?",
+      "choices": {
+        "A": "A security vulnerability that always causes injection attacks",
+        "B": "A performance edge case that slows down the database",
+        "C": "A boundary value case because the string length is unusual",
+        "D": "An encoding edge case where invisible characters may cause string comparison, length calculation, and display rendering to behave unexpectedly"
+      },
+      "answer": "D",
+      "explanation": "Zero-width joiners and similar invisible Unicode characters (ZWS, ZWNJ, BOM) create edge cases where visual representation differs from byte-level representation. String length in characters vs bytes vs display width may differ, equality comparisons may produce unexpected results, and search/filter operations may miss matches. This is a Unicode/encoding edge case, not inherently a security or performance issue.",
+      "topic": "unicode_edge_cases",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA055",
+      "question": "What is the recommended approach when entry criteria for a test phase are only partially met?",
+      "choices": {
+        "A": "Document the risk of proceeding with partial criteria, obtain stakeholder agreement, and begin testing with a modified scope that accounts for the gaps",
+        "B": "Begin testing immediately and ignore the unmet criteria",
+        "C": "Escalate to senior management and halt the project",
+        "D": "Wait until all entry criteria are fully satisfied before starting"
+      },
+      "answer": "A",
+      "explanation": "In practice, strict adherence to entry criteria can cause schedule delays while ignoring them creates quality risk. The pragmatic approach is to perform a risk assessment of the unmet criteria, document the implications, get stakeholder sign-off on the decision to proceed, and adjust the test scope to mitigate the identified risks. This balances quality with delivery timelines.",
+      "topic": "entry_exit_criteria",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA056",
+      "question": "In schema validation testing for a REST API, which assertion is most commonly overlooked?",
+      "choices": {
+        "A": "Verifying the response is valid JSON",
+        "B": "Verifying field data types match the schema",
+        "C": "Verifying required fields are present",
+        "D": "Verifying that the response does not contain additional undocumented fields that could leak internal data"
+      },
+      "answer": "D",
+      "explanation": "While testers commonly validate that required fields are present and correctly typed, they rarely check for additional fields not defined in the schema. Undocumented fields can leak internal implementation details, debug information, or sensitive data (internal IDs, timestamps, user data) that should not be exposed. Strict schema validation with 'additionalProperties: false' catches this.",
+      "topic": "schema_validation",
+      "topic_category": "api_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA057",
+      "question": "When testing a system that stores timestamps, a user in New York creates a record at 11:30 PM EST on March 9 (the night before DST spring-forward). A user in London views the record the next morning. What edge case should testers verify?",
+      "choices": {
+        "A": "That the timestamp displays in UTC",
+        "B": "That the database uses a DATE type instead of TIMESTAMP",
+        "C": "That the stored UTC timestamp is correctly converted to each user's local timezone, especially around the DST transition where 2:00 AM EST does not exist",
+        "D": "That the application displays relative times like 'yesterday'"
+      },
+      "answer": "C",
+      "explanation": "DST transitions create edge cases where an hour is either skipped (spring forward: 2:00 AM jumps to 3:00 AM) or repeated (fall back). Systems must correctly store in UTC and convert to local time for display. The critical test is that times near the transition boundary are correctly converted for users in different timezones, especially when one timezone has transitioned and another has not.",
+      "topic": "timezone_edge_cases",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA058",
+      "question": "What does the concept of 'test independence' refer to in ISTQB terminology?",
+      "choices": {
+        "A": "Tests that can run in any order without depending on each other",
+        "B": "The degree of separation between the person who wrote the code and the person who tests it, ranging from developer self-testing to independent external test teams",
+        "C": "Tests that do not require test data",
+        "D": "Tests that can run without network connectivity"
+      },
+      "answer": "B",
+      "explanation": "Test independence in ISTQB refers to the organizational separation between developers and testers. Levels range from low independence (developer tests own code) through tests by another developer, tests by a person from a different team, tests by a person from a different organization, to high independence (external test lab). Greater independence provides different perspectives but can create communication overhead.",
+      "topic": "test_independence_levels",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA059",
+      "question": "During performance testing, throughput drops significantly while CPU and memory usage remain low. What is the most likely bottleneck?",
+      "choices": {
+        "A": "The application needs more RAM",
+        "B": "Application code is inefficient",
+        "C": "The test tool is not generating enough load",
+        "D": "The database or external service has a connection pool exhaustion or I/O bottleneck"
+      },
+      "answer": "D",
+      "explanation": "When throughput drops but local compute resources (CPU, memory) are underutilized, the bottleneck is typically external to the application server: database connection pool exhaustion, slow external service calls, disk I/O saturation, network bandwidth limits, or thread pool exhaustion waiting on blocking I/O. The application is waiting, not processing, which is why CPU stays low.",
+      "topic": "bottleneck_identification",
+      "topic_category": "performance_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA060",
+      "question": "A test traceability matrix maps test cases to requirements. What additional mapping significantly improves the matrix's value for risk management?",
+      "choices": {
+        "A": "Bidirectional mapping between requirements, test cases, and defects, combined with risk ratings for each requirement",
+        "B": "Mapping test cases to the testers who wrote them",
+        "C": "Mapping test cases to test environments",
+        "D": "Mapping test cases to sprint numbers"
+      },
+      "answer": "A",
+      "explanation": "A risk-enhanced bidirectional traceability matrix links requirements to test cases (forward traceability), test cases back to requirements (backward traceability), and both to discovered defects. Adding risk ratings per requirement enables risk-based coverage analysis: you can identify high-risk requirements with low test coverage or high defect rates, directing testing effort where it matters most.",
+      "topic": "traceability_matrices",
+      "topic_category": "test_strategy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA061",
+      "question": "In chaos engineering, what is the purpose of introducing controlled failures into production?",
+      "choices": {
+        "A": "To verify that the system's resilience mechanisms (failover, circuit breakers, retry logic) work correctly under real-world failure conditions",
+        "B": "To test the monitoring and alerting system only",
+        "C": "To stress test the hardware",
+        "D": "To find bugs in the application code"
+      },
+      "answer": "A",
+      "explanation": "Chaos engineering's primary purpose is to validate system resilience by introducing controlled failures (network latency, server crashes, dependency outages) in production and observing whether the system degrades gracefully. While it may surface bugs and test monitoring as side effects, the core goal is building confidence that resilience mechanisms work under real conditions, not just in test environments.",
+      "topic": "chaos_engineering",
+      "topic_category": "test_process",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA062",
+      "question": "When performing rollback verification testing for a deployment, what must be verified beyond simply reverting to the previous version?",
+      "choices": {
+        "A": "That the rollback script runs within 5 minutes",
+        "B": "That database migrations are backward-compatible, in-flight transactions are handled, cached data remains valid, and dependent services are not broken by the version downgrade",
+        "C": "That the CI/CD pipeline shows a green status",
+        "D": "That the development team is notified"
+      },
+      "answer": "B",
+      "explanation": "Rollback testing must verify that the entire system state is consistent after reversion. Database schema changes (especially destructive migrations like column drops) may make rollback impossible. In-flight transactions may be lost or corrupted. Caches may contain data in the new format that the old version cannot parse. Dependent services may have already updated their contracts to match the new version.",
+      "topic": "rollback_verification",
+      "topic_category": "release_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA063",
+      "question": "A test effectiveness metric shows that 40% of defects found in production were in areas with test coverage above 80%. What does this suggest?",
+      "choices": {
+        "A": "80% coverage is too low",
+        "B": "The coverage tool is broken",
+        "C": "High structural coverage does not guarantee detection of all defect types; the tests may lack assertion quality, or may miss integration, race condition, and requirements-level defects",
+        "D": "Production defects are always in well-tested areas"
+      },
+      "answer": "C",
+      "explanation": "This metric reveals that coverage quantity does not equal coverage quality. Tests may execute code paths (achieving coverage) without meaningful assertions, or they may miss defects that only manifest under specific conditions: timing issues, integration failures, configuration-dependent behavior, or requirements gaps. This highlights the need for mutation testing and assertion density metrics alongside coverage.",
+      "topic": "test_effectiveness_metrics",
+      "topic_category": "coverage_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA064",
+      "question": "In negative testing, what is the most important outcome to verify when submitting invalid input to an API?",
+      "choices": {
+        "A": "That the API does not crash",
+        "B": "That the API returns an appropriate error status code, a descriptive error message, does not leak internal details (stack traces, SQL queries), and does not partially process the invalid request",
+        "C": "That the API returns a 400 status code",
+        "D": "That the API returns any error message"
+      },
+      "answer": "B",
+      "explanation": "Comprehensive negative testing verifies multiple aspects: correct error status code, helpful error message for the client, absence of information leakage (no stack traces, internal paths, or SQL in error responses), and transactional integrity (no partial writes or side effects from invalid requests). Simply checking for a 400 status code misses security and data integrity concerns.",
+      "topic": "negative_testing_patterns",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA065",
+      "question": "When testing a system that processes concurrent requests, what is the most reliable method to detect race conditions?",
+      "choices": {
+        "A": "Adding sleep statements between operations",
+        "B": "Running tests multiple times and checking for inconsistent results",
+        "C": "Using deliberate thread scheduling techniques (barriers, latches) to force interleaving at suspected critical sections, combined with invariant assertions on shared state",
+        "D": "Testing with a single user first, then with two users"
+      },
+      "answer": "C",
+      "explanation": "Race conditions are non-deterministic, so simply re-running tests relies on luck. Deliberate interleaving using synchronization primitives (barriers to align threads at critical points, countdown latches to release concurrent operations simultaneously) combined with invariant checks (e.g., account balance should never go negative) makes race conditions reproducible. Sleep-based approaches are unreliable and slow.",
+      "topic": "race_condition_detection",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA066",
+      "question": "What is the primary purpose of a performance baseline?",
+      "choices": {
+        "A": "To establish a reference measurement of system performance under defined conditions against which future measurements can be compared to detect regressions",
+        "B": "To satisfy SLA requirements",
+        "C": "To determine the hardware requirements for the application",
+        "D": "To set the maximum acceptable response time"
+      },
+      "answer": "A",
+      "explanation": "A performance baseline captures the system's performance characteristics (response times, throughput, resource utilization) under specific, repeatable conditions. This reference point enables detection of performance regressions: any significant deviation from the baseline in future releases indicates a regression that requires investigation, even if the absolute values still meet SLA thresholds.",
+      "topic": "performance_baselines",
+      "topic_category": "performance_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA067",
+      "question": "A tester classifies a defect's root cause as 'requirements ambiguity.' Which phase of defect prevention should address this type of root cause?",
+      "choices": {
+        "A": "Code review",
+        "B": "Unit testing",
+        "C": "Requirements review and specification clarification before development begins",
+        "D": "Deployment verification"
+      },
+      "answer": "C",
+      "explanation": "If the root cause is ambiguous requirements, the defect was introduced during the requirements phase and should be prevented there. Requirements reviews, specification walkthroughs, and techniques like example mapping or BDD (Given-When-Then) clarify ambiguities before development. Code review and testing catch the resulting defects but do not address the root cause of ambiguous specifications.",
+      "topic": "root_cause_categories",
+      "topic_category": "bug_reporting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA068",
+      "question": "In the OWASP Testing Guide, what is the recommended approach for testing authentication mechanisms?",
+      "choices": {
+        "A": "Test for credential brute-force resistance, session fixation, credential transport security, account lockout behavior, password policy enforcement, and authentication bypass via parameter manipulation",
+        "B": "Verify that the login form has a CAPTCHA",
+        "C": "Verify that passwords are at least 8 characters",
+        "D": "Test only with valid credentials to ensure they work"
+      },
+      "answer": "A",
+      "explanation": "OWASP recommends comprehensive authentication testing including: brute-force resistance (lockout, rate limiting), session management (fixation, hijacking), credential transport (HTTPS enforcement), password policies (complexity, history), and bypass attempts (manipulating authentication tokens, parameters, or headers). Testing only the happy path or a single control misses the breadth of authentication vulnerabilities.",
+      "topic": "owasp_testing_guide",
+      "topic_category": "security_testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA069",
+      "question": "When creating release notes, what is the QA team's primary responsibility?",
+      "choices": {
+        "A": "Reviewing release notes for accuracy by verifying that documented features work as described, known issues are correctly listed, and resolved defects are confirmed fixed",
+        "B": "Writing marketing copy for new features",
+        "C": "Approving the release date",
+        "D": "Formatting the release notes document"
+      },
+      "answer": "A",
+      "explanation": "QA's role in release notes review is verification accuracy: confirming that described features match actual behavior, known issues lists are complete and accurate, fixed-defect claims are verified by re-testing, and no significant issues are omitted. QA provides the quality perspective to prevent release notes from misleading users about the state of the software.",
+      "topic": "release_notes_review",
+      "topic_category": "release_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA070",
+      "question": "What does path coverage measure and why is it generally impractical to achieve 100%?",
+      "choices": {
+        "A": "Path coverage measures the percentage of file system paths tested; it is impractical due to the number of files",
+        "B": "Path coverage measures the percentage of all possible execution paths through the code that have been tested; loops can create an infinite number of paths making 100% coverage impossible",
+        "C": "Path coverage measures the percentage of API endpoint paths tested; it is impractical due to API versioning",
+        "D": "Path coverage measures the percentage of database access paths tested; it is impractical due to query complexity"
+      },
+      "answer": "B",
+      "explanation": "Path coverage requires every distinct execution path through the program to be tested. A single loop that can execute 0 to N times creates N+1 paths on its own. Multiple loops and conditional branches cause the number of paths to grow exponentially. Even a small program with nested loops and conditions can have millions of paths, making exhaustive path coverage infeasible for non-trivial code.",
+      "topic": "path_coverage",
+      "topic_category": "coverage_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "QA071",
+      "question": "A payment form has three input fields: Amount (valid range: $0.01-$10,000.00), Currency (USD, EUR, GBP), and Payment Method (credit_card, bank_transfer, paypal). Using two-value boundary value analysis for Amount combined with equivalence classes for Currency and Payment Method, what is the minimum number of test cases needed to cover all boundary values for Amount with each valid currency and payment method combination?",
+      "choices": {
+        "A": "12 (4 boundary values x 3 currencies)",
+        "B": "36 (4 boundary values x 3 currencies x 3 payment methods)",
+        "C": "9 (3 currencies x 3 payment methods)",
+        "D": "4 (boundaries only)"
+      },
+      "answer": "B",
+      "explanation": "Two-value BVA for Amount produces 4 boundary values ($0.00, $0.01, $10,000.00, $10,000.01). Since currency and payment method interact with Amount (different currencies may have different processing rules, different payment methods may have different limits), full combination requires 4 x 3 x 3 = 36 test cases. Option A ignores parameter interactions; options C and D only consider partial combinations.",
+      "topic": "boundary_value_combinatorial",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA072",
+      "question": "You are assessing release readiness. The following open defects remain: (1) Critical: data loss when saving with special characters -- workaround exists, (2) High: performance degradation above 200 concurrent users -- expected load is 150, (3) High: incorrect tax calculation for one state -- affects 2% of users, (4) Medium: UI alignment issue on mobile landscape mode, (5) Low: typo in error message. Deployment window is in 3 hours. The workaround for defect 1 is documented. Using risk-based triage, what is the correct go/no-go decision?",
+      "choices": {
+        "A": "No-go: any critical defect blocks release",
+        "B": "No-go: three high-or-above defects exceed the quality gate",
+        "C": "Go with conditions: deploy with the workaround for defect 1 documented in release notes, accept defect 2 since expected load is below threshold, schedule hotfix for defect 3 within 48 hours, defer defects 4 and 5",
+        "D": "Go: all defects have acceptable workarounds"
+      },
+      "answer": "C",
+      "explanation": "Risk-based triage evaluates each defect against actual business impact. Defect 1 has a viable workaround (risk mitigated). Defect 2's threshold is above expected load (risk accepted with monitoring). Defect 3 affects revenue accuracy for 2% of users and needs a rapid hotfix but does not block deployment if communicated. Defects 4 and 5 have negligible user impact. A blanket 'no critical defects' policy ignores context and workaround effectiveness.",
+      "topic": "risk_based_triage",
+      "topic_category": "release_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA073",
+      "question": "A function calculates shipping cost based on three inputs: weight (kg, range 0.1-50.0), destination zone (1-5), and shipping speed (standard, express, overnight). The requirements state: (a) Express is not available for zone 5, (b) Overnight is only available for zones 1-2, (c) Items over 30kg cannot use overnight shipping. You need a decision table. How many valid rule columns are needed to represent all allowed combinations?",
+      "choices": {
+        "A": "11 (15 total minus 4 invalid: zone 5 express, zone 3 overnight, zone 4 overnight, zone 5 overnight)",
+        "B": "12 (15 total minus zone 5 express, zone 3 overnight, zone 5 overnight)",
+        "C": "15 (5 zones x 3 speeds)",
+        "D": "10 (15 total minus 5 invalid: zone 5 express, zone 3 overnight, zone 4 overnight, zone 5 overnight, and zones 1-2 overnight with weight > 30kg counted as one)"
+      },
+      "answer": "D",
+      "explanation": "Start with 5 zones x 3 speeds = 15 total. Remove invalid: express + zone 5 (1), overnight + zone 3 (1), overnight + zone 4 (1), overnight + zone 5 (1). That leaves 11. But constraint (c) further splits overnight for zones 1-2 into weight <=30kg (valid) and weight >30kg (invalid). This removes 1 more combination category (overnight + zones 1-2 + heavy weight), leaving 10 valid rule columns in the decision table.",
+      "topic": "decision_table_design",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA074",
+      "question": "You have a test suite with the following coverage: Statement coverage 92%, Branch coverage 78%, MC/DC coverage 65%. A new critical module is being added with a regulatory requirement of MC/DC coverage. To bring overall MC/DC from 65% to 80%, the new module has 40 conditions. Assuming the existing codebase has 200 conditions at 65% MC/DC (130 conditions covered), how many of the new module's 40 conditions must achieve MC/DC coverage?",
+      "choices": {
+        "A": "32 conditions",
+        "B": "40 conditions (all of them)",
+        "C": "The new module needs MC/DC on all 40 conditions AND you need to cover 22 more conditions in the existing code",
+        "D": "62 conditions from the new module, which is impossible -- you must also improve existing coverage"
+      },
+      "answer": "D",
+      "explanation": "Target: 80% of 240 total conditions = 192 covered. Currently covered: 130. Needed: 192 - 130 = 62 additional conditions covered. The new module only has 40 conditions, so even 100% MC/DC on the new module (170 total covered) only reaches 70.8%. To hit 80%, you must cover all 40 new conditions (170) AND improve existing coverage by 22 more conditions (192 total). Since the question asks about the new module alone, the answer reveals that the new module cannot achieve the target independently.",
+      "topic": "coverage_gap_analysis",
+      "topic_category": "coverage_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA075",
+      "question": "An e-commerce API has a checkout endpoint that: (1) validates inventory, (2) charges payment, (3) sends confirmation email, (4) updates inventory. A race condition bug report states that two users simultaneously purchasing the last item both received order confirmations. Analyzing the code flow, which design flaw caused this and what test would have caught it?",
+      "choices": {
+        "A": "The database is corrupted; a data integrity test would detect this",
+        "B": "The payment gateway is duplicating charges; a payment integration test would detect this",
+        "C": "The email service is too slow; a performance test would detect this",
+        "D": "The inventory check and update are not atomic; a test sending concurrent checkout requests for the last item and asserting only one succeeds would detect this"
+      },
+      "answer": "D",
+      "explanation": "This is a classic TOCTOU (time-of-check-to-time-of-use) race condition. Both requests check inventory (step 1) before either updates it (step 4), so both see 1 item available. The fix is making the check-and-decrement atomic (e.g., database UPDATE with WHERE quantity > 0). The detection test sends concurrent requests targeting the same last-item scenario using synchronization barriers and asserts that exactly one gets HTTP 200 and the other gets a sold-out error.",
+      "topic": "concurrency_race_conditions",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA076",
+      "question": "A soak test runs for 72 hours. Memory usage starts at 2.1 GB, climbs to 3.8 GB at 24 hours, 5.2 GB at 48 hours, and 6.9 GB at 72 hours. The server has 8 GB RAM. Response time p95 degrades from 200ms to 450ms to 1.2s to 3.8s at those intervals. What is the diagnosis, the estimated time to OOM crash, and the recommended immediate action?",
+      "choices": {
+        "A": "Database connection pool exhaustion; restart the database",
+        "B": "Garbage collection overhead; tune JVM parameters",
+        "C": "Normal behavior under sustained load; increase server RAM to 16 GB",
+        "D": "Memory leak averaging ~67 MB/hour; at this rate OOM would occur around 90-95 hours; immediate action is to identify the leaking resource (unclosed connections, growing caches, unreleased buffers) through heap analysis, not add RAM"
+      },
+      "answer": "D",
+      "explanation": "The linear memory growth (~4.8 GB over 72 hours = ~67 MB/hour) with correlated response time degradation is a textbook memory leak pattern. Extrapolating: 8 GB would be reached around hour 88-95 depending on OS overhead. Adding RAM only delays the crash. The correct action is heap dump analysis to find the leak source (objects that grow indefinitely), fix the root cause (close resources, bound caches, fix reference retention), and re-run the soak test to verify.",
+      "topic": "soak_test_analysis",
+      "topic_category": "performance_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA077",
+      "question": "You are testing a REST API that accepts JSON. You send a request with duplicate keys in the JSON body: {\"quantity\": 1, \"quantity\": 999}. The API processes the order. Which aspect of API security does this test, what is the expected vulnerability, and which OWASP category does it fall under?",
+      "choices": {
+        "A": "This tests rate limiting; it falls under OWASP API4 Lack of Resources & Rate Limiting",
+        "B": "This tests injection attacks; it falls under OWASP A03 Injection",
+        "C": "This tests input validation and parser differential attacks; different JSON parsers may resolve duplicate keys differently (first-wins vs last-wins), which can bypass validation if the validator and processor use different parsers; this relates to OWASP API8 Security Misconfiguration",
+        "D": "This tests mass assignment; it falls under OWASP API3 Excessive Data Exposure"
+      },
+      "answer": "C",
+      "explanation": "Duplicate JSON keys exploit parser differentials: RFC 7159 does not mandate behavior for duplicate keys, so different parsers may take the first or last value. If a validation layer uses first-wins (sees quantity=1, passes validation) but the processing layer uses last-wins (processes quantity=999), an attacker bypasses business rule validation. This is a security misconfiguration where the parsing behavior mismatch creates a vulnerability.",
+      "topic": "parser_differential_testing",
+      "topic_category": "security_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA078",
+      "question": "A test team has 200 test cases. Historical data shows: 60% of defects are found by 30 test cases (the 'core'), 25% by the next 70 test cases, and 15% by the remaining 100. For a hotfix release with 2 hours available for regression, and each test case takes 3 minutes, how many test cases can be executed and what expected defect detection rate is achieved?",
+      "choices": {
+        "A": "All 200 test cases if parallelized across 5 testers",
+        "B": "40 test cases covering the core 30 plus 10 from the second tier, achieving approximately 63-64% expected defect detection",
+        "C": "40 test cases, 60% detection rate",
+        "D": "120 test cases, 85% detection rate"
+      },
+      "answer": "B",
+      "explanation": "Available time: 120 minutes / 3 minutes per test = 40 test cases. Optimal allocation: all 30 core test cases (60% defect detection) plus 10 of the 70 second-tier tests. The second tier finds 25% of defects across 70 tests, so 10 tests contribute approximately 10/70 x 25% = 3.6% additional detection. Total: approximately 63-64%. Option D ignores the constraint that parallelization was not specified as available.",
+      "topic": "risk_based_regression",
+      "topic_category": "test_strategy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA079",
+      "question": "A team reports 95% requirements coverage but is finding significant defects in production related to user workflows that span multiple requirements. What additional coverage metric would address this gap, and how would you implement it?",
+      "choices": {
+        "A": "Add mutation testing to existing tests",
+        "B": "Add API endpoint coverage",
+        "C": "Add end-to-end workflow coverage that maps test cases to user journeys (sequences of requirements), ensuring that transitions between requirements and cross-requirement data flows are tested",
+        "D": "Increase statement coverage to 100%"
+      },
+      "answer": "C",
+      "explanation": "95% requirements coverage means individual requirements are tested in isolation, but the integration points between requirements (data passed from one feature to another, state transitions across workflows, cumulative effects) are not. End-to-end workflow coverage maps tests to complete user journeys that traverse multiple requirements, catching defects that emerge only when features interact in sequence. This complements requirements coverage with behavioral coverage.",
+      "topic": "requirements_coverage_gaps",
+      "topic_category": "coverage_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA080",
+      "question": "You are reviewing a bug report backlog and notice the following pattern: Module A has 45 defects (8 critical, 15 high), Module B has 12 defects (1 critical, 3 high), and Module C has 28 defects (0 critical, 5 high). Module C was recently rewritten. Applying the Pareto principle and defect clustering analysis, which module should receive the most additional testing effort and why?",
+      "choices": {
+        "A": "Equal effort across all three modules for fairness",
+        "B": "Module B because it has the fewest defects, suggesting insufficient testing",
+        "C": "Module C because recently rewritten modules are always the riskiest",
+        "D": "Module A because defect clustering predicts more latent defects in historically defect-dense modules, and its high critical/high ratio suggests systemic quality issues"
+      },
+      "answer": "D",
+      "explanation": "Defect clustering (Pareto principle) predicts that Module A, with the highest defect count and a disproportionate concentration of critical/high severity defects, likely contains more undiscovered defects. The severity distribution suggests deep architectural or design issues rather than surface-level bugs. Module C's 0-critical count despite being newly written is actually a positive signal. Module B's low count could indicate either quality or under-testing, requiring further investigation.",
+      "topic": "defect_clustering_analysis",
+      "topic_category": "bug_reporting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA081",
+      "question": "You are designing contract tests for a microservice where Service A (consumer) calls Service B (provider). Service B has 3 API versions deployed (v1, v2, v3). Service A uses v2. Service C also consumes Service B using v1. How many consumer contracts are needed, and what verification strategy ensures provider changes do not break consumers?",
+      "choices": {
+        "A": "3 contracts (one per API version); test each consumer separately",
+        "B": "No contracts needed; integration tests are sufficient",
+        "C": "1 contract (Service A's v2); run provider verification before each Service B deployment",
+        "D": "2 contracts (Service A v2, Service C v1); run both consumer contracts against Service B on every provider build to verify backward compatibility across all active consumer versions"
+      },
+      "answer": "D",
+      "explanation": "Consumer-driven contract testing requires one contract per consumer-provider interaction. Service A contributes a contract for its v2 usage, Service C contributes a contract for its v1 usage. Both contracts must be verified against Service B on every provider build (CI pipeline). This catches breaking changes to v1 or v2 before deployment. V3 needs no contract until a consumer adopts it. Integration tests are complementary but do not provide the fast, isolated feedback that contract tests offer.",
+      "topic": "contract_test_design",
+      "topic_category": "api_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA082",
+      "question": "A CI/CD pipeline has 4 test stages: Unit (5 min), Integration (15 min), E2E (45 min), Performance (30 min). The team averages 20 commits per day. Currently all stages run sequentially for every commit (95 min total). The E2E stage has a 12% flaky test rate causing 2-3 pipeline failures per day. Design the optimized pipeline: which stages should gate, which should run in parallel, and how should flaky tests be handled?",
+      "choices": {
+        "A": "Unit gates integration; integration gates E2E and Performance in parallel; quarantine flaky E2E tests into a separate non-gating suite that reports failures without blocking; this reduces pipeline time to ~65 minutes and eliminates false pipeline failures",
+        "B": "Only run unit tests on commits; run everything else nightly",
+        "C": "Remove E2E tests entirely to fix the flaky test problem",
+        "D": "Run all stages in parallel to save time"
+      },
+      "answer": "A",
+      "explanation": "The optimized pipeline uses staged gating: Unit (5 min) must pass before Integration (15 min), then E2E and Performance run in parallel (45 min total since they are independent). This reduces pipeline time from 95 to 65 minutes. Quarantining the 12% flaky E2E tests into a non-gating parallel suite eliminates false failures (saving 2-3 pipeline restarts per day) while still tracking and fixing them. Option A loses fast-feedback benefits of early gating; C loses critical coverage; D delays feedback too long for 20 commits/day.",
+      "topic": "ci_cd_pipeline_optimization",
+      "topic_category": "test_process",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA083",
+      "question": "A function processes dates and converts between timezones. You must test the edge case of a recurring weekly meeting scheduled for 'every Sunday at 2:30 AM ET' during the US DST spring-forward transition (clocks jump from 2:00 AM to 3:00 AM). What should the system do, and which test assertions verify correct behavior?",
+      "choices": {
+        "A": "The meeting should occur at 1:30 AM ET (one hour earlier); assert the stored time is shifted backward",
+        "B": "The meeting should be skipped that week; assert no event is created for that Sunday",
+        "C": "The system should raise an error; assert an exception is thrown",
+        "D": "The meeting should occur at 3:00 AM ET (the next valid time after 2:30 AM); assert the stored UTC time corresponds to 3:00 AM ET on that date, and that users in non-DST timezones see their correct local time equivalent"
+      },
+      "answer": "D",
+      "explanation": "When 2:30 AM ET does not exist due to DST spring-forward, the standard resolution is to use the next valid time (3:00 AM ET). Test assertions should verify: (1) the stored UTC value corresponds to 3:00 AM ET on that date, (2) users in non-DST timezones (e.g., UTC, IST) see the correct converted time, (3) the following week's meeting returns to 2:30 AM ET when the time exists again, and (4) no duplicate or missing events are created. Skipping the meeting or raising an error would be poor UX for a recurring event.",
+      "topic": "dst_transition_testing",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA084",
+      "question": "You are testing a system that uses optimistic locking. User A loads a record (version 1), User B loads the same record (version 1), User B saves changes (record becomes version 2), then User A attempts to save their changes. What is the complete set of test scenarios needed to verify correct optimistic locking behavior?",
+      "choices": {
+        "A": "Test that the database throws a constraint violation",
+        "B": "Test only the conflict scenario: User A should get an error",
+        "C": "Test only that the version number increments",
+        "D": "Test four scenarios: (1) No conflict (single user edit succeeds), (2) Write-write conflict (User A gets a version conflict error with the ability to reload), (3) Conflict resolution (User A reloads version 2, merges changes, saves as version 3), (4) Concurrent create (two users creating the same record simultaneously)"
+      },
+      "answer": "D",
+      "explanation": "Complete optimistic locking testing requires: (1) the happy path where no conflict exists, verifying the version increments; (2) the conflict detection path where User A receives a clear error indicating their version is stale; (3) the recovery path where User A can see User B's changes, merge if needed, and successfully save; (4) the edge case of simultaneous creates with no prior version. Additionally, verify that the error message helps the user understand what happened and what to do. Testing only the conflict scenario misses the recovery workflow.",
+      "topic": "optimistic_locking_testing",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA085",
+      "question": "A web application has 500 mutation test results: 380 mutants killed, 80 survived, 40 equivalent mutants. What is the mutation score, what does it tell you about test effectiveness, and what action should you take with the survived mutants?",
+      "choices": {
+        "A": "Mutation score is 95% (380+40/460+40 adjusted); equivalent mutants count as killed",
+        "B": "Mutation score is 76% (380/500); the test suite is weak and needs complete rewriting",
+        "C": "Mutation score is 82.6% (380/460, excluding equivalent mutants); the test suite detects most faults but has gaps; analyze the 80 survived mutants to identify untested code behaviors and write targeted tests for those specific mutation types",
+        "D": "Mutation score is 76% (380/500); equivalent mutants should be reclassified as survived"
+      },
+      "answer": "C",
+      "explanation": "Mutation score is calculated as killed / (total - equivalent) = 380 / (500 - 40) = 380/460 = 82.6%. Equivalent mutants are excluded because they produce identical behavior to the original and cannot be detected by any test. The 80 survived mutants represent real fault-detection gaps. Each survived mutant indicates a behavior change that no test detected, so analyzing the types of survived mutations (arithmetic, boundary, null checks, etc.) reveals specific categories of missing assertions.",
+      "topic": "mutation_score_analysis",
+      "topic_category": "coverage_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA086",
+      "question": "An API returns paginated results with cursor-based pagination. The response includes: {\"data\": [...], \"next_cursor\": \"abc123\", \"has_more\": true}. During testing, you discover that if 50 items exist and you request page_size=20, you get pages of 20, 20, and 10 items. However, if items are deleted between page requests, you sometimes get duplicate items. Design the minimal test suite to validate pagination correctness.",
+      "choices": {
+        "A": "Test with different page sizes only",
+        "B": "Test: (1) First page returns correct count and valid cursor, (2) Traversing all pages returns exactly all items with no duplicates or gaps, (3) Empty dataset returns no results and no cursor, (4) page_size=1 returns one item per page, (5) Concurrent deletion during pagination is handled (document expected behavior: duplicates, gaps, or consistency guarantee), (6) Invalid/expired cursor returns appropriate error, (7) Cursor is opaque and tamper-resistant",
+        "C": "Test by counting total items across all pages",
+        "D": "Test first page, last page, and empty results only"
+      },
+      "answer": "B",
+      "explanation": "Comprehensive pagination testing covers: basic functionality (items, cursors, has_more), full traversal integrity (no duplicates/gaps in stable data), boundary conditions (empty set, single item, page_size=1, page_size > total items), concurrent modification behavior (the duplicate-on-delete scenario must be documented and tested), error handling (bad cursors, expired cursors), and security (cursor tampering should not expose unauthorized data). Option D only checks counts without verifying item identity.",
+      "topic": "pagination_testing_suite",
+      "topic_category": "api_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA087",
+      "question": "A test team measures three defect metrics quarterly. Q1: defect detection rate 72%, defect leakage rate 28%, defect removal efficiency 68%. Q2: defect detection rate 78%, defect leakage rate 22%, defect removal efficiency 74%. Q3: defect detection rate 75%, defect leakage rate 25%, defect removal efficiency 70%. What trend analysis should the QA manager present, and what corrective action is warranted?",
+      "choices": {
+        "A": "Metrics are stable within normal variation; no action needed",
+        "B": "Zigzag pattern: Q2 improved across all metrics but Q3 regressed back toward Q1 levels, indicating that Q2 improvements were not sustained; investigation needed into what changed between Q2 and Q3 (staffing, process adherence, test scope, new features complexity) to make improvements stick",
+        "C": "Positive trend: all metrics improved from Q1 to Q2; no action needed",
+        "D": "Negative trend: metrics are declining; fire the test team"
+      },
+      "answer": "B",
+      "explanation": "The data shows improvement from Q1 to Q2 (detection up 6%, leakage down 6%, removal efficiency up 6%) followed by regression in Q3 (all metrics deteriorated). This is a sustainability problem, not a capability problem. The team proved it can achieve better results (Q2) but did not maintain them. Root cause analysis should examine what was different in Q2 (additional reviews, more testers, simpler features) versus Q3 to institutionalize the improvements. Dismissing the regression as normal variation ignores a 3-point swing.",
+      "topic": "defect_metrics_trend_analysis",
+      "topic_category": "bug_reporting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA088",
+      "question": "You are planning tests for a new microservice that handles user registration. The service: (1) validates email format, (2) checks email uniqueness against a database, (3) hashes the password, (4) stores the user record, (5) sends a verification email via an external service. Using the test pyramid, allocate tests across layers. Which allocation is correct?",
+      "choices": {
+        "A": "Unit tests only since each step is a pure function",
+        "B": "Unit tests for email validation logic and password hashing; integration tests for database operations (uniqueness check, record storage) and email service interaction; 1-2 E2E tests for the complete happy path and one failure path",
+        "C": "5 E2E tests covering the full flow; no unit or integration tests needed",
+        "D": "Only integration tests since all components interact"
+      },
+      "answer": "B",
+      "explanation": "Following the test pyramid: Unit layer (largest): email format validation with various inputs (valid, invalid, edge cases), password hashing correctness and security properties. These are pure logic with no external dependencies. Integration layer (medium): database uniqueness check (test with existing/new emails against a real test database), record storage and retrieval, email service contract (mock or use test endpoint). E2E layer (smallest): 1-2 tests verifying the full registration flow end-to-end. This maximizes fast feedback while ensuring integration points are verified.",
+      "topic": "test_pyramid_allocation",
+      "topic_category": "test_strategy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA089",
+      "question": "During a security review, you discover that an API endpoint accepts a JSON body with a nested object: {\"user\": {\"role\": \"admin\"}}. Normal users should only be able to update {\"user\": {\"name\": \"...\"}}. The API uses automatic JSON-to-object mapping. What vulnerability class is this, what are the test cases, and what is the expected fix?",
+      "choices": {
+        "A": "Broken authentication; test with expired tokens; fix with token validation",
+        "B": "SQL injection; test with SQL in the name field; fix with parameterized queries",
+        "C": "Cross-site scripting; test with script tags; fix with output encoding",
+        "D": "Mass assignment (also called over-posting); test cases: (1) Normal update with only allowed fields succeeds, (2) Include 'role' field in request body and verify it is rejected or ignored, (3) Include other sensitive fields (is_admin, email_verified, balance) and verify they cannot be modified, (4) Try nested path traversal like {\"user\": {\"permissions\": {\"admin\": true}}}; fix with explicit allowlists of bindable fields"
+      },
+      "answer": "D",
+      "explanation": "Mass assignment occurs when APIs automatically bind all incoming JSON fields to internal objects without restricting which fields are writable. An attacker adds extra fields (role, permissions, balance) that the binder maps to the internal model. Test cases must attempt to modify every sensitive field individually and in combination. The fix is an allowlist (whitelist) of fields that can be bound from user input, rejecting or stripping all others. This is OWASP API6: Unrestricted Resource Consumption / Mass Assignment.",
+      "topic": "mass_assignment_testing",
+      "topic_category": "security_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA090",
+      "question": "A performance test shows the following percentile data for API response times: p50=120ms, p75=180ms, p90=350ms, p95=800ms, p99=4200ms. The SLA requires p95 < 500ms. The team proposes adding a CDN cache with 90% hit rate for GET requests (which comprise 70% of traffic). Estimate whether the CDN will meet the SLA and what additional testing is needed.",
+      "choices": {
+        "A": "The CDN will solve the problem; no additional testing needed",
+        "B": "The CDN will make performance worse due to added network hops",
+        "C": "The CDN will improve GET request performance but POST/PUT/DELETE requests (30% of traffic) are unaffected; the p95 of the remaining uncached traffic may still exceed 500ms because the slow tail is likely concentrated in write operations and cache misses; additional testing must measure p95 specifically for cache-miss and write-operation subsets",
+        "D": "The SLA should be changed to p99 instead of p95"
+      },
+      "answer": "C",
+      "explanation": "A CDN cache with 90% hit rate on GET requests (70% of traffic) means 63% of all requests will be served from cache (very fast). But the p95 threshold is determined by the slowest 5% of requests. Since cache misses (7% of traffic) and write operations (30% of traffic) are unaffected, the 37% of uncached requests likely contain the slow tail. The overall p95 depends on the latency distribution of this 37% subset. Testing must specifically measure percentiles for uncached requests to determine if the SLA is achievable. The CDN helps the median but may not move p95 below 500ms.",
+      "topic": "performance_sla_analysis",
+      "topic_category": "performance_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA091",
+      "question": "You are reviewing a test suite for a login function. The suite has 50 test cases and achieves 100% branch coverage. A mutation testing tool introduces 80 mutants and 55 are killed. The unkilled mutants include: 12 boundary condition mutations (changed < to <=), 8 removed null checks, and 5 modified return values. What is the mutation score, what do the survived mutation categories tell you, and what types of test cases are missing?",
+      "choices": {
+        "A": "Mutation score 55/80 = 68.75%; increase branch coverage to fix it",
+        "B": "Mutation score 55/80 = 68.75%; delete the survived mutants since they are equivalent",
+        "C": "Mutation score 68.75%; all missing tests are about code coverage",
+        "D": "Mutation score 68.75%; the survived mutations reveal three specific gaps: (1) Boundary assertions are weak -- tests pass the correct side but do not assert failure at the boundary, (2) Null/empty input handling is untested -- the function handles nulls but no test verifies this behavior, (3) Return value assertions are incomplete -- tests may check for success but not verify the specific returned value; add boundary tests, null input tests, and precise return value assertions"
+      },
+      "answer": "D",
+      "explanation": "Mutation score is 55/80 = 68.75% (assuming no equivalent mutants). The three categories of survived mutants map directly to missing test types: (1) The 12 survived boundary mutations (< to <=) mean tests do not include values at exact boundaries. (2) The 8 survived null-check removals mean no test passes null inputs to verify they are handled. (3) The 5 survived return value modifications mean tests assert the function succeeds but do not verify the exact return. 100% branch coverage did not catch these because coverage measures execution, not assertion quality.",
+      "topic": "mutation_testing_gap_analysis",
+      "topic_category": "coverage_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA092",
+      "question": "A mobile banking application is being prepared for release. The regression test suite takes 6 hours to execute. The sprint ends Friday and the release must go out Monday morning. Three features were added this sprint: (1) biometric login (high risk, new feature), (2) updated account statement PDF export (medium risk, enhancement), (3) changed button color on settings page (low risk, cosmetic). How should test effort be allocated across the 6 hours?",
+      "choices": {
+        "A": "Test only the biometric login since it is the highest risk",
+        "B": "Allocate approximately 3 hours to biometric login (new security-critical feature requiring extensive testing), 2 hours to PDF export (functional regression and cross-device verification), 30 minutes to button color change (visual verification only), and 30 minutes to core smoke tests (login, transfer, balance check) to verify no regressions in untouched critical paths",
+        "C": "Run the full automated regression suite for 6 hours regardless of changes",
+        "D": "2 hours per feature for equal coverage"
+      },
+      "answer": "B",
+      "explanation": "Risk-based test allocation directs effort proportional to risk: biometric login is new, security-critical, and affects authentication (highest risk, most time). PDF export is an enhancement to existing functionality (medium risk, moderate time). Button color is cosmetic with near-zero regression risk (minimal time). The remaining time should cover core smoke tests to ensure critical untouched paths still work. Option C wastes time on low-risk areas; option D ignores regression risk in other features.",
+      "topic": "risk_based_test_planning",
+      "topic_category": "test_strategy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA093",
+      "question": "A defect report states: 'User cannot save profile.' The developer marks it as 'Cannot Reproduce.' Investigation reveals: the defect occurs only when the user's display name contains an emoji (e.g., 'John Rocket'), the backend uses a MySQL column with utf8 encoding (3-byte max), and the emoji requires utf8mb4 (4-byte). What is the root cause category, how should the bug report be improved, and what broader test should be added?",
+      "choices": {
+        "A": "Root cause: data encoding mismatch (utf8 3-byte column cannot store 4-byte Unicode characters); improve the bug report by specifying the exact input string, the database encoding configuration, and the error message/truncation behavior; add a systematic Unicode edge case test suite covering: astral plane characters (emoji, CJK extension B), RTL text, combining characters, and maximum-length strings in the character set",
+        "B": "Root cause: UI bug; improve report by adding a screenshot; add more UI tests",
+        "C": "Root cause: database corruption; improve report by adding database logs; add database health checks",
+        "D": "Root cause: network timeout; improve report by adding network traces; add timeout tests"
+      },
+      "answer": "A",
+      "explanation": "This is a classic encoding mismatch: MySQL's 'utf8' charset only supports up to 3-byte Unicode characters (BMP), but emoji and many other characters require 4 bytes (supplementary planes). The developer could not reproduce it because they tested with ASCII names. The bug report must include: exact input (with the specific emoji), backend error (truncation or exception), and database column encoding. The broader lesson is that any text field should be tested with 4-byte Unicode characters to catch encoding limitations.",
+      "topic": "encoding_defect_analysis",
+      "topic_category": "bug_reporting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA094",
+      "question": "You are testing a blue-green deployment. The blue environment (v1.2) is live, and the green environment (v2.0) is staged. v2.0 includes a database migration that adds a column 'preferences JSONB' with a NOT NULL constraint. After switching traffic to green, a critical bug is found and you need to roll back to blue. What is the problem, and what should the test plan have included?",
+      "choices": {
+        "A": "Run the migration in reverse automatically",
+        "B": "Just drop the new column before rolling back",
+        "C": "The rollback will fail or cause errors because v1.2 code does not know about the new 'preferences' column. If the migration ran on a shared database, v1.2 INSERT statements will fail the NOT NULL constraint. The test plan should have included: (1) Forward compatibility test -- can v1.2 operate against the v2.0 schema? (2) Rollback rehearsal with the actual migration, (3) Verification that migrations are backward-compatible (nullable columns, default values, or separate database per environment)",
+        "D": "No problem; switch traffic back to blue"
+      },
+      "answer": "C",
+      "explanation": "This is a common blue-green deployment trap: if both environments share a database, the schema must be backward-compatible. A NOT NULL column without a default value will cause v1.2 inserts to fail. The test plan should validate: (1) the old code works against the new schema (forward compatibility), (2) actual rollback execution including data state, (3) that all migrations follow backward-compatible patterns (add nullable columns, use defaults, avoid renames/drops until the old version is decommissioned). Simply dropping the column risks data loss.",
+      "topic": "blue_green_rollback_testing",
+      "topic_category": "release_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA095",
+      "question": "A tester must verify an API's idempotency. The endpoint POST /api/payments accepts an Idempotency-Key header. Design the complete test scenario set. Which set covers all critical idempotency behaviors?",
+      "choices": {
+        "A": "Test: (1) Same request+same key returns identical response without creating a duplicate payment, (2) Same key with different request body returns a 409 Conflict or 422 error (not a new payment), (3) Different key with same body creates a new payment (keys are per-request, not per-body), (4) Expired/invalid key handling, (5) Concurrent requests with the same key (race condition on first-write), (6) Key reuse after the original request failed (should the key be reusable or permanently consumed?)",
+        "B": "Send the same request twice with the same key and verify the second returns the cached response",
+        "C": "Test only that duplicate requests return HTTP 200",
+        "D": "Test that the Idempotency-Key header is optional"
+      },
+      "answer": "A",
+      "explanation": "Complete idempotency testing must cover: the happy path (duplicate returns same result), the misuse path (same key + different body should be rejected, not silently processed), the independence path (different keys always create new resources), the edge cases (expired keys, concurrent identical requests), and the failure recovery path (what happens when the original request failed -- can the key be reused to retry?). Each of these represents a distinct class of bugs found in production payment systems.",
+      "topic": "idempotency_testing",
+      "topic_category": "api_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA096",
+      "question": "A test environment management issue arises: Test environment A has database version 12.1, but production runs 12.4. A test passes in environment A but fails in production. Investigation reveals that a SQL query uses a function whose behavior changed between versions. What process improvements should be implemented?",
+      "choices": {
+        "A": "Always test in production directly",
+        "B": "Implement three process improvements: (1) Environment parity monitoring -- automated checks that test environment versions match production for all components (DB, OS, middleware, libraries), with alerts on drift, (2) Environment configuration as code -- version-locked infrastructure definitions that are updated in lockstep with production changes, (3) Production-equivalent pre-release environment -- at least one test environment that mirrors production configuration exactly, refreshed regularly",
+        "C": "Add more test cases to cover version differences",
+        "D": "Pin the production database to version 12.1 to match the test environment"
+      },
+      "answer": "B",
+      "explanation": "This is a test environment fidelity issue. The root cause is not the specific function behavior change, but the process that allowed environment drift. The three improvements address detection (automated parity monitoring), prevention (infrastructure-as-code with version locking), and verification (a production-equivalent environment). Testing in production is dangerous for a banking application, adding test cases for version differences is reactive, and holding production back is untenable.",
+      "topic": "test_environment_management",
+      "topic_category": "test_process",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA097",
+      "question": "You need to test a file upload feature that accepts CSV files. The specification says: max file size 10 MB, max 50,000 rows, columns must be 'name,email,phone', email must be valid format. Design the negative test set that covers the most critical edge cases. Which set is most comprehensive?",
+      "choices": {
+        "A": "Upload a valid file and verify success only",
+        "B": "Test: (1) File exactly 10 MB (boundary), (2) File 10 MB + 1 byte (just over), (3) Exactly 50,000 rows (boundary), (4) 50,001 rows (just over), (5) Missing column header, (6) Extra unexpected column, (7) Swapped column order, (8) Empty file (0 bytes), (9) File with only headers, no data rows, (10) Row with embedded newlines in a quoted field, (11) Row with the CSV delimiter in a field value, (12) UTF-8 BOM at file start, (13) Mixed line endings (CRLF and LF), (14) Valid CSV extension but binary content, (15) Extremely long single field value exceeding column width",
+        "C": "Upload a file larger than 10 MB and a file with invalid emails",
+        "D": "Upload files with wrong extensions (.txt, .xlsx) only"
+      },
+      "answer": "B",
+      "explanation": "Comprehensive CSV upload negative testing requires boundary tests (size and row limits), structural tests (column count, order, naming), content tests (embedded delimiters, newlines in quoted fields, encoding issues), empty/minimal cases (0 bytes, headers only), and format deception (correct extension with wrong content). Each of these represents a real-world failure mode: users export CSVs from different tools that handle quoting, encoding, and line endings differently. Option A covers only 2 of these 15+ categories.",
+      "topic": "file_upload_edge_cases",
+      "topic_category": "edge_case_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA098",
+      "question": "A testing team is transitioning from TMMi Level 2 to Level 3. They currently have per-project test processes but no organizational standard. The team has 8 projects with varying test approaches. What are the key process areas that must be addressed for Level 3, and what is the recommended implementation sequence?",
+      "choices": {
+        "A": "Hire external consultants to write the test process documentation",
+        "B": "Achieve 100% test automation across all projects",
+        "C": "Address three TMMi Level 3 process areas in sequence: (1) Test Organization -- establish a central test group that defines organizational test policies and standards, (2) Test Training Program -- develop and deliver training on the standardized process to all project teams, (3) Test Process Definition -- create the organizational standard test process (with tailoring guidelines for project-specific adaptation), then pilot on 2-3 projects before organization-wide rollout, using retrospectives to refine the standard",
+        "D": "Buy a test management tool and mandate its use across all projects"
+      },
+      "answer": "C",
+      "explanation": "TMMi Level 3 requires institutionalized, organization-wide test processes. The three key process areas are Test Organization (who owns the standard), Test Training Program (how people learn it), and Test Process Definition (what the standard is). The implementation sequence matters: establish ownership first, then define the process, then train people. Tailoring guidelines allow project-specific adaptation without losing standardization. Piloting on a subset before rollout reduces risk. Tools and automation are Level 4-5 concerns.",
+      "topic": "tmmi_level_transition",
+      "topic_category": "test_process",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA099",
+      "question": "An API has the following rate limit configuration: 100 requests per minute per API key, with a sliding window. A tester sends 60 requests in the first 30 seconds, waits 15 seconds, then sends 50 requests. At what point should rate limiting kick in, and what is the complete test assertion set?",
+      "choices": {
+        "A": "After 100 total requests; assert HTTP 429 on request 101",
+        "B": "With a sliding window: the 60 requests from seconds 0-30 are all within the current 60-second window. After waiting until second 45 and sending 50 more, the window from second 0-60 contains 110 requests. Rate limiting should trigger on the 101st request (the 41st request of the second batch). Assertions: (1) Requests 1-60 return 200, (2) Requests 61-100 return 200 (first 40 of second batch), (3) Request 101 returns 429 with Retry-After header, (4) After the window slides past second 30 (at second 90), the 60 early requests fall outside the window and capacity is restored",
+        "C": "The sliding window resets every 60 seconds from the first request; rate limiting triggers at second 60",
+        "D": "Rate limiting resets after the 15-second pause; all 50 requests should succeed"
+      },
+      "answer": "B",
+      "explanation": "A sliding window rate limiter counts requests in the trailing 60-second window from the current moment. At second 45: the window covers seconds -15 to 45, containing all 60 requests from seconds 0-30. Adding 50 more from second 45 onward, the 101st request (60+41) exceeds the 100-request limit within the 60-second window. The key test is window recovery: at second 90, the window covers seconds 30-90, and the 60 requests from seconds 0-30 have aged out, restoring capacity. A fixed window would behave differently, so knowing the algorithm is critical to correct test design.",
+      "topic": "sliding_window_rate_limit",
+      "topic_category": "api_testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "QA100",
+      "question": "You are the QA lead for a release that includes a breaking API change: v2 of the /users endpoint changes the response schema (nested 'address' object replaced with flat fields). 200 external consumers use v1. The team plans to deprecate v1 in 6 months. Design the complete test and validation strategy for this transition. Which approach covers all critical risks?",
+      "choices": {
+        "A": "Test v2 thoroughly and send a deprecation email to consumers",
+        "B": "Implement a 5-phase test strategy: (1) V2 contract tests -- validate the new schema against documented specification with positive, negative, and edge cases, (2) V1 backward compatibility tests -- verify v1 continues to return the old schema and that no v2 changes leak into v1 responses, (3) Migration validation -- provide a test endpoint where consumers can verify their integrations against v2 before the cutover, (4) Canary deployment -- route 5% of traffic to v2 while monitoring error rates, response schema validation failures, and consumer complaint channels, (5) Deprecation monitoring -- after v1 deprecation notice, track v1 usage metrics to identify consumers who have not migrated before the shutdown deadline, with automated alerts if v1 traffic increases instead of decreasing",
+        "C": "Run the existing v1 tests against v2 and fix any failures",
+        "D": "Test v2 only; v1 consumers should have migrated by now"
+      },
+      "answer": "B",
+      "explanation": "A breaking API change affecting 200 external consumers requires defense-in-depth testing across the full lifecycle: validating the new version, protecting the old version, enabling consumer migration, controlled rollout, and deprecation tracking. Each phase addresses a distinct risk: v2 correctness, v1 regression, consumer readiness, production stability, and migration completion. Running v1 tests against v2 (option C) would correctly fail since the schema changed, which is expected behavior not a test failure. Ignoring v1 consumers (option D) risks breaking 200 integrations.",
+      "topic": "api_migration_testing",
+      "topic_category": "release_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

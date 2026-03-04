@@ -1,0 +1,22 @@
+{
+  "_comment": "Curated agent capabilities for Cohort. Remove this file to show all tools.",
+  "version": 1,
+  "tools": [
+    "comms_service",
+    "web_search",
+    "youtube_service",
+    "intel_scheduler",
+    "content_monitor_scheduler",
+    "document_processor",
+    "health_monitor"
+  ],
+  "display_names": {
+    "comms_service": "Email & Calendar",
+    "web_search": "Web Search",
+    "youtube_service": "YouTube",
+    "intel_scheduler": "RSS & News Monitoring",
+    "content_monitor_scheduler": "Social Media & Marketing",
+    "document_processor": "Document Processing",
+    "health_monitor": "System Health Monitor"
+  }
+}

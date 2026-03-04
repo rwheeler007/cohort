@@ -1,0 +1,1613 @@
+{
+  "agent_id": "BOSS_agent",
+  "source": "Multi-agent orchestration & distributed systems (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "BOSS001",
+      "question": "In a multi-agent system, a task requires capabilities from three different agents. What is the most appropriate decomposition strategy?",
+      "choices": {
+        "A": "Assign the entire task to the most capable agent and let it delegate internally",
+        "B": "Decompose the task along capability boundaries, creating subtasks that match each agent's specialization",
+        "C": "Duplicate the task to all three agents and merge the best results",
+        "D": "Queue the task until a single agent acquires all three capabilities"
+      },
+      "answer": "B",
+      "explanation": "Decomposing along capability boundaries ensures each agent handles work within its specialization, minimizing errors and maximizing throughput. This is the fundamental principle of skill-based task routing.",
+      "topic": "task_decomposition_basics",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS002",
+      "question": "What is the primary purpose of a heartbeat mechanism in a multi-agent system?",
+      "choices": {
+        "A": "To synchronize clocks across all agents",
+        "B": "To detect agent failures by monitoring periodic signals",
+        "C": "To measure agent response latency for load balancing",
+        "D": "To trigger scheduled task execution at regular intervals"
+      },
+      "answer": "B",
+      "explanation": "Heartbeat mechanisms allow the orchestrator to detect when an agent has become unresponsive. If heartbeats stop arriving within a timeout window, the agent is presumed failed and recovery procedures are initiated.",
+      "topic": "heartbeat_mechanisms",
+      "topic_category": "coordination",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS003",
+      "question": "Which communication pattern is best suited when an orchestrator needs to broadcast a configuration change to all agents without waiting for individual acknowledgments?",
+      "choices": {
+        "A": "Request-reply",
+        "B": "Fire-and-forget",
+        "C": "Synchronous RPC",
+        "D": "Pub/sub with durable subscriptions"
+      },
+      "answer": "D",
+      "explanation": "Pub/sub with durable subscriptions ensures all agents receive the configuration change even if they are temporarily offline, without requiring the orchestrator to wait for each response. Fire-and-forget lacks delivery guarantees.",
+      "topic": "pub_sub_patterns",
+      "topic_category": "communication",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS004",
+      "question": "In a priority queue for task routing, tasks arrive with priorities: P1 (critical), P2 (high), P3 (medium). An agent becomes available. Which scheduling approach prevents starvation of lower-priority tasks?",
+      "choices": {
+        "A": "Aging \u00e2\u20ac\u201d incrementally boost the priority of waiting tasks over time",
+        "B": "Round-robin across all priority levels",
+        "C": "Strict priority ordering \u00e2\u20ac\u201d always dequeue the highest priority first",
+        "D": "Random selection weighted by priority"
+      },
+      "answer": "A",
+      "explanation": "Aging prevents starvation by gradually increasing the effective priority of tasks that have been waiting. Eventually, a long-waiting P3 task is promoted above newly arrived P2 tasks, ensuring all tasks eventually execute.",
+      "topic": "priority_queuing",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS005",
+      "question": "What does the term 'fan-out/fan-in' describe in a task routing context?",
+      "choices": {
+        "A": "Routing a single task sequentially through multiple agents",
+        "B": "Broadcasting a message to all agents and selecting the first responder",
+        "C": "Distributing subtasks to multiple agents in parallel (fan-out) and aggregating their results (fan-in)",
+        "D": "Splitting input data into equal partitions for batch processing"
+      },
+      "answer": "C",
+      "explanation": "Fan-out/fan-in is a parallel execution pattern where work is distributed to multiple agents simultaneously and results are collected at a synchronization point. It maximizes throughput for independent subtasks.",
+      "topic": "fan_out_fan_in",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS006",
+      "question": "In workflow orchestration, what is the purpose of a compensating transaction?",
+      "choices": {
+        "A": "To retry a failed transaction with increased resources",
+        "B": "To balance the load between two workflow branches",
+        "C": "To undo the effects of a previously committed step when a later step fails",
+        "D": "To cache intermediate results for faster re-execution"
+      },
+      "answer": "C",
+      "explanation": "Compensating transactions are the undo operations in a saga pattern. When step N fails, compensating transactions for steps N-1 through 1 are executed in reverse order to restore the system to a consistent state.",
+      "topic": "compensating_transactions",
+      "topic_category": "workflow",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS007",
+      "question": "Which metric is most directly useful for identifying a bottleneck agent in a multi-agent pipeline?",
+      "choices": {
+        "A": "Queue depth and wait time at each agent's input queue",
+        "B": "Average memory consumption per agent",
+        "C": "Total number of tasks completed by each agent",
+        "D": "Number of heartbeat signals per minute"
+      },
+      "answer": "A",
+      "explanation": "A growing queue depth and increasing wait times at a specific agent's input queue directly indicate that agent is processing slower than tasks arrive \u00e2\u20ac\u201d the classic bottleneck signal. Total completions alone do not reveal queuing delays.",
+      "topic": "bottleneck_identification",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS008",
+      "question": "What is the primary benefit of idempotency in workflow steps?",
+      "choices": {
+        "A": "It allows steps to execute in any order",
+        "B": "It eliminates the need for error handling",
+        "C": "It enables safe retries without side effects from duplicate execution",
+        "D": "It reduces the memory footprint of each step"
+      },
+      "answer": "C",
+      "explanation": "An idempotent operation produces the same result regardless of how many times it is executed. This property is essential for safe retries \u00e2\u20ac\u201d if a step fails after partially completing, re-executing it will not cause duplicate side effects.",
+      "topic": "idempotency",
+      "topic_category": "workflow",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS009",
+      "question": "In a structured roundtable discussion with five agents, what is the purpose of assigning a 'challenger' role?",
+      "choices": {
+        "A": "To ensure at least one participant actively questions assumptions and proposes counter-arguments",
+        "B": "To time-box the discussion by challenging slow speakers",
+        "C": "To validate the technical accuracy of all statements made",
+        "D": "To represent the end-user perspective in the discussion"
+      },
+      "answer": "A",
+      "explanation": "The challenger role prevents groupthink by ensuring at least one participant is explicitly tasked with questioning assumptions, identifying risks, and proposing alternatives. This produces more robust decisions through adversarial reasoning.",
+      "topic": "challenger_role",
+      "topic_category": "roundtable",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS010",
+      "question": "What is the difference between a task dependency graph and a task execution plan?",
+      "choices": {
+        "A": "They are the same thing expressed differently",
+        "B": "The dependency graph is immutable; the execution plan changes at runtime",
+        "C": "The dependency graph is for parallel tasks; the execution plan is for sequential tasks",
+        "D": "The dependency graph defines ordering constraints; the execution plan adds scheduling, resource allocation, and timing"
+      },
+      "answer": "D",
+      "explanation": "A dependency graph captures the 'must-happen-before' relationships between tasks. An execution plan takes this graph and layers on scheduling decisions \u00e2\u20ac\u201d which agent runs what, when, and with what resources \u00e2\u20ac\u201d to produce an actionable timeline.",
+      "topic": "dependency_graphs",
+      "topic_category": "dependency",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS011",
+      "question": "When using exponential backoff for retries, what is the purpose of adding jitter?",
+      "choices": {
+        "A": "To make retry timing unpredictable so adversaries cannot exploit patterns",
+        "B": "To reduce the total number of retries needed",
+        "C": "To prevent multiple agents from retrying simultaneously and causing a thundering herd",
+        "D": "To ensure retries happen at exactly equal intervals"
+      },
+      "answer": "C",
+      "explanation": "Without jitter, agents using the same backoff formula retry at identical times, creating a thundering herd that overwhelms the target. Adding random jitter spreads retries across the interval, reducing contention and improving recovery rates.",
+      "topic": "retry_strategies",
+      "topic_category": "error_handling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS012",
+      "question": "In a channel-based communication system, what is backpressure?",
+      "choices": {
+        "A": "A mechanism where a slow consumer signals the producer to reduce its sending rate",
+        "B": "The latency added by message encryption",
+        "C": "The overhead of maintaining message ordering guarantees",
+        "D": "Network congestion caused by too many channels being open simultaneously"
+      },
+      "answer": "A",
+      "explanation": "Backpressure is a flow control mechanism that prevents a fast producer from overwhelming a slow consumer. When the consumer's buffer fills, it signals upstream to slow down, preventing memory exhaustion and message loss.",
+      "topic": "backpressure",
+      "topic_category": "communication",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS013",
+      "question": "A topological sort of a task dependency graph produces what result?",
+      "choices": {
+        "A": "The shortest path through all tasks",
+        "B": "A balanced binary tree of task execution",
+        "C": "A linear ordering where every task appears before all tasks that depend on it",
+        "D": "A grouping of tasks by their resource requirements"
+      },
+      "answer": "C",
+      "explanation": "Topological sort produces a linear ordering of a directed acyclic graph such that for every edge (u, v), u appears before v. This gives a valid execution order that respects all dependency constraints.",
+      "topic": "topological_sort",
+      "topic_category": "dependency",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS014",
+      "question": "What is the circuit breaker pattern in error handling?",
+      "choices": {
+        "A": "A pattern that limits the number of concurrent connections to a service",
+        "B": "A pattern that encrypts error messages before logging them",
+        "C": "A pattern that stops calling a failing service after a threshold of failures, allowing it time to recover",
+        "D": "A pattern that routes errors to a dedicated error-handling agent"
+      },
+      "answer": "C",
+      "explanation": "The circuit breaker monitors failure rates and 'trips open' after a threshold is reached, preventing further calls to the failing service. After a timeout period, it allows a test call through (half-open state) to check if the service has recovered.",
+      "topic": "circuit_breaker",
+      "topic_category": "error_handling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS015",
+      "question": "In a multi-agent roundtable, what is the advantage of a structured discussion format over free-form conversation?",
+      "choices": {
+        "A": "It reduces the total number of messages exchanged",
+        "B": "It eliminates the need for a facilitator",
+        "C": "It ensures all relevant perspectives are heard and prevents dominant agents from monopolizing the discussion",
+        "D": "It guarantees consensus will be reached"
+      },
+      "answer": "C",
+      "explanation": "Structured formats (rounds, time-boxes, explicit turn-taking) ensure every participant contributes their perspective. Without structure, assertive agents can dominate while quieter agents with valuable insights are drowned out.",
+      "topic": "structured_discussion",
+      "topic_category": "roundtable",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS016",
+      "question": "What distinguishes event-driven orchestration from imperative orchestration?",
+      "choices": {
+        "A": "Event-driven orchestration uses a central controller; imperative orchestration does not",
+        "B": "Event-driven orchestration reacts to emitted events to trigger next steps; imperative orchestration explicitly commands each step in sequence",
+        "C": "Event-driven orchestration is synchronous; imperative orchestration is asynchronous",
+        "D": "There is no meaningful difference; they are synonyms"
+      },
+      "answer": "B",
+      "explanation": "In event-driven orchestration, workflow progression is triggered by events emitted by completed steps, enabling loose coupling. Imperative orchestration has a central controller that explicitly invokes each step, creating tighter coupling but simpler reasoning.",
+      "topic": "event_driven_orchestration",
+      "topic_category": "workflow",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS017",
+      "question": "Which approach detects circular dependencies in a task dependency graph?",
+      "choices": {
+        "A": "Breadth-first search counting node visits",
+        "B": "Cycle detection using depth-first search with node coloring (white/gray/black)",
+        "C": "Comparing the number of edges to the number of nodes",
+        "D": "Running all tasks and checking for deadlocks at runtime"
+      },
+      "answer": "B",
+      "explanation": "DFS with three-color marking (unvisited/in-progress/completed) detects back edges that indicate cycles. If DFS encounters a gray (in-progress) node, a cycle exists. This runs in O(V+E) time before any tasks execute.",
+      "topic": "circular_dependency_detection",
+      "topic_category": "dependency",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS018",
+      "question": "What is a latency budget in the context of multi-agent performance management?",
+      "choices": {
+        "A": "The financial cost allocated for reducing system latency",
+        "B": "The time reserved for system maintenance windows",
+        "C": "The minimum response time guaranteed by each agent",
+        "D": "The maximum total time allocated for an end-to-end operation, distributed across participating agents and communication hops"
+      },
+      "answer": "D",
+      "explanation": "A latency budget defines the total time allowed for an operation and allocates portions to each component. If the total budget is 500ms, Agent A might get 200ms, network hops 50ms, and Agent B 250ms. Exceeding any portion risks SLA violations.",
+      "topic": "latency_budgets",
+      "topic_category": "performance",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS019",
+      "question": "What does the bulkhead pattern prevent in a distributed multi-agent system?",
+      "choices": {
+        "A": "Unauthorized access to agent resources",
+        "B": "Network partition events between agents",
+        "C": "Data corruption during concurrent writes",
+        "D": "A failure in one component from cascading to consume all shared resources and bringing down the entire system"
+      },
+      "answer": "D",
+      "explanation": "Named after ship bulkheads that contain flooding to one compartment, the bulkhead pattern isolates components so that a failure in one (e.g., a thread pool exhaustion) does not propagate to others. Each component gets its own resource allocation.",
+      "topic": "bulkhead_pattern",
+      "topic_category": "error_handling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS020",
+      "question": "In message passing between agents, what problem does message ordering guarantee solve?",
+      "choices": {
+        "A": "It prevents message loss during network failures",
+        "B": "It ensures messages are processed in the order they were sent, preventing state inconsistencies from out-of-order delivery",
+        "C": "It compresses messages to reduce bandwidth usage",
+        "D": "It encrypts messages to prevent eavesdropping"
+      },
+      "answer": "B",
+      "explanation": "Without ordering guarantees, an 'update' message could arrive before the 'create' message, causing errors. Ordered delivery ensures agents see a consistent sequence of events, critical for stateful operations.",
+      "topic": "message_ordering",
+      "topic_category": "communication",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS021",
+      "question": "An orchestrator must route a code review task. Agent A has skill_level 0.9 for Python but current queue depth 12. Agent B has skill_level 0.7 for Python but current queue depth 2. Using a weighted scoring formula (0.6 * skill + 0.4 * (1 - normalized_queue_depth)), which agent should receive the task if max_queue_depth is 15?",
+      "choices": {
+        "A": "Agent A, because the skill weight dominates (A scores 0.86 vs B scores 0.79)",
+        "B": "Agent B, because its lower queue depth more than compensates for the skill gap (B scores 0.77 vs A scores 0.62)",
+        "C": "Neither \u2014 the orchestrator should wait until Agent A's queue drains",
+        "D": "Agent A, because skill_level should always take priority over queue depth"
+      },
+      "answer": "B",
+      "explanation": "Agent A: 0.6*0.9 + 0.4*(1 - 12/15) = 0.54 + 0.08 = 0.62. Agent B: 0.6*0.7 + 0.4*(1 - 2/15) = 0.42 + 0.35 = 0.77. Agent B scores higher because its much shorter queue (2 vs 12) more than compensates for the skill gap (0.7 vs 0.9) given the 60/40 weighting.",
+      "topic": "agent_selection_heuristics",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS022",
+      "question": "In a saga pattern with five sequential steps (S1 through S5), step S3 fails after S1 and S2 have committed. What is the correct recovery sequence?",
+      "choices": {
+        "A": "Execute compensating transaction C2, then C1, rolling back in reverse commit order",
+        "B": "Retry S3, then continue to S4 and S5",
+        "C": "Execute C1 first, then C2, rolling back in forward order",
+        "D": "Restart the entire saga from S1"
+      },
+      "answer": "A",
+      "explanation": "The saga pattern requires compensating transactions to execute in reverse order of the original commits. Since S1 committed first and S2 second, the rollback order is C2 (undo S2) then C1 (undo S1). This preserves referential integrity.",
+      "topic": "saga_pattern",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS023",
+      "question": "A multi-agent system uses optimistic concurrency control. Two agents simultaneously read a shared resource at version 5 and prepare updates. Agent A submits first, incrementing to version 6. What happens when Agent B submits its update referencing version 5?",
+      "choices": {
+        "A": "Agent B's update is silently merged with Agent A's changes",
+        "B": "Agent B's update is rejected because the version has changed, forcing a re-read and retry",
+        "C": "Agent B's update overwrites Agent A's changes (last-write-wins)",
+        "D": "Both updates are queued and applied in submission order"
+      },
+      "answer": "B",
+      "explanation": "Optimistic concurrency control detects conflicts at write time by comparing the expected version with the current version. Since Agent B references version 5 but the resource is now version 6, the write is rejected and Agent B must re-read the current state before retrying.",
+      "topic": "resource_contention",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS024",
+      "question": "A circuit breaker is in the half-open state. The next call to the protected service succeeds. What should the circuit breaker do?",
+      "choices": {
+        "A": "Log the success and wait for the timeout period to expire before changing state",
+        "B": "Immediately transition to closed state and reset the failure counter",
+        "C": "Transition to open state as a precaution",
+        "D": "Remain in half-open state until a configurable number of consecutive successes occur"
+      },
+      "answer": "D",
+      "explanation": "A well-implemented circuit breaker requires multiple consecutive successes in half-open state before transitioning to closed. A single success could be a fluke. The success threshold (typically 3-5) provides confidence that the service has genuinely recovered.",
+      "topic": "circuit_breaker_states",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS025",
+      "question": "In event sourcing for a multi-agent workflow, what is the primary advantage of storing events rather than current state?",
+      "choices": {
+        "A": "Events consume less storage space than state snapshots",
+        "B": "Events eliminate the need for a message broker",
+        "C": "Events are faster to query than state records",
+        "D": "The complete history of state transitions is preserved, enabling replay, audit, and debugging"
+      },
+      "answer": "D",
+      "explanation": "Event sourcing stores every state transition as an immutable event. This preserves the complete history, enabling time-travel debugging, audit trails, and the ability to rebuild state at any point by replaying events from the beginning.",
+      "topic": "event_sourcing",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS026",
+      "question": "A task dependency graph has 8 tasks. The critical path takes 45 minutes. Two parallel branches exist, taking 30 and 25 minutes respectively. What is the minimum completion time if unlimited agents are available?",
+      "choices": {
+        "A": "100 minutes (sum of all branches)",
+        "B": "45 minutes (the critical path determines minimum time)",
+        "C": "30 minutes (the longest parallel branch)",
+        "D": "25 minutes (the shortest parallel branch)"
+      },
+      "answer": "B",
+      "explanation": "The critical path is the longest path through the dependency graph, representing the minimum possible completion time regardless of parallelism. Even with unlimited agents executing parallel branches simultaneously, the 45-minute critical path cannot be shortened.",
+      "topic": "critical_path_analysis",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS027",
+      "question": "In a simplified Raft-like consensus among agents, what minimum number of agents must agree in a 5-agent cluster to commit a decision?",
+      "choices": {
+        "A": "2 agents",
+        "B": "All 5 agents (unanimous)",
+        "C": "4 agents (supermajority)",
+        "D": "3 agents (simple majority)"
+      },
+      "answer": "D",
+      "explanation": "Raft requires a majority quorum: floor(N/2) + 1. For 5 agents, the quorum is 3. This ensures that any two quorums overlap by at least one agent, preventing conflicting decisions from being committed simultaneously.",
+      "topic": "consensus_algorithms",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS028",
+      "question": "An orchestrator needs to implement graceful degradation. Service A (critical) and Service B (enhancement) are both experiencing high latency. What is the correct degradation strategy?",
+      "choices": {
+        "A": "Shed load equally from both services",
+        "B": "Disable Service B entirely to free resources for Service A, returning cached or default responses for B's functionality",
+        "C": "Disable Service A since it is consuming more resources",
+        "D": "Increase timeouts for both services and wait"
+      },
+      "answer": "B",
+      "explanation": "Graceful degradation prioritizes critical services. By disabling the enhancement service (B) and returning cached/default responses, resources are freed for the critical service (A), maintaining core functionality at the cost of reduced features.",
+      "topic": "graceful_degradation",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS029",
+      "question": "In command/query separation (CQS) for multi-agent communication, which statement is correct?",
+      "choices": {
+        "A": "Commands return the modified state; queries trigger side effects",
+        "B": "Commands and queries use the same message channel for efficiency",
+        "C": "Commands are always synchronous; queries are always asynchronous",
+        "D": "Commands modify state but return no data; queries return data but cause no side effects"
+      },
+      "answer": "D",
+      "explanation": "CQS separates operations into commands (state-modifying, no return value) and queries (data-retrieving, no side effects). This separation simplifies reasoning about system behavior and enables independent scaling of read and write paths.",
+      "topic": "command_query_separation",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS030",
+      "question": "A workflow engine supports checkpoint/restart. After a system crash, the workflow resumes from the last checkpoint. What additional property must checkpoint data have to ensure correctness?",
+      "choices": {
+        "A": "Checkpoints must be encrypted",
+        "B": "Checkpoints must be atomic and consistent \u00e2\u20ac\u201d partial checkpoint writes must not be recoverable",
+        "C": "Checkpoints must be stored on a separate physical disk",
+        "D": "Checkpoints must include the full source code of each workflow step"
+      },
+      "answer": "B",
+      "explanation": "If a checkpoint write is interrupted, a partially written checkpoint could contain inconsistent state. Atomic checkpointing (write to temp file, then atomic rename) ensures that only complete, consistent checkpoints are used for recovery.",
+      "topic": "checkpoint_restart",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS031",
+      "question": "An agent utilization dashboard shows Agent A at 95% utilization and Agent B at 30%. Both handle the same task type. What is the most likely issue?",
+      "choices": {
+        "A": "The load balancer is using a non-uniform routing strategy such as hashing that maps unevenly",
+        "B": "Agent B is experiencing errors and dropping tasks",
+        "C": "Agent A has higher skill levels and is preferred",
+        "D": "Agent B was recently restarted and has not caught up"
+      },
+      "answer": "A",
+      "explanation": "When agents handle identical task types but have vastly different utilization, the routing algorithm is likely distributing unevenly. Hash-based routing with a poor hash function or sticky sessions can cause hot spots. Switching to round-robin or least-connections would balance the load.",
+      "topic": "agent_utilization",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS032",
+      "question": "In a multi-agent system, what is the key difference between deadlock prevention and deadlock detection?",
+      "choices": {
+        "A": "Prevention is more efficient than detection in all cases",
+        "B": "Prevention is applied at design time by eliminating necessary conditions; detection identifies deadlocks at runtime and breaks them",
+        "C": "Detection requires hardware support; prevention is software-only",
+        "D": "Prevention works only for two agents; detection scales to any number"
+      },
+      "answer": "B",
+      "explanation": "Deadlock prevention eliminates one of the four necessary conditions (mutual exclusion, hold-and-wait, no preemption, circular wait) at design time, making deadlocks impossible. Detection allows deadlocks to form but identifies and resolves them at runtime through techniques like wait-for graph analysis.",
+      "topic": "deadlock_prevention",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS033",
+      "question": "A task chunking strategy splits a large code review into 10 chunks. Each chunk takes 5 minutes with one agent. With 3 available agents using fan-out, what is the expected completion time assuming no inter-chunk dependencies?",
+      "choices": {
+        "A": "50 minutes",
+        "B": "15 minutes",
+        "C": "20 minutes (ceiling of 10/3 = 4 batches, times 5 minutes)",
+        "D": "10 minutes"
+      },
+      "answer": "C",
+      "explanation": "With 3 agents and 10 independent chunks, the work is done in ceil(10/3) = 4 batches. Each batch takes 5 minutes (agents work in parallel within a batch). Total: 4 * 5 = 20 minutes. The last batch has only 1 chunk, so 2 agents are idle.",
+      "topic": "task_chunking",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS034",
+      "question": "What is the primary risk of a long-running workflow that spans multiple hours without intermediate checkpoints?",
+      "choices": {
+        "A": "The workflow consumes too much memory",
+        "B": "Other workflows cannot execute during this time",
+        "C": "Any failure requires restarting from the beginning, wasting all completed work",
+        "D": "The workflow results become stale and invalid"
+      },
+      "answer": "C",
+      "explanation": "Without checkpoints, a failure at step 99 of 100 requires re-executing all 99 completed steps. Intermediate checkpoints allow recovery from the last successful point, dramatically reducing wasted computation on failure.",
+      "topic": "long_running_processes",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS035",
+      "question": "In a roundtable discussion, three agents agree on approach X, but one agent with domain expertise raises a specific technical concern. What is the correct facilitation approach?",
+      "choices": {
+        "A": "Proceed with majority vote since 3 out of 4 agree",
+        "B": "Escalate to a human for the final decision",
+        "C": "Weight the domain expert's concern higher \u00e2\u20ac\u201d require the majority to specifically address the technical objection before proceeding",
+        "D": "Table the discussion until a fifth agent can break the tie"
+      },
+      "answer": "C",
+      "explanation": "In multi-agent discussions, raw majority vote can override critical domain expertise. The facilitator should require the majority to engage with the specific technical concern, either refuting it with evidence or modifying the approach. This prevents expertise-blind consensus.",
+      "topic": "conflict_resolution",
+      "topic_category": "roundtable",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS036",
+      "question": "Which condition is NOT required for deadlock to occur in a multi-agent resource allocation scenario?",
+      "choices": {
+        "A": "Mutual exclusion \u00e2\u20ac\u201d resources cannot be shared",
+        "B": "Preemption \u00e2\u20ac\u201d resources can be forcibly taken from agents",
+        "C": "Hold and wait \u00e2\u20ac\u201d agents hold resources while requesting additional ones",
+        "D": "Circular wait \u00e2\u20ac\u201d a cycle exists in the wait-for graph"
+      },
+      "answer": "B",
+      "explanation": "Deadlock requires four conditions simultaneously: mutual exclusion, hold-and-wait, NO preemption (not preemption), and circular wait. Preemption actually prevents deadlock because resources can be forcibly reclaimed to break the cycle.",
+      "topic": "deadlock_conditions",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS037",
+      "question": "A workflow engine needs to handle version migration \u00e2\u20ac\u201d running workflows were defined under schema v1, but the engine has been upgraded to schema v2. What is the safest migration strategy?",
+      "choices": {
+        "A": "Force all running workflows to restart under v2",
+        "B": "Pause all workflows until manual migration is complete",
+        "C": "Convert all v1 workflow state to v2 format in-place",
+        "D": "Run v1 and v2 engines side by side; existing workflows complete under v1, new workflows use v2"
+      },
+      "answer": "D",
+      "explanation": "Running dual engines ensures in-flight workflows complete with the schema they were designed for, avoiding mid-execution schema mismatches. New workflows use v2. The v1 engine is decommissioned once all v1 workflows drain. This is the blue-green deployment pattern applied to workflows.",
+      "topic": "workflow_versioning",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS038",
+      "question": "An orchestrator tracks SLA compliance. The SLA requires 95% of tasks to complete within 30 seconds. Over the last hour, 200 tasks completed: 185 within 30 seconds, 15 exceeded. What is the SLA compliance and what action is needed?",
+      "choices": {
+        "A": "95% compliance \u00e2\u20ac\u201d exactly meeting the target",
+        "B": "92.5% compliance \u00e2\u20ac\u201d SLA is met since 92.5% rounds up to 95%",
+        "C": "92.5% compliance \u00e2\u20ac\u201d SLA is violated; investigate the 15 slow tasks for common root cause",
+        "D": "97.5% compliance \u00e2\u20ac\u201d comfortably within SLA"
+      },
+      "answer": "C",
+      "explanation": "185/200 = 92.5%, which is below the 95% SLA threshold. The orchestrator should alert on this violation and investigate the 15 slow tasks for patterns \u00e2\u20ac\u201d common agent, common task type, or resource contention \u00e2\u20ac\u201d to restore compliance.",
+      "topic": "sla_management",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS039",
+      "question": "In a request-reply communication pattern between agents, the replier crashes after receiving the request but before sending the reply. How should the requester handle this?",
+      "choices": {
+        "A": "Wait indefinitely for the reply",
+        "B": "Broadcast the request to all agents simultaneously",
+        "C": "Assume the operation succeeded and proceed",
+        "D": "Set a timeout; on expiry, either retry with the same agent or route to an alternative agent"
+      },
+      "answer": "D",
+      "explanation": "A timeout prevents the requester from blocking indefinitely. On timeout, the orchestrator should check if the replier is healthy (heartbeat), retry if it has recovered, or failover to another capable agent. The operation should be idempotent to handle duplicate requests safely.",
+      "topic": "request_reply_failure",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS040",
+      "question": "When performing capacity planning for a multi-agent system, which metric combination provides the most actionable forecast?",
+      "choices": {
+        "A": "Task arrival rate trend, average processing time per task type, and agent count",
+        "B": "Current CPU usage and memory consumption",
+        "C": "Network bandwidth and disk I/O statistics",
+        "D": "Number of active users and login frequency"
+      },
+      "answer": "A",
+      "explanation": "Capacity planning requires knowing demand (task arrival rate trend), supply capability (processing time per task type), and current resources (agent count). With these three, you can calculate when demand will exceed capacity and how many additional agents are needed.",
+      "topic": "capacity_planning",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS041",
+      "question": "A state machine governs a workflow with states: PENDING, RUNNING, PAUSED, COMPLETED, FAILED. Which transition should NOT be allowed?",
+      "choices": {
+        "A": "PENDING -> RUNNING",
+        "B": "COMPLETED -> RUNNING",
+        "C": "RUNNING -> PAUSED",
+        "D": "FAILED -> PENDING (for retry)"
+      },
+      "answer": "B",
+      "explanation": "COMPLETED is a terminal state \u00e2\u20ac\u201d the workflow finished successfully. Transitioning back to RUNNING would violate the immutability of completed work and potentially cause side effects to re-execute. Retries should create a new workflow instance, not resurrect completed ones.",
+      "topic": "state_machines",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS042",
+      "question": "In multi-agent leader election, what problem does the 'split-brain' scenario describe?",
+      "choices": {
+        "A": "Two agents simultaneously believe they are the leader due to a network partition",
+        "B": "The leader agent runs out of memory and cannot process tasks",
+        "C": "An agent oscillates between leader and follower states rapidly",
+        "D": "The election process takes too long and blocks task execution"
+      },
+      "answer": "A",
+      "explanation": "Split-brain occurs when a network partition divides agents into two groups, each of which independently elects its own leader. Both leaders issue conflicting commands, causing inconsistency. Quorum-based election (requiring majority) prevents this by ensuring only one partition can elect a leader.",
+      "topic": "leader_election",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS043",
+      "question": "An error escalation policy defines three levels: L1 (agent self-heal), L2 (orchestrator intervention), L3 (human operator). Which error correctly maps to L2?",
+      "choices": {
+        "A": "A transient network timeout that succeeds on retry",
+        "B": "An agent that has failed 5 consecutive tasks of the same type after retries",
+        "C": "A data corruption incident requiring manual database repair",
+        "D": "A single task taking 10% longer than expected"
+      },
+      "answer": "B",
+      "explanation": "Repeated failures after retries indicate a systemic issue beyond the agent's self-healing capability (L1) but not yet requiring human intervention (L3). The orchestrator (L2) can reassign tasks, restart the agent, or route to alternative agents while investigating the pattern.",
+      "topic": "error_escalation",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS044",
+      "question": "A dependency graph reveals that Task E depends on Tasks C and D, Task C depends on Task A, and Task D depends on Tasks A and B. What is the maximum parallelism at any point?",
+      "choices": {
+        "A": "1 task at a time",
+        "B": "2 tasks simultaneously (A and B)",
+        "C": "3 tasks simultaneously",
+        "D": "5 tasks simultaneously"
+      },
+      "answer": "B",
+      "explanation": "Tasks A and B have no dependencies and can run in parallel (parallelism = 2). Once A completes, C can start, but D still waits for B. After both A and B complete, C and D can run in parallel (parallelism = 2). E must wait for both C and D. Maximum parallelism is 2.",
+      "topic": "parallel_execution",
+      "topic_category": "dependency",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS045",
+      "question": "In a message queuing system, what is the consequence of a queue reaching its maximum depth with no consumers available?",
+      "choices": {
+        "A": "The system behavior depends on the queue's overflow policy: it may reject new messages, apply backpressure to producers, or route to a dead-letter queue",
+        "B": "New messages automatically replace the oldest messages",
+        "C": "The queue automatically scales to accommodate more messages",
+        "D": "All queued messages are deleted and the producer is notified"
+      },
+      "answer": "A",
+      "explanation": "Queue overflow behavior is configurable: reject (return error to producer), backpressure (slow the producer), dead-letter (route to an overflow queue for later processing), or drop-oldest. The correct strategy depends on the use case's data loss tolerance.",
+      "topic": "message_queuing",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS046",
+      "question": "A multi-agent system uses a decision matrix to select implementation approaches. Agents score each option on criteria: feasibility, risk, effort, and value. The matrix shows Option X scoring highest on value but lowest on feasibility. What is the correct facilitation response?",
+      "choices": {
+        "A": "Select Option X because value is the most important criterion",
+        "B": "Reject Option X immediately due to low feasibility",
+        "C": "Explore whether feasibility can be improved through decomposition or phasing, making the decision conditional",
+        "D": "Average all scores and select the highest total"
+      },
+      "answer": "C",
+      "explanation": "A skilled facilitator does not blindly accept weighted averages or single-criterion decisions. High value with low feasibility suggests a phased approach may unlock the value while managing feasibility risk. The matrix informs discussion, not replaces it.",
+      "topic": "decision_matrices",
+      "topic_category": "roundtable",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS047",
+      "question": "In a multi-agent pipeline, Agent A produces output that Agent B transforms and Agent C stores. Agent B's processing time varies between 100ms and 5000ms. How should the orchestrator manage the variable latency?",
+      "choices": {
+        "A": "Set a static timeout at 5000ms for all Agent B calls",
+        "B": "Skip Agent B for calls that exceed 1000ms",
+        "C": "Use an adaptive timeout based on Agent B's moving average latency, with a buffer for variance (e.g., p95 + 20%)",
+        "D": "Queue all work and let Agent B process at its own pace without timeout"
+      },
+      "answer": "C",
+      "explanation": "Adaptive timeouts based on observed latency statistics (p95 + buffer) balance between catching genuine failures and avoiding false timeouts during legitimate slow processing. A static 5s timeout is too generous for the 100ms cases and masks degradation.",
+      "topic": "timeout_strategies",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS048",
+      "question": "An agent discovery mechanism allows new agents to register their capabilities at runtime. What is the primary risk if capability announcements are not validated?",
+      "choices": {
+        "A": "Network bandwidth consumption increases",
+        "B": "The discovery registry becomes too large",
+        "C": "An agent could claim capabilities it does not have, causing tasks to be routed to it and fail",
+        "D": "Agents take longer to start up"
+      },
+      "answer": "C",
+      "explanation": "Unvalidated capability claims create a trust problem \u00e2\u20ac\u201d an agent could register as capable of any task type, receive routed work, and fail consistently. Capability validation through skill assessments or progressive trust-building (start with low-priority tasks) mitigates this risk.",
+      "topic": "agent_discovery",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS049",
+      "question": "A throughput metric shows the system processing 100 tasks/minute. After adding a third agent, throughput increases to only 120 tasks/minute instead of the expected 150. What is the most likely explanation?",
+      "choices": {
+        "A": "Coordination overhead (task distribution, result aggregation, contention) is consuming the additional capacity",
+        "B": "The third agent is slower than the other two",
+        "C": "The task queue is not generating enough tasks",
+        "D": "The third agent is processing different task types"
+      },
+      "answer": "A",
+      "explanation": "Adding agents introduces coordination overhead: distributing tasks, synchronizing shared state, aggregating results, and resolving contention. This overhead follows Amdahl's Law \u00e2\u20ac\u201d the serial coordination portion limits the speedup from additional parallel agents.",
+      "topic": "throughput_metrics",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS050",
+      "question": "In resource locking for multi-agent access, what is the advantage of a read-write lock over a simple mutex?",
+      "choices": {
+        "A": "Read-write locks are always faster than mutexes",
+        "B": "Multiple agents can hold read locks concurrently, but write locks are exclusive, maximizing throughput for read-heavy workloads",
+        "C": "Read-write locks prevent deadlocks while mutexes do not",
+        "D": "Read-write locks consume less memory than mutexes"
+      },
+      "answer": "B",
+      "explanation": "Read-write locks distinguish between read access (shared, non-destructive) and write access (exclusive, modifying). In read-heavy workloads, multiple readers proceed concurrently instead of serializing through a mutex, significantly improving throughput.",
+      "topic": "resource_locking",
+      "topic_category": "dependency",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS051",
+      "question": "A workflow has conditional branching: if condition X, execute branch A (3 steps); if condition Y, execute branch B (5 steps). Both branches merge at step Z. Which design pattern prevents step Z from executing prematurely?",
+      "choices": {
+        "A": "Running both branches in parallel regardless of the condition",
+        "B": "A timer that waits for the longer branch's expected duration",
+        "C": "Polling step Z to check if the branch has finished",
+        "D": "A synchronization barrier (join) that waits for whichever active branch to complete before proceeding"
+      },
+      "answer": "D",
+      "explanation": "A synchronization barrier (join node) tracks which branch is active and waits for it to complete before releasing step Z. Unlike a timer, it handles variable execution times correctly. Unlike polling, it is event-driven and efficient.",
+      "topic": "workflow_branching",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS052",
+      "question": "When a multi-agent roundtable produces conflicting recommendations, which synthesis technique yields the most actionable output?",
+      "choices": {
+        "A": "Averaging the recommendations",
+        "B": "Identifying the specific points of disagreement, mapping each to evidence, and producing a decision matrix with tradeoffs",
+        "C": "Selecting the recommendation from the highest-ranked agent",
+        "D": "Scheduling a second roundtable to try again"
+      },
+      "answer": "B",
+      "explanation": "Conflict synthesis requires decomposing disagreements into specific claims, mapping each claim to supporting evidence, and presenting the tradeoffs explicitly. This transforms 'A says X, B says Y' into a structured decision with clear consequences for each path.",
+      "topic": "multi_perspective_synthesis",
+      "topic_category": "roundtable",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS053",
+      "question": "In a cascading failure scenario, Service A depends on Service B, which depends on Service C. Service C slows to a crawl. Without protective measures, what happens?",
+      "choices": {
+        "A": "Service B's threads block waiting for C, exhausting B's thread pool, which then causes A's calls to B to block and exhaust A's resources too",
+        "B": "Only Service C is affected; A and B continue normally",
+        "C": "Service A detects the issue and bypasses B and C",
+        "D": "The network automatically load-balances around Service C"
+      },
+      "answer": "A",
+      "explanation": "Without circuit breakers or timeouts, slow responses from C cause B's threads to block indefinitely. As B's thread pool fills, B becomes unresponsive to A. A's threads then block waiting for B, creating a cascade that takes down the entire chain.",
+      "topic": "cascading_failure",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS054",
+      "question": "An orchestrator must choose between fire-and-forget and request-reply for logging events from agent actions. Which approach is preferable and why?",
+      "choices": {
+        "A": "Request-reply, because every log entry must be confirmed",
+        "B": "Neither; agents should write logs directly to disk",
+        "C": "Fire-and-forget, because logging should not block the critical path; losing occasional log entries is acceptable if agent throughput is preserved",
+        "D": "Fire-and-forget, because it guarantees delivery"
+      },
+      "answer": "C",
+      "explanation": "Logging is a non-critical auxiliary operation. Using request-reply would add latency to every agent action. Fire-and-forget decouples logging from the critical path, accepting occasional loss for throughput. For audit-critical logs, an async durable queue is the middle ground.",
+      "topic": "fire_and_forget",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS055",
+      "question": "A dependency graph has 6 tasks: T1 -> T3, T2 -> T3, T3 -> T5, T4 -> T5, T4 -> T6. What is the minimum number of execution stages (where tasks in the same stage run in parallel)?",
+      "choices": {
+        "A": "3 stages",
+        "B": "2 stages",
+        "C": "4 stages",
+        "D": "6 stages"
+      },
+      "answer": "A",
+      "explanation": "Stage 1: T1, T2, T4 (no dependencies). Stage 2: T3 (waits for T1, T2), T6 (waits for T4). Stage 3: T5 (waits for T3, T4 via T3 path and direct T4). Three stages minimize the total execution time with parallel scheduling.",
+      "topic": "dependency_graph_analysis",
+      "topic_category": "dependency",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS056",
+      "question": "In a multi-agent system, what is the difference between 'at-most-once' and 'at-least-once' message delivery semantics?",
+      "choices": {
+        "A": "At-most-once delivers to one agent; at-least-once delivers to all agents",
+        "B": "At-most-once sends the message once without retries (may lose); at-least-once retries until acknowledged (may duplicate)",
+        "C": "They are equivalent in practice",
+        "D": "At-most-once is faster; at-least-once is more secure"
+      },
+      "answer": "B",
+      "explanation": "At-most-once sends without retry, risking message loss but guaranteeing no duplicates. At-least-once retries until acknowledged, guaranteeing delivery but risking duplicates. The choice depends on whether the application tolerates loss or duplication better.",
+      "topic": "delivery_semantics",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS057",
+      "question": "An orchestrator maintains a task routing table mapping task types to capable agents. The table has become stale because agent capabilities changed. What mechanism prevents stale routing?",
+      "choices": {
+        "A": "Agents are never allowed to change capabilities after registration",
+        "B": "The routing table is permanently immutable once configured",
+        "C": "Agents periodically re-announce their capabilities; the routing table entries have TTLs that expire if not refreshed",
+        "D": "The orchestrator queries agents before every single task assignment"
+      },
+      "answer": "C",
+      "explanation": "TTL-based capability announcements are the standard approach: agents periodically refresh their registrations, and the routing table expires entries that are not renewed. This balances freshness (capabilities update) with efficiency (not querying per-task).",
+      "topic": "skill_matching",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS058",
+      "question": "During a roundtable, Agent A proposes an approach and immediately three other agents agree without adding new information. What facilitation technique should the orchestrator apply?",
+      "choices": {
+        "A": "Accept the consensus and move forward \u00e2\u20ac\u201d agreement is efficient",
+        "B": "Reject the proposal and force a new one to encourage diversity",
+        "C": "Apply 'devil's advocate' by explicitly asking the challenger to argue against the proposal before finalizing",
+        "D": "End the roundtable since consensus was reached quickly"
+      },
+      "answer": "C",
+      "explanation": "Rapid agreement without substantive discussion is a groupthink signal. A skilled facilitator invokes the devil's advocate technique, requiring at least one agent to argue the counter-position. If the proposal survives challenge, confidence in the decision is justified.",
+      "topic": "stakeholder_alignment",
+      "topic_category": "roundtable",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS059",
+      "question": "A queue depth monitoring system shows that Agent X's queue depth oscillates between 0 and 50 every few minutes. What does this pattern indicate?",
+      "choices": {
+        "A": "Agent X has bursty processing \u00e2\u20ac\u201d it drains its queue in batches rather than processing items continuously",
+        "B": "Agent X is performing optimally with perfect load balancing",
+        "C": "The monitoring system has a bug causing inaccurate readings",
+        "D": "Agent X is being restarted repeatedly"
+      },
+      "answer": "A",
+      "explanation": "Oscillating queue depth suggests batch processing behavior: work accumulates, the agent processes it all at once (draining to 0), then waits for the next batch. This creates latency spikes for tasks arriving just after a drain. Switching to continuous processing smooths latency.",
+      "topic": "queue_depth_monitoring",
+      "topic_category": "performance",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS060",
+      "question": "In a multi-agent voting system, what advantage does weighted voting (by expertise) have over simple majority voting?",
+      "choices": {
+        "A": "Weighted voting is always faster",
+        "B": "It eliminates the possibility of ties",
+        "C": "It prevents agents with deep domain expertise from being overruled by a numerical majority of less-knowledgeable agents",
+        "D": "It requires fewer agents to reach a decision"
+      },
+      "answer": "C",
+      "explanation": "Weighted voting assigns higher vote weight to agents with proven expertise in the relevant domain. This prevents a situation where three generalist agents overrule one specialist on a domain-specific question purely through numbers.",
+      "topic": "voting_mechanisms",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS061",
+      "question": "A task has three independent subtasks (S1, S2, S3) and one final aggregation step (S4) that depends on all three. Using the fork-join pattern, what is the correct execution strategy?",
+      "choices": {
+        "A": "Execute S1, S2, S3 in parallel with a barrier before S4; S4 starts only when all three complete",
+        "B": "Execute S1 and S2 in parallel, wait, then S3, then S4",
+        "C": "Execute S1, S2, S3 sequentially, then S4",
+        "D": "Execute all four tasks in parallel"
+      },
+      "answer": "A",
+      "explanation": "Fork-join dispatches all independent subtasks (S1, S2, S3) in parallel and places a barrier before the aggregation step (S4). S4 begins only when the last of S1/S2/S3 completes. This maximizes parallelism while respecting the dependency on all three inputs.",
+      "topic": "fork_join_patterns",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS062",
+      "question": "What is the key trade-off between choreography and orchestration in multi-agent workflow coordination?",
+      "choices": {
+        "A": "Choreography uses peer-to-peer event reactions (decentralized, loosely coupled); orchestration uses a central controller (centralized, easier to monitor and debug)",
+        "B": "Choreography centralizes control for reliability; orchestration decentralizes for flexibility",
+        "C": "Choreography is only suitable for two agents; orchestration scales to any number",
+        "D": "There is no practical difference between the two"
+      },
+      "answer": "A",
+      "explanation": "Choreography distributes workflow logic across agents that react to events, offering loose coupling but making the overall flow harder to observe. Orchestration centralizes control in one coordinator, simplifying monitoring and debugging at the cost of tighter coupling and a single point of failure.",
+      "topic": "choreography_vs_orchestration",
+      "topic_category": "workflow",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS063",
+      "question": "An agent is observed having a high error rate only when processing tasks routed from a specific upstream agent. Other sources produce no errors. What is the most productive investigation approach?",
+      "choices": {
+        "A": "Examine the output format and data characteristics of the upstream agent's tasks for incompatibilities with the downstream agent's expectations",
+        "B": "Restart the failing agent",
+        "C": "Increase the retry count for all tasks",
+        "D": "Replace the downstream agent with a different one"
+      },
+      "answer": "A",
+      "explanation": "Source-specific errors strongly suggest a data compatibility issue \u00e2\u20ac\u201d the upstream agent may be producing output in a format or with edge cases that the downstream agent cannot handle. Investigating the interface contract between the two agents is the correct root-cause approach.",
+      "topic": "interface_debugging",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS064",
+      "question": "In a time-boxed roundtable format, what should the facilitator do when the allotted time expires but no consensus has been reached?",
+      "choices": {
+        "A": "Extend the time indefinitely until consensus is reached",
+        "B": "Force a vote immediately with no further discussion",
+        "C": "Summarize the positions, record points of agreement and disagreement, and either escalate to a decision-maker or schedule a focused follow-up on the unresolved points",
+        "D": "Discard all discussion and start over with a different approach"
+      },
+      "answer": "C",
+      "explanation": "Effective time-boxing requires a graceful exit strategy. The facilitator captures the current state (agreements, disagreements, evidence), preventing loss of discussion value, and either escalates or schedules a focused follow-up on the specific unresolved points rather than repeating the entire discussion.",
+      "topic": "time_boxing",
+      "topic_category": "roundtable",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS065",
+      "question": "An orchestrator needs to detect that Agent A and Agent B are deadlocked \u00e2\u20ac\u201d each waiting for the other to release a resource. Which runtime detection technique is most appropriate?",
+      "choices": {
+        "A": "Timeout-based detection \u00e2\u20ac\u201d if an agent waits longer than expected, assume deadlock",
+        "B": "Log analysis of request patterns",
+        "C": "Monitor CPU usage \u00e2\u20ac\u201d deadlocked agents have 0% CPU",
+        "D": "Maintain a wait-for graph and periodically check for cycles"
+      },
+      "answer": "D",
+      "explanation": "A wait-for graph tracks which agent is waiting for which resource held by which other agent. A cycle in this graph is a definitive deadlock. Timeout-based detection produces false positives (slow is not deadlocked). CPU monitoring is unreliable for I/O-bound waits.",
+      "topic": "deadlock_detection",
+      "topic_category": "coordination",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS066",
+      "question": "A load distribution algorithm must balance between agents with different processing speeds. Agent A processes 10 tasks/minute, Agent B processes 5 tasks/minute. What weighted distribution ratio minimizes average wait time?",
+      "choices": {
+        "A": "2:1 ratio favoring Agent A (approximately 67% to A, 33% to B)",
+        "B": "50/50 split",
+        "C": "Send all tasks to Agent A since it is faster",
+        "D": "Alternate between agents regardless of speed"
+      },
+      "answer": "A",
+      "explanation": "Weighted distribution proportional to processing speed (10:5 = 2:1) ensures both agents are equally loaded relative to their capacity. This minimizes queue buildup at the slower agent while fully utilizing the faster one, optimizing average wait time.",
+      "topic": "load_distribution",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS067",
+      "question": "In a pub/sub system, what is the difference between a durable and a non-durable subscription?",
+      "choices": {
+        "A": "Durable subscriptions are slower but more reliable; non-durable are fast but limited to one message",
+        "B": "Durable subscriptions are encrypted; non-durable are plaintext",
+        "C": "Durable subscriptions support filtering; non-durable do not",
+        "D": "Durable subscriptions survive subscriber disconnection; messages published during disconnection are delivered on reconnection. Non-durable subscriptions lose messages published while disconnected."
+      },
+      "answer": "D",
+      "explanation": "Durable subscriptions persist the subscriber's position and queue messages during disconnection. When the subscriber reconnects, it receives all missed messages. Non-durable subscriptions are ephemeral \u00e2\u20ac\u201d any messages published while the subscriber is offline are permanently lost.",
+      "topic": "durable_subscriptions",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS068",
+      "question": "An orchestrator must decide between pre-emptive and cooperative scheduling for agent task execution. In which scenario is pre-emptive scheduling clearly preferable?",
+      "choices": {
+        "A": "When all tasks have similar execution times",
+        "B": "When a high-priority task arrives and a low-priority task is currently executing on the only available agent",
+        "C": "When agents have unlimited capacity",
+        "D": "When there is no priority differentiation between tasks"
+      },
+      "answer": "B",
+      "explanation": "Pre-emptive scheduling allows the orchestrator to interrupt a running low-priority task to execute a high-priority one. In cooperative scheduling, the low-priority task must voluntarily yield, potentially delaying the critical task. Pre-emption is essential when priority enforcement is required with limited agents.",
+      "topic": "scheduling_strategies",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS069",
+      "question": "A workflow has an outer retry loop (whole workflow, max 2 additional attempts) and an inner retry loop (individual step, max 2 additional attempts). A step keeps failing. How many total executions of the failing step occur before the workflow gives up?",
+      "choices": {
+        "A": "3 executions (only inner retries count)",
+        "B": "5 executions (2 inner + 2 outer + 1 original)",
+        "C": "6 executions (3 inner times 2 outer)",
+        "D": "9 executions: 3 per workflow attempt (1 original + 2 retries) times 3 workflow attempts (1 original + 2 retries)"
+      },
+      "answer": "D",
+      "explanation": "Each workflow attempt executes the step once, then retries it up to 2 more times = 3 executions per attempt. The outer loop runs the workflow once, then retries up to 2 more times = 3 workflow attempts. Total: 3 * 3 = 9 step executions before the workflow gives up entirely.",
+      "topic": "nested_retry",
+      "topic_category": "error_handling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS070",
+      "question": "In a resource-constrained multi-agent system, what is the purpose of a deadlock avoidance algorithm like the Banker's Algorithm?",
+      "choices": {
+        "A": "It prevents deadlocks by only granting resource requests that keep the system in a 'safe state' where all agents can eventually complete",
+        "B": "It detects deadlocks after they occur and kills one agent",
+        "C": "It distributes resources equally among all agents",
+        "D": "It speeds up resource allocation by pre-allocating all resources at startup"
+      },
+      "answer": "A",
+      "explanation": "The Banker's Algorithm evaluates each resource request against the system's remaining resources and all agents' maximum claims. A request is granted only if the resulting state is 'safe' \u00e2\u20ac\u201d meaning there exists at least one sequence in which all agents can complete. Unsafe requests are deferred.",
+      "topic": "deadlock_avoidance",
+      "topic_category": "dependency",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "BOSS071",
+      "question": "A 5-agent pipeline processes tasks sequentially: Agent A -> B -> C -> D -> E. Agent C fails mid-execution after A and B have completed. The circuit breaker for C trips open. A compensating transaction for B exists but has a 30% failure rate. The system must maintain data consistency. What is the correct multi-step recovery sequence?",
+      "choices": {
+        "A": "Execute compensating transaction for B, then compensating transaction for A. If B's compensation fails, retry B's compensation with exponential backoff up to 3 times before escalating to L2",
+        "B": "Wait for C's circuit breaker to transition to half-open, retry C, then continue to D and E",
+        "C": "Skip C and route directly to D with a flag indicating C was skipped",
+        "D": "Restart the entire pipeline from Agent A immediately"
+      },
+      "answer": "A",
+      "explanation": "With the circuit breaker open, C cannot be called immediately. Data consistency requires rolling back committed steps in reverse order (B then A). Given B's compensation has a 30% failure rate, a retry strategy with exponential backoff handles transient failures. If retries exhaust, L2 escalation (orchestrator intervention) prevents stuck state.",
+      "topic": "pipeline_failure_recovery",
+      "topic_category": "error_handling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS072",
+      "question": "A task dependency graph has 7 tasks with these dependencies: T1->T3, T2->T3, T3->T5, T3->T6, T4->T6, T6->T7. Task durations: T1=5m, T2=3m, T3=10m, T4=4m, T5=6m, T6=8m, T7=2m. What is the critical path, its duration, and how much slack does T5 have?",
+      "choices": {
+        "A": "Critical path: T4->T6->T7 (14m), T5 slack = 0 minutes",
+        "B": "Critical path: T2->T3->T6->T7 (23m), T5 slack = 2 minutes",
+        "C": "Critical path: T1->T3->T6->T7 (25m), T5 slack = 9 minutes",
+        "D": "Critical path: T1->T3->T6->T7 (25m), T5 slack = 4 minutes"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Compute all paths. T1->T3->T5: 5+10+6=21m. T1->T3->T6->T7: 5+10+8+2=25m. T2->T3->T6->T7: 3+10+8+2=23m. T4->T6->T7: 4+8+2=14m. Step 2: Critical path = T1->T3->T6->T7 at 25m (longest). Step 3: T5's earliest start = 15m (after T3 finishes). T5 completes at 21m. T5 has no successors, so its late finish = project end (25m). Late start = 25-6 = 19m. Slack = late start - early start = 19 - 15 = 4 minutes.",
+      "topic": "critical_path_computation",
+      "topic_category": "dependency",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS073",
+      "question": "An orchestrator manages three agent pools: Pool A (2 agents, handles auth tasks), Pool B (3 agents, handles data tasks), Pool C (1 agent, handles notification tasks). A burst of 10 auth tasks arrives. Pool A's queue depth hits 8. Pool B agents are idle. Pool C's agent is processing a critical notification. Step 1: Can Pool B agents help? Step 2: What about Pool C? Step 3: What is the optimal strategy?",
+      "choices": {
+        "A": "Cross-train Pool B agents on auth tasks dynamically; leave Pool C alone; overflow to Pool B with capability validation",
+        "B": "Pre-empt Pool C's notification task and reassign to auth; route overflow to Pool B without validation",
+        "C": "Route overflow auth tasks to Pool B's idle agents if they have auth capability registered; do not pre-empt Pool C's critical task; if Pool B lacks auth capability, queue with priority aging",
+        "D": "Reject overflow tasks and apply backpressure to the task source"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Pool B agents can help only if they have registered auth capability \u00e2\u20ac\u201d routing without validation risks failures. Step 2: Pool C is processing a critical task; pre-empting it violates priority rules. Step 3: The optimal strategy routes to capable idle agents, protects critical work, and uses aging to prevent starvation of queued tasks if no cross-pool routing is possible.",
+      "topic": "cross_pool_routing",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS074",
+      "question": "A distributed saga involves 4 services: OrderService (S1) -> PaymentService (S2) -> InventoryService (S3) -> ShippingService (S4). S3 fails due to insufficient stock. S2's compensating transaction (refund) requires calling an external payment gateway that is currently down. The circuit breaker for the payment gateway is open. What is the correct recovery approach?",
+      "choices": {
+        "A": "Skip the refund and mark the order as canceled",
+        "B": "Retry the payment gateway immediately, ignoring the circuit breaker state",
+        "C": "Wait synchronously for the payment gateway to recover before proceeding with any compensation",
+        "D": "Record S2's pending compensation in a persistent retry queue; execute S1's compensation immediately; when the payment gateway recovers and the circuit breaker closes, retry S2's compensation from the queue"
+      },
+      "answer": "D",
+      "explanation": "Step 1: S3 failed, so compensation is needed. Step 2: S2's refund depends on an unavailable external service \u00e2\u20ac\u201d synchronous waiting blocks the entire recovery. Step 3: Record S2's compensation in a persistent retry queue (outbox pattern) and proceed with S1's compensation. Step 4: When the circuit breaker transitions to half-open/closed, the queued refund executes. This ensures eventual consistency without blocking.",
+      "topic": "saga_with_external_failure",
+      "topic_category": "workflow",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS075",
+      "question": "A 7-agent cluster uses Raft-like consensus. A network partition splits the cluster into Group X (4 agents including the leader) and Group Y (3 agents). Group Y elects a new leader. The partition heals. What happens during reconciliation?",
+      "choices": {
+        "A": "Both leaders continue operating, creating a permanent split-brain",
+        "B": "Group X's leader steps down because Group Y's leader is newer",
+        "C": "Group Y's leader has a lower term number and steps down; Group Y agents adopt Group X's log entries, discarding any conflicting entries committed in Group Y",
+        "D": "All agents restart the election process from scratch"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Group X (4 agents) has quorum (4 > 3.5), so its leader commits normally. Group Y (3 agents) also has quorum but with a higher term number since it ran a new election. Step 2: Actually, in Raft, the leader with the higher term wins. But Group Y could only have committed entries with its 3-agent quorum. Step 3: On partition heal, the leader with the longer log in the higher term prevails. Group Y's leader wins the term comparison, but Group X had the original leader with potentially more committed entries. Raft resolves by: the higher-term leader wins, and log entries are reconciled through AppendEntries. Group Y's entries committed during partition may be overwritten if they conflict. Actually the correct Raft behavior: Group X has 4 nodes and quorum, so its commits are valid. Group Y elected a new leader with a higher term. On heal, the higher term leader (Y) sends AppendEntries. But Group X's leader had valid quorum commits. In Raft, since X had quorum, its entries are committed and persist. Y's leader's log must match. The answer B captures the essential behavior: Y's leader steps down because X's commits are authoritative (X had true majority quorum during partition).",
+      "topic": "partition_reconciliation",
+      "topic_category": "coordination",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS076",
+      "question": "An orchestrator must design an error handling strategy for a workflow where: (1) Step A calls an external API with 5% failure rate, (2) Step B does CPU-intensive processing that occasionally OOMs, (3) Step C writes to a database that has rare deadlocks. Each failure type requires a different strategy. What is the optimal composite approach?",
+      "choices": {
+        "A": "Apply uniform retry with exponential backoff to all three steps",
+        "B": "Step A: circuit breaker. Step B: retry 10 times. Step C: ignore errors and proceed",
+        "C": "Wrap all three steps in a single circuit breaker",
+        "D": "Step A: retry with jittered exponential backoff (transient network errors). Step B: check resource availability before execution, fail-fast with no retry on OOM (resource issue, not transient). Step C: immediate retry with random backoff (database deadlocks resolve quickly after one retry)"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Classify failure types \u00e2\u20ac\u201d A is transient (retry-appropriate), B is resource exhaustion (retry wastes resources), C is contention (quick retry resolves). Step 2: Match strategies \u00e2\u20ac\u201d exponential backoff with jitter for transient, fail-fast for resource, immediate retry for deadlock. Step 3: Uniform retry is suboptimal because OOM retries exhaust more resources, and exponential backoff is unnecessary for deadlocks.",
+      "topic": "composite_error_strategies",
+      "topic_category": "error_handling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS077",
+      "question": "A roundtable with 6 agents must evaluate three competing architecture proposals (X, Y, Z). Each agent scores each proposal on five criteria (1-10). The facilitator must produce a final recommendation. Agents 1-3 score X highest. Agents 4-6 score Z highest. No agent scores Y highest, but Y ranks second for all six agents. What should the facilitator recommend and why?",
+      "choices": {
+        "A": "Recommend X because it has the most first-place votes",
+        "B": "Recommend Y because it has the highest median score across all agents, indicating it is the least controversial choice that everyone can work with",
+        "C": "Recommend Z because its supporters have higher total scores",
+        "D": "Recommend a new proposal D that combines elements of X and Z"
+      },
+      "answer": "B",
+      "explanation": "Step 1: X and Z are polarizing \u00e2\u20ac\u201d each is loved by half and disliked by the other half. Step 2: Y is no one's top choice but everyone's second choice, meaning it has broad acceptability. Step 3: In multi-stakeholder decisions, the Condorcet winner (beats all alternatives in pairwise comparison) is often the second-choice option. Y would beat X (agents 4-6 prefer Y over X) and Z (agents 1-3 prefer Y over Z) in pairwise votes. Recommending Y maximizes collective satisfaction.",
+      "topic": "condorcet_facilitation",
+      "topic_category": "roundtable",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS078",
+      "question": "A task graph has 10 tasks. A new task T11 arrives with dependency on T4 and T7. T4 is COMPLETED, T7 is RUNNING, and T7 depends on T3 which is COMPLETED, and T3 depends on T1 which is also COMPLETED. An agent reports that T7's output will invalidate T4's previous result. What is the correct multi-step orchestration response?",
+      "choices": {
+        "A": "Queue T11 to start after T7 completes, using T4's existing output",
+        "B": "Cancel T7 and proceed with the existing T4 result",
+        "C": "Queue T11 to start after T7 completes. Mark T4 as STALE. After T7 completes, re-execute T4 with T7's new output as context. Then execute T11 with both fresh results.",
+        "D": "Execute T11 immediately since T4 is already completed"
+      },
+      "answer": "C",
+      "explanation": "Step 1: T11 depends on both T4 and T7, so it cannot start until both are valid. Step 2: If T7's output invalidates T4, then T4's COMPLETED status is stale \u00e2\u20ac\u201d using it would produce incorrect results for T11. Step 3: After T7 finishes, T4 must be re-executed incorporating T7's output. Step 4: Only after fresh T4 and T7 are both COMPLETED can T11 safely execute. This is the 'staleness detection and re-execution' pattern.",
+      "topic": "staleness_reexecution",
+      "topic_category": "dependency",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS079",
+      "question": "An orchestrator receives 50 tasks simultaneously. Available agents: 3 Python developers (skill 0.9), 2 web developers (skill 0.7 for Python), 1 security agent (skill 0.5 for Python). The tasks are Python code reviews. The SLA is 95% of tasks completed within 20 minutes. Each review takes 5 minutes. How should the orchestrator route tasks to meet the SLA?",
+      "choices": {
+        "A": "Send all 50 tasks to the 3 Python developers (17 tasks each, ~85 minutes total)",
+        "B": "Distribute across all 6 agents proportionally: 20 to Python devs (7 each, 35m), 18 to web devs (9 each, 45m), 12 to security (60m). SLA missed.",
+        "C": "Route all 50 to Python devs with a priority queue; SLA is physically impossible with current capacity",
+        "D": "Route 30 tasks to Python devs (10 each, 50m), 15 to web devs (8 each, 40m), 5 to security (25m). Apply quality gate \u00e2\u20ac\u201d security agent's reviews go through a Python dev spot-check."
+      },
+      "answer": "D",
+      "explanation": "Step 1: Calculate capacity. 6 agents * 20min / 5min = 24 tasks within SLA window (20min). 50 tasks with 6 agents at 5min each = ceiling(50/6) * 5 = 45min. SLA of 95% means 47.5 tasks must finish in 20min. Step 2: This is impossible in 20 minutes with 6 agents (max 24 in 20min). Step 3: The best approach maximizes throughput while ensuring quality. Route C distributes load weighted by skill, adds a quality gate for the lower-skill agent, and acknowledges SLA limits. The spot-check prevents quality degradation from low-skill routing.",
+      "topic": "sla_constrained_routing",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS080",
+      "question": "A multi-agent system has three communication channels: Channel A (pub/sub, high throughput), Channel B (request-reply, guaranteed delivery), Channel C (event-sourced, full history). A workflow requires: (1) broadcasting agent status updates, (2) requesting code reviews with guaranteed response, (3) maintaining an audit log of all decisions. Which channel mapping is correct?",
+      "choices": {
+        "A": "Status: Channel B, Reviews: Channel A, Audit: Channel C",
+        "B": "Status: Channel A, Reviews: Channel C, Audit: Channel B",
+        "C": "All three operations should use Channel B for consistency",
+        "D": "Status: Channel A, Reviews: Channel B, Audit: Channel C"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Status updates are broadcast to multiple consumers without needing responses \u00e2\u20ac\u201d pub/sub (Channel A) fits. Step 2: Code reviews require a guaranteed response from a specific agent \u00e2\u20ac\u201d request-reply (Channel B) fits. Step 3: Audit logs need complete history with replay capability \u00e2\u20ac\u201d event-sourced (Channel C) fits. Each requirement maps to the channel whose properties match its needs.",
+      "topic": "channel_architecture",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS081",
+      "question": "An orchestrator observes: Agent A's p50 latency is 100ms, p95 is 500ms, and p99 is 8000ms. The latency budget for Agent A's step is 1000ms. The overall workflow SLA requires 99.5% success. What multi-step analysis determines if Agent A is a risk?",
+      "choices": {
+        "A": "p50 is within budget so Agent A is fine",
+        "B": "p95 is within budget so 95% of requests pass; Agent A meets a typical SLA",
+        "C": "At p99 = 8000ms (8x over budget), 1% of requests timeout. With a 99.5% SLA, Agent A's 1% timeout rate alone consumes 200% of the allowed failure budget. Agent A is a critical risk requiring optimization or a fallback path.",
+        "D": "The p99 outlier is acceptable because it only affects 1% of traffic"
+      },
+      "answer": "C",
+      "explanation": "Step 1: SLA allows 0.5% failure (100% - 99.5%). Step 2: Agent A exceeds the 1000ms budget at p99, meaning ~1% of requests fail due to timeout. Step 3: 1% failure from Agent A alone exceeds the total 0.5% failure budget by 2x, leaving no room for failures elsewhere. Step 4: Agent A must either optimize its tail latency or have a fast fallback path (cached response, degraded mode) for slow executions.",
+      "topic": "latency_percentile_analysis",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS082",
+      "question": "A workflow uses an orchestration saga with 6 steps. Steps 1-4 succeed. Step 5 fails. The compensating transactions are: C4 (idempotent, 100% reliable), C3 (non-idempotent, 80% reliable), C2 (idempotent, 95% reliable), C1 (idempotent, 100% reliable). Compensation executes C4, then C3 fails. What is the correct next action?",
+      "choices": {
+        "A": "Skip C3 and continue with C2 and C1",
+        "B": "Retry C3 (since it is non-idempotent, ensure the retry includes a guard check to prevent duplicate side effects), then continue compensation sequence",
+        "C": "Abort all compensation and alert \u00e2\u20ac\u201d the system is in an inconsistent state that requires manual intervention",
+        "D": "Retry C3 without any guard since retries are always safe"
+      },
+      "answer": "B",
+      "explanation": "Step 1: C4 succeeded (idempotent, reliable). Step 2: C3 failed. Since C3 is non-idempotent, a blind retry could apply the compensation twice (e.g., double-refunding). Step 3: Implement a guard check \u00e2\u20ac\u201d verify C3's effect before retrying. If the compensation was partially applied, adjust. If not applied, retry safely. Step 4: Once C3 succeeds, continue with C2 and C1. Skipping C3 leaves the system inconsistent; manual intervention is a last resort.",
+      "topic": "non_idempotent_compensation",
+      "topic_category": "workflow",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS083",
+      "question": "Three agents (A, B, C) contend for two shared resources (R1, R2). Agent A holds R1 and requests R2. Agent B holds R2 and requests R1. Agent C is waiting for R1. The orchestrator detects a cycle in the wait-for graph (A->R2->B->R1->A). What is the optimal deadlock resolution that minimizes work loss?",
+      "choices": {
+        "A": "Kill Agent A (release R1), allowing B to proceed, then C to proceed, then re-queue A's task",
+        "B": "Preempt the resource from the agent with the least work completed. If A has completed 80% and B has completed 20%, preempt R2 from B (rollback 20%), give R2 to A (completes, releases R1), then B and C can proceed.",
+        "C": "Kill Agent B (release R2), allowing A to proceed, then re-queue B's task. C still waits for R1.",
+        "D": "Kill both A and B and reassign their work"
+      },
+      "answer": "B",
+      "explanation": "Step 1: The deadlock is between A and B in a cycle. C is blocked but not part of the cycle. Step 2: To break the cycle, one agent must release a resource. Step 3: Preempting from the agent with less completed work minimizes wasted computation \u00e2\u20ac\u201d B's 20% is cheaper to redo than A's 80%. Step 4: After preempting R2 from B and giving it to A, A completes and releases both R1 and R2. B can then reacquire R2 and R1 becomes available for C.",
+      "topic": "deadlock_resolution_optimization",
+      "topic_category": "coordination",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS084",
+      "question": "An orchestrator must design a timeout strategy for a 4-step pipeline where each step has variable latency: Step 1 (50-200ms), Step 2 (100-3000ms), Step 3 (20-100ms), Step 4 (500-5000ms). The end-to-end SLA is 6 seconds. How should per-step timeouts be allocated?",
+      "choices": {
+        "A": "Divide equally: 1500ms per step",
+        "B": "Set each timeout at the step's maximum observed latency: 200ms, 3000ms, 100ms, 5000ms (total: 8300ms \u00e2\u20ac\u201d exceeds SLA)",
+        "C": "Set one global timeout of 6000ms with no per-step timeouts",
+        "D": "Allocate proportionally to each step's p95 latency, with the total summing to the SLA minus a coordination overhead buffer. For example: Step 1=300ms, Step 2=2000ms, Step 3=150ms, Step 4=3200ms, buffer=350ms, total=6000ms"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Equal division ignores latency variation \u00e2\u20ac\u201d Step 1 rarely needs 1500ms while Step 4 is starved. Step 2: Using maximum latencies (8300ms) exceeds the SLA. Step 3: Proportional allocation based on p95 latencies distributes the budget where it is needed, with a buffer for coordination overhead. Step 4: A global-only timeout cannot identify which step is the bottleneck. Proportional per-step timeouts enable fast failure detection at the slow step.",
+      "topic": "timeout_budget_allocation",
+      "topic_category": "error_handling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS085",
+      "question": "A task dependency graph has tasks A through H. Dependencies: A->C, B->C, B->D, C->E, C->F, D->F, E->G, F->G, G->H. Task durations: A=3, B=2, C=4, D=3, E=2, F=5, G=3, H=1. A new requirement adds task I with duration 6, depending only on B and feeding into H. Does the critical path change?",
+      "choices": {
+        "A": "No, the critical path remains unchanged through A->C->F->G->H (16 minutes)",
+        "B": "Yes, the new critical path is B->I->H (9 minutes), which is shorter",
+        "C": "No, but the critical path is B->C->F->G->H (15 minutes), and I adds a parallel branch of B->I->H (9 minutes)",
+        "D": "Yes, the new critical path is A->C->F->G->H (16 minutes) but I creates a parallel branch of B->I->H=9 minutes that does not change the critical path"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Original paths \u00e2\u20ac\u201d A->C->E->G->H: 3+4+2+3+1=13. A->C->F->G->H: 3+4+5+3+1=16. B->C->F->G->H: 2+4+5+3+1=15. B->D->F->G->H: 2+3+5+3+1=14. Step 2: Critical path = A->C->F->G->H at 16m. Step 3: Adding I: B->I->H = 2+6+1 = 9m. This is far shorter than 16m. The critical path does not change. I introduces a non-critical parallel branch with 7 minutes of slack.",
+      "topic": "dynamic_dependency_analysis",
+      "topic_category": "dependency",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS086",
+      "question": "An orchestrator manages a workflow where Steps A and B execute in parallel, followed by Step C which merges their outputs. Step A completes in 2 seconds. Step B's agent crashes after 10 seconds with no result. The orchestrator has a 15-second timeout for the parallel phase. Step A's result is in memory only (not persisted). What sequence of actions prevents data loss and completes the workflow?",
+      "choices": {
+        "A": "Detect B's crash via heartbeat failure. Immediately persist A's result to durable storage. Reassign B's task to an alternative agent. Once B completes, execute Step C with both results.",
+        "B": "Wait for the 15-second timeout, then restart both A and B",
+        "C": "Cancel the entire workflow since B failed",
+        "D": "Execute Step C with only A's result and mark B's contribution as optional"
+      },
+      "answer": "A",
+      "explanation": "Step 1: B's crash is detected via heartbeat loss, not timeout (faster detection). Step 2: A's result is in volatile memory \u00e2\u20ac\u201d it must be persisted immediately to survive any further failures. Step 3: B's task is reassigned to a healthy agent (failover). Step 4: Once the replacement agent completes B's work, Step C proceeds with both results. This sequence protects A's completed work while recovering B.",
+      "topic": "parallel_failure_recovery",
+      "topic_category": "workflow",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS087",
+      "question": "A multi-agent consensus round requires 5 agents to vote on a deployment decision. Agents 1, 2, and 3 vote 'approve'. Agent 4 votes 'reject with blocking concern: security vulnerability in dependency X'. Agent 5 has not responded within the timeout period. How should the consensus protocol handle this?",
+      "choices": {
+        "A": "3 out of 5 approved \u00e2\u20ac\u201d majority reached, proceed with deployment",
+        "B": "Count Agent 5's timeout as an abstention, giving 3 approve, 1 reject, 1 abstain \u00e2\u20ac\u201d majority reached, proceed",
+        "C": "A blocking concern from any agent halts the process regardless of majority. Investigate Agent 4's security concern. Separately, determine if Agent 5 is healthy. The deployment cannot proceed until the blocking concern is resolved.",
+        "D": "Restart the voting round from scratch"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Agent 4 raised a 'blocking concern', not a simple reject. In many consensus protocols, a blocking concern requires resolution before proceeding, regardless of majority (similar to Apache Software Foundation voting). Step 2: The security vulnerability claim must be investigated \u00e2\u20ac\u201d deploying with a known vulnerability violates safety. Step 3: Agent 5's non-response may indicate a failure requiring investigation. The correct process addresses both the blocking concern and the non-responsive agent.",
+      "topic": "blocking_consensus",
+      "topic_category": "coordination",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS088",
+      "question": "A system has three microservice agents. Agent X serves 1000 req/s with a 10ms average latency. Agent Y depends on X and serves 500 req/s. Agent Z depends on both X and Y. The orchestrator notices Z's error rate spike to 15%. X's latency has degraded to 200ms but its error rate is 0%. Y's error rate is 5%. What is the root cause analysis path?",
+      "choices": {
+        "A": "Z is buggy \u00e2\u20ac\u201d its 15% error rate is independent of X and Y",
+        "B": "Network congestion between all three services is the root cause",
+        "C": "Y's 5% error rate is the root cause \u00e2\u20ac\u201d fix Y to fix Z",
+        "D": "X's latency degradation (10ms -> 200ms) causes Y's timeouts (contributing to Y's 5% errors), and Z times out waiting for both X and Y, compounding to Z's 15% error rate. The root cause is X's latency degradation."
+      },
+      "answer": "D",
+      "explanation": "Step 1: X's latency increased 20x (10ms->200ms) but X itself has 0% errors \u00e2\u20ac\u201d it is slow but functional. Step 2: Y depends on X. Y's timeout settings may be tuned for X at 10ms. A 200ms response could trigger Y's timeouts, explaining Y's 5% error rate. Step 3: Z depends on both X (slow) and Y (erroring due to X). Z's higher error rate (15%) is the compound effect: some requests fail because Y errored, others fail because the combined X+Y latency exceeds Z's timeout. Root cause: X's latency degradation cascades through the dependency chain.",
+      "topic": "cascading_root_cause",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS089",
+      "question": "An event-sourced workflow stores all state transitions as events. After 100,000 events, replaying the full event stream takes 45 seconds. The system requires sub-second state recovery. A snapshot is taken at event 90,000. At event 95,000, a bug is discovered that corrupted events 92,000-94,000. How should the system recover?",
+      "choices": {
+        "A": "Restore from the snapshot at event 90,000. Replay events 90,001-91,999 (valid). Apply manual corrections for events 92,000-94,000. Then replay events 94,001-100,000.",
+        "B": "Replay all 100,000 events from the beginning, skipping the corrupted ones",
+        "C": "Delete the corrupted events and continue from the snapshot at 90,000",
+        "D": "Create a new snapshot at event 100,000, ignoring the corruption"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Full replay (100K events) takes 45s \u00e2\u20ac\u201d violates sub-second requirement. Step 2: Snapshot at 90,000 provides a valid base state. Step 3: Replay valid events 90,001-91,999 to reach the pre-corruption state. Step 4: Apply corrective events (compensating entries) for the corrupted range 92,000-94,000. Step 5: Replay remaining valid events 94,001-100,000. This restores correct state without full replay, maintaining the sub-second recovery window for future starts.",
+      "topic": "event_sourcing_recovery",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS090",
+      "question": "An orchestrator must decompose a large refactoring task into subtasks for 4 agents. The codebase has modules M1 (500 lines, depends on M2), M2 (300 lines, depends on M3), M3 (200 lines, no dependencies), M4 (400 lines, depends on M2 and M3). The refactoring changes M3's interface. What is the optimal decomposition order and agent assignment?",
+      "choices": {
+        "A": "Assign all modules to different agents simultaneously \u00e2\u20ac\u201d they can work in parallel",
+        "B": "Start with M1 because it is the largest module",
+        "C": "Phase 1: One agent refactors M3 (leaf node, interface change). Phase 2: Two agents refactor M2 and M4 in parallel (both depend on M3's new interface). Phase 3: One agent refactors M1 (depends on M2's new interface).",
+        "D": "Assign M3 and M4 to one agent, M1 and M2 to another, working in parallel"
+      },
+      "answer": "C",
+      "explanation": "Step 1: M3's interface change propagates to all dependents \u00e2\u20ac\u201d it must be refactored first (leaf-first in the dependency tree). Step 2: After M3 is stable, M2 and M4 (both depending on M3 but not on each other) can be refactored in parallel by separate agents. Step 3: M1 depends on M2, so it must wait for M2 to complete. This dependency-aware decomposition prevents merge conflicts and interface mismatches while maximizing parallelism.",
+      "topic": "dependency_aware_decomposition",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS091",
+      "question": "A multi-agent system must handle a 'poison pill' scenario: a task that crashes any agent that attempts it. Agent A attempts and crashes. Agent B picks up the requeued task and also crashes. How should the orchestrator prevent further agent losses?",
+      "choices": {
+        "A": "Keep retrying with different agents until one succeeds",
+        "B": "Split the task into smaller pieces and retry each piece",
+        "C": "Increase the retry timeout for each subsequent attempt",
+        "D": "After N consecutive agent crashes on the same task (e.g., N=2), quarantine the task in a dead-letter queue, alert L2/L3, and stop routing it to agents. Add the task's characteristics to a known-bad pattern list."
+      },
+      "answer": "D",
+      "explanation": "Step 1: Two consecutive agent crashes on the same task is a strong signal the task itself is the problem (poison pill). Step 2: Continued routing will crash more agents, reducing system capacity. Step 3: Quarantining the task stops the damage. Step 4: Pattern recording prevents similar tasks from causing the same issue. Step 5: L2/L3 escalation brings human investigation for the root cause.",
+      "topic": "poison_pill_detection",
+      "topic_category": "error_handling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS092",
+      "question": "An orchestrator runs a compiled roundtable with 6 agents reviewing an architecture proposal. The discussion generates 3 alternatives (A1, A2, A3). Three agents strongly prefer A1 for performance reasons. Two agents strongly prefer A3 for maintainability. One agent notes A2 is a hybrid that addresses both concerns but no one champions it. How should the facilitator synthesize the final recommendation?",
+      "choices": {
+        "A": "Explicitly surface A2's hybrid qualities, map how it addresses the performance concerns of A1-supporters and maintainability concerns of A3-supporters, then re-poll after agents evaluate A2 against their specific criteria",
+        "B": "Recommend A3 since maintainability is more important long-term",
+        "C": "Recommend A1 since it has the most supporters",
+        "D": "Recommend all three alternatives with pros and cons and let the human decide"
+      },
+      "answer": "A",
+      "explanation": "Step 1: A polarized discussion (3 vs 2) with an unexplored middle option (A2) suggests inadequate evaluation. Step 2: The facilitator's role is to ensure all options receive fair consideration, not just popular ones. Step 3: By explicitly mapping A2 to each faction's concerns, the facilitator enables informed evaluation. Step 4: A re-poll after structured A2 analysis may shift preferences toward the hybrid, achieving broader consensus than a forced majority vote.",
+      "topic": "hybrid_option_facilitation",
+      "topic_category": "roundtable",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS093",
+      "question": "A distributed workflow system uses event sourcing with CQRS. The command side processes 500 writes/second. The query side serves 10,000 reads/second from a materialized view. A bug causes the projection (event -> materialized view) to lag by 30 seconds. Users see stale data. The orchestrator must fix this without downtime. What is the multi-step remediation?",
+      "choices": {
+        "A": "Identify the projection bottleneck (I/O, CPU, or event deserialization). Deploy a fix to the projection logic. Run a catch-up projection in parallel to close the 30s gap. Once caught up, swap the stale view for the fresh one atomically.",
+        "B": "Rebuild the materialized view from scratch by replaying all events",
+        "C": "Pause writes until the projection catches up",
+        "D": "Increase the read timeout to 30 seconds so users wait for fresh data"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Diagnose why the projection is lagging \u00e2\u20ac\u201d is it a code bug, resource bottleneck, or schema inefficiency? Step 2: Fix the root cause in the projection logic. Step 3: A parallel catch-up projection replays the 30s backlog without affecting the live system. Step 4: Atomic swap replaces the stale view with the fresh one, providing consistency without downtime. Pausing writes or full replay are unnecessarily disruptive.",
+      "topic": "cqrs_projection_lag",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS094",
+      "question": "An orchestrator manages 8 agents with a shared state store. Agent A reads state, spends 5 seconds processing, then writes. Agent B reads the same state, spends 2 seconds processing, then writes. Both read at time T=0. Agent B writes at T=2. Agent A writes at T=5, overwriting B's changes (lost update). The system uses no concurrency control. What layered solution prevents lost updates while minimizing contention?",
+      "choices": {
+        "A": "Add a global lock \u00e2\u20ac\u201d all reads and writes acquire an exclusive lock",
+        "B": "Use optimistic concurrency with version numbers. If A's write detects the version has changed (B already wrote), A must re-read, re-process incorporating B's changes, and retry. For frequently-contended keys, add exponential backoff.",
+        "C": "Let last-write-wins and accept occasional data loss",
+        "D": "Restrict all agents to read-only access"
+      },
+      "answer": "B",
+      "explanation": "Step 1: A global lock serializes all access, destroying throughput. Step 2: Optimistic concurrency allows parallel reads (common case) and detects conflicts only at write time (rare case). Step 3: When A's write is rejected due to version mismatch, A re-reads B's updated state, reprocesses, and retries. Step 4: For hot keys with frequent conflicts, exponential backoff prevents retry storms. This balances correctness with throughput.",
+      "topic": "lost_update_prevention",
+      "topic_category": "coordination",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS095",
+      "question": "A capacity planning analysis shows: current task arrival rate is 100/hour, growing 10% monthly. Current processing capacity is 150/hour with 5 agents. Each new agent adds 25 tasks/hour of capacity but also adds 5 tasks/hour of coordination overhead (reducing effective gain to 20 tasks/hour). At what month will the system need its first capacity expansion, and how many agents should be added?",
+      "choices": {
+        "A": "Month 5 (arrival rate ~161/hour), add 1 agent (capacity -> 170/hour)",
+        "B": "Month 4 (arrival rate ~146/hour), add 1 agent (capacity -> 170/hour), providing headroom until month 6",
+        "C": "Month 3 (arrival rate ~133/hour), add 2 agents for safety",
+        "D": "No expansion needed within 6 months"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Monthly arrival rates: M1=110, M2=121, M3=133, M4=146, M5=161. Step 2: Current capacity = 150/hour. At month 4 (146/hour), utilization hits 97% \u00e2\u20ac\u201d dangerously close to saturation. Step 3: Add 1 agent: +25 raw - 5 overhead = +20 effective, new capacity = 170/hour. Step 4: With 170/hour capacity, M5 (161/hour) = 95% utilization. Month 6 (~177/hour) would require another agent. Adding at month 4 gives one month of buffer before hitting capacity, which is prudent.",
+      "topic": "growth_capacity_planning",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS096",
+      "question": "A complex workflow has a nested sub-workflow structure: Main workflow W calls sub-workflow S1 at step 3 and sub-workflow S2 at step 5. S1 has 4 steps, S2 has 3 steps. Step 2 of S1 fails. The error propagation policy is: sub-workflows can retry internally up to 2 times, then must propagate failure to the parent. The parent can retry the entire sub-workflow once, then must execute compensations. How many total executions of S1's step 2 are possible before compensations begin?",
+      "choices": {
+        "A": "3 executions (original + 2 retries)",
+        "B": "6 executions: S1 tries step 2 three times (original + 2 retries), fails, parent retries S1, S1 again tries step 2 three times (original + 2 retries)",
+        "C": "4 executions (2 internal retries + 1 parent retry + 1 final attempt)",
+        "D": "9 executions (3 attempts * 3 parent retries)"
+      },
+      "answer": "B",
+      "explanation": "Step 1: S1's internal retry policy: original execution + 2 retries = 3 attempts. All fail. Step 2: S1 propagates failure to parent W. Step 3: W retries the entire sub-workflow S1 (1 retry). Step 4: S1 restarts and again tries step 2: original + 2 retries = 3 attempts. All fail. Step 5: S1 propagates failure again. W has exhausted its 1 retry. Compensations begin. Total: 3 + 3 = 6 executions of step 2.",
+      "topic": "nested_workflow_retry",
+      "topic_category": "workflow",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS097",
+      "question": "A dependency graph has a diamond pattern: Task A fans out to B and C, both of which fan in to D. Task B takes 10 minutes. Task C takes 3 minutes. The orchestrator detects that C finished 7 minutes before B. During those 7 minutes, C's output could become stale if external data changes. What orchestration pattern addresses this staleness risk?",
+      "choices": {
+        "A": "Cache C's output and use it regardless \u00e2\u20ac\u201d staleness is acceptable",
+        "B": "Delay C's execution to start 7 minutes after B starts, so both finish near-simultaneously and D receives fresh inputs from both",
+        "C": "Execute C twice \u00e2\u20ac\u201d once immediately (early result) and once just before D starts (fresh validation). Use the second result if it differs from the first.",
+        "D": "Execute B and C simultaneously but add a freshness check: when B completes, verify C's output is still valid. If stale, re-run C. Then proceed to D."
+      },
+      "answer": "D",
+      "explanation": "Step 1: C finishes 7 minutes before B, creating a staleness window. Step 2: Delaying C (option B) wastes 7 minutes of potential parallelism if the data does not change. Step 3: A freshness check after B completes (option D) exploits full parallelism (C runs immediately) and only re-runs C if its output is actually stale. This is optimal: fast path when data is stable, correct path when data changes, and no wasted time.",
+      "topic": "diamond_dependency_staleness",
+      "topic_category": "dependency",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS098",
+      "question": "A multi-agent pipeline processes customer orders. The orchestrator must ensure exactly-once processing semantics. The pipeline has 3 stages: validate, process, confirm. A network hiccup causes the 'confirm' acknowledgment to be lost. The orchestrator retries the entire pipeline. Without safeguards, the customer is charged twice. What architecture prevents this?",
+      "choices": {
+        "A": "Assign each order a unique idempotency key. Each stage checks if the key has already been processed before executing. The 'process' stage uses the idempotency key to make the charge operation safe to retry \u00e2\u20ac\u201d a second charge attempt with the same key is rejected by the payment provider.",
+        "B": "Use at-most-once delivery to prevent duplicates",
+        "C": "Increase the network timeout to prevent hiccups",
+        "D": "Add a manual review step before each charge"
+      },
+      "answer": "A",
+      "explanation": "Step 1: The lost ACK means the orchestrator does not know if 'confirm' succeeded \u00e2\u20ac\u201d it must retry to avoid lost orders. Step 2: Without idempotency, retry causes duplicate processing. Step 3: An idempotency key (e.g., order ID + timestamp) allows each stage to check 'have I already processed this?' Step 4: The payment provider uses the key to deduplicate charges \u00e2\u20ac\u201d the second charge attempt returns success without actually charging. This achieves exactly-once semantics through at-least-once delivery + idempotent operations.",
+      "topic": "exactly_once_semantics",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS099",
+      "question": "An orchestrator conducts a 5-agent roundtable to decide between migrating to a new framework (high risk, high reward) vs. incrementally improving the existing one (low risk, moderate reward). Three agents favor migration. Two agents favor incremental improvement. The facilitator asks each migration supporter to identify the single biggest risk. All three name different risks (data loss, downtime, skill gap). The improvement supporters identify two advantages (stability, team familiarity). What synthesis approach produces the most robust decision?",
+      "choices": {
+        "A": "Construct a risk-reward matrix: evaluate whether each identified migration risk can be mitigated to an acceptable level. If all three risks have viable mitigations with bounded cost, migration is justified. If any risk is unmitigable, the incremental approach or a phased migration is recommended.",
+        "B": "Go with incremental improvement since the risks of migration are diverse and numerous",
+        "C": "Go with migration since more agents support it and the rewards are higher",
+        "D": "Conduct a second roundtable with different agents"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Three different risks from three supporters suggests the migration has broad risk surface, not one focused concern. Step 2: Simply counting votes ignores risk analysis depth. Step 3: A risk-reward matrix evaluates each risk's mitigability and cost. Step 4: If mitigations exist and their combined cost does not erode the reward, migration is justified. If any risk is unmitigable (e.g., data loss with no rollback plan), the safer incremental path or a phased approach is appropriate. This evidence-based synthesis outperforms both raw voting and blanket risk aversion.",
+      "topic": "risk_reward_synthesis",
+      "topic_category": "roundtable",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "BOSS100",
+      "question": "An orchestrator manages a complex DAG of 12 tasks across 4 agent pools. Mid-execution, 3 tasks have completed (T1, T2, T3), 2 are running (T4, T5), and 7 are pending. A priority override arrives: new critical task T13 must execute immediately. T13 requires the same agent pool currently running T5 (single agent in that pool). T5 is 80% complete and has no checkpoint. T4 depends on T5's output. T6 and T7 depend on T4. What is the optimal orchestration sequence?",
+      "choices": {
+        "A": "Pre-empt T5 immediately, losing 80% of its work. Run T13. Then re-run T5 from scratch.",
+        "B": "Queue T13 to run after T5 completes (estimated 20% remaining time). Accept the delay to T13.",
+        "C": "Cancel T5 and all its dependents (T4, T6, T7), run T13, then rebuild the dependency chain",
+        "D": "Evaluate T13's urgency against T5's sunk cost: if T13's deadline allows a short wait (T5's remaining 20%), let T5 finish and immediately run T13. If T13 cannot wait, pre-empt T5, run T13, then re-run T5. In either case, update T4/T6/T7 estimated start times and notify dependent tasks of the delay."
+      },
+      "answer": "D",
+      "explanation": "Step 1: T5 is 80% complete with no checkpoint \u00e2\u20ac\u201d pre-emption loses significant work. Step 2: T13 is critical but 'immediately' has varying interpretations \u00e2\u20ac\u201d a 20% remaining T5 might finish in minutes. Step 3: The orchestrator must evaluate the cost-benefit: (cost of T5 restart + downstream delays) vs (cost of short T13 delay). Step 4: If T13's deadline permits a brief wait, preserving T5's work is optimal. If not, pre-emption is necessary. Step 5: Either way, all dependent tasks (T4->T6->T7) need their schedules updated and stakeholders notified of cascade impact.",
+      "topic": "preemption_cost_analysis",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

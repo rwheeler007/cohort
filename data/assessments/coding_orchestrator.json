@@ -1,0 +1,1613 @@
+{
+  "agent_id": "coding_orchestrator",
+  "source": "Software engineering management & technical coordination (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "CO001",
+      "question": "A team receives a request to build a REST API that will handle approximately 500 requests per second with complex JSON transformations. Which language choice best balances developer productivity and performance for this scenario?",
+      "choices": {
+        "A": "Python, because its dynamic typing makes JSON manipulation trivial",
+        "B": "Go, because its concurrency model and compiled performance handle high-throughput APIs well",
+        "C": "Java, because the JVM startup time is irrelevant for long-running servers",
+        "D": "Ruby, because its metaprogramming capabilities simplify JSON handling"
+      },
+      "answer": "B",
+      "explanation": "At 500 req/s with complex transformations, Go provides excellent throughput via goroutines and compiled performance, while remaining productive for API development. Python could work but may struggle at this throughput without significant async optimization.",
+      "topic": "language_selection_for_tasks",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO002",
+      "question": "When assigning a task to build a real-time chat feature, which developer specialization is MOST critical to match?",
+      "choices": {
+        "A": "DevOps specialist, since deployment is the primary bottleneck",
+        "B": "Frontend CSS specialist, since chat UI design is the hardest part",
+        "C": "Database optimization specialist, since chat requires fast reads",
+        "D": "WebSocket and event-driven programming specialist, since real-time requires persistent bidirectional connections"
+      },
+      "answer": "D",
+      "explanation": "Real-time chat fundamentally depends on persistent bidirectional communication (WebSockets, SSE). A developer experienced with event-driven patterns and connection management is the most critical match for this task.",
+      "topic": "developer_specialization_matching",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO003",
+      "question": "A developer estimates a task at 2 story points, but you notice it involves modifying a shared authentication module used by 6 other services. How should you adjust?",
+      "choices": {
+        "A": "Double the estimate to 4 points because shared modules are always harder",
+        "B": "Reduce the estimate because shared modules are well-tested and stable",
+        "C": "Re-assess complexity upward because changes to shared modules require cross-service regression testing and coordination",
+        "D": "Accept the estimate since the developer knows the code best"
+      },
+      "answer": "C",
+      "explanation": "Shared module changes have hidden complexity: they require understanding downstream consumers, coordinating integration testing across 6 services, and managing deployment ordering. The original estimate likely only covers the code change itself.",
+      "topic": "task_complexity_estimation",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO004",
+      "question": "What is the primary advantage of the test pyramid (many unit tests, fewer integration tests, fewest e2e tests)?",
+      "choices": {
+        "A": "It eliminates the need for manual QA entirely",
+        "B": "It minimizes total test execution time while maximizing defect detection at the cheapest level",
+        "C": "It ensures 100% code coverage at all levels",
+        "D": "It guarantees that integration bugs are always caught before deployment"
+      },
+      "answer": "B",
+      "explanation": "The test pyramid optimizes the cost-to-value ratio: unit tests are fast, cheap, and catch most logic bugs. Integration and e2e tests are slower and more expensive but catch different classes of defects. The pyramid shape maximizes coverage efficiency.",
+      "topic": "test_pyramid_enforcement",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO005",
+      "question": "When designing a CI/CD pipeline for a monorepo with 4 microservices, which approach avoids unnecessary builds?",
+      "choices": {
+        "A": "Build services on a rotating schedule regardless of changes",
+        "B": "Use path-based triggers so only services with changed files are built and deployed",
+        "C": "Let developers manually trigger builds for the services they changed",
+        "D": "Build all services on every commit to ensure consistency"
+      },
+      "answer": "B",
+      "explanation": "Path-based triggers (e.g., only build service-A when files under services/service-A/ change) prevent wasted CI resources and reduce pipeline duration, while still catching all relevant changes automatically.",
+      "topic": "pipeline_design",
+      "topic_category": "cicd",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO006",
+      "question": "A code review reveals that a function has a cyclomatic complexity of 25. What is the most appropriate response?",
+      "choices": {
+        "A": "Reject the PR entirely and reassign to a senior developer",
+        "B": "Request the author refactor into smaller functions, as high cyclomatic complexity correlates with increased defect rates and maintenance difficulty",
+        "C": "Add a comment documenting the complexity and approve",
+        "D": "Approve it if tests pass, since complexity metrics are unreliable"
+      },
+      "answer": "B",
+      "explanation": "Cyclomatic complexity of 25 means 25 independent paths through the code. This makes testing, understanding, and maintaining the function difficult. Refactoring into smaller, focused functions is the standard remediation.",
+      "topic": "code_quality_metrics",
+      "topic_category": "code_review",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO007",
+      "question": "Which serialization format is most appropriate for high-frequency inter-service communication where schema evolution and bandwidth efficiency matter?",
+      "choices": {
+        "A": "JSON, because it is human-readable and universally supported",
+        "B": "Protocol Buffers, because they provide compact binary encoding with built-in schema evolution support",
+        "C": "XML, because it is the most widely supported format",
+        "D": "CSV, because it is the simplest format to parse"
+      },
+      "answer": "B",
+      "explanation": "Protocol Buffers offer compact binary serialization (5-10x smaller than JSON), built-in schema evolution via field numbering, and strong cross-language support, making them ideal for high-frequency inter-service communication.",
+      "topic": "serialization_formats",
+      "topic_category": "cross_language",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO008",
+      "question": "What is 'shift-left security' in the context of a development pipeline?",
+      "choices": {
+        "A": "Shifting security responsibilities from the security team to the leftmost column on the Kanban board",
+        "B": "Deploying security patches before feature releases",
+        "C": "Moving security testing earlier in the development lifecycle, ideally into the coding and CI phases",
+        "D": "Using left-aligned encryption algorithms for better performance"
+      },
+      "answer": "C",
+      "explanation": "Shift-left security means integrating security practices earlier in the SDLC (during coding, code review, and CI) rather than waiting for post-deployment security audits. This catches vulnerabilities when they are cheapest to fix.",
+      "topic": "shift_left_security",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO009",
+      "question": "When should you prefer splitting a task into parallel subtasks versus keeping it as a single sequential task?",
+      "choices": {
+        "A": "Always split tasks to maximize developer utilization",
+        "B": "Never split tasks because integration overhead always exceeds the time savings",
+        "C": "Split when subtasks have minimal dependencies and can be developed, tested, and merged independently",
+        "D": "Split only when the task will take more than one sprint"
+      },
+      "answer": "C",
+      "explanation": "Task splitting is beneficial when subtasks have clear boundaries and minimal coupling, allowing parallel development without constant coordination. If subtasks are tightly coupled, the integration overhead can exceed the parallelism benefit.",
+      "topic": "split_vs_combine_tasks",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO010",
+      "question": "Which Docker best practice reduces image size and improves security?",
+      "choices": {
+        "A": "Installing all development tools in the production image for debugging",
+        "B": "Using multi-stage builds with a minimal runtime base image like Alpine or distroless",
+        "C": "Using the latest Ubuntu base image for all containers",
+        "D": "Running all processes as the root user for simplicity"
+      },
+      "answer": "B",
+      "explanation": "Multi-stage builds separate the build environment from the runtime environment. Using minimal base images like Alpine or distroless reduces attack surface and image size, often by 10-100x compared to full OS images.",
+      "topic": "docker_best_practices",
+      "topic_category": "cloud",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO011",
+      "question": "A request arrives to 'improve the search feature.' It is unclear whether this means backend query optimization, frontend UX improvements, or adding new search capabilities. What is the best first step?",
+      "choices": {
+        "A": "Decompose the request by gathering requirements to clarify scope before routing to any developer",
+        "B": "Route it to the frontend developer since the user mentioned the feature",
+        "C": "Assign it to the most senior developer on the team",
+        "D": "Route it to the backend developer since search is primarily a backend concern"
+      },
+      "answer": "A",
+      "explanation": "Ambiguous requests must be clarified before routing. Premature assignment wastes developer time on the wrong problem. Decomposing the request into specific, actionable requirements ensures correct routing and accurate estimation.",
+      "topic": "routing_ambiguous_requests",
+      "topic_category": "task_routing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO012",
+      "question": "Which deployment strategy allows you to test a new version with a small percentage of real production traffic before full rollout?",
+      "choices": {
+        "A": "Recreate deployment",
+        "B": "Rolling deployment",
+        "C": "Canary deployment",
+        "D": "Blue-green deployment"
+      },
+      "answer": "C",
+      "explanation": "Canary deployment routes a small percentage of traffic (e.g., 5%) to the new version while the majority stays on the old version. This allows real-world validation before committing to a full rollout, unlike blue-green which switches 100% at once.",
+      "topic": "deployment_strategies",
+      "topic_category": "cicd",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO013",
+      "question": "What is the primary purpose of a code ownership model (e.g., CODEOWNERS file)?",
+      "choices": {
+        "A": "To track which developer has the highest commit count per module",
+        "B": "To ensure that changes to specific code areas are reviewed by developers with domain expertise in those areas",
+        "C": "To prevent any developer from modifying code they did not originally write",
+        "D": "To assign blame when bugs are discovered in production"
+      },
+      "answer": "B",
+      "explanation": "Code ownership models ensure that changes to critical or specialized areas are reviewed by developers who understand the domain context, catching issues that a general reviewer might miss. It is about review quality, not access restriction.",
+      "topic": "code_ownership_models",
+      "topic_category": "code_review",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO014",
+      "question": "When comparing Python and Go for a CPU-bound data processing pipeline, which statement is most accurate?",
+      "choices": {
+        "A": "Python is always faster because NumPy uses C under the hood",
+        "B": "Go and Python have equivalent performance for CPU-bound tasks",
+        "C": "Go will typically outperform Python for CPU-bound work due to compiled execution and true parallelism, though Python may be preferred if the team has strong NumPy/Pandas expertise",
+        "D": "Python's GIL makes it unsuitable for any parallel processing"
+      },
+      "answer": "C",
+      "explanation": "Go's compiled nature and goroutine-based parallelism give it a significant edge for CPU-bound work. However, Python's scientific computing ecosystem (NumPy, Pandas) can close the gap for specific data operations, making team expertise a valid factor.",
+      "topic": "language_tradeoffs",
+      "topic_category": "cross_language",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO015",
+      "question": "Which practice best addresses flaky tests in a CI pipeline?",
+      "choices": {
+        "A": "Automatically retry all failed tests 3 times and pass if any attempt succeeds",
+        "B": "Quarantine flaky tests into a separate suite, investigate root causes, and track flakiness metrics over time",
+        "C": "Increase test timeouts to 5 minutes to eliminate timing-related flakiness",
+        "D": "Delete flaky tests since they provide no reliable signal"
+      },
+      "answer": "B",
+      "explanation": "Quarantining separates flaky tests from the critical path so they do not block deployments, while tracking and root-cause analysis ensures they get fixed. Blind retries mask real failures; deletion loses coverage; timeouts only address one flakiness cause.",
+      "topic": "flaky_test_management",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO016",
+      "question": "What is the Eisenhower Matrix approach to priority management in software development?",
+      "choices": {
+        "A": "Assigning priorities based on which stakeholder requested the task",
+        "B": "Categorizing tasks by estimated completion time into four buckets",
+        "C": "Ranking all tasks by business revenue impact only",
+        "D": "Classifying tasks along two axes: urgency and importance, to determine whether to do now, schedule, delegate, or eliminate"
+      },
+      "answer": "D",
+      "explanation": "The Eisenhower Matrix classifies tasks as urgent/not-urgent and important/not-important. This helps coordinators avoid the trap of always working on urgent-but-unimportant tasks while neglecting important strategic work.",
+      "topic": "urgency_vs_importance",
+      "topic_category": "priority",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO017",
+      "question": "When integrating SAST (Static Application Security Testing) into a CI pipeline, at which stage should it run?",
+      "choices": {
+        "A": "After deployment to production as a post-release check",
+        "B": "Only when a security team member manually triggers it",
+        "C": "During the build stage on every pull request, before code is merged to the main branch",
+        "D": "Only during the nightly build to avoid slowing down developer feedback"
+      },
+      "answer": "C",
+      "explanation": "SAST should run on every PR during the build stage to catch vulnerabilities before they enter the main codebase. This aligns with shift-left security and provides fast feedback to developers while the code context is fresh.",
+      "topic": "sast_dast_in_pipeline",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO018",
+      "question": "A Kubernetes pod keeps crashing with OOMKilled status. What does this indicate?",
+      "choices": {
+        "A": "The pod could not connect to the network",
+        "B": "The container image was not found in the registry",
+        "C": "The pod's container exceeded its memory limit and was terminated by the kernel",
+        "D": "The pod's liveness probe failed"
+      },
+      "answer": "C",
+      "explanation": "OOMKilled means the container exceeded its configured memory limit (or the node ran out of memory). The Linux OOM killer terminates the process. The fix is either increasing the memory limit or fixing the memory leak in the application.",
+      "topic": "kubernetes_patterns",
+      "topic_category": "cloud",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO019",
+      "question": "What distinguishes a merge conflict resolution strategy based on 'ours' vs 'theirs'?",
+      "choices": {
+        "A": "'Ours' and 'theirs' are identical but used for different git hosting platforms",
+        "B": "'Ours' applies to binary files; 'theirs' applies to text files",
+        "C": "'Ours' means the team lead decides; 'theirs' means the PR author decides",
+        "D": "'Ours' keeps the current branch's changes and discards incoming; 'theirs' keeps incoming changes and discards current"
+      },
+      "answer": "D",
+      "explanation": "In git merge conflicts, 'ours' favors the current branch's version of conflicting changes, while 'theirs' favors the incoming branch's version. These strategies automate conflict resolution when one side's changes should always take priority.",
+      "topic": "merge_conflict_resolution",
+      "topic_category": "code_review",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO020",
+      "question": "What is the primary cost of frequent context switching for developers?",
+      "choices": {
+        "A": "It has no measurable cost as long as tasks are well-documented",
+        "B": "It increases the time to reach productive flow state, with studies showing 15-25 minutes needed to regain deep focus after an interruption",
+        "C": "It only affects junior developers who cannot multitask",
+        "D": "It reduces the number of git commits per day"
+      },
+      "answer": "B",
+      "explanation": "Context switching destroys flow state. Research consistently shows that developers need 15-25 minutes to regain deep focus after an interruption. A coordinator should batch interruptions and protect focus time to maximize throughput.",
+      "topic": "context_switching_costs",
+      "topic_category": "priority",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CO021",
+      "question": "In an event-driven architecture, what problem does an event store solve that a traditional message broker alone does not?",
+      "choices": {
+        "A": "Event stores provide higher throughput than message brokers",
+        "B": "Event stores eliminate the need for consumers to acknowledge messages",
+        "C": "Event stores automatically scale horizontally without configuration",
+        "D": "Event stores persist the complete history of state changes, enabling temporal queries, replay, and rebuilding projections from scratch"
+      },
+      "answer": "D",
+      "explanation": "An event store maintains the full ordered history of events, enabling event replay, temporal queries, and projection rebuilding. A traditional broker typically deletes messages after consumption, losing this historical capability.",
+      "topic": "event_driven_architecture",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO022",
+      "question": "A team has a Python backend developer, a React frontend developer, and a Go systems developer. A task requires building a CLI tool that parses large binary files and outputs structured JSON. Which routing decision is best?",
+      "choices": {
+        "A": "Route to the React developer since the output is JSON",
+        "B": "Split equally among all three developers",
+        "C": "Route to the Go developer since binary parsing and CLI tools align with systems programming expertise and Go's strong binary handling",
+        "D": "Route to the Python developer since Python excels at scripting tasks"
+      },
+      "answer": "C",
+      "explanation": "Parsing large binary files is a systems programming task where Go excels with its strong byte manipulation, static compilation (easy CLI distribution), and performance. The Go systems developer's specialization matches the task requirements.",
+      "topic": "developer_specialization_matching",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO023",
+      "question": "In the CQRS (Command Query Responsibility Segregation) pattern, what is the fundamental reason for separating read and write models?",
+      "choices": {
+        "A": "To allow read and write models to be independently optimized, scaled, and evolved since their access patterns and consistency requirements differ fundamentally",
+        "B": "To ensure all queries return cached results",
+        "C": "To prevent SQL injection attacks on write operations",
+        "D": "To use different programming languages for reads and writes"
+      },
+      "answer": "A",
+      "explanation": "CQRS separates reads and writes because they have fundamentally different optimization needs: writes need transactional consistency and validation, while reads need denormalized views and caching. Separating them allows each to be tuned independently.",
+      "topic": "cqrs_pattern",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO024",
+      "question": "When designing a code review checklist for a team, which approach yields the highest defect detection rate?",
+      "choices": {
+        "A": "Context-specific checklists tailored by change type (security-sensitive, performance-critical, API-breaking, etc.) with a common baseline",
+        "B": "An exhaustive checklist of 200+ items covering every possible issue",
+        "C": "A single generic checklist applied to all code changes regardless of type",
+        "D": "No checklist; rely entirely on reviewer expertise and intuition"
+      },
+      "answer": "A",
+      "explanation": "Context-specific checklists focus reviewer attention on the most relevant concerns for each change type, improving signal-to-noise. A common baseline catches universal issues, while tailored sections address type-specific risks without checklist fatigue.",
+      "topic": "review_checklist_design",
+      "topic_category": "code_review",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO025",
+      "question": "What is the strangler fig pattern in the context of legacy system migration?",
+      "choices": {
+        "A": "Running the legacy and modern systems in parallel indefinitely",
+        "B": "Rewriting the entire legacy system from scratch in a big-bang release",
+        "C": "Incrementally replacing legacy components by routing new functionality to a modern system while the old system continues to handle unchanged functionality, gradually strangling the old system",
+        "D": "Wrapping the legacy system in a container without changing any code"
+      },
+      "answer": "C",
+      "explanation": "The strangler fig pattern incrementally replaces legacy functionality by intercepting calls at the edge and routing them to new implementations. Over time, more traffic flows to the new system until the legacy system can be decommissioned.",
+      "topic": "strangler_fig_pattern",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO026",
+      "question": "When a CI pipeline takes 45 minutes per build, which optimization typically provides the largest improvement?",
+      "choices": {
+        "A": "Implementing layer caching for Docker builds, dependency caching, and parallelizing independent test suites",
+        "B": "Running the pipeline only during business hours",
+        "C": "Adding more RAM to the build server",
+        "D": "Switching from YAML-based to GUI-based pipeline configuration"
+      },
+      "answer": "A",
+      "explanation": "The three highest-impact CI optimizations are: caching (Docker layers, dependencies), parallelization (running independent test suites concurrently), and incremental builds. These typically reduce 45-minute pipelines to 10-15 minutes.",
+      "topic": "build_optimization",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO027",
+      "question": "In a polyglot microservices architecture with Python, Go, and TypeScript services, what is the best approach for defining API contracts between services?",
+      "choices": {
+        "A": "Use shared database tables as the integration contract",
+        "B": "Write all services in the same language to avoid contract issues",
+        "C": "Use a language-neutral Interface Definition Language (IDL) like OpenAPI or Protocol Buffers that generates client/server code for all target languages",
+        "D": "Let each service define its own ad-hoc JSON format"
+      },
+      "answer": "C",
+      "explanation": "A language-neutral IDL provides a single source of truth for API contracts, generates type-safe client and server stubs for each language, and catches contract violations at compile time rather than runtime.",
+      "topic": "api_contract_design",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO028",
+      "question": "A developer's PR includes 1,200 lines of changes across 15 files. How should this be handled in code review?",
+      "choices": {
+        "A": "Request the developer break it into smaller, focused PRs because review effectiveness drops significantly beyond 200-400 lines of change",
+        "B": "Auto-approve it if the CI pipeline passes",
+        "C": "Review it as-is since the developer submitted it as a single unit of work",
+        "D": "Assign it to 5 reviewers so each reviews 3 files"
+      },
+      "answer": "A",
+      "explanation": "Research shows that review effectiveness drops sharply beyond 200-400 lines. A 1,200-line PR across 15 files will receive superficial review. Breaking it into focused PRs improves defect detection and reviewer engagement.",
+      "topic": "pr_review_prioritization",
+      "topic_category": "code_review",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO029",
+      "question": "When selecting between blue-green and canary deployment strategies, which factor most strongly favors canary?",
+      "choices": {
+        "A": "The infrastructure budget is extremely limited",
+        "B": "The application has stateful sessions that cannot be migrated",
+        "C": "The team wants instant rollback capability",
+        "D": "The team needs to validate performance characteristics under real production traffic patterns before full rollout"
+      },
+      "answer": "D",
+      "explanation": "Canary's key advantage is gradual exposure to real traffic, allowing validation of performance, error rates, and user experience with real data before committing. Blue-green switches all traffic at once, missing gradual validation.",
+      "topic": "deployment_strategies",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO030",
+      "question": "In hexagonal architecture (ports and adapters), what is the role of a 'port'?",
+      "choices": {
+        "A": "A network port number used for inter-service communication",
+        "B": "An interface that defines how the application core interacts with external systems, without specifying implementation details",
+        "C": "A database connection pool configuration",
+        "D": "A logging endpoint for monitoring"
+      },
+      "answer": "B",
+      "explanation": "In hexagonal architecture, a port is an interface (contract) that decouples the application core from external concerns. Adapters implement these ports for specific technologies (e.g., a PostgreSQL adapter implements a repository port).",
+      "topic": "hexagonal_architecture",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO031",
+      "question": "A task requires building a data pipeline that ingests CSV files, transforms data, and loads it into PostgreSQL. The team has a Python developer and a Go developer available. The pipeline needs to handle files up to 50GB. What is the best routing decision?",
+      "choices": {
+        "A": "Route to Python for the transform logic using streaming/chunked processing, since the data engineering ecosystem (pandas, SQLAlchemy, existing ETL libraries) reduces development time significantly",
+        "B": "Route to Python because pandas is the standard for data pipelines",
+        "C": "Split the task: Go for file reading, Python for transformation",
+        "D": "Route to Go because it handles large files better than Python in all cases"
+      },
+      "answer": "A",
+      "explanation": "Python's data engineering ecosystem (pandas chunked reading, SQLAlchemy, established ETL patterns) significantly reduces development time. For 50GB files, chunked/streaming processing in Python handles memory constraints. Go would offer raw speed but lack the ecosystem.",
+      "topic": "language_selection_for_tasks",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO032",
+      "question": "What distinguishes feature flags from feature branches in terms of deployment risk?",
+      "choices": {
+        "A": "Feature flags are riskier because they add conditional logic to production code",
+        "B": "Feature flags eliminate all deployment risk",
+        "C": "They are identical in risk profile",
+        "D": "Feature branches are riskier because long-lived branches accumulate merge conflicts and integration risk; feature flags allow trunk-based development with runtime toggles"
+      },
+      "answer": "D",
+      "explanation": "Long-lived feature branches diverge from trunk, accumulating merge conflicts and delaying integration. Feature flags allow code to be merged to trunk behind toggles, reducing integration risk while controlling feature exposure at runtime.",
+      "topic": "feature_flags",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO033",
+      "question": "When assessing technical debt, which metric provides the most actionable insight for prioritization?",
+      "choices": {
+        "A": "Total lines of code in the repository",
+        "B": "The ratio of time spent on unplanned rework to planned feature work in areas with high change frequency",
+        "C": "The number of TODO comments in the codebase",
+        "D": "The age of the oldest file in the repository"
+      },
+      "answer": "B",
+      "explanation": "Technical debt is most impactful where it causes frequent rework in high-change areas. Measuring rework ratio in frequently modified code identifies where debt actively slows development, enabling targeted remediation with the highest ROI.",
+      "topic": "technical_debt_assessment",
+      "topic_category": "code_review",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO034",
+      "question": "In domain-driven design, what is a bounded context and why does it matter for task routing?",
+      "choices": {
+        "A": "A bounded context is an explicit boundary within which a domain model is defined and applicable; it matters for routing because developers should own complete bounded contexts, not fragments across multiple contexts",
+        "B": "A bounded context is a deployment unit; it matters for routing because each microservice is one context",
+        "C": "A bounded context is a security boundary; it matters for routing because it determines access control",
+        "D": "A bounded context is a database schema; it matters for routing because each developer owns one schema"
+      },
+      "answer": "A",
+      "explanation": "A bounded context defines where a specific domain model's terms and rules apply. Routing tasks within bounded context boundaries ensures developers understand the full domain model, reducing misunderstandings and cross-context coupling.",
+      "topic": "domain_driven_design",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO035",
+      "question": "When choosing between REST, gRPC, and GraphQL for a new API, which scenario most clearly favors gRPC?",
+      "choices": {
+        "A": "Internal service-to-service communication requiring low latency, strict contracts, and bidirectional streaming",
+        "B": "A mobile app that needs to fetch deeply nested data with a single request",
+        "C": "A public API consumed by third-party web applications",
+        "D": "A simple CRUD API with infrequent updates"
+      },
+      "answer": "A",
+      "explanation": "gRPC excels at internal service-to-service communication with its binary protocol (low latency), strict IDL contracts (proto files), bidirectional streaming, and auto-generated client stubs. REST is better for public APIs; GraphQL for flexible data fetching.",
+      "topic": "api_contract_design",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO036",
+      "question": "What is the sidecar pattern in microservices, and when is it the correct choice?",
+      "choices": {
+        "A": "A helper container deployed alongside the main container in the same pod, handling cross-cutting concerns like logging, proxying, or TLS termination without modifying the main service",
+        "B": "A backup service that takes over when the primary service fails",
+        "C": "A service that monitors another service and restarts it when it crashes",
+        "D": "A pattern where two services share the same database to reduce latency"
+      },
+      "answer": "A",
+      "explanation": "The sidecar pattern deploys a helper container alongside the main application container (same pod in K8s). It handles cross-cutting concerns (mTLS, logging, metrics, proxy) without modifying the main service code, enabling polyglot infrastructure.",
+      "topic": "sidecar_pattern",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO037",
+      "question": "A developer reports a skill gap in Kubernetes. As a coordinator, which assessment approach best determines the actual gap severity?",
+      "choices": {
+        "A": "Assign them a Kubernetes task and see if they succeed",
+        "B": "Ask the developer to rate their Kubernetes skills on a 1-10 scale",
+        "C": "Design a structured assessment: can they write a Deployment manifest, debug a CrashLoopBackOff, configure a HPA, set up RBAC? Map their responses to specific sub-skill gaps",
+        "D": "Check if they have a Kubernetes certification"
+      },
+      "answer": "C",
+      "explanation": "Structured skill assessment across specific sub-skills (manifests, debugging, scaling, security) identifies precise gaps. Self-ratings are unreliable, trial-by-fire is wasteful, and certifications do not map to practical capability.",
+      "topic": "skill_gap_assessment",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO038",
+      "question": "When should you choose serverless (e.g., AWS Lambda) over containerized services for a workload?",
+      "choices": {
+        "A": "Always, because serverless is cheaper and simpler",
+        "B": "When the workload requires persistent WebSocket connections",
+        "C": "When the workload is event-driven with variable load, short execution times (<15min), and the team wants to avoid infrastructure management overhead",
+        "D": "When the workload needs consistent sub-10ms cold start latency"
+      },
+      "answer": "C",
+      "explanation": "Serverless excels for event-driven, bursty workloads with short execution times where auto-scaling to zero saves cost. Persistent connections, long-running tasks, and strict cold-start requirements favor containers.",
+      "topic": "serverless_selection_criteria",
+      "topic_category": "cloud",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO039",
+      "question": "In the context of dependency scanning in CI, what is the difference between SBOM generation and vulnerability scanning?",
+      "choices": {
+        "A": "SBOM generation creates an inventory of all software components and versions; vulnerability scanning checks that inventory against known CVE databases to identify security risks",
+        "B": "They are the same thing with different names",
+        "C": "Vulnerability scanning replaces the need for SBOMs",
+        "D": "SBOM is for open-source licenses; vulnerability scanning is for proprietary code"
+      },
+      "answer": "A",
+      "explanation": "An SBOM (Software Bill of Materials) inventories all components. Vulnerability scanning cross-references that inventory against CVE databases. Both are needed: the SBOM provides the what, vulnerability scanning provides the risk assessment.",
+      "topic": "dependency_scanning",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO040",
+      "question": "What is the key difference between integration tests and contract tests in a microservices environment?",
+      "choices": {
+        "A": "There is no meaningful difference; they test the same thing",
+        "B": "Contract tests are slower but more reliable than integration tests",
+        "C": "Integration tests are written by QA; contract tests are written by developers",
+        "D": "Integration tests verify that services work together end-to-end; contract tests verify that each service honors its API contract without requiring the other service to be running"
+      },
+      "answer": "D",
+      "explanation": "Contract tests (e.g., using Pact) verify API compatibility without requiring services to be running simultaneously, making them fast and reliable. Integration tests verify actual service interaction but are slower and more brittle.",
+      "topic": "test_infrastructure",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO041",
+      "question": "When comparing MessagePack and JSON for inter-service serialization, what is the primary tradeoff?",
+      "choices": {
+        "A": "MessagePack supports data types that JSON does not, such as functions",
+        "B": "MessagePack provides 30-50% size reduction and faster parsing compared to JSON, but sacrifices human readability and requires library support in all consuming languages",
+        "C": "MessagePack is human-readable while JSON is not",
+        "D": "JSON is always faster to parse than MessagePack"
+      },
+      "answer": "B",
+      "explanation": "MessagePack's binary format is 30-50% smaller and faster to parse than JSON, but it loses human readability (harder to debug) and requires MessagePack libraries in all services. JSON's ubiquity and readability often outweigh MessagePack's efficiency.",
+      "topic": "serialization_formats",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO042",
+      "question": "A pipeline has three stages: build (3 min), unit tests (5 min), integration tests (12 min). Which optimization strategy best reduces total pipeline time?",
+      "choices": {
+        "A": "Run unit tests in parallel with the build, and parallelize integration test suites across multiple runners while implementing test result caching",
+        "B": "Skip integration tests on non-main branches",
+        "C": "Run all three stages sequentially but on a faster machine",
+        "D": "Move integration tests to a nightly build only"
+      },
+      "answer": "A",
+      "explanation": "Parallelizing independent stages and splitting the integration test suite across runners directly reduces wall-clock time. Test result caching skips unchanged tests. This preserves test coverage quality unlike skipping or deferring tests.",
+      "topic": "build_optimization",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO043",
+      "question": "In clean architecture, which layer should contain the business rules, and why?",
+      "choices": {
+        "A": "The presentation layer, because business rules determine what the user sees",
+        "B": "The database layer, because business rules should be enforced as close to the data as possible",
+        "C": "The use case (application) and entity (domain) layers, because business rules should be independent of frameworks, databases, and UI, enabling testability and portability",
+        "D": "The controller layer, because it receives user input and must validate it"
+      },
+      "answer": "C",
+      "explanation": "Clean architecture places business rules in the innermost layers (entities and use cases) with no dependencies on outer layers (UI, DB, frameworks). This makes rules testable in isolation and portable across infrastructure changes.",
+      "topic": "clean_architecture",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO044",
+      "question": "When should a coordinator choose TDD (Test-Driven Development) over writing tests after implementation?",
+      "choices": {
+        "A": "Never, because TDD slows down development",
+        "B": "Always, because TDD is universally superior",
+        "C": "Only for trivial functions where the behavior is obvious",
+        "D": "When the requirements are well-defined and the domain logic is complex, since TDD enforces clear interface design and prevents scope creep"
+      },
+      "answer": "D",
+      "explanation": "TDD provides the most value when requirements are clear and logic is complex: it forces interface design before implementation, prevents scope creep, and creates comprehensive regression tests. Exploratory or prototyping work may benefit from test-after.",
+      "topic": "tdd_vs_bdd_selection",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO045",
+      "question": "What is the primary risk of using a shared database as an integration pattern between microservices?",
+      "choices": {
+        "A": "It creates tight coupling: schema changes in one service can break others, services cannot be independently deployed or scaled, and it violates bounded context boundaries",
+        "B": "It is too slow for microservices",
+        "C": "It prevents horizontal scaling of the database",
+        "D": "It requires all services to use the same programming language"
+      },
+      "answer": "A",
+      "explanation": "A shared database creates implicit coupling between services through the schema. Any schema change requires coordinated changes across all consumers, defeating the independent deployability that is the core benefit of microservices.",
+      "topic": "monolith_vs_microservices",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO046",
+      "question": "When managing secrets in a CI/CD pipeline, which approach provides the strongest security posture?",
+      "choices": {
+        "A": "Use a dedicated secrets manager (e.g., HashiCorp Vault, AWS Secrets Manager) with short-lived credentials injected at runtime and audit logging",
+        "B": "Store secrets as environment variables in the CI configuration file",
+        "C": "Encode secrets in Base64 in the pipeline configuration",
+        "D": "Commit secrets to a private repository with encryption at rest"
+      },
+      "answer": "A",
+      "explanation": "A dedicated secrets manager provides centralized access control, rotation, audit logging, and short-lived credentials. Environment variables in CI config can leak in logs; committed secrets persist in git history; Base64 is not encryption.",
+      "topic": "secrets_management_in_ci",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO047",
+      "question": "A team needs to choose between AWS, GCP, and Azure for a new project. The primary workload is ML training with GPU instances, and the team has strong Python and Kubernetes experience. Which factor should most influence the decision?",
+      "choices": {
+        "A": "The CEO's personal preference",
+        "B": "GPU instance availability, ML platform maturity (SageMaker vs Vertex AI vs Azure ML), and Kubernetes managed service quality (EKS vs GKE vs AKS) relative to team expertise",
+        "C": "Which provider offers the most free tier credits",
+        "D": "Which cloud provider has the most data centers globally"
+      },
+      "answer": "B",
+      "explanation": "For ML workloads, GPU availability and ML platform maturity are critical. GKE is widely considered the most mature managed Kubernetes (team's strength). The decision should be driven by workload-specific capabilities and team expertise alignment.",
+      "topic": "cloud_provider_comparison",
+      "topic_category": "cloud",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO048",
+      "question": "What is the main advantage of infrastructure as code (IaC) over manual infrastructure provisioning?",
+      "choices": {
+        "A": "IaC makes infrastructure reproducible, version-controlled, reviewable, and testable, treating infrastructure changes with the same rigor as application code changes",
+        "B": "IaC eliminates all infrastructure costs",
+        "C": "IaC is always faster than clicking through a cloud console",
+        "D": "IaC prevents all security vulnerabilities"
+      },
+      "answer": "A",
+      "explanation": "IaC's primary advantage is treating infrastructure as a versioned, reviewable artifact. Changes go through PR review, can be tested in staging, and can be rolled back via git revert. Manual changes are unreproducible and unauditable.",
+      "topic": "infrastructure_as_code",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO049",
+      "question": "When Rust and Python are both options for a WebAssembly-targeted module, which language is typically better suited and why?",
+      "choices": {
+        "A": "Neither language supports WebAssembly compilation",
+        "B": "Python, because it has broader library support for WebAssembly",
+        "C": "Rust, because its lack of garbage collector and zero-cost abstractions produce compact, predictable WebAssembly modules with near-native performance",
+        "D": "Both produce identical WebAssembly output"
+      },
+      "answer": "C",
+      "explanation": "Rust's ownership model eliminates the need for a garbage collector runtime in the WASM output, producing smaller, faster modules. Python's runtime overhead and GC make it poorly suited for WASM targets compared to Rust.",
+      "topic": "language_tradeoffs",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO050",
+      "question": "What test coverage percentage should a coordinator set as a team-wide minimum, and why?",
+      "choices": {
+        "A": "0%, because coverage targets incentivize meaningless tests",
+        "B": "A pragmatic range like 70-80% for new code with focus on critical path coverage, because coverage past that point shows diminishing returns and can incentivize low-value tests",
+        "C": "50%, because most bugs are in the other 50%",
+        "D": "100%, because any uncovered code is a potential bug"
+      },
+      "answer": "B",
+      "explanation": "70-80% is the empirical sweet spot where most critical logic is covered. Higher targets incentivize testing trivial getters/setters. The coordinator should emphasize critical path coverage and mutation testing quality over raw line coverage numbers.",
+      "topic": "coverage_goals",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO051",
+      "question": "In a serverless architecture, what is the 'cold start' problem and how does it affect task routing decisions?",
+      "choices": {
+        "A": "Cold start is a database connection issue unrelated to serverless",
+        "B": "Cold start is the initialization latency when a serverless function is invoked after being idle, affecting routing decisions because latency-sensitive tasks should use provisioned concurrency or container-based alternatives",
+        "C": "Cold start only affects Python functions and is irrelevant for other languages",
+        "D": "Cold start is when a server room temperature drops, affecting hardware performance"
+      },
+      "answer": "B",
+      "explanation": "Cold starts (100ms-10s depending on runtime) occur when serverless platforms must initialize a new execution environment. Coordinators must route latency-sensitive workloads to pre-warmed instances or containers to avoid user-facing delays.",
+      "topic": "serverless_patterns",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO052",
+      "question": "What is the purpose of a security review gate in a CI/CD pipeline, and where should it be placed?",
+      "choices": {
+        "A": "An automated checkpoint after security scans (SAST, dependency scan, secrets detection) that blocks promotion to production if critical or high-severity findings exist",
+        "B": "A firewall rule that blocks deployments on weekends",
+        "C": "A weekly meeting where security engineers review all merged code",
+        "D": "A manual approval step placed after production deployment to verify security"
+      },
+      "answer": "A",
+      "explanation": "A security gate is an automated pipeline checkpoint that evaluates security scan results against a defined policy. Placed before production promotion, it blocks deployments with critical/high vulnerabilities, enforcing security standards without manual bottlenecks.",
+      "topic": "security_review_gates",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO053",
+      "question": "When routing a task that requires implementing a GraphQL API, which developer skills are most critical to verify?",
+      "choices": {
+        "A": "REST API design experience, since GraphQL is just a wrapper around REST",
+        "B": "Frontend JavaScript experience only, since GraphQL is a frontend technology",
+        "C": "SQL database expertise, since GraphQL maps directly to SQL",
+        "D": "Schema design, resolver architecture, N+1 query prevention (DataLoader pattern), and understanding of query complexity limiting"
+      },
+      "answer": "D",
+      "explanation": "GraphQL has unique challenges: schema design drives the API contract, resolvers must avoid N+1 queries via DataLoader, and unconstrained queries need complexity limiting to prevent abuse. These skills are distinct from REST expertise.",
+      "topic": "framework_selection_criteria",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO054",
+      "question": "What is the primary benefit of using environment-per-PR (ephemeral preview environments) in a CI/CD pipeline?",
+      "choices": {
+        "A": "It reduces cloud infrastructure costs",
+        "B": "It speeds up the CI build process",
+        "C": "It eliminates the need for staging environments permanently",
+        "D": "It allows QA, product, and design stakeholders to review changes in an isolated, production-like environment before merging, catching integration issues earlier"
+      },
+      "answer": "D",
+      "explanation": "Ephemeral PR environments enable stakeholders to interact with changes in isolation before merge. This catches UX, integration, and configuration issues earlier in the workflow, reducing post-merge defects and review cycle time.",
+      "topic": "environment_management",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO055",
+      "question": "In a monolith-to-microservices migration, which decomposition strategy is recommended as a first step?",
+      "choices": {
+        "A": "Split the monolith by database tables, one service per table",
+        "B": "Extract all entities into separate services simultaneously",
+        "C": "Rewrite the entire monolith in a new language",
+        "D": "Identify the bounded context with the highest change frequency and most independent data ownership, extract it first as a proof of concept"
+      },
+      "answer": "D",
+      "explanation": "Starting with the highest-change-frequency bounded context maximizes learning while delivering value. Its frequent changes justify the investment, and independent data ownership reduces the extraction complexity. This proves the pattern before wider decomposition.",
+      "topic": "monolith_vs_microservices",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO056",
+      "question": "When managing artifact versions in a CI pipeline, what is the best practice for ensuring reproducible deployments?",
+      "choices": {
+        "A": "Use 'latest' tags for all Docker images to always deploy the newest version",
+        "B": "Store artifacts on the build server's local disk",
+        "C": "Tag artifacts with the git commit SHA or a semantic version pinned to a specific build, and use immutable artifact repositories where published versions cannot be overwritten",
+        "D": "Rebuild artifacts from source for every deployment"
+      },
+      "answer": "C",
+      "explanation": "Immutable, SHA-tagged artifacts ensure that what was tested is exactly what is deployed. 'Latest' tags are mutable and non-deterministic. Rebuilding introduces drift risk. Local storage is fragile and non-distributed.",
+      "topic": "artifact_management",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO057",
+      "question": "What characteristic of Rust makes it uniquely suited for tasks where both memory safety and zero-overhead abstractions are requirements?",
+      "choices": {
+        "A": "Its garbage collector is faster than Go's",
+        "B": "Its ownership and borrowing system enforces memory safety at compile time without runtime overhead, eliminating both garbage collection pauses and manual memory management bugs",
+        "C": "Its dynamic typing allows flexible memory management",
+        "D": "Its interpreter optimizes memory allocation at runtime"
+      },
+      "answer": "B",
+      "explanation": "Rust's ownership system is unique: it prevents memory bugs (use-after-free, data races) at compile time, not runtime. This means no GC pauses (unlike Go/Java) and no manual memory management bugs (unlike C/C++), achieving safety with zero overhead.",
+      "topic": "language_tradeoffs",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO058",
+      "question": "When is BDD (Behavior-Driven Development) a better choice than TDD for a project?",
+      "choices": {
+        "A": "When the team needs a shared understanding of requirements with non-technical stakeholders, and specifications should serve as both documentation and executable tests",
+        "B": "When the codebase is entirely backend with no user-facing features",
+        "C": "When the team wants to minimize the number of tests written",
+        "D": "When the project has no non-technical stakeholders"
+      },
+      "answer": "A",
+      "explanation": "BDD's Given/When/Then format creates a shared language between technical and non-technical stakeholders. The specifications become living documentation that is also executable, bridging the gap between requirements and implementation.",
+      "topic": "tdd_vs_bdd_selection",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO059",
+      "question": "What is the primary security risk of using DAST (Dynamic Application Security Testing) as the only security testing method?",
+      "choices": {
+        "A": "DAST cannot test web applications",
+        "B": "DAST produces too many false positives to be useful",
+        "C": "DAST only tests the running application from the outside, missing code-level vulnerabilities like hardcoded secrets, insecure deserialization patterns, and logic flaws that are visible in source code",
+        "D": "DAST is too slow to run in CI pipelines"
+      },
+      "answer": "C",
+      "explanation": "DAST tests from the outside (like an attacker), finding runtime vulnerabilities but missing code-level issues. SAST analyzes source code and finds hardcoded secrets, insecure patterns, and logic flaws. Both are needed for comprehensive coverage.",
+      "topic": "sast_dast_in_pipeline",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO060",
+      "question": "When designing a Kubernetes deployment for a stateful application (e.g., a database), which resource type is most appropriate?",
+      "choices": {
+        "A": "Job, because databases are batch workloads",
+        "B": "Deployment, because all K8s workloads should use Deployments",
+        "C": "DaemonSet, because it ensures one instance per node",
+        "D": "StatefulSet, because it provides stable network identities, ordered deployment/scaling, and persistent volume claims that survive pod restarts"
+      },
+      "answer": "D",
+      "explanation": "StatefulSets provide stable pod identities (pod-0, pod-1), ordered startup/shutdown, and persistent volume claims that reattach to the same pod. These properties are essential for databases and other stateful workloads that Deployments cannot guarantee.",
+      "topic": "kubernetes_patterns",
+      "topic_category": "cloud",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO061",
+      "question": "A coordinator receives three tasks simultaneously: a production hotfix for a payment bug, a feature requested by the CEO for a demo tomorrow, and a tech debt refactoring that would unblock 3 other tasks. How should these be prioritized?",
+      "choices": {
+        "A": "Production hotfix first (revenue impact and user trust), then tech debt (unblocks 3 tasks giving highest throughput), then CEO demo (deadline-driven scheduling after critical items)",
+        "B": "Tech debt first (unblocks the most work), then hotfix, then demo",
+        "C": "All three in parallel with equal priority",
+        "D": "CEO demo first (highest authority), then hotfix, then tech debt"
+      },
+      "answer": "A",
+      "explanation": "The production payment bug has immediate revenue and trust impact. Tech debt unblocking 3 tasks has the highest throughput multiplier. The CEO demo has a fixed deadline but lower severity. This ordering maximizes value delivery while respecting urgency.",
+      "topic": "urgency_vs_importance",
+      "topic_category": "priority",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO062",
+      "question": "What is the primary purpose of the circuit breaker pattern in microservices?",
+      "choices": {
+        "A": "To compress network traffic between services",
+        "B": "To balance load across multiple service instances",
+        "C": "To encrypt communication between services",
+        "D": "To prevent cascading failures by detecting when a downstream service is unhealthy and failing fast instead of queuing requests that will timeout"
+      },
+      "answer": "D",
+      "explanation": "The circuit breaker monitors downstream call failures. When failures exceed a threshold, it 'opens' and returns errors immediately instead of waiting for timeouts. This prevents thread pool exhaustion and cascading failures across the service mesh.",
+      "topic": "microservices_patterns",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO063",
+      "question": "When choosing an IaC tool, what distinguishes Terraform from Pulumi as a selection criterion?",
+      "choices": {
+        "A": "Terraform uses a declarative DSL (HCL) with a large provider ecosystem, while Pulumi uses general-purpose languages (Python, TypeScript, Go), making the choice depend on team preference for DSLs vs familiar programming languages",
+        "B": "Terraform does not support state management while Pulumi does",
+        "C": "Terraform can only manage AWS resources while Pulumi supports all clouds",
+        "D": "Pulumi is faster at provisioning than Terraform in all cases"
+      },
+      "answer": "A",
+      "explanation": "The core distinction is DSL vs general-purpose language. Terraform's HCL is purpose-built and widely adopted. Pulumi allows IaC in Python/TypeScript/Go, which can be better for teams who prefer familiar languages and need complex logic in their IaC.",
+      "topic": "infrastructure_as_code_selection",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO064",
+      "question": "A team has 5 developers receiving an average of 8 PRs per day. What strategy prevents code review from becoming a bottleneck?",
+      "choices": {
+        "A": "Assign all PRs to the tech lead for centralized review",
+        "B": "Implement automated review for style/linting, use CODEOWNERS for domain-specific routing, set a 4-hour SLA for first review response, and rotate review responsibilities to spread knowledge",
+        "C": "Batch all reviews to a single hour each day",
+        "D": "Skip code review for small PRs under 50 lines"
+      },
+      "answer": "B",
+      "explanation": "Automating style checks removes noise from human review. CODEOWNERS routes to domain experts. SLAs prevent staleness. Rotation spreads knowledge and prevents single-person bottlenecks. Together these maintain quality without blocking velocity.",
+      "topic": "pr_review_prioritization",
+      "topic_category": "code_review",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO065",
+      "question": "What is the key difference between eventual consistency and strong consistency, and how does it influence architecture decisions?",
+      "choices": {
+        "A": "Strong consistency is only available in SQL databases",
+        "B": "They are the same; all distributed systems are strongly consistent",
+        "C": "Eventual consistency is a bug; strong consistency is the correct behavior",
+        "D": "Strong consistency guarantees every read returns the latest write; eventual consistency guarantees reads will converge over time. Strong consistency requires coordination (higher latency), while eventual consistency allows higher availability and throughput"
+      },
+      "answer": "D",
+      "explanation": "Per the CAP theorem, strong consistency requires cross-node coordination (sacrificing availability or latency). Eventual consistency trades immediate accuracy for availability and throughput. Architecture decisions depend on which tradeoff the domain tolerates.",
+      "topic": "distributed_systems",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO066",
+      "question": "When setting up cost optimization for cloud workloads, which approach typically yields the largest savings?",
+      "choices": {
+        "A": "Turning off all development environments permanently",
+        "B": "Right-sizing instances based on actual utilization metrics, using reserved instances or savings plans for predictable workloads, and auto-scaling for variable workloads",
+        "C": "Switching to a cheaper cloud provider",
+        "D": "Using only spot instances for all workloads"
+      },
+      "answer": "B",
+      "explanation": "Right-sizing eliminates waste from over-provisioned instances. Reserved capacity discounts (30-60% savings) apply to predictable baselines. Auto-scaling handles variable load efficiently. This three-pronged approach typically yields 40-60% cost reduction.",
+      "topic": "cost_optimization",
+      "topic_category": "cloud",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO067",
+      "question": "When a coordinator notices that a developer consistently underestimates task complexity, what is the most effective intervention?",
+      "choices": {
+        "A": "Introduce calibration through post-task retrospectives comparing estimates to actuals, identify systematic bias patterns (e.g., underestimating integration work), and pair with an experienced estimator for complex tasks",
+        "B": "Remove them from estimation responsibilities",
+        "C": "Secretly double all their estimates",
+        "D": "Add a fixed 50% buffer to all tasks"
+      },
+      "answer": "A",
+      "explanation": "Calibration through data (estimate vs actual) reveals specific bias patterns. Pairing transfers estimation skills. This develops the developer's judgment rather than working around it, producing long-term improvement.",
+      "topic": "task_complexity_estimation",
+      "topic_category": "task_routing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO068",
+      "question": "In a Python/TypeScript polyglot system, which approach best handles shared data validation logic?",
+      "choices": {
+        "A": "Use a Python-to-TypeScript transpiler",
+        "B": "Define validation schemas in a language-neutral format (JSON Schema, OpenAPI) and generate validators for both languages, ensuring a single source of truth",
+        "C": "Only validate in the backend; trust the frontend",
+        "D": "Duplicate the validation code in both languages independently"
+      },
+      "answer": "B",
+      "explanation": "Language-neutral schemas (JSON Schema, OpenAPI) provide a single source of truth that generates type-safe validators for both languages. This eliminates drift between frontend/backend validation and reduces duplication bugs.",
+      "topic": "polyglot_architecture",
+      "topic_category": "cross_language",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO069",
+      "question": "When a developer reports that their tests pass locally but fail in CI, what is the most likely category of root cause?",
+      "choices": {
+        "A": "The CI server has a bug in its test runner",
+        "B": "Network latency between the CI server and the code repository",
+        "C": "Environment differences: implicit local dependencies (running services, environment variables, file system state, timezone, OS libraries) that are not captured in the CI configuration",
+        "D": "The developer is lying about local test results"
+      },
+      "answer": "C",
+      "explanation": "Local-pass/CI-fail almost always stems from environment differences: locally running services (Redis, DB), undeclared environment variables, filesystem assumptions (paths, permissions), or OS-level differences. The fix is making CI fully deterministic via containers.",
+      "topic": "test_infrastructure",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO070",
+      "question": "What is the role of an API gateway in a microservices architecture, and when is it overkill?",
+      "choices": {
+        "A": "An API gateway handles cross-cutting concerns (auth, rate limiting, routing, TLS) at the edge; it is overkill for internal-only service meshes with fewer than 3 services where a simple reverse proxy suffices",
+        "B": "An API gateway is always necessary for any microservices system",
+        "C": "An API gateway replaces the need for service-level authentication",
+        "D": "An API gateway is only useful for GraphQL APIs"
+      },
+      "answer": "A",
+      "explanation": "API gateways centralize edge concerns, reducing duplication across services. However, for simple internal architectures, a lightweight reverse proxy (nginx, Traefik) handles routing without the operational complexity of a full gateway (Kong, AWS API Gateway).",
+      "topic": "microservices_patterns",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CO071",
+      "question": "You coordinate a team with three developers:\n- Dev A: Python expert, intermediate Go, no React experience, currently at 70% capacity\n- Dev B: React/TypeScript expert, intermediate Python, no Go experience, currently at 40% capacity\n- Dev C: Go expert, intermediate React, no Python experience, currently at 90% capacity\n\nA new feature requires: (1) a Go gRPC service with complex binary protocol handling, (2) a Python data transformation pipeline, and (3) a React dashboard consuming both services.\n\nStep 1: Identify the optimal task-to-developer mapping considering both expertise and load.\nStep 2: Determine the correct sequencing given data dependencies.\nStep 3: Select the best approach.\n\nWhich plan is correct?",
+      "choices": {
+        "A": "Dev A takes Go gRPC (intermediate Go), Dev C takes React (intermediate React), Dev B takes Python (intermediate Python). This spreads growth opportunities evenly.",
+        "B": "Dev B takes all three since they have the most free capacity at 40%",
+        "C": "All three developers collaborate on each component sequentially to maximize knowledge sharing",
+        "D": "Dev C takes Go gRPC, Dev A takes Python pipeline, Dev B takes React dashboard. Sequence: Go gRPC and Python pipeline in parallel, then React dashboard. Dev C's high load is acceptable because the Go task is their strongest skill."
+      },
+      "answer": "D",
+      "explanation": "Expertise-first routing: Dev C handles the complex Go binary protocol (expert), Dev A handles Python transforms (expert), Dev B builds the React dashboard (expert). The dashboard depends on both APIs, so backend services run in parallel first. Dev C's 90% load is manageable for their strongest skill.",
+      "topic": "developer_specialization_matching",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO072",
+      "question": "Your team is migrating a monolithic e-commerce application to microservices. The monolith handles: user auth, product catalog, shopping cart, order processing, payment, and notification services. The codebase has tight coupling between cart and order processing (shared database tables), and between payment and notification (synchronous calls).\n\nStep 1: Identify which bounded contexts can be extracted independently.\nStep 2: Determine the extraction order that minimizes risk.\nStep 3: Choose the migration strategy.\n\nWhich approach is correct?",
+      "choices": {
+        "A": "Extract user auth and product catalog first (independent, read-heavy, no tight coupling), then notification (decoupled from payment via async events), then cart + orders together (coupled), and finally payment (highest risk, extracted last with most experience). Use strangler fig pattern throughout.",
+        "B": "Extract cart and orders separately despite their shared database tables",
+        "C": "Extract all 6 services simultaneously using a big-bang rewrite",
+        "D": "Start with payment extraction since it is the most critical service"
+      },
+      "answer": "A",
+      "explanation": "Auth and catalog are natural first candidates: independent, read-heavy, low-risk. Notification can decouple from payment via async events. Cart/orders must move together due to shared state. Payment goes last because it has the highest risk and the team will have the most migration experience by then.",
+      "topic": "monolith_to_microservices_migration",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO073",
+      "question": "You discover that your CI/CD pipeline has the following security issues:\n1. Docker images are built using root user\n2. npm packages are installed without integrity checking\n3. Database credentials are passed as build arguments\n4. No vulnerability scanning on third-party dependencies\n5. The deployment script has write access to all production servers\n\nStep 1: Categorize each issue by severity.\nStep 2: Determine the remediation priority.\nStep 3: Select the response plan.\n\nWhich plan correctly addresses all issues in the right order?",
+      "choices": {
+        "A": "Fix Docker root user first since containers are the most visible component",
+        "B": "Only fix the credential issue; the others are low risk",
+        "C": "Fix all 5 issues simultaneously in a single sprint",
+        "D": "Priority 1 (Critical): Move database credentials to a secrets manager (issue 3) and restrict deployment script access with least-privilege IAM (issue 5). Priority 2 (High): Add dependency vulnerability scanning (issue 4) and enable npm integrity checking (issue 2). Priority 3 (Medium): Switch Docker builds to non-root user (issue 1)."
+      },
+      "answer": "D",
+      "explanation": "Credentials as build args (visible in image layers and logs) and over-privileged deployment (blast radius) are critical. Dependency scanning and integrity checking prevent supply-chain attacks (high). Non-root Docker is defense-in-depth (medium). This ordering addresses the highest-impact risks first.",
+      "topic": "pipeline_security_remediation",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO074",
+      "question": "A Python service processes 10,000 webhook events per minute. Under load, response times spike to 30 seconds and the service drops events. Investigation reveals:\n- Each webhook handler makes 3 synchronous HTTP calls to downstream services (avg 200ms each)\n- The PostgreSQL connection pool is limited to 10 connections\n- The service runs in a single-process WSGI configuration\n- No message queue is used; events are processed inline\n\nStep 1: Identify the primary bottleneck.\nStep 2: Determine the correct combination of fixes.\nStep 3: Select the best response.\n\nWhich approach resolves the core issues?",
+      "choices": {
+        "A": "Rewrite the entire service in Go for better performance",
+        "B": "Increase the PostgreSQL connection pool to 1000 connections",
+        "C": "Add a CDN in front of the webhook endpoint",
+        "D": "Switch to an async framework (FastAPI/ASGI), introduce a message queue (Redis/RabbitMQ) to decouple webhook receipt from processing, increase the connection pool to 50-100 connections, and run multiple worker processes"
+      },
+      "answer": "D",
+      "explanation": "The primary bottleneck is synchronous processing: 3x200ms = 600ms per event, single-process WSGI with 10 DB connections caps at ~16 events/second. Async processing, message queue for decoupling, larger connection pool, and multi-worker deployment address all bottlenecks without a full rewrite.",
+      "topic": "performance_optimization",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO075",
+      "question": "You are designing a test strategy for a new microservices platform with 8 services. The team has 3 QA engineers and 12 developers. Services communicate via REST APIs and an event bus.\n\nStep 1: Define the test pyramid layers and ownership.\nStep 2: Identify the critical integration boundaries.\nStep 3: Select the strategy that maximizes coverage with the available team.\n\nWhich strategy is optimal?",
+      "choices": {
+        "A": "Write unit tests only and rely on production monitoring to catch integration issues",
+        "B": "QA engineers write all tests; developers focus only on code",
+        "C": "Developers own unit tests (80%+ coverage) and contract tests (Pact) for their service boundaries. QA engineers own integration test suites for critical cross-service flows, e2e smoke tests, and exploratory testing. Contract tests verify API and event bus compatibility without requiring all services to be running.",
+        "D": "Only write e2e tests since they cover everything"
+      },
+      "answer": "C",
+      "explanation": "This divides ownership by expertise: developers understand their service internals (unit + contract tests), QA understands cross-cutting flows (integration + e2e + exploratory). Contract tests (Pact) verify service compatibility without running the full stack, making them fast and reliable for 8-service architectures.",
+      "topic": "test_strategy_design",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO076",
+      "question": "Your organization runs a polyglot system: Python ML service, Go API gateway, TypeScript frontend, Rust data processing engine. A bug report indicates data corruption between the Go API and Rust processor.\n\nStep 1: Identify likely serialization/deserialization failure points.\nStep 2: Determine the diagnostic approach.\nStep 3: Select the fix that prevents future cross-language data issues.\n\nWhich approach is correct?",
+      "choices": {
+        "A": "Add more logging to both services and wait for the bug to happen again",
+        "B": "Switch all serialization to XML for better debugging",
+        "C": "Audit the serialization contract: check for integer overflow differences (Go's int vs Rust's i64), floating point handling, null/None/nil semantics, UTF-8 string handling, and endianness. Implement a shared Protocol Buffers schema as the canonical contract, add cross-language integration tests that verify serialization round-trips, and deploy contract testing in CI.",
+        "D": "Rewrite the Rust service in Go to eliminate the language boundary"
+      },
+      "answer": "C",
+      "explanation": "Cross-language data corruption typically stems from type system mismatches (integer widths, float precision, null handling). A shared IDL (protobuf) eliminates ambiguity. Cross-language round-trip tests in CI prevent regression. This addresses root cause rather than symptoms.",
+      "topic": "cross_language_debugging",
+      "topic_category": "cross_language",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO077",
+      "question": "You need to design a CI/CD pipeline for a monorepo containing 6 microservices, a shared library, and infrastructure-as-code. Requirements: independent service deployments, shared library changes trigger dependent service rebuilds, infrastructure changes require approval, and the pipeline must complete in under 15 minutes.\n\nStep 1: Design the dependency graph and trigger rules.\nStep 2: Optimize for the 15-minute constraint.\nStep 3: Select the correct pipeline design.\n\nWhich design meets all requirements?",
+      "choices": {
+        "A": "Path-based triggers with a dependency graph: changes to shared library trigger builds for all 6 dependent services. Each service has an independent build-test-deploy pipeline. Infrastructure changes trigger a separate plan-approve-apply pipeline with manual approval gate. All service builds parallelized across runners. Docker layer caching and test result caching reduce build times.",
+        "B": "A single sequential pipeline that builds services one at a time",
+        "C": "Separate repositories for each service to avoid the dependency problem",
+        "D": "Build everything on every commit to ensure consistency"
+      },
+      "answer": "A",
+      "explanation": "Path-based triggers with dependency awareness ensures only affected services rebuild. Parallel runners keep wall-clock time under 15 minutes. Separate IaC pipeline with approval gates addresses infrastructure safety. Caching prevents redundant work across frequent commits.",
+      "topic": "advanced_pipeline_design",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO078",
+      "question": "A startup is choosing between three architecture options for a new SaaS product:\nOption X: Monolith (Django, PostgreSQL)\nOption Y: Microservices from day 1 (Go services, Kafka, Kubernetes)\nOption Z: Modular monolith (FastAPI with clearly bounded modules, PostgreSQL with schema-per-module, designed for future extraction)\n\nThe team has 4 developers, needs to launch MVP in 3 months, and expects to scale to 10,000 users in year one.\n\nStep 1: Evaluate each option against team size, timeline, and scale requirements.\nStep 2: Assess operational overhead.\nStep 3: Select the best option.\n\nWhich option is most appropriate?",
+      "choices": {
+        "A": "Option X: Django monolith because it is the simplest",
+        "B": "Option Z: Modular monolith, because it combines fast development velocity for 4 developers with clear module boundaries that enable future microservice extraction, avoids distributed systems complexity during MVP, and handles 10K users easily on a single deployment",
+        "C": "A hybrid: some modules as microservices, others as monolith",
+        "D": "Option Y: Microservices from day 1 because the product needs to scale"
+      },
+      "answer": "B",
+      "explanation": "With 4 developers and a 3-month timeline, microservices create premature operational complexity. A pure monolith risks future extraction difficulty. The modular monolith provides MVP velocity with intentional boundaries (schema-per-module) that make future extraction possible when scale demands it. 10K users is well within monolith capacity.",
+      "topic": "architecture_selection",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO079",
+      "question": "Your team discovers that a production Kubernetes cluster has these issues:\n1. All pods run as root\n2. No network policies (all pods can communicate with all others)\n3. Secrets are stored as plain base64 in etcd (no encryption at rest)\n4. No resource limits on any deployment\n5. Container images are pulled from a public registry with no signature verification\n\nStep 1: Rank these by exploitation severity.\nStep 2: Determine which can be fixed without downtime.\nStep 3: Select the correct remediation plan.\n\nWhich remediation plan is correct?",
+      "choices": {
+        "A": "Fix all issues simultaneously in a maintenance window",
+        "B": "Only fix the root user issue since it is the most commonly cited K8s vulnerability",
+        "C": "Immediate (no downtime): Enable etcd encryption at rest (issue 3) and add network policies with default-deny (issue 2). Rolling update: Add securityContext with non-root and readOnlyRootFilesystem (issue 1), set resource limits (issue 4). Pipeline change: Add image signature verification and private registry mirroring (issue 5).",
+        "D": "Migrate to a new cluster with all fixes applied"
+      },
+      "answer": "C",
+      "explanation": "Etcd encryption and network policies can be applied without pod restarts (highest severity, no downtime). Security contexts and resource limits require rolling updates (planned). Image verification is a pipeline change (prevents future risk). This ordering minimizes disruption while addressing highest-risk items first.",
+      "topic": "kubernetes_security_remediation",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO080",
+      "question": "You are coordinating a complex feature that requires:\n- Backend: New REST endpoints in Python (3 days estimated)\n- Frontend: React components with complex state management (4 days estimated)\n- Database: Schema migration adding 3 new tables with foreign keys (1 day estimated)\n- Infrastructure: New Redis cache cluster deployment (1 day estimated)\n\nDev A (Python) and Dev B (React) are available. You handle infrastructure. The feature must ship in 5 business days.\n\nStep 1: Identify the critical path.\nStep 2: Determine which tasks can parallelize.\nStep 3: Select the correct execution plan.\n\nWhich plan meets the 5-day deadline?",
+      "choices": {
+        "A": "Dev A does everything sequentially while Dev B waits",
+        "B": "Sequential: DB migration -> Backend -> Frontend -> Infrastructure",
+        "C": "Ship without the database migration to meet the deadline",
+        "D": "Day 1: DB migration (Dev A) + Redis deployment (you) in parallel. Days 1-3: Backend development (Dev A) starts after migration. Days 1-4: Frontend development (Dev B) starts day 1 using mocked API contracts. Day 4-5: Integration and testing. Critical path is frontend at 4 days, so Dev B starts immediately with agreed API contracts."
+      },
+      "answer": "D",
+      "explanation": "The critical path is frontend (4 days). By starting Dev B immediately with API contract mocks, the 4-day frontend work overlaps with backend. DB migration and Redis deploy on day 1 (parallel, no dependency). Integration days 4-5 catch issues. Total: 5 days.",
+      "topic": "deadline_driven_scheduling",
+      "topic_category": "priority",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO081",
+      "question": "A legacy Node.js service (Express, callbacks, no TypeScript) needs modernization. The service handles 2,000 req/s and has 85% test coverage. Options:\nA) Incremental migration to TypeScript with async/await, keep Express\nB) Full rewrite in Go\nC) Migrate to NestJS (TypeScript) with a strangler fig approach\nD) Add TypeScript types via JSDoc comments only\n\nStep 1: Evaluate risk vs benefit for each option at 2,000 req/s with existing test coverage.\nStep 2: Consider team disruption and rollback capability.\nStep 3: Select the best modernization path.\n\nWhich option balances risk and modernization benefit?",
+      "choices": {
+        "A": "Option C: NestJS with strangler fig, because it provides a modern framework with TypeScript safety, the strangler fig approach allows incremental migration with rollback capability per route, and the 85% test coverage enables confident refactoring",
+        "B": "Option B: Full rewrite in Go because it will handle more traffic",
+        "C": "Option A: Keep Express because changing frameworks is too risky",
+        "D": "Option D: JSDoc only because it is the lowest risk"
+      },
+      "answer": "A",
+      "explanation": "NestJS provides TypeScript, dependency injection, and modern patterns. The strangler fig approach migrates route-by-route with rollback per endpoint. The 85% test coverage validates each migration step. A full rewrite risks the Big Rewrite failure mode; JSDoc adds types without structural improvement.",
+      "topic": "modernization_strategy",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO082",
+      "question": "You are designing a review process for a security-critical financial API. Current state: 2 reviewers per PR, no specialized security review, automated linting only.\n\nStep 1: Identify what the current process misses for financial APIs.\nStep 2: Design the enhanced review pipeline.\nStep 3: Select the correct review process.\n\nWhich process provides adequate security for financial code?",
+      "choices": {
+        "A": "Increase to 3 general reviewers per PR",
+        "B": "Replace human review with AI code review tools",
+        "C": "Add automated SAST and dependency scanning as pre-merge gates. Require 2 general reviewers plus 1 mandatory security reviewer for any PR touching auth, payment, or PII handling code paths. Security reviewer checks: input validation, authorization checks, audit logging, encryption, and SQL injection prevention. Add a security-specific checklist triggered by CODEOWNERS path matching.",
+        "D": "Only review PRs that touch the payment module; trust other code"
+      },
+      "answer": "C",
+      "explanation": "Financial APIs need layered security review: automated scanning catches known vulnerability patterns, general reviewers verify logic, and a specialized security reviewer checks domain-specific concerns (auth, encryption, audit trails). CODEOWNERS automates routing to ensure security-sensitive paths always get expert review.",
+      "topic": "security_review_process",
+      "topic_category": "code_review",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO083",
+      "question": "Your system uses event-driven architecture with Kafka. You discover three problems:\n1. Consumer lag is growing (consumers cannot keep up with producers)\n2. Events are sometimes processed out of order, causing data inconsistency\n3. A consumer crash causes duplicate event processing on restart\n\nStep 1: Identify the root cause of each problem.\nStep 2: Determine whether these are configuration, architecture, or code issues.\nStep 3: Select the combined fix.\n\nWhich approach addresses all three problems?",
+      "choices": {
+        "A": "Increase Kafka partition count to fix all three issues",
+        "B": "Add retry logic with exponential backoff to fix all three issues",
+        "C": "For lag (1): Increase consumer instances and partition count for parallel consumption. For ordering (2): Use partition keys to ensure related events route to the same partition, maintaining per-entity ordering. For duplicates (3): Implement idempotent consumers using event ID deduplication tables and transactional outbox pattern for exactly-once semantics.",
+        "D": "Switch from Kafka to a traditional REST-based architecture"
+      },
+      "answer": "C",
+      "explanation": "Lag is a throughput issue (scale consumers + partitions). Ordering is a partitioning issue (key-based partition routing). Duplicates are an idempotency issue (deduplication + transactional outbox). Each problem has a distinct root cause requiring a specific solution.",
+      "topic": "event_driven_debugging",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO084",
+      "question": "A team needs to choose between three database options for a new service:\n- PostgreSQL (relational, strong consistency, complex queries)\n- MongoDB (document store, flexible schema, horizontal scaling)\n- Redis (in-memory, sub-millisecond reads, limited query capability)\n\nThe service requirements: user session management, 50,000 concurrent sessions, sub-5ms read latency, session data is semi-structured (varies by user type), sessions expire after 30 minutes.\n\nStep 1: Evaluate each option against the requirements.\nStep 2: Consider operational complexity.\nStep 3: Select the best option.\n\nWhich database is the best fit?",
+      "choices": {
+        "A": "Redis, because sub-5ms latency requires in-memory storage, TTL natively handles 30-minute expiration, semi-structured data fits Redis hashes or JSON module, and 50K concurrent sessions is well within Redis capacity. Use PostgreSQL as a secondary store only if long-term session analytics are needed.",
+        "B": "Use all three in a tiered architecture",
+        "C": "PostgreSQL because it supports complex queries on session data",
+        "D": "MongoDB because the semi-structured data matches its document model"
+      },
+      "answer": "A",
+      "explanation": "The requirements strongly favor Redis: sub-5ms latency demands in-memory storage, TTL is built-in for expiration, Redis hashes handle semi-structured data, and 50K sessions is modest for Redis. PostgreSQL and MongoDB introduce unnecessary disk I/O latency for this use case.",
+      "topic": "database_selection",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO085",
+      "question": "You are coordinating a zero-downtime migration from AWS to GCP for a production system. The system includes: 3 microservices on ECS, RDS PostgreSQL, S3 for file storage, CloudFront CDN, and Route 53 DNS.\n\nStep 1: Identify components that can be migrated independently.\nStep 2: Determine the migration sequence that maintains availability.\nStep 3: Select the correct migration plan.\n\nWhich plan ensures zero downtime?",
+      "choices": {
+        "A": "Only migrate the database; keep services on AWS",
+        "B": "Migrate DNS first, then services, then database",
+        "C": "Migrate everything simultaneously during a maintenance window",
+        "D": "Phase 1: Set up GCP equivalents (GKE, Cloud SQL, GCS, Cloud CDN) and establish data replication (AWS RDS -> Cloud SQL, S3 -> GCS sync). Phase 2: Deploy services to GKE with traffic still on AWS. Phase 3: Shift DNS (Route 53 -> Cloud DNS) with weighted routing, gradually moving traffic from AWS to GCP. Phase 4: Verify all traffic on GCP, decommission AWS. Rollback at any phase by shifting DNS weight back."
+      },
+      "answer": "D",
+      "explanation": "The phased approach with data replication establishes GCP as a parallel environment before any traffic moves. Weighted DNS routing enables gradual traffic shift with instant rollback capability. Data replication ensures consistency during the transition. No single point of failure.",
+      "topic": "cloud_migration",
+      "topic_category": "cloud",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO086",
+      "question": "Your team's integration test suite has grown to 2,000 tests taking 90 minutes. Developers skip running them locally, and CI feedback is too slow. Analysis shows:\n- 300 tests are end-to-end (browser-based), averaging 15s each\n- 1,200 tests hit a real database, averaging 2s each\n- 500 tests make real HTTP calls to external APIs, averaging 3s each\n\nStep 1: Identify which test categories to optimize and how.\nStep 2: Calculate the expected time savings.\nStep 3: Select the best optimization plan.\n\nWhich plan provides the most improvement?",
+      "choices": {
+        "A": "Replace real HTTP calls with contract tests and WireMock stubs (500 tests: 3s -> 0.1s, saving ~24 min). Parallelize database tests across 4 shards (1200 tests: 40 min -> 10 min, saving 30 min). Parallelize e2e tests across 6 browser instances (300 tests: 75 min -> 12.5 min, saving 62.5 min). Total: 90 min -> ~23 min.",
+        "B": "Convert all tests to unit tests by removing external dependencies",
+        "C": "Delete the 300 e2e tests since they take the longest per test",
+        "D": "Run all tests in parallel on a single machine with more CPU cores"
+      },
+      "answer": "A",
+      "explanation": "This approach targets each category with the right optimization: contract tests + stubs for HTTP calls (eliminate network latency), sharded parallel runs for DB tests, and multi-browser parallelism for e2e. The calculated result (~23 min) is achievable and preserves test quality. A single machine cannot parallelize browser tests effectively.",
+      "topic": "test_optimization",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO087",
+      "question": "A request comes in to build a real-time analytics dashboard. Requirements:\n- Ingest 100,000 events/second from 5 data sources\n- Sub-second query latency on aggregated data\n- Support time-series queries, top-N, and percentile calculations\n- Data retention: raw events for 7 days, aggregated data for 1 year\n- Team has Python and TypeScript expertise only\n\nStep 1: Select the appropriate data pipeline architecture.\nStep 2: Choose the query/storage engine.\nStep 3: Select the best technology stack.\n\nWhich stack is most appropriate?",
+      "choices": {
+        "A": "Kafka for event ingestion, ClickHouse (or TimescaleDB) for time-series storage and sub-second aggregation queries, a Python stream processor (Faust or Kafka Streams equivalent) for real-time aggregation, and a TypeScript/React frontend with WebSocket for live updates. Separate hot (7-day raw) and cold (1-year aggregated) storage tiers.",
+        "B": "PostgreSQL with materialized views for everything",
+        "C": "Store all events in Redis for maximum speed",
+        "D": "Use a SaaS analytics tool like Mixpanel instead of building"
+      },
+      "answer": "A",
+      "explanation": "At 100K events/s, Kafka handles ingestion reliably. ClickHouse/TimescaleDB are purpose-built for time-series analytics with sub-second aggregation. Python stream processing fits team expertise. Hot/cold tiering manages the retention requirements cost-effectively. The team can build this with their Python + TypeScript skills.",
+      "topic": "technology_stack_selection",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO088",
+      "question": "You are designing a rollback strategy for a microservices deployment where Service A v2 introduces a breaking API change consumed by Services B and C. All three services must be updated.\n\nStep 1: Identify the deployment ordering constraint.\nStep 2: Design the rollback safety mechanism.\nStep 3: Select the correct strategy.\n\nWhich deployment and rollback strategy is safest?",
+      "choices": {
+        "A": "Use API versioning: Deploy Service A v2 with both v1 and v2 endpoints active. Deploy Services B and C updated to use v2 endpoints behind feature flags. Gradually enable v2 consumption. If issues arise, disable feature flags (instant rollback to v1 endpoints). After validation, deprecate v1 endpoints. Each service can be rolled back independently.",
+        "B": "Deploy B and C first (they will error on the v1 API) then deploy A",
+        "C": "Deploy Service A v2 first, then immediately update B and C",
+        "D": "Deploy all three simultaneously and roll back all three if anything fails"
+      },
+      "answer": "A",
+      "explanation": "API versioning with parallel endpoints eliminates the coordination problem: Service A serves both versions simultaneously, consumers switch via feature flags. Rollback is instant (flag toggle). No service depends on a specific deployment order. This is the expand-contract (parallel change) pattern.",
+      "topic": "deployment_rollback_strategy",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO089",
+      "question": "You are reviewing a PR that introduces a new caching layer. The implementation uses an in-memory cache (dictionary) with no expiration, no size limit, and no cache invalidation strategy. The cache stores user profile objects.\n\nStep 1: Identify all issues with this implementation.\nStep 2: Assess the production risk of each issue.\nStep 3: Select the correct review feedback.\n\nWhich review feedback is most complete?",
+      "choices": {
+        "A": "Reject and ask them to use Redis instead, without explaining why",
+        "B": "Approve the PR since the tests pass",
+        "C": "Request adding a TTL and approve",
+        "D": "Request changes addressing: (1) Memory leak risk: unbounded cache will grow until OOM in production (Critical). (2) Stale data: no invalidation means profile updates are invisible to cached sessions (High). (3) No TTL: cache entries persist for the process lifetime (High). (4) Thread safety: Python dict is not thread-safe for concurrent writes under multi-threaded servers (Medium). Recommend using an established caching library (cachetools, Redis) with TTL, LRU eviction, and invalidation hooks."
+      },
+      "answer": "D",
+      "explanation": "The review identifies four distinct issues with severity levels: OOM risk (unbounded growth), staleness (no invalidation), persistence (no TTL), and concurrency (thread safety). Recommending an established library addresses all issues systematically rather than patching them individually.",
+      "topic": "code_review_analysis",
+      "topic_category": "code_review",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO090",
+      "question": "A development team of 8 is experiencing these symptoms:\n- PRs average 5 days from open to merge\n- 30% of builds fail on the main branch\n- Developers report spending 40% of their time on code reviews\n- Deployment frequency has dropped from daily to weekly\n\nStep 1: Identify the root causes (not just symptoms).\nStep 2: Determine which interventions have the highest leverage.\nStep 3: Select the correct improvement plan.\n\nWhich plan addresses the root causes?",
+      "choices": {
+        "A": "Skip code review entirely to speed up merges",
+        "B": "Hire more developers to increase capacity",
+        "C": "Reduce the team to 4 developers to simplify coordination",
+        "D": "Root causes: PRs are too large (causing long reviews and frequent merge conflicts), insufficient pre-merge validation (causing main branch failures), and review bottlenecks (causing the 5-day cycle). Interventions: (1) Enforce PR size limits (<400 lines) to reduce review time and conflict probability. (2) Require CI pass before review (pre-merge validation eliminates 30% main branch failures). (3) Implement automated style/lint checks to reduce review scope. (4) Set 4-hour first-response SLA with review rotation. Expected outcome: PR cycle drops to 1-2 days, main branch stays green, deployment returns to daily."
+      },
+      "answer": "D",
+      "explanation": "The symptoms form a reinforcing cycle: large PRs take long to review, stale PRs cause merge conflicts, conflicts cause build failures, failures cause deployment hesitancy. Breaking the cycle requires smaller PRs (faster reviews, fewer conflicts), pre-merge CI (green main branch), and review SLAs (faster cycles).",
+      "topic": "development_process_optimization",
+      "topic_category": "code_review",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO091",
+      "question": "You need to design a secrets rotation strategy for a production system that uses:\n- Database credentials (PostgreSQL)\n- API keys for 3 third-party services\n- TLS certificates for inter-service mTLS\n- JWT signing keys for user authentication\n\nStep 1: Classify each secret by rotation complexity and risk.\nStep 2: Design the rotation mechanism for each category.\nStep 3: Select the correct strategy.\n\nWhich strategy is correct?",
+      "choices": {
+        "A": "Rotate all secrets daily using a cron job",
+        "B": "Rotate all secrets on the same schedule for simplicity",
+        "C": "Never rotate secrets because rotation causes outages",
+        "D": "Database credentials: Rotate every 90 days via Vault dynamic secrets (short-lived, auto-generated). Third-party API keys: Rotate every 180 days with dual-key overlap period (old key valid for 24h after new key activation). TLS certificates: Auto-renew via cert-manager with 30-day validity and 7-day renewal window. JWT signing keys: Rotate every 30 days with JWKS endpoint listing both old and new keys, allowing gradual token expiration. Each type has different risk profiles and requires different overlap strategies."
+      },
+      "answer": "D",
+      "explanation": "Each secret type has different rotation complexity: DB credentials can use dynamic short-lived secrets (Vault), API keys need overlap periods for third-party propagation, TLS uses automated cert management, and JWT keys need JWKS overlap for in-flight tokens. One-size-fits-all rotation ignores these differences.",
+      "topic": "secrets_rotation_strategy",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO092",
+      "question": "Your team operates 12 microservices on Kubernetes. Observability is minimal: basic health checks and stdout logs. A production incident takes 4 hours to diagnose because there is no way to trace a request across services.\n\nStep 1: Identify the three pillars of observability needed.\nStep 2: Design the implementation approach.\nStep 3: Select the correct observability stack.\n\nWhich approach provides the most diagnostic value?",
+      "choices": {
+        "A": "Add request ID headers and search logs manually",
+        "B": "Install an APM tool on the 3 most critical services only",
+        "C": "Implement all three observability pillars: (1) Distributed tracing (OpenTelemetry + Jaeger/Tempo) with trace context propagation across all 12 services to follow requests end-to-end. (2) Structured logging (JSON format) with trace ID correlation, shipped to a centralized log aggregator (Loki/ELK). (3) Metrics (Prometheus + Grafana) for latency histograms, error rates, and saturation per service. Use OpenTelemetry as the unified instrumentation layer to minimize per-service integration effort.",
+        "D": "Add more log statements to each service"
+      },
+      "answer": "C",
+      "explanation": "The three observability pillars (traces, logs, metrics) provide complementary views: traces show request flow across services, logs provide detail at each service, metrics show system-wide health. OpenTelemetry unifies instrumentation. Trace ID correlation links all three for any specific request.",
+      "topic": "observability_design",
+      "topic_category": "cloud",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO093",
+      "question": "A developer proposes using Go for a new CRUD API service. The existing system is 100% Python. The team of 6 has no Go experience. The service has no special performance requirements.\n\nStep 1: Evaluate the technical merit of the proposal.\nStep 2: Assess the organizational impact.\nStep 3: Select the correct decision.\n\nWhat is the right call?",
+      "choices": {
+        "A": "Let the developer use Go but isolate them from the rest of the team",
+        "B": "Approve Go to diversify the technology stack",
+        "C": "Approve Go because it will make the service faster",
+        "D": "Decline Go for this service. The proposal lacks technical justification (no performance requirement Go would uniquely serve). Introducing a new language requires: training investment for 6 developers, separate CI/CD tooling, split operational expertise, and increased on-call complexity. The organizational cost exceeds the benefit. Revisit Go when a genuine performance or concurrency need arises that Python cannot serve."
+      },
+      "answer": "D",
+      "explanation": "Technology diversification must be justified by genuine technical need. A CRUD API with no performance requirements does not need Go. The hidden costs (training, tooling, operational split) for a 6-person team are significant. A good coordinator prevents resume-driven development while keeping the door open for justified future use.",
+      "topic": "technology_selection_governance",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO094",
+      "question": "You are designing a feature flag system for a team doing trunk-based development. Requirements:\n- Support boolean, percentage-based, and user-segment flags\n- Flags must be evaluable in <1ms\n- Flag changes must propagate to all instances within 30 seconds\n- Audit log of all flag changes\n- Stale flags (unused for 30+ days) should be automatically identified\n\nStep 1: Choose between build-your-own and third-party.\nStep 2: Design the propagation mechanism.\nStep 3: Select the correct architecture.\n\nWhich architecture meets all requirements?",
+      "choices": {
+        "A": "Store flags in a database and query on every request",
+        "B": "Use environment variables for all flags",
+        "C": "Hard-code flags with if/else statements and deploy to change them",
+        "D": "Use a feature flag service (LaunchDarkly, Unleash, or custom) with: local in-memory SDK cache for <1ms evaluation, SSE/WebSocket streaming from the flag service for <30s propagation, flag change events written to an audit log (append-only), and a background job that queries SDK analytics to identify flags with zero evaluations in 30+ days for cleanup. The SDK evaluates flags locally against cached rules without network calls per evaluation."
+      },
+      "answer": "D",
+      "explanation": "The <1ms latency requirement demands local evaluation (no network per-call). Streaming propagation meets the 30s requirement. Audit logging is a server-side concern. SDK analytics tracking evaluation counts enables automated stale flag detection. This is the standard architecture used by LaunchDarkly, Unleash, and similar systems.",
+      "topic": "feature_flag_architecture",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO095",
+      "question": "A production system is experiencing intermittent 500 errors. Logs show the errors correlate with high traffic periods. The system architecture:\n- Load balancer -> 3 API server instances -> PostgreSQL (single primary, 2 read replicas)\n- Connection pool: 20 connections per instance (60 total)\n- PostgreSQL max_connections: 100\n- Peak traffic: 3,000 requests/second\n- Average query time: 5ms, but some complex reports take 2 seconds\n\nStep 1: Calculate whether connection exhaustion is the root cause.\nStep 2: Identify all contributing factors.\nStep 3: Select the correct fix.\n\nWhich analysis and fix is correct?",
+      "choices": {
+        "A": "Increase PostgreSQL max_connections to 1000",
+        "B": "The issue is the load balancer; replace it with a DNS round-robin",
+        "C": "Add more API server instances to distribute the load",
+        "D": "At 3,000 req/s with 5ms average query time, each connection handles ~200 req/s, so 60 connections handle ~12,000 req/s (sufficient). However, 2-second report queries occupy connections 400x longer than normal queries. A few concurrent reports exhaust the pool. Fix: Separate connection pools for transactional (fast) and analytical (slow) queries. Route reports to read replicas. Add connection pool monitoring. Set query timeout for the transactional pool at 500ms. This prevents slow queries from starving fast ones."
+      },
+      "answer": "D",
+      "explanation": "The math shows normal queries have ample pool capacity. The 2-second report queries are the problem: they hold connections 400x longer, causing pool exhaustion during peaks. Separate pools isolate the blast radius. Routing reports to read replicas reduces primary load. This is the classic mixed-workload connection pool starvation pattern.",
+      "topic": "performance_diagnosis",
+      "topic_category": "cross_language",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO096",
+      "question": "Your organization wants to implement a developer platform (Internal Developer Platform / IDP). The current state:\n- 25 microservices, 4 teams, 3 languages (Python, Go, TypeScript)\n- Each team has its own CI/CD pipeline configuration\n- Onboarding a new service takes 2 weeks\n- No standardized observability or deployment patterns\n\nStep 1: Identify the highest-value IDP capabilities to build first.\nStep 2: Determine the build-vs-buy decision.\nStep 3: Select the correct IDP strategy.\n\nWhich strategy provides the most leverage?",
+      "choices": {
+        "A": "Buy a commercial PaaS like Heroku and mandate all teams use it",
+        "B": "Build a custom platform from scratch with all features",
+        "C": "Phase 1 (Golden paths): Create standardized service templates per language (Python, Go, TypeScript) with built-in CI/CD, observability, and deployment configs. Use Backstage as the service catalog and scaffolding tool. Phase 2 (Self-service): Environment provisioning via Terraform modules triggered by PR-based workflow. Phase 3 (Guardrails): Automated compliance checks, security scanning, and cost governance integrated into the golden paths. Target: reduce new service onboarding from 2 weeks to 2 hours.",
+        "D": "Standardize on a single language to simplify the platform"
+      },
+      "answer": "C",
+      "explanation": "The phased approach builds the highest-leverage capability first (golden paths for service templates), then adds self-service, then governance. Backstage provides the catalog/scaffolding layer. This reduces onboarding from 2 weeks to hours while preserving polyglot flexibility. A full custom build is too expensive; mandating one language is too disruptive.",
+      "topic": "developer_platform_design",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO097",
+      "question": "You must coordinate a database migration from MySQL to PostgreSQL for a live production system serving 5,000 transactions per minute. The database has 50 tables, 200GB of data, and the application cannot have more than 5 minutes of downtime.\n\nStep 1: Design the migration approach that meets the downtime constraint.\nStep 2: Identify the validation strategy.\nStep 3: Select the correct migration plan.\n\nWhich plan meets the 5-minute downtime constraint?",
+      "choices": {
+        "A": "Migrate one table at a time over several months",
+        "B": "Use an ORM abstraction layer so the database does not matter",
+        "C": "Phase 1 (Weeks before): Set up continuous replication from MySQL to PostgreSQL using a CDC tool (Debezium/pgloader). Validate data parity with checksums on both databases. Phase 2 (Pre-cutover): Run the application in dual-write mode, verifying PostgreSQL handles production queries correctly. Phase 3 (Cutover, <5 min): Stop writes, verify final replication sync, switch application connection strings to PostgreSQL, resume writes. Rollback plan: keep MySQL replication running in reverse for 48 hours post-cutover.",
+        "D": "Stop the application, dump MySQL, import to PostgreSQL, start the application"
+      },
+      "answer": "C",
+      "explanation": "CDC-based continuous replication keeps PostgreSQL synchronized before cutover, minimizing the actual switch time to just final sync + connection string change (<5 min). Dual-write validation proves PostgreSQL handles real queries. Reverse replication provides a rollback path. This is the standard approach for live database migrations.",
+      "topic": "database_migration_strategy",
+      "topic_category": "cross_language",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO098",
+      "question": "You are coordinating an incident response for a production outage. Timeline:\n- T+0: Monitoring alerts fire (5xx error rate >10%)\n- T+5 min: On-call engineer identifies the failing service\n- T+15 min: Root cause identified (bad database migration in latest deploy)\n- T+20 min: Engineer proposes two options: (A) rollback the deployment, or (B) apply a forward-fix hotfix\n\nThe bad migration added a NOT NULL column without a default value to a table with 10 million rows. The deployment also includes 3 other critical bug fixes that customers are waiting for.\n\nStep 1: Evaluate the rollback vs forward-fix tradeoffs.\nStep 2: Assess the time-to-resolution for each option.\nStep 3: Select the correct incident response.\n\nWhich response is correct?",
+      "choices": {
+        "A": "Rollback the deployment immediately. Reason: Rolling back is deterministic and fast (~2 min for deployment revert + migration down). Forward-fixing requires writing, testing, and deploying new code under pressure, which introduces additional risk. The 3 bug fixes can be re-deployed after the migration is fixed properly. After rollback, fix the migration (add default value or make nullable), test it, and redeploy the full release. Post-incident: add migration safety checks to CI.",
+        "B": "Leave the system broken while investigating more options",
+        "C": "Forward-fix by adding a default value to the column in production",
+        "D": "Always rollback; never forward-fix during incidents"
+      },
+      "answer": "A",
+      "explanation": "During an active outage, the primary goal is restoring service. Rollback is deterministic and tested (migration down scripts exist). Forward-fixing under pressure risks compounding the incident. The bug fixes can wait hours; the outage cannot. The post-incident action (migration safety checks) prevents recurrence.",
+      "topic": "incident_response_coordination",
+      "topic_category": "priority",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO099",
+      "question": "You discover that your CI pipeline has become a security liability:\n- Build artifacts are stored on a shared NFS mount accessible to all developers\n- The CI service account has admin privileges on the production Kubernetes cluster\n- Pipeline secrets are stored in plaintext in the CI configuration repository\n- Third-party CI plugins have not been audited or version-pinned\n- Build logs containing environment variables are publicly accessible within the org\n\nStep 1: Rank these vulnerabilities by exploitability and blast radius.\nStep 2: Design the remediation sequence.\nStep 3: Select the correct plan.\n\nWhich plan addresses the vulnerabilities in the correct priority order?",
+      "choices": {
+        "A": "Only fix the plaintext secrets; the others are acceptable risks",
+        "B": "Priority 1 (Critical, immediate): Move secrets to a vault and rotate all exposed credentials (plaintext secrets in repo = already compromised assumption). Restrict CI service account to namespace-scoped RBAC (admin on prod K8s = cluster takeover risk). Priority 2 (High, this week): Restrict build log visibility and scrub environment variables from output. Migrate artifacts to an authenticated registry with RBAC. Priority 3 (Medium, this sprint): Audit and pin all third-party CI plugins, add plugin allowlisting.",
+        "C": "Fix them alphabetically by description",
+        "D": "Replace the entire CI system with a new provider"
+      },
+      "answer": "B",
+      "explanation": "Plaintext secrets in a repo means any repo reader has production credentials (treat as compromised, rotate immediately). CI admin on prod K8s means a CI compromise = full cluster control. These are the highest blast radius. Log exposure and artifact access are high but narrower. Plugin auditing is important but lower urgency.",
+      "topic": "ci_pipeline_security_audit",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CO100",
+      "question": "You are coordinating the development of a new payment processing system. The team consists of:\n- Dev A: Senior Python/Django, 8 years experience, strong on security\n- Dev B: Mid-level React/TypeScript, 3 years experience, fast UI development\n- Dev C: Senior Go, 6 years experience, strong on distributed systems\n- Dev D: Junior full-stack, 1 year experience, eager but needs mentoring\n\nThe system requires: PCI-DSS compliant payment API, real-time transaction processing pipeline, admin dashboard, and webhook notification service. Timeline: 8 weeks.\n\nStep 1: Decompose the system into work packages.\nStep 2: Map work packages to developers based on expertise, security requirements, and mentoring opportunities.\nStep 3: Select the correct plan.\n\nWhich plan maximizes quality, security, and team development?",
+      "choices": {
+        "A": "Assign everyone to pair program on the payment API first, then move to the next component",
+        "B": "Dev A: Payment API (Python/Django) \u00e2\u20ac\u201d PCI-DSS compliance requires their security expertise. Dev C: Transaction processing pipeline (Go) \u00e2\u20ac\u201d high-throughput, distributed systems work matches their strengths. Dev B: Admin dashboard (React) \u00e2\u20ac\u201d fast UI velocity. Dev D: Webhook notification service with Dev A as mentor \u00e2\u20ac\u201d isolated, well-defined scope suitable for junior developer with security oversight. Cross-cutting: Dev A reviews all security-sensitive PRs across all components. Dev C reviews Dev D's service architecture.",
+        "C": "Let Dev D choose their preferred component to maximize engagement",
+        "D": "Dev A handles the entire payment API alone since security is critical"
+      },
+      "answer": "B",
+      "explanation": "This plan routes security-critical work to the security expert (Dev A), distributed systems to the systems expert (Dev C), UI to the fast frontend developer (Dev B), and gives the junior developer an isolated, well-scoped component with senior mentorship. Cross-cutting security review ensures all components meet PCI-DSS. Dev D grows without risking critical path.",
+      "topic": "comprehensive_task_routing",
+      "topic_category": "task_routing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

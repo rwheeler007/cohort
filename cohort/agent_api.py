@@ -80,21 +80,28 @@ _API_KEYS: dict[str, str] = {}
 _request_counts: dict[str, list[float]] = {}
 READ_RATE_LIMIT = 120  # max reads per minute per key
 
-# Free-tier agent IDs (13 core agents that ship open source)
+# Free-tier agent IDs (15 agents: full dev team + content/growth stack)
 FREE_TIER_AGENTS: set[str] = {
+    # Core developers
     "python_developer",
     "web_developer",
     "javascript_developer",
     "system_coder",
     "database_developer",
+    "cpp_developer",
+    # Quality & security
     "qa_agent",
     "security_agent",
-    "documentation_agent",
-    "cpp_developer",
+    # DevOps & analysis
+    "devops_agent",
+    "code_archaeologist",
+    # Coordination & docs
     "coding_orchestrator",
-    "monolith_breaker",
-    "project_manager_agent",
+    "documentation_agent",
+    # Content & growth
     "marketing_agent",
+    "content_strategy_agent",
+    "analytics_agent",
 }
 
 # Enterprise-only agents (factory layer -- not visible to free or pro)
@@ -435,7 +442,7 @@ async def get_tiers():
         tiers=[
             TierInfo(
                 tier="free",
-                description="Core development agents -- orchestration engine, 12 dev agents, full UI",
+                description="Full AI development team -- 15 agents, orchestration engine, content pipeline, full UI",
                 agents=free_agents,
                 agent_count=len(free_agents),
             ),

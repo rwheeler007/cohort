@@ -1,0 +1,1613 @@
+{
+  "agent_id": "documentation_agent",
+  "source": "Technical writing & documentation engineering (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "DOC001",
+      "question": "When writing a setup guide for a REST API client library, which approach most effectively serves developers who want to get started quickly?",
+      "choices": {
+        "A": "Provide a comprehensive reference of all configuration options before any code examples",
+        "B": "Start with a minimal working code example that makes a real API call, then progressively introduce configuration options",
+        "C": "List all prerequisites in alphabetical order followed by a complete architecture diagram",
+        "D": "Begin with the library's internal architecture so developers understand the design before using it"
+      },
+      "answer": "B",
+      "explanation": "Task-based writing with progressive disclosure serves developers best. A minimal working example lets them verify their setup immediately, and layering in complexity afterward matches the natural learning curve.",
+      "topic": "task_based_writing",
+      "topic_category": "writing_craft",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC002",
+      "question": "A Flesch-Kincaid Grade Level score of 8.2 for API documentation aimed at professional software engineers indicates what?",
+      "choices": {
+        "A": "The documentation is too complex and needs simplification",
+        "B": "The reading level is appropriate for technical documentation, which typically targets grades 7-10 for clarity",
+        "C": "The reading level is appropriate since professional documentation should target grade 12+",
+        "D": "The score is meaningless for technical content because it cannot account for domain-specific terminology"
+      },
+      "answer": "B",
+      "explanation": "Even for expert audiences, technical documentation benefits from clear, accessible prose. A Flesch-Kincaid grade level of 7-10 is considered optimal for technical docs because it keeps the cognitive load on the concepts, not the sentence structure.",
+      "topic": "readability_metrics",
+      "topic_category": "writing_craft",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC003",
+      "question": "Which sentence best demonstrates concise technical writing?",
+      "choices": {
+        "A": "In order to configure the application, you should make changes to the configuration file that is located in the root directory.",
+        "B": "The configuration file, which can be found in the root directory, needs to be edited by you to configure the application.",
+        "C": "It is necessary that the configuration file in the root directory be modified for the purpose of configuring the application.",
+        "D": "To configure the application, edit `config.yaml` in the root directory."
+      },
+      "answer": "D",
+      "explanation": "Option C eliminates filler phrases ('in order to,' 'it is necessary'), uses active voice with an imperative verb ('edit'), and names the specific file. This follows the principle of maximum information in minimum words.",
+      "topic": "conciseness",
+      "topic_category": "writing_craft",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC004",
+      "question": "In the OpenAPI 3.0 specification, what is the correct way to define a reusable schema for a 'User' object that multiple endpoints reference?",
+      "choices": {
+        "A": "Define it under `components.schemas.User` and reference it with `$ref: '#/components/schemas/User'`",
+        "B": "Define it under `definitions.User` at the root level",
+        "C": "Define it under `paths.schemas.User`",
+        "D": "Define it inline in every endpoint that uses it"
+      },
+      "answer": "A",
+      "explanation": "OpenAPI 3.x uses the `components` object for reusable definitions. `components.schemas` holds data models, referenced via `$ref`. The `definitions` keyword was used in Swagger 2.0, not OpenAPI 3.x.",
+      "topic": "openapi_components",
+      "topic_category": "api_docs",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC005",
+      "question": "What is the primary advantage of using a static site generator like MkDocs Material for documentation over a traditional CMS?",
+      "choices": {
+        "A": "Static site generators provide built-in user authentication and role-based access",
+        "B": "Static site generators automatically translate content into multiple languages",
+        "C": "Documentation lives in version-controlled Markdown files alongside code, enabling pull request reviews and CI/CD pipelines",
+        "D": "A CMS always requires a database server, making it impossible to host on CDNs"
+      },
+      "answer": "C",
+      "explanation": "The docs-as-code approach stores documentation as Markdown in Git repositories, enabling the same review, branching, and CI/CD workflows used for source code. This is the core value proposition of static site generators for documentation.",
+      "topic": "static_site_generators",
+      "topic_category": "docs_as_code",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC006",
+      "question": "When organizing a knowledge base with 200+ articles, which navigation pattern most effectively helps users find content?",
+      "choices": {
+        "A": "A single alphabetical list of all articles",
+        "B": "A flat list sorted by creation date with pagination",
+        "C": "A faceted navigation combining category hierarchy, tags, and full-text search",
+        "D": "A single search bar with no browsable navigation structure"
+      },
+      "answer": "C",
+      "explanation": "Faceted navigation supports multiple information-seeking behaviors: browsing (category hierarchy), exploratory search (tags), and known-item search (full-text). This combination serves users regardless of whether they know exactly what they are looking for.",
+      "topic": "navigation_patterns",
+      "topic_category": "information_architecture",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC007",
+      "question": "According to the Google developer documentation style guide, which sentence correctly uses the recommended voice?",
+      "choices": {
+        "A": "The system deletes the file when the process completes.",
+        "B": "It should be noted that the file will be deleted.",
+        "C": "The file is deleted by the system when the process completes.",
+        "D": "One must ensure that file deletion occurs upon process completion."
+      },
+      "answer": "A",
+      "explanation": "The Google developer documentation style guide recommends active voice ('the system deletes') over passive voice ('is deleted by'), impersonal constructions ('it should be noted'), or overly formal phrasing ('one must ensure').",
+      "topic": "voice_and_tone",
+      "topic_category": "style_guides",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC008",
+      "question": "Which Mermaid diagram type is most appropriate for documenting an OAuth 2.0 authorization code flow?",
+      "choices": {
+        "A": "Flowchart (graph TD)",
+        "B": "Class diagram (classDiagram)",
+        "C": "Sequence diagram (sequenceDiagram)",
+        "D": "Entity-relationship diagram (erDiagram)"
+      },
+      "answer": "C",
+      "explanation": "OAuth 2.0 flows involve multiple actors (client, authorization server, resource server) exchanging messages in a specific order. Sequence diagrams are designed to show interactions between participants over time, making them the natural fit.",
+      "topic": "mermaid_diagram_types",
+      "topic_category": "diagramming",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC009",
+      "question": "In CommonMark-compliant Markdown, what happens when you write a line that starts with `#` followed immediately by text with no space (e.g., `#Heading`)?",
+      "choices": {
+        "A": "It is not recognized as a heading per the CommonMark spec, which requires a space after the `#` characters",
+        "B": "It renders as an H1 heading in all Markdown parsers",
+        "C": "It renders as an H1 heading but without the ability to link to it",
+        "D": "It renders as inline code"
+      },
+      "answer": "A",
+      "explanation": "The CommonMark specification requires at least one space between the `#` characters and the heading text. Without the space, the line is treated as a paragraph, not a heading. Some non-compliant parsers may still render it as a heading, but this is not standard behavior.",
+      "topic": "commonmark_spec",
+      "topic_category": "markdown",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC010",
+      "question": "When preparing documentation for localization, which practice most effectively reduces translation costs and errors?",
+      "choices": {
+        "A": "Use idiomatic expressions and cultural references to make the source text engaging",
+        "B": "Write all documentation in the target language first and back-translate to English",
+        "C": "Translate documentation using only machine translation to minimize costs",
+        "D": "Write in a controlled language with short sentences, consistent terminology, and no idioms or slang"
+      },
+      "answer": "D",
+      "explanation": "Controlled language (consistent terminology, simple sentence structures, no idioms) dramatically reduces translation ambiguity, improves machine translation quality, and ensures consistency across locales. This is the foundation of internationalization-ready content.",
+      "topic": "i18n_workflow",
+      "topic_category": "localization",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC011",
+      "question": "What is the most important consideration when writing alt text for a technical architecture diagram?",
+      "choices": {
+        "A": "Describe every visual element including colors, line weights, and exact positioning",
+        "B": "Simply write 'Architecture diagram' as a brief label",
+        "C": "Convey the relationships and data flow between components that the diagram communicates, not just its visual appearance",
+        "D": "Omit alt text entirely and provide a link to a text-only version of the page"
+      },
+      "answer": "C",
+      "explanation": "Effective alt text for technical diagrams communicates the information the diagram conveys (component relationships, data flows, dependencies), not a pixel-by-pixel description. The goal is functional equivalence for users who cannot see the image.",
+      "topic": "alt_text_for_diagrams",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC012",
+      "question": "Which metric most directly measures whether documentation is helping users accomplish their goals?",
+      "choices": {
+        "A": "Task completion rate measured through user testing or funnel analysis",
+        "B": "Total page views per month",
+        "C": "Average time on page",
+        "D": "Number of documentation pages published"
+      },
+      "answer": "A",
+      "explanation": "Task completion rate directly measures documentation effectiveness: can users accomplish what they came to do? Page views and time on page are ambiguous (high time could mean engagement or confusion), and page count measures volume, not quality.",
+      "topic": "documentation_quality_metrics",
+      "topic_category": "metrics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC013",
+      "question": "When documenting a procedure with 12 steps, what is the recommended approach to maintain clarity?",
+      "choices": {
+        "A": "Present all 12 steps in a single numbered list without breaks",
+        "B": "Convert all steps to a paragraph narrative to improve readability",
+        "C": "Group the steps into logical phases with subheadings, keeping each phase under 7 steps",
+        "D": "Randomly split the steps into two equal pages for brevity"
+      },
+      "answer": "C",
+      "explanation": "Chunking long procedures into logical phases with descriptive subheadings reduces cognitive load and helps users track their progress. The 7-item guideline aligns with working memory capacity research and improves scanability.",
+      "topic": "procedural_writing",
+      "topic_category": "writing_craft",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC014",
+      "question": "In the OpenAPI 3.0 specification, which field is used to describe authentication requirements for an API endpoint?",
+      "choices": {
+        "A": "`auth` at the operation level",
+        "B": "`authentication` under the `servers` object",
+        "C": "`security` at the operation level, referencing schemes defined in `components.securitySchemes`",
+        "D": "`headers.Authorization` in the `parameters` array"
+      },
+      "answer": "C",
+      "explanation": "OpenAPI 3.x uses the `security` field (at operation or root level) that references named security schemes defined in `components.securitySchemes`. This separates the scheme definition (e.g., OAuth2, API key) from its application to specific operations.",
+      "topic": "openapi_security_schemes",
+      "topic_category": "api_docs",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC015",
+      "question": "What is the primary purpose of a documentation linter like Vale?",
+      "choices": {
+        "A": "To check Markdown syntax and render preview pages",
+        "B": "To automatically translate documentation into multiple languages",
+        "C": "To enforce prose style rules (terminology, voice, readability) through configurable rulesets aligned to style guides",
+        "D": "To generate API documentation from source code annotations"
+      },
+      "answer": "C",
+      "explanation": "Vale is a prose linter that enforces editorial style rules defined in YAML packages. It can check for Google/Microsoft style guide compliance, banned words, passive voice, readability thresholds, and custom terminology -- integrating style enforcement into CI/CD.",
+      "topic": "docs_linting",
+      "topic_category": "docs_as_code",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC016",
+      "question": "Which content type classification correctly distinguishes between the three fundamental documentation types?",
+      "choices": {
+        "A": "Tutorials are task-oriented, how-to guides are learning-oriented, reference is information-oriented",
+        "B": "Tutorials are learning-oriented, how-to guides are task-oriented, reference is information-oriented",
+        "C": "Tutorials are reference-oriented, how-to guides are learning-oriented, reference is task-oriented",
+        "D": "All three types serve the same purpose and differ only in length"
+      },
+      "answer": "B",
+      "explanation": "Following the Diataxis framework: tutorials guide learning through structured lessons, how-to guides help users accomplish specific tasks, and reference provides comprehensive information about the system. Each serves a different user need and mindset.",
+      "topic": "content_types",
+      "topic_category": "information_architecture",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC017",
+      "question": "The Microsoft Writing Style Guide recommends which approach for addressing the reader?",
+      "choices": {
+        "A": "Use third person ('the user') consistently throughout all documentation",
+        "B": "Use second person ('you') to address the reader directly",
+        "C": "Alternate between first person ('we') and third person ('the developer')",
+        "D": "Avoid pronouns entirely and use passive constructions"
+      },
+      "answer": "B",
+      "explanation": "The Microsoft Writing Style Guide recommends second person ('you') for addressing the reader, as it creates a direct, conversational tone that makes instructions clearer and more engaging. This aligns with most modern technical writing style guides.",
+      "topic": "voice_and_tone",
+      "topic_category": "style_guides",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC018",
+      "question": "What is the purpose of frontmatter in a Markdown documentation file?",
+      "choices": {
+        "A": "To define CSS styles that apply only to that page",
+        "B": "To specify which Markdown parser to use for the file",
+        "C": "To include JavaScript code that executes when the page loads",
+        "D": "To provide structured metadata (title, description, tags, sidebar position) used by the static site generator for rendering and navigation"
+      },
+      "answer": "D",
+      "explanation": "Frontmatter (typically YAML between `---` delimiters) provides metadata that static site generators use for page titles, descriptions, sidebar ordering, tags, and other rendering decisions. It separates content metadata from content body.",
+      "topic": "frontmatter",
+      "topic_category": "markdown",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC019",
+      "question": "When documenting error codes for a REST API, which approach provides the most useful information to developers?",
+      "choices": {
+        "A": "List only the HTTP status code and a generic message",
+        "B": "Document only 200 OK responses since errors are self-explanatory",
+        "C": "Include only a link to the HTTP specification for each status code",
+        "D": "Provide the status code, a machine-readable error code, a human-readable message, a description of common causes, and suggested resolution steps"
+      },
+      "answer": "D",
+      "explanation": "Comprehensive error documentation with machine-readable codes, human messages, causes, and resolution steps enables developers to handle errors programmatically and debug issues efficiently. This follows the principle that error paths deserve as much documentation as happy paths.",
+      "topic": "error_documentation",
+      "topic_category": "api_docs",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC020",
+      "question": "Which heading structure correctly follows accessibility and SEO best practices for a documentation page?",
+      "choices": {
+        "A": "Use H1 for the page title, then skip to H3 for visual variety",
+        "B": "Use H1 for the page title, H2 for major sections, H3 for subsections, never skipping levels",
+        "C": "Use bold text instead of heading elements for all section titles",
+        "D": "Use H1 for every section heading to maximize SEO impact"
+      },
+      "answer": "B",
+      "explanation": "Sequential heading hierarchy (H1 > H2 > H3, no skipped levels) is required for screen reader navigation and creates a logical document outline. Skipping levels breaks the accessibility tree, and multiple H1s dilute document structure for both users and search engines.",
+      "topic": "heading_hierarchy",
+      "topic_category": "accessibility",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "DOC021",
+      "question": "You are writing a conceptual overview for a microservices architecture. The document needs to serve both architects evaluating the design and developers implementing individual services. How should you structure it?",
+      "choices": {
+        "A": "Write a single document targeting architects and link to separate implementation guides for developers",
+        "B": "Use progressive disclosure: start with a high-level system diagram and summary for architects, then drill into service-level details with implementation links for developers",
+        "C": "Write two completely separate documents with no cross-references",
+        "D": "Include all implementation details inline so architects can see the full picture"
+      },
+      "answer": "B",
+      "explanation": "Progressive disclosure serves multiple audiences in a single document by layering information from general to specific. Architects get the overview they need at the top, while developers can drill deeper. This avoids content duplication while serving both information needs.",
+      "topic": "progressive_disclosure",
+      "topic_category": "writing_craft",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC022",
+      "question": "In an OpenAPI 3.0 specification, you need to define an endpoint that accepts either a `CreditCard` or `BankAccount` payment method. Which construct correctly models this?",
+      "choices": {
+        "A": "`oneOf` with a `discriminator` property that maps a `paymentType` field to the correct schema",
+        "B": "`allOf` combining CreditCard and BankAccount schemas",
+        "C": "`anyOf` without a discriminator, letting the client send any combination of fields",
+        "D": "A single schema with all fields from both types marked as optional"
+      },
+      "answer": "A",
+      "explanation": "`oneOf` with a discriminator is the correct way to model exclusive polymorphism in OpenAPI 3.x. The discriminator maps a property value to a specific schema, enabling code generators to produce proper union types and validators to enforce exactly one schema match.",
+      "topic": "openapi_polymorphism",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC023",
+      "question": "Your MkDocs Material documentation site needs to support versioned docs for a library with v1.x, v2.x, and v3.x all in active use. Which approach is recommended?",
+      "choices": {
+        "A": "Maintain a single docs folder and use conditional content blocks with Jinja macros for version differences",
+        "B": "Use mike (MkDocs version provider) to deploy separate versioned builds with a version selector dropdown, each version in its own Git branch or tagged commit",
+        "C": "Create three separate MkDocs projects with independent configurations and no shared content",
+        "D": "Put all three versions in tabs on every page"
+      },
+      "answer": "B",
+      "explanation": "Mike is the standard versioning tool for MkDocs Material. It deploys independent builds from Git branches/tags to subdirectories, adds a version selector, and manages aliases (e.g., 'latest'). This gives each version a complete, self-consistent documentation set.",
+      "topic": "versioned_docs",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC024",
+      "question": "When designing a taxonomy for a knowledge base covering 500+ articles across a SaaS platform, what is the maximum recommended depth for a category hierarchy?",
+      "choices": {
+        "A": "1 level (flat tags only)",
+        "B": "Unlimited depth with auto-generated breadcrumbs",
+        "C": "5-7 levels deep to ensure precise categorization",
+        "D": "2-3 levels deep, supplemented by cross-cutting tags for secondary classification"
+      },
+      "answer": "D",
+      "explanation": "Research in information architecture shows that hierarchies beyond 3 levels deep create navigation friction and increase the chance of misclassification. A 2-3 level hierarchy combined with cross-cutting tags (faceted classification) provides both structure and flexibility.",
+      "topic": "taxonomy_design",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC025",
+      "question": "A style guide mandates 'bias-free language.' A developer has written: 'When the user logs in, he can access his dashboard.' What is the correct revision following modern style guide recommendations?",
+      "choices": {
+        "A": "When the user logs in, he or she can access his or her dashboard.",
+        "B": "When logging in, access the dashboard.",
+        "C": "When the user logs in, the user can access the user's dashboard.",
+        "D": "When users log in, they can access their dashboards."
+      },
+      "answer": "D",
+      "explanation": "Both Google and Microsoft style guides recommend using plural 'they/their' or restructuring sentences to avoid gendered pronouns. Pluralizing ('users... they... their') reads naturally and is more inclusive than 'he or she' constructions or awkward noun repetition.",
+      "topic": "bias_free_language",
+      "topic_category": "style_guides",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC026",
+      "question": "In a Mermaid sequence diagram, how do you correctly represent an asynchronous message followed by a response?",
+      "choices": {
+        "A": "`Client->>Server: Request` (solid arrow) then `Server-->>Client: Response` (dashed arrow)",
+        "B": "`Client--)Server: Request` (open arrowhead for async) then `Server-->>Client: Response`",
+        "C": "`Client->Server: Request` then `Server->Client: Response`",
+        "D": "`Client..>Server: Request` then `Server..>Client: Response`"
+      },
+      "answer": "B",
+      "explanation": "In Mermaid sequence diagram syntax, `-->>` is a dashed line with arrowhead (return/response), `->>` is a solid line with arrowhead (synchronous), and `--)`  is a dashed line with open arrowhead (asynchronous). The `--)` open arrowhead specifically denotes an async message.",
+      "topic": "mermaid_sequence_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC027",
+      "question": "What is the key difference between GitHub Flavored Markdown (GFM) and CommonMark regarding table support?",
+      "choices": {
+        "A": "CommonMark natively supports tables; GFM does not",
+        "B": "GFM removes features from CommonMark to simplify the syntax",
+        "C": "They are identical specifications maintained by the same organization",
+        "D": "GFM extends CommonMark with pipe table syntax, autolinks, strikethrough, and task lists that are not part of the CommonMark spec"
+      },
+      "answer": "D",
+      "explanation": "GFM is a superset of CommonMark that adds several extensions: pipe tables, autolinks, strikethrough (`~~text~~`), task lists, and disallowed raw HTML. CommonMark itself does not define table syntax, making tables a GFM-specific extension.",
+      "topic": "gfm_extensions",
+      "topic_category": "markdown",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC028",
+      "question": "When setting up a translation management system (TMS) for a docs-as-code workflow, what is the recommended approach for handling content that should not be translated?",
+      "choices": {
+        "A": "Manually tell translators to skip code blocks and file paths in every translation request",
+        "B": "Use inline `notranslate` markers or TMS segmentation rules to protect code blocks, variable names, CLI commands, and brand terms from translation",
+        "C": "Translate everything including code examples to maintain consistency",
+        "D": "Remove all code examples from translated versions"
+      },
+      "answer": "B",
+      "explanation": "Translation management systems support segmentation rules and 'do not translate' markers that protect code blocks, variables, commands, and brand terms. This prevents translators from accidentally modifying functional content while keeping the surrounding prose translatable.",
+      "topic": "translation_management",
+      "topic_category": "localization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC029",
+      "question": "You are setting up a CI/CD pipeline for documentation. Which combination of checks should run on every pull request to catch quality issues before merge?",
+      "choices": {
+        "A": "Spell check only",
+        "B": "Manual review by a technical writer with no automated checks",
+        "C": "Only verify the site builds successfully",
+        "D": "Markdown lint (markdownlint), prose lint (Vale), broken link check, and a build test to verify the site generates without errors"
+      },
+      "answer": "D",
+      "explanation": "A comprehensive docs CI pipeline combines structural checks (markdownlint for Markdown validity), editorial checks (Vale for style/terminology), referential integrity (broken link checking), and build verification. This catches the four most common documentation defects automatically.",
+      "topic": "ci_cd_for_docs",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC030",
+      "question": "In DITA (Darwin Information Typing Architecture), what is the primary advantage of topic-based authoring over book-based authoring?",
+      "choices": {
+        "A": "Topics render faster in web browsers than book chapters",
+        "B": "Self-contained topics can be assembled into multiple deliverables (guides, help systems, PDFs) through DITA maps, enabling single-sourcing and content reuse",
+        "C": "DITA topics automatically generate code examples from source code",
+        "D": "Topic-based authoring eliminates the need for an information architect"
+      },
+      "answer": "B",
+      "explanation": "DITA's topic-based model decouples content units from their delivery format. A single topic (concept, task, or reference) can appear in multiple DITA maps, enabling reuse across guides, help systems, and PDFs without content duplication.",
+      "topic": "topic_based_authoring",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC031",
+      "question": "When documenting an API that uses pagination, which information is essential to include for each paginated endpoint?",
+      "choices": {
+        "A": "The pagination strategy (offset, cursor, or keyset), parameters for controlling page size and position, response metadata (total count, next/previous links), and default/maximum page sizes",
+        "B": "Only the total count of results",
+        "C": "Only example requests showing the first page",
+        "D": "A disclaimer that pagination behavior may change without notice"
+      },
+      "answer": "A",
+      "explanation": "Complete pagination documentation covers the strategy used (which affects client implementation), control parameters, response metadata for navigation, and limits. Without these details, developers cannot implement robust pagination handling or predict API behavior at scale.",
+      "topic": "api_reference_structure",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC032",
+      "question": "A technical writer notices that the 'Troubleshooting' section of a deployment guide has the highest bounce rate on the documentation site. What does this most likely indicate?",
+      "choices": {
+        "A": "The troubleshooting content is so good that users solve their problem and leave satisfied",
+        "B": "Users are arriving from search engines with specific error messages, and the page either solves their problem (success) or fails to match their issue (failure) -- further analysis of search queries and feedback signals is needed to distinguish",
+        "C": "The page should be deleted because no one wants to read it",
+        "D": "The bounce rate metric is always unreliable for documentation sites"
+      },
+      "answer": "B",
+      "explanation": "High bounce rate on troubleshooting pages is ambiguous without additional signals. Users may bounce because they found the answer (success) or because it did not match their problem (failure). Correlating with search queries, feedback widgets, and time-on-page helps disambiguate.",
+      "topic": "analytics_for_docs",
+      "topic_category": "metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC033",
+      "question": "What is 'information scent' in the context of documentation UX, and why does it matter?",
+      "choices": {
+        "A": "A visual design pattern that uses color gradients to indicate content importance",
+        "B": "The search engine optimization score of documentation pages",
+        "C": "The cues (link labels, headings, descriptions) that help users predict whether following a path will lead to the information they need, directly affecting navigation success rates",
+        "D": "A metric measuring how many users bookmark a page for later reference"
+      },
+      "answer": "C",
+      "explanation": "Information scent, from Information Foraging Theory, describes how well navigation cues predict the content behind them. Strong scent (descriptive headings, clear link text) helps users make correct navigation choices; weak scent causes users to abandon or take wrong paths.",
+      "topic": "information_scent",
+      "topic_category": "writing_craft",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC034",
+      "question": "You need to document a webhook payload that includes nested objects with optional fields. In OpenAPI 3.0, how do you correctly indicate which fields are required vs optional in a nested schema?",
+      "choices": {
+        "A": "Add `optional: true` to each optional field",
+        "B": "Mark optional fields with a `?` suffix in the property name",
+        "C": "List required field names in the `required` array at each object level where they appear; unlisted properties are optional by default",
+        "D": "Use `nullable: true` to indicate optional fields"
+      },
+      "answer": "C",
+      "explanation": "OpenAPI 3.x uses a `required` array at each schema object level listing the names of mandatory properties. Properties not in this array are optional. This must be set at each nesting level independently. `nullable` controls whether a field accepts null values, which is different from optionality.",
+      "topic": "openapi_required_fields",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC035",
+      "question": "When configuring Vale for a project, what is the relationship between a `.vale.ini` configuration file and Vale packages?",
+      "choices": {
+        "A": "`.vale.ini` replaces packages entirely with inline rule definitions",
+        "B": "Packages are optional extras that only work with Vale's paid tier",
+        "C": "`.vale.ini` specifies which packages (style rule collections like Google, Microsoft, write-good) to apply, sets severity levels, and defines file-type-specific overrides; packages contain the actual rule definitions",
+        "D": "`.vale.ini` only controls output format; packages control everything else"
+      },
+      "answer": "C",
+      "explanation": "`.vale.ini` is the project-level configuration that references Vale packages (collections of YAML-defined prose rules). It controls which packages apply to which file types, sets minimum alert levels, and can override individual rules. Packages like `Google`, `Microsoft`, and `write-good` contain the rules themselves.",
+      "topic": "vale_configuration",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC036",
+      "question": "When designing cross-references in a documentation system, what is the advantage of using semantic references (e.g., `:ref:` in Sphinx or `@link` in JSDoc) over raw hyperlinks?",
+      "choices": {
+        "A": "Semantic references load faster in the browser",
+        "B": "Semantic references are resolved at build time, so broken references cause build failures rather than silent broken links in production; they also survive file renames and restructuring",
+        "C": "Raw hyperlinks are always preferable because they work in any Markdown parser",
+        "D": "Semantic references automatically translate the linked text into the user's language"
+      },
+      "answer": "B",
+      "explanation": "Semantic cross-references are resolved during the documentation build, turning them into compile-time checks. If a referenced target is renamed or removed, the build fails immediately. Raw hyperlinks only fail silently in production when a user clicks them.",
+      "topic": "cross_referencing",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC037",
+      "question": "According to the Google developer documentation style guide, how should you format a list of API parameters in documentation?",
+      "choices": {
+        "A": "As a comma-separated list in a paragraph",
+        "B": "In a JSON code block showing an example request with all parameters filled in",
+        "C": "As a bulleted list with no type information",
+        "D": "In a table with columns for name, type, required/optional status, and description, using code font for parameter names"
+      },
+      "answer": "D",
+      "explanation": "The Google developer documentation style guide recommends parameter tables with consistent columns (name in code font, type, required/optional, description). This structure enables scanning and is the established convention for API reference documentation.",
+      "topic": "terminology_management",
+      "topic_category": "style_guides",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC038",
+      "question": "When is a text explanation preferable to a diagram in technical documentation?",
+      "choices": {
+        "A": "Always -- text is universally more accessible than diagrams",
+        "B": "Never -- diagrams are always superior for technical content",
+        "C": "When the information is linear and sequential (e.g., a step-by-step procedure), when the relationships being described are simple, or when the audience primarily consumes content via screen readers",
+        "D": "Only when the documentation tool does not support image embedding"
+      },
+      "answer": "C",
+      "explanation": "Diagrams excel at showing spatial relationships, parallel processes, and complex dependencies. Text is better for linear/sequential information and is inherently more accessible. The choice depends on the nature of the information and the audience's consumption context.",
+      "topic": "text_vs_diagrams",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC039",
+      "question": "What is MDX, and what problem does it solve for documentation sites?",
+      "choices": {
+        "A": "MDX is a compressed Markdown format that reduces file sizes for large documentation sets",
+        "B": "MDX converts Markdown to XML for compatibility with DITA authoring tools",
+        "C": "MDX is a proprietary format used only by Docusaurus that adds footnote support",
+        "D": "MDX combines Markdown with JSX, allowing authors to embed interactive React components (live code editors, API explorers, tabbed examples) directly in documentation content"
+      },
+      "answer": "D",
+      "explanation": "MDX merges Markdown syntax with JSX, enabling documentation authors to embed React components inline. This allows interactive elements like live code playgrounds, API request builders, and tabbed examples within standard Markdown documentation pages.",
+      "topic": "mdx",
+      "topic_category": "markdown",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC040",
+      "question": "When localizing date, time, and number formats in documentation, which approach ensures correctness across locales?",
+      "choices": {
+        "A": "Use ISO 8601 (YYYY-MM-DD) for dates in technical contexts, and render user-facing dates and numbers using the ICU library or equivalent locale-aware formatting functions",
+        "B": "Use the MM/DD/YYYY format universally since it is the international standard",
+        "C": "Write out dates in English words (e.g., 'March 3, 2026') for all locales",
+        "D": "Omit dates and numbers from localized content to avoid formatting issues"
+      },
+      "answer": "A",
+      "explanation": "ISO 8601 is unambiguous in technical contexts. For user-facing content, locale-aware formatting (via ICU or equivalent) renders dates, times, numbers, and currencies according to each locale's conventions (e.g., DD.MM.YYYY in Germany, YYYY/MM/DD in Japan).",
+      "topic": "locale_aware_formatting",
+      "topic_category": "localization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC041",
+      "question": "When writing parallel structure in a list of API capabilities, which version is correctly parallel?",
+      "choices": {
+        "A": "The API supports: creating users, to update profiles, and the deletion of accounts.",
+        "B": "The API supports: creating users, updating profiles, and deleting accounts.",
+        "C": "The API supports: user creation, profile updating, and account deletion.",
+        "D": "The API supports: you can create users, update profiles, and accounts can be deleted."
+      },
+      "answer": "B",
+      "explanation": "Parallel structure requires each list item to use the same grammatical form. Option C uses gerund phrases consistently ('creating...', 'updating...', 'deleting...'). Option B uses noun phrases (also parallel), but C is preferred in technical writing for its verb-forward, action-oriented clarity.",
+      "topic": "parallel_structure",
+      "topic_category": "writing_craft",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC042",
+      "question": "In Docusaurus, what is the purpose of the `sidebars.js` configuration file?",
+      "choices": {
+        "A": "It declares the sidebar navigation structure, specifying document ordering, category groupings, auto-generated sections, and links that appear in the documentation sidebar",
+        "B": "It defines the visual styling of the sidebar component",
+        "C": "It configures the search index for the documentation site",
+        "D": "It specifies which Markdown plugins are enabled for sidebar rendering"
+      },
+      "answer": "A",
+      "explanation": "`sidebars.js` in Docusaurus defines the navigation tree for documentation. It supports manual ordering, category definitions, auto-generated sidebars from directory structure, and external links. This controls how users browse the documentation hierarchy.",
+      "topic": "docusaurus_configuration",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC043",
+      "question": "What is single-sourcing in documentation, and which technique best implements it?",
+      "choices": {
+        "A": "Single-sourcing means writing documentation in a single file; it is implemented by keeping all content in one large Markdown file",
+        "B": "Single-sourcing means maintaining one canonical source for each piece of content and reusing it across deliverables; it is implemented through content references (conrefs), transclusion, or snippet includes",
+        "C": "Single-sourcing means having a single author write all documentation",
+        "D": "Single-sourcing means using only one documentation tool for the entire organization"
+      },
+      "answer": "B",
+      "explanation": "Single-sourcing ensures each content unit has one authoritative source that is reused across multiple outputs (web, PDF, in-app help). Techniques include DITA conrefs, Sphinx includes, MkDocs snippets, and Docusaurus MDX imports -- all avoiding content duplication that leads to inconsistency.",
+      "topic": "single_sourcing",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC044",
+      "question": "When documenting SDK methods, what is the recommended order of information for each method entry?",
+      "choices": {
+        "A": "Source code first, then description",
+        "B": "Method signature, brief description, parameter details (name, type, description, default), return value, exceptions/errors, and a usage example",
+        "C": "A usage example only, with no signature or parameter documentation",
+        "D": "An alphabetical list of all related methods with shared documentation"
+      },
+      "answer": "B",
+      "explanation": "The established convention for SDK reference docs follows: signature (scannable entry point), description (what it does), parameters (detailed contract), return value, exceptions (failure modes), and example (concrete usage). This order matches how developers scan reference documentation.",
+      "topic": "sdk_documentation",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC045",
+      "question": "A documentation team is debating whether to use a glossary or inline definitions for domain-specific terms. When is a centralized glossary the better choice?",
+      "choices": {
+        "A": "When terms appear across multiple pages and consistent definitions are critical; the glossary serves as a single source of truth that prevents definition drift across authors and pages",
+        "B": "When the documentation has fewer than 10 domain-specific terms",
+        "C": "When the documentation targets only expert users who already know all terminology",
+        "D": "When the documentation is published only as a PDF"
+      },
+      "answer": "A",
+      "explanation": "A centralized glossary prevents definition drift when multiple authors define the same terms differently across pages. It also enables tooling (hover tooltips, automated linking) and serves as the terminology authority. Inline definitions work for terms used on a single page.",
+      "topic": "glossaries",
+      "topic_category": "style_guides",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC046",
+      "question": "When creating a Mermaid entity-relationship diagram for database documentation, which syntax correctly represents a one-to-many relationship where a Customer has many Orders?",
+      "choices": {
+        "A": "`Customer --- Order : places`",
+        "B": "`Customer -->|1:N| Order`",
+        "C": "`Customer ||--o{ Order : places`",
+        "D": "`Customer ===> Order`"
+      },
+      "answer": "C",
+      "explanation": "Mermaid ER diagram syntax uses `||` for exactly one and `o{` for zero or more. `Customer ||--o{ Order : places` reads as 'one Customer places zero or more Orders.' The relationship label follows the colon.",
+      "topic": "mermaid_er_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC047",
+      "question": "What is the purpose of admonitions (note, warning, tip, caution) in documentation, and what is the most common misuse?",
+      "choices": {
+        "A": "Admonitions are decorative elements; the most common misuse is not using enough of them",
+        "B": "Admonitions replace headings for section organization; misuse is mixing different types",
+        "C": "Admonitions highlight information that does not fit the main flow but requires attention; the most common misuse is overuse, which causes 'alert fatigue' where readers learn to ignore them all",
+        "D": "Admonitions are only for legal disclaimers; misuse is using them for technical tips"
+      },
+      "answer": "C",
+      "explanation": "Admonitions draw attention to important information outside the main content flow (warnings, tips, prerequisites). Overuse dilutes their signal: when everything is highlighted, nothing stands out. Best practice limits admonitions to 1-2 per page section.",
+      "topic": "admonitions",
+      "topic_category": "markdown",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC048",
+      "question": "When implementing right-to-left (RTL) support for Arabic documentation, which aspect is most commonly overlooked?",
+      "choices": {
+        "A": "Translating the text from English to Arabic",
+        "B": "Changing the font to an Arabic typeface",
+        "C": "Mirroring the UI layout (navigation, icons, progress indicators) and ensuring bidirectional text handling for inline code, numbers, and LTR terms embedded in RTL content",
+        "D": "Removing all images from the RTL version"
+      },
+      "answer": "C",
+      "explanation": "RTL support requires more than text translation. UI mirroring (navigation swaps sides, chevrons reverse), bidirectional text handling (inline code and numbers remain LTR within RTL flow), and directional icon adjustments are frequently overlooked, causing a broken reading experience.",
+      "topic": "rtl_support",
+      "topic_category": "localization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC049",
+      "question": "What distinguishes WCAG AA compliance from WCAG AAA compliance for documentation, and which level should documentation sites typically target?",
+      "choices": {
+        "A": "AA is the widely accepted target, requiring 4.5:1 contrast for normal text, keyboard navigability, and text alternatives; AAA adds stricter requirements (7:1 contrast, sign language for video) that are impractical for most documentation sites",
+        "B": "AA and AAA are identical requirements; target either one",
+        "C": "AAA is the minimum legal requirement; AA is an optional bonus",
+        "D": "AA covers only visual accessibility; AAA adds cognitive accessibility"
+      },
+      "answer": "A",
+      "explanation": "WCAG AA is the standard target for documentation sites and is referenced by most accessibility laws. It covers contrast ratios, keyboard navigation, screen reader support, and text alternatives. AAA adds stricter criteria that are often impractical at scale.",
+      "topic": "wcag_for_docs",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC050",
+      "question": "How should a documentation team measure 'documentation debt,' and what metric best captures it?",
+      "choices": {
+        "A": "Count the total number of documentation pages -- more pages means more debt",
+        "B": "Track the ratio of documented-to-undocumented features, combined with content freshness (last-reviewed date vs last code change) and known-issue counts from user feedback",
+        "C": "Measure documentation debt by word count -- shorter docs have less debt",
+        "D": "Documentation debt cannot be measured and should be addressed ad-hoc"
+      },
+      "answer": "B",
+      "explanation": "Documentation debt has multiple dimensions: coverage (undocumented features), freshness (stale content after code changes), and accuracy (known issues from feedback). Tracking these together gives a quantitative view of documentation health that can be prioritized like technical debt.",
+      "topic": "documentation_debt",
+      "topic_category": "metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC051",
+      "question": "You have an OpenAPI 3.0 spec with a `GET /users` endpoint that supports filtering. The endpoint accepts `status` (enum: active, inactive, suspended), `created_after` (date-time), and `role` (string). How should these be defined?",
+      "choices": {
+        "A": "As properties in a `requestBody` schema with `content: application/json`",
+        "B": "In the `servers` object as URL template variables",
+        "C": "As `headers` in the request specification",
+        "D": "As `parameters` with `in: query`, each with its own `schema` specifying the type and constraints (enum values, format: date-time)"
+      },
+      "answer": "D",
+      "explanation": "GET request filters are query parameters, defined in the `parameters` array with `in: query`. Each parameter gets its own `schema` with type constraints: `status` uses `enum`, `created_after` uses `format: date-time`, and `role` uses `type: string`. Request bodies on GET requests are discouraged by HTTP conventions.",
+      "topic": "openapi_query_parameters",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC052",
+      "question": "When writing a task-based tutorial, what is the purpose of including a 'What you'll build' section at the beginning?",
+      "choices": {
+        "A": "To increase the word count of the tutorial",
+        "B": "To set expectations, show the end result upfront, and help readers decide if this tutorial matches their goal before investing time -- reducing abandonment and improving completion rates",
+        "C": "To provide an abstract for search engines only",
+        "D": "To list every technology the tutorial will cover in alphabetical order"
+      },
+      "answer": "B",
+      "explanation": "A 'What you'll build' section with a screenshot or description of the end result gives readers immediate context. It helps them assess whether the tutorial meets their needs, reduces mid-tutorial abandonment, and provides a mental model of the destination.",
+      "topic": "task_based_writing",
+      "topic_category": "writing_craft",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC053",
+      "question": "In a Sphinx documentation project, what is the role of `conf.py` and how does it relate to `toctree` directives?",
+      "choices": {
+        "A": "`conf.py` is the project configuration (extensions, theme, project metadata, build options), while `toctree` directives in reStructuredText files define the document hierarchy and navigation structure",
+        "B": "`conf.py` contains all documentation content; `toctree` is only for the index page",
+        "C": "`conf.py` defines the sidebar; `toctree` defines the footer links",
+        "D": "`conf.py` and `toctree` are interchangeable configuration methods"
+      },
+      "answer": "A",
+      "explanation": "Sphinx's `conf.py` handles project-level configuration (extensions, theme, version, language), while `toctree` directives in `.rst` files define the content hierarchy. Together they separate build configuration from content structure.",
+      "topic": "sphinx_configuration",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC054",
+      "question": "When designing the navigation for a developer portal with 'Getting Started,' 'Guides,' 'API Reference,' and 'SDKs' sections, what is the optimal navigation hierarchy principle?",
+      "choices": {
+        "A": "Order sections alphabetically for consistency",
+        "B": "Put API Reference first because it has the most pages",
+        "C": "Order by user journey: Getting Started first (onboarding), Guides second (learning), API Reference third (building), SDKs fourth (integrating), matching the developer's progression from novice to practitioner",
+        "D": "Randomize the order and let search handle navigation"
+      },
+      "answer": "C",
+      "explanation": "Developer portal navigation should follow the user journey from first contact to proficiency. Getting Started captures new users, Guides support the learning phase, API Reference serves active development, and SDKs support integration. This matches how developers progressively engage with a platform.",
+      "topic": "content_hierarchy",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC055",
+      "question": "The Google developer documentation style guide recommends which approach for documenting boolean parameters?",
+      "choices": {
+        "A": "Describe both states explicitly, specify the default value, and use descriptive names that indicate the enabled behavior (e.g., `enableCache` rather than `cacheFlag`)",
+        "B": "Describe only the `true` behavior and let users infer the `false` behavior",
+        "C": "Document boolean parameters identically to string parameters with no special treatment",
+        "D": "Omit boolean parameters from documentation since they are self-explanatory"
+      },
+      "answer": "A",
+      "explanation": "Boolean parameters should document both states and the default value, since the 'false' behavior is not always the inverse of 'true.' Descriptive names (enableX, allowY) make the parameter's purpose clear without requiring documentation lookup.",
+      "topic": "parameter_documentation",
+      "topic_category": "style_guides",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC056",
+      "question": "When using Mermaid to document a CI/CD pipeline with parallel stages, which diagram type and feature best represents jobs running concurrently?",
+      "choices": {
+        "A": "A pie chart showing time distribution across stages",
+        "B": "A flowchart (graph LR) with fork/join nodes where parallel paths diverge from a single node and reconverge at a synchronization point",
+        "C": "A Gantt chart with overlapping time bars",
+        "D": "A class diagram with inheritance representing stage dependencies"
+      },
+      "answer": "B",
+      "explanation": "Mermaid flowcharts can represent parallelism by having a single node branch into multiple paths (fork) that later merge at a synchronization node (join). This visually communicates concurrent execution and synchronization points in a CI/CD pipeline.",
+      "topic": "architecture_diagrams",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC057",
+      "question": "What are code block annotations (e.g., line highlighting, diff markers) in documentation, and when should you use them?",
+      "choices": {
+        "A": "Annotations are comments added inside code blocks; use them to explain every line of code",
+        "B": "Annotations are metadata tags used for code search indexing only",
+        "C": "Annotations are rendering features (line highlights, line numbers, diff markers, title bars) applied to fenced code blocks that draw attention to specific lines or changes, best used to focus the reader on the relevant parts of a code example",
+        "D": "Annotations are only supported in reStructuredText, not Markdown"
+      },
+      "answer": "C",
+      "explanation": "Code block annotations (supported by tools like Docusaurus, MkDocs Material, and Shiki) add visual cues to code examples: highlighted lines draw attention to the important parts, diff markers show before/after changes, and title bars provide file context. They reduce cognitive load on longer code examples.",
+      "topic": "code_block_annotations",
+      "topic_category": "markdown",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC058",
+      "question": "What is machine translation post-editing (MTPE), and when is it an appropriate strategy for documentation localization?",
+      "choices": {
+        "A": "MTPE is fully automated translation with no human involvement",
+        "B": "MTPE is only used for translating marketing content, never technical documentation",
+        "C": "MTPE uses machine translation as a first pass, then human translators review and correct the output; it is appropriate for high-volume, regularly-updated content where full human translation is cost-prohibitive but quality still matters",
+        "D": "MTPE produces higher quality than human-only translation in all cases"
+      },
+      "answer": "C",
+      "explanation": "MTPE combines machine translation speed with human quality assurance. It works well for technical documentation with controlled language, consistent terminology, and high update frequency. The human post-editor corrects errors, ensuring terminology consistency and technical accuracy.",
+      "topic": "mt_post_editing",
+      "topic_category": "localization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC059",
+      "question": "When documenting a REST API that uses rate limiting, what information must be included for developers to implement proper retry logic?",
+      "choices": {
+        "A": "Document the rate limit values (requests per window), the response headers indicating remaining quota and reset time (e.g., `X-RateLimit-Remaining`, `X-RateLimit-Reset`), the HTTP 429 response body format, and recommended retry strategies (exponential backoff)",
+        "B": "Only mention that rate limiting exists",
+        "C": "Tell developers to contact support when they hit rate limits",
+        "D": "Document only the maximum rate limit without per-endpoint details"
+      },
+      "answer": "A",
+      "explanation": "Developers need rate limit values, response headers for programmatic quota tracking, the 429 response format for error handling, and retry strategy guidance. Without these, developers cannot build resilient API clients that gracefully handle rate limiting.",
+      "topic": "api_rate_limit_docs",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC060",
+      "question": "What is the relationship between a documentation site's search functionality and its information architecture?",
+      "choices": {
+        "A": "Search and information architecture are completely independent systems",
+        "B": "Search eliminates the need for information architecture entirely",
+        "C": "Good information architecture enhances search through consistent terminology, descriptive headings, and structured metadata; poor IA (inconsistent terms, vague headings) degrades search quality regardless of the search engine's capability",
+        "D": "Information architecture only affects navigation menus, not search results"
+      },
+      "answer": "C",
+      "explanation": "Search quality depends on the content it indexes. Consistent terminology, descriptive headings, structured frontmatter, and clear page titles all improve search relevance and ranking. Poor IA means search returns ambiguous or poorly-ranked results even with a good search engine.",
+      "topic": "search_optimization",
+      "topic_category": "information_architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC061",
+      "question": "A documentation feedback widget shows 40% negative ratings on your authentication quickstart guide. The guide covers OAuth 2.0 with PKCE for a mobile SDK. Analyzing the feedback comments reveals three themes: 'too much theory before code,' 'code examples don't work,' and 'missing prerequisites.' Which approach most effectively addresses all three issues?",
+      "choices": {
+        "A": "Restructure to: prerequisites checklist (with verification commands), a minimal working code example first, then progressive explanation of OAuth concepts anchored to the code, with tested CI-verified examples and explicit platform versions",
+        "B": "Delete the theoretical sections entirely and only show code",
+        "C": "Add a disclaimer that the guide is for advanced users only",
+        "D": "Replace the written guide with a video tutorial"
+      },
+      "answer": "A",
+      "explanation": "This addresses all three feedback themes: prerequisites checklist (missing prerequisites), code-first structure (too much theory before code), and CI-verified examples (code examples don't work). Progressive explanation anchored to working code is the standard pattern for effective quickstart guides.",
+      "topic": "feedback_mechanisms",
+      "topic_category": "metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC062",
+      "question": "In audience analysis for a developer platform, you identify three personas: 'Evaluator' (deciding whether to adopt), 'Implementer' (building the integration), and 'Operator' (running in production). How should the documentation structure serve all three?",
+      "choices": {
+        "A": "Create a single documentation site with entry points and content paths tailored to each persona: landing pages for evaluators (overview, comparisons, ROI), integration guides for implementers (tutorials, reference), and operations guides for operators (monitoring, troubleshooting, upgrades)",
+        "B": "Write separate documentation sites for each persona",
+        "C": "Target only implementers since they are the primary users of documentation",
+        "D": "Combine all content into a single 'Getting Started' page"
+      },
+      "answer": "A",
+      "explanation": "A unified site with persona-aware entry points serves all audiences without fragmenting content. Evaluators need different content (capabilities, comparisons) than implementers (tutorials, reference) or operators (runbooks, monitoring). Shared infrastructure with tailored navigation is the scalable approach.",
+      "topic": "audience_analysis",
+      "topic_category": "writing_craft",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC063",
+      "question": "When building a Hugo documentation site, what is the role of the `archetypes` directory?",
+      "choices": {
+        "A": "It contains template files (with frontmatter defaults and content scaffolding) that `hugo new` uses to create new content files of specific types, ensuring consistent structure across documentation pages",
+        "B": "It stores compiled HTML output from the build process",
+        "C": "It defines the color scheme and typography of the documentation theme",
+        "D": "It stores backup copies of deleted documentation pages"
+      },
+      "answer": "A",
+      "explanation": "Hugo archetypes are content templates used by `hugo new` to scaffold new pages with predefined frontmatter and content structure. For documentation, archetypes ensure every new tutorial, reference page, or guide starts with the correct metadata and section structure.",
+      "topic": "hugo_archetypes",
+      "topic_category": "docs_as_code",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC064",
+      "question": "How should color-independent information be implemented in documentation that uses status indicators?",
+      "choices": {
+        "A": "Use only red and green colors for error and success states",
+        "B": "Use only text with no visual indicators",
+        "C": "Combine color with a secondary indicator (icon, label, or pattern) so that status is conveyed through multiple channels, ensuring users with color vision deficiency can distinguish states",
+        "D": "Provide a separate 'accessible version' of the documentation without color"
+      },
+      "answer": "C",
+      "explanation": "WCAG requires that color is not the sole means of conveying information. Status indicators should combine color with icons (checkmark, X), text labels (Success, Error), or patterns to ensure the information is accessible to users who cannot perceive color differences.",
+      "topic": "color_independent_info",
+      "topic_category": "accessibility",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC065",
+      "question": "When API documentation describes versioning, what approach communicates backward compatibility most clearly?",
+      "choices": {
+        "A": "List only the current version with no mention of previous versions",
+        "B": "Maintain a single 'latest' version and remove all documentation for older versions",
+        "C": "Increment the version number on every API change without documenting what changed",
+        "D": "Provide a versioning policy statement (semantic versioning, deprecation timeline), per-version changelogs with breaking vs non-breaking changes, migration guides between major versions, and sunset dates for deprecated versions"
+      },
+      "answer": "D",
+      "explanation": "Comprehensive version documentation includes the versioning policy (how versions are numbered), changelogs (what changed), migration guides (how to upgrade), and sunset dates (when old versions stop working). This gives developers the information they need to plan upgrades.",
+      "topic": "api_versioning_docs",
+      "topic_category": "api_docs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC066",
+      "question": "What is the purpose of a content freshness tracking system in documentation, and how should staleness be detected?",
+      "choices": {
+        "A": "It tracks the last-reviewed date of each page against code changes in related areas; staleness is detected by comparing page last-reviewed timestamps to Git commit dates affecting documented features, flagging pages where the code has changed since the last review",
+        "B": "Content freshness only matters for blog posts, not technical documentation",
+        "C": "Content freshness is tracked by counting page views -- low views mean stale content",
+        "D": "A manual spreadsheet updated quarterly by the documentation manager"
+      },
+      "answer": "A",
+      "explanation": "Automated freshness tracking correlates documentation review dates with code change dates. When source code for a documented feature is modified after the documentation was last reviewed, the page is flagged as potentially stale. This prevents documentation from silently drifting out of sync with the product.",
+      "topic": "content_freshness_tracking",
+      "topic_category": "metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC067",
+      "question": "In a large documentation project with 50 contributors, what is the primary benefit of a terminology management system (term base) integrated with the authoring workflow?",
+      "choices": {
+        "A": "It increases the font size of important terms",
+        "B": "It restricts which words authors can use to a fixed vocabulary of 500 terms",
+        "C": "It automatically generates a glossary page but has no effect on content consistency",
+        "D": "It ensures all contributors use the same terms for the same concepts (e.g., consistently using 'endpoint' vs 'route' vs 'URL'), with automated enforcement through linting rules, preventing confusion caused by inconsistent terminology across authors"
+      },
+      "answer": "D",
+      "explanation": "Terminology management ensures consistency across many authors. When 50 contributors independently choose between 'endpoint,' 'route,' 'URL,' and 'path' for the same concept, readers face unnecessary cognitive load. A term base with linting enforcement prevents this drift.",
+      "topic": "terminology_management",
+      "topic_category": "style_guides",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC068",
+      "question": "When embedding interactive content (API explorers, live code editors) in documentation, what is the critical user experience consideration?",
+      "choices": {
+        "A": "Interactive content should replace all static code examples",
+        "B": "Interactive elements must degrade gracefully: provide a static fallback for users without JavaScript, slow connections, or accessibility tools, and never block the user from reading the core documentation content if the interactive element fails to load",
+        "C": "Interactive content should auto-play animations to attract attention",
+        "D": "Interactive elements only work in PDF output and should be avoided on the web"
+      },
+      "answer": "B",
+      "explanation": "Interactive documentation elements enhance the experience but must not gate it. Static fallbacks ensure content is accessible when JavaScript is disabled, connections are slow, or assistive technologies cannot interact with the component. The documentation must be useful with or without interactive features.",
+      "topic": "embedding_interactive_content",
+      "topic_category": "markdown",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC069",
+      "question": "When creating architecture diagrams for documentation, what is the principle of visual hierarchy, and how should it be applied?",
+      "choices": {
+        "A": "Make all elements the same size and color for consistency",
+        "B": "Place the most important component in the bottom-right corner",
+        "C": "Always use 3D rendering for maximum visual impact",
+        "D": "Use size, color weight, and positioning to establish importance: primary systems are larger and more prominent, secondary systems are smaller and subdued, and data flow direction matches the reader's natural scanning direction (left-to-right or top-to-bottom)"
+      },
+      "answer": "D",
+      "explanation": "Visual hierarchy in architecture diagrams uses size, color, and position to guide the reader's attention. Primary components are visually prominent, secondary components recede, and data flow follows natural reading direction. This reduces the time needed to understand the system.",
+      "topic": "visual_hierarchy",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC070",
+      "question": "When a documentation site supports multiple languages, how should the URL structure be organized for optimal SEO and user experience?",
+      "choices": {
+        "A": "Use subdirectories with locale prefixes: `example.com/fr/docs/getting-started`, with `hreflang` tags linking equivalent pages across locales and a language selector that preserves the current page path",
+        "B": "Use query parameters: `example.com/docs?lang=fr`",
+        "C": "Use separate domains for each language: `fr.example.com`, `de.example.com`",
+        "D": "Dynamically translate the page via JavaScript based on browser language with no URL change"
+      },
+      "answer": "A",
+      "explanation": "Subdirectory-based locale routing (`/fr/docs/...`) gives each localized page a unique, indexable URL. `hreflang` tags tell search engines which pages are translations of each other. A language selector that preserves the current path lets users switch languages without losing their place.",
+      "topic": "content_translation_best_practices",
+      "topic_category": "localization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "DOC071",
+      "question": "You are the lead technical writer for a platform with 3 API products (Payments, Identity, Messaging), each with 2 active major versions. The developer portal serves both first-time evaluators exploring the platform and power users who work across multiple products daily. Design the information architecture for the top-level navigation. Consider: (1) version switching must not disorient the user, (2) cross-product workflows exist (e.g., send a payment confirmation message), and (3) evaluators need a unified entry point. Which architecture best resolves these competing concerns?",
+      "choices": {
+        "A": "Product-first navigation (Payments, Identity, Messaging tabs) with version selectors scoped within each product, a cross-cutting 'Guides' section for multi-product workflows, and a unified 'Platform Overview' landing page for evaluators that links into each product",
+        "B": "A flat structure with all 6 API versions (3 products x 2 versions) listed in the top nav, plus a shared 'Getting Started' page",
+        "C": "Version-first navigation (v1, v2 tabs) with products nested under each version",
+        "D": "A single search bar with no browsable navigation, relying entirely on search to serve both audiences"
+      },
+      "answer": "A",
+      "explanation": "Product-first navigation matches the mental model of both audiences: evaluators explore products, power users work within products. Scoped version selectors prevent cross-product version confusion. The cross-cutting Guides section acknowledges that real workflows span products, and the Platform Overview gives evaluators a unified entry point.",
+      "topic": "developer_portal_ia",
+      "topic_category": "information_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC072",
+      "question": "Your team is migrating 800 documentation pages from a legacy CMS to a docs-as-code system using MkDocs Material. The pages contain CMS-specific shortcodes, embedded widgets, custom metadata fields, and mixed content types (tutorials, references, release notes). Step 1: How do you audit the existing content? Step 2: What is the conversion strategy? Step 3: How do you validate the migration? Choose the approach that addresses all three steps.",
+      "choices": {
+        "A": "Manually copy-paste each page into Markdown files, visually compare to the original, and fix issues as users report them",
+        "B": "Hire external contractors to manually rewrite all 800 pages from scratch",
+        "C": "Export all pages as PDFs and re-import them into MkDocs",
+        "D": "Write a content audit script that catalogs all pages, shortcodes, widgets, and metadata fields; build automated converters for each shortcode-to-Markdown mapping; run a diff-based validation pipeline comparing rendered output (headings, links, images, code blocks) between old and new, with a coverage report flagging unconverted elements"
+      },
+      "answer": "D",
+      "explanation": "A systematic migration requires automated auditing (catalog what exists), automated conversion (shortcode mappings ensure consistency at scale), and automated validation (diff-based comparison catches regressions). Manual approaches do not scale to 800 pages, and PDF export loses all structured metadata.",
+      "topic": "docs_migration",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC073",
+      "question": "You are designing the OpenAPI specification for a healthcare API that must document: (1) FHIR-compliant resource schemas with deep nesting (Patient -> Condition -> Observation), (2) conditional required fields (e.g., `insuranceId` is required only when `paymentMethod` is 'insurance'), and (3) field-level access control annotations (e.g., `ssn` is visible only to admin-role tokens). OpenAPI 3.0 cannot natively express conditional requirements or field-level RBAC. How do you document these constraints?",
+      "choices": {
+        "A": "Ignore conditional requirements and RBAC in the spec, document them only in prose",
+        "B": "Use `allOf` to combine every possible field combination, creating one schema variant per condition",
+        "C": "Use `x-` extension fields for conditional requirements and RBAC annotations within the OpenAPI spec, generate the API reference from the spec with a custom renderer that interprets these extensions, and supplement with structured tables in the prose documentation that cross-reference the extension fields",
+        "D": "Abandon OpenAPI and write the entire API reference manually in Markdown"
+      },
+      "answer": "C",
+      "explanation": "OpenAPI's `x-` extension mechanism is designed for vendor-specific metadata. Using extensions for conditional logic and RBAC keeps the spec machine-readable and single-sourced. A custom renderer can interpret these extensions to generate accurate documentation, while supplementary prose tables provide human-readable summaries of the access control matrix.",
+      "topic": "openapi_extensions",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC074",
+      "question": "A developer portal team discovers that their API code examples are frequently broken after backend releases. The current workflow is: backend deploys, then tech writers manually update code examples within 48 hours. Step 1: Identify the root cause of the reliability gap. Step 2: Design a testing strategy for code examples. Step 3: Integrate it into the release pipeline. Which solution addresses all three steps?",
+      "choices": {
+        "A": "Add more tech writers to reduce the 48-hour lag",
+        "B": "Use screenshots of code instead of text-based examples",
+        "C": "Remove all code examples from the documentation to eliminate breakage",
+        "D": "Store code examples as executable test files in the API repository, run them as integration tests in the CI/CD pipeline before each release, and auto-embed the tested examples into documentation via code inclusion directives (snippets from source files), so deployed examples are always the ones that passed CI"
+      },
+      "answer": "D",
+      "explanation": "The root cause is decoupled lifecycles between code and examples. Storing examples as executable tests couples them to the release pipeline, catching breakage before deployment. Code inclusion directives (MkDocs snippets, Sphinx literalinclude) ensure the documentation always reflects the tested version.",
+      "topic": "docs_testing",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC075",
+      "question": "You are writing documentation for a distributed system with eventual consistency. A procedure instructs users to: (1) create a resource via POST, (2) immediately read it via GET, (3) modify it via PUT. In practice, step 2 may return 404 due to replication lag. How should the documentation handle this? Consider: technical accuracy, user success rate, and avoiding unnecessary complexity for the common case.",
+      "choices": {
+        "A": "Document only the happy path where all three steps succeed sequentially",
+        "B": "Replace the tutorial with a theoretical explanation of the CAP theorem",
+        "C": "Document the happy path as the primary flow, then add a clearly-marked 'Eventual Consistency' callout after step 1 explaining the possible 404, with a retry pattern (exponential backoff with the specific header to check), and a note that most environments see consistency within a stated timeframe",
+        "D": "Add a disclaimer that the API is unreliable and users should expect failures"
+      },
+      "answer": "C",
+      "explanation": "This balances accuracy (acknowledging eventual consistency), usability (happy path stays primary), and actionability (concrete retry pattern). The callout is scoped to the exact step where the issue manifests, gives a practical workaround, and sets realistic expectations without overcomplicating the common case.",
+      "topic": "documenting_edge_cases",
+      "topic_category": "writing_craft",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC076",
+      "question": "Your organization has 12 microservices, each with its own OpenAPI spec maintained by different teams. You need to create a unified developer portal that: (1) aggregates all specs into a coherent navigation, (2) maintains per-team ownership of their specs, and (3) resolves cross-service `$ref` references (e.g., Payments references the User schema from Identity). Analyze the architectural tradeoffs between build-time aggregation vs runtime federation.",
+      "choices": {
+        "A": "Copy all schemas into a single monolithic OpenAPI file maintained by the documentation team",
+        "B": "Have each team publish their own independent documentation portal with no cross-references",
+        "C": "Runtime federation: load each spec dynamically at page load, resolving references client-side",
+        "D": "Build-time aggregation: a CI pipeline collects specs from each team's repo, resolves cross-service `$ref` using a shared schema registry, validates the combined spec, and generates the portal; this preserves team ownership (each team's repo is the source of truth) while producing a consistent portal, at the cost of a build step that can fail if cross-service schemas diverge"
+      },
+      "answer": "D",
+      "explanation": "Build-time aggregation gives the best balance: teams own their specs (decoupled repos), cross-service references are validated at build time (catching schema drift before deployment), and the output is a single coherent portal. Runtime federation adds latency and fragility. A monolithic file eliminates team ownership.",
+      "topic": "api_portal_architecture",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC077",
+      "question": "You are implementing a DITA-based documentation system for a hardware product with 15 variants that share 70% of their content. Step 1: How do you model the shared vs variant-specific content? Step 2: How do you handle conditional processing for variant-specific sections? Step 3: How do you ensure a technician in the field sees only their specific variant's documentation?",
+      "choices": {
+        "A": "Create 15 complete copies of the documentation and manually keep them in sync",
+        "B": "Use DITA's conref mechanism for shared content (70% reuse), DITAVAL filtering with product attributes for variant-specific sections, and build-time conditional processing to generate 15 variant-specific outputs; field technicians receive the pre-filtered output for their specific product variant",
+        "C": "Write a single generic document that covers all 15 variants with no differentiation",
+        "D": "Use CSS to hide variant-specific content based on a URL parameter"
+      },
+      "answer": "B",
+      "explanation": "DITA's conref reuses shared content from canonical sources (avoiding 15-way sync). DITAVAL conditional processing filters content by product attribute (variant-specific assembly). Build-time generation produces clean, variant-specific deliverables that technicians can use without filtering, reducing errors in the field.",
+      "topic": "content_reuse_and_filtering",
+      "topic_category": "information_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC078",
+      "question": "A Vale style guide package needs to enforce these rules for your API documentation: (1) 'click' must always be replaced with 'select' (accessibility), (2) API parameter names must be in backtick code font, (3) sentences must not exceed 25 words, and (4) passive voice is flagged as a warning but not an error. Step 1: What Vale rule types implement each requirement? Step 2: What is the severity configuration?",
+      "choices": {
+        "A": "All four rules use the same `substitution` rule type at error severity",
+        "B": "Configure all rules as 'suggestion' severity so they never block CI",
+        "C": "Rule 1: `substitution` rule (error severity, 'click' -> 'select'). Rule 2: `conditional` or custom `script` rule checking for parameter names outside backticks (warning). Rule 3: `metric` rule based on sentence length (warning). Rule 4: `existence` rule for passive voice indicators (suggestion severity)",
+        "D": "Write all rules as regular expressions in `.vale.ini` without using packages"
+      },
+      "answer": "C",
+      "explanation": "Each rule maps to a different Vale extension point: `substitution` for term replacement, `conditional`/`script` for context-dependent checks (code font detection), `metric` for quantitative measurements (sentence length), and `existence` for pattern detection (passive voice). Severity levels (error, warning, suggestion) control CI gating vs advisory feedback.",
+      "topic": "vale_rule_types",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC079",
+      "question": "You need to document a GraphQL API alongside existing REST API documentation. The GraphQL API has: schemas, queries, mutations, subscriptions, custom scalars, and directives. Step 1: How does GraphQL documentation structure differ from REST? Step 2: Which aspects of the GraphQL schema are self-documenting? Step 3: What supplementary documentation is needed beyond the auto-generated schema reference?",
+      "choices": {
+        "A": "Document GraphQL identically to REST with endpoint-per-page format",
+        "B": "Convert all GraphQL operations to REST-style endpoint documentation",
+        "C": "GraphQL does not need documentation because the schema explorer (GraphiQL) is sufficient",
+        "D": "GraphQL is organized by types, queries, and mutations (not endpoints). The schema is self-documenting via description strings on types, fields, and arguments (introspection). Supplementary docs needed: conceptual guides for query composition patterns, authentication/authorization flows, rate limiting (which differs from REST), real-world query examples with variable usage, pagination patterns (connections/cursors), and error handling conventions"
+      },
+      "answer": "D",
+      "explanation": "GraphQL's type system enables auto-generated reference docs via introspection, but real-world usage requires guidance that schemas cannot express: how to compose queries, authentication patterns, pagination approaches, and error handling. The documentation complements the schema explorer rather than duplicating it.",
+      "topic": "graphql_documentation",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC080",
+      "question": "Your documentation site receives 500,000 monthly page views across 4 languages (English, Spanish, Japanese, German). Analytics show that Japanese users have a 60% higher bounce rate than other locales. Step 1: What are the likely causes? Step 2: How do you diagnose the root cause? Step 3: What documentation-specific fixes address each potential cause?",
+      "choices": {
+        "A": "Assume machine translation quality is the only issue and retranslate everything",
+        "B": "Add more English content and auto-translate it to Japanese",
+        "C": "Remove the Japanese locale since it has poor performance metrics",
+        "D": "Likely causes: translation quality issues, missing locale-specific content (Japan-specific regulatory requirements, local integrations), cultural mismatch in examples (US-centric scenarios), or technical issues (font rendering, CJK line-breaking). Diagnose by: segmenting bounce rate by page type, running user surveys in Japanese, reviewing translation vendor quality metrics, and checking CJK rendering across browsers. Fixes target each root cause: translation QA review, locale-specific content additions, culturally adapted examples, and CJK typography CSS fixes"
+      },
+      "answer": "D",
+      "explanation": "High bounce rate in a specific locale can stem from multiple causes: translation quality, missing culturally relevant content, inappropriate examples, or rendering issues. Systematic diagnosis (segment by page, survey users, check quality metrics, test rendering) identifies the actual root cause before committing to expensive fixes.",
+      "topic": "locale_specific_quality",
+      "topic_category": "localization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC081",
+      "question": "You are designing a documentation system for a CLI tool with 45 commands, each with multiple flags and subcommands. The documentation must be: (1) auto-generated from the CLI's help text to stay in sync, (2) augmented with human-written examples and explanations, and (3) searchable with flag-level granularity. Analyze the tradeoffs between fully auto-generated docs, fully hand-written docs, and a hybrid approach.",
+      "choices": {
+        "A": "Fully auto-generate from `--help` output with no human additions",
+        "B": "Fully hand-write all documentation independently from the CLI source code",
+        "C": "Hybrid: auto-generate the reference scaffold (command signatures, flag descriptions, default values) from the CLI source code, then layer human-written content (usage examples, common workflows, gotchas) in separate sections that are not overwritten by regeneration; use a build step that merges auto-generated and human-written content, and index flags individually for search",
+        "D": "Only document the 10 most-used commands and ignore the rest"
+      },
+      "answer": "C",
+      "explanation": "The hybrid approach solves all three requirements: auto-generation keeps reference in sync with the source code, human-written layers add the context that help text lacks, and the merge step preserves both on regeneration. Flag-level indexing enables granular search. Fully auto-generated docs lack examples; fully manual docs drift.",
+      "topic": "cli_documentation_automation",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC082",
+      "question": "A Mermaid class diagram needs to document a plugin system where: (1) a PluginManager loads plugins that implement a Plugin interface, (2) plugins can depend on other plugins via a DependencyResolver, and (3) the system has lifecycle hooks (onLoad, onEnable, onDisable). The diagram should communicate both the static structure and the initialization sequence. What is the optimal documentation strategy?",
+      "choices": {
+        "A": "A single class diagram showing all classes, interfaces, and sequence flows",
+        "B": "Two complementary diagrams: a class diagram showing the static structure (Plugin interface, PluginManager, DependencyResolver relationships, lifecycle method signatures) and a sequence diagram showing the initialization flow (PluginManager -> DependencyResolver -> Plugin.onLoad -> Plugin.onEnable), with cross-references between them and surrounding prose explaining the design rationale",
+        "C": "Only text descriptions with no diagrams",
+        "D": "A single flowchart that attempts to show both structure and sequence"
+      },
+      "answer": "B",
+      "explanation": "Static structure (class relationships) and dynamic behavior (initialization sequence) are fundamentally different views. Using the appropriate diagram type for each (class for structure, sequence for behavior) communicates both clearly. Cross-references and prose connect the views and explain the design decisions behind the architecture.",
+      "topic": "complementary_diagrams",
+      "topic_category": "diagramming",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC083",
+      "question": "You are auditing a documentation site for screen reader accessibility. The site uses: collapsible sections (details/summary), tabbed code examples (React component), auto-playing API response animations, and tooltip-based glossary definitions. Step 1: Identify the accessibility barriers. Step 2: Prioritize fixes by impact. Step 3: Propose solutions for each barrier.",
+      "choices": {
+        "A": "Remove all interactive elements to ensure accessibility",
+        "B": "Barriers in priority order: (1) Auto-playing animations violate WCAG 2.2.2 (provide pause/stop control or respect prefers-reduced-motion). (2) Tabbed code examples may trap keyboard focus or lack ARIA tab roles (implement proper ARIA tablist/tab/tabpanel pattern with keyboard navigation). (3) Tooltip glossary definitions are inaccessible to keyboard/touch users (convert to hover+focus triggered, with ARIA-describedby linking). (4) Collapsible sections need ARIA expanded state announcement (verify details/summary native semantics are preserved or add ARIA attributes)",
+        "C": "Only fix the auto-playing animation since it is the most visible issue",
+        "D": "Add a text-only alternative site and redirect screen reader users there"
+      },
+      "answer": "B",
+      "explanation": "Systematic accessibility auditing identifies each barrier, prioritizes by WCAG severity and user impact, and proposes specific remediation. Auto-playing content is the highest priority (blocks content consumption), followed by keyboard traps (blocks navigation), inaccessible tooltips (blocks information access), and ARIA state issues (degrades experience).",
+      "topic": "screen_reader_accessibility",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC084",
+      "question": "Your documentation uses Flesch-Kincaid scoring as a readability gate in CI (rejecting pages above grade 12). A senior engineer submits a page about distributed consensus algorithms that scores grade 14.2. The page is technically accurate and well-structured, but uses long domain-specific terms ('Byzantine fault tolerance,' 'leader election protocol'). Step 1: Why does this page fail the readability gate? Step 2: Should the gate be adjusted? Step 3: What is the right solution?",
+      "choices": {
+        "A": "Reject the page and require the author to simplify all domain terminology",
+        "B": "Replace all domain-specific terms with simpler synonyms regardless of accuracy",
+        "C": "Disable the readability gate entirely since it produced a false positive",
+        "D": "Flesch-Kincaid is inflated by polysyllabic domain terms, not by poor writing. The solution: configure the readability gate with a domain-specific vocabulary exclusion list (terms like 'Byzantine,' 'consensus,' 'protocol' are excluded from syllable counting), set different thresholds per content type (reference pages allow higher grades than tutorials), and manually verify the page's actual clarity through peer review"
+      },
+      "answer": "D",
+      "explanation": "Readability formulas penalize polysyllabic words regardless of whether they are jargon that the audience knows. The solution calibrates the tool (vocabulary exclusions, per-content-type thresholds) rather than discarding it or dumbing down accurate terminology. Peer review validates that the page is genuinely clear despite the score.",
+      "topic": "readability_gate_calibration",
+      "topic_category": "writing_craft",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC085",
+      "question": "You are designing the style guide for a developer platform that will be authored by 30 engineers (not professional writers). The guide needs to be: (1) short enough that engineers actually read it, (2) enforceable via automation, and (3) flexible enough to cover tutorials, reference docs, and blog posts. Design the style guide architecture.",
+      "choices": {
+        "A": "Write a 100-page comprehensive style guide document and require all engineers to read it before their first contribution",
+        "B": "Adopt the Google style guide verbatim with no customization",
+        "C": "Do not create a style guide; rely on peer review to enforce consistency",
+        "D": "Create a 3-tier architecture: Tier 1 is a 2-page 'Quick Reference' card with the 10 most impactful rules (voice, tense, code formatting, structure templates). Tier 2 is a Vale package that automates enforcement of 80% of the rules in CI, with clear error messages that teach the rule. Tier 3 is the full reference guide (linked from Vale error messages) for edge cases and rationale. Content-type-specific templates (tutorial, reference, blog) encode structure rules as starter files"
+      },
+      "answer": "D",
+      "explanation": "The 3-tier architecture matches engineer behavior: most will read only the quick reference, CI automation catches violations without requiring memorization, and the full guide serves as a reference when needed. Content-type templates encode structural decisions, reducing cognitive overhead for non-writer contributors.",
+      "topic": "style_guide_architecture",
+      "topic_category": "style_guides",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC086",
+      "question": "A documentation platform serves content in 8 languages. The i18n workflow currently uses a translation memory (TM) system with human translators. You need to add 3 new languages with limited budget. Step 1: Evaluate the content corpus for machine-translatability. Step 2: Design a tiered quality strategy. Step 3: Define the feedback loop for continuous improvement.",
+      "choices": {
+        "A": "Step 1: Audit content by type -- API reference and UI strings have high repeatability (good for MT), conceptual guides have moderate complexity, marketing content has low translatability. Step 2: Tier the strategy -- critical paths (getting started, auth, billing) get MTPE (machine translation + human post-edit), high-volume reference gets MT with community review flags, and low-traffic pages get MT-only with prominent 'machine translated' badges. Step 3: Track translation quality scores per page, route user-reported issues to the TM for correction, and progressively promote MT-only pages to MTPE as the TM improves for each language pair",
+        "B": "Use machine translation for all 3 new languages with no human review",
+        "C": "Translate only the top 20 pages for each new language and leave the rest in English",
+        "D": "Wait until budget is available for full human translation of all 3 languages"
+      },
+      "answer": "A",
+      "explanation": "A tiered quality strategy allocates translation budget where it has the most impact: critical user paths get human-reviewed MT, high-volume reference gets community-reviewed MT, and low-traffic pages get flagged MT-only. The feedback loop progressively improves quality as the translation memory grows from corrections.",
+      "topic": "tiered_translation_strategy",
+      "topic_category": "localization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC087",
+      "question": "You need to design a documentation quality dashboard for executive reporting. The dashboard must answer: 'Is our documentation helping users succeed, and where are the gaps?' Step 1: Define the key metrics. Step 2: Map data sources. Step 3: Design the dashboard layout for a non-technical audience.",
+      "choices": {
+        "A": "Show only page view counts and publication velocity",
+        "B": "Display only the number of documentation pages published per quarter",
+        "C": "Key metrics in 4 quadrants: Coverage (% of features documented, % of API endpoints documented), Quality (readability scores, style guide compliance rate, broken link count), Effectiveness (task completion rates, search success rate, support ticket deflection), and Freshness (pages reviewed within SLA, pages flagged as stale). Data sources: docs site analytics, CI lint results, support ticket system, search logs, Git commit history. Layout: traffic-light summary cards at top, trend lines for each metric, drill-down tables for stale/undocumented items",
+        "D": "Show raw analytics data from Google Analytics with no interpretation layer"
+      },
+      "answer": "C",
+      "explanation": "A documentation quality dashboard for executives needs to connect docs metrics to business outcomes. Four quadrants (coverage, quality, effectiveness, freshness) answer different executive questions. Traffic-light summaries enable at-a-glance assessment, trend lines show trajectory, and drill-downs enable action.",
+      "topic": "documentation_quality_dashboard",
+      "topic_category": "metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC088",
+      "question": "You are documenting a real-time WebSocket API that has: connection lifecycle events (open, close, error, reconnect), message types (subscribe, unsubscribe, heartbeat, data), and back-pressure mechanisms (slow consumer detection, buffer overflow behavior). Traditional REST API documentation patterns (request/response per endpoint) do not fit. Design the documentation structure for this API.",
+      "choices": {
+        "A": "Document each message type as if it were a REST endpoint with request/response",
+        "B": "Write a single page listing all message types in a table with no lifecycle documentation",
+        "C": "Provide only a WebSocket URL and let developers use browser DevTools to discover the protocol",
+        "D": "Structure around the connection lifecycle: (1) Connection guide (handshake, authentication, reconnection strategy with exponential backoff). (2) Message reference organized by direction (client-to-server: subscribe, unsubscribe, heartbeat; server-to-client: data, error, system). (3) Protocol behavior (message ordering guarantees, back-pressure signals, buffer limits). (4) State machine diagram showing connection states and transitions. (5) Integration examples showing real subscription flows with error handling"
+      },
+      "answer": "D",
+      "explanation": "WebSocket APIs require documentation structured around connection lifecycle and bidirectional message flow, not REST-style endpoints. The connection guide covers the stateful nature, directional message reference clarifies the protocol, behavior documentation covers non-obvious semantics (ordering, back-pressure), and the state machine diagram shows the full lifecycle visually.",
+      "topic": "websocket_api_docs",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC089",
+      "question": "Your documentation codebase has grown to 2,000 Markdown files across 8 repositories. Link checking takes 45 minutes in CI, broken internal links appear weekly, and cross-repo references break silently when pages are renamed. Step 1: Diagnose why the current approach fails at scale. Step 2: Design a link integrity system. Step 3: Optimize CI performance.",
+      "choices": {
+        "A": "Step 1: The current approach fails because link checking is monolithic (checks all links every run) and cross-repo references use raw URLs that bypass build-time validation. Step 2: Implement a link registry that maps semantic identifiers to URLs, updated at build time by each repo; cross-repo references use semantic IDs resolved at build time, so renames update the registry rather than breaking consumers. Step 3: Use incremental link checking (only check links on changed pages + their reverse dependencies), cache external link validation results with TTL, and parallelize checks across repos",
+        "B": "Disable link checking to fix the CI performance problem",
+        "C": "Replace all cross-repo links with 'see other repository' text instructions",
+        "D": "Move all 2,000 files into a single repository to eliminate cross-repo references"
+      },
+      "answer": "A",
+      "explanation": "The root cause is two-fold: raw URL references that break on rename, and monolithic link checking that does not scale. A semantic link registry makes references rename-proof, while incremental checking (only changed pages + dependents) plus caching reduces CI time from O(all links) to O(changed links).",
+      "topic": "link_integrity_at_scale",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC090",
+      "question": "You are responsible for documenting a platform migration from REST API v2 to v3. 5,000 developers use v2 in production. The migration involves: breaking changes to 12 endpoints, new authentication (OAuth 2.0 replacing API keys), and a 6-month deprecation timeline. Design the documentation strategy for the migration. Consider: minimizing support burden, supporting incremental migration, and providing confidence to enterprise customers.",
+      "choices": {
+        "A": "Publish v3 documentation and remove v2 documentation immediately",
+        "B": "Send an email to all 5,000 developers with the complete list of breaking changes",
+        "C": "Create a migration hub with: (1) a migration overview page (timeline, breaking changes summary, risk assessment for enterprise customers), (2) per-endpoint migration guides showing v2 request/response alongside v3 equivalent with diff highlighting, (3) an authentication migration guide with step-by-step OAuth 2.0 setup, (4) a compatibility matrix showing which v2 features map to v3, (5) codemods or migration scripts with documentation, and (6) v2 deprecation warnings in the v2 docs linking to the corresponding v3 migration guide for each endpoint",
+        "D": "Document only v3 and let developers discover breaking changes through runtime errors"
+      },
+      "answer": "C",
+      "explanation": "A migration hub centralizes the migration experience: the overview sets expectations for decision-makers, per-endpoint guides enable incremental migration, the auth guide addresses the most impactful change, the compatibility matrix enables impact assessment, and in-context deprecation warnings in v2 docs provide just-in-time migration guidance.",
+      "topic": "api_migration_documentation",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC091",
+      "question": "A knowledge base with 1,200 articles has grown organically over 5 years. Users report difficulty finding content, and search analytics show 30% of searches result in zero hits despite relevant content existing. Step 1: Diagnose the information architecture failures. Step 2: Design a taxonomy restructure. Step 3: Plan the migration without breaking existing bookmarks and search rankings.",
+      "choices": {
+        "A": "Delete all articles and start from scratch with a new taxonomy",
+        "B": "Reorganize articles alphabetically by title",
+        "C": "Add a better search engine without changing the content structure",
+        "D": "Step 1: Audit reveals duplicated content under inconsistent categories, synonym-divergent terminology (same concept called different names), and orphaned articles with no category assignment -- all degrading search recall. Step 2: Design a controlled vocabulary mapping existing terms to canonical terms, restructure into a 3-level hierarchy with cross-cutting tags, and create redirect rules for consolidated pages. Step 3: Implement URL redirects (301) for all moved pages, run search re-indexing, preserve canonical URLs where possible, update internal cross-references via automated rewriting, and monitor search zero-result rate as the success metric"
+      },
+      "answer": "D",
+      "explanation": "The 30% zero-hit rate indicates a terminology mismatch between user queries and content, plus structural issues hiding relevant content. A controlled vocabulary fixes the semantic gap, hierarchy restructuring improves browsability, and 301 redirects preserve existing bookmarks and SEO equity during migration.",
+      "topic": "taxonomy_restructure",
+      "topic_category": "information_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC092",
+      "question": "You are implementing a PlantUML-to-Mermaid migration for a documentation site to eliminate the PlantUML server dependency. The documentation contains 85 diagrams: 40 sequence diagrams, 20 class diagrams, 15 activity diagrams, and 10 component diagrams. Step 1: Identify which diagram types migrate cleanly. Step 2: Identify which require redesign. Step 3: Design the migration workflow.",
+      "choices": {
+        "A": "Step 1: Sequence and class diagrams have near-direct Mermaid equivalents (migrate with syntax transformation). Step 2: Activity diagrams map to Mermaid flowcharts with some layout compromises; component diagrams have no direct Mermaid equivalent and require redesign as C4 diagrams (using mermaid-c4 or flowchart subgraphs). Step 3: Write automated syntax converters for the 60 directly-mappable diagrams, manually redesign the 25 that need rethinking, visual-diff validate each migration, and batch the work across sprints prioritized by page traffic",
+        "B": "Manually redraw all 85 diagrams in Mermaid from scratch",
+        "C": "Keep PlantUML for diagrams that do not convert and run both rendering systems",
+        "D": "Replace all diagrams with text descriptions to avoid the migration"
+      },
+      "answer": "A",
+      "explanation": "Not all PlantUML diagram types have Mermaid equivalents. Sequence and class diagrams convert directly, activity diagrams need flowchart adaptation, and component diagrams require architectural redesign. Automating the direct conversions (70% of diagrams) and manually redesigning the rest is the efficient approach.",
+      "topic": "diagram_migration",
+      "topic_category": "diagramming",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC093",
+      "question": "You are designing an MDX-based documentation system that embeds live API explorers. The explorers allow users to input parameters and see real API responses. Step 1: What are the security implications? Step 2: How do you handle authentication in the explorer? Step 3: How do you ensure the interactive component does not degrade the documentation experience for non-interactive users?",
+      "choices": {
+        "A": "Step 1: Security risks include exposing API keys in client-side code, enabling unintended production mutations, and potential XSS through response rendering. Step 2: Use a sandbox API environment with read-only tokens, or proxy requests through a rate-limited documentation backend that strips sensitive headers. Step 3: Render a static default response below the interactive component as the SSR fallback, use progressive enhancement (static content loads first, interactive layer hydrates), and ensure all information conveyed by the explorer is also available in static text for accessibility and offline readers",
+        "B": "Embed live API calls directly against the production API with no authentication",
+        "C": "Require users to paste their production API key into the explorer",
+        "D": "Only show the API explorer to authenticated documentation users"
+      },
+      "answer": "A",
+      "explanation": "Live API explorers introduce security surface area (key exposure, production mutations, XSS), authentication complexity (sandbox vs proxy), and accessibility concerns (interactive-only content excludes some users). Sandboxed environments, progressive enhancement, and static fallbacks address all three dimensions.",
+      "topic": "interactive_api_docs_security",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC094",
+      "question": "Your team writes documentation in English, which is then translated into 6 languages. A new feature requires documenting culturally-sensitive financial concepts (credit scores, tax identification numbers) that differ fundamentally across regions. Step 1: Why does standard translation fail here? Step 2: What is the documentation strategy? Step 3: How do you manage the content lifecycle across locales?",
+      "choices": {
+        "A": "Translate the English documentation directly and add footnotes for regional differences",
+        "B": "Step 1: Standard translation fails because the concepts themselves differ (credit scores do not exist in some regions; tax ID formats vary). Direct translation produces incorrect or meaningless content. Step 2: Use locale-specific content authoring (not translation) for region-dependent sections: define a shared structural template, but have regional subject matter experts write the locale-specific content natively. Step 3: Track content freshness per locale independently, since region-specific regulations change on different schedules; use a content matrix mapping shared components vs locale-specific components, with independent review cycles for each locale's regulatory content",
+        "C": "Remove all culturally-sensitive content from the documentation",
+        "D": "Use a single global description and tell users to consult their local regulations"
+      },
+      "answer": "B",
+      "explanation": "When concepts differ across cultures (not just words), translation is the wrong tool -- locale-specific authoring by regional SMEs is needed. A shared template ensures structural consistency while allowing each locale to describe their own financial concepts accurately. Independent freshness tracking handles asynchronous regulatory changes.",
+      "topic": "locale_specific_authoring",
+      "topic_category": "localization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC095",
+      "question": "You discover that a reference documentation page rendered from an OpenAPI spec has a table with 47 columns representing all fields of a complex response object. The table is unusable on mobile and overwhelming on desktop. Step 1: Why does the generated format fail? Step 2: Design an alternative presentation. Step 3: Ensure the alternative stays in sync with the OpenAPI spec.",
+      "choices": {
+        "A": "Remove the table and list only the 10 most important fields",
+        "B": "Step 1: Auto-generated flat tables cannot represent nested objects meaningfully, and 47 columns exceed human scanning capacity. Step 2: Replace with a hierarchical, collapsible schema explorer that groups fields by object nesting, shows required fields expanded by default and optional fields collapsed, with type badges and inline descriptions. Step 3: Generate the explorer component from the OpenAPI spec at build time using a custom renderer that reads the same `$ref`-resolved schema, ensuring any spec change is reflected automatically without manual updates",
+        "C": "Split the table across 5 separate pages with 9-10 columns each",
+        "D": "Convert the table to a PDF download that users can view separately"
+      },
+      "answer": "B",
+      "explanation": "Flat tables fail for complex nested schemas because they cannot represent hierarchy and overwhelm users with column count. A collapsible schema explorer respects the object structure, uses progressive disclosure (required fields visible, optional collapsed), and is generated from the same OpenAPI spec to maintain sync.",
+      "topic": "api_schema_presentation",
+      "topic_category": "api_docs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC096",
+      "question": "You are building a docs-as-code pipeline for a monorepo containing 4 services, each with its own `docs/` directory. The pipeline must: (1) build a unified site from all 4 docs directories, (2) support service-specific navigation and versioning, (3) run PR previews showing only the changed service's docs, and (4) deploy to a CDN with cache invalidation scoped to changed paths only. Design the pipeline architecture.",
+      "choices": {
+        "A": "Build each service's docs independently with no unified site",
+        "B": "Use a monorepo-aware build system: a root `mkdocs.yml` uses the monorepo plugin to merge 4 service docs into a unified nav. PR preview builds use file-change detection to identify affected services and build only those (with stubs for unchanged services). Production builds generate the full site. CDN deployment uses content-hash-based cache keys so only changed pages invalidate. Service-specific `mike` versioning allows independent version releases per service within the unified site",
+        "C": "Copy all docs into a single flat directory and build from there",
+        "D": "Build the full site on every PR regardless of which service changed"
+      },
+      "answer": "B",
+      "explanation": "Monorepo documentation requires balancing unified output with service-level independence. The monorepo plugin merges navigation, change detection scopes PR previews (fast feedback), content-hash cache keys minimize CDN invalidation (performance), and per-service versioning allows independent release cycles within one site.",
+      "topic": "monorepo_docs_pipeline",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC097",
+      "question": "A documentation site scores 92/100 on Lighthouse accessibility but receives complaints from screen reader users that navigation is confusing. The site uses: a persistent left sidebar with collapsible sections, breadcrumbs, a table of contents sidebar on the right, and a search modal. Step 1: Why might Lighthouse miss these issues? Step 2: What manual testing would reveal the problems? Step 3: What ARIA improvements would fix them?",
+      "choices": {
+        "A": "Lighthouse accessibility scoring is sufficient; the complaints are invalid",
+        "B": "Replace the sidebar navigation with a single hamburger menu",
+        "C": "Increase the Lighthouse score to 100 by fixing the remaining automated issues",
+        "D": "Step 1: Lighthouse tests automated rules (contrast, alt text, ARIA attributes) but cannot evaluate navigation coherence, focus management, or reading order -- issues that require human judgment. Step 2: Manual testing with a screen reader (NVDA/JAWS) reveals: sidebar focus traps on collapse/expand, no skip-navigation link to bypass the 50-item sidebar, breadcrumbs and TOC not marked as `nav` landmarks with descriptive `aria-label`, and search modal does not trap focus or announce itself. Step 3: Add skip-nav link, label `nav` landmarks distinctly ('Main navigation,' 'Breadcrumbs,' 'On this page'), implement focus management for sidebar collapse and search modal, and add `aria-current=\"page\"` to the active sidebar item"
+      },
+      "answer": "D",
+      "explanation": "Lighthouse catches syntactic accessibility issues (missing attributes, contrast) but not semantic issues (navigation coherence, focus management, landmark labeling). Screen reader testing reveals the experiential problems: focus traps, missing skip links, unlabeled landmarks, and modal focus management -- all requiring manual ARIA improvements.",
+      "topic": "advanced_aria_navigation",
+      "topic_category": "accessibility",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC098",
+      "question": "Your organization wants to measure the ROI of documentation. Engineering leadership asks: 'How do we know our documentation investment is paying off?' Step 1: Define measurable outcomes tied to business value. Step 2: Design the measurement framework. Step 3: Address the attribution challenge (documentation is one of many factors affecting outcomes).",
+      "choices": {
+        "A": "Step 1: Tie docs to business metrics: support ticket deflection (fewer tickets = cost savings), time-to-first-API-call (faster onboarding = higher conversion), developer satisfaction scores, and self-service resolution rate. Step 2: Implement measurement: instrument docs with analytics to track user journeys, correlate doc page visits with support ticket reduction (users who read docs before filing tickets), measure time-to-first-successful-API-call for users who follow the quickstart vs those who do not, survey developer satisfaction quarterly. Step 3: Use controlled comparison (cohort of users with/without docs access), trend analysis (docs improvements correlated with metric changes over time), and acknowledge documentation as a contributing factor with confidence intervals rather than claiming sole attribution",
+        "B": "Report the number of documentation pages published as the ROI metric",
+        "C": "Claim that documentation prevents all support tickets",
+        "D": "Report only qualitative feedback ('developers like the docs') without quantitative metrics"
+      },
+      "answer": "A",
+      "explanation": "Documentation ROI requires connecting docs metrics to business outcomes (ticket deflection, onboarding speed, satisfaction). The attribution challenge -- docs are one of many factors -- is addressed through controlled comparisons and trend correlation rather than claiming sole causation. This gives leadership actionable, honest data.",
+      "topic": "documentation_roi",
+      "topic_category": "metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC099",
+      "question": "You are designing a documentation system for a regulated industry (medical devices, FDA 21 CFR Part 11). The documentation must: (1) maintain full audit trails for every content change, (2) require electronic signatures for publication approval, (3) support content recall (ability to retract published content), and (4) comply with records retention requirements. Evaluate how a docs-as-code system can meet these regulatory requirements vs a traditional document management system (DMS).",
+      "choices": {
+        "A": "Docs-as-code meets most requirements with augmentation: (1) Git provides immutable audit trails (every change attributed, timestamped, and linked to a commit). (2) Electronic signatures require a PR approval workflow with GPG-signed commits or an external e-signature integration that records approver identity and timestamp. (3) Content recall is implemented via tagged releases with the ability to roll back and redeploy, plus a 'withdrawn' status page replacing retracted content. (4) Records retention uses Git tag protection policies, branch protection, and periodic archival to a compliant long-term storage system. The gaps vs traditional DMS: Git does not natively enforce 21 CFR Part 11 e-signature requirements, requiring a wrapper tool or integration",
+        "B": "Docs-as-code cannot meet regulatory requirements; use a traditional DMS exclusively",
+        "C": "Use Google Docs for all regulated documentation since it has version history",
+        "D": "Regulatory compliance only applies to the product, not its documentation"
+      },
+      "answer": "A",
+      "explanation": "Git-based docs-as-code provides strong audit trails and version control that meet many regulatory requirements. The key gap is formal electronic signatures (21 CFR Part 11 requires specific identity verification that Git commits alone do not satisfy), which needs an integration layer. Understanding where docs-as-code is strong and where it needs augmentation enables a compliant hybrid approach.",
+      "topic": "regulated_documentation",
+      "topic_category": "docs_as_code",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "DOC100",
+      "question": "You inherit a developer portal with the following problems: (1) 40% of pages have not been updated in 18 months, (2) three different writing styles are evident from different eras of the company, (3) the navigation has 6 levels deep with 200+ leaf pages, (4) the search returns irrelevant results, and (5) developer NPS for documentation is -15. You have budget for one technical writer and 6 months. Step 1: Prioritize the problems. Step 2: Design a 6-month remediation plan. Step 3: Define success metrics for each phase.",
+      "choices": {
+        "A": "Rewrite all 200+ pages from scratch within 6 months",
+        "B": "Hire 5 contractors to address all problems simultaneously",
+        "C": "Focus exclusively on fixing search since that is the most technically interesting problem",
+        "D": "Step 1: Priority by developer impact: navigation depth (users cannot find content) > stale content (users find wrong answers) > search quality (degraded by stale/inconsistent content) > style inconsistency (cosmetic). Step 2: Months 1-2: Restructure navigation to 3 levels max, consolidate/archive stale pages (reduce to ~120 active pages), implement redirects. Months 3-4: Update the top-30 highest-traffic pages for accuracy and consistent style, implement a Vale pipeline for new content. Months 5-6: Improve search relevance (metadata, synonyms), establish a freshness review cycle, create contribution guide for engineers. Step 3: Month 2 success: navigation depth <= 3, page count reduced 40%. Month 4: top-30 pages pass Vale checks, stale content flagged < 20%. Month 6: search zero-result rate < 10%, developer NPS positive"
+      },
+      "answer": "D",
+      "explanation": "With one writer and 6 months, ruthless prioritization by developer impact is essential. Navigation restructuring and content pruning (months 1-2) have the highest ROI because they fix findability. Updating high-traffic pages (months 3-4) fixes accuracy where it matters most. Search and process improvements (months 5-6) sustain the gains. Each phase has measurable success criteria.",
+      "topic": "documentation_remediation_plan",
+      "topic_category": "information_architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

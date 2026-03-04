@@ -236,9 +236,19 @@ def main() -> None:
     sa_parser.add_argument("--port", type=int, default=8200, help="Port")
     sa_parser.add_argument("--agents-dir", default=None, help="Path to agents directory")
 
+    # -- setup ------------------------------------------------------
+    sub.add_parser(
+        "setup",
+        help="Interactive setup wizard (Ollama + model + content feeds)",
+    )
+
     args = parser.parse_args()
 
-    if args.command == "serve":
+    if args.command == "setup":
+        from cohort.local.setup import run_setup
+
+        sys.exit(run_setup())
+    elif args.command == "serve":
         from cohort.server import serve
 
         print(f"[*] cohort server starting on {args.host}:{args.port}")

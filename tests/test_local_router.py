@@ -156,14 +156,14 @@ def test_ollama_list_models():
     client = OllamaClient()
 
     mock_response = MagicMock()
-    mock_response.read = Mock(return_value=b'{"models": [{"name": "llama3.2:1b"}, {"name": "qwen3:8b"}]}')
+    mock_response.read = Mock(return_value=b'{"models": [{"name": "qwen2.5-coder:1.5b"}, {"name": "qwen3:8b"}]}')
     mock_response.__enter__ = Mock(return_value=mock_response)
     mock_response.__exit__ = Mock(return_value=False)
 
     with patch("urllib.request.urlopen", return_value=mock_response):
         models = client.list_models()
 
-    assert models == ["llama3.2:1b", "qwen3:8b"]
+    assert models == ["qwen2.5-coder:1.5b", "qwen3:8b"]
 
 
 def test_ollama_list_models_server_down():
@@ -221,7 +221,7 @@ def test_ollama_generate_failure():
 def test_get_model_for_vram_tier1():
     """Test model selection for <4GB VRAM."""
     model = get_model_for_vram(2048)  # 2GB
-    assert model == "llama3.2:1b"
+    assert model == "qwen2.5-coder:1.5b"
 
 
 def test_get_model_for_vram_tier2():
@@ -361,7 +361,7 @@ def test_local_router_model_missing():
 
     mock_client = Mock(spec=OllamaClient)
     mock_client.health_check.return_value = True
-    mock_client.list_models.return_value = ["llama3.2:1b"]  # Different model
+    mock_client.list_models.return_value = ["qwen2.5-coder:1.5b"]  # Different model
 
     with patch.object(router, "_detect_hardware", return_value=mock_hw_info):
         with patch("cohort.local.router.OllamaClient", return_value=mock_client):

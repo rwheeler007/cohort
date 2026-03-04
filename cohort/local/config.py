@@ -26,7 +26,7 @@ class ModelMapping(TypedDict):
 VRAM_TIER_MODELS: list[ModelMapping] = [
     {
         "vram_range": (0, 4096),  # <4GB VRAM
-        "model": "llama3.2:1b",
+        "model": "qwen2.5-coder:1.5b",
         "tier": 1,
     },
     {
@@ -61,6 +61,30 @@ TASK_TEMPERATURES: dict[str, float] = {
 }
 
 DEFAULT_TEMPERATURE = 0.4
+
+
+# =====================================================================
+# Model Descriptions (for setup wizard display)
+# =====================================================================
+
+MODEL_DESCRIPTIONS: dict[str, dict[str, str]] = {
+    "qwen2.5-coder:1.5b": {
+        "size": "~1 GB",
+        "summary": "Lightweight coding model, fast on any hardware",
+    },
+    "gemma3:4b": {
+        "size": "~2.5 GB",
+        "summary": "Compact model, good balance of speed and quality",
+    },
+    "qwen3:8b": {
+        "size": "~4.7 GB",
+        "summary": "Strong reasoning and coding, great for most tasks",
+    },
+    "qwen3:30b-a3b": {
+        "size": "~18 GB",
+        "summary": "Top-tier mixture-of-experts, near-frontier quality",
+    },
+}
 
 
 def get_model_for_vram(vram_mb: int) -> str:

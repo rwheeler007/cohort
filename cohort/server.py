@@ -94,6 +94,35 @@ def _save_settings(settings: dict[str, Any]) -> None:
         logger.warning("Failed to save settings.json: %s", exc)
 
 
+def _load_tool_filter() -> tuple[list[str], dict[str, str]] | None:
+    """Load curated tool ID list and display names from cohort_tools.json.
+
+    Returns (tool_ids, display_names) if the file exists and is valid,
+    or None if no filter should be applied (show all tools).
+    """
+    if _settings_path is None:
+        return None
+
+    filter_path = _settings_path.parent / "cohort_tools.json"
+    if not filter_path.exists():
+        return None
+
+    try:
+        with open(filter_path, encoding="utf-8") as f:
+            data = json.load(f)
+
+        tool_ids = data.get("tools", [])
+        if isinstance(tool_ids, list) and all(isinstance(t, str) for t in tool_ids):
+            display_names = data.get("display_names", {})
+            return tool_ids, display_names
+
+        logger.warning("cohort_tools.json has invalid format, showing all tools")
+        return None
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning("Failed to load cohort_tools.json: %s", exc)
+        return None
+
+
 # =====================================================================
 # Route handlers
 # =====================================================================
@@ -615,6 +644,33 @@ async def end_roundtable(request: Request) -> JSONResponse:
     return JSONResponse({"success": True, "summary": summary})
 
 
+async def list_roundtable_sessions(request: Request) -> JSONResponse:
+    """GET /api/roundtable/sessions -- list all sessions."""
+    orch = _get_roundtable_orch()
+    sessions = [s.to_dict() for s in orch.sessions.values()]
+    return JSONResponse({"success": True, "sessions": sessions})
+
+
+async def pause_roundtable(request: Request) -> JSONResponse:
+    """POST /api/roundtable/{session_id}/pause -- pause session."""
+    session_id = request.path_params["session_id"]
+    orch = _get_roundtable_orch()
+    ok = orch.pause_session(session_id)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found or not active"}, status_code=404)
+    return JSONResponse({"success": True})
+
+
+async def resume_roundtable(request: Request) -> JSONResponse:
+    """POST /api/roundtable/{session_id}/resume -- resume session."""
+    session_id = request.path_params["session_id"]
+    orch = _get_roundtable_orch()
+    ok = orch.resume_session(session_id)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found or not paused"}, status_code=404)
+    return JSONResponse({"success": True})
+
+
 async def get_channel_roundtable(request: Request) -> JSONResponse:
     """GET /api/roundtable/channel/{channel_id} -- get active session for channel."""
     channel_id = request.path_params["channel_id"]
@@ -697,7 +753,7 @@ async def condense_channel(request: Request) -> JSONResponse:
 # =====================================================================
 
 async def list_tools(request: Request) -> JSONResponse:
-    """GET /api/tools -- return workflow tools from boss_config.yaml."""
+    """GET /api/tools -- return workflow tools from boss_config.yaml, filtered by cohort_tools.json."""
     settings = _load_settings()
     agents_root = settings.get("agents_root", "")
     if not agents_root:
@@ -717,17 +773,29 @@ async def list_tools(request: Request) -> JSONResponse:
             cfg = yaml.safe_load(f) or {}
 
         raw_tools = cfg.get("boss", {}).get("tools", {})
+        tool_filter = _load_tool_filter()
+        allowed_ids = tool_filter[0] if tool_filter else None
+        display_names = tool_filter[1] if tool_filter else {}
+
         tools = []
         for tool_id, info in raw_tools.items():
+            if allowed_ids is not None and tool_id not in allowed_ids:
+                continue
+            name = display_names.get(tool_id) or tool_id.replace("_", " ").title()
             tools.append({
                 "id": tool_id,
-                "name": tool_id.replace("_", " ").title(),
+                "name": name,
                 "description": info.get("description", ""),
                 "phases": info.get("phases", []),
                 "features": info.get("features", []),
                 "path": info.get("path", ""),
                 "implemented": bool(info.get("path")),
             })
+
+        # Preserve curated ordering from cohort_tools.json
+        if allowed_ids is not None:
+            order = {tid: i for i, tid in enumerate(allowed_ids)}
+            tools.sort(key=lambda t: order.get(t["id"], 999))
 
         return JSONResponse({"tools": tools})
     except Exception as exc:
@@ -904,6 +972,236 @@ async def post_permissions(request: Request) -> JSONResponse:
 
 
 # =====================================================================
+# Setup Wizard API
+# =====================================================================
+
+
+async def setup_status(request: Request) -> JSONResponse:
+    """GET /api/setup/status -- check if setup has been completed."""
+    settings = _load_settings()
+    setup_done = settings.get("setup_completed", False)
+
+    return JSONResponse({
+        "setup_completed": setup_done,
+        "hardware_info": settings.get("hardware_info"),
+        "model_name": settings.get("model_name"),
+        "model_verified": settings.get("model_verified", False),
+        "content_topic": settings.get("content_topic"),
+    })
+
+
+async def setup_detect_hardware(request: Request) -> JSONResponse:
+    """POST /api/setup/detect -- detect GPU and VRAM."""
+    from cohort.local.config import MODEL_DESCRIPTIONS, get_model_for_vram
+    from cohort.local.detect import detect_hardware
+
+    hw = detect_hardware()
+    model = get_model_for_vram(hw.vram_mb)
+    desc = MODEL_DESCRIPTIONS.get(model, {})
+
+    # Persist hardware info
+    settings = _load_settings()
+    settings["hardware_info"] = {
+        "gpu_name": hw.gpu_name,
+        "vram_mb": hw.vram_mb,
+        "cpu_only": hw.cpu_only,
+        "platform": hw.platform,
+    }
+    settings["model_name"] = model
+    _save_settings(settings)
+
+    return JSONResponse({
+        "gpu_name": hw.gpu_name,
+        "vram_mb": hw.vram_mb,
+        "cpu_only": hw.cpu_only,
+        "platform": hw.platform,
+        "recommended_model": model,
+        "model_size": desc.get("size", "unknown"),
+        "model_summary": desc.get("summary", ""),
+    })
+
+
+async def setup_check_ollama(request: Request) -> JSONResponse:
+    """POST /api/setup/check-ollama -- check if Ollama is running."""
+    import shutil
+
+    from cohort.local.ollama import OllamaClient
+
+    client = OllamaClient(timeout=5)
+    running = client.health_check()
+    on_path = shutil.which("ollama") is not None
+    models = client.list_models() if running else []
+
+    settings = _load_settings()
+    recommended = settings.get("model_name", "")
+    model_installed = False
+    if recommended and models:
+        base = recommended.split(":")[0]
+        model_installed = any(
+            m == recommended or m.startswith(base + ":") for m in models
+        )
+
+    return JSONResponse({
+        "running": running,
+        "on_path": on_path,
+        "models": models,
+        "model_installed": model_installed,
+        "platform": __import__("platform").system().lower(),
+    })
+
+
+async def setup_pull_model(request: Request) -> JSONResponse:
+    """POST /api/setup/pull-model -- start model pull with Socket.IO progress."""
+    settings = _load_settings()
+    model = settings.get("model_name", "")
+    if not model:
+        return JSONResponse({"error": "No model selected"}, status_code=400)
+
+    from cohort.socketio_events import sio
+
+    asyncio.create_task(_stream_model_pull(model, sio))
+    return JSONResponse({"status": "pulling", "model": model})
+
+
+async def _stream_model_pull(model: str, sio_server: Any) -> None:
+    """Background task: stream Ollama model pull via Socket.IO events."""
+    import json as _json
+    import queue
+    import threading
+    import urllib.request
+
+    url = "http://127.0.0.1:11434/api/pull"
+    body = _json.dumps({"model": model, "stream": True}).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    progress_queue: queue.Queue[dict | None] = queue.Queue()
+
+    def _pull_thread() -> None:
+        try:
+            with urllib.request.urlopen(req, timeout=3600) as resp:
+                for raw_line in resp:
+                    line = raw_line.decode("utf-8").strip()
+                    if not line:
+                        continue
+                    try:
+                        data = _json.loads(line)
+                    except _json.JSONDecodeError:
+                        continue
+                    progress_queue.put(data)
+        except Exception as exc:
+            progress_queue.put({"error": str(exc)})
+        finally:
+            progress_queue.put(None)
+
+    t = threading.Thread(target=_pull_thread, daemon=True)
+    t.start()
+
+    while True:
+        try:
+            data = await asyncio.to_thread(progress_queue.get, timeout=2.0)
+        except Exception:
+            await asyncio.sleep(0.5)
+            continue
+
+        if data is None:
+            settings = _load_settings()
+            settings["model_installed"] = True
+            _save_settings(settings)
+            await sio_server.emit("setup:complete", {"model": model, "success": True})
+            break
+
+        if "error" in data:
+            await sio_server.emit(
+                "setup:complete",
+                {"model": model, "success": False, "error": data["error"]},
+            )
+            break
+
+        await sio_server.emit("setup:progress", {
+            "status": data.get("status", ""),
+            "total": data.get("total", 0),
+            "completed": data.get("completed", 0),
+        })
+
+
+async def setup_verify_model(request: Request) -> JSONResponse:
+    """POST /api/setup/verify -- test inference with the selected model."""
+    from cohort.local.ollama import OllamaClient
+
+    settings = _load_settings()
+    model = settings.get("model_name", "")
+    if not model:
+        return JSONResponse({"error": "No model selected"}, status_code=400)
+
+    client = OllamaClient(timeout=120)
+    result = await asyncio.to_thread(
+        client.generate,
+        model=model,
+        prompt="What makes a good code review? Answer in two sentences.",
+        temperature=0.3,
+    )
+
+    if result and result.text.strip():
+        settings["model_verified"] = True
+        _save_settings(settings)
+        return JSONResponse({
+            "success": True,
+            "text": result.text.strip(),
+            "elapsed_seconds": result.elapsed_seconds,
+            "model": model,
+        })
+
+    return JSONResponse({
+        "success": False,
+        "error": "Model produced no output. First run can be slow -- try again.",
+    })
+
+
+async def setup_get_topics(request: Request) -> JSONResponse:
+    """GET /api/setup/topics -- return available content pipeline topics."""
+    from cohort.local.setup import TOPIC_FEEDS
+
+    topics = {}
+    for topic, feeds in TOPIC_FEEDS.items():
+        topics[topic] = [{"name": f["name"], "url": f["url"]} for f in feeds]
+    return JSONResponse({"topics": topics})
+
+
+async def setup_save_config(request: Request) -> JSONResponse:
+    """POST /api/setup/save-config -- save content config + mark setup complete."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    feeds = body.get("feeds", [])
+    topic = body.get("topic", "")
+
+    if feeds:
+        config = {
+            "feeds": feeds,
+            "topic": topic,
+            "check_interval_minutes": 60,
+            "max_articles_per_feed": 10,
+        }
+        config_path = Path(_resolved_data_dir) / "content_config.json"
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    settings = _load_settings()
+    settings["setup_completed"] = True
+    settings["content_topic"] = topic
+    _save_settings(settings)
+
+    return JSONResponse({"success": True})
+
+
+# =====================================================================
 # Agent persistence helpers
 # =====================================================================
 
@@ -968,9 +1266,13 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
     agents_dir = Path(agents_dir_env) if agents_dir_env else Path(resolved_dir) / "agents"
+    remote_url = os.environ.get("COHORT_AGENTS_API_URL", "")
+    api_key = os.environ.get("COHORT_AGENTS_API_KEY", "")
     _agent_store = AgentStore(
         agents_dir=agents_dir if agents_dir.is_dir() else None,
         fallback_registry=_LEGACY_REGISTRY,
+        remote_url=remote_url,
+        api_key=api_key,
     )
     set_store(_agent_store)
 
@@ -1034,11 +1336,22 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/tools", list_tools, methods=["GET"]),
         Route("/api/tasks", get_task_queue, methods=["GET"]),
         Route("/api/outputs", get_outputs, methods=["GET"]),
+        # Setup wizard endpoints
+        Route("/api/setup/status", setup_status, methods=["GET"]),
+        Route("/api/setup/detect", setup_detect_hardware, methods=["POST"]),
+        Route("/api/setup/check-ollama", setup_check_ollama, methods=["POST"]),
+        Route("/api/setup/pull-model", setup_pull_model, methods=["POST"]),
+        Route("/api/setup/verify", setup_verify_model, methods=["POST"]),
+        Route("/api/setup/topics", setup_get_topics, methods=["GET"]),
+        Route("/api/setup/save-config", setup_save_config, methods=["POST"]),
         # Roundtable endpoints
+        Route("/api/roundtable/sessions", list_roundtable_sessions, methods=["GET"]),
         Route("/api/roundtable/start", start_roundtable, methods=["POST"]),
         Route("/api/roundtable/{session_id}/status", get_roundtable_status, methods=["GET"]),
         Route("/api/roundtable/{session_id}/next-speaker", get_next_speaker, methods=["GET"]),
         Route("/api/roundtable/{session_id}/record-turn", record_roundtable_turn, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/pause", pause_roundtable, methods=["POST"]),
+        Route("/api/roundtable/{session_id}/resume", resume_roundtable, methods=["POST"]),
         Route("/api/roundtable/{session_id}/end", end_roundtable, methods=["POST"]),
         Route("/api/roundtable/channel/{channel_id}", get_channel_roundtable, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),

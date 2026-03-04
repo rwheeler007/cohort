@@ -72,6 +72,3 @@ jobs:
 
       - name: Publish to PyPI (trusted publisher)
         uses: pypa/gh-action-pypi-publish@release/v1
-        # Falls back to token auth if trusted publishing is not configured
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}

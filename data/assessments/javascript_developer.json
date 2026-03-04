@@ -1,0 +1,1613 @@
+{
+  "agent_id": "javascript_developer",
+  "source": "Senior JavaScript/TypeScript certification level (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "JS001",
+      "question": "What is the output of the following code?\n\nconst obj = { a: 1, b: 2, c: 3 };\nconst { a, ...rest } = obj;\nconsole.log(rest);",
+      "choices": {
+        "A": "undefined",
+        "B": "{ b: 2, c: 3 }",
+        "C": "{ a: 1 }",
+        "D": "{ a: 1, b: 2, c: 3 }"
+      },
+      "answer": "B",
+      "explanation": "The rest element in destructuring collects all remaining own enumerable properties not already picked off. Since `a` was extracted, `rest` contains `{ b: 2, c: 3 }`.",
+      "topic": "destructuring_rest",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS002",
+      "question": "Which statement about JavaScript closures is correct?",
+      "choices": {
+        "A": "A closure retains a reference to the outer function's variable environment, allowing access to variables even after the outer function returns",
+        "B": "A closure captures variables by value at the time the function is defined",
+        "C": "A closure is created only when a function is explicitly returned from another function",
+        "D": "Closures only work with variables declared using var, not let or const"
+      },
+      "answer": "A",
+      "explanation": "Closures capture the variable environment by reference, not by value. They work with var, let, and const, and are created whenever a function references variables from an enclosing scope, not only when explicitly returned.",
+      "topic": "closures",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS003",
+      "question": "What does the following code log?\n\nconsole.log(typeof null);",
+      "choices": {
+        "A": "\"undefined\"",
+        "B": "\"null\"",
+        "C": "\"NullType\"",
+        "D": "\"object\""
+      },
+      "answer": "D",
+      "explanation": "typeof null returning \"object\" is a well-known legacy bug in JavaScript dating back to the first implementation. It has never been fixed due to backward compatibility concerns.",
+      "topic": "type_system",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS004",
+      "question": "What is the output?\n\nconst arr = [1, 2, 3, 4, 5];\nconst result = arr.flatMap(x => x % 2 === 0 ? [x, x * 10] : []);\nconsole.log(result);",
+      "choices": {
+        "A": "[[2, 20], [4, 40]]",
+        "B": "[20, 40]",
+        "C": "[2, 20, 4, 40]",
+        "D": "[1, 2, 3, 4, 5]"
+      },
+      "answer": "C",
+      "explanation": "flatMap first maps each element then flattens one level. Even numbers produce [x, x*10] arrays which are flattened into the result. Odd numbers produce empty arrays which contribute nothing.",
+      "topic": "array_methods",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS005",
+      "question": "What is the purpose of WeakRef in JavaScript?",
+      "choices": {
+        "A": "It provides a reference-counted pointer similar to C++ shared_ptr",
+        "B": "It creates a reference that prevents garbage collection of the target object",
+        "C": "It creates an immutable reference to a primitive value",
+        "D": "It holds a weak reference to an object that does not prevent garbage collection of that object"
+      },
+      "answer": "D",
+      "explanation": "WeakRef holds a reference to an object without preventing garbage collection. The referenced object can be reclaimed at any time, and deref() returns undefined if it has been collected.",
+      "topic": "weakref",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS006",
+      "question": "What does this code output?\n\nfunction* gen() {\n  yield 1;\n  yield 2;\n  return 3;\n}\nconst it = gen();\nconsole.log([...it]);",
+      "choices": {
+        "A": "[1, 2]",
+        "B": "[3]",
+        "C": "[]",
+        "D": "[1, 2, 3]"
+      },
+      "answer": "A",
+      "explanation": "The spread operator iterates the generator until done is true. yield produces values with done: false. The return value (3) has done: true, so the iteration protocol excludes it from spread/for-of results.",
+      "topic": "generators",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS007",
+      "question": "Which hook is used in React to defer a state update to a lower-priority render?",
+      "choices": {
+        "A": "useTransition",
+        "B": "useMemo",
+        "C": "useLayoutEffect",
+        "D": "useCallback"
+      },
+      "answer": "A",
+      "explanation": "useTransition marks a state update as non-urgent, allowing React to keep the UI responsive by interrupting the transition render if higher-priority updates arrive. useCallback and useMemo are for memoization, and useLayoutEffect fires synchronously after DOM mutations.",
+      "topic": "hooks_concurrent",
+      "topic_category": "react",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS008",
+      "question": "In Node.js, what is the correct way to read a file asynchronously using promises?",
+      "choices": {
+        "A": "import { readFile } from 'node:fs/promises'; const data = await readFile('file.txt', 'utf8');",
+        "B": "import fs from 'node:fs'; const data = fs.readFileSync('file.txt');",
+        "C": "const fs = require('fs'); fs.readFile('file.txt', (err, data) => {});",
+        "D": "import { createReadStream } from 'node:fs'; const data = createReadStream('file.txt').read();"
+      },
+      "answer": "A",
+      "explanation": "The node:fs/promises module provides promise-based versions of fs methods. Option A uses callbacks, C is synchronous, and D misuses createReadStream (streams are not read synchronously with .read()).",
+      "topic": "fs_promises",
+      "topic_category": "nodejs",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS009",
+      "question": "What does the `satisfies` operator do in TypeScript?\n\ntype Colors = 'red' | 'green' | 'blue';\nconst palette = {\n  red: [255, 0, 0],\n  green: '#00ff00',\n  blue: [0, 0, 255]\n} satisfies Record<Colors, string | number[]>;",
+      "choices": {
+        "A": "It throws a runtime error if the object doesn't match the type",
+        "B": "It validates that palette conforms to the type while preserving the inferred narrow types of each property",
+        "C": "It is equivalent to a type assertion using `as`",
+        "D": "It narrows the type of palette to Record<Colors, string | number[]>, losing the specific literal types"
+      },
+      "answer": "B",
+      "explanation": "The satisfies operator checks that an expression matches a type without widening it. palette.red remains number[] and palette.green remains string, unlike a type annotation which would widen all values to string | number[].",
+      "topic": "satisfies_operator",
+      "topic_category": "typescript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS010",
+      "question": "What is the default behavior of Vite's dev server regarding module format?",
+      "choices": {
+        "A": "It compiles everything to SystemJS format for maximum compatibility",
+        "B": "It bundles all modules into a single CJS file and serves it",
+        "C": "It pre-bundles all source files using esbuild before serving anything",
+        "D": "It serves native ES modules over HTTP, transforming only the requested file on demand"
+      },
+      "answer": "D",
+      "explanation": "Vite leverages native ESM in the browser during development, transforming individual files on demand. It pre-bundles only node_modules dependencies with esbuild, not application source code.",
+      "topic": "vite_dev_server",
+      "topic_category": "build_tools",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS011",
+      "question": "Which pattern correctly creates a custom React hook that tracks window resize?",
+      "choices": {
+        "A": "function useWindowSize() {\n  const size = useRef({ w: window.innerWidth, h: window.innerHeight });\n  window.addEventListener('resize', () => { size.current = { w: window.innerWidth, h: window.innerHeight }; });\n  return size.current;\n}",
+        "B": "function useWindowSize() {\n  let size = { w: window.innerWidth, h: window.innerHeight };\n  window.addEventListener('resize', () => { size = { w: window.innerWidth, h: window.innerHeight }; });\n  return size;\n}",
+        "C": "function useWindowSize() {\n  const [size, setSize] = useState({ w: 0, h: 0 });\n  setSize({ w: window.innerWidth, h: window.innerHeight });\n  return size;\n}",
+        "D": "function useWindowSize() {\n  const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight });\n  useEffect(() => {\n    const handler = () => setSize({ w: window.innerWidth, h: window.innerHeight });\n    window.addEventListener('resize', handler);\n    return () => window.removeEventListener('resize', handler);\n  }, []);\n  return size;\n}"
+      },
+      "answer": "D",
+      "explanation": "A correctly uses useState for reactive state, useEffect for side-effect subscription with cleanup. B uses a plain variable that won't trigger re-renders. C uses useRef without cleanup and won't trigger re-renders. D calls setState during render, causing an infinite loop.",
+      "topic": "custom_hooks",
+      "topic_category": "react",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS012",
+      "question": "In Jest/Vitest, what does `vi.mock('module')` (or `jest.mock('module')`) do when called at the top level of a test file?",
+      "choices": {
+        "A": "It replaces the module with an auto-mocked version where all exports become mock functions, hoisted to the top of the file",
+        "B": "It only mocks the default export, leaving named exports untouched",
+        "C": "It creates a deep clone of the module that can be modified without affecting other tests",
+        "D": "It delays loading the module until the first test runs"
+      },
+      "answer": "A",
+      "explanation": "vi.mock/jest.mock is hoisted above imports and replaces all exports with mock implementations (jest.fn()/vi.fn()). It affects the entire module, not just the default export, and is hoisted regardless of where it appears in the file.",
+      "topic": "mocking",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS013",
+      "question": "What does `structuredClone` do that `JSON.parse(JSON.stringify(obj))` cannot?",
+      "choices": {
+        "A": "Clone objects containing Date, Map, Set, ArrayBuffer, and circular references",
+        "B": "Clone objects with functions as values",
+        "C": "Clone objects with Symbol keys",
+        "D": "Clone DOM elements"
+      },
+      "answer": "A",
+      "explanation": "structuredClone handles Date, Map, Set, RegExp, ArrayBuffer, and circular references, all of which JSON serialization loses or throws on. However, it cannot clone functions, DOM nodes, or Symbol-keyed properties.",
+      "topic": "structured_clone",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS014",
+      "question": "What is the output?\n\nconst p1 = Promise.resolve(1);\nconst p2 = Promise.reject(new Error('fail'));\nconst p3 = Promise.resolve(3);\n\nconst results = await Promise.allSettled([p1, p2, p3]);\nconsole.log(results.map(r => r.status));",
+      "choices": {
+        "A": "['resolved', 'rejected', 'resolved']",
+        "B": "['fulfilled', 'fulfilled', 'fulfilled']",
+        "C": "Throws an unhandled rejection error",
+        "D": "['fulfilled', 'rejected', 'fulfilled']"
+      },
+      "answer": "D",
+      "explanation": "Promise.allSettled waits for all promises to settle and never short-circuits. Each result has a status of 'fulfilled' or 'rejected'. Unlike Promise.all, it does not reject on any individual failure.",
+      "topic": "promises",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS015",
+      "question": "What does the following TypeScript code produce?\n\ntype EventName = `on${Capitalize<'click' | 'focus'>}`;\n// What is EventName?",
+      "choices": {
+        "A": "'on_click' | 'on_focus'",
+        "B": "'onCLICK' | 'onFOCUS'",
+        "C": "'onclick' | 'onfocus'",
+        "D": "'onClick' | 'onFocus'"
+      },
+      "answer": "D",
+      "explanation": "The Capitalize intrinsic type uppercases only the first character of the string. Combined with the template literal type prefix 'on', the result is 'onClick' | 'onFocus'.",
+      "topic": "template_literal_types",
+      "topic_category": "typescript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS016",
+      "question": "In Redux Toolkit, what does `createSlice` automatically generate?",
+      "choices": {
+        "A": "A React context provider for the slice state",
+        "B": "Only the reducer function",
+        "C": "Action creators and action type strings corresponding to each reducer, plus the slice reducer",
+        "D": "Middleware for handling async operations"
+      },
+      "answer": "C",
+      "explanation": "createSlice generates action creators, action type strings (like 'sliceName/reducerName'), and the combined slice reducer from the reducers object. It does not generate context providers or middleware (createAsyncThunk handles async).",
+      "topic": "redux_toolkit",
+      "topic_category": "state_management",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS017",
+      "question": "What is tree shaking in the context of JavaScript bundlers?",
+      "choices": {
+        "A": "Dead code elimination based on static analysis of ES module import/export statements",
+        "B": "A runtime optimization that lazily loads unused modules",
+        "C": "A process that removes comments and whitespace from source code",
+        "D": "A technique to minify variable names in the output bundle"
+      },
+      "answer": "A",
+      "explanation": "Tree shaking uses static analysis of ESM import/export to identify and remove unused exports from the final bundle. It requires ES modules because CommonJS require() is dynamic and not statically analyzable.",
+      "topic": "tree_shaking",
+      "topic_category": "build_tools",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS018",
+      "question": "Which Node.js stream type allows both reading and writing, with the output being a transformation of the input?",
+      "choices": {
+        "A": "PassThrough",
+        "B": "Duplex",
+        "C": "Writable",
+        "D": "Transform"
+      },
+      "answer": "D",
+      "explanation": "A Transform stream is a special Duplex stream where the output is computed from the input. Duplex streams also read and write but the two sides are independent (like a TCP socket). PassThrough is a Transform that passes data through unchanged.",
+      "topic": "streams",
+      "topic_category": "nodejs",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS019",
+      "question": "What does React.lazy() return?",
+      "choices": {
+        "A": "A ref to the dynamically imported module",
+        "B": "A higher-order component that adds loading state",
+        "C": "A lazy component that renders a fallback until the dynamic import resolves, usable with Suspense",
+        "D": "A promise that resolves to the component"
+      },
+      "answer": "C",
+      "explanation": "React.lazy() takes a function returning a dynamic import and returns a component that can be rendered inside a Suspense boundary. While the module loads, Suspense shows its fallback UI.",
+      "topic": "lazy_loading",
+      "topic_category": "react",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS020",
+      "question": "What is the output?\n\nconst sym = Symbol('id');\nconst obj = { [sym]: 42, name: 'test' };\nconsole.log(Object.keys(obj));\nconsole.log(Object.getOwnPropertySymbols(obj));",
+      "choices": {
+        "A": "['Symbol(id)', 'name'] then []",
+        "B": "['name'] then []",
+        "C": "['name'] then [Symbol(id)]",
+        "D": "['name', 'Symbol(id)'] then [Symbol(id)]"
+      },
+      "answer": "C",
+      "explanation": "Object.keys only returns string-keyed enumerable properties, so Symbol-keyed properties are excluded. Object.getOwnPropertySymbols returns an array of all Symbol-keyed own properties.",
+      "topic": "symbol",
+      "topic_category": "core_javascript",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "JS021",
+      "question": "What is the output of this code?\n\nconst handler = {\n  get(target, prop, receiver) {\n    return prop in target ? target[prop] : `Property '${prop}' not found`;\n  }\n};\nconst obj = new Proxy({ x: 1 }, handler);\nconsole.log(obj.x);\nconsole.log(obj.y);",
+      "choices": {
+        "A": "1 then undefined",
+        "B": "undefined then undefined",
+        "C": "1 then throws TypeError",
+        "D": "1 then \"Property 'y' not found\""
+      },
+      "answer": "D",
+      "explanation": "The Proxy's get trap intercepts all property accesses. For 'x', which exists on the target, it returns the actual value (1). For 'y', which doesn't exist, the trap returns the custom string.",
+      "topic": "proxy_reflect",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS022",
+      "question": "What does the following TypeScript code resolve to?\n\ntype IsArray<T> = T extends any[] ? 'array' : 'not array';\ntype A = IsArray<string[]>;\ntype B = IsArray<string[] | number>;",
+      "choices": {
+        "A": "A = 'array', B = 'array'",
+        "B": "A = 'array', B = 'array | not array'",
+        "C": "A = 'array', B = 'array' | 'not array'",
+        "D": "A = 'array', B = 'not array'"
+      },
+      "answer": "C",
+      "explanation": "Conditional types distribute over unions. IsArray<string[] | number> evaluates to IsArray<string[]> | IsArray<number>, which is 'array' | 'not array'. This is a key behavior of conditional types in TypeScript.",
+      "topic": "conditional_types",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS023",
+      "question": "In React 18, what is the difference between `useDeferredValue` and `useTransition`?",
+      "choices": {
+        "A": "useTransition wraps a state-setting function to mark the update as non-urgent; useDeferredValue takes a value and returns a deferred copy that may lag behind during urgent updates",
+        "B": "They are identical; useDeferredValue is just an alias for useTransition",
+        "C": "useDeferredValue works only with primitive values; useTransition works with objects",
+        "D": "useTransition is for server components; useDeferredValue is for client components"
+      },
+      "answer": "A",
+      "explanation": "useTransition gives you startTransition to wrap setState calls, marking them as interruptible. useDeferredValue accepts a value (often from props or a parent state) and returns a version that may show stale data during concurrent renders, useful when you don't control the state update.",
+      "topic": "concurrent_features",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS024",
+      "question": "What happens when you pipe a Readable stream to a Writable stream in Node.js and the Writable stream's internal buffer is full?",
+      "choices": {
+        "A": "An error is thrown immediately",
+        "B": "Data is silently dropped until the buffer has space",
+        "C": "The Writable stream automatically expands its buffer to accommodate all data",
+        "D": "The Readable stream is paused (backpressure) and resumes when the Writable drains"
+      },
+      "answer": "D",
+      "explanation": "Node.js streams implement backpressure: when write() returns false (buffer full), pipe() pauses the readable source and listens for the 'drain' event on the writable to resume reading.",
+      "topic": "streams_backpressure",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS025",
+      "question": "What does the TypeScript `infer` keyword do in this type?\n\ntype ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;",
+      "choices": {
+        "A": "It creates a runtime type check for the return value",
+        "B": "It introduces a type variable R in the true branch, inferred from the matched position in the conditional type",
+        "C": "It asserts that R is a known type at compile time",
+        "D": "It is equivalent to writing `unknown` in place of R"
+      },
+      "answer": "B",
+      "explanation": "The infer keyword declares a type variable within a conditional type's extends clause. TypeScript infers R from whatever the function's return type is. It can only be used in the extends clause of a conditional type.",
+      "topic": "infer_keyword",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS026",
+      "question": "In Zustand, what is the purpose of the `shallow` comparison function when used with selectors?",
+      "choices": {
+        "A": "It converts the state to an immutable object",
+        "B": "It caches the selector function for better performance",
+        "C": "It performs a deep equality check on all nested objects",
+        "D": "It performs a shallow equality check on the selected state, preventing re-renders when the selected slice is structurally identical"
+      },
+      "answer": "D",
+      "explanation": "By default, Zustand uses strict reference equality (===) to determine re-renders. If a selector returns a new object each time (e.g., picking multiple properties), shallow comparison checks each key individually, avoiding unnecessary re-renders when values haven't changed.",
+      "topic": "zustand_selectors",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS027",
+      "question": "What is wrong with this React error boundary implementation?\n\nfunction ErrorBoundary({ children }) {\n  const [hasError, setHasError] = useState(false);\n  try {\n    return hasError ? <h1>Error</h1> : children;\n  } catch (error) {\n    setHasError(true);\n    return <h1>Error</h1>;\n  }\n}",
+      "choices": {
+        "A": "Error boundaries must be class components that implement static getDerivedStateFromError and/or componentDidCatch; try/catch in a function component does not catch rendering errors in children",
+        "B": "The catch block should use useErrorBoundary() hook instead",
+        "C": "The try/catch works but setHasError should be replaced with useReducer",
+        "D": "Nothing is wrong; this is a valid error boundary"
+      },
+      "answer": "A",
+      "explanation": "React error boundaries must be class components. A try/catch block in a function component's render path cannot catch errors thrown during React's rendering of child components because those errors propagate through React's fiber tree, not the JavaScript call stack.",
+      "topic": "error_boundaries",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS028",
+      "question": "What is the output?\n\nasync function foo() {\n  console.log('A');\n  await Promise.resolve();\n  console.log('B');\n}\nconsole.log('C');\nfoo();\nconsole.log('D');",
+      "choices": {
+        "A": "A, B, C, D",
+        "B": "C, D, A, B",
+        "C": "C, A, D, B",
+        "D": "C, A, B, D"
+      },
+      "answer": "C",
+      "explanation": "The synchronous code runs first: 'C' is logged, foo() is called which logs 'A' synchronously, then hits await which yields. 'D' is logged next. Then the microtask queue runs, logging 'B'.",
+      "topic": "event_loop",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS029",
+      "question": "What does the following TypeScript mapped type produce?\n\ntype Readonly<T> = { readonly [K in keyof T]: T[K] };\ntype Mutable<T> = { -readonly [K in keyof T]: T[K] };\n\ninterface Frozen { readonly x: number; readonly y: string; }\ntype Thawed = Mutable<Frozen>;",
+      "choices": {
+        "A": "{ readonly x: number; readonly y: string; }",
+        "B": "{ -readonly x: number; -readonly y: string; }",
+        "C": "{ x: number; y: string; }",
+        "D": "Type error: -readonly is not valid syntax"
+      },
+      "answer": "C",
+      "explanation": "The -readonly modifier in a mapped type removes the readonly modifier from all properties. Thawed becomes { x: number; y: string; } with mutable properties. This is valid TypeScript syntax for removing modifiers.",
+      "topic": "mapped_types",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS030",
+      "question": "In MSW (Mock Service Worker), what is the difference between `http.get()` and `graphql.query()` handlers?",
+      "choices": {
+        "A": "graphql.query() requires a schema file; http.get() does not",
+        "B": "http.get() only works in Node.js; graphql.query() only works in the browser",
+        "C": "They are interchangeable since GraphQL uses HTTP",
+        "D": "http.get() intercepts REST requests matching a URL pattern; graphql.query() intercepts GraphQL queries matching an operation name, regardless of URL"
+      },
+      "answer": "D",
+      "explanation": "MSW's http handlers match on HTTP method + URL pattern. GraphQL handlers match on operation name extracted from the request body, since all GraphQL requests typically go to the same endpoint. No schema file is needed.",
+      "topic": "msw_mocking",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS031",
+      "question": "What is the output?\n\nconst wm = new WeakMap();\nlet obj = { data: 'hello' };\nwm.set(obj, 'metadata');\nconsole.log(wm.has(obj));\nobj = null;\n// After GC runs:\nconsole.log(wm.has(obj));",
+      "choices": {
+        "A": "true then true",
+        "B": "true then false",
+        "C": "true then throws TypeError",
+        "D": "true then false (but the second call checks for null key, which is invalid)"
+      },
+      "answer": "D",
+      "explanation": "After setting obj to null, wm.has(null) throws TypeError because WeakMap keys must be objects or symbols. The original object may be garbage collected, but the error occurs before that matters since null is not a valid WeakMap key.",
+      "topic": "weakmap",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS032",
+      "question": "Which TypeScript feature allows adding new properties to an existing third-party module's type declarations?",
+      "choices": {
+        "A": "The `override` keyword",
+        "B": "Module augmentation using `declare module`",
+        "C": "Type assertion with `as`",
+        "D": "Type casting with `<Type>value`"
+      },
+      "answer": "B",
+      "explanation": "Module augmentation lets you add declarations to existing modules using `declare module 'module-name' { ... }` in a .ts file. This merges with the module's existing declarations, allowing you to extend third-party types without modifying them.",
+      "topic": "module_augmentation",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS033",
+      "question": "What is the correct way to prevent a React component from re-rendering when its parent re-renders, assuming props haven't changed?",
+      "choices": {
+        "A": "Use shouldComponentUpdate in function components",
+        "B": "Place the component inside a Suspense boundary",
+        "C": "Use useCallback on the component itself",
+        "D": "Wrap the component with React.memo(), which performs a shallow comparison of props by default"
+      },
+      "answer": "D",
+      "explanation": "React.memo() is a higher-order component that memoizes the rendered result. It re-renders only when props change (shallow comparison by default, or custom comparator as second argument). shouldComponentUpdate is class-only, useCallback memoizes functions, and Suspense handles async loading.",
+      "topic": "render_optimization",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS034",
+      "question": "In Node.js worker threads, how is data passed between the main thread and a worker?",
+      "choices": {
+        "A": "Via direct function calls from the main thread to the worker",
+        "B": "Via message passing using postMessage/on('message'), with data being structured-cloned by default, or through SharedArrayBuffer for shared memory",
+        "C": "Through shared global variables accessible by both threads",
+        "D": "Through the file system only"
+      },
+      "answer": "B",
+      "explanation": "Worker threads communicate via message passing (postMessage/on('message')). Data is structured-cloned by default (copied, not shared). SharedArrayBuffer can be used for true shared memory with Atomics for synchronization. There are no shared globals or direct function calls.",
+      "topic": "worker_threads",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS035",
+      "question": "What does this TypeScript code produce?\n\ntype Discriminated = \n  | { kind: 'circle'; radius: number }\n  | { kind: 'square'; side: number };\n\nfunction area(shape: Discriminated) {\n  switch (shape.kind) {\n    case 'circle': return Math.PI * shape.radius ** 2;\n    case 'square': return shape.side ** 2;\n  }\n}\n\n// What happens if you add a new variant to Discriminated without updating area()?",
+      "choices": {
+        "A": "TypeScript will always catch this as an error automatically",
+        "B": "There is no way to make TypeScript catch this",
+        "C": "The switch statement implicitly returns undefined, which is always a type error",
+        "D": "Adding an exhaustiveness check using `const _: never = shape;` in a default case will produce a compile error for unhandled variants"
+      },
+      "answer": "D",
+      "explanation": "TypeScript narrows discriminated unions in switch/case. By assigning shape to a `never` typed variable in the default case, any unhandled variant will cause a compile error since it won't be assignable to never. Without this, the function silently returns undefined.",
+      "topic": "discriminated_unions",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS036",
+      "question": "What problem does the `act()` wrapper solve in React testing?",
+      "choices": {
+        "A": "It ensures all state updates, effects, and pending re-renders triggered by the wrapped code are flushed before assertions run",
+        "B": "It mocks all API calls made during the test",
+        "C": "It isolates the component from its context providers",
+        "D": "It enables snapshot testing for the component"
+      },
+      "answer": "A",
+      "explanation": "act() ensures that all updates related to state changes, effects, and renders are processed and applied to the DOM before your test assertions execute. Without it, assertions may run before React has finished updating, leading to flaky tests.",
+      "topic": "act_wrapping",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS037",
+      "question": "What is the output of this code?\n\nconst re = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;\nconst match = re.exec('2024-03-15');\nconsole.log(match.groups.month);",
+      "choices": {
+        "A": "\"03\"",
+        "B": "undefined",
+        "C": "3",
+        "D": "\"March\""
+      },
+      "answer": "A",
+      "explanation": "Named capture groups (using ?<name>) populate the match.groups object. The month group captures '03' as a string. Named groups make regex matches more readable than numeric indices.",
+      "topic": "regexp_named_groups",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS038",
+      "question": "In React Server Components (RSC), which of the following is true?",
+      "choices": {
+        "A": "Client Components cannot import Server Components",
+        "B": "Server Components render on the server, can access server-side resources directly, and their code is never sent to the client bundle",
+        "C": "Server Components replace API routes entirely",
+        "D": "Server Components can use useState and useEffect hooks"
+      },
+      "answer": "B",
+      "explanation": "Server Components run only on the server, can directly access databases/filesystems, and are excluded from the client JS bundle. They cannot use client-side hooks (useState, useEffect). Client components can render server components passed as children/props.",
+      "topic": "server_components",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS039",
+      "question": "What does `const assertion` do in TypeScript?\n\nconst config = { endpoint: '/api', retries: 3 } as const;",
+      "choices": {
+        "A": "Prevents the variable from being reassigned",
+        "B": "Makes the object immutable at runtime",
+        "C": "Converts the object to a frozen Object.freeze() equivalent",
+        "D": "Infers the narrowest possible literal types and makes all properties readonly: { readonly endpoint: '/api'; readonly retries: 3 }"
+      },
+      "answer": "D",
+      "explanation": "The `as const` assertion narrows all literal values to their literal types (not widened to string/number) and makes all properties deeply readonly at the type level. It has no runtime effect; Object.freeze() is needed for runtime immutability.",
+      "topic": "const_assertions",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS040",
+      "question": "What is the primary advantage of dynamic `import()` over static `import` for code splitting?",
+      "choices": {
+        "A": "Dynamic imports allow loading modules on demand at runtime, enabling bundlers to split code into separate chunks that are loaded only when needed",
+        "B": "Dynamic imports work with CommonJS modules while static imports do not",
+        "C": "Dynamic imports bypass CORS restrictions",
+        "D": "Dynamic imports are faster to execute"
+      },
+      "answer": "A",
+      "explanation": "Dynamic import() returns a promise and can be used conditionally or in response to user actions. Bundlers recognize import() calls and create separate chunks for the imported modules, reducing the initial bundle size.",
+      "topic": "code_splitting",
+      "topic_category": "build_tools",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS041",
+      "question": "What is the key difference between useCallback and useMemo in React?",
+      "choices": {
+        "A": "useCallback memoizes a function reference; useMemo memoizes the return value of a function",
+        "B": "useCallback is for async functions; useMemo is for sync functions",
+        "C": "They are interchangeable",
+        "D": "useMemo runs on every render; useCallback runs only when dependencies change"
+      },
+      "answer": "A",
+      "explanation": "useCallback(fn, deps) returns a memoized version of the callback fn that only changes when deps change. useMemo(() => computeValue(), deps) calls the function and caches its return value. useCallback(fn, deps) is equivalent to useMemo(() => fn, deps).",
+      "topic": "hooks_memoization",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS042",
+      "question": "What does this Vitest configuration achieve?\n\n// vitest.config.ts\nexport default defineConfig({\n  test: {\n    coverage: {\n      provider: 'v8',\n      include: ['src/**/*.ts'],\n      exclude: ['**/*.test.ts', '**/*.d.ts'],\n      thresholds: { lines: 80, branches: 75 }\n    }\n  }\n});",
+      "choices": {
+        "A": "It limits the number of test files that can run in parallel",
+        "B": "It configures V8-based code coverage collection for src TypeScript files, excluding tests and declaration files, and fails the run if line coverage is below 80% or branch coverage below 75%",
+        "C": "It enables TypeScript type checking during test execution",
+        "D": "It runs tests only on files matching the include pattern"
+      },
+      "answer": "B",
+      "explanation": "The coverage configuration uses V8's built-in coverage tracking (faster than Istanbul), scopes it to source files, and sets minimum thresholds. The test run will fail if coverage drops below the specified percentages.",
+      "topic": "vitest_config",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS043",
+      "question": "What is the output?\n\nconst obj = {};\nObject.defineProperty(obj, 'x', { value: 42, writable: false, enumerable: false });\nobj.x = 100;\nconsole.log(obj.x);\nconsole.log(Object.keys(obj));",
+      "choices": {
+        "A": "100 then ['x']",
+        "B": "42 then []",
+        "C": "Throws TypeError",
+        "D": "42 then ['x']"
+      },
+      "answer": "B",
+      "explanation": "With writable: false, the assignment obj.x = 100 silently fails in sloppy mode (would throw in strict mode). The value remains 42. With enumerable: false, Object.keys() returns an empty array since x is not enumerable.",
+      "topic": "property_descriptors",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS044",
+      "question": "What does the TypeScript `declare module` syntax achieve here?\n\ndeclare module '*.css' {\n  const styles: { [key: string]: string };\n  export default styles;\n}",
+      "choices": {
+        "A": "It converts CSS files to JavaScript modules at runtime",
+        "B": "It enables CSS-in-JS functionality",
+        "C": "It strips CSS imports during compilation",
+        "D": "It provides type declarations for CSS module imports so TypeScript doesn't report errors when importing .css files"
+      },
+      "answer": "D",
+      "explanation": "This ambient module declaration tells TypeScript that any .css import will have a default export of type { [key: string]: string }. It provides type information only and has no runtime effect. The actual CSS module transformation is handled by the bundler.",
+      "topic": "declaration_merging",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS045",
+      "question": "In the Node.js cluster module, what role does the primary process play?",
+      "choices": {
+        "A": "It only logs errors from worker processes",
+        "B": "It compiles TypeScript before workers can execute",
+        "C": "It handles all incoming HTTP requests directly",
+        "D": "It forks worker processes and can distribute incoming connections among them, but does not handle requests itself"
+      },
+      "answer": "D",
+      "explanation": "The primary (master) process uses cluster.fork() to create worker processes. When using the default round-robin scheduling, the primary accepts connections and distributes them to workers. The primary itself does not process HTTP requests.",
+      "topic": "cluster_module",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS046",
+      "question": "What happens when you use `forwardRef` with `useImperativeHandle` in React?\n\nconst FancyInput = forwardRef((props, ref) => {\n  const inputRef = useRef();\n  useImperativeHandle(ref, () => ({\n    focus: () => inputRef.current.focus(),\n    getValue: () => inputRef.current.value\n  }));\n  return <input ref={inputRef} />;\n});",
+      "choices": {
+        "A": "The parent receives a ref with a customized interface exposing only focus() and getValue(), not the full DOM node",
+        "B": "The parent receives a ref to the actual DOM input element",
+        "C": "This pattern is deprecated in React 18",
+        "D": "forwardRef and useImperativeHandle cannot be used together"
+      },
+      "answer": "A",
+      "explanation": "useImperativeHandle customizes the instance value exposed to parent components via ref. The parent only sees { focus, getValue }, not the raw DOM element, providing a controlled API surface.",
+      "topic": "forward_ref_imperative",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS047",
+      "question": "What problem does the Jotai atom library solve compared to React Context for state management?",
+      "choices": {
+        "A": "Jotai atoms are independently subscribable, so updating one atom only re-renders components that read that specific atom, unlike Context which re-renders all consumers when any part of the context value changes",
+        "B": "Jotai works without React, while Context requires React",
+        "C": "Jotai provides time-travel debugging that Context does not",
+        "D": "Jotai provides server-side rendering support that Context lacks"
+      },
+      "answer": "A",
+      "explanation": "React Context re-renders all consumers when the provider value changes, even if a consumer only uses a small slice. Jotai atoms are individually subscribable, enabling fine-grained re-renders. Each atom is an independent unit of state.",
+      "topic": "jotai_atoms",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS048",
+      "question": "What does this TypeScript generic constraint mean?\n\nfunction merge<T extends object, U extends object>(a: T, b: U): T & U {\n  return { ...a, ...b };\n}",
+      "choices": {
+        "A": "T and U must be any non-primitive types (objects, arrays, functions), and the return type is the intersection of both",
+        "B": "T and U must have the same shape",
+        "C": "T and U must extend the same base class",
+        "D": "T and U must be class instances"
+      },
+      "answer": "A",
+      "explanation": "The `extends object` constraint restricts T and U to non-primitive types. The return type T & U is an intersection type containing all properties from both types. Arrays and functions are objects in TypeScript, so they also satisfy this constraint.",
+      "topic": "generic_constraints",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS049",
+      "question": "In Node.js, what is the purpose of `process.nextTick()` versus `setImmediate()`?",
+      "choices": {
+        "A": "They are identical; nextTick is just an alias for setImmediate",
+        "B": "process.nextTick() fires before I/O callbacks on the current iteration; setImmediate() fires on the next iteration of the event loop after I/O callbacks",
+        "C": "setImmediate() runs synchronously; process.nextTick() is asynchronous",
+        "D": "process.nextTick() is deprecated in favor of setImmediate()"
+      },
+      "answer": "B",
+      "explanation": "process.nextTick() callbacks run after the current operation completes but before the event loop continues, draining the nextTick queue. setImmediate() fires in the check phase of the next event loop iteration, after I/O callbacks.",
+      "topic": "event_loop_node",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS050",
+      "question": "What is the difference between snapshot testing and assertion-based testing?",
+      "choices": {
+        "A": "Snapshot testing is faster and should always be preferred",
+        "B": "Assertion-based tests cannot test UI components",
+        "C": "Snapshot tests capture the rendered output and compare against a stored reference; they detect any change but don't specify what the correct output should be, making them brittle to intentional changes",
+        "D": "Snapshot tests run in the browser; assertion tests run in Node.js"
+      },
+      "answer": "C",
+      "explanation": "Snapshot tests serialize component output and compare against a stored snapshot file. They catch any change (intentional or not) but lack intent: reviewers see a diff but not whether the change is correct. They tend to be updated blindly, reducing value over time.",
+      "topic": "snapshot_testing",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS051",
+      "question": "What does the following Vite configuration accomplish?\n\n// vite.config.ts\nexport default defineConfig({\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, './src'),\n      '@components': path.resolve(__dirname, './src/components')\n    }\n  }\n});",
+      "choices": {
+        "A": "It creates npm package aliases for publishing",
+        "B": "It renames directories on the filesystem",
+        "C": "It redirects all imports to a CDN",
+        "D": "It sets up path aliases so that imports like `import X from '@/utils'` resolve to `./src/utils`, avoiding long relative paths"
+      },
+      "answer": "D",
+      "explanation": "The resolve.alias configuration maps import path prefixes to filesystem directories. '@' maps to ./src, so `import X from '@/utils'` resolves to ./src/utils. A matching tsconfig.json paths entry is needed for TypeScript support.",
+      "topic": "path_aliases",
+      "topic_category": "build_tools",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS052",
+      "question": "What is the output?\n\nfunction Parent() {\n  console.log('Parent render');\n  return (\n    <div>\n      <MemoChild />\n    </div>\n  );\n}\n\nconst MemoChild = React.memo(function Child() {\n  console.log('Child render');\n  return <p>Hello</p>;\n});\n\n// If Parent re-renders due to its own state change, what logs?",
+      "choices": {
+        "A": "'Parent render' only",
+        "B": "Neither logs",
+        "C": "'Child render' only",
+        "D": "'Parent render' and 'Child render'"
+      },
+      "answer": "A",
+      "explanation": "React.memo prevents re-rendering when props are shallowly equal. MemoChild receives no props, so they never change. When Parent re-renders, MemoChild's memo check sees no prop changes and skips rendering. Only 'Parent render' logs.",
+      "topic": "memo_optimization",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS053",
+      "question": "What does `variance annotation` mean in TypeScript 5.x?\n\ninterface Producer<out T> { produce(): T; }\ninterface Consumer<in T> { consume(value: T): void; }",
+      "choices": {
+        "A": "out means T can only be used as an output; in means T can only be used as an input, enabling the compiler to check variance without structural analysis of the entire type",
+        "B": "out and in are access modifiers like public and private",
+        "C": "They control whether T is erased at runtime",
+        "D": "They specify whether T is nullable"
+      },
+      "answer": "A",
+      "explanation": "Variance annotations (in/out) explicitly declare whether a type parameter is covariant (out, appears in output positions) or contravariant (in, appears in input positions). This helps TypeScript check assignability more efficiently and catches mistakes where T is used in the wrong position.",
+      "topic": "variance_annotations",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS054",
+      "question": "How does an optimistic update typically work in a state management system?",
+      "choices": {
+        "A": "The update is sent to the server and the UI waits in a loading state until confirmation",
+        "B": "The UI is updated immediately with the expected result before the server confirms, and rolled back if the server request fails",
+        "C": "The update is batched and applied only after all other pending updates complete",
+        "D": "The update is applied twice: once optimistically and once pessimistically"
+      },
+      "answer": "B",
+      "explanation": "Optimistic updates immediately apply the expected state change to the UI, providing instant feedback. The actual server request runs in the background. If it fails, the state is rolled back to the previous value, often with an error notification.",
+      "topic": "optimistic_updates",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS055",
+      "question": "What does this Node.js EventEmitter code demonstrate?\n\nconst EventEmitter = require('events');\nclass MyEmitter extends EventEmitter {}\nconst emitter = new MyEmitter();\nemitter.on('error', (err) => console.log('Caught:', err.message));\nemitter.emit('error', new Error('test'));\n\n// What if you remove the 'error' listener?",
+      "choices": {
+        "A": "The error is logged to stderr automatically",
+        "B": "The error is queued and thrown on the next tick",
+        "C": "Without an 'error' listener, emitting an 'error' event throws the error as an uncaught exception, crashing the process",
+        "D": "The error is silently ignored"
+      },
+      "answer": "C",
+      "explanation": "EventEmitter has special handling for 'error' events: if no listener is registered for 'error', emitting one throws the error, which becomes an uncaught exception. This is a deliberate safety mechanism to prevent silent error swallowing.",
+      "topic": "event_emitter",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS056",
+      "question": "What is the key benefit of using Vite's `define` option versus `.env` files for environment variables?",
+      "choices": {
+        "A": "define works only in production; .env works only in development",
+        "B": "define is the only way to set environment variables in Vite",
+        "C": "define performs static replacement at build time (like C macros), allowing dead code elimination, while .env variables are available at runtime via import.meta.env",
+        "D": ".env files are not supported in Vite"
+      },
+      "answer": "C",
+      "explanation": "Vite's define option performs literal text replacement during bundling. This enables tree-shaking of dead code paths (e.g., if (false) { ... } is removed). .env variables via import.meta.env are also statically replaced but follow Vite's VITE_ prefix convention.",
+      "topic": "env_variables",
+      "topic_category": "build_tools",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS057",
+      "question": "What is the output?\n\ntype Guard = (x: unknown) => x is string;\n\nconst isString: Guard = (x): x is string => typeof x === 'string';\n\nfunction process(value: unknown) {\n  if (isString(value)) {\n    // What is value's type here?\n    return value.toUpperCase();\n  }\n  return null;\n}",
+      "choices": {
+        "A": "value is narrowed to `string` inside the if block, so .toUpperCase() is valid",
+        "B": "value is still `unknown` inside the if block",
+        "C": "value is narrowed to `string | undefined`",
+        "D": "This code has a type error because type predicates don't work with unknown"
+      },
+      "answer": "A",
+      "explanation": "The type predicate `x is string` in the return type tells TypeScript that if isString returns true, the argument is a string. Inside the if block, TypeScript narrows value from unknown to string, making string methods available.",
+      "topic": "type_guards",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS058",
+      "question": "In React, what is the difference between Context and external state libraries (Zustand, Jotai) for global state?",
+      "choices": {
+        "A": "Context is optimized for low-frequency updates (themes, locale, auth); external libraries provide subscription-based updates that avoid unnecessary re-renders for high-frequency state changes",
+        "B": "External libraries require server-side rendering; Context does not",
+        "C": "Context is always faster than external libraries",
+        "D": "Context supports middleware; external libraries do not"
+      },
+      "answer": "A",
+      "explanation": "Context triggers re-renders for all consumers on any change. External libraries use subscription patterns where components subscribe to specific state slices and only re-render when their slice changes, making them better for frequently-updating state.",
+      "topic": "context_vs_external",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS059",
+      "question": "What does this TypeScript utility type resolve to?\n\ntype Pick<T, K extends keyof T> = { [P in K]: T[P] };\n\ninterface User { id: number; name: string; email: string; age: number; }\ntype UserPreview = Pick<User, 'id' | 'name'>;",
+      "choices": {
+        "A": "{ id: number; name: string; email: string; age: number; }",
+        "B": "{ email: string; age: number; }",
+        "C": "{ id: number; name: string; }",
+        "D": "Pick<User, 'id' | 'name'> (no resolution)"
+      },
+      "answer": "C",
+      "explanation": "Pick iterates over the union 'id' | 'name' and creates a new type with only those properties from User. The constraint K extends keyof T ensures only valid keys can be picked.",
+      "topic": "utility_types",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS060",
+      "question": "How does Node.js http2 differ from http in terms of connection handling?",
+      "choices": {
+        "A": "http2 requires WebSocket upgrade for bidirectional communication",
+        "B": "http2 uses UDP instead of TCP",
+        "C": "http2 multiplexes multiple request/response streams over a single TCP connection, eliminating head-of-line blocking at the HTTP level",
+        "D": "http2 is slower but more secure"
+      },
+      "answer": "C",
+      "explanation": "HTTP/2 uses a single TCP connection with multiplexed streams, allowing concurrent requests without the overhead of multiple connections. Each stream is independent, so a slow response doesn't block others at the application layer (though TCP head-of-line blocking can still occur).",
+      "topic": "http2",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS061",
+      "question": "What is the purpose of the React Suspense boundary when used with data fetching?",
+      "choices": {
+        "A": "It caches all API responses for child components",
+        "B": "It prevents child components from making network requests",
+        "C": "It catches JavaScript errors in child components",
+        "D": "It shows a fallback UI while child components are waiting for asynchronous data, integrating with the concurrent rendering model"
+      },
+      "answer": "D",
+      "explanation": "Suspense displays a fallback (e.g., loading spinner) while children suspend. A component suspends by throwing a promise (or using a Suspense-compatible data source). When the data resolves, React re-renders the component tree. This is different from error boundaries which catch errors, not promises.",
+      "topic": "suspense",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS062",
+      "question": "What does the following code demonstrate?\n\nconst handler: ProxyHandler<any> = {\n  get(target, prop, receiver) {\n    const value = Reflect.get(target, prop, receiver);\n    if (typeof value === 'object' && value !== null) {\n      return new Proxy(value, handler);\n    }\n    return value;\n  },\n  set(target, prop, value, receiver) {\n    console.log(`Setting ${String(prop)} to ${value}`);\n    return Reflect.set(target, prop, value, receiver);\n  }\n};",
+      "choices": {
+        "A": "A simple property validator",
+        "B": "A one-level shallow observer",
+        "C": "A read-only proxy that prevents all mutations",
+        "D": "A deep reactive proxy that recursively wraps nested objects, logging all property mutations at any depth"
+      },
+      "answer": "D",
+      "explanation": "The get trap returns a new Proxy wrapping nested objects, making the reactivity recursive. The set trap logs mutations. This lazy-proxy pattern (wrapping on access) is similar to how Vue 3's reactivity system works, avoiding upfront deep traversal.",
+      "topic": "proxy_deep_reactive",
+      "topic_category": "core_javascript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS063",
+      "question": "What is a key pitfall of testing React hooks with renderHook when the hook depends on context?",
+      "choices": {
+        "A": "Context-dependent hooks must be tested in a browser environment",
+        "B": "renderHook cannot test hooks that use useState",
+        "C": "renderHook only works with class components",
+        "D": "The hook must be wrapped in the appropriate context provider via the wrapper option, otherwise it will throw or return default context values"
+      },
+      "answer": "D",
+      "explanation": "renderHook from @testing-library/react-hooks (or @testing-library/react) accepts a wrapper option where you provide context providers. Without it, useContext returns the default value, which may cause unexpected behavior or missing functionality.",
+      "topic": "testing_hooks",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS064",
+      "question": "What is the ESM equivalent of CommonJS `__dirname`?",
+      "choices": {
+        "A": "ESM does not support accessing the current file's directory",
+        "B": "process.cwd() is always equivalent to __dirname",
+        "C": "__dirname works the same in ESM",
+        "D": "import.meta.dirname (Node.js 21.2+) or path.dirname(fileURLToPath(import.meta.url)) for older versions"
+      },
+      "answer": "D",
+      "explanation": "In ES modules, __dirname is not available. Node.js 21.2+ provides import.meta.dirname directly. For older versions, you convert import.meta.url (a file:// URL) to a path using fileURLToPath, then get the directory. process.cwd() returns the working directory, not the file's directory.",
+      "topic": "esm_vs_cjs",
+      "topic_category": "build_tools",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS065",
+      "question": "What problem does the `useReducer` hook solve that `useState` does not handle well?",
+      "choices": {
+        "A": "useReducer is required for any state that is not a primitive",
+        "B": "useReducer centralizes complex state logic with multiple sub-values or when the next state depends on the previous state, making state transitions explicit and testable",
+        "C": "useReducer automatically persists state to localStorage",
+        "D": "useReducer provides global state without Context"
+      },
+      "answer": "B",
+      "explanation": "useReducer excels when state logic is complex (multiple related values, state depends on previous state). The reducer function is pure and testable outside React. It makes state transitions explicit through action types rather than scattered setState calls.",
+      "topic": "use_reducer",
+      "topic_category": "react",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS066",
+      "question": "What is the purpose of `signal-based reactivity` as used in frameworks like Solid.js and the TC39 signals proposal?",
+      "choices": {
+        "A": "Signals are a replacement for Promises",
+        "B": "Signals are reactive primitives that track dependencies automatically and update only the specific computations and DOM nodes that depend on them, without virtual DOM diffing",
+        "C": "Signals provide inter-process communication between web workers",
+        "D": "Signals are event emitters optimized for UI frameworks"
+      },
+      "answer": "B",
+      "explanation": "Signals are fine-grained reactive primitives. When a signal's value changes, only computations that read that signal are re-executed, and only the specific DOM nodes that depend on those computations are updated. This avoids the overhead of virtual DOM reconciliation.",
+      "topic": "signal_reactivity",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS067",
+      "question": "What does this TypeScript code accomplish?\n\ntype DeepPartial<T> = {\n  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];\n};",
+      "choices": {
+        "A": "Makes all properties required",
+        "B": "Recursively makes all properties at every depth optional",
+        "C": "Makes only top-level properties optional",
+        "D": "Converts all properties to nullable"
+      },
+      "answer": "B",
+      "explanation": "DeepPartial recursively applies the ? modifier. For object-type properties, it recurses with DeepPartial<T[P]>. For primitives, it keeps the type as-is but optional. This is commonly used for configuration objects where any subset of nested values can be overridden.",
+      "topic": "recursive_types",
+      "topic_category": "typescript",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS068",
+      "question": "In Node.js, how do you properly handle errors in a pipeline of streams?\n\nconst { pipeline } = require('stream/promises');\nawait pipeline(readStream, transformStream, writeStream);",
+      "choices": {
+        "A": "pipeline() automatically propagates errors and cleans up all streams in the chain; wrapping in try/catch (or .catch for the promise version) handles all stream errors in one place",
+        "B": "Use stream.destroy() before starting the pipeline",
+        "C": "Attach an error listener to each individual stream",
+        "D": "Errors in stream pipelines cannot be caught"
+      },
+      "answer": "A",
+      "explanation": "The pipeline utility (stream/promises version returns a promise) handles error propagation and cleanup. If any stream errors, pipeline destroys all streams and the promise rejects. This replaces the tedious pattern of attaching error handlers to each stream individually.",
+      "topic": "stream_pipeline",
+      "topic_category": "nodejs",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS069",
+      "question": "What is the purpose of testing error boundaries in React?",
+      "choices": {
+        "A": "To verify that the application never throws errors",
+        "B": "To verify that when a child component throws during rendering, the error boundary catches it and renders the fallback UI instead of crashing the entire component tree",
+        "C": "To measure the performance impact of error handling",
+        "D": "To test that try/catch blocks work in event handlers"
+      },
+      "answer": "B",
+      "explanation": "Error boundary tests verify resilience: when a child throws during render, the boundary catches it via getDerivedStateFromError/componentDidCatch and renders fallback UI. Tests typically render a child that throws and assert the fallback appears and the rest of the app remains functional.",
+      "topic": "testing_error_boundaries",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS070",
+      "question": "What does the `cache invalidation` strategy in Redux Toolkit Query (RTK Query) provide?",
+      "choices": {
+        "A": "It automatically deletes all cached data every 60 seconds",
+        "B": "It requires manual cache clearing after every mutation",
+        "C": "It uses tag-based invalidation where mutations can specify which tags to invalidate, causing queries with those tags to automatically refetch",
+        "D": "It uses time-to-live (TTL) as the only invalidation mechanism"
+      },
+      "answer": "C",
+      "explanation": "RTK Query uses a tag-based system: queries declare what tags they provide (e.g., { type: 'Post', id: 1 }), and mutations declare which tags they invalidate. When a mutation invalidates tags, all matching queries automatically refetch, keeping the cache consistent.",
+      "topic": "cache_invalidation",
+      "topic_category": "state_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "JS071",
+      "question": "Consider this TypeScript code:\n\ntype ExtractRouteParams<T extends string> =\n  T extends `${infer _Start}:${infer Param}/${infer Rest}`\n    ? { [K in Param]: string } & ExtractRouteParams<`/${Rest}`>\n    : T extends `${infer _Start}:${infer Param}`\n      ? { [K in Param]: string }\n      : {};\n\ntype Params = ExtractRouteParams<'/users/:userId/posts/:postId'>;\n\nStep 1: What does the first conditional branch match?\nStep 2: What does the recursive call produce?\nStep 3: What is the final resolved type of Params?",
+      "choices": {
+        "A": "{ userId: string | undefined; postId: string | undefined }",
+        "B": "{ userId: string; postId: string }",
+        "C": "{ ':userId': string; ':postId': string }",
+        "D": "{ userId: string }"
+      },
+      "answer": "B",
+      "explanation": "Step 1: The template matches with Param='userId' and Rest='posts/:postId'. Step 2: The recursive call processes '/:postId', matching the second branch with Param='postId', producing { postId: string }. Step 3: The intersection merges to { userId: string; postId: string }.",
+      "topic": "template_literal_types",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS072",
+      "question": "Analyze this React component tree and determine the render behavior:\n\nfunction App() {\n  const [count, setCount] = useState(0);\n  return (\n    <ThemeContext.Provider value=\"dark\">\n      <Header />\n      <Main count={count} />\n      <Footer onClick={() => setCount(c => c + 1)} />\n    </ThemeContext.Provider>\n  );\n}\nconst Header = React.memo(() => {\n  const theme = useContext(ThemeContext);\n  return <h1>{theme}</h1>;\n});\nconst Main = React.memo(({ count }) => <p>{count}</p>);\nconst Footer = React.memo(({ onClick }) => <button onClick={onClick}>+</button>);\n\nStep 1: When setCount is called, which components re-render?\nStep 2: Does Header re-render even though theme hasn't changed?\nStep 3: Does Footer re-render?",
+      "choices": {
+        "A": "Only Main re-renders",
+        "B": "Main re-renders, Footer re-renders because the onClick arrow function creates a new reference each render, Header is skipped",
+        "C": "All three (Header, Main, Footer) re-render",
+        "D": "Main and Footer re-render; Header is skipped"
+      },
+      "answer": "B",
+      "explanation": "Step 1: App re-renders, creating new props for children. Step 2: Header uses useContext(ThemeContext) but the provider value 'dark' is a string literal that doesn't change, and Header receives no props, so memo skips it. Step 3: Footer receives onClick which is an inline arrow function, creating a new reference each render, defeating React.memo. Main re-renders because count changed.",
+      "topic": "render_optimization",
+      "topic_category": "react",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS073",
+      "question": "Trace the execution order of this Node.js code:\n\nconst fs = require('fs');\n\nconsole.log('1');\n\nsetImmediate(() => console.log('2'));\n\nfs.readFile(__filename, () => {\n  console.log('3');\n  setImmediate(() => console.log('4'));\n  process.nextTick(() => console.log('5'));\n  console.log('6');\n});\n\nprocess.nextTick(() => console.log('7'));\n\nconsole.log('8');\n\nStep 1: What runs synchronously?\nStep 2: What runs in the nextTick queue?\nStep 3: What is the final output order?",
+      "choices": {
+        "A": "1, 8, 7, 3, 6, 5, 2, 4",
+        "B": "1, 8, 7, 2, 3, 6, 5, 4",
+        "C": "1, 8, 2, 7, 3, 6, 4, 5",
+        "D": "1, 7, 8, 2, 3, 5, 6, 4"
+      },
+      "answer": "B",
+      "explanation": "Step 1: '1' and '8' run synchronously. Step 2: '7' runs from the nextTick queue (before I/O and check phases). Step 3: '2' runs from setImmediate (check phase). Then the I/O callback fires: '3', '6' run synchronously within it; '5' runs from nextTick before the next setImmediate; '4' runs from the setImmediate scheduled inside the callback.",
+      "topic": "event_loop_phases",
+      "topic_category": "nodejs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS074",
+      "question": "What does this complex TypeScript conditional type resolve to?\n\ntype IsNever<T> = [T] extends [never] ? true : false;\ntype IsAny<T> = 0 extends (1 & T) ? true : false;\n\ntype Check1 = IsNever<never>;\ntype Check2 = IsNever<string>;\ntype Check3 = IsAny<any>;\ntype Check4 = IsAny<unknown>;\n\nStep 1: Why does IsNever wrap T in a tuple?\nStep 2: How does the 1 & T trick detect any?\nStep 3: What are the four results?",
+      "choices": {
+        "A": "Check1=false, Check2=false, Check3=true, Check4=false",
+        "B": "Check1=never, Check2=false, Check3=true, Check4=false",
+        "C": "Check1=true, Check2=false, Check3=true, Check4=false",
+        "D": "Check1=true, Check2=false, Check3=true, Check4=true"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Without the tuple wrapper, `never extends never` distributes over the empty union and returns never, not true. Wrapping in [T] prevents distribution. Step 2: `1 & any` is any, and `0 extends any` is true. For unknown, `1 & unknown` is 1, and `0 extends 1` is false. Step 3: Check1=true, Check2=false, Check3=true, Check4=false.",
+      "topic": "advanced_conditional_types",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS075",
+      "question": "Analyze this React Suspense scenario:\n\nfunction App() {\n  return (\n    <Suspense fallback={<p>Loading outer...</p>}>\n      <UserProfile />\n      <Suspense fallback={<p>Loading posts...</p>}>\n        <UserPosts />\n      </Suspense>\n    </Suspense>\n  );\n}\n// UserProfile suspends for 2 seconds\n// UserPosts suspends for 1 second\n\nStep 1: What does the user see initially?\nStep 2: What happens after 1 second?\nStep 3: What happens after 2 seconds?",
+      "choices": {
+        "A": "Initially 'Loading posts...' and UserProfile loading separately; after 1s UserPosts appears; after 2s UserProfile appears",
+        "B": "Initially 'Loading outer...'; after 2s both UserProfile and UserPosts appear together",
+        "C": "Initially 'Loading outer...' for everything; after 1s still 'Loading outer...'; after 2s both appear",
+        "D": "Initially nothing; after 1s UserPosts appears with 'Loading outer...'; after 2s UserProfile appears"
+      },
+      "answer": "B",
+      "explanation": "Step 1: UserProfile suspends, which triggers the outer Suspense boundary, hiding everything inside it (including the nested Suspense). The user sees 'Loading outer...'. Step 2: UserPosts resolves but the outer boundary is still suspended because UserProfile hasn't resolved. Step 3: After 2s, UserProfile resolves, the outer boundary resolves, and both components appear (UserPosts was already resolved).",
+      "topic": "suspense_nesting",
+      "topic_category": "react",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS076",
+      "question": "Trace the prototype chain resolution:\n\nfunction Animal(name) { this.name = name; }\nAnimal.prototype.speak = function() { return `${this.name} makes a sound`; };\n\nfunction Dog(name) { Animal.call(this, name); }\nDog.prototype = Object.create(Animal.prototype);\nDog.prototype.constructor = Dog;\nDog.prototype.speak = function() { return `${this.name} barks`; };\n\nconst dog = new Dog('Rex');\ndelete Dog.prototype.speak;\n\nStep 1: What does dog.speak() return after the delete?\nStep 2: What does dog.constructor point to?\nStep 3: What does Object.getPrototypeOf(Dog.prototype) equal?",
+      "choices": {
+        "A": "'Rex makes a sound', Dog, Animal.prototype",
+        "B": "'Rex makes a sound', Animal, Animal.prototype",
+        "C": "TypeError (speak is not a function), Dog, Animal.prototype",
+        "D": "'Rex barks', Dog, Animal.prototype"
+      },
+      "answer": "A",
+      "explanation": "Step 1: After deleting Dog.prototype.speak, the lookup walks up to Animal.prototype.speak, returning 'Rex makes a sound'. Step 2: constructor was explicitly set to Dog on line 6. Step 3: Dog.prototype was created via Object.create(Animal.prototype), so its prototype is Animal.prototype.",
+      "topic": "prototypes",
+      "topic_category": "core_javascript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS077",
+      "question": "Analyze this TypeScript generic with multiple levels of inference:\n\ntype UnpackPromise<T> = T extends Promise<infer U>\n  ? U extends Promise<infer V>\n    ? V\n    : U\n  : T;\n\ntype A = UnpackPromise<Promise<Promise<string>>>;\ntype B = UnpackPromise<Promise<number>>;\ntype C = UnpackPromise<boolean>;\n\nStep 1: For type A, what does the first infer extract?\nStep 2: Does the second conditional match for type A?\nStep 3: What are all three resolved types?",
+      "choices": {
+        "A": "A=Promise<string>, B=number, C=boolean",
+        "B": "A=string, B=Promise<number>, C=boolean",
+        "C": "A=string, B=number, C=boolean",
+        "D": "A=Promise<Promise<string>>, B=number, C=boolean"
+      },
+      "answer": "C",
+      "explanation": "Step 1: For A, U is inferred as Promise<string>. Step 2: Promise<string> extends Promise<infer V> matches, V=string. Step 3: A=string (unpacked twice), B=number (U=number, doesn't match nested Promise), C=boolean (doesn't match outer Promise).",
+      "topic": "nested_inference",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS078",
+      "question": "Analyze this Vite build configuration for code splitting behavior:\n\n// vite.config.ts\nexport default defineConfig({\n  build: {\n    rollupOptions: {\n      output: {\n        manualChunks: {\n          vendor: ['react', 'react-dom'],\n          utils: ['lodash-es', 'date-fns']\n        }\n      }\n    }\n  }\n});\n\n// App.tsx\nconst AdminPanel = lazy(() => import('./AdminPanel'));\nconst Dashboard = lazy(() => import('./Dashboard'));\n\nStep 1: How many chunks does the build produce (minimum)?\nStep 2: Which modules go into which chunks?\nStep 3: When does the AdminPanel chunk load?",
+      "choices": {
+        "A": "At least 5 chunks: vendor, utils, main app entry, AdminPanel, and Dashboard",
+        "B": "2 chunks: vendor and app",
+        "C": "3 chunks: vendor, utils, and one app chunk containing everything else",
+        "D": "4 chunks: vendor, utils, AdminPanel+Dashboard combined, and main"
+      },
+      "answer": "A",
+      "explanation": "Step 1: manualChunks creates 2 named chunks. The main entry creates 1 chunk. Each lazy() import creates a separate chunk. Minimum 5 chunks. Step 2: vendor gets react/react-dom, utils gets lodash-es/date-fns, main gets the entry code, and AdminPanel/Dashboard each get their own chunk. Step 3: AdminPanel chunk loads only when the route/condition rendering it is triggered, thanks to React.lazy().",
+      "topic": "code_splitting_config",
+      "topic_category": "build_tools",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS079",
+      "question": "Trace the state transitions in this useReducer implementation:\n\ntype State = { items: string[]; loading: boolean; error: string | null };\ntype Action =\n  | { type: 'FETCH_START' }\n  | { type: 'FETCH_SUCCESS'; payload: string[] }\n  | { type: 'FETCH_ERROR'; payload: string }\n  | { type: 'ADD_ITEM'; payload: string };\n\nfunction reducer(state: State, action: Action): State {\n  switch (action.type) {\n    case 'FETCH_START': return { ...state, loading: true, error: null };\n    case 'FETCH_SUCCESS': return { ...state, items: action.payload, loading: false };\n    case 'FETCH_ERROR': return { ...state, loading: false, error: action.payload };\n    case 'ADD_ITEM': return { ...state, items: [...state.items, action.payload] };\n  }\n}\n\nconst initial: State = { items: [], loading: false, error: null };\n// Dispatched in order: FETCH_START, FETCH_SUCCESS(['a','b']), ADD_ITEM('c')\n\nStep 1: State after FETCH_START?\nStep 2: State after FETCH_SUCCESS?\nStep 3: Final state after ADD_ITEM?",
+      "choices": {
+        "A": "{ items: ['c'], loading: false, error: null }",
+        "B": "{ items: ['a','b','c'], loading: true, error: null }",
+        "C": "{ items: ['a','b','c'], loading: false, error: null }",
+        "D": "{ items: ['a','b'], loading: false, error: null }"
+      },
+      "answer": "C",
+      "explanation": "Step 1: { items: [], loading: true, error: null }. Step 2: { items: ['a','b'], loading: false, error: null }. Step 3: ADD_ITEM spreads existing items and appends 'c': { items: ['a','b','c'], loading: false, error: null }.",
+      "topic": "use_reducer_patterns",
+      "topic_category": "react",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS080",
+      "question": "Analyze this Node.js Transform stream for correctness:\n\nconst { Transform } = require('stream');\n\nclass CSVToJSON extends Transform {\n  constructor() {\n    super({ readableObjectMode: true });\n    this.headers = null;\n    this.buffer = '';\n  }\n  _transform(chunk, encoding, callback) {\n    this.buffer += chunk.toString();\n    const lines = this.buffer.split('\\n');\n    this.buffer = lines.pop(); // Keep incomplete line\n    for (const line of lines) {\n      if (!this.headers) {\n        this.headers = line.split(',');\n      } else {\n        const values = line.split(',');\n        const obj = {};\n        this.headers.forEach((h, i) => obj[h.trim()] = values[i]?.trim());\n        this.push(obj);\n      }\n    }\n    callback();\n  }\n  _flush(callback) {\n    if (this.buffer && this.headers) {\n      const values = this.buffer.split(',');\n      const obj = {};\n      this.headers.forEach((h, i) => obj[h.trim()] = values[i]?.trim());\n      this.push(obj);\n    }\n    callback();\n  }\n}\n\nStep 1: Why is readableObjectMode: true needed?\nStep 2: Why does _transform keep lines.pop() in buffer?\nStep 3: What is _flush for?",
+      "choices": {
+        "A": "readableObjectMode allows pushing objects (not buffers) downstream; lines.pop() retains partial lines across chunks; _flush processes the final line after the writable side ends",
+        "B": "readableObjectMode makes the stream faster; lines.pop() is a bug; _flush is never called",
+        "C": "The stream is incorrect: it should use writableObjectMode instead",
+        "D": "The stream doesn't need object mode because it outputs strings"
+      },
+      "answer": "A",
+      "explanation": "Step 1: The readable side emits objects (parsed CSV rows), so readableObjectMode: true is needed. The writable side receives Buffer/string chunks (default). Step 2: Chunks may split in the middle of a line; pop() saves the incomplete trailing line. Step 3: _flush is called when the writable side ends, processing any remaining data in the buffer.",
+      "topic": "transform_streams",
+      "topic_category": "nodejs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS081",
+      "question": "Analyze this TypeScript mapped type with key remapping:\n\ntype Getters<T> = {\n  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];\n};\n\ninterface Person { name: string; age: number; }\ntype PersonGetters = Getters<Person>;\n\nStep 1: What does `string & K` accomplish?\nStep 2: How does key remapping with `as` work?\nStep 3: What is the final type?",
+      "choices": {
+        "A": "{ getName: () => string; getAge: () => number; }",
+        "B": "{ name: () => string; age: () => number; }",
+        "C": "{ getName: string; getAge: number; }",
+        "D": "{ get_name: () => string; get_age: () => number; }"
+      },
+      "answer": "A",
+      "explanation": "Step 1: `string & K` filters out symbol keys (Capitalize only works on strings). Step 2: The `as` clause remaps each key K to a template literal type `get${Capitalize<...>}`. Step 3: 'name' becomes 'getName', 'age' becomes 'getAge', each mapped to a getter function returning the original property type.",
+      "topic": "key_remapping",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS082",
+      "question": "Analyze this async testing scenario with MSW:\n\n// handler\nhttp.get('/api/users', async () => {\n  await delay(100);\n  return HttpResponse.json([{ id: 1, name: 'Alice' }]);\n});\n\n// test\ntest('displays users after loading', async () => {\n  render(<UserList />);\n  expect(screen.getByText('Loading...')).toBeInTheDocument();\n  await waitFor(() => {\n    expect(screen.getByText('Alice')).toBeInTheDocument();\n  });\n  expect(screen.queryByText('Loading...')).not.toBeInTheDocument();\n});\n\nStep 1: What does the delay(100) simulate?\nStep 2: Why is waitFor needed instead of just await?\nStep 3: What would break if we used findByText instead of the waitFor pattern?",
+      "choices": {
+        "A": "The delay simulates network latency; waitFor retries the assertion until it passes (polling); findByText would also work here and is actually the preferred approach for this specific case",
+        "B": "Nothing would break; findByText is equivalent",
+        "C": "The delay simulates network latency; waitFor is needed because the component must re-render after the fetch resolves; findByText cannot be used with MSW",
+        "D": "The delay causes the test to timeout; waitFor is a workaround for slow tests"
+      },
+      "answer": "A",
+      "explanation": "Step 1: delay(100) simulates real-world network latency. Step 2: waitFor polls until the assertion passes or times out, handling async state updates. Step 3: findByText is actually a convenience wrapper around waitFor + getByText and would work equivalently here. It's the preferred API for waiting for elements to appear.",
+      "topic": "async_testing_msw",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS083",
+      "question": "Analyze this performance optimization scenario:\n\nfunction SearchResults({ query }) {\n  const deferredQuery = useDeferredValue(query);\n  const results = useMemo(() => filterItems(deferredQuery), [deferredQuery]);\n  const isStale = query !== deferredQuery;\n\n  return (\n    <div style={{ opacity: isStale ? 0.5 : 1 }}>\n      {results.map(item => <ResultItem key={item.id} item={item} />)}\n    </div>\n  );\n}\n\nStep 1: What happens when the user types quickly?\nStep 2: Why combine useDeferredValue with useMemo?\nStep 3: What does the isStale check provide?",
+      "choices": {
+        "A": "useDeferredValue debounces the query with a 300ms delay; useMemo is redundant here",
+        "B": "During fast typing, deferredQuery lags behind query; useMemo prevents recalculation until deferredQuery catches up; isStale dims the results to indicate pending update, providing visual feedback without blocking input",
+        "C": "The component never re-renders during typing because useDeferredValue blocks all updates",
+        "D": "The results flash between stale and fresh states rapidly, causing a poor user experience"
+      },
+      "answer": "B",
+      "explanation": "Step 1: React prioritizes the input update (query changes immediately) over the deferred value, so typing stays responsive. Step 2: useMemo with deferredQuery avoids recalculating filterItems on every keystroke; it only recalculates when deferredQuery catches up. Step 3: isStale provides visual feedback (dimming) so users know the displayed results are for an older query while new results are computing.",
+      "topic": "deferred_value_optimization",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS084",
+      "question": "Analyze this Node.js worker thread communication pattern:\n\nconst { Worker, isMainThread, parentPort, workerData } = require('worker_threads');\n\nif (isMainThread) {\n  const sharedBuffer = new SharedArrayBuffer(4);\n  const view = new Int32Array(sharedBuffer);\n  Atomics.store(view, 0, 0);\n\n  const worker = new Worker(__filename, { workerData: { sharedBuffer } });\n  worker.on('message', () => {\n    console.log('Main reads:', Atomics.load(view, 0));\n  });\n} else {\n  const view = new Int32Array(workerData.sharedBuffer);\n  Atomics.store(view, 0, 42);\n  parentPort.postMessage('done');\n}\n\nStep 1: How is the SharedArrayBuffer passed to the worker?\nStep 2: Why use Atomics instead of direct array access?\nStep 3: What does the main thread log?",
+      "choices": {
+        "A": "Main reads: 42 (SharedArrayBuffer is shared memory; Atomics ensures the write is visible across threads; the message confirms ordering)",
+        "B": "Main reads: undefined (Int32Array cannot wrap SharedArrayBuffer)",
+        "C": "Main reads: 0 (SharedArrayBuffer is copied, not shared)",
+        "D": "Throws an error because worker threads cannot use SharedArrayBuffer"
+      },
+      "answer": "A",
+      "explanation": "Step 1: SharedArrayBuffer is passed via workerData and is genuinely shared (not cloned) between threads. Step 2: Atomics provides atomic operations ensuring memory ordering across threads, preventing torn reads/writes. Step 3: The worker stores 42, then sends 'done'; the main thread's message handler reads 42 because the Atomics.store guarantees visibility.",
+      "topic": "shared_memory",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS085",
+      "question": "Analyze this complex TypeScript discriminated union exhaustiveness pattern:\n\ntype Shape =\n  | { kind: 'circle'; radius: number }\n  | { kind: 'rect'; width: number; height: number }\n  | { kind: 'triangle'; base: number; height: number };\n\nfunction assertNever(x: never): never {\n  throw new Error(`Unexpected: ${JSON.stringify(x)}`);\n}\n\nfunction area(s: Shape): number {\n  switch (s.kind) {\n    case 'circle': return Math.PI * s.radius ** 2;\n    case 'rect': return s.width * s.height;\n    default: return assertNever(s);\n  }\n}\n\nStep 1: What compile-time error occurs?\nStep 2: What runtime behavior occurs if you suppress the error?\nStep 3: How do you fix it?",
+      "choices": {
+        "A": "No error occurs; the default case handles triangle correctly",
+        "B": "Runtime error only: assertNever is never called because TypeScript prevents it",
+        "C": "Compile error: Type '{ kind: \"triangle\"; ... }' is not assignable to type 'never'; at runtime the assertNever throws for triangle inputs; fix by adding case 'triangle'",
+        "D": "Compile error on the switch statement itself; shapes cannot be discriminated by 'kind'"
+      },
+      "answer": "C",
+      "explanation": "Step 1: After handling 'circle' and 'rect', TypeScript narrows s to { kind: 'triangle'; ... } in the default branch, which is not assignable to never. Step 2: If suppressed (e.g., @ts-ignore), passing a triangle at runtime hits assertNever and throws. Step 3: Add `case 'triangle': return 0.5 * s.base * s.height;`.",
+      "topic": "exhaustiveness_checking",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS086",
+      "question": "Analyze this Redux Toolkit async flow:\n\nconst fetchUsers = createAsyncThunk('users/fetch', async (_, { rejectWithValue }) => {\n  try {\n    const res = await fetch('/api/users');\n    if (!res.ok) throw new Error('Failed');\n    return await res.json();\n  } catch (err) {\n    return rejectWithValue(err.message);\n  }\n});\n\nconst usersSlice = createSlice({\n  name: 'users',\n  initialState: { data: [], status: 'idle', error: null },\n  reducers: {},\n  extraReducers: (builder) => {\n    builder\n      .addCase(fetchUsers.pending, (state) => { state.status = 'loading'; })\n      .addCase(fetchUsers.fulfilled, (state, action) => {\n        state.status = 'succeeded';\n        state.data = action.payload;\n      })\n      .addCase(fetchUsers.rejected, (state, action) => {\n        state.status = 'failed';\n        state.error = action.payload;\n      });\n  }\n});\n\nStep 1: What happens if the fetch returns a 404?\nStep 2: Why use rejectWithValue instead of just throwing?\nStep 3: What is state.error set to?",
+      "choices": {
+        "A": "The rejected case runs; rejectWithValue makes the error message available as action.payload instead of action.error; state.error is 'Failed'",
+        "B": "The pending case runs indefinitely; the thunk never resolves",
+        "C": "The fulfilled case runs with an empty payload; state.error is null",
+        "D": "The thunk crashes with an unhandled rejection"
+      },
+      "answer": "A",
+      "explanation": "Step 1: A 404 means res.ok is false, throwing an Error caught in the catch block. Step 2: rejectWithValue puts the value in action.payload (typed and predictable), while a plain throw puts it in action.error.message (less controllable). Step 3: The rejected case sets state.error to action.payload, which is the string 'Failed'.",
+      "topic": "async_thunk",
+      "topic_category": "state_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS087",
+      "question": "Analyze this bundle analysis scenario:\n\nA React app imports:\n- react (45KB gzipped)\n- react-dom (130KB gzipped)\n- lodash (72KB gzipped, but only _.debounce is used)\n- date-fns (entire package imported as `import * as dateFns from 'date-fns'`)\n- A chart library (250KB gzipped, used only on /analytics route)\n\nStep 1: Which import is the biggest tree-shaking opportunity?\nStep 2: How should the chart library be loaded?\nStep 3: What is the optimal strategy for each?",
+      "choices": {
+        "A": "Move everything to a web worker",
+        "B": "Use CDN links for all libraries to avoid bundling entirely",
+        "C": "Replace lodash with lodash-es and use named import; lazy-load chart library with React.lazy(); replace `import *` with named imports from date-fns for tree shaking",
+        "D": "Remove all libraries and write custom implementations"
+      },
+      "answer": "C",
+      "explanation": "Step 1: lodash (CJS, 72KB) but only one function is used; switching to lodash-es enables tree-shaking, or use `import debounce from 'lodash-es/debounce'`. Step 2: The 250KB chart library should be code-split via React.lazy(() => import('./AnalyticsChart')) since it's route-specific. Step 3: date-fns supports tree-shaking with named imports (`import { format } from 'date-fns'`), but `import *` defeats it.",
+      "topic": "bundle_analysis",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS088",
+      "question": "Analyze this complex mocking scenario in Vitest:\n\nvi.mock('./database', () => ({\n  getUser: vi.fn().mockResolvedValue({ id: 1, name: 'Alice' }),\n  saveUser: vi.fn().mockResolvedValue(true)\n}));\n\nvi.mock('./logger', () => ({\n  default: { info: vi.fn(), error: vi.fn() }\n}));\n\nimport { getUser, saveUser } from './database';\nimport logger from './logger';\nimport { updateUser } from './userService'; // uses database + logger internally\n\ntest('updateUser logs on success', async () => {\n  await updateUser(1, { name: 'Bob' });\n\n  expect(getUser).toHaveBeenCalledWith(1);\n  expect(saveUser).toHaveBeenCalledWith({ id: 1, name: 'Bob' });\n  expect(logger.info).toHaveBeenCalled();\n});\n\nStep 1: Why are vi.mock calls hoisted above imports?\nStep 2: Why mock both the database and logger modules?\nStep 3: What would break if you used vi.fn() without mockResolvedValue on getUser?",
+      "choices": {
+        "A": "Mocking both modules is unnecessary; only the database needs mocking",
+        "B": "vi.mock is hoisted to ensure mocks are in place before modules are imported; both are mocked to isolate the unit under test; without mockResolvedValue, getUser returns undefined (not a Promise), causing updateUser to likely throw 'Cannot read properties of undefined'",
+        "C": "vi.mock is not hoisted; the import order is what matters",
+        "D": "The test would pass because vi.fn() returns undefined by default, which is sufficient"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Vitest hoists vi.mock calls above all imports so the mock factory runs before any module tries to load the real dependency. Step 2: Mocking both isolates updateUser's logic from real I/O and side effects. Step 3: vi.fn() returns undefined synchronously; if updateUser does `const user = await getUser(id)`, awaiting undefined yields undefined, and accessing user.id throws.",
+      "topic": "module_mocking",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS089",
+      "question": "Analyze this TypeScript type-level computation:\n\ntype TupleToUnion<T extends any[]> = T[number];\ntype UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;\n\ntype Fns = [(a: string) => void, (b: number) => void, (c: boolean) => void];\ntype FnUnion = TupleToUnion<Fns>;\ntype FnIntersection = UnionToIntersection<FnUnion>;\n\nStep 1: What is FnUnion?\nStep 2: How does UnionToIntersection work (contravariant inference)?\nStep 3: What is the final type of FnIntersection?",
+      "choices": {
+        "A": "(a: string & number & boolean) => void",
+        "B": "never (incompatible function types)",
+        "C": "(a: string) => void | (b: number) => void | (c: boolean) => void",
+        "D": "(a: string) => void & (b: number) => void & (c: boolean) => void, meaning it accepts string, number, and boolean as overloads"
+      },
+      "answer": "D",
+      "explanation": "Step 1: FnUnion is the union of all three function types. Step 2: UnionToIntersection exploits contravariant type inference: putting U in a contravariant position (function parameter) causes TypeScript to infer the intersection. Step 3: The result is an intersection of all three function types, effectively creating an overloaded function that accepts (string), (number), or (boolean).",
+      "topic": "union_to_intersection",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS090",
+      "question": "Analyze this React Server Component data flow:\n\n// ServerComponent.tsx (server component)\nasync function ServerComponent() {\n  const data = await db.query('SELECT * FROM posts');\n  return (\n    <div>\n      <h1>Posts ({data.length})</h1>\n      <ClientSearch />\n      <PostList posts={data} />\n    </div>\n  );\n}\n\n// ClientSearch.tsx\n'use client';\nfunction ClientSearch() {\n  const [query, setQuery] = useState('');\n  return <input value={query} onChange={e => setQuery(e.target.value)} />;\n}\n\n// PostList.tsx (server component)\nfunction PostList({ posts }) {\n  return <ul>{posts.map(p => <li key={p.id}>{p.title}</li>)}</ul>;\n}\n\nStep 1: Which code runs on the server vs client?\nStep 2: Is the db import sent to the client bundle?\nStep 3: Can ClientSearch filter the posts?",
+      "choices": {
+        "A": "ServerComponent runs on server; PostList and ClientSearch both run on client",
+        "B": "All components run on both server and client (universal rendering)",
+        "C": "ServerComponent and PostList run on server (not in client bundle); ClientSearch runs on client; db.query code is excluded from client bundle; ClientSearch cannot directly filter posts because it has no access to server-side data without additional patterns (API route, server action, or re-architecture)",
+        "D": "Everything runs on the server; the client receives only HTML"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Components without 'use client' are server components (ServerComponent, PostList). Only ClientSearch runs on the client. Step 2: Server component code and imports (db) are never sent to the client bundle. Step 3: ClientSearch has local state but no access to the posts data; filtering would require passing data down, using a server action, or an API endpoint.",
+      "topic": "rsc_data_flow",
+      "topic_category": "react",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS091",
+      "question": "Analyze this Node.js child_process pattern:\n\nconst { execFile } = require('child_process');\nconst { promisify } = require('util');\nconst execFileAsync = promisify(execFile);\n\nasync function runPipeline(filePath) {\n  const { stdout: linted } = await execFileAsync('eslint', ['--fix', filePath]);\n  const { stdout: formatted } = await execFileAsync('prettier', ['--write', filePath]);\n  const { stdout: tested } = await execFileAsync('vitest', ['run', '--reporter=json']);\n  return { linted, formatted, tested: JSON.parse(tested) };\n}\n\nStep 1: Why use execFile instead of exec?\nStep 2: What happens if eslint returns a non-zero exit code?\nStep 3: What is the security consideration?",
+      "choices": {
+        "A": "execFile is slower but more reliable; non-zero exit codes are silently ignored; there are no security issues",
+        "B": "execFile avoids shell injection by not spawning a shell; non-zero exit code causes the promisified call to reject with an error (containing stderr); filePath should still be validated to prevent path traversal",
+        "C": "execFile only works on Unix; exec should be used on Windows",
+        "D": "execFile is identical to exec; non-zero exit code returns empty string; no security considerations"
+      },
+      "answer": "B",
+      "explanation": "Step 1: execFile executes the binary directly without spawning a shell, eliminating shell injection risks (e.g., filePath containing `; rm -rf /`). exec runs through a shell and is vulnerable. Step 2: promisify(execFile) rejects when the process exits non-zero, with error.stderr and error.code available. Step 3: Even without shell injection, filePath should be validated/sanitized to prevent path traversal attacks.",
+      "topic": "child_process",
+      "topic_category": "nodejs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS092",
+      "question": "Analyze this virtualization pattern for rendering a large list:\n\nimport { useVirtualizer } from '@tanstack/react-virtual';\n\nfunction VirtualList({ items }) {\n  const parentRef = useRef(null);\n  const virtualizer = useVirtualizer({\n    count: items.length,\n    getScrollElement: () => parentRef.current,\n    estimateSize: () => 50,\n    overscan: 5,\n  });\n\n  return (\n    <div ref={parentRef} style={{ height: '400px', overflow: 'auto' }}>\n      <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>\n        {virtualizer.getVirtualItems().map(virtualRow => (\n          <div key={virtualRow.key}\n            style={{ position: 'absolute', top: `${virtualRow.start}px`, height: `${virtualRow.size}px` }}>\n            {items[virtualRow.index].name}\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n\nStep 1: Why use absolute positioning instead of a regular list?\nStep 2: What does overscan: 5 do?\nStep 3: With 10,000 items, approximately how many DOM nodes exist at any time?",
+      "choices": {
+        "A": "10,000 DOM nodes; overscan is ignored; absolute positioning is for animation",
+        "B": "100 DOM nodes; overscan loads items asynchronously; positioning is cosmetic",
+        "C": "50 DOM nodes; overscan controls fetch batch size; absolute positioning is required by React",
+        "D": "About 8+10=18 visible items plus overscan; absolute positioning allows rendering only visible items at their correct scroll positions without affecting layout; overscan renders 5 extra items above and below the viewport to prevent flickering during fast scrolling"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Absolute positioning means only visible items are in the DOM, positioned at exact pixel offsets. A wrapper div with getTotalSize() maintains scrollbar accuracy. Step 2: overscan: 5 renders 5 extra rows above and below the viewport, preventing blank flashes during fast scrolling. Step 3: With 400px height and 50px rows, ~8 visible rows + 10 overscan (5 each side) = ~18 DOM nodes regardless of total items.",
+      "topic": "virtualization",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS093",
+      "question": "Analyze this Vite module resolution issue:\n\n// vite.config.ts\nexport default defineConfig({\n  resolve: {\n    alias: { '@': '/src' }\n  },\n  optimizeDeps: {\n    include: ['legacy-cjs-lib']\n  }\n});\n\n// src/utils.ts\nimport helpers from 'legacy-cjs-lib'; // CJS module\nimport { format } from 'date-fns';      // ESM module\n\nStep 1: Why is legacy-cjs-lib in optimizeDeps.include?\nStep 2: What does Vite do with CJS dependencies during dev?\nStep 3: Why doesn't date-fns need explicit inclusion?",
+      "choices": {
+        "A": "All dependencies need explicit inclusion; Vite never auto-detects",
+        "B": "CJS modules work natively in browsers; optimizeDeps is for performance only",
+        "C": "date-fns requires explicit inclusion but it's hidden in a default config",
+        "D": "CJS modules must be pre-bundled to ESM for native browser import; Vite's dev server uses esbuild to pre-bundle CJS deps; date-fns ships as ESM and is auto-discovered by Vite's dependency scanner, but Vite pre-bundles it too (for fewer HTTP requests), just without needing manual inclusion"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Browsers cannot natively import CJS modules. Vite pre-bundles them with esbuild, converting to ESM. Some CJS deps aren't auto-detected (dynamic require, conditional exports), needing manual inclusion. Step 2: esbuild converts CJS to ESM during dev server startup. Step 3: Vite auto-discovers imports by scanning source files. date-fns is ESM-native but is still pre-bundled to reduce the number of HTTP requests (date-fns has many small files).",
+      "topic": "module_resolution",
+      "topic_category": "build_tools",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS094",
+      "question": "Analyze this Zustand store with middleware composition:\n\nimport { create } from 'zustand';\nimport { devtools, persist, subscribeWithSelector } from 'zustand/middleware';\nimport { immer } from 'zustand/middleware/immer';\n\nconst useStore = create(\n  devtools(\n    persist(\n      subscribeWithSelector(\n        immer((set, get) => ({\n          items: [],\n          addItem: (item) => set((state) => { state.items.push(item); }),\n          total: () => get().items.reduce((sum, i) => sum + i.price, 0)\n        }))\n      ),\n      { name: 'cart-store' }\n    )\n  )\n);\n\n// Subscriber\nuseStore.subscribe(\n  (state) => state.items.length,\n  (length) => console.log('Items count:', length)\n);\n\nStep 1: Why does immer allow state.items.push() (mutation)?  \nStep 2: What does the subscribeWithSelector middleware enable?\nStep 3: In what order do the middleware execute?",
+      "choices": {
+        "A": "immer is only for Redux; Zustand doesn't support middleware composition",
+        "B": "push() works because Zustand uses mutable state internally; middleware execute in random order",
+        "C": "push() causes a bug because Zustand requires immutability; subscribeWithSelector is redundant; order doesn't matter",
+        "D": "immer wraps the set callback in a Proxy-based draft, so mutations produce immutable updates; subscribeWithSelector enables subscribing to computed selectors (not full state); middleware executes outside-in: devtools wraps persist wraps subscribeWithSelector wraps immer"
+      },
+      "answer": "D",
+      "explanation": "Step 1: The immer middleware intercepts set() calls, providing a draft proxy where mutations are tracked and converted to an immutable update. Step 2: subscribeWithSelector allows subscribing to specific state slices with equality checking, only firing the callback when the selected value changes. Step 3: Middleware composes outside-in (like function composition): devtools -> persist -> subscribeWithSelector -> immer -> store.",
+      "topic": "zustand_middleware",
+      "topic_category": "state_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS095",
+      "question": "Analyze this TypeScript declaration merging scenario:\n\ninterface Box { width: number; }\ninterface Box { height: number; }\ninterface Box { depth: number; }\n\nnamespace Box {\n  export function create(w: number, h: number, d: number): Box {\n    return { width: w, height: h, depth: d };\n  }\n}\n\nconst b: Box = Box.create(1, 2, 3);\n\nStep 1: What type does the merged Box interface have?\nStep 2: How does the namespace merge with the interface?\nStep 3: Is `b` valid?",
+      "choices": {
+        "A": "Declaration merging only works with type aliases, not interfaces",
+        "B": "The interfaces merge but the namespace overwrites them; b only has the create method",
+        "C": "Only the last Box interface is used; namespace causes a conflict; b is invalid",
+        "D": "All three interface declarations merge into { width: number; height: number; depth: number }; the namespace adds static methods to the Box name without conflicting with the type; b is valid with all three properties"
+      },
+      "answer": "D",
+      "explanation": "Step 1: TypeScript merges same-named interface declarations, combining all properties: { width: number; height: number; depth: number }. Step 2: The namespace merges with the interface, adding Box.create as a callable property while Box as a type still represents the merged interface. Step 3: Box.create returns { width, height, depth } which satisfies the merged Box interface.",
+      "topic": "declaration_merging",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS096",
+      "question": "Analyze this web worker communication pattern for offloading heavy computation:\n\n// main.ts\nconst worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });\n\nfunction sortLargeArray(data: number[]): Promise<number[]> {\n  return new Promise((resolve) => {\n    worker.onmessage = (e) => resolve(e.data);\n    worker.postMessage(data);\n  });\n}\n\n// worker.ts\nself.onmessage = (e: MessageEvent<number[]>) => {\n  const sorted = e.data.sort((a, b) => a - b);\n  self.postMessage(sorted);\n};\n\nStep 1: What happens to the original array when posted to the worker?\nStep 2: Why use `new URL('./worker.ts', import.meta.url)` instead of a string path?\nStep 3: How could you avoid copying the data twice?",
+      "choices": {
+        "A": "The array is serialized to JSON; URL constructor is a polyfill; there's no way to avoid copying",
+        "B": "The array is shared; string path works the same; copying is unavoidable",
+        "C": "The array is passed by reference; URL constructor is only for TypeScript; SharedArrayBuffer eliminates all copies",
+        "D": "The array is structured-cloned (copied) to the worker and back; the URL constructor enables Vite/webpack to bundle the worker file correctly; using Transferable objects (e.g., ArrayBuffer with transfer list) would move the memory instead of copying, eliminating both copy operations"
+      },
+      "answer": "D",
+      "explanation": "Step 1: postMessage uses the structured clone algorithm, creating a full copy of the data. The return postMessage also copies. Step 2: The URL constructor with import.meta.url lets bundlers (Vite, webpack) discover and bundle the worker file properly, handling module resolution. Step 3: Converting to a TypedArray backed by an ArrayBuffer and using the transfer list in postMessage(data, [data.buffer]) transfers ownership without copying.",
+      "topic": "web_workers",
+      "topic_category": "performance",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS097",
+      "question": "Analyze this testing pattern for async error handling:\n\ntest('handles API timeout', async () => {\n  server.use(\n    http.get('/api/data', async () => {\n      await delay('infinite');\n    })\n  );\n\n  render(<DataComponent timeout={1000} />);\n\n  await waitFor(() => {\n    expect(screen.getByRole('alert')).toHaveTextContent('Request timed out');\n  }, { timeout: 3000 });\n\n  expect(screen.queryByTestId('data-table')).not.toBeInTheDocument();\n  expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();\n});\n\nStep 1: What does `delay('infinite')` do in MSW?\nStep 2: Why is the waitFor timeout (3000) larger than the component timeout (1000)?\nStep 3: What three things does this test verify?",
+      "choices": {
+        "A": "delay('infinite') triggers an AbortError; waitFor auto-retries the request; it verifies the loading spinner",
+        "B": "delay('infinite') makes the test hang forever; the timeouts are unrelated; it only verifies one thing",
+        "C": "delay('infinite') makes the handler never respond, simulating a timeout; waitFor timeout must exceed component timeout to give the component time to detect the timeout and render error UI; it verifies: error message appears, data table is absent, retry button is present",
+        "D": "delay('infinite') returns null after 1 second; the timeouts should be equal; it tests network connectivity"
+      },
+      "answer": "C",
+      "explanation": "Step 1: MSW's delay('infinite') makes the handler never respond, letting the component's own timeout logic fire. Step 2: waitFor's 3000ms timeout gives the component 1000ms to timeout + time for React to re-render with the error state. Step 3: The test verifies three aspects of timeout handling: error message display, absence of data, and presence of a recovery action (retry button).",
+      "topic": "async_error_testing",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS098",
+      "question": "Analyze this complex TypeScript generic with conditional mapped types:\n\ntype EventHandlers<T> = {\n  [K in keyof T as T[K] extends Function ? never : K extends string ? `on${Capitalize<K>}Change` : never]: (value: T[K]) => void;\n};\n\ninterface UserState {\n  name: string;\n  age: number;\n  greet: () => void;\n}\n\ntype UserHandlers = EventHandlers<UserState>;\n\nStep 1: Which properties are filtered out by the `never` condition?\nStep 2: How are the remaining keys transformed?\nStep 3: What is the final type?",
+      "choices": {
+        "A": "{ onNameChange: string; onAgeChange: number; }",
+        "B": "{ onGreetChange: (value: () => void) => void; onNameChange: (value: string) => void; onAgeChange: (value: number) => void; }",
+        "C": "{ name: (value: string) => void; age: (value: number) => void; }",
+        "D": "{ onNameChange: (value: string) => void; onAgeChange: (value: number) => void; }"
+      },
+      "answer": "D",
+      "explanation": "Step 1: The conditional `T[K] extends Function ? never : ...` filters out 'greet' because its type `() => void` extends Function. Step 2: Remaining keys (name, age) are remapped via template literal to 'onNameChange' and 'onAgeChange'. Step 3: Each handler is a function taking the original property type as its parameter.",
+      "topic": "conditional_mapped_types",
+      "topic_category": "typescript",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS099",
+      "question": "Analyze this React concurrent rendering scenario:\n\nfunction App() {\n  const [tab, setTab] = useState('home');\n  const [isPending, startTransition] = useTransition();\n\n  function selectTab(nextTab) {\n    startTransition(() => { setTab(nextTab); });\n  }\n\n  return (\n    <div>\n      <TabBar activeTab={tab} onSelect={selectTab} isPending={isPending} />\n      <Suspense fallback={<Spinner />}>\n        {tab === 'home' && <Home />}\n        {tab === 'posts' && <Posts />}  {/* Posts does heavy rendering */}\n        {tab === 'contact' && <Contact />}\n      </Suspense>\n    </div>\n  );\n}\n\nStep 1: What happens when the user clicks 'posts' then immediately clicks 'contact'?\nStep 2: What does isPending indicate during this sequence?\nStep 3: Why doesn't the Suspense fallback flash between tab switches?",
+      "choices": {
+        "A": "Posts finishes rendering before Contact starts; isPending is irrelevant; Suspense catches all transitions",
+        "B": "The clicks are queued and processed in order; isPending alternates; Suspense shows for each tab",
+        "C": "Both Posts and Contact render; isPending is always false; Suspense fallback shows briefly",
+        "D": "React interrupts the Posts transition and starts Contact instead; isPending is true while the transition is in progress, enabling a visual indicator; the transition keeps showing the old tab until the new one is ready, avoiding the Suspense fallback flash"
+      },
+      "answer": "D",
+      "explanation": "Step 1: useTransition makes tab updates interruptible. When 'contact' is clicked while 'posts' is still rendering, React abandons the Posts render and starts Contact. Step 2: isPending is true from the moment startTransition is called until the transition completes, letting TabBar show a loading indicator. Step 3: Transitions keep the current UI visible until the new UI is ready, preventing Suspense fallback flashes.",
+      "topic": "concurrent_rendering",
+      "topic_category": "react",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "JS100",
+      "question": "Analyze this full-stack debugging scenario:\n\nA Node.js API endpoint uses:\n1. Express middleware: `app.use(express.json({ limit: '10mb' }))`\n2. A Transform stream that gzips the response\n3. A database connection pool with max 10 connections\n\nUnder load (100 concurrent requests), the server becomes unresponsive. Response times go from 50ms to 30+ seconds, then connections start timing out.\n\nStep 1: The connection pool is exhausted (10 max, 100 concurrent). What symptom does this cause?\nStep 2: The gzip Transform stream buffers data. Combined with backpressure, what happens?\nStep 3: What is the most likely root cause and fix?",
+      "choices": {
+        "A": "Express cannot handle 100 concurrent requests; switch to Fastify",
+        "B": "The JSON parser is too slow; increase the body limit; disable gzip",
+        "C": "The Transform stream crashes under load; pool size is irrelevant; upgrade Node.js",
+        "D": "Connection pool exhaustion causes requests to queue waiting for a database connection, holding Express connections open; gzip backpressure further slows response draining; the fix is to increase pool size, add connection timeout, and implement request queuing with circuit breaker pattern"
+      },
+      "answer": "D",
+      "explanation": "Step 1: With 10 pool connections and 100 requests, 90 requests block waiting for a connection, holding Express request objects in memory. Step 2: Gzip backpressure means the TCP write buffer fills up, slowing response completion, which keeps connections checked out longer -- a cascading bottleneck. Step 3: Increase pool size (or add PgBouncer), set acquisition timeout so waiting requests fail fast, and add a circuit breaker to shed load during pool exhaustion.",
+      "topic": "server_performance",
+      "topic_category": "nodejs",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

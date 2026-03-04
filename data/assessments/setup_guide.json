@@ -1,0 +1,1613 @@
+{
+  "agent_id": "setup_guide",
+  "source": "Ollama documentation + hardware expertise + UX onboarding (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "SG001",
+      "question": "What is the recommended way to install Ollama on macOS?",
+      "choices": {
+        "A": "Compile from source using Go toolchain",
+        "B": "Download the .dmg installer from ollama.com/download",
+        "C": "Install via apt-get from the official repository",
+        "D": "Use pip install ollama"
+      },
+      "answer": "B",
+      "explanation": "Ollama provides a native macOS .dmg installer at ollama.com/download. apt-get is Linux-only, pip installs the Python client library (not the server), and compiling from source is unnecessary for most users.",
+      "topic": "ollama_installation_macos",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG002",
+      "question": "Which command downloads a model from the Ollama registry to your local machine?",
+      "choices": {
+        "A": "ollama fetch llama3",
+        "B": "ollama download llama3",
+        "C": "ollama pull llama3",
+        "D": "ollama get llama3"
+      },
+      "answer": "C",
+      "explanation": "The 'ollama pull' command downloads a model from the registry. The other commands do not exist in Ollama's CLI.",
+      "topic": "ollama_cli_pull",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG003",
+      "question": "What does the nvidia-smi command show that is most relevant when setting up local LLMs?",
+      "choices": {
+        "A": "CPU core count and clock speed",
+        "B": "Network bandwidth and latency statistics",
+        "C": "Available disk space on the system drive",
+        "D": "GPU model, driver version, and VRAM usage"
+      },
+      "answer": "D",
+      "explanation": "nvidia-smi displays NVIDIA GPU information including the GPU model, driver version, CUDA version, and current VRAM usage -- all critical for determining which models can run locally.",
+      "topic": "gpu_detection_nvidia_smi",
+      "topic_category": "hardware_vram",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG004",
+      "question": "A user has an NVIDIA GPU with 8GB of VRAM. Which quantized model size is the largest they can comfortably run?",
+      "choices": {
+        "A": "A 70B parameter model at Q4_K_M quantization",
+        "B": "A 7B parameter model at F16 (full precision)",
+        "C": "A 13B parameter model at Q4_K_M quantization",
+        "D": "A 30B parameter model at Q8_0 quantization"
+      },
+      "answer": "C",
+      "explanation": "A 13B Q4_K_M model requires roughly 7-8GB of VRAM. A 70B Q4_K_M needs ~40GB, a 30B Q8_0 needs ~30GB, and a 7B F16 needs ~14GB -- all exceeding 8GB.",
+      "topic": "vram_model_sizing",
+      "topic_category": "hardware_vram",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG005",
+      "question": "What is the primary advantage of running LLMs locally with Ollama compared to cloud-based AI services?",
+      "choices": {
+        "A": "Local models are always faster than cloud models",
+        "B": "Your data never leaves your machine, ensuring complete privacy",
+        "C": "Local models produce higher quality responses",
+        "D": "Local models have larger context windows"
+      },
+      "answer": "B",
+      "explanation": "The primary advantage of local LLM inference is data privacy -- prompts and responses stay on the user's hardware. Speed, quality, and context window depend on the specific model and hardware, not the deployment method.",
+      "topic": "local_processing_privacy",
+      "topic_category": "security_privacy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG006",
+      "question": "Which Ollama CLI command lists all models currently downloaded on the local machine?",
+      "choices": {
+        "A": "ollama catalog",
+        "B": "ollama show --all",
+        "C": "ollama list",
+        "D": "ollama models"
+      },
+      "answer": "C",
+      "explanation": "'ollama list' displays all locally available models with their size and modification date. 'ollama show' displays details for a single model, and the other commands do not exist.",
+      "topic": "ollama_cli_list",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG007",
+      "question": "When explaining VRAM to a non-technical user, which analogy best follows plain-English communication principles?",
+      "choices": {
+        "A": "VRAM is the volatile random-access memory on your discrete graphics processing unit",
+        "B": "VRAM is like the GPU's working desk -- the bigger the desk, the larger the AI model it can work with at once",
+        "C": "VRAM is the memory bandwidth multiplied by bus width divided by clock cycles",
+        "D": "VRAM is measured in gigabytes and determines the maximum parameter count of quantized transformer models"
+      },
+      "answer": "B",
+      "explanation": "The desk analogy translates a technical concept into a familiar physical metaphor, following the principle of plain-English communication. The other options use jargon that would confuse non-technical users.",
+      "topic": "analogy_usage",
+      "topic_category": "communication",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG008",
+      "question": "What happens when you run 'ollama run llama3' and the model is not yet downloaded?",
+      "choices": {
+        "A": "Ollama opens a browser window to download the model manually",
+        "B": "Ollama automatically pulls the model first, then starts an interactive chat session",
+        "C": "The command creates an empty model placeholder that must be filled later",
+        "D": "The command fails with a 'model not found' error"
+      },
+      "answer": "B",
+      "explanation": "'ollama run' automatically downloads the model if it is not present locally, then launches an interactive chat session. This combines the pull and run steps for convenience.",
+      "topic": "ollama_cli_run",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG009",
+      "question": "In the Cohort agent system, what is the role of a 'specialist' agent?",
+      "choices": {
+        "A": "It only handles user authentication and permissions",
+        "B": "It coordinates work between other agents and manages task queues",
+        "C": "It has deep domain expertise in a specific area like coding, design, or analysis",
+        "D": "It provides system utilities like file management and logging"
+      },
+      "answer": "C",
+      "explanation": "Specialist agents have deep domain expertise in a focused area. Orchestrator agents coordinate work between agents, and utility agents provide shared system services.",
+      "topic": "agent_types_specialist",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG010",
+      "question": "What is the default port that the Ollama server listens on?",
+      "choices": {
+        "A": "5000",
+        "B": "11434",
+        "C": "8080",
+        "D": "3000"
+      },
+      "answer": "B",
+      "explanation": "Ollama's default API port is 11434. The server listens at http://localhost:11434 by default. This can be changed via the OLLAMA_HOST environment variable.",
+      "topic": "ollama_default_port",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG011",
+      "question": "Which quantization level provides the best balance between model quality and VRAM usage for most users?",
+      "choices": {
+        "A": "Q4_K_M -- good quality retention with significant size reduction",
+        "B": "Q2_K -- smallest size, best for all hardware",
+        "C": "Q1_0 -- binary quantization is the future",
+        "D": "F16 -- full precision is always worth the VRAM cost"
+      },
+      "answer": "A",
+      "explanation": "Q4_K_M offers an excellent quality-to-size ratio, retaining most model capabilities while reducing VRAM requirements by roughly 75% compared to F16. Q2_K degrades quality too much, and F16 is impractical for most consumer GPUs.",
+      "topic": "quantization_tradeoffs",
+      "topic_category": "hardware_vram",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG012",
+      "question": "A user installing Ollama on Linux is asked to run: curl -fsSL https://ollama.com/install.sh | sh. What security concern should be mentioned?",
+      "choices": {
+        "A": "Piping a remote script to sh executes code without review -- users should inspect the script first",
+        "B": "The curl command will consume too much bandwidth",
+        "C": "The script requires a paid license key to proceed",
+        "D": "This method does not work on Linux distributions"
+      },
+      "answer": "A",
+      "explanation": "Curl-pipe-to-shell patterns execute remote code sight unseen. Best practice is to download the script first, review it, then execute. Ollama is reputable, but users should understand the risk pattern.",
+      "topic": "curl_pipe_shell_risk",
+      "topic_category": "security_privacy",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG013",
+      "question": "What does the OLLAMA_HOST environment variable control?",
+      "choices": {
+        "A": "The hostname of the remote model registry",
+        "B": "The DNS server used for model downloads",
+        "C": "The address and port the Ollama server binds to",
+        "D": "The username for Ollama cloud authentication"
+      },
+      "answer": "C",
+      "explanation": "OLLAMA_HOST sets the bind address and port for the Ollama API server. For example, setting it to 0.0.0.0:11434 makes Ollama accessible from other machines on the network.",
+      "topic": "ollama_host_env",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG014",
+      "question": "When guiding a first-time user through Ollama setup, what principle does 'progressive disclosure' refer to?",
+      "choices": {
+        "A": "Progressively increasing the difficulty of test prompts",
+        "B": "Disclosing the full source code of the application",
+        "C": "Revealing information gradually, starting with essentials and adding complexity only as needed",
+        "D": "Showing all configuration options at once so the user can choose"
+      },
+      "answer": "C",
+      "explanation": "Progressive disclosure is a UX principle where you present only essential information first and reveal advanced options as the user's understanding grows. This reduces cognitive load during onboarding.",
+      "topic": "progressive_disclosure",
+      "topic_category": "onboarding",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG015",
+      "question": "How can you view detailed information about a specific downloaded model, including its parameters and template?",
+      "choices": {
+        "A": "ollama describe llama3",
+        "B": "ollama info llama3",
+        "C": "ollama inspect llama3",
+        "D": "ollama show llama3"
+      },
+      "answer": "D",
+      "explanation": "'ollama show' displays detailed model information including the Modelfile, parameters, template, and license. The other commands do not exist in Ollama's CLI.",
+      "topic": "ollama_cli_show",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG016",
+      "question": "What happens to inference speed when a model is too large to fit entirely in VRAM and must partially use system RAM?",
+      "choices": {
+        "A": "Speed is unaffected because RAM and VRAM perform identically",
+        "B": "Speed increases because the system uses both processors in parallel",
+        "C": "The model refuses to load and returns an error",
+        "D": "Inference becomes significantly slower because CPU/RAM processing is much slower than GPU/VRAM"
+      },
+      "answer": "D",
+      "explanation": "When a model spills from VRAM to system RAM, the CPU handles the overflow layers. CPU inference is 10-50x slower than GPU inference, causing a major performance drop proportional to how much of the model is offloaded.",
+      "topic": "cpu_gpu_offload_speed",
+      "topic_category": "hardware_vram",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG017",
+      "question": "Which Ollama API endpoint is used for multi-turn chat conversations with message history?",
+      "choices": {
+        "A": "/api/complete",
+        "B": "/api/conversation",
+        "C": "/api/generate",
+        "D": "/api/chat"
+      },
+      "answer": "D",
+      "explanation": "/api/chat accepts a messages array with role/content pairs (system, user, assistant) for multi-turn conversations. /api/generate is for single-prompt completion without conversation history.",
+      "topic": "ollama_api_chat",
+      "topic_category": "ollama_setup",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG018",
+      "question": "How does Cohort differ from cloud-based AI assistants like ChatGPT?",
+      "choices": {
+        "A": "Cohort requires an internet connection but is faster than ChatGPT",
+        "B": "Cohort runs entirely on your local hardware, keeping data private and working offline",
+        "C": "Cohort and ChatGPT use the same models but different interfaces",
+        "D": "Cohort uses larger models and produces better responses"
+      },
+      "answer": "B",
+      "explanation": "Cohort runs local LLMs on the user's own hardware via Ollama, meaning data never leaves the machine and it works without internet. ChatGPT requires cloud connectivity and processes data on remote servers.",
+      "topic": "cohort_vs_cloud",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG019",
+      "question": "What is the approximate VRAM requirement for running a 7B parameter model at Q4_K_M quantization?",
+      "choices": {
+        "A": "About 4-5 GB",
+        "B": "About 20-24 GB",
+        "C": "About 1-2 GB",
+        "D": "About 12-14 GB"
+      },
+      "answer": "A",
+      "explanation": "A 7B model at Q4_K_M (roughly 4.5 bits per parameter) requires approximately 7B * 4.5 / 8 = ~3.9GB for weights, plus overhead for KV cache and computation, totaling about 4-5GB.",
+      "topic": "vram_7b_q4",
+      "topic_category": "hardware_vram",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG020",
+      "question": "When a user encounters an error during setup, what is the best first response according to onboarding best practices?",
+      "choices": {
+        "A": "Send the user a link to the full documentation",
+        "B": "Immediately escalate to human support",
+        "C": "Ask the user to reinstall everything from scratch",
+        "D": "Acknowledge the error, explain what it means in plain language, and provide a specific fix"
+      },
+      "answer": "D",
+      "explanation": "Error recovery in onboarding should acknowledge the issue (reducing frustration), translate the error into understandable language, and provide an actionable fix. Escalation, docs-dumping, or full reinstalls are disproportionate first responses.",
+      "topic": "error_recovery_onboarding",
+      "topic_category": "onboarding",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SG021",
+      "question": "A Modelfile contains the line 'PARAMETER num_ctx 8192'. What does this configure?",
+      "choices": {
+        "A": "The number of CPU cores used for inference",
+        "B": "The maximum context window length in tokens",
+        "C": "The batch size for parallel request processing",
+        "D": "The number of concurrent model instances allowed"
+      },
+      "answer": "B",
+      "explanation": "num_ctx sets the context window size in tokens. A value of 8192 means the model can consider up to 8192 tokens of combined input and output. Larger values consume more VRAM for the KV cache.",
+      "topic": "modelfile_num_ctx",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG022",
+      "question": "A user reports that 'ollama serve' fails with 'address already in use'. What is the most likely cause?",
+      "choices": {
+        "A": "Ollama is already running as a system service or another instance is using port 11434",
+        "B": "The GPU driver is not installed",
+        "C": "The user does not have admin privileges",
+        "D": "The model files are corrupted"
+      },
+      "answer": "A",
+      "explanation": "Address already in use means another process (typically Ollama running as a system service, or a previous instance) is already bound to port 11434. The fix is to stop the existing service or use OLLAMA_HOST to bind to a different port.",
+      "topic": "port_conflict_troubleshooting",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG023",
+      "question": "What is the formula to estimate the minimum VRAM needed for a quantized model's weights?",
+      "choices": {
+        "A": "parameters / quantization_bits * 1024",
+        "B": "parameters + quantization_bits * layer_count",
+        "C": "parameters * quantization_bits / 8 (in bytes)",
+        "D": "parameters * 32 / 8 regardless of quantization"
+      },
+      "answer": "C",
+      "explanation": "VRAM for weights is estimated as: parameter_count * bits_per_parameter / 8 bytes. For example, a 7B model at Q4 (4 bits): 7e9 * 4 / 8 = 3.5GB. This does not include KV cache or computation overhead.",
+      "topic": "vram_estimation_formula",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG024",
+      "question": "Why does a Mixture-of-Experts (MoE) model like qwen3:30b-a3b fit in less VRAM than a dense 30B model?",
+      "choices": {
+        "A": "MoE models offload inactive parameters to disk automatically",
+        "B": "MoE models use higher quantization levels automatically",
+        "C": "Only a fraction of the total parameters are active during any single token generation",
+        "D": "MoE models compress their weights at runtime using lossless compression"
+      },
+      "answer": "C",
+      "explanation": "MoE architectures route each token through only a subset of expert layers (e.g., 3B active out of 30B total). However, all parameters still need to be in memory -- the VRAM savings come from smaller KV caches and the fact that the total parameter count for a given quality level is achieved with fewer active parameters. The 'a3b' suffix indicates ~3B active parameters.",
+      "topic": "moe_architecture_vram",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG025",
+      "question": "What is the security risk of setting OLLAMA_HOST to 0.0.0.0:11434?",
+      "choices": {
+        "A": "It deletes the model cache directory",
+        "B": "It disables HTTPS encryption for model downloads",
+        "C": "It prevents Ollama from using the GPU",
+        "D": "It exposes the Ollama API to all network interfaces, allowing anyone on the network to send prompts"
+      },
+      "answer": "D",
+      "explanation": "Binding to 0.0.0.0 makes the API accessible from any network interface. Without authentication (Ollama has none by default), anyone on the local network can send prompts, list models, or consume GPU resources.",
+      "topic": "api_exposure_risk",
+      "topic_category": "security_privacy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG026",
+      "question": "A user with only a CPU (no discrete GPU) wants to run a local LLM. What model configuration would you recommend?",
+      "choices": {
+        "A": "A 70B model at Q4_K_M -- CPU handles large models fine",
+        "B": "Any model at F16 precision since CPUs prefer full precision",
+        "C": "A 7B or smaller model at Q4_K_M with expectations set for slower inference",
+        "D": "CPU-only systems cannot run Ollama at all"
+      },
+      "answer": "C",
+      "explanation": "CPU-only inference works but is much slower than GPU. A 7B Q4_K_M model is practical, generating a few tokens per second on modern CPUs. Setting expectations about speed is essential. Larger models become impractically slow on CPU.",
+      "topic": "cpu_only_recommendations",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG027",
+      "question": "What does the keep_alive parameter control in Ollama, and what is its default value?",
+      "choices": {
+        "A": "The TCP keepalive interval for network connections; default is 30 seconds",
+        "B": "How long a model stays loaded in memory after the last request; default is 5 minutes",
+        "C": "How frequently health checks run against loaded models; default is 60 seconds",
+        "D": "How long the server process runs before auto-shutdown; default is 24 hours"
+      },
+      "answer": "B",
+      "explanation": "keep_alive controls how long Ollama keeps a model loaded in VRAM/RAM after the last request. The default is 5 minutes (5m). Setting it to '0' unloads immediately; '-1' keeps the model loaded indefinitely.",
+      "topic": "keep_alive_behavior",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG028",
+      "question": "A user wants to create a custom model that always responds in Spanish. Which Modelfile instruction sets the system prompt?",
+      "choices": {
+        "A": "PROMPT Always respond in Spanish",
+        "B": "SYSTEM Always respond in Spanish",
+        "C": "CONFIG language=spanish",
+        "D": "INSTRUCTION Always respond in Spanish"
+      },
+      "answer": "B",
+      "explanation": "The SYSTEM instruction in a Modelfile sets the system prompt that prepends to every conversation. 'SYSTEM Always respond in Spanish' would configure the custom model's default behavior.",
+      "topic": "modelfile_system_prompt",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG029",
+      "question": "Which model family is generally considered best for code generation tasks among the following?",
+      "choices": {
+        "A": "Gemma -- Google's instruction-following model",
+        "B": "Llama 3 -- general purpose chat model",
+        "C": "DeepSeek Coder or Qwen2.5-Coder -- purpose-built for code",
+        "D": "Phi-3 Mini -- smallest model available"
+      },
+      "answer": "C",
+      "explanation": "DeepSeek Coder and Qwen2.5-Coder are specifically trained on code datasets and benchmarked for programming tasks. General chat models like Llama 3 can write code but are not optimized for it.",
+      "topic": "coding_model_selection",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG030",
+      "question": "What does the OLLAMA_MODELS environment variable control?",
+      "choices": {
+        "A": "The directory where Ollama stores downloaded model files",
+        "B": "The default model to use when none is specified",
+        "C": "The maximum number of models that can be loaded simultaneously",
+        "D": "A comma-separated list of models to auto-download on startup"
+      },
+      "answer": "A",
+      "explanation": "OLLAMA_MODELS sets the filesystem path where Ollama stores model blobs and manifests. This is useful for redirecting storage to a larger drive when the default location has insufficient space.",
+      "topic": "ollama_models_env",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG031",
+      "question": "When troubleshooting a model that loads but generates extremely slow output, which metric from nvidia-smi is most relevant?",
+      "choices": {
+        "A": "Display output resolution",
+        "B": "GPU serial number",
+        "C": "GPU memory used vs total -- checking if the model fits entirely in VRAM",
+        "D": "Fan speed percentage"
+      },
+      "answer": "C",
+      "explanation": "If GPU memory usage exceeds available VRAM, the model is partially offloaded to CPU/RAM, causing dramatic slowdowns. Comparing used vs total VRAM reveals whether the model fits. Fan speed and serial number are irrelevant to inference speed.",
+      "topic": "slow_inference_diagnosis",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG032",
+      "question": "What is the difference between /api/generate and /api/chat in Ollama's REST API?",
+      "choices": {
+        "A": "/api/generate uses GPU and /api/chat uses CPU",
+        "B": "/api/generate is synchronous and /api/chat is asynchronous",
+        "C": "/api/generate takes a single prompt string; /api/chat takes a messages array with roles for multi-turn conversation",
+        "D": "/api/generate produces text and /api/chat produces audio"
+      },
+      "answer": "C",
+      "explanation": "/api/generate accepts a single 'prompt' field for one-shot completion. /api/chat accepts a 'messages' array with role/content objects (system, user, assistant) enabling multi-turn conversations with context.",
+      "topic": "api_generate_vs_chat",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG033",
+      "question": "Apple Silicon Macs (M1/M2/M3) handle LLM inference differently from discrete GPU systems. What is the key architectural advantage?",
+      "choices": {
+        "A": "Unified memory architecture means CPU and GPU share the same RAM pool, avoiding VRAM limitations",
+        "B": "Apple Silicon uses quantum computing for faster matrix operations",
+        "C": "Apple Silicon has dedicated LLM acceleration cores",
+        "D": "macOS automatically compresses models to fit available memory"
+      },
+      "answer": "A",
+      "explanation": "Apple Silicon's unified memory architecture lets the GPU access the full system RAM pool. A MacBook with 32GB unified memory can run models that would require 32GB of discrete VRAM on a PC, though bandwidth is lower than dedicated VRAM.",
+      "topic": "apple_silicon_unified_memory",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG034",
+      "question": "A user runs 'ollama pull llama3' and it gets stuck at 50% for over an hour. What should you check first?",
+      "choices": {
+        "A": "If the CUDA drivers need updating",
+        "B": "Whether the model is compatible with their operating system",
+        "C": "Network connectivity and available disk space on the model storage drive",
+        "D": "Whether the GPU has enough VRAM for the model"
+      },
+      "answer": "C",
+      "explanation": "A stalled download is most commonly caused by network issues (slow connection, proxy, firewall) or insufficient disk space on the drive where OLLAMA_MODELS points. VRAM and CUDA are not relevant until the model is loaded for inference.",
+      "topic": "stuck_download_troubleshooting",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG035",
+      "question": "What is the GGUF format in the context of local LLMs?",
+      "choices": {
+        "A": "A graphical user interface framework for building chat applications",
+        "B": "A network protocol for streaming model responses between servers",
+        "C": "A file format for storing quantized model weights, designed for efficient local inference",
+        "D": "A GPU driver framework developed by NVIDIA for LLM acceleration"
+      },
+      "answer": "C",
+      "explanation": "GGUF (GPT-Generated Unified Format) is the file format used by llama.cpp and Ollama for storing quantized model weights. It supports multiple quantization levels and includes metadata about the model architecture.",
+      "topic": "gguf_format",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG036",
+      "question": "When a frustrated user says 'nothing works and I want to give up,' what is the best response approach?",
+      "choices": {
+        "A": "Tell them local LLMs might not be for them and suggest ChatGPT instead",
+        "B": "Provide a detailed technical explanation of every possible failure mode",
+        "C": "Ask them to paste their entire terminal output for analysis",
+        "D": "Acknowledge their frustration, identify the specific error, and offer one clear next step"
+      },
+      "answer": "D",
+      "explanation": "When users are frustrated, emotional acknowledgment must come first, followed by narrowing the problem to a specific issue and providing a single actionable step. Information overload or dismissal increases frustration.",
+      "topic": "handling_frustrated_users",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG037",
+      "question": "What is the primary purpose of the /api/embeddings endpoint in Ollama?",
+      "choices": {
+        "A": "To generate vector representations of text for similarity search and RAG applications",
+        "B": "To embed images into text responses",
+        "C": "To embed one model inside another for ensemble inference",
+        "D": "To embed watermarks in generated text for copyright protection"
+      },
+      "answer": "A",
+      "explanation": "/api/embeddings generates numerical vector representations of input text. These vectors enable semantic search, retrieval-augmented generation (RAG), and text similarity comparisons.",
+      "topic": "api_embeddings",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG038",
+      "question": "An NVIDIA RTX 3060 has 12GB of VRAM. What is the largest dense (non-MoE) model it can run comfortably at Q4_K_M?",
+      "choices": {
+        "A": "A 70B parameter model",
+        "B": "A 13B parameter model",
+        "C": "A 3B parameter model",
+        "D": "A 30B parameter model"
+      },
+      "answer": "B",
+      "explanation": "A 13B model at Q4_K_M requires approximately 7-8GB for weights plus 2-3GB for KV cache and overhead, fitting within 12GB. A 30B Q4_K_M needs ~17GB, exceeding the 3060's VRAM.",
+      "topic": "rtx3060_model_sizing",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG039",
+      "question": "What does the 'ollama cp' command do?",
+      "choices": {
+        "A": "Copies the model's configuration to the clipboard",
+        "B": "Compresses the model file to save disk space",
+        "C": "Copies a model file to a USB drive for backup",
+        "D": "Creates a copy of an existing model under a new name (like creating an alias or starting point for customization)"
+      },
+      "answer": "D",
+      "explanation": "'ollama cp source destination' creates a copy of a model under a new name. This is useful for creating a base for customization without modifying the original, or for creating convenient aliases.",
+      "topic": "ollama_cli_cp",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG040",
+      "question": "What is the current status of AMD GPU support in Ollama via ROCm?",
+      "choices": {
+        "A": "ROCm support exists but is limited to specific AMD GPU models and may require additional setup compared to NVIDIA",
+        "B": "AMD GPUs work identically to NVIDIA GPUs with no additional configuration",
+        "C": "AMD support requires a special paid version of Ollama",
+        "D": "AMD GPUs are fully unsupported and will never work with Ollama"
+      },
+      "answer": "A",
+      "explanation": "Ollama has ROCm support for AMD GPUs, but it is more limited than CUDA support. Only certain AMD GPU architectures are supported (typically RDNA2/RDNA3 and recent data center GPUs), and setup may require specific driver versions.",
+      "topic": "amd_rocm_status",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG041",
+      "question": "What is the difference between a base model and a fine-tuned/instruction-tuned model?",
+      "choices": {
+        "A": "There is no practical difference -- the terms are interchangeable",
+        "B": "Base models run on GPU; fine-tuned models run on CPU",
+        "C": "Base models predict next tokens from pre-training; instruction-tuned models are further trained to follow instructions and engage in conversation",
+        "D": "Base models are larger; fine-tuned models are smaller compressed versions"
+      },
+      "answer": "C",
+      "explanation": "Base models are trained on raw text prediction and may not follow instructions well. Instruction-tuned (or chat) models undergo additional training (SFT, RLHF, DPO) to follow instructions, answer questions, and engage in dialogue.",
+      "topic": "base_vs_finetuned",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG042",
+      "question": "A user sees 'Error: model not found: try pulling it first' when running 'ollama run mymodel'. They are sure they downloaded it. What likely happened?",
+      "choices": {
+        "A": "Ollama needs to be reinstalled",
+        "B": "The model license has expired",
+        "C": "The model was downloaded but the name has a typo or differs from the registry name",
+        "D": "The GPU does not have enough VRAM for the model"
+      },
+      "answer": "C",
+      "explanation": "The most common cause is a name mismatch -- the user may have pulled 'llama3:8b' but tried to run 'llama3' or 'mymodel'. Running 'ollama list' shows exact names of downloaded models.",
+      "topic": "model_not_found_troubleshooting",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG043",
+      "question": "In the context of user onboarding, what does 'step verification' mean?",
+      "choices": {
+        "A": "Using two-factor authentication for each setup step",
+        "B": "Verifying the download checksum of every installed component",
+        "C": "Having a second person verify the installation",
+        "D": "Confirming each step succeeded before moving to the next, often with a quick test or check command"
+      },
+      "answer": "D",
+      "explanation": "Step verification in onboarding means confirming each step succeeded before proceeding. For example, after installing Ollama, verify with 'ollama --version' before attempting to pull a model. This catches issues early.",
+      "topic": "step_verification",
+      "topic_category": "onboarding",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG044",
+      "question": "What is the primary difference between Q4_K_M and Q4_K_S quantization?",
+      "choices": {
+        "A": "Q4_K_S supports streaming output while Q4_K_M does not",
+        "B": "Q4_K_M processes tokens faster than Q4_K_S",
+        "C": "Q4_K_M is for Mac and Q4_K_S is for Linux systems",
+        "D": "Q4_K_M (medium) uses slightly more bits for important layers, offering better quality than Q4_K_S (small) at a small size increase"
+      },
+      "answer": "D",
+      "explanation": "In K-quant variants, M (medium) allocates more bits to attention and important layers compared to S (small). Q4_K_M is slightly larger but retains more quality. The difference is typically 5-10% in file size.",
+      "topic": "quantization_k_variants",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG045",
+      "question": "How does increasing the context window (num_ctx) affect VRAM usage?",
+      "choices": {
+        "A": "VRAM usage decreases because larger contexts allow better compression",
+        "B": "VRAM usage increases because the KV cache grows linearly with context length",
+        "C": "It has no effect on VRAM -- context is stored on disk",
+        "D": "It only affects CPU memory, not VRAM"
+      },
+      "answer": "B",
+      "explanation": "The key-value (KV) cache stores attention state for each token in the context window. Doubling num_ctx roughly doubles KV cache memory. A 7B model at 2048 context might use 4GB, but at 32768 context could need 6-8GB.",
+      "topic": "context_window_vram",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG046",
+      "question": "A user asks whether Ollama sends their data to the cloud. What is the accurate answer?",
+      "choices": {
+        "A": "Ollama sends usage statistics but not prompt content",
+        "B": "Data is sent if the user opts in during installation",
+        "C": "Only during model downloads; inference is fully local with no telemetry",
+        "D": "Yes, anonymized prompts are sent for model improvement"
+      },
+      "answer": "C",
+      "explanation": "Ollama performs inference entirely locally. The only network activity is downloading models from the registry. There is no telemetry, no prompt logging to remote servers, and no data collection. All processing happens on the user's hardware.",
+      "topic": "no_telemetry",
+      "topic_category": "security_privacy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG047",
+      "question": "What is the recommended approach when a user needs to run a model but has less VRAM than the model requires?",
+      "choices": {
+        "A": "Tell them it is impossible and they need to buy a new GPU",
+        "B": "Suggest a smaller model or lower quantization, or explain the CPU offload tradeoff transparently",
+        "C": "Recommend overclocking their GPU to create more VRAM",
+        "D": "Suggest disabling their operating system's display to free VRAM"
+      },
+      "answer": "B",
+      "explanation": "The best approach offers alternatives: a smaller model that fits in VRAM, a lower quantization level, or honest explanation that partial CPU offloading works but slows inference. Framing limitations positively while being transparent.",
+      "topic": "framing_limitations",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG048",
+      "question": "What does 'ollama rm llama3' do?",
+      "choices": {
+        "A": "Removes the model from GPU memory but keeps it on disk",
+        "B": "Deletes the locally downloaded model files, freeing disk space",
+        "C": "Resets the model's conversation history",
+        "D": "Removes the model from the Ollama registry so no one can download it"
+      },
+      "answer": "B",
+      "explanation": "'ollama rm' deletes the local copy of a model, freeing disk space. It does not affect the remote registry. To reload the model later, you would need to 'ollama pull' it again.",
+      "topic": "ollama_cli_rm",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG049",
+      "question": "In the Cohort meeting system, what is the basic purpose of agent meetings?",
+      "choices": {
+        "A": "To benchmark agent performance against each other",
+        "B": "To perform automated software updates across all agents",
+        "C": "To schedule GPU time slots for each agent",
+        "D": "To enable multiple specialized agents to collaborate on a problem through structured discussion"
+      },
+      "answer": "D",
+      "explanation": "Cohort meetings bring multiple agents together for structured collaboration on a topic. Each agent contributes their specialized perspective, enabling more thorough analysis than any single agent could provide.",
+      "topic": "meeting_system_basics",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG050",
+      "question": "A user reports 'CUDA out of memory' errors. Which of the following is NOT a valid mitigation?",
+      "choices": {
+        "A": "Use a smaller model or lower quantization",
+        "B": "Reduce the num_ctx (context window) parameter",
+        "C": "Close other GPU-intensive applications",
+        "D": "Increase the num_ctx parameter to give CUDA more room to work"
+      },
+      "answer": "D",
+      "explanation": "Increasing num_ctx makes CUDA memory usage worse, not better, because it enlarges the KV cache. Valid mitigations include smaller models, lower quantization, reducing context window, and closing other GPU applications.",
+      "topic": "cuda_oom_troubleshooting",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG051",
+      "question": "What is the purpose of the OLLAMA_ORIGINS environment variable?",
+      "choices": {
+        "A": "It tracks the original source of each downloaded model",
+        "B": "It sets the origin server for model downloads",
+        "C": "It specifies which countries can access the Ollama API",
+        "D": "It configures allowed CORS origins for the API, enabling web applications to connect"
+      },
+      "answer": "D",
+      "explanation": "OLLAMA_ORIGINS configures Cross-Origin Resource Sharing (CORS) allowed origins. This is needed when web applications hosted on different domains/ports need to call the Ollama API directly from the browser.",
+      "topic": "ollama_origins_cors",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG052",
+      "question": "When explaining the concept of 'quantization' to a non-technical user, which explanation follows best communication practices?",
+      "choices": {
+        "A": "Quantization reduces floating-point precision from FP16 to INT4 via post-training calibration",
+        "B": "Quantization is when you take a 16-bit number and round it to 4 bits",
+        "C": "Think of it like compressing a photo -- the file gets smaller and there is a tiny quality loss, but it is usually unnoticeable for everyday use",
+        "D": "It is a mathematical transformation applied to weight tensors in the neural network"
+      },
+      "answer": "C",
+      "explanation": "The photo compression analogy maps a familiar concept (JPEG compression) to quantization: smaller files with acceptable quality loss. This is more accessible than technical descriptions of bit precision or tensor operations.",
+      "topic": "explaining_quantization",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG053",
+      "question": "Which of the following model families was developed by Alibaba Cloud?",
+      "choices": {
+        "A": "Phi",
+        "B": "Qwen",
+        "C": "Gemma",
+        "D": "Llama"
+      },
+      "answer": "B",
+      "explanation": "Qwen is developed by Alibaba Cloud. Llama is by Meta, Gemma by Google, and Phi by Microsoft. Knowing model provenance helps with license awareness and support expectations.",
+      "topic": "model_families_origin",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG054",
+      "question": "A user on Windows sees 'connection refused' when their application tries to reach Ollama at localhost:11434. The model works fine in the terminal. What is a likely cause?",
+      "choices": {
+        "A": "The model needs to be converted to Windows format first",
+        "B": "The Ollama desktop app is running but the application may be using a different network interface or Ollama stopped between tests",
+        "C": "Windows Defender has permanently blocked Ollama's port",
+        "D": "Windows does not support Ollama's API"
+      },
+      "answer": "B",
+      "explanation": "Connection refused typically means the Ollama server is not running when the application tries to connect. On Windows, Ollama runs as a desktop app and may have been closed, or the app might be connecting to the wrong address. Checking if 'ollama serve' is running is the first diagnostic step.",
+      "topic": "connection_refused_troubleshooting",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG055",
+      "question": "What is the difference between 'ollama serve' and running Ollama as a system service?",
+      "choices": {
+        "A": "'ollama serve' uses CPU only; the system service uses GPU",
+        "B": "'ollama serve' is for development; the system service is for production with authentication",
+        "C": "'ollama serve' runs in the foreground of a terminal session; a system service runs in the background and starts automatically on boot",
+        "D": "There is no difference -- they are the same thing"
+      },
+      "answer": "C",
+      "explanation": "'ollama serve' starts the server in the current terminal session and stops when the terminal closes. A system service (systemd on Linux, background app on macOS/Windows) runs persistently and auto-starts on boot.",
+      "topic": "serve_vs_service",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG056",
+      "question": "Thermal throttling on a GPU can affect LLM inference. What symptom would a user observe?",
+      "choices": {
+        "A": "The model produces incorrect answers due to heat-damaged calculations",
+        "B": "The model automatically switches to a smaller size",
+        "C": "Token generation speed gradually decreases during long sessions as the GPU reduces clock speed to manage heat",
+        "D": "The screen resolution drops to reduce GPU workload"
+      },
+      "answer": "C",
+      "explanation": "When a GPU overheats, it throttles clock speeds to reduce temperature. This manifests as progressively slower token generation during extended use. The output quality is unaffected, but throughput drops.",
+      "topic": "thermal_throttling",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG057",
+      "question": "What is the primary benefit of embedding models (like nomic-embed-text) compared to chat models?",
+      "choices": {
+        "A": "They use less VRAM because they have no weights",
+        "B": "They can process images alongside text",
+        "C": "They convert text into numerical vectors for semantic search and retrieval, enabling RAG pipelines",
+        "D": "They generate human-readable responses faster"
+      },
+      "answer": "C",
+      "explanation": "Embedding models transform text into dense vector representations. These vectors capture semantic meaning and enable similarity search, which is the foundation of retrieval-augmented generation (RAG) -- finding relevant documents to inject into a chat model's context.",
+      "topic": "embedding_models_purpose",
+      "topic_category": "model_selection",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG058",
+      "question": "When should a Setup Guide agent escalate a user's issue to human support?",
+      "choices": {
+        "A": "When the issue involves hardware failure, persistent crashes after standard troubleshooting, or problems outside the agent's domain expertise",
+        "B": "Only when the user explicitly requests it",
+        "C": "As soon as the user reports any error",
+        "D": "Never -- the agent should always resolve issues independently"
+      },
+      "answer": "A",
+      "explanation": "Escalation is appropriate when the agent has exhausted its troubleshooting capabilities, the issue requires physical hardware intervention, or the problem falls outside its domain. Knowing when to escalate is a key competency.",
+      "topic": "escalation_judgment",
+      "topic_category": "communication",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG059",
+      "question": "Which command creates a new custom model from a Modelfile?",
+      "choices": {
+        "A": "ollama create mymodel -f Modelfile",
+        "B": "ollama new mymodel < Modelfile",
+        "C": "ollama make mymodel --from Modelfile",
+        "D": "ollama build -f Modelfile mymodel"
+      },
+      "answer": "A",
+      "explanation": "'ollama create' builds a new model from a Modelfile. The -f flag specifies the Modelfile path. The model name comes first, followed by the file flag.",
+      "topic": "ollama_cli_create",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG060",
+      "question": "Why is it important to be aware of model licenses when using Ollama?",
+      "choices": {
+        "A": "Model licenses determine the maximum context window size",
+        "B": "Some models have restrictions on commercial use, and users should understand their rights and obligations",
+        "C": "Ollama charges license fees for certain models",
+        "D": "Unlicensed models will not run on Ollama"
+      },
+      "answer": "B",
+      "explanation": "Different model families have different licenses. For example, Llama models had a community license with usage thresholds, while some models are fully open. Users deploying models commercially should understand these restrictions.",
+      "topic": "model_license_awareness",
+      "topic_category": "security_privacy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG061",
+      "question": "What does 'cognitive load management' mean in the context of user onboarding?",
+      "choices": {
+        "A": "Monitoring the CPU load during the user's first session",
+        "B": "Limiting the amount of new information presented at each step to avoid overwhelming the user",
+        "C": "Measuring how many tokens the user's prompts consume",
+        "D": "Tracking how many models the user has downloaded"
+      },
+      "answer": "B",
+      "explanation": "Cognitive load management means structuring the onboarding experience so users are not overwhelmed with too much information at once. Each step should introduce only what is needed for that step, keeping the mental burden manageable.",
+      "topic": "cognitive_load_management",
+      "topic_category": "onboarding",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG062",
+      "question": "What is the approximate VRAM requirement for a 70B parameter model at Q4_K_M quantization?",
+      "choices": {
+        "A": "About 8-10 GB",
+        "B": "About 20-24 GB",
+        "C": "About 64-70 GB",
+        "D": "About 38-42 GB"
+      },
+      "answer": "D",
+      "explanation": "A 70B model at Q4_K_M: 70e9 * 4.5 / 8 = ~39GB for weights alone. With KV cache overhead, approximately 38-42GB is needed. This requires a dual-GPU setup or high-end professional GPU.",
+      "topic": "vram_70b_model",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG063",
+      "question": "A user asks 'What is the best model?' How should a setup guide agent respond?",
+      "choices": {
+        "A": "Ask clarifying questions about their use case, hardware, and priorities before recommending",
+        "B": "Explain that all models are equally capable",
+        "C": "Recommend the largest model that fits in their VRAM without qualification",
+        "D": "Always recommend Llama 3 since it is the most popular"
+      },
+      "answer": "A",
+      "explanation": "The 'best' model depends on use case (coding, chat, analysis), available hardware, and priorities (speed vs quality). A good setup guide asks about these factors before recommending, rather than giving a one-size-fits-all answer.",
+      "topic": "adaptive_recommendation",
+      "topic_category": "onboarding",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG064",
+      "question": "Where does Ollama store its log files on Linux for troubleshooting?",
+      "choices": {
+        "A": "~/.ollama/logs/",
+        "B": "/var/log/ollama/main.log",
+        "C": "Systemd journal (journalctl -u ollama) when running as a service",
+        "D": "/tmp/ollama-debug.log"
+      },
+      "answer": "C",
+      "explanation": "When Ollama runs as a systemd service on Linux, logs are managed by journald and viewed with 'journalctl -u ollama'. When run manually via 'ollama serve', output goes to the terminal's stdout/stderr.",
+      "topic": "log_locations_linux",
+      "topic_category": "troubleshooting",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG065",
+      "question": "What is 'scaffolded learning' in the context of helping users learn about local LLMs?",
+      "choices": {
+        "A": "Providing temporary support structures (guided examples, templates, checklists) that are gradually removed as the user gains competence",
+        "B": "Building a physical scaffold to hold GPU hardware",
+        "C": "Using scaffolding code that wraps around the Ollama API",
+        "D": "Installing all prerequisites automatically without user involvement"
+      },
+      "answer": "A",
+      "explanation": "Scaffolded learning provides structured support (step-by-step guides, example commands, verification checks) that is gradually reduced as users become more capable. Initially guided, users eventually operate independently.",
+      "topic": "scaffolded_learning",
+      "topic_category": "onboarding",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG066",
+      "question": "What is the data flow in a local LLM setup using Ollama?",
+      "choices": {
+        "A": "User prompt -> Ollama API (localhost) -> Model loaded in GPU/CPU memory -> Tokens generated locally -> Response",
+        "B": "User prompt -> Cloud API -> Model inference -> Cloud storage -> Response",
+        "C": "User prompt -> Browser extension -> CDN-cached model -> Response",
+        "D": "User prompt -> Ollama API -> Remote model server -> Encrypted response -> Local decryption"
+      },
+      "answer": "A",
+      "explanation": "In a local Ollama setup, the entire data flow stays on the machine: the user sends a prompt to localhost:11434, Ollama processes it through the model loaded in GPU/CPU memory, and returns the generated response. No data leaves the machine.",
+      "topic": "local_data_flow",
+      "topic_category": "security_privacy",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG067",
+      "question": "How does the Cohort agent system help users who are unsure which agent to use?",
+      "choices": {
+        "A": "It requires users to read documentation and choose manually",
+        "B": "It only has one general-purpose agent to avoid confusion",
+        "C": "It assigns agents randomly",
+        "D": "It provides agent discovery and recommendation based on the user's task description"
+      },
+      "answer": "D",
+      "explanation": "Cohort helps users find the right agent through task-based discovery -- describing what they want to do rather than knowing which specialist to ask. This reduces the barrier to entry for multi-agent systems.",
+      "topic": "agent_discovery",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG068",
+      "question": "A user with 16GB system RAM and no GPU asks about running a 13B model. What should you advise?",
+      "choices": {
+        "A": "They need to buy virtual RAM credits from Ollama",
+        "B": "It will run but very slowly -- a 13B Q4_K_M needs ~7-8GB RAM for the model plus RAM for the OS, leaving the system tight at 16GB. A 7B model would be more practical.",
+        "C": "It will not work at all without a GPU",
+        "D": "16GB RAM is more than enough for any model size"
+      },
+      "answer": "B",
+      "explanation": "A 13B Q4_K_M uses ~7-8GB. The OS and other programs need 4-6GB. At 16GB total, the system can technically run it but may swap, degrading performance further. CPU inference on a 13B model is already slow. A 7B model gives breathing room.",
+      "topic": "ram_constraints_cpu_only",
+      "topic_category": "hardware_vram",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG069",
+      "question": "What is a model alias in Ollama, and how is one created?",
+      "choices": {
+        "A": "An encrypted model name for security; created automatically",
+        "B": "A DNS record that points to an Ollama server; created via OLLAMA_ALIAS environment variable",
+        "C": "A backup copy of a model; created using 'ollama backup'",
+        "D": "A shorter name for an existing model, created using 'ollama cp original_name alias_name'"
+      },
+      "answer": "D",
+      "explanation": "Model aliases are created with 'ollama cp' by copying a model reference under a new name. For example, 'ollama cp llama3:8b-instruct-q4_K_M mymodel' creates a convenient short name. No data is duplicated.",
+      "topic": "model_aliases",
+      "topic_category": "ollama_setup",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG070",
+      "question": "What role does an orchestrator agent play in the Cohort system?",
+      "choices": {
+        "A": "It coordinates work across multiple specialist agents, managing task decomposition and result synthesis",
+        "B": "It manages hardware resources and GPU allocation",
+        "C": "It is the fastest model used for simple queries",
+        "D": "It handles user authentication and session management"
+      },
+      "answer": "A",
+      "explanation": "Orchestrator agents coordinate multi-agent workflows: breaking complex tasks into subtasks, routing to appropriate specialists, and synthesizing results. They manage the flow of work, not the hardware resources.",
+      "topic": "orchestrator_role",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SG071",
+      "question": "A user has an RTX 4070 Ti (12GB VRAM), 32GB system RAM, and wants to run a coding assistant and a chat model simultaneously. The coding model (deepseek-coder-v2:16b at Q4_K_M) requires ~9GB VRAM and the chat model (llama3:8b at Q4_K_M) requires ~5GB. Step 1: Can both models fit in VRAM simultaneously? Step 2: If not, what keep_alive strategy optimizes their workflow where they code for 30-minute blocks then chat for 5 minutes?",
+      "choices": {
+        "A": "They cannot fit simultaneously (9+5=14GB > 12GB). Set keep_alive to '0' on both models so each unloads immediately after use, allowing the other to load on demand",
+        "B": "Both fit simultaneously (14GB < 12GB is wrong, they compress at runtime) -- no keep_alive tuning needed",
+        "C": "They cannot fit simultaneously. Set keep_alive to '30m' on the coding model and '0' on the chat model, since the coding model is used more and should stay loaded",
+        "D": "Run both models on CPU to avoid VRAM conflicts entirely"
+      },
+      "answer": "C",
+      "explanation": "14GB exceeds 12GB VRAM, so both cannot be loaded simultaneously. Since coding happens in 30-minute blocks, keeping the coding model loaded (keep_alive='30m') avoids repeated 10-20 second load times. The chat model loads briefly and unloads (keep_alive='0') since it is used infrequently.",
+      "topic": "dual_model_keep_alive_strategy",
+      "topic_category": "hardware_vram",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG072",
+      "question": "A user reports that their 13B model loads successfully but produces gibberish output (random characters, repeated tokens, malformed words). Step 1: Identify which of these potential causes is most likely -- (a) insufficient VRAM, (b) corrupted model download, (c) wrong GPU driver. Step 2: What is the correct diagnostic command? Step 3: What is the fix?",
+      "choices": {
+        "A": "Cause: insufficient VRAM (partial offload corrupts output). Diagnostic: nvidia-smi. Fix: use a smaller model",
+        "B": "Cause: corrupted model download (incomplete or damaged GGUF file). Diagnostic: ollama show <model> to check integrity, then ollama rm <model> && ollama pull <model> to redownload",
+        "C": "Cause: model incompatibility with OS. Diagnostic: check system logs. Fix: reinstall Ollama",
+        "D": "Cause: wrong GPU driver. Diagnostic: nvidia-smi. Fix: update CUDA drivers"
+      },
+      "answer": "B",
+      "explanation": "Gibberish output from a model that loads successfully is the hallmark of a corrupted download -- the weight values are damaged but the file structure is intact enough to load. VRAM issues cause slowness or OOM errors, not gibberish. The fix is to delete and re-pull the model.",
+      "topic": "gibberish_output_diagnosis",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG073",
+      "question": "You are helping a user choose a model for their 24GB VRAM GPU (RTX 4090). They want the highest quality general-purpose chat model possible. Step 1: Calculate the maximum dense model parameter count at Q4_K_M that fits in 24GB (use formula: params * 4.5 / 8, allow 4GB for KV cache and overhead). Step 2: Identify the best model choice. Step 3: Would an MoE model be a better option?",
+      "choices": {
+        "A": "Max ~13B parameters dense. Best choice: llama3:13b at Q8_0. MoE models are always worse than dense models",
+        "B": "Max ~35B parameters dense. Best choice: any 7B model at F16 for best quality. MoE is not supported by Ollama",
+        "C": "Max ~35B parameters dense. Best choice: a 33B/34B chat model at Q4_K_M. An MoE model like qwen3:30b-a3b could provide better quality because its total parameter count translates to higher knowledge capacity while active parameters stay small",
+        "D": "Max ~70B parameters dense. Best choice: llama3:70b at Q4_K_M. MoE is unnecessary with this much VRAM"
+      },
+      "answer": "C",
+      "explanation": "Available VRAM for weights: 24 - 4 = 20GB. Max params: 20 * 8 / 4.5 = ~35.5B. A 33-34B dense model fits. However, an MoE model like qwen3:30b-a3b has 30B total parameters (~17GB at Q4_K_M) but its knowledge capacity exceeds a similar-sized dense model because more total parameters encode more information, even though only ~3B are active per token.",
+      "topic": "optimal_model_selection_24gb",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG074",
+      "question": "A user behind a corporate proxy cannot pull models. They get timeout errors on 'ollama pull'. Step 1: What environment variables need to be set for Ollama to use the proxy? Step 2: If the proxy does SSL inspection (MITM), what additional step is needed? Step 3: What alternative exists if proxy configuration fails entirely?",
+      "choices": {
+        "A": "Step 1: Set OLLAMA_HOST to the proxy address. Step 2: Use HTTP instead of HTTPS. Step 3: Copy models from a USB drive",
+        "B": "Step 1: Configure proxy in Ollama's config file. Step 2: Nothing additional needed. Step 3: There is no alternative",
+        "C": "Step 1: Set OLLAMA_PROXY. Step 2: Disable SSL. Step 3: Use a VPN",
+        "D": "Step 1: Set HTTP_PROXY and HTTPS_PROXY environment variables. Step 2: Add the proxy's CA certificate to the system trust store. Step 3: Download GGUF files manually from HuggingFace and import via Modelfile with a FROM directive pointing to the local file"
+      },
+      "answer": "D",
+      "explanation": "Ollama respects standard HTTP_PROXY/HTTPS_PROXY environment variables. SSL-inspecting proxies require their CA certificate in the system trust store to avoid TLS errors. If proxy issues persist, users can download GGUF model files directly and create a Modelfile with 'FROM ./model.gguf' to import locally.",
+      "topic": "proxy_troubleshooting_chain",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG075",
+      "question": "A user wants to build a private document Q&A system using Ollama. Step 1: What two types of models do they need? Step 2: What is the data flow from document ingestion to answering a question? Step 3: What is the minimum practical hardware for this setup?",
+      "choices": {
+        "A": "Step 1: Two chat models for redundancy. Step 2: Send entire documents as prompts to both models. Step 3: 4GB VRAM is sufficient",
+        "B": "Step 1: A chat model and an image model. Step 2: Screenshot documents -> OCR -> chat. Step 3: 48GB VRAM minimum",
+        "C": "Step 1: An embedding model (e.g., nomic-embed-text) and a chat model (e.g., llama3:8b). Step 2: Chunk documents -> embed chunks into vectors -> store in vector DB -> at query time, embed the question -> retrieve similar chunks -> inject chunks into chat model prompt -> generate answer. Step 3: 8GB+ VRAM GPU or 16GB+ RAM for CPU-only",
+        "D": "Step 1: A chat model and a translation model. Step 2: Translate documents -> chat with translations. Step 3: Any modern laptop"
+      },
+      "answer": "C",
+      "explanation": "RAG requires an embedding model to vectorize documents and a chat model to generate answers. The pipeline: chunk -> embed -> store -> query-embed -> retrieve similar -> inject context -> generate. An 8GB GPU can run both a small embedding model and a 7B chat model (not simultaneously, but sequentially).",
+      "topic": "rag_pipeline_setup",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG076",
+      "question": "A user has two NVIDIA GPUs: GPU 0 (RTX 3090, 24GB) and GPU 1 (RTX 3060, 12GB). They want to run a 30B Q4_K_M model (~17GB weights). Step 1: Will the model fit on a single GPU? Step 2: How does Ollama handle multi-GPU inference? Step 3: What is the performance implication of splitting across these asymmetric GPUs?",
+      "choices": {
+        "A": "Step 1: Fits on GPU 0 alone (17GB < 24GB) with room for KV cache. Step 2: Ollama can split layers across GPUs. Step 3: When split across asymmetric GPUs, the slower GPU becomes the bottleneck -- inference speed is limited by the slower card's memory bandwidth. Best to keep it on GPU 0 only",
+        "B": "Step 1: Does not fit on either GPU. Step 2: Ollama cannot use multiple GPUs. Step 3: Must use CPU",
+        "C": "Step 1: Fits on GPU 0 (17GB < 24GB). Step 2: Ollama uses both GPUs automatically. Step 3: No performance impact",
+        "D": "Step 1: Fits on GPU 1 (17GB > 12GB is wrong due to compression). Step 2: GPU 0 handles compute, GPU 1 handles memory. Step 3: Perfect performance"
+      },
+      "answer": "A",
+      "explanation": "17GB weights + ~4GB KV cache = ~21GB fits within GPU 0's 24GB. While Ollama supports multi-GPU layer splitting, using the 3060 as overflow would slow inference to the 3060's bandwidth. Keeping the model entirely on the faster 3090 is optimal.",
+      "topic": "multi_gpu_asymmetric",
+      "topic_category": "hardware_vram",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG077",
+      "question": "A user's Ollama setup worked yesterday but today 'ollama run llama3' hangs indefinitely without loading. Step 1: What is the first diagnostic command? Step 2: If the server is running but unresponsive, what should be checked? Step 3: If disk space is the issue, what is the fastest recovery?",
+      "choices": {
+        "A": "Step 1: Reinstall Ollama. Step 2: Check GPU temperature. Step 3: Delete the operating system's temp files",
+        "B": "Step 1: Update GPU drivers. Step 2: Check internet connectivity. Step 3: Move models to a cloud drive",
+        "C": "Step 1: Reboot the computer. Step 2: Check BIOS settings. Step 3: Reformat the drive",
+        "D": "Step 1: Check if the Ollama server is responding with 'curl http://localhost:11434'. Step 2: Check disk space (model storage may be full) and system resources (RAM/swap exhaustion from other processes). Step 3: Use 'ollama rm' to delete unused models and free space in the model storage directory"
+      },
+      "answer": "D",
+      "explanation": "First verify the server responds (curl test). If it hangs, check disk space (full disks prevent model loading), RAM usage (swap thrashing), and whether a previous model is stuck loaded. Freeing space by removing unused models with 'ollama rm' is the fastest targeted fix.",
+      "topic": "hanging_model_load_diagnosis",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG078",
+      "question": "You need to explain to a CEO (non-technical) why their company should use local LLMs instead of cloud AI for processing confidential legal documents. Step 1: What is the core privacy argument? Step 2: What is the compliance argument? Step 3: How do you address the quality concern without technical jargon?",
+      "choices": {
+        "A": "Step 1: It is cheaper. Step 2: Local is faster. Step 3: Local models are better than GPT-4",
+        "B": "Step 1: Cloud providers read your data. Step 2: It is illegal to use cloud AI. Step 3: Local models are identical to GPT-4",
+        "C": "Step 1: With local LLMs, confidential documents never leave the company's own computers -- there is zero risk of data being stored on third-party servers. Step 2: For regulatory compliance (GDPR, attorney-client privilege), keeping data on-premise provides a clear audit trail and eliminates vendor data-processing agreements. Step 3: Modern local models handle most document analysis well enough for practical use -- think of it like having a capable in-house assistant versus outsourcing to a brilliant but external consultant",
+        "D": "Step 1: Explain VRAM architecture. Step 2: Discuss GGUF quantization. Step 3: Compare perplexity benchmarks"
+      },
+      "answer": "C",
+      "explanation": "For a CEO: lead with the business risk (data stays internal), follow with regulatory compliance (concrete obligation, not abstract), and manage expectations honestly using an analogy (in-house assistant vs external consultant). Technical details about VRAM and quantization are irrelevant to this audience.",
+      "topic": "executive_communication_local_llm",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG079",
+      "question": "A user wants to serve Ollama on their local network so other devices can use it. Step 1: What configuration change is needed? Step 2: What security measures should be implemented? Step 3: What are the performance implications for multiple simultaneous users?",
+      "choices": {
+        "A": "Step 1: Install Ollama on every client device. Step 2: Set up VPN between all devices. Step 3: Performance scales linearly with users",
+        "B": "Step 1: Set OLLAMA_HOST=0.0.0.0:11434 to bind to all interfaces. Step 2: Use firewall rules to restrict access to trusted IPs, consider a reverse proxy with authentication since Ollama has no built-in auth. Step 3: Ollama processes requests sequentially by default -- multiple users will queue, and VRAM limits one model at a time unless configured for parallel inference",
+        "C": "Step 1: Purchase an Ollama network license. Step 2: Enable the built-in user authentication system. Step 3: Each user gets a dedicated GPU core",
+        "D": "Step 1: No changes needed -- Ollama auto-broadcasts on the network. Step 2: None needed on a local network. Step 3: No performance impact"
+      },
+      "answer": "B",
+      "explanation": "Binding to 0.0.0.0 enables network access. Since Ollama lacks authentication, firewall rules and a reverse proxy with auth are essential security layers. Performance degrades with concurrent users because requests queue and VRAM constrains the model size.",
+      "topic": "network_serving_security",
+      "topic_category": "security_privacy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG080",
+      "question": "A user wants to compare model quality for their specific use case. Step 1: What is wrong with relying solely on benchmark leaderboards? Step 2: What is a better evaluation approach? Step 3: How should they structure their test?",
+      "choices": {
+        "A": "Step 1: Benchmarks only measure speed. Step 2: Use the largest model possible. Step 3: Test with random internet prompts",
+        "B": "Step 1: Benchmarks are completely useless. Step 2: Ask other users for recommendations. Step 3: Pick the most popular model",
+        "C": "Step 1: Benchmarks are always accurate. Step 2: Use the highest-ranked model. Step 3: Run one prompt and decide",
+        "D": "Step 1: Benchmarks test general capabilities but may not reflect performance on the user's specific domain or task type. Step 2: Create a small set of 10-20 representative prompts from their actual use case and blind-test 2-3 candidate models. Step 3: Score each response on task-relevant criteria (accuracy, formatting, speed), use consistent prompts across models, and test edge cases specific to their domain"
+      },
+      "answer": "D",
+      "explanation": "Benchmarks measure general capability but individual use cases vary. The gold standard is testing candidate models on representative real-world prompts with consistent evaluation criteria. This reveals which model handles the user's specific domain, formatting needs, and edge cases best.",
+      "topic": "model_evaluation_methodology",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG081",
+      "question": "A user sees periodic 'GPU fan spin-up' events during idle periods even after inference completes. They set keep_alive to '5m'. Step 1: Why does the GPU stay active after inference? Step 2: What happens at the 5-minute mark? Step 3: How would setting keep_alive='0' change behavior, and what is the tradeoff?",
+      "choices": {
+        "A": "Step 1: Background virus scan. Step 2: Nothing happens. Step 3: No effect",
+        "B": "Step 1: The GPU is defective. Step 2: The model auto-updates. Step 3: keep_alive='0' disables the GPU entirely",
+        "C": "Step 1: The model remains loaded in VRAM for 5 minutes (the keep_alive window), keeping the GPU in an active power state even without inference. Step 2: After 5 minutes of no requests, Ollama unloads the model from VRAM, allowing the GPU to drop to idle. Step 3: keep_alive='0' unloads immediately after each request, so the GPU returns to idle faster -- but the next request incurs a 5-20 second model load delay",
+        "D": "Step 1: Ollama is running a background optimization. Step 2: The model is saved to a checkpoint. Step 3: keep_alive='0' is not a valid setting"
+      },
+      "answer": "C",
+      "explanation": "With keep_alive='5m', the model stays in VRAM for 5 minutes after the last request, keeping the GPU warm. After timeout, the model unloads and the GPU idles. Setting '0' gives immediate unload (better for power/heat) but every new request pays the model-load latency penalty.",
+      "topic": "keep_alive_gpu_power",
+      "topic_category": "hardware_vram",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG082",
+      "question": "You are designing a first-run experience for a new Cohort user who has never used local LLMs. Step 1: What should the first screen show? Step 2: How should hardware detection results be presented? Step 3: What is the optimal number of steps before the user can send their first prompt?",
+      "choices": {
+        "A": "Step 1: A welcome message and a single 'Get Started' action. Step 2: Translate hardware specs into practical terms ('Your GPU can run models X, Y, Z -- here is what each is good at'). Step 3: 3-5 steps maximum -- install Ollama, auto-detect hardware, recommended model pull, first prompt. Celebrate when the first response arrives",
+        "B": "Step 1: A tutorial video that must be watched in full. Step 2: Do not show hardware info -- it confuses users. Step 3: 8-10 steps with a quiz after each",
+        "C": "Step 1: Full list of all 50+ available models. Step 2: Raw nvidia-smi output. Step 3: 15-20 steps for thoroughness",
+        "D": "Step 1: A terms of service agreement. Step 2: Hardware specs in a data table. Step 3: 1 step -- auto-install everything silently"
+      },
+      "answer": "A",
+      "explanation": "First-run UX should minimize time-to-value: welcome -> detect hardware -> present recommendations in human terms -> pull model -> celebrate first response. 3-5 steps keep momentum. Translating 'RTX 3060 12GB' into 'you can run these models' bridges the knowledge gap.",
+      "topic": "first_run_experience_design",
+      "topic_category": "onboarding",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG083",
+      "question": "A user's model generates correct responses but they are extremely slow (1-2 tokens per second on an RTX 3080 10GB with a 7B Q4_K_M model that should get 30+ tok/s). Step 1: What does the token speed indicate? Step 2: What should be checked? Step 3: What is the most likely root cause?",
+      "choices": {
+        "A": "Step 1: The model is too complex. Step 2: Check model benchmarks. Step 3: The 7B model is too large",
+        "B": "Step 1: The model needs more RAM. Step 2: Check swap usage. Step 3: Insufficient swap space",
+        "C": "Step 1: 1-2 tok/s on GPU-capable hardware suggests the model is running on CPU, not GPU. Step 2: Check nvidia-smi during inference to see if GPU utilization is near 0%. Check Ollama logs for GPU detection messages. Step 3: Ollama is not detecting the GPU -- likely a CUDA/driver version mismatch or the NVIDIA container toolkit is missing",
+        "D": "Step 1: Normal speed for a 7B model. Step 2: Check internet speed. Step 3: Slow internet"
+      },
+      "answer": "C",
+      "explanation": "A 7B Q4_K_M on an RTX 3080 should achieve 30+ tokens/second. 1-2 tok/s is characteristic of CPU inference. Checking nvidia-smi during generation reveals whether the GPU is being used. If GPU utilization is near 0%, the GPU is not being utilized -- usually due to driver/CUDA issues.",
+      "topic": "slow_inference_gpu_not_used",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG084",
+      "question": "A user wants to use a model with a 128K context window but has a 12GB VRAM GPU running a 7B Q4_K_M model. Step 1: How much additional VRAM does a 128K context window require compared to the default 2048? Step 2: Will this fit? Step 3: What is the recommended compromise?",
+      "choices": {
+        "A": "Step 1: About 100MB extra. Step 2: Yes, easily fits. Step 3: Always use maximum context",
+        "B": "Step 1: No additional VRAM -- context is stored on disk. Step 2: Yes, always fits. Step 3: No compromise needed",
+        "C": "Step 1: KV cache for 128K context on a 7B model can require 8-12GB+ additional VRAM beyond the ~4GB for model weights. Step 2: No -- 4GB weights + 8-12GB KV cache exceeds 12GB VRAM. Step 3: Use 8K-16K context (num_ctx 8192 or 16384), which adds only 0.5-2GB KV cache, and manage context by summarizing earlier conversation rather than relying on raw window size",
+        "D": "Step 1: 128K context is not supported by any model. Step 2: Not applicable. Step 3: Use 2048 context only"
+      },
+      "answer": "C",
+      "explanation": "KV cache scales linearly with context length. A 7B model's KV cache at 128K tokens can consume 8-12GB+ depending on architecture, far exceeding what a 12GB GPU can accommodate alongside the model weights. A practical 8K-16K window plus context management strategies is the recommended approach.",
+      "topic": "context_window_vram_calculation",
+      "topic_category": "hardware_vram",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG085",
+      "question": "A developer wants to integrate Ollama into their Python application. Step 1: What are the two primary integration approaches? Step 2: What is the tradeoff between them? Step 3: How should error handling differ for local LLM calls vs cloud API calls?",
+      "choices": {
+        "A": "Step 1: Import Ollama's C++ library or use WebSockets. Step 2: C++ is faster. Step 3: Same error handling for both",
+        "B": "Step 1: Use the ollama Python package (pip install ollama) for native integration, or use HTTP requests to the REST API directly. Step 2: The Python package provides type-safe wrappers and streaming, but adds a dependency. Raw HTTP requests have no dependencies but require manual response parsing and error handling. Step 3: Local LLM calls need timeout handling for model loading (cold start), OOM detection, and checking if the server is running -- unlike cloud APIs which mainly need rate limit and authentication error handling",
+        "C": "Step 1: Use SSH or FTP. Step 2: SSH is more secure. Step 3: Retry indefinitely on any error",
+        "D": "Step 1: Use gRPC or GraphQL. Step 2: gRPC is for streaming, GraphQL for queries. Step 3: No error handling needed for local"
+      },
+      "answer": "B",
+      "explanation": "The two approaches are the ollama Python package (higher-level, typed) and direct REST API calls (no dependencies). Local LLM error handling must account for model cold-start delays, GPU OOM errors, and server availability -- different failure modes than cloud API rate limits and auth errors.",
+      "topic": "python_integration_patterns",
+      "topic_category": "ollama_setup",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG086",
+      "question": "A user is choosing between Llama 3 8B, Phi-3 Mini (3.8B), and Gemma 2 9B for general chat on a 6GB VRAM laptop GPU. Step 1: Which models fit at Q4_K_M? Step 2: What quality differences should be expected? Step 3: Which provides the best quality-to-VRAM ratio for this specific constraint?",
+      "choices": {
+        "A": "Step 1: All three fit easily. Step 2: Larger models are always better. Step 3: Gemma 2 9B since it has the most parameters",
+        "B": "Step 1: Only Phi-3 Mini fits. Step 2: All are identical. Step 3: Phi-3 Mini by default",
+        "C": "Step 1: None fit in 6GB. Step 2: Not applicable. Step 3: Must use cloud API",
+        "D": "Step 1: Phi-3 Mini (3.8B, ~2.5GB) fits easily. Llama 3 8B (~5GB) fits tightly. Gemma 2 9B (~5.5GB) is marginal with minimal room for KV cache. Step 2: Llama 3 8B and Gemma 2 9B generally outperform Phi-3 Mini on complex reasoning, but Phi-3 Mini punches above its weight for its size. Step 3: Llama 3 8B at Q4_K_M offers the best balance -- it fits within 6GB with room for a small KV cache and provides strong general chat quality"
+      },
+      "answer": "D",
+      "explanation": "At Q4_K_M: Phi-3 Mini (~2.5GB) fits easily, Llama 3 8B (~5GB) fits with room for KV cache, Gemma 2 9B (~5.5GB) is tight. Llama 3 8B provides strong quality within the VRAM budget. Gemma 2 9B might work but leaves very little room for context, making it risky for the 6GB constraint.",
+      "topic": "constrained_vram_model_comparison",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG087",
+      "question": "A user on a headless Linux server (no display) runs 'nvidia-smi' and gets 'command not found', but they know a GPU is physically installed. Step 1: What does this indicate? Step 2: What are the diagnostic steps? Step 3: What is the complete fix path?",
+      "choices": {
+        "A": "Step 1: The GPU is broken. Step 2: Replace the GPU. Step 3: Buy a new GPU",
+        "B": "Step 1: NVIDIA drivers are not installed (nvidia-smi is part of the driver package). Step 2: Check if the GPU is detected by the kernel with 'lspci | grep -i nvidia' to confirm hardware presence. Check if nouveau (open-source) driver is loaded with 'lsmod | grep nouveau'. Step 3: Install NVIDIA proprietary drivers (apt install nvidia-driver-XXX or the official .run installer), blacklist nouveau, reboot, verify with nvidia-smi, then install CUDA toolkit if needed for Ollama GPU support",
+        "C": "Step 1: nvidia-smi only works with a display connected. Step 2: Connect a monitor. Step 3: Run nvidia-smi again",
+        "D": "Step 1: Server GPUs do not support nvidia-smi. Step 2: Use a different tool. Step 3: Check the BIOS instead"
+      },
+      "answer": "B",
+      "explanation": "Missing nvidia-smi means the NVIDIA driver package is not installed. lspci confirms hardware presence, lsmod checks for conflicting nouveau driver. The fix path: install proprietary NVIDIA drivers, blacklist nouveau, reboot, verify GPU detection, then ensure CUDA toolkit is available for Ollama.",
+      "topic": "headless_gpu_driver_setup",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG088",
+      "question": "A user asks about model provenance: 'How do I know a model from ollama.com is safe and not backdoored?' Step 1: What is the legitimate concern? Step 2: What safeguards exist? Step 3: What risk remains, and how should it be communicated?",
+      "choices": {
+        "A": "Step 1: Not a concern since models are just numbers. Step 2: None needed. Step 3: Explain there is no risk",
+        "B": "Step 1: Models might contain viruses. Step 2: Run antivirus on model files. Step 3: Antivirus eliminates all risk",
+        "C": "Step 1: Models are executable code-equivalents -- malicious weights could produce biased, harmful, or data-exfiltrating outputs. Supply chain attacks on model files are theoretically possible. Step 2: Ollama's registry hosts models from known organizations (Meta, Google, Mistral), model files have checksums, and community reporting helps flag issues. Step 3: No model is 100% guaranteed safe. Stick to well-known model families from reputable organizations, use official tags rather than unverified community uploads, and treat model output as untrusted input in any application",
+        "D": "Step 1: No legitimate concern -- all models are verified. Step 2: Military-grade encryption. Step 3: Zero risk"
+      },
+      "answer": "C",
+      "explanation": "Model provenance is a real concern -- weights could encode biased or harmful behaviors. Mitigations include using models from known organizations, verifying checksums, and treating outputs as untrusted. Complete safety cannot be guaranteed, but risk can be managed through sourcing practices.",
+      "topic": "model_provenance_security",
+      "topic_category": "security_privacy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG089",
+      "question": "A user wants to set up Ollama for a small team of 5 developers. Step 1: Should they run one shared Ollama instance or individual installations? Step 2: What hardware sizing is needed for the shared approach? Step 3: What is the network architecture?",
+      "choices": {
+        "A": "Step 1: Cloud-hosted Ollama is required for teams. Step 2: Cloud instances auto-scale. Step 3: Standard cloud networking",
+        "B": "Step 1: One installation, share via USB drive. Step 2: Any laptop. Step 3: Sneakernet",
+        "C": "Step 1: Individual installations on each developer's machine with their own GPU. Step 2: Each needs their own GPU. Step 3: No network needed",
+        "D": "Step 1: A shared instance is more cost-effective if a powerful server is available, but each developer having their own installation provides better latency and no queuing. Hybrid is best: shared server for large models, local for small/fast models. Step 2: For shared: 24-48GB VRAM minimum, fast SSD for model loading, consider concurrent request patterns. Step 3: Server with OLLAMA_HOST=0.0.0.0, firewall restricting access to office network, reverse proxy with basic auth, developers configure their tools to point to the server's IP"
+      },
+      "answer": "D",
+      "explanation": "The optimal setup depends on existing hardware. A hybrid approach (shared server for large models, local for quick tasks) balances cost and performance. The shared server needs adequate VRAM, network binding, and security layers since Ollama lacks built-in authentication.",
+      "topic": "team_deployment_architecture",
+      "topic_category": "security_privacy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG090",
+      "question": "A user's Ollama system generates excellent responses but occasionally produces hallucinated facts. Step 1: Is this a setup/configuration issue or inherent to LLMs? Step 2: What configuration can reduce hallucination? Step 3: What should the user be told about managing hallucination risk?",
+      "choices": {
+        "A": "Step 1: A configuration issue -- use higher temperature. Step 2: Set temperature to 2.0. Step 3: Higher temperature eliminates hallucination",
+        "B": "Step 1: It is a bug in Ollama. Step 2: Update to the latest version. Step 3: Hallucinations will be fixed in the next release",
+        "C": "Step 1: Hallucination is inherent to all LLMs -- they generate plausible text, not verified facts. It is not a configuration bug. Step 2: Lower temperature (0.1-0.3 for factual tasks) reduces creative variation. Use system prompts instructing the model to say 'I don't know' when uncertain. RAG (retrieval-augmented generation) grounds responses in actual documents. Step 3: Communicate that LLMs are reasoning aids, not truth databases. Critical facts should always be verified. This is a fundamental characteristic, not a flaw that will be patched",
+        "D": "Step 1: The model is too small. Step 2: Use a 70B model. Step 3: Larger models never hallucinate"
+      },
+      "answer": "C",
+      "explanation": "Hallucination is intrinsic to how LLMs generate text. Mitigation strategies include lower temperature for factual tasks, instructive system prompts, and RAG for grounding. The key communication: LLMs are powerful reasoning tools but not fact databases -- verification of critical information is always necessary.",
+      "topic": "hallucination_management",
+      "topic_category": "communication",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG091",
+      "question": "A user reports that after updating their NVIDIA driver, Ollama no longer uses the GPU. Models load but inference is CPU-only (confirmed by 0% GPU utilization in nvidia-smi). Step 1: What is the most likely cause? Step 2: How to diagnose? Step 3: What is the fix?",
+      "choices": {
+        "A": "Step 1: GPU hardware was damaged by the update. Step 2: Run a hardware diagnostic. Step 3: Replace the GPU",
+        "B": "Step 1: Driver updates reset OLLAMA_HOST. Step 2: Check environment variables. Step 3: Set OLLAMA_HOST again",
+        "C": "Step 1: The new NVIDIA driver version may be incompatible with the CUDA toolkit version that Ollama was compiled against, or the CUDA runtime libraries were overwritten/removed during the driver update. Step 2: Check 'nvidia-smi' for the new driver's CUDA version. Check Ollama server logs for CUDA initialization errors at startup. Verify libcuda.so/nvcuda.dll is present. Step 3: Either install the matching CUDA toolkit version for the new driver, downgrade the driver to the previous version, or update Ollama to a version that supports the new CUDA version",
+        "D": "Step 1: The new driver is faster, making GPU usage less visible. Step 2: Check inference speed. Step 3: No fix needed"
+      },
+      "answer": "C",
+      "explanation": "Driver updates can break CUDA compatibility if the new driver version introduces a CUDA version that Ollama's bundled runtime does not support, or if libraries are displaced. The diagnostic chain: check CUDA version match, check Ollama startup logs for GPU errors, verify CUDA libraries. Fix by aligning versions.",
+      "topic": "driver_update_cuda_break",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG092",
+      "question": "A new Cohort user asks: 'I have ChatGPT Plus -- why would I also want Cohort with local models?' Step 1: What are the honest advantages of Cohort over ChatGPT? Step 2: What are the honest disadvantages? Step 3: How should this be positioned?",
+      "choices": {
+        "A": "Step 1: Cohort is free. Step 2: Slower responses. Step 3: Use whatever is cheaper",
+        "B": "Step 1: Cohort is better in every way. Step 2: There are no disadvantages. Step 3: Tell them to cancel ChatGPT",
+        "C": "Step 1: Local models are identical to GPT-4. Step 2: None. Step 3: Replace ChatGPT entirely",
+        "D": "Step 1: Privacy (data stays local), no subscription cost after hardware, offline capability, customization (fine-tuning, system prompts), multi-agent collaboration, no rate limits. Step 2: Smaller models are less capable than GPT-4 for complex reasoning, requires decent hardware, no automatic updates to model capabilities, initial setup effort. Step 3: Position as complementary -- use Cohort for private/sensitive work, customized workflows, and offline access. Use ChatGPT for tasks requiring frontier model capabilities. They serve different needs"
+      },
+      "answer": "D",
+      "explanation": "Honest positioning builds trust. Cohort excels at privacy, customization, offline use, and multi-agent workflows. ChatGPT excels at raw reasoning capability with frontier models. They are complementary tools for different use cases, not replacements for each other.",
+      "topic": "cohort_vs_chatgpt_positioning",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG093",
+      "question": "A user has a model that outputs well-formatted JSON in short prompts but produces malformed JSON in longer conversations (truncated or missing closing braces). Step 1: What is the likely cause? Step 2: How to confirm? Step 3: What are the solutions?",
+      "choices": {
+        "A": "Step 1: The model is hitting its context window limit (num_ctx), causing output to truncate before completing the JSON structure. Step 2: Check the num_ctx setting with 'ollama show <model>' and compare to the conversation length. Monitor if responses end mid-token. Step 3: Increase num_ctx (costs VRAM), use shorter prompts by summarizing conversation history, or use the 'format: json' parameter in the API request which helps some models maintain valid JSON structure",
+        "B": "Step 1: The model has a JSON bug. Step 2: Report it to the model developers. Step 3: Wait for a fix",
+        "C": "Step 1: System RAM is too low. Step 2: Check free RAM. Step 3: Add more system RAM",
+        "D": "Step 1: JSON output is not supported by local models. Step 2: Try XML instead. Step 3: Use a different output format"
+      },
+      "answer": "A",
+      "explanation": "Truncated JSON in long conversations is a classic context window overflow symptom. The model runs out of generation budget before completing the structure. Confirmation: check num_ctx vs conversation token count. Fixes: increase num_ctx (VRAM cost), manage context length, or use format-enforcement features.",
+      "topic": "json_truncation_context_window",
+      "topic_category": "troubleshooting",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG094",
+      "question": "You are building a Modelfile for a custom agent that should (a) always respond in markdown format, (b) use a temperature of 0.2 for consistency, (c) have a 16K context window, and (d) be based on llama3:8b. Step 1: What goes in the FROM line? Step 2: What PARAMETER lines are needed? Step 3: Write the SYSTEM instruction.",
+      "choices": {
+        "A": "Step 1: FROM base. Step 2: PARAMETER heat 0.2 and PARAMETER context 16384. Step 3: SYSTEM Respond in markdown",
+        "B": "Step 1: FROM llama3. Step 2: PARAMETER temp 0.2 and PARAMETER ctx 16000. Step 3: SYSTEM You are a bot",
+        "C": "Step 1: FROM llama3:8b. Step 2: PARAMETER temperature 0.2 and PARAMETER num_ctx 16384. Step 3: SYSTEM You are a helpful assistant. Always format your responses using markdown. Use headers, bullet points, code blocks, and tables where appropriate to make information clear and well-organized. If you are unsure about something, say so rather than guessing.",
+        "D": "Step 1: FROM llama3:8b-instruct. Step 2: No parameters needed -- use defaults. Step 3: No system prompt -- the model already formats correctly"
+      },
+      "answer": "C",
+      "explanation": "FROM specifies the base model with tag. PARAMETER uses Ollama's exact parameter names: 'temperature' (not 'temp') and 'num_ctx' (not 'ctx'). The SYSTEM instruction should be specific about formatting expectations and include guardrails against hallucination.",
+      "topic": "modelfile_construction",
+      "topic_category": "ollama_setup",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG095",
+      "question": "A user with a MacBook Pro M2 Max (32GB unified memory) asks what models they can run. Step 1: How much of the 32GB is available for Ollama? Step 2: What is the largest model they can run? Step 3: How does Apple Silicon performance compare to an equivalent NVIDIA setup?",
+      "choices": {
+        "A": "Step 1: Roughly 24-26GB is usable after macOS and apps reserve 6-8GB from the unified pool. Step 2: A 30B-34B model at Q4_K_M (~17-19GB) fits comfortably, or a 70B at Q4_K_M (~40GB) would require significant swapping. Step 3: Apple Silicon has lower memory bandwidth than dedicated GPU VRAM (200-400 GB/s vs 600-1000 GB/s for high-end NVIDIA), so token generation is typically 30-50% slower at equivalent model sizes, but the large unified pool lets you run bigger models than many consumer NVIDIA GPUs",
+        "B": "Step 1: 32GB. Step 2: Any model up to 30B. Step 3: Performance is identical to NVIDIA",
+        "C": "Step 1: 32GB minus a 16GB GPU reserve. Step 2: Only a 7B model. Step 3: Apple Silicon cannot run LLMs",
+        "D": "Step 1: All 32GB since it is unified memory. Step 2: A 70B model easily. Step 3: Apple Silicon is always faster than NVIDIA"
+      },
+      "answer": "A",
+      "explanation": "Unified memory is shared between CPU, GPU, and OS. After system overhead, ~24-26GB is practical. Apple Silicon's advantage is pool size (run bigger models than a 12GB NVIDIA GPU), but bandwidth is lower, making per-token speed slower. A 30-34B model is the sweet spot for 32GB unified.",
+      "topic": "apple_silicon_model_sizing",
+      "topic_category": "hardware_vram",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG096",
+      "question": "A user reports that two different agents in Cohort give contradictory advice about the same topic. Step 1: Why can this happen in a multi-agent system? Step 2: Is this a bug or a feature? Step 3: How should it be explained to the user?",
+      "choices": {
+        "A": "Step 1: Random model behavior. Step 2: Bug. Step 3: Reboot the system",
+        "B": "Step 1: Different agents have different domain expertise, training contexts, and system prompts. A coding-focused agent and a UX-focused agent may legitimately prioritize different factors when analyzing the same problem. Step 2: It is a feature when it surfaces different perspectives, but a problem if the contradiction is factual (one is objectively wrong). Step 3: Explain that multi-agent systems intentionally provide diverse perspectives. For factual contradictions, identify which agent has stronger domain expertise on the specific topic. For strategic disagreements, the contradiction itself is valuable information highlighting a tradeoff",
+        "C": "Step 1: One agent is broken. Step 2: Bug -- fix the wrong agent. Step 3: Apologize for the error",
+        "D": "Step 1: They use different models. Step 2: Neither bug nor feature. Step 3: Pick the agent you like better"
+      },
+      "answer": "B",
+      "explanation": "Multi-agent disagreement is expected and often valuable -- different specialists surface different tradeoffs. The key distinction is factual contradiction (one is wrong) vs strategic disagreement (legitimate different priorities). Users should evaluate which agent has stronger domain authority on the specific point of contention.",
+      "topic": "multi_agent_contradiction",
+      "topic_category": "cohort_ecosystem",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG097",
+      "question": "A user wants to quantize their own fine-tuned model for use with Ollama. Step 1: What format does the fine-tuned model need to be in first? Step 2: How is it converted to GGUF? Step 3: How is it imported into Ollama?",
+      "choices": {
+        "A": "Step 1: The model needs to be in standard PyTorch/safetensors format (e.g., HuggingFace format). Step 2: Use llama.cpp's convert scripts (convert_hf_to_gguf.py) to convert to GGUF, then quantize with llama-quantize to the desired level (Q4_K_M, Q5_K_M, etc.). Step 3: Create a Modelfile with 'FROM ./model-q4_k_m.gguf' pointing to the local GGUF file, then run 'ollama create mymodel -f Modelfile'",
+        "B": "Step 1: ONNX format. Step 2: Use ollama convert. Step 3: ollama import model.onnx",
+        "C": "Step 1: Any format works. Step 2: No conversion needed. Step 3: Place the file in the Ollama models directory",
+        "D": "Step 1: TensorFlow SavedModel format. Step 2: Upload to ollama.com for conversion. Step 3: ollama pull mymodel"
+      },
+      "answer": "A",
+      "explanation": "The pipeline: HuggingFace/PyTorch model -> llama.cpp convert_hf_to_gguf.py -> GGUF file -> llama-quantize for desired quantization level -> Modelfile with FROM pointing to local GGUF -> 'ollama create' to register. This is the standard path for bringing custom models into Ollama.",
+      "topic": "custom_model_quantization_pipeline",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG098",
+      "question": "A user running Ollama on a remote server wants to ensure it is secure. Step 1: What is the default security posture of Ollama? Step 2: What specific attack vectors exist? Step 3: What is the recommended hardening checklist?",
+      "choices": {
+        "A": "Step 1: Fully secured by default. Step 2: None. Step 3: No hardening needed",
+        "B": "Step 1: Ollama has no authentication, no encryption, and binds to localhost only by default. It is designed for local single-user operation. Step 2: If exposed to network: unauthorized prompt injection, resource exhaustion (GPU denial of service), model enumeration, and potential prompt extraction of system prompts. Step 3: (a) Keep bound to localhost, access only via SSH tunnel or VPN. (b) If network-exposed: reverse proxy with TLS and authentication. (c) Firewall rules restricting source IPs. (d) Set OLLAMA_ORIGINS to restrict CORS. (e) Monitor logs for unusual request patterns. (f) Run Ollama as a non-root user with minimal permissions",
+        "C": "Step 1: Enterprise-grade encryption. Step 2: Only physical access attacks. Step 3: Lock the server room",
+        "D": "Step 1: OAuth2 authentication enabled by default. Step 2: Brute force password attacks. Step 3: Use strong passwords"
+      },
+      "answer": "B",
+      "explanation": "Ollama has zero security features by default -- no auth, no TLS, localhost-only binding. If network-exposed, the attack surface includes unauthorized use, resource exhaustion, and information disclosure. Hardening requires external layers: reverse proxy with auth, firewall rules, TLS, CORS restriction, and least-privilege execution.",
+      "topic": "remote_server_hardening",
+      "topic_category": "security_privacy",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG099",
+      "question": "A user has disk space for only one model and must choose between a 7B coding model at Q8_0 or a 13B coding model at Q4_K_M. Both fit in their 10GB VRAM. Step 1: What are the VRAM requirements? Step 2: What are the quality tradeoffs? Step 3: Which should they choose for a software development workflow?",
+      "choices": {
+        "A": "Step 1: Both need 10GB exactly. Step 2: Q8_0 is always better than Q4_K_M. Step 3: Always choose higher quantization",
+        "B": "Step 1: 7B Q8_0 ~7GB, 13B Q4_K_M ~8GB. Step 2: Identical quality. Step 3: Flip a coin",
+        "C": "Step 1: 7B Q8_0 requires ~7GB (7B * 8 / 8), 13B Q4_K_M requires ~7.5GB (13B * 4.5 / 8). Both fit in 10GB with room for KV cache. Step 2: The 7B at Q8_0 has high per-parameter precision but fewer total parameters. The 13B at Q4_K_M has more parameters (more knowledge and reasoning capacity) but lower per-parameter precision. Step 3: For coding, the 13B Q4_K_M is generally the better choice -- the additional parameters provide better reasoning, code understanding, and broader training coverage, and Q4_K_M quantization retains enough precision for code generation where exact numerical precision matters less than logical reasoning",
+        "D": "Step 1: Both need 5GB. Step 2: 13B is always better. Step 3: Always choose more parameters regardless of quantization"
+      },
+      "answer": "C",
+      "explanation": "Both fit comfortably in 10GB. The 13B Q4_K_M offers more reasoning capacity from additional parameters, which generally outweighs the per-parameter precision loss from Q4 quantization for code generation tasks. Research consistently shows parameter count contributes more to code quality than quantization level within the Q4-Q8 range.",
+      "topic": "parameter_vs_quantization_tradeoff",
+      "topic_category": "model_selection",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SG100",
+      "question": "You are designing a comprehensive health check script for a Cohort deployment. Step 1: What are the critical components to check? Step 2: What constitutes a 'healthy' vs 'degraded' vs 'down' status for each? Step 3: How should results be presented to a non-technical user?",
+      "choices": {
+        "A": "Step 1: (a) Ollama server reachability (GET /), (b) GPU detection and VRAM availability, (c) at least one model downloaded, (d) inference test (send a simple prompt and verify response), (e) disk space on model storage, (f) system RAM availability. Step 2: Healthy: all checks pass, inference under 5 seconds for a 7B model. Degraded: server running but inference slow (GPU not detected, high memory pressure, low disk). Down: server unreachable or inference fails. Step 3: Traffic light summary (all good / some warnings / needs attention) with plain-English explanations like 'Your AI is running well' or 'Storage is getting low -- consider removing unused models' -- technical details available on demand but not shown by default",
+        "B": "Step 1: Check if Ollama is installed. Step 2: Installed = healthy. Step 3: Print the version number",
+        "C": "Step 1: Run all benchmarks. Step 2: Compare to published benchmarks. Step 3: Show a percentile ranking",
+        "D": "Step 1: Just ping the Ollama server. Step 2: Responds = healthy, doesn't = down. Step 3: Show a green or red dot"
+      },
+      "answer": "A",
+      "explanation": "A comprehensive health check covers connectivity, GPU status, model availability, actual inference capability, and resource headroom. Three-tier status (healthy/degraded/down) enables prioritized response. Presentation should be user-friendly summaries with technical details on demand, following progressive disclosure principles.",
+      "topic": "health_check_design",
+      "topic_category": "onboarding",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

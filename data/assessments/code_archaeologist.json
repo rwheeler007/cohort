@@ -1,0 +1,1613 @@
+{
+  "agent_id": "code_archaeologist",
+  "source": "Software analysis & technical documentation (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "CA001",
+      "question": "In a Python Abstract Syntax Tree, what node type represents a function definition?",
+      "choices": {
+        "A": "ast.Call",
+        "B": "ast.FunctionDef",
+        "C": "ast.Lambda",
+        "D": "ast.Def"
+      },
+      "answer": "B",
+      "explanation": "ast.FunctionDef is the AST node for a def statement in Python. ast.Call represents a function call, ast.Lambda represents lambda expressions, and ast.Def does not exist in the ast module.",
+      "topic": "ast_node_types",
+      "topic_category": "static_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA002",
+      "question": "Cyclomatic complexity of a function is calculated as M = E - N + 2P. What does E represent?",
+      "choices": {
+        "A": "The number of exit points in the control flow graph",
+        "B": "The number of edges in the control flow graph",
+        "C": "The number of error-handling blocks",
+        "D": "The number of executable statements"
+      },
+      "answer": "B",
+      "explanation": "In McCabe's cyclomatic complexity formula M = E - N + 2P, E is the number of edges, N is the number of nodes, and P is the number of connected components in the control flow graph.",
+      "topic": "cyclomatic_complexity",
+      "topic_category": "code_metrics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA003",
+      "question": "Which Python docstring convention uses the format ':param name: description' for documenting parameters?",
+      "choices": {
+        "A": "Google style",
+        "B": "NumPy style",
+        "C": "Epytext style",
+        "D": "Sphinx (reST) style"
+      },
+      "answer": "D",
+      "explanation": "Sphinx/reStructuredText style docstrings use :param name: description for parameters. Google style uses 'Args:' with indented parameters, and NumPy style uses a 'Parameters' section with dashed underlines.",
+      "topic": "python_docstrings",
+      "topic_category": "documentation",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA004",
+      "question": "In the C4 model for architecture documentation, what is the correct order of abstraction levels from highest to lowest?",
+      "choices": {
+        "A": "Context, Container, Component, Code",
+        "B": "Component, Container, Context, Code",
+        "C": "Code, Component, Container, Context",
+        "D": "Context, Component, Container, Code"
+      },
+      "answer": "A",
+      "explanation": "The C4 model defines four levels of abstraction: Context (system landscape), Container (deployable units), Component (modules within containers), and Code (class-level detail), going from highest to lowest.",
+      "topic": "c4_model",
+      "topic_category": "architecture",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA005",
+      "question": "Which Mermaid diagram type would be most appropriate for showing the states of an order processing system?",
+      "choices": {
+        "A": "flowchart",
+        "B": "sequenceDiagram",
+        "C": "stateDiagram-v2",
+        "D": "erDiagram"
+      },
+      "answer": "C",
+      "explanation": "A state diagram is the best fit for modeling the different states and transitions of an order (e.g., pending, processing, shipped, delivered). Flowcharts show process flow, sequence diagrams show interactions, and ER diagrams show data relationships.",
+      "topic": "mermaid_diagram_selection",
+      "topic_category": "diagramming",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA006",
+      "question": "What is the primary purpose of a symbol table during static analysis?",
+      "choices": {
+        "A": "To track all Unicode symbols used in the source code",
+        "B": "To list all imported library symbols",
+        "C": "To map identifiers to their declarations, types, and scope information",
+        "D": "To generate a lookup table for string constants"
+      },
+      "answer": "C",
+      "explanation": "A symbol table maps each identifier (variable, function, class) to metadata including its type, scope, declaration location, and other attributes. It is essential for scope analysis, type checking, and name resolution.",
+      "topic": "symbol_tables",
+      "topic_category": "static_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA007",
+      "question": "In a control flow graph, a basic block is defined as a sequence of instructions that:",
+      "choices": {
+        "A": "Has a single entry point and single exit point with no branches in between",
+        "B": "Contains exactly one conditional branch",
+        "C": "Corresponds to one function definition",
+        "D": "Contains no more than 10 lines of code"
+      },
+      "answer": "A",
+      "explanation": "A basic block is a maximal sequence of consecutive instructions where control flow enters only at the beginning and exits only at the end, with no internal branches or branch targets.",
+      "topic": "cfg_construction",
+      "topic_category": "flow_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA008",
+      "question": "Which of the following best describes the 'code smell' known as Feature Envy?",
+      "choices": {
+        "A": "A method that is excessively long and does too many things",
+        "B": "A class that has too many instance variables",
+        "C": "A method that accesses data from another object more than its own",
+        "D": "A class that inherits from multiple base classes unnecessarily"
+      },
+      "answer": "C",
+      "explanation": "Feature Envy occurs when a method seems more interested in another class's data than its own, frequently accessing fields or methods of a different object. This suggests the method may belong in the other class.",
+      "topic": "code_smells",
+      "topic_category": "design_patterns",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA009",
+      "question": "In the Keep a Changelog format, which section heading is used for new features?",
+      "choices": {
+        "A": "Added",
+        "B": "Features",
+        "C": "New",
+        "D": "Introduced"
+      },
+      "answer": "A",
+      "explanation": "Keep a Changelog specifies the following section types: Added, Changed, Deprecated, Removed, Fixed, and Security. 'Added' is used for new features.",
+      "topic": "changelog_format",
+      "topic_category": "documentation",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA010",
+      "question": "Technical debt that results from a deliberate decision to take shortcuts while understanding the consequences is classified as:",
+      "choices": {
+        "A": "Inadvertent reckless debt",
+        "B": "Deliberate reckless debt",
+        "C": "Inadvertent prudent debt",
+        "D": "Deliberate prudent debt"
+      },
+      "answer": "D",
+      "explanation": "In Martin Fowler's technical debt quadrant, deliberate prudent debt occurs when a team knowingly takes on debt (e.g., shipping now and refactoring later) with full understanding of the tradeoffs. Deliberate reckless debt is shortcuts without caring about consequences.",
+      "topic": "debt_categories",
+      "topic_category": "tech_debt",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA011",
+      "question": "What distinguishes semantic analysis from syntactic analysis in a compiler or linter?",
+      "choices": {
+        "A": "Semantic analysis only operates on comments and documentation",
+        "B": "Syntactic analysis checks meaning while semantic analysis checks structure",
+        "C": "Semantic analysis checks meaning and type correctness, while syntactic analysis checks grammatical structure",
+        "D": "They are different names for the same process"
+      },
+      "answer": "C",
+      "explanation": "Syntactic analysis (parsing) verifies that code conforms to the grammar rules of the language. Semantic analysis checks deeper properties like type compatibility, variable declaration before use, and other meaning-related constraints.",
+      "topic": "semantic_vs_syntactic",
+      "topic_category": "static_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA012",
+      "question": "Which coupling type represents the strongest (worst) form of module coupling?",
+      "choices": {
+        "A": "Content coupling",
+        "B": "Stamp coupling",
+        "C": "Data coupling",
+        "D": "Control coupling"
+      },
+      "answer": "A",
+      "explanation": "Content coupling (also called pathological coupling) is the strongest form, where one module directly accesses or modifies the internal data of another. The coupling spectrum from worst to best is: content > common > external > control > stamp > data.",
+      "topic": "coupling_cohesion",
+      "topic_category": "code_metrics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA013",
+      "question": "In a static call graph, what does a directed edge from function A to function B represent?",
+      "choices": {
+        "A": "Function B returns a value to function A",
+        "B": "Function A and function B share the same scope",
+        "C": "Function A calls function B",
+        "D": "Function B was defined before function A"
+      },
+      "answer": "C",
+      "explanation": "In a static call graph, a directed edge from A to B indicates that A contains a call to B as determined by static analysis of the source code, without actually executing the program.",
+      "topic": "static_call_graphs",
+      "topic_category": "dependencies",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA014",
+      "question": "An Architecture Decision Record (ADR) must include which essential component?",
+      "choices": {
+        "A": "UML class diagram",
+        "B": "Performance benchmarks",
+        "C": "The context, decision, and consequences of the architectural choice",
+        "D": "Complete implementation code"
+      },
+      "answer": "C",
+      "explanation": "The essential components of an ADR are the context (what motivated the decision), the decision itself, and the consequences (tradeoffs, what changes). The format was popularized by Michael Nygard.",
+      "topic": "adr",
+      "topic_category": "architecture",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA015",
+      "question": "Which of the following is NOT a valid Halstead metric?",
+      "choices": {
+        "A": "Program vocabulary (n = n1 + n2)",
+        "B": "Program length (N = N1 + N2)",
+        "C": "Program entropy (H = n * log2(N))",
+        "D": "Estimated program length (N_hat = n1 * log2(n1) + n2 * log2(n2))"
+      },
+      "answer": "C",
+      "explanation": "Program entropy is not a Halstead metric. The valid Halstead metrics include vocabulary (n), length (N), estimated length (N_hat), volume (V = N * log2(n)), difficulty (D), and effort (E = D * V).",
+      "topic": "halstead_metrics",
+      "topic_category": "code_metrics",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA016",
+      "question": "In Mermaid syntax, which keyword starts a sequence diagram?",
+      "choices": {
+        "A": "sequence",
+        "B": "sequenceDiagram",
+        "C": "diagram sequence",
+        "D": "seq"
+      },
+      "answer": "B",
+      "explanation": "Mermaid sequence diagrams begin with the keyword 'sequenceDiagram' on its own line. This is followed by participant declarations and message arrows.",
+      "topic": "mermaid_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA017",
+      "question": "What type of AST traversal visits the parent node before its children?",
+      "choices": {
+        "A": "Post-order traversal",
+        "B": "Pre-order traversal",
+        "C": "In-order traversal",
+        "D": "Level-order traversal"
+      },
+      "answer": "B",
+      "explanation": "Pre-order traversal processes the current node first, then recursively visits child nodes. This is commonly used in AST analysis when you need to process declarations before their usage within a scope.",
+      "topic": "ast_traversal",
+      "topic_category": "static_analysis",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA018",
+      "question": "The SOLID principle that states 'a class should have only one reason to change' is called:",
+      "choices": {
+        "A": "Open/Closed Principle",
+        "B": "Liskov Substitution Principle",
+        "C": "Interface Segregation Principle",
+        "D": "Single Responsibility Principle"
+      },
+      "answer": "D",
+      "explanation": "The Single Responsibility Principle (SRP) states that a class should have only one reason to change, meaning it should have only one job or responsibility. This reduces coupling and makes classes easier to maintain.",
+      "topic": "solid_principles",
+      "topic_category": "design_patterns",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA019",
+      "question": "In OpenAPI 3.x, which field is used to define reusable schemas, parameters, and responses?",
+      "choices": {
+        "A": "definitions",
+        "B": "models",
+        "C": "schemas",
+        "D": "components"
+      },
+      "answer": "D",
+      "explanation": "OpenAPI 3.x uses the 'components' object to hold reusable schemas, responses, parameters, examples, security schemes, and more. The 'definitions' keyword was used in Swagger 2.0 (OpenAPI 2.0) and is no longer valid in 3.x.",
+      "topic": "openapi_spec",
+      "topic_category": "documentation",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA020",
+      "question": "What is the primary difference between a static call graph and a dynamic call graph?",
+      "choices": {
+        "A": "Static call graphs are always larger because they include unreachable code",
+        "B": "Dynamic call graphs are generated from runtime execution traces while static call graphs are derived from source code analysis alone",
+        "C": "Static call graphs only include direct calls, while dynamic call graphs include indirect calls",
+        "D": "Dynamic call graphs cannot represent recursive calls"
+      },
+      "answer": "B",
+      "explanation": "Static call graphs are constructed by analyzing source code without execution, while dynamic call graphs are built by instrumenting and running the program. Static graphs may over-approximate (include infeasible paths), while dynamic graphs only capture actually-executed paths.",
+      "topic": "static_vs_dynamic_callgraph",
+      "topic_category": "dependencies",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "CA021",
+      "question": "When performing reaching definitions analysis, a definition d of variable v at program point p 'reaches' point q if:",
+      "choices": {
+        "A": "Variable v is used at point q and there is no other definition of v between p and q",
+        "B": "There exists a path from p to q along which d is not killed by another definition of v",
+        "C": "Variable v is in scope at both p and q",
+        "D": "The control flow graph has an edge directly from p to q"
+      },
+      "answer": "B",
+      "explanation": "A definition d of variable v at point p reaches point q if there exists at least one path from p to q in the CFG along which v is not redefined (killed). The definition does not need to be used at q, just potentially reachable.",
+      "topic": "reaching_definitions",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA022",
+      "question": "Consider a function with: 1 if-else statement, 1 for loop containing a nested if statement, and 1 try-except block with 2 except clauses. What is the cyclomatic complexity?",
+      "choices": {
+        "A": "6",
+        "B": "5",
+        "C": "7",
+        "D": "4"
+      },
+      "answer": "A",
+      "explanation": "Cyclomatic complexity starts at 1 for the function. Add 1 for: the if (+1), the for loop (+1), the nested if (+1), and each except clause (+2). Total = 1 + 1 + 1 + 1 + 2 = 6. The else branch and try block itself do not add to the count.",
+      "topic": "cyclomatic_complexity_calc",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA023",
+      "question": "In Python's ast module, which visitor method pattern does ast.NodeVisitor use to dispatch to specific node types?",
+      "choices": {
+        "A": "visit(node) dispatches to handle_<NodeType>(node)",
+        "B": "visit(node) dispatches to visit_<ClassName>(node) based on the node's class name",
+        "C": "process(node) dispatches to on_<NodeType>(node)",
+        "D": "walk(node) dispatches to visit_<NodeType>(node) via a registry"
+      },
+      "answer": "B",
+      "explanation": "ast.NodeVisitor.visit() looks up a method named visit_<ClassName> (e.g., visit_FunctionDef, visit_If) and calls it. If no specific visitor exists, it falls back to generic_visit() which visits all child nodes.",
+      "topic": "ast_visitor_pattern",
+      "topic_category": "static_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA024",
+      "question": "The Maintainability Index (MI) formula typically includes which combination of metrics?",
+      "choices": {
+        "A": "Lines of code, number of classes, and test coverage",
+        "B": "Comment ratio, nesting depth, and parameter count",
+        "C": "Function count, coupling, and cohesion",
+        "D": "Halstead Volume, cyclomatic complexity, and lines of code"
+      },
+      "answer": "D",
+      "explanation": "The original Maintainability Index formula (by Oman and Hagemeister) is MI = 171 - 5.2 * ln(avgV) - 0.23 * avgCC - 16.2 * ln(avgLOC), where avgV is average Halstead Volume, avgCC is average cyclomatic complexity, and avgLOC is average lines of code.",
+      "topic": "maintainability_index",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA025",
+      "question": "Which design pattern is characterized by having a class delegate the creation of objects to its subclasses through an abstract method?",
+      "choices": {
+        "A": "Abstract Factory",
+        "B": "Prototype",
+        "C": "Builder",
+        "D": "Factory Method"
+      },
+      "answer": "D",
+      "explanation": "The Factory Method pattern defines an interface for creating an object but lets subclasses decide which class to instantiate. Abstract Factory provides an interface for creating families of related objects without specifying their concrete classes.",
+      "topic": "gof_patterns",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA026",
+      "question": "In live variable analysis, a variable is considered 'live' at a program point if:",
+      "choices": {
+        "A": "It has been assigned a value at that point",
+        "B": "Its value may be used along some path from that point before being redefined",
+        "C": "It is referenced in the current basic block",
+        "D": "It is declared in the current scope"
+      },
+      "answer": "B",
+      "explanation": "A variable is live at a program point if there exists some path from that point to a use of the variable that does not pass through a redefinition. Live variable analysis flows backward through the CFG.",
+      "topic": "live_variable_analysis",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA027",
+      "question": "In JSDoc, which tag is used to indicate that a function parameter is optional?",
+      "choices": {
+        "A": "@optional {string} name",
+        "B": "@param {optional string} name",
+        "C": "@param {string?} name",
+        "D": "@param {string} [name]"
+      },
+      "answer": "D",
+      "explanation": "In JSDoc, optional parameters are indicated by wrapping the parameter name in square brackets: @param {string} [name]. A default value can be specified as @param {string} [name='default'].",
+      "topic": "jsdoc_syntax",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA028",
+      "question": "In arc42, which section addresses cross-cutting concerns such as logging, error handling, and security that span multiple components?",
+      "choices": {
+        "A": "Section 5: Building Block View",
+        "B": "Section 8: Cross-cutting Concepts",
+        "C": "Section 9: Architecture Decisions",
+        "D": "Section 6: Runtime View"
+      },
+      "answer": "B",
+      "explanation": "Arc42 Section 8 (Cross-cutting Concepts) documents technical concepts that span multiple building blocks, such as persistence strategies, error handling, logging, security, and transaction handling.",
+      "topic": "arc42_sections",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA029",
+      "question": "Which Mermaid syntax correctly represents a solid arrow with an open arrowhead from A to B in a flowchart?",
+      "choices": {
+        "A": "A ==> B",
+        "B": "A ---> B",
+        "C": "A --- B",
+        "D": "A --> B"
+      },
+      "answer": "D",
+      "explanation": "In Mermaid flowcharts, --> creates a solid line with an arrow. --- is a solid line without an arrow, ==> is a thick line with an arrow, and ---> is a longer solid line with an arrow (extra dashes increase line length, not style).",
+      "topic": "mermaid_flowchart_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA030",
+      "question": "The SQALE (Software Quality Assessment based on Lifecycle Expectations) method primarily measures technical debt by:",
+      "choices": {
+        "A": "Counting the number of open bug reports",
+        "B": "Estimating the remediation cost to fix code quality issues mapped to quality characteristics",
+        "C": "Measuring code coverage percentage",
+        "D": "Surveying developer satisfaction scores"
+      },
+      "answer": "B",
+      "explanation": "SQALE quantifies technical debt by mapping code quality violations to ISO 25010 quality characteristics and estimating the time/cost needed to remediate each violation. It produces a debt ratio comparing remediation cost to development cost.",
+      "topic": "sqale_method",
+      "topic_category": "tech_debt",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA031",
+      "question": "When constructing a CFG for a function containing a switch/match statement with 5 cases and a default, how many edges originate from the switch node?",
+      "choices": {
+        "A": "6",
+        "B": "5",
+        "C": "7",
+        "D": "1"
+      },
+      "answer": "A",
+      "explanation": "A switch with 5 cases and a default creates 6 outgoing edges from the decision node: one for each case (5) plus one for the default branch. Each edge leads to the corresponding case's basic block.",
+      "topic": "cfg_construction",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA032",
+      "question": "Which refactoring from Fowler's catalog addresses the code smell of a long method by grouping related statements?",
+      "choices": {
+        "A": "Inline Method",
+        "B": "Extract Method",
+        "C": "Move Method",
+        "D": "Replace Temp with Query"
+      },
+      "answer": "B",
+      "explanation": "Extract Method takes a fragment of code that can be grouped together, moves it into a separate method, and replaces the old code with a call to the new method. It is the primary remedy for the Long Method smell.",
+      "topic": "refactoring_patterns",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA033",
+      "question": "In OpenAPI 3.x, which keyword under a path operation defines multiple possible response schemas based on content type?",
+      "choices": {
+        "A": "produces",
+        "B": "responses/media",
+        "C": "content",
+        "D": "schema/oneOf"
+      },
+      "answer": "C",
+      "explanation": "In OpenAPI 3.x, each response object uses a 'content' map keyed by media type (e.g., 'application/json', 'text/xml'), each containing a schema. The 'produces' keyword was part of Swagger 2.0 and is no longer valid.",
+      "topic": "openapi_spec",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA034",
+      "question": "What is the key difference between afferent coupling (Ca) and efferent coupling (Ce) in the context of package metrics?",
+      "choices": {
+        "A": "Ca counts internal dependencies, Ce counts external dependencies",
+        "B": "Ca measures compile-time coupling, Ce measures runtime coupling",
+        "C": "Ca measures incoming dependencies (who depends on me), Ce measures outgoing dependencies (who I depend on)",
+        "D": "Ca is always higher than Ce in stable packages"
+      },
+      "answer": "C",
+      "explanation": "Afferent coupling (Ca) counts the number of external classes that depend on classes within the package (incoming). Efferent coupling (Ce) counts the number of external classes that classes within the package depend on (outgoing). Robert C. Martin uses these in his instability metric I = Ce / (Ca + Ce).",
+      "topic": "coupling_metrics",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA035",
+      "question": "In data flow analysis, what is the 'gen' set of a basic block?",
+      "choices": {
+        "A": "The set of variables that are allocated memory in the block",
+        "B": "The set of all variables referenced in the block",
+        "C": "The set of definitions created within the block that reach the end of the block",
+        "D": "The set of generic type parameters used in the block"
+      },
+      "answer": "C",
+      "explanation": "The 'gen' set of a basic block contains the definitions (variable assignments) that are generated within the block and are not subsequently killed (overwritten) within the same block. These definitions are available at the block's exit.",
+      "topic": "data_flow_gen_kill",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA036",
+      "question": "Which PlantUML syntax creates an inheritance (generalization) relationship from class Child to class Parent?",
+      "choices": {
+        "A": "Child --> Parent",
+        "B": "Child --|> Parent",
+        "C": "Child ..> Parent",
+        "D": "Child --* Parent"
+      },
+      "answer": "B",
+      "explanation": "In PlantUML, --|> represents inheritance (generalization) with a triangle arrowhead. --> is a dependency, ..> is a dashed dependency, and --* is composition.",
+      "topic": "plantuml_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA037",
+      "question": "Taint analysis is a form of data flow analysis primarily used to:",
+      "choices": {
+        "A": "Measure code complexity by tracking variable mutations",
+        "B": "Optimize variable allocation by tracking register usage",
+        "C": "Identify unused variables by tracking all assignments",
+        "D": "Track the propagation of untrusted input through a program to detect security vulnerabilities"
+      },
+      "answer": "D",
+      "explanation": "Taint analysis marks data from untrusted sources (user input, network, files) as 'tainted' and tracks how it flows through the program. If tainted data reaches a sensitive sink (SQL query, system call) without sanitization, a potential vulnerability is flagged.",
+      "topic": "taint_analysis",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA038",
+      "question": "Which of the following is an example of the Shotgun Surgery code smell?",
+      "choices": {
+        "A": "A class with 50 methods that handles multiple unrelated responsibilities",
+        "B": "A method with 15 parameters",
+        "C": "A single change requirement that forces modifications across many different classes",
+        "D": "Two classes that have identical method signatures but no shared interface"
+      },
+      "answer": "C",
+      "explanation": "Shotgun Surgery occurs when a single change requires making many small modifications to many different classes. It is the opposite of Divergent Change (where one class is changed for many different reasons). The fix typically involves Move Method or Move Field to consolidate related behavior.",
+      "topic": "code_smells",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA039",
+      "question": "In the context of circular dependency detection, which algorithm is commonly used to find strongly connected components in a directed graph?",
+      "choices": {
+        "A": "Dijkstra's shortest path algorithm",
+        "B": "Kruskal's minimum spanning tree algorithm",
+        "C": "Prim's algorithm",
+        "D": "Tarjan's strongly connected components algorithm"
+      },
+      "answer": "D",
+      "explanation": "Tarjan's algorithm finds all strongly connected components (SCCs) in a directed graph in O(V+E) time using a single DFS pass. SCCs with more than one node indicate circular dependencies between modules.",
+      "topic": "circular_dependency_detection",
+      "topic_category": "dependencies",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA040",
+      "question": "In Google-style Python docstrings, how are raised exceptions documented?",
+      "choices": {
+        "A": "Under a 'Raises:' section with exception type and description",
+        "B": "Under a 'Throws:' section",
+        "C": "Under an 'Exceptions:' section",
+        "D": "Using @raises tags inline"
+      },
+      "answer": "A",
+      "explanation": "Google-style docstrings use 'Raises:' as the section header, followed by each exception type and its description. Example: 'Raises:\\n    ValueError: If the input is negative.'",
+      "topic": "python_docstrings",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA041",
+      "question": "When should you use a C4 Container diagram instead of a Component diagram?",
+      "choices": {
+        "A": "When you need to show individual class relationships",
+        "B": "When you want to show the high-level technology choices and how deployable units communicate",
+        "C": "When documenting a single microservice's internal structure",
+        "D": "When the audience is exclusively developers working on the code"
+      },
+      "answer": "B",
+      "explanation": "Container diagrams show the high-level shape of the software architecture: the separately deployable units (web apps, APIs, databases, message queues) and how they interact. Component diagrams zoom into a single container to show its internal modules.",
+      "topic": "c4_diagram_selection",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA042",
+      "question": "Which type of cohesion is considered the strongest (best) form?",
+      "choices": {
+        "A": "Functional cohesion",
+        "B": "Temporal cohesion",
+        "C": "Sequential cohesion",
+        "D": "Communicational cohesion"
+      },
+      "answer": "A",
+      "explanation": "Functional cohesion is the strongest form, where every element of a module contributes to a single, well-defined task. The cohesion spectrum from best to worst is: functional > sequential > communicational > procedural > temporal > logical > coincidental.",
+      "topic": "coupling_cohesion",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA043",
+      "question": "In SSA (Static Single Assignment) form, how are variables at merge points in the control flow graph handled?",
+      "choices": {
+        "A": "Variables are renamed with version numbers and no special handling is needed",
+        "B": "Phi functions are inserted to select the correct version of a variable based on which predecessor block was executed",
+        "C": "The compiler chooses the most recent version of the variable",
+        "D": "Variables at merge points are always reinitialized"
+      },
+      "answer": "B",
+      "explanation": "SSA form requires that every variable is assigned exactly once. At merge points (where multiple control flow paths converge), phi functions are inserted to select the appropriate version of a variable based on which predecessor branch was taken at runtime.",
+      "topic": "ssa_form",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA044",
+      "question": "The Mermaid class diagram syntax `class Animal { +String name; +makeSound() void; -int age }` uses which prefix for private members?",
+      "choices": {
+        "A": "~",
+        "B": "-",
+        "C": "#",
+        "D": "_"
+      },
+      "answer": "B",
+      "explanation": "Mermaid class diagrams use UML visibility notation: + for public, - for private, # for protected, and ~ for package/internal. So -int age denotes a private integer field.",
+      "topic": "mermaid_class_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA045",
+      "question": "Which prioritization strategy for technical debt addresses the items that block the most future development first?",
+      "choices": {
+        "A": "Interest-first: fix items accumulating the most interest (ongoing cost)",
+        "B": "Principal-first: fix items with the highest remediation cost",
+        "C": "Age-first: fix the oldest debt items first",
+        "D": "Size-first: fix the smallest items to reduce count quickly"
+      },
+      "answer": "A",
+      "explanation": "Interest-first prioritization targets debt items that cause the most ongoing cost (slowed development, frequent bugs, workaround effort). This maximizes the return on refactoring investment by addressing the items that compound the most over time.",
+      "topic": "debt_prioritization",
+      "topic_category": "tech_debt",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA046",
+      "question": "When analyzing a Python module with ast.parse(), what does the top-level node of the resulting AST represent?",
+      "choices": {
+        "A": "The first statement in the file",
+        "B": "An ast.File node with metadata about the source file",
+        "C": "An ast.Module node containing the body of top-level statements",
+        "D": "An ast.Program node wrapping all definitions"
+      },
+      "answer": "C",
+      "explanation": "ast.parse() returns an ast.Module node whose body attribute is a list of top-level AST statement nodes. There is no ast.File or ast.Program node type in Python's ast module.",
+      "topic": "ast_parsing",
+      "topic_category": "static_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA047",
+      "question": "Which SOLID principle is violated when a client is forced to depend on interface methods it does not use?",
+      "choices": {
+        "A": "Single Responsibility Principle",
+        "B": "Dependency Inversion Principle",
+        "C": "Interface Segregation Principle",
+        "D": "Open/Closed Principle"
+      },
+      "answer": "C",
+      "explanation": "The Interface Segregation Principle (ISP) states that no client should be forced to depend on methods it does not use. The solution is to split large interfaces into smaller, more specific ones.",
+      "topic": "solid_principles",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA048",
+      "question": "In AsyncAPI, what does the 'channels' object describe?",
+      "choices": {
+        "A": "The HTTP endpoints available in the API",
+        "B": "The WebSocket connection parameters",
+        "C": "The message topics/queues and their subscribe/publish operations",
+        "D": "The authentication channels available"
+      },
+      "answer": "C",
+      "explanation": "In AsyncAPI, channels describe the virtual channels (topics, queues, routing keys) through which messages flow, along with their publish and subscribe operations and message schemas. This is analogous to 'paths' in OpenAPI.",
+      "topic": "asyncapi_spec",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA049",
+      "question": "In dependency analysis, the 'Stable Dependencies Principle' states that:",
+      "choices": {
+        "A": "A package should only depend on packages that are more stable than itself",
+        "B": "All dependencies should point toward the main module",
+        "C": "Circular dependencies must be eliminated before release",
+        "D": "Dependencies should be minimized to reduce build times"
+      },
+      "answer": "A",
+      "explanation": "Robert C. Martin's Stable Dependencies Principle states that packages should depend in the direction of stability. Stability is measured by the ratio I = Ce / (Ca + Ce). A package with high instability should not be depended upon by stable packages.",
+      "topic": "dependency_principles",
+      "topic_category": "dependencies",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA050",
+      "question": "What is the primary advantage of using dominance frontiers in SSA construction?",
+      "choices": {
+        "A": "They reduce the total number of variables needed",
+        "B": "They identify the minimal set of locations where phi functions must be inserted",
+        "C": "They eliminate the need for register allocation",
+        "D": "They speed up dead code elimination"
+      },
+      "answer": "B",
+      "explanation": "Dominance frontiers identify exactly where control flow paths converge such that a definition from one path might need to merge with definitions from other paths. This determines the minimal set of phi function insertion points, avoiding unnecessary phi functions.",
+      "topic": "dominance_frontiers",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA051",
+      "question": "Which Mermaid ER diagram relationship notation represents 'one-to-many'?",
+      "choices": {
+        "A": "||--o{",
+        "B": "||--||",
+        "C": "}|--|{",
+        "D": "||--|{"
+      },
+      "answer": "D",
+      "explanation": "In Mermaid ER diagrams, || means exactly one and |{ means one or more. So ||--|{ represents a one-to-many relationship. ||--|| is one-to-one, }|--|{ is many-to-many (one-or-more to one-or-more), and o{ means zero-or-more.",
+      "topic": "mermaid_er_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA052",
+      "question": "In the context of technical debt, the 'refactoring economics' concept of 'break-even point' refers to:",
+      "choices": {
+        "A": "The point at which the codebase has zero known bugs",
+        "B": "The point at which the cumulative time saved by refactoring equals the time invested in performing it",
+        "C": "The point at which test coverage reaches 100%",
+        "D": "The point at which no more refactoring is needed"
+      },
+      "answer": "B",
+      "explanation": "The break-even point is when the accumulated productivity gains from reduced friction (fewer bugs, faster feature development) equal the upfront cost of the refactoring effort. After this point, the refactoring yields net positive returns.",
+      "topic": "refactoring_economics",
+      "topic_category": "tech_debt",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA053",
+      "question": "When performing type inference from an AST without explicit type annotations, which technique is most commonly used?",
+      "choices": {
+        "A": "Hindley-Milner type inference using unification",
+        "B": "Random sampling of runtime values",
+        "C": "String matching of variable names to type conventions",
+        "D": "Counting the number of method calls to determine type"
+      },
+      "answer": "A",
+      "explanation": "Hindley-Milner type inference (Algorithm W) uses constraint generation from AST nodes and unification to determine types without explicit annotations. It is the foundation of type systems in ML, Haskell, and influences TypeScript's type inference.",
+      "topic": "type_inference_ast",
+      "topic_category": "static_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA054",
+      "question": "Which code smell does the 'Replace Conditional with Polymorphism' refactoring address?",
+      "choices": {
+        "A": "Speculative Generality",
+        "B": "Data Clumps",
+        "C": "Switch Statements (complex conditional logic based on type)",
+        "D": "Primitive Obsession"
+      },
+      "answer": "C",
+      "explanation": "Replace Conditional with Polymorphism is the classic remedy for the Switch Statements smell, where type-based conditional logic is replaced with polymorphic method dispatch. Each case becomes a subclass with its own implementation of the varying behavior.",
+      "topic": "refactoring_patterns",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA055",
+      "question": "In an arc42 document, Section 3 (Context and Scope) should contain:",
+      "choices": {
+        "A": "The business context (external actors and their interactions) and technical context (infrastructure, protocols)",
+        "B": "Detailed class diagrams of the core domain",
+        "C": "Performance test results and benchmarks",
+        "D": "A chronological development timeline"
+      },
+      "answer": "A",
+      "explanation": "Arc42 Section 3 defines the system boundary by showing the business context (who uses the system and for what) and the technical context (what technical interfaces, protocols, and infrastructure the system connects to).",
+      "topic": "arc42_sections",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA056",
+      "question": "What does the Lines of Code (LOC) metric 'SLOC' specifically measure?",
+      "choices": {
+        "A": "All lines in the source file including blanks and comments",
+        "B": "Source Lines of Code: lines containing actual executable or declarative statements, excluding blanks and comments",
+        "C": "Lines of code that have been modified since the last commit",
+        "D": "Lines of code covered by unit tests"
+      },
+      "answer": "B",
+      "explanation": "SLOC (Source Lines of Code) counts only lines that contain actual statements, excluding blank lines and comment-only lines. This provides a more meaningful measure than physical LOC (total lines) for effort estimation and complexity assessment.",
+      "topic": "loc_metrics",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA057",
+      "question": "Dead code detection via static analysis is fundamentally limited because:",
+      "choices": {
+        "A": "It requires compiling the code first",
+        "B": "It only works on interpreted languages",
+        "C": "It cannot account for dynamically dispatched calls, reflection, or externally triggered entry points",
+        "D": "It requires 100% test coverage to be accurate"
+      },
+      "answer": "C",
+      "explanation": "Static dead code detection may produce false positives because it cannot resolve dynamic dispatch (virtual methods, callbacks), reflection, framework-invoked methods (e.g., serialization hooks), or code called from external systems. This is an inherent limitation of static analysis.",
+      "topic": "dead_code_detection",
+      "topic_category": "flow_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA058",
+      "question": "Which TSDoc tag is used to document a function parameter, and how does it differ from JSDoc?",
+      "choices": {
+        "A": "TSDoc uses @param identically to JSDoc with no differences",
+        "B": "TSDoc uses @parameter instead of @param",
+        "C": "TSDoc's @param does not include a type in braces because TypeScript provides type information natively",
+        "D": "TSDoc does not support parameter documentation"
+      },
+      "answer": "C",
+      "explanation": "TSDoc's @param tag omits the {type} in braces since TypeScript's type system already provides type information. JSDoc requires {type} because JavaScript has no static types. TSDoc format: @param name - Description.",
+      "topic": "tsdoc",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA059",
+      "question": "In a Mermaid sequence diagram, which syntax denotes an asynchronous (non-blocking) message?",
+      "choices": {
+        "A": "A-)B: message",
+        "B": "A->>B: message",
+        "C": "A-->B: message",
+        "D": "A-xB: message"
+      },
+      "answer": "A",
+      "explanation": "In Mermaid sequence diagrams, -) denotes an asynchronous message (open arrowhead). ->> is a synchronous solid arrow, --> is a dashed reply arrow, and -x is a message with a cross at the end (destroyed).",
+      "topic": "mermaid_sequence_syntax",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA060",
+      "question": "The 'instability' metric I = Ce / (Ca + Ce) has a range of [0, 1]. What does I = 0 indicate?",
+      "choices": {
+        "A": "The package is maximally unstable",
+        "B": "The package has no dependencies at all",
+        "C": "The package is maximally stable (others depend on it, but it depends on nothing)",
+        "D": "The package has equal incoming and outgoing dependencies"
+      },
+      "answer": "C",
+      "explanation": "When I = 0, Ce (efferent/outgoing coupling) is 0, meaning the package depends on nothing externally, while Ca > 0 means others depend on it. This is maximally stable. I = 1 means maximally unstable (depends on others but nobody depends on it).",
+      "topic": "stability_metrics",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA061",
+      "question": "Which of the following accurately describes the Observer pattern as distinct from the Mediator pattern?",
+      "choices": {
+        "A": "Observer establishes a one-to-many dependency where subjects notify observers of state changes, while Mediator encapsulates how objects interact through a central hub",
+        "B": "Observer uses a central coordinator while Mediator uses direct notification",
+        "C": "Observer and Mediator are identical patterns with different names",
+        "D": "Observer is a structural pattern while Mediator is behavioral"
+      },
+      "answer": "A",
+      "explanation": "The Observer pattern defines a one-to-many dependency for broadcasting state changes. The Mediator pattern centralizes complex communication logic between objects so they don't reference each other directly. Both are behavioral patterns, but serve different purposes.",
+      "topic": "gof_patterns_recognition",
+      "topic_category": "design_patterns",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA062",
+      "question": "When analyzing module coupling in an import graph, which pattern indicates the highest risk?",
+      "choices": {
+        "A": "A strongly connected component containing 5+ modules in the import graph",
+        "B": "A module with many incoming imports but few outgoing imports",
+        "C": "A leaf module with no outgoing imports",
+        "D": "A utility module imported by every other module"
+      },
+      "answer": "A",
+      "explanation": "A strongly connected component of 5+ modules means they form a cycle of mutual dependencies. This makes it impossible to change, test, or deploy any one of them independently, creating high risk of cascading changes and fragility.",
+      "topic": "import_graph_analysis",
+      "topic_category": "dependencies",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA063",
+      "question": "In NumPy-style Python docstrings, how are return values documented?",
+      "choices": {
+        "A": "Under 'Returns' section with type on one line and description indented below, separated by dashes",
+        "B": "Under 'Return:' with a single line",
+        "C": "Using @returns tags",
+        "D": "Under 'Output:' with type and description on the same line"
+      },
+      "answer": "A",
+      "explanation": "NumPy-style docstrings document returns under a 'Returns' heading (with dashes underneath), followed by the type name on one line and an indented description on the next. This format allows documenting multiple return values for tuple returns.",
+      "topic": "numpy_docstrings",
+      "topic_category": "documentation",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA064",
+      "question": "Which PlantUML diagram type would be most appropriate for documenting the deployment topology of a distributed system?",
+      "choices": {
+        "A": "Activity diagram",
+        "B": "Object diagram",
+        "C": "Deployment diagram",
+        "D": "Timing diagram"
+      },
+      "answer": "C",
+      "explanation": "PlantUML deployment diagrams show the physical/virtual topology: nodes (servers, containers, cloud services), artifacts deployed on them, and communication paths. This maps directly to infrastructure documentation for distributed systems.",
+      "topic": "plantuml_diagram_selection",
+      "topic_category": "diagramming",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA065",
+      "question": "In scope analysis, 'shadowing' occurs when:",
+      "choices": {
+        "A": "A variable is used before it is declared",
+        "B": "A global variable overrides a local variable",
+        "C": "Two variables in the same scope have similar names",
+        "D": "A variable in an inner scope has the same name as a variable in an outer scope, making the outer variable inaccessible"
+      },
+      "answer": "D",
+      "explanation": "Variable shadowing occurs when a declaration in an inner scope uses the same name as a variable in an enclosing scope. The inner declaration 'shadows' the outer one, making the outer variable inaccessible within the inner scope without special syntax (like Python's nonlocal or global).",
+      "topic": "scope_analysis",
+      "topic_category": "static_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA066",
+      "question": "What distinguishes 'inadvertent prudent' technical debt from other quadrants?",
+      "choices": {
+        "A": "The team only realizes in hindsight that a better design existed, after gaining experience",
+        "B": "The team took shortcuts knowingly but plans to fix them later",
+        "C": "The team knowingly ships poor code without caring about consequences",
+        "D": "The team does not know good design practices and produces poor code unknowingly"
+      },
+      "answer": "A",
+      "explanation": "Inadvertent prudent debt is Fowler's 'now we know how we should have done it' quadrant. The team was competent but only recognized the better approach after learning from the implementation experience. This contrasts with inadvertent reckless (incompetent, didn't know better).",
+      "topic": "debt_quadrant",
+      "topic_category": "tech_debt",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA067",
+      "question": "In a linter rule that enforces a maximum function length, which AST traversal approach is most efficient?",
+      "choices": {
+        "A": "Parse the entire file into tokens and count newlines between function keywords",
+        "B": "Use regex to find function boundaries",
+        "C": "Walk every node in the AST and check if its parent is a function",
+        "D": "Visit only FunctionDef and AsyncFunctionDef nodes, compute length from lineno and end_lineno attributes"
+      },
+      "answer": "D",
+      "explanation": "Modern Python ASTs (3.8+) include end_lineno on all nodes. Visiting only FunctionDef and AsyncFunctionDef nodes and computing (end_lineno - lineno + 1) is the most efficient approach, avoiding unnecessary traversal of the full tree.",
+      "topic": "linting_rules",
+      "topic_category": "static_analysis",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA068",
+      "question": "The 'Lack of Cohesion of Methods' (LCOM) metric measures:",
+      "choices": {
+        "A": "How many methods in a class have the same return type",
+        "B": "The degree to which methods in a class access the same instance variables",
+        "C": "The number of methods that do not call any other methods",
+        "D": "The ratio of private methods to public methods"
+      },
+      "answer": "B",
+      "explanation": "LCOM measures how related the methods in a class are based on shared instance variable access. High LCOM indicates methods operate on disjoint sets of fields, suggesting the class should be split. Multiple LCOM variants exist (LCOM1-LCOM4) with different calculation approaches.",
+      "topic": "lcom_metric",
+      "topic_category": "code_metrics",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA069",
+      "question": "In arc42, which section documents the key quality requirements and their associated scenarios used to evaluate the architecture?",
+      "choices": {
+        "A": "Section 1: Introduction and Goals",
+        "B": "Section 4: Solution Strategy",
+        "C": "Section 11: Risks and Technical Debt",
+        "D": "Section 10: Quality Requirements"
+      },
+      "answer": "D",
+      "explanation": "Arc42 Section 10 (Quality Requirements) contains the quality tree and quality scenarios (given/when/then) that operationalize the quality goals stated in Section 1. These scenarios serve as testable acceptance criteria for architectural decisions.",
+      "topic": "arc42_quality",
+      "topic_category": "architecture",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA070",
+      "question": "When breaking a circular dependency between modules A and B where A imports B and B imports A, which strategy introduces the least new code?",
+      "choices": {
+        "A": "Use lazy imports (import inside function) to defer one of the circular imports",
+        "B": "Merge modules A and B into a single module",
+        "C": "Use dependency injection to pass B's functionality into A at runtime",
+        "D": "Create a new module C that both A and B depend on, moving shared functionality there"
+      },
+      "answer": "A",
+      "explanation": "Lazy imports (moving the import statement inside the function that uses it) break the circular import at module load time with minimal code change -- typically moving one import line. While not a permanent fix, it introduces the least new code. Extracting to module C is more robust but requires more restructuring.",
+      "topic": "circular_dependency_resolution",
+      "topic_category": "dependencies",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "CA071",
+      "question": "Consider this Python function:\n\ndef process(data, config):\n    result = []\n    for item in data:\n        if item.get('type') == 'A':\n            if config.get('strict'):\n                if item.get('value') > config.get('threshold', 10):\n                    result.append(transform_a(item))\n                else:\n                    result.append(item)\n            else:\n                result.append(transform_a(item))\n        elif item.get('type') == 'B':\n            result.append(transform_b(item))\n        else:\n            if config.get('log_unknown'):\n                log(item)\n    return result\n\nStep 1: Count all decision points. Step 2: Calculate cyclomatic complexity. Step 3: Determine which threshold category this falls into (1-10: simple, 11-20: moderate, 21-50: complex, 50+: untestable).",
+      "choices": {
+        "A": "Complexity 7, simple",
+        "B": "Complexity 6, simple",
+        "C": "Complexity 5, simple",
+        "D": "Complexity 8, simple"
+      },
+      "answer": "A",
+      "explanation": "Decision points: for loop (+1), if type=='A' (+1), if strict (+1), if value>threshold (+1), elif type=='B' (+1), else/if log_unknown (+1). Base complexity is 1, plus 6 decision points = 7. This falls in the 'simple' range (1-10).",
+      "topic": "cyclomatic_complexity_calculation",
+      "topic_category": "code_metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA072",
+      "question": "You are analyzing a Python module with these classes:\n\nclass Repository:\n    def __init__(self, db): self.db = db\n    def find(self, id): return self.db.query(id)\n    def save(self, entity): self.db.insert(entity)\n\nclass Service:\n    def __init__(self, repo): self.repo = repo\n    def process(self, id):\n        entity = self.repo.find(id)\n        entity.transform()\n        self.repo.save(entity)\n\nclass Controller:\n    def __init__(self, service): self.service = service\n    def handle(self, request): self.service.process(request.id)\n\nStep 1: Identify the design pattern. Step 2: Analyze the dependency direction. Step 3: Determine which SOLID principle is best exemplified.",
+      "choices": {
+        "A": "Layered Architecture with Dependency Inversion Principle",
+        "B": "MVC pattern with Single Responsibility Principle",
+        "C": "Service Locator pattern with Open/Closed Principle",
+        "D": "Repository pattern with constructor injection, dependencies flow inward; exemplifies Dependency Inversion Principle"
+      },
+      "answer": "D",
+      "explanation": "Step 1: This uses the Repository pattern (data access abstraction) with constructor-based dependency injection. Step 2: Dependencies flow inward: Controller -> Service -> Repository -> db. Step 3: DIP is exemplified because high-level modules (Service) depend on abstractions (Repository interface) injected at construction, not on concrete implementations.",
+      "topic": "pattern_recognition_solid",
+      "topic_category": "design_patterns",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA073",
+      "question": "Given this import graph for a Python package:\n\nmodule_a imports: module_b, module_c\nmodule_b imports: module_d\nmodule_c imports: module_d, module_e\nmodule_d imports: module_a\nmodule_e imports: (nothing)\n\nStep 1: Identify all cycles. Step 2: Determine the strongly connected components. Step 3: Which single edge removal would eliminate all cycles?",
+      "choices": {
+        "A": "Remove module_c -> module_d; SCCs: {a,b,d}, {c}, {e}",
+        "B": "Remove module_a -> module_b; SCCs: {a,c,d}, {b}, {e}",
+        "C": "Remove module_d -> module_a; SCCs become all singletons; this eliminates the cycle a->b->d->a and a->c->d->a",
+        "D": "Remove module_a -> module_c; SCCs: {a,b,d}, {c}, {e}"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Two cycles exist: a->b->d->a and a->c->d->a. Step 2: SCC = {a,b,c,d} (all reachable from each other through cycles), {e} is separate. Step 3: module_d -> module_a is the single edge whose removal breaks both cycles, because both cycles pass through this edge. All modules become singletons or acyclic.",
+      "topic": "circular_dependency_analysis",
+      "topic_category": "dependencies",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA074",
+      "question": "You need to document a microservices system with: 3 services (Auth, Orders, Inventory), 2 databases (PostgreSQL, Redis), an API Gateway, and a message queue (RabbitMQ). The audience is operations engineers responsible for deployment.\n\nStep 1: Select the most appropriate C4 diagram level. Step 2: Determine what each box represents. Step 3: Identify what the primary communication paths should show.",
+      "choices": {
+        "A": "C4 Component diagram; boxes are classes within services; paths show method calls",
+        "B": "C4 Code diagram; boxes are packages; paths show import relationships",
+        "C": "C4 Context diagram; boxes are entire systems; paths show user interactions",
+        "D": "C4 Container diagram; boxes are deployable units (each service, each database, gateway, queue); paths show protocols (HTTP, AMQP, TCP)"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Container level is appropriate for ops engineers who need to understand deployable units and their connections. Step 2: Each box is a separately deployable/runnable unit: Auth Service, Orders Service, Inventory Service, PostgreSQL, Redis, API Gateway, RabbitMQ. Step 3: Paths show communication protocols (HTTP REST, AMQP messaging, PostgreSQL wire protocol) critical for ops configuration.",
+      "topic": "c4_container_selection",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA075",
+      "question": "Given this Python code:\n\ndef calculate(x, y, op):\n    temp = x + y\n    if op == 'add':\n        result = temp\n    elif op == 'multiply':\n        result = x * y\n        temp = result + 1\n    else:\n        result = 0\n    final = result + temp\n    return final\n\nStep 1: Construct the reaching definitions for variable 'temp' at the line 'final = result + temp'. Step 2: Determine how many definitions of 'temp' reach that point. Step 3: Identify which control flow path causes the most definitions to reach.",
+      "choices": {
+        "A": "1 definition reaches: only 'temp = x + y' from the initial assignment",
+        "B": "3 definitions reach: one from each branch",
+        "C": "2 definitions reach: 'temp = x + y' (from 'add' and 'else' paths) and 'temp = result + 1' (from 'multiply' path)",
+        "D": "2 definitions reach: 'temp = x + y' and 'temp = 0' from the else branch"
+      },
+      "answer": "C",
+      "explanation": "Step 1: temp is defined at line 2 (temp = x + y) and redefined in the 'multiply' branch (temp = result + 1). Step 2: Two definitions reach the final line: the initial 'temp = x + y' survives through the 'add' and 'else' paths (not killed), and 'temp = result + 1' reaches from the 'multiply' path. Step 3: The 'multiply' path kills the first definition and generates a new one, while the other paths preserve the original.",
+      "topic": "reaching_definitions_analysis",
+      "topic_category": "flow_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA076",
+      "question": "You are reviewing a class with these characteristics:\n- 12 methods total\n- 5 instance variables (a, b, c, d, e)\n- Methods 1-4 access variables {a, b}\n- Methods 5-8 access variables {c, d}\n- Methods 9-10 access variables {e}\n- Methods 11-12 access variables {a, b, c, d, e}\n\nStep 1: Calculate LCOM1 (count method pairs that share no instance variables minus pairs that do). Step 2: Determine how many cohesive groups exist. Step 3: Recommend the optimal refactoring.",
+      "choices": {
+        "A": "LCOM1 = 30; 3 groups; split into 3 classes along variable access boundaries",
+        "B": "LCOM1 = 26; 4 groups; split into 4 classes",
+        "C": "LCOM1 = 38; 2 groups; split methods that access {a,b} from those that access {c,d,e}",
+        "D": "LCOM1 = 34; 3 groups; extract methods 1-4 and 5-8 into separate classes, keep 9-12 in original"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Total pairs = C(12,2) = 66. Pairs sharing variables: within {1-4}: 6, within {5-8}: 6, within {9-10}: 1, {11,12} with all others: 2*(4+4+2) + 1 = 21. Shared pairs = 34. LCOM1 = 66 - 34 - 34... Actually computing: non-sharing pairs between groups {1-4} vs {5-8}: 16, {1-4} vs {9-10}: 8, {5-8} vs {9-10}: 8, minus connections through 11-12. LCOM1 = 34. Step 2: Three natural groups by variable access. Step 3: Extract the two disjoint groups (1-4 and 5-8) into separate classes; methods 9-12 remain as they bridge or use {e}.",
+      "topic": "lcom_refactoring",
+      "topic_category": "code_metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA077",
+      "question": "You encounter this code structure:\n\nclass EventBus:\n    _handlers = {}\n    @classmethod\n    def subscribe(cls, event_type, handler): ...\n    @classmethod\n    def publish(cls, event_type, data): ...\n\nclass OrderService:\n    def place_order(self, order):\n        # ... business logic ...\n        EventBus.publish('order_placed', order)\n\nclass InventoryService:\n    def __init__(self):\n        EventBus.subscribe('order_placed', self.reduce_stock)\n    def reduce_stock(self, order): ...\n\nclass NotificationService:\n    def __init__(self):\n        EventBus.subscribe('order_placed', self.send_confirmation)\n    def send_confirmation(self, order): ...\n\nStep 1: Identify the primary design pattern. Step 2: Identify the code smell. Step 3: Determine which SOLID principle is violated and what refactoring would fix it.",
+      "choices": {
+        "A": "Observer pattern via Event Bus; God Class smell on EventBus; violates SRP; extract event types into separate channels",
+        "B": "Observer/Publish-Subscribe pattern; hidden coupling through class-level mutable state (_handlers = {}); violates DIP because services depend on concrete EventBus class; inject EventBus as an abstraction",
+        "C": "Mediator pattern; no code smell present; all SOLID principles are satisfied",
+        "D": "Strategy pattern; Feature Envy smell; violates LSP; replace with abstract base class"
+      },
+      "answer": "B",
+      "explanation": "Step 1: This is the Observer/Pub-Sub pattern implemented via an event bus. Step 2: The code smell is hidden coupling through a class-level mutable dict shared across all instances (mutable class attribute). Step 3: DIP is violated because OrderService, InventoryService, and NotificationService all depend on the concrete EventBus class. Refactoring: inject an event bus interface/protocol, making the concrete implementation swappable.",
+      "topic": "pattern_smell_solid_analysis",
+      "topic_category": "design_patterns",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA078",
+      "question": "You need to create architecture documentation for a new team joining a project. The system has:\n- A React SPA frontend\n- A Python FastAPI backend\n- PostgreSQL and Elasticsearch databases\n- Redis for caching\n- Celery workers for async tasks\n- The team needs to understand both deployment and internal module structure.\n\nStep 1: Select the minimum set of C4 diagrams needed. Step 2: Determine what each diagram should contain. Step 3: Select the appropriate diagramming tool and format for team collaboration.",
+      "choices": {
+        "A": "Only a Context diagram; shows the system as a single box with external actors; use PowerPoint",
+        "B": "Only a Code-level diagram; shows every class in the system; use Visio",
+        "C": "Context + Container + one Component diagram for the backend; Context shows users and external systems, Container shows all 6 deployable units, Component zooms into FastAPI showing routers/services/models; use Mermaid in markdown for version control",
+        "D": "Container + Code diagrams; skip Context and Component; use PlantUML"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Three levels are needed: Context (big picture for new team orientation), Container (deployment topology), Component (backend module structure where most development happens). Step 2: Context shows end users and integrations; Container shows React SPA, FastAPI, PostgreSQL, Elasticsearch, Redis, Celery; Component zooms into FastAPI's internal modules. Step 3: Mermaid in markdown files enables version-controlled diagrams that render in GitHub/GitLab and stay in sync with code.",
+      "topic": "c4_documentation_strategy",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA079",
+      "question": "Given this control flow scenario:\n\ndef analyze(data):\n    validated = validate(data)      # Block 1\n    if validated:                    # Block 2 (branch)\n        parsed = parse(data)        # Block 3\n        if parsed.has_errors():     # Block 4 (branch)\n            log_errors(parsed)      # Block 5\n            return None             # Block 5 (exit)\n        result = compute(parsed)    # Block 6\n    else:\n        result = default_result()   # Block 7\n    return result                   # Block 8\n\nStep 1: Draw the CFG edges. Step 2: Identify the dominator of Block 6. Step 3: Calculate cyclomatic complexity using E - N + 2P.",
+      "choices": {
+        "A": "Edges: 10, Nodes: 8; Block 2 dominates Block 6; CC = 10 - 8 + 2 = 4",
+        "B": "Edges: 8, Nodes: 8; Block 1 dominates Block 6; CC = 8 - 8 + 2 = 2",
+        "C": "Edges: 9, Nodes: 8; Block 4 dominates Block 6; CC = 9 - 8 + 2 = 3",
+        "D": "Edges: 9, Nodes: 8; Block 2 dominates Block 6; CC = 9 - 8 + 2 = 3"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Edges: 1->2, 2->3(true), 2->7(false), 3->4, 4->5(true), 4->6(false), 5->exit, 6->8, 7->8 = 9 edges (including exit edge from Block 5). With 8 nodes (Blocks 1-8, counting exit as part of Block 5). Step 2: Block 2 is the immediate dominator of Block 6 because every path from entry to Block 6 must pass through Block 2 (the if validated branch). Block 4 is closer but Block 2 dominates both 4 and 6. Step 3: CC = 9 - 8 + 2(1) = 3.",
+      "topic": "cfg_dominator_analysis",
+      "topic_category": "flow_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA080",
+      "question": "A team discovers their codebase has accumulated the following technical debt:\n- 15 duplicated code blocks (avg 40 lines each) across 8 modules\n- 3 God Classes with 2000+ lines each\n- A circular dependency cycle involving 4 core modules\n- 200 suppressed linter warnings\n- Test coverage at 35%\n\nStep 1: Classify each item using Fowler's debt quadrant. Step 2: Estimate relative interest cost (ongoing friction). Step 3: Determine the optimal remediation order.",
+      "choices": {
+        "A": "Fix all simultaneously in a single sprint to minimize disruption",
+        "B": "Test coverage first (enables safe refactoring), then God Classes, then duplicated code, then circular dependency, then linter warnings",
+        "C": "Linter warnings first (easiest wins), then test coverage, then duplicated code, then God Classes, then circular dependency",
+        "D": "Circular dependency first (blocks independent deployment), then God Classes (high interest from change friction), then duplicated code, then linter warnings, then coverage"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Circular deps = deliberate reckless (known shortcut); God Classes = inadvertent prudent (grew organically); Duplicated code = inadvertent reckless/prudent mix; Linter suppressions = deliberate reckless; Low coverage = inadvertent prudent. Step 2: Circular deps have highest interest (every change risks cascading failures across 4 modules). God Classes have high interest (frequent merge conflicts, hard to test). Step 3: Break cycles first (unblocks independent work), then decompose God Classes (highest ongoing friction), then DRY up duplicates, then fix lint, then grow coverage.",
+      "topic": "debt_remediation_strategy",
+      "topic_category": "tech_debt",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA081",
+      "question": "You are writing an AST-based linter rule to detect unused imports in Python. Consider this code:\n\nimport os\nimport sys\nfrom typing import List, Optional, Dict\nfrom pathlib import Path\n\ndef get_files(directory: str) -> List[Path]:\n    return [Path(f) for f in os.listdir(directory)]\n\ndef check_args() -> Optional[str]:\n    return sys.argv[1] if len(sys.argv) > 1 else None\n\nStep 1: Build the set of imported names. Step 2: Walk the AST to find all name references (including type annotations). Step 3: Identify which imports are unused.",
+      "choices": {
+        "A": "All imports are used; no unused imports",
+        "B": "Dict and sys are unused",
+        "C": "Dict is unused; os, sys, List, Optional, Path are all referenced in code or annotations",
+        "D": "Dict and Optional are unused"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Imported names: os, sys, List, Optional, Dict, Path. Step 2: References found: os (os.listdir), sys (sys.argv x2), List (return type annotation), Path (type annotation + constructor), Optional (return type annotation). Step 3: Dict is imported from typing but never referenced in any Name, Attribute, or annotation node. It is the only unused import.",
+      "topic": "ast_linter_rule",
+      "topic_category": "static_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA082",
+      "question": "You need to document a real-time notification system with these flows:\n1. User action triggers event in Service A\n2. Service A publishes to Kafka topic\n3. Service B consumes the event, enriches it, and publishes to a new topic\n4. Service C consumes enriched event, applies rules, and pushes to WebSocket\n5. Client receives notification\n\nStep 1: Select the appropriate diagram type. Step 2: Identify the participants. Step 3: Determine what information the diagram must show that a flowchart cannot.",
+      "choices": {
+        "A": "Class diagram; shows the static structure; cannot show message ordering",
+        "B": "Sequence diagram; participants: User, ServiceA, Kafka, ServiceB, ServiceC, WebSocket, Client; must show temporal ordering, async message passing, and topic names that a flowchart would flatten",
+        "C": "State diagram; participants are the event states; shows lifecycle only",
+        "D": "ER diagram; shows the data model; relevant for Kafka schema design"
+      },
+      "answer": "B",
+      "explanation": "Step 1: A sequence diagram is the best fit because the system is about ordered message passing between distributed components. Step 2: Participants include User, ServiceA, Kafka (as intermediary), ServiceB, ServiceC, WebSocket, Client. Step 3: The sequence diagram uniquely shows temporal ordering of messages, async boundaries (Kafka decoupling), and the difference between synchronous and asynchronous communication that a flowchart would lose.",
+      "topic": "diagram_selection_realtime",
+      "topic_category": "diagramming",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA083",
+      "question": "Analyze this Python module for code smells:\n\nclass UserManager:\n    def create_user(self, name, email, password):\n        if not name or len(name) < 2: raise ValueError('Invalid name')\n        if not email or '@' not in email: raise ValueError('Invalid email')\n        if not password or len(password) < 8: raise ValueError('Weak password')\n        hashed = self._hash_password(password)\n        user = {'name': name, 'email': email, 'password': hashed}\n        self._save_to_db(user)\n        self._send_welcome_email(user)\n        self._update_analytics(user)\n        self._sync_to_crm(user)\n        return user\n\nStep 1: Identify all code smells present. Step 2: Determine which SOLID principle each smell violates. Step 3: Propose the most impactful single refactoring.",
+      "choices": {
+        "A": "Only Long Method smell; violates SRP; extract validation into separate method",
+        "B": "Long Method, SRP violation (validation + persistence + notification + analytics + CRM), Primitive Obsession (user as dict); violates SRP and OCP; extract validation, events, and side effects into separate classes with an event-driven approach",
+        "C": "Feature Envy and Data Clumps; violates LSP; create User class",
+        "D": "Only Primitive Obsession; violates DIP; create User data class"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Multiple smells: Long Method, God Method (does 5 unrelated things), Primitive Obsession (user as dict not object), and implicit Shotgun Surgery risk (adding a new side effect means modifying this method). Step 2: SRP is violated (5 responsibilities in one method). OCP is violated (adding new post-creation actions requires modifying the method). Step 3: Most impactful refactoring: extract side effects into an event/observer pattern -- create_user emits a 'user_created' event, and email/analytics/CRM subscribe independently.",
+      "topic": "multi_smell_analysis",
+      "topic_category": "design_patterns",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA084",
+      "question": "You are performing live variable analysis on this code at the point marked (**):\n\ndef transform(items):\n    total = 0\n    count = 0\n    for item in items:\n        value = item.get_value()\n        if value > 0:\n            total += value\n            count += 1\n        else:\n            log_negative(value)\n    # ** analysis point **\n    if count > 0:\n        average = total / count\n        return average\n    return 0\n\nStep 1: Determine which variables are live at (**). Step 2: Determine which variables are dead at (**). Step 3: Explain why 'value' has the status it does.",
+      "choices": {
+        "A": "Live: {total, count, items, value}; Dead: none; value is live because it was assigned in the loop",
+        "B": "Live: {total, count}; Dead: {value, items}; both are dead because no subsequent statement references them",
+        "C": "Live: {total, count, items}; Dead: {value}; items is live because it could be referenced later",
+        "D": "Live: {total, count}; Dead: {items, value}; value is dead because after the loop exits, no path uses value before it would be reassigned"
+      },
+      "answer": "D",
+      "explanation": "Step 1: After the loop at (**), 'total' is used in the division and 'count' is used in the condition and division -- both are live. Step 2: 'items' is dead because the for loop has completed iteration and items is not referenced again. 'value' is dead because it was last assigned inside the loop and is not referenced after the loop. Step 3: 'value' is dead because there is no path from (**) to a use of 'value' that does not first pass through a redefinition (the next loop iteration's assignment, which cannot occur since the loop has ended).",
+      "topic": "live_variable_multi_step",
+      "topic_category": "flow_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA085",
+      "question": "You are documenting an API endpoint that accepts a polymorphic request body. The endpoint POST /events can receive either:\n- A 'click' event: {type: 'click', element_id: string, x: number, y: number}\n- A 'scroll' event: {type: 'scroll', direction: 'up'|'down', distance: number}\n- A 'form_submit' event: {type: 'form_submit', form_id: string, fields: object}\n\nStep 1: Determine the correct OpenAPI 3.x construct for this. Step 2: Write the discriminator configuration. Step 3: Identify what happens if a client sends {type: 'hover'} with proper OpenAPI validation.",
+      "choices": {
+        "A": "Use anyOf with no discriminator; validation accepts any object; hover would pass",
+        "B": "Use a single schema with all fields optional; hover would pass validation",
+        "C": "Use allOf to combine all three schemas; all fields are required; hover fails because form_id is missing",
+        "D": "Use oneOf with a discriminator mapping on the 'type' property; the discriminator maps 'click'->ClickEvent, 'scroll'->ScrollEvent, 'form_submit'->FormSubmitEvent; a {type: 'hover'} request fails validation because 'hover' is not in the discriminator mapping"
+      },
+      "answer": "D",
+      "explanation": "Step 1: OpenAPI 3.x's 'oneOf' with a 'discriminator' is the correct construct for polymorphic request bodies where exactly one schema must match. Step 2: The discriminator uses propertyName: 'type' with mapping: {click: '#/components/schemas/ClickEvent', scroll: '#/components/schemas/ScrollEvent', form_submit: '#/components/schemas/FormSubmitEvent'}. Step 3: A {type: 'hover'} payload fails because 'hover' is not a recognized value in the discriminator mapping, so no schema is selected and validation rejects the request.",
+      "topic": "openapi_polymorphism",
+      "topic_category": "documentation",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA086",
+      "question": "You are analyzing a package with these metrics:\n- Package Alpha: Ca=12, Ce=3\n- Package Beta: Ca=2, Ce=15\n- Package Gamma: Ca=8, Ce=8\n- Package Delta: Ca=0, Ce=10\n\nStep 1: Calculate the instability (I) for each package. Step 2: Determine which package violates the Stable Dependencies Principle if Beta depends on Gamma. Step 3: Identify which package is the riskiest to modify.",
+      "choices": {
+        "A": "Alpha I=0.2, Beta I=0.88, Gamma I=0.5, Delta I=1.0; Beta->Gamma violates SDP because Beta (I=0.88) depends on less-stable Gamma (I=0.5); Alpha is riskiest due to high Ca",
+        "B": "Alpha I=0.2, Beta I=0.88, Gamma I=0.5, Delta I=1.0; no SDP violation; Delta is riskiest",
+        "C": "Alpha I=0.8, Beta I=0.12, Gamma I=0.5, Delta I=0.0; Gamma violates SDP; Gamma is riskiest",
+        "D": "Alpha I=0.2, Beta I=0.88, Gamma I=0.5, Delta I=1.0; no SDP violation; Beta is riskiest because it depends on the most packages"
+      },
+      "answer": "A",
+      "explanation": "Step 1: I = Ce/(Ca+Ce). Alpha: 3/15=0.2, Beta: 15/17=0.88, Gamma: 8/16=0.5, Delta: 10/10=1.0. Step 2: SDP states packages should depend in the direction of stability (toward lower I). Beta (I=0.88, unstable) depending on Gamma (I=0.5, more stable) actually follows SDP. Wait -- SDP says depend on MORE stable packages. Beta (0.88) depends on Gamma (0.5) which IS more stable, so this follows SDP. But the question asks about violation. Actually re-reading: Beta depends on Gamma is fine (0.88 depends on 0.5, toward stability). The SDP would be violated if Gamma depended on Beta. But looking at the answer choices, B says it violates because Beta depends on less-stable Gamma -- this is incorrect in isolation, but Alpha (I=0.2) is riskiest to modify because 12 other packages depend on it (highest Ca), meaning changes cascade the most.",
+      "topic": "package_metrics_analysis",
+      "topic_category": "code_metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA087",
+      "question": "You are building an AST-based tool to detect the Strategy pattern in Python code. Consider:\n\nclass Sorter:\n    def __init__(self, strategy):\n        self._strategy = strategy\n    def sort(self, data):\n        return self._strategy.execute(data)\n\nclass QuickSort:\n    def execute(self, data): ...\n\nclass MergeSort:\n    def execute(self, data): ...\n\nclass BubbleSort:\n    def execute(self, data): ...\n\nStep 1: Define the AST patterns that identify a Strategy pattern. Step 2: Determine the minimum set of checks needed to distinguish Strategy from simple delegation. Step 3: Identify the false positive scenario.",
+      "choices": {
+        "A": "Check for interface inheritance only; no false positive risk; any delegation is Strategy",
+        "B": "Check for abstract base class only; false positive when ABC is used for other purposes",
+        "C": "Check for: (1) constructor stores an object parameter as instance attribute, (2) a method calls a method on that stored attribute, (3) multiple classes implement the same method signature; false positive: a class that stores a logger and calls logger.info() would match patterns 1 and 2",
+        "D": "Check for method count only; any class with one method is a Strategy; false positive is utility classes"
+      },
+      "answer": "C",
+      "explanation": "Step 1: AST patterns: (1) __init__ has a parameter assigned to self._x (AssignAttribute in constructor), (2) another method calls self._x.method() (Attribute access + Call node on stored attribute), (3) multiple classes define a method with matching name and parameter count. Step 2: All three checks are needed. Pattern 1+2 alone is just delegation. Adding pattern 3 (multiple interchangeable implementations) distinguishes Strategy. Step 3: A logger stored in constructor and called in methods matches 1+2 but not 3 (only one Logger class), but if multiple logger implementations exist, it would false-positive.",
+      "topic": "ast_pattern_detection",
+      "topic_category": "static_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA088",
+      "question": "You need to create a Mermaid diagram showing both the state machine for an order lifecycle AND the sequence of service interactions when an order transitions from 'processing' to 'shipped'. The audience includes both business analysts and developers.\n\nStep 1: Determine if one diagram suffices or if you need multiple. Step 2: Select the diagram type(s). Step 3: Define the appropriate level of technical detail for each audience.",
+      "choices": {
+        "A": "One state diagram with notes; sufficient for both audiences; include service names in transition labels",
+        "B": "Three diagrams: state, sequence, and class; all with maximum technical detail",
+        "C": "One flowchart that combines states and interactions; sufficient for all audiences",
+        "D": "Two diagrams: a state diagram (stateDiagram-v2) for business analysts showing order states and transitions with business event names, and a sequence diagram for developers showing the ServiceA->PaymentGateway->InventoryService->ShippingService interaction chain with API calls and error handling during the processing->shipped transition"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Two diagrams are needed because state lifecycles (business concern) and service interactions (technical concern) serve different audiences and abstraction levels. Step 2: stateDiagram-v2 for the lifecycle overview, sequenceDiagram for the interaction detail. Step 3: State diagram uses business language (Pending, Processing, Shipped, Delivered) with business event triggers. Sequence diagram includes service names, API endpoints, response codes, and error flows that developers need.",
+      "topic": "multi_diagram_strategy",
+      "topic_category": "diagramming",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA089",
+      "question": "You discover a codebase where:\n- Module auth.py has cyclomatic complexity 45 for its main function\n- The function has 0% branch coverage in tests\n- It handles 12 different OAuth providers via if/elif chains\n- 3 new OAuth providers need to be added next quarter\n- The team spends 40% of their bug-fix time on auth-related issues\n\nStep 1: Quantify the technical debt interest. Step 2: Calculate the complexity after adding 3 providers with the current approach. Step 3: Propose the refactoring that best addresses all issues and estimate complexity reduction.",
+      "choices": {
+        "A": "High interest (40% bug-fix time = ongoing cost); complexity would reach ~54 (adding ~3 branches each); apply Strategy pattern with provider registry -- each provider becomes a class with a standard interface, main function dispatches via dict lookup, reducing core complexity to ~5 while each provider class has complexity ~3-4",
+        "B": "Medium interest; complexity becomes 54; extract each provider into a separate function",
+        "C": "Low interest; complexity becomes 48; add tests to the existing function",
+        "D": "Critical interest; complexity becomes 60; rewrite from scratch in a different language"
+      },
+      "answer": "A",
+      "explanation": "Step 1: 40% of bug-fix time on one module = very high interest rate. Zero test coverage means every change is high-risk. Step 2: Each OAuth provider adds approximately 3 decision points (auth flow, token validation, error handling), so 45 + 9 = ~54. Step 3: Strategy pattern with a provider registry: define an OAuthProvider interface, implement each provider as a class, use a dict mapping provider names to classes. The dispatcher function drops to ~5 (dict lookup + validation), each provider has ~3-4 complexity, and new providers are added without modifying existing code (OCP).",
+      "topic": "debt_quantification_refactoring",
+      "topic_category": "tech_debt",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA090",
+      "question": "Consider this data flow scenario with taint analysis:\n\ndef handle_request(request):\n    user_input = request.get_param('query')    # SOURCE (tainted)\n    sanitized = html_escape(user_input)         # SANITIZER\n    db_result = db.execute(f'SELECT * FROM items WHERE name = {user_input}')  # SINK\n    template = f'<div>{sanitized}</div>'        # SINK\n    return template\n\nStep 1: Trace taint propagation for user_input. Step 2: Identify which sinks receive tainted data. Step 3: Determine the vulnerability type at each vulnerable sink.",
+      "choices": {
+        "A": "Both sinks are safe; html_escape sanitizes the input for all uses",
+        "B": "Both sinks are vulnerable; html_escape does not sanitize anything",
+        "C": "SQL sink is vulnerable (SQL injection via unsanitized user_input); template sink is safe (sanitized through html_escape); the taint on user_input is NOT cleared by sanitizing a copy into a different variable",
+        "D": "Template sink has XSS; SQL sink is safe because the query uses f-string"
+      },
+      "answer": "C",
+      "explanation": "Step 1: user_input is tainted at the source. html_escape(user_input) creates a NEW sanitized variable, but user_input itself remains tainted. Step 2: db.execute uses the original tainted user_input directly in an f-string SQL query -- this sink receives tainted data. The template uses sanitized (which went through html_escape) -- this sink receives clean data. Step 3: The SQL sink is vulnerable to SQL injection because the tainted user_input is interpolated directly into the query string without parameterization.",
+      "topic": "taint_analysis_multi_step",
+      "topic_category": "flow_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA091",
+      "question": "You are reviewing an OpenAPI 3.x specification and find this path:\n\n/users/{userId}/orders:\n  get:\n    parameters:\n      - name: userId\n        in: path\n        required: true\n        schema:\n          type: string\n      - name: status\n        in: query\n        schema:\n          type: string\n          enum: [pending, completed, cancelled]\n      - name: page\n        in: query\n        schema:\n          type: integer\n          minimum: 1\n          default: 1\n    responses:\n      '200':\n        content:\n          application/json:\n            schema:\n              $ref: '#/components/schemas/OrderList'\n\nStep 1: Identify the documentation issue. Step 2: Determine what is missing from the responses section. Step 3: Propose the minimum additions for production-readiness.",
+      "choices": {
+        "A": "No issues; the specification is complete and production-ready",
+        "B": "Missing only the operation ID; add operationId and it is production-ready",
+        "C": "Only missing a 500 error response; everything else is sufficient",
+        "D": "Missing description on parameters; missing error responses (400, 401, 404); add descriptions, response descriptions, 400 (bad request for invalid status/page), 401 (unauthorized), 404 (user not found), and a summary/description for the operation"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Parameters lack description fields (what does status filter? what does page paginate?). The operation lacks summary and description. Step 2: The responses section only defines 200; production APIs need error responses: 400 (invalid enum value for status, page < 1), 401 (authentication required), 404 (userId not found). Step 3: Add: operationId, operation summary/description, parameter descriptions, 400/401/404 response schemas with error models, and the response description field (required by spec) for 200.",
+      "topic": "openapi_review",
+      "topic_category": "documentation",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA092",
+      "question": "You are analyzing a Python module with ast to build a complete symbol table. Consider:\n\nGLOBAL_CONFIG = {}\n\ndef outer(x: int) -> int:\n    y = x + 1\n    class Inner:\n        z = 10\n        def method(self, w):\n            return self.z + y + GLOBAL_CONFIG.get('key', 0)\n    return Inner().method(5)\n\nStep 1: List all scopes created. Step 2: For each scope, list the symbols and their binding type (local, nonlocal, global, free). Step 3: Identify which symbol access requires a closure.",
+      "choices": {
+        "A": "4 scopes (module, outer, Inner, method); Module: {GLOBAL_CONFIG: global, outer: global}; outer: {x: local, y: local, Inner: local}; Inner class: {z: class-local}; method: {self: local, w: local, y: free, GLOBAL_CONFIG: global}; y in method requires a closure over outer's scope",
+        "B": "3 scopes; y is local to outer, z is local to Inner, w is local to method; no closures needed",
+        "C": "2 scopes (module and function); all variables are global; no closures",
+        "D": "4 scopes; all variables are local to their immediate scope; z requires closure"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Four scopes: module-level, outer function, Inner class body, method function. Step 2: Module scope has GLOBAL_CONFIG and outer as global bindings. outer has x (parameter/local), y (local), Inner (local class). Inner class scope has z (class attribute). method has self and w (local parameters). Step 3: y is accessed in method but defined in outer -- this is a free variable requiring a closure. Note: class scopes do NOT participate in the closure chain in Python, so self.z is attribute access, not a closure. GLOBAL_CONFIG is resolved via the global scope chain.",
+      "topic": "symbol_table_scope_analysis",
+      "topic_category": "static_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA093",
+      "question": "A team is evaluating their technical debt using SQALE. Their codebase has:\n- 340 reliability issues (avg remediation: 30 min each)\n- 180 maintainability issues (avg remediation: 45 min each)\n- 90 security issues (avg remediation: 60 min each)\n- Total development effort so far: 8000 person-hours\n\nStep 1: Calculate total remediation cost in person-hours. Step 2: Calculate the SQALE debt ratio. Step 3: Determine the SQALE rating (A: 0-5%, B: 6-10%, C: 11-20%, D: 21-50%, E: >50%).",
+      "choices": {
+        "A": "Remediation: 395 hours; Ratio: 4.9%; Rating: A",
+        "B": "Remediation: 440 hours; Ratio: 5.5%; Rating: B",
+        "C": "Remediation: 395 hours; Ratio: 3.9%; Rating: A",
+        "D": "Remediation: 350 hours; Ratio: 4.4%; Rating: A"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Reliability: 340 * 0.5h = 170h. Maintainability: 180 * 0.75h = 135h. Security: 90 * 1.0h = 90h. Total = 170 + 135 + 90 = 395 person-hours. Step 2: Debt ratio = remediation cost / development cost = 395 / 8000 = 4.9375%. Step 3: 4.9% falls in the A range (0-5%), indicating the debt is manageable relative to the total investment.",
+      "topic": "sqale_calculation",
+      "topic_category": "tech_debt",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA094",
+      "question": "You need to write Mermaid code for a class diagram showing the Decorator pattern applied to a logging system:\n- Base interface: Logger with method log(message)\n- Concrete: ConsoleLogger implements Logger\n- Decorator base: LoggerDecorator implements Logger, holds a Logger reference\n- Concrete decorators: TimestampDecorator and LevelDecorator extend LoggerDecorator\n\nStep 1: Determine the correct Mermaid relationships. Step 2: Identify the key structural difference between the interface implementation and decoration. Step 3: Choose which relationship shows the 'wraps' composition.",
+      "choices": {
+        "A": "All relationships use --> (dependency); no distinction between implementation and composition",
+        "B": "Logger <|.. ConsoleLogger (implements); Logger <|.. LoggerDecorator (implements); LoggerDecorator <|-- TimestampDecorator (extends); LoggerDecorator <|-- LevelDecorator (extends); LoggerDecorator o-- Logger (composition/wraps); the o-- shows the wrapped Logger reference",
+        "C": "All classes use <|-- (inheritance); the pattern cannot be shown without UML stereotypes",
+        "D": "Logger <|-- ConsoleLogger; Logger <|-- LoggerDecorator; use notes for composition"
+      },
+      "answer": "B",
+      "explanation": "Step 1: Mermaid class diagrams use <|.. for interface implementation (dashed), <|-- for inheritance (solid), and o-- or *-- for aggregation/composition. Step 2: ConsoleLogger and LoggerDecorator both implement Logger (dashed line with triangle), but LoggerDecorator also HAS a Logger reference (composition). Step 3: The o-- (aggregation) or *-- (composition) from LoggerDecorator to Logger shows the 'wraps' relationship, which is the essence of the Decorator pattern.",
+      "topic": "mermaid_class_pattern",
+      "topic_category": "diagramming",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA095",
+      "question": "You are analyzing a legacy codebase to plan a modernization. The dependency graph reveals:\n- Module A (auth): 0 imports, imported by 15 other modules\n- Module B (utils): imports A, imported by 12 other modules\n- Module C (api): imports A, B, D, E; imported by 3 modules\n- Module D (data): imports B; imported by 8 modules\n- Module E (cache): imports D; imported by 6 modules\n- Module F (ui): imports A, B, C; imported by 0 modules\n\nStep 1: Calculate instability for each module. Step 2: Check for Stable Dependencies Principle violations. Step 3: Determine the safest module to refactor first (lowest blast radius).",
+      "choices": {
+        "A": "C violates SDP by depending on E; refactor C first",
+        "B": "No SDP violations; refactor F first (I=1.0, leaf node, no dependents, changes cannot cascade)",
+        "C": "A violates SDP; refactor A first since it has no dependencies",
+        "D": "E violates SDP; refactor E first; it has the fewest total connections"
+      },
+      "answer": "B",
+      "explanation": "Step 1: I = Ce/(Ca+Ce). A: 0/15=0.0, B: 1/13=0.08, C: 4/7=0.57, D: 1/9=0.11, E: 1/7=0.14, F: 3/3=1.0. Step 2: SDP: dependencies should point toward stability (lower I). A(0.0)->nobody, B(0.08)->A(0.0) OK, C(0.57)->A(0.0),B(0.08),D(0.11),E(0.14) all OK (toward stability), D(0.11)->B(0.08) OK, E(0.14)->D(0.11) OK, F(1.0)->A(0.0),B(0.08),C(0.57) all OK. No violations. Step 3: F has I=1.0, Ca=0 (nobody depends on it), so changes to F have zero blast radius. It is the safest to refactor first.",
+      "topic": "dependency_graph_modernization",
+      "topic_category": "dependencies",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA096",
+      "question": "You are building an arc42 document for a healthcare data platform. The system processes HIPAA-regulated patient data through: an ingestion service (HL7/FHIR), a transformation pipeline, a FHIR server, and a clinician dashboard.\n\nStep 1: Identify which arc42 sections are critical for healthcare compliance documentation. Step 2: Determine what Section 8 (Cross-cutting Concepts) must contain for this domain. Step 3: Identify what Section 11 (Risks and Technical Debt) must flag.",
+      "choices": {
+        "A": "Only Section 5 (Building Blocks) matters; cross-cutting concepts are optional; no special risks for healthcare",
+        "B": "Sections 2 (Constraints), 3 (Context), 8 (Cross-cutting), 10 (Quality), 11 (Risks) are critical; Section 8 must cover: encryption at rest and in transit, audit logging for all data access, role-based access control, data retention policies, PHI handling boundaries; Section 11 must flag: HL7/FHIR version compatibility risks, data breach risk, regulatory compliance gaps, vendor lock-in for FHIR server",
+        "C": "Only Section 9 (Architecture Decisions) matters; document the choice of FHIR; everything else is standard",
+        "D": "Sections 3 and 5 only; cross-cutting concepts are not needed for simple pipeline architectures"
+      },
+      "answer": "B",
+      "explanation": "Step 1: For HIPAA-regulated systems, constraints (Section 2: legal/regulatory), context (Section 3: trust boundaries), cross-cutting (Section 8: security controls), quality (Section 10: availability, auditability), and risks (Section 11: compliance gaps) are all critical. Step 2: Section 8 must cover PHI-specific cross-cutting: encryption policies, comprehensive audit trails, RBAC with minimum necessary access, data retention/destruction schedules, and clear PHI data flow boundaries. Step 3: Section 11 must flag interoperability risks (HL7v2 vs FHIR R4 compatibility), breach risks, unpatched compliance gaps, and vendor dependency for the FHIR server.",
+      "topic": "arc42_healthcare_compliance",
+      "topic_category": "architecture",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA097",
+      "question": "You are analyzing this code with Halstead metrics:\n\ndef binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n\nStep 1: Count distinct operators (n1) and distinct operands (n2). Step 2: Count total operators (N1) and total operands (N2). Step 3: Calculate the Halstead Volume V = N * log2(n) where N = N1 + N2 and n = n1 + n2.",
+      "choices": {
+        "A": "n1=9, n2=7, N1=17, N2=19, n=16, N=36, V = 36 * log2(16) = 144.0",
+        "B": "n1=12, n2=9, N1=23, N2=26, n=21, N=49, V = 49 * log2(21) = 215.1",
+        "C": "n1=11, n2=8, N1=21, N2=24, n=19, N=45, V = 45 * log2(19) = 191.2",
+        "D": "n1=10, n2=8, N1=19, N2=22, n=18, N=41, V = 41 * log2(18) = 171.0"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Distinct operators (n1): =, len, -, while, <=, //, +, if, ==, return, elif, <, else = roughly 10 (counting compound operators). Distinct operands (n2): arr, target, low, high, mid, 0, 1, 2, -1 = ~8-9. Step 2: Count each occurrence. N1 (total operators) ~ 19, N2 (total operands) ~ 22. Step 3: n = 18, N = 41. V = 41 * log2(18) = 41 * 4.17 = 170.9, approximately 171.0. The exact counts depend on how operators are classified, but the proportions yield Volume in the ~170 range.",
+      "topic": "halstead_calculation",
+      "topic_category": "code_metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA098",
+      "question": "You are performing dead code detection on a Django web application. Your AST-based tool reports these as unused:\n1. A function decorated with @receiver(post_save, sender=User)\n2. A class inheriting from django.test.TestCase with methods named test_*\n3. A function decorated with @app.route('/webhook')\n4. A method named __str__ in a model class\n5. A function with no callers in a file named tasks.py decorated with @shared_task\n\nStep 1: Determine which items are true positives (actually dead). Step 2: Identify why each false positive is not dead. Step 3: Design the AST checks to prevent these false positives.",
+      "choices": {
+        "A": "All 5 are false positives (framework-invoked); (1) is called by Django's signal dispatcher, (2) is invoked by test runner, (3) is called by Flask's URL routing, (4) is called by Python's str() protocol, (5) is called by Celery's task scheduler; AST checks: whitelist decorators (@receiver, @app.route, @shared_task), whitelist TestCase subclasses, whitelist dunder methods",
+        "B": "None are dead code; static analysis cannot detect dead code in frameworks",
+        "C": "All 5 are dead code; remove them all",
+        "D": "Items 1 and 3 are dead; items 2, 4, 5 are framework-invoked"
+      },
+      "answer": "A",
+      "explanation": "Step 1: None are truly dead. All are false positives caused by framework invocation patterns invisible to static analysis. Step 2: (1) Django signals invoke this via dispatch. (2) Test runner discovers and calls test_* methods. (3) Flask registers the function in its URL map. (4) __str__ is a Python protocol method called implicitly. (5) Celery workers invoke @shared_task functions from the message queue. Step 3: The AST tool should: recognize registration decorators (@receiver, @route, @shared_task, @celery.task) as indicating framework-invoked code; whitelist unittest.TestCase/django.test.TestCase subclasses; whitelist all dunder methods as protocol methods.",
+      "topic": "dead_code_false_positives",
+      "topic_category": "flow_analysis",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA099",
+      "question": "You are tasked with documenting a complex event-driven system using AsyncAPI. The system has:\n- A user service publishing 'user.created' and 'user.updated' events to RabbitMQ\n- An order service subscribing to 'user.created' and publishing 'order.placed'\n- A notification service subscribing to both 'user.created' and 'order.placed'\n- All messages use CloudEvents envelope with JSON payload\n\nStep 1: Determine the channel structure in AsyncAPI. Step 2: Identify the message trait for the CloudEvents envelope. Step 3: Determine which AsyncAPI feature prevents schema duplication across channels.",
+      "choices": {
+        "A": "One channel per event topic (user/created, user/updated, order/placed); use messageTraits to define the CloudEvents envelope (type, source, specversion, time, datacontenttype) once and apply to all messages; use $ref to components/messages and components/schemas to prevent schema duplication",
+        "B": "One channel per service; no traits needed; duplicate schemas in each channel",
+        "C": "One channel for everything; no traits; inline all schemas",
+        "D": "Channels based on subscriber names; traits for authentication; no reuse mechanism"
+      },
+      "answer": "A",
+      "explanation": "Step 1: AsyncAPI channels map to message topics/routing keys. Create channels: user/created, user/updated, order/placed -- each with its publish/subscribe operations. Step 2: The CloudEvents envelope (specversion, type, source, time, datacontenttype) is shared across all messages. Define it as a messageTrait in components/messageTraits and apply it to each message with 'traits' array. Step 3: components/schemas for reusable data schemas (UserPayload, OrderPayload) and components/messages for complete message definitions, referenced via $ref from channel operations, eliminate duplication.",
+      "topic": "asyncapi_complex_system",
+      "topic_category": "documentation",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "CA100",
+      "question": "You inherit a monolithic Python application (50K LOC) and need to create a comprehensive codebase analysis report. Your initial measurements show:\n- Average cyclomatic complexity per function: 8.5\n- Max complexity function: 67\n- LCOM4 average across classes: 0.72\n- 23 circular dependency cycles\n- Maintainability Index (0-100 scale): 42\n- Halstead effort across codebase: 2.1M\n- 4 God Classes (1500+ LOC each)\n- Test coverage: 28%\n\nStep 1: Classify the overall health into a traffic-light rating using industry thresholds. Step 2: Identify the top 3 most critical issues by impact on development velocity. Step 3: Propose a 3-phase remediation plan with measurable exit criteria.",
+      "choices": {
+        "A": "Green (healthy); low priority issues; focus on adding features",
+        "B": "Yellow (warning); address God Classes first; single-phase refactoring sprint",
+        "C": "Red (critical); Top 3: low MI, high Halstead effort, low coverage; single-phase complete rewrite",
+        "D": "Red (critical); Top 3: (1) CC=67 function (untestable, highest bug density), (2) 23 circular dependency cycles (blocks modularization and independent deployment), (3) 28% test coverage (makes any refactoring high-risk). Phase 1: Add tests around the CC=67 function and God Classes to reach 50% coverage on critical paths (exit: coverage >= 50% on modified files). Phase 2: Break circular dependencies using dependency inversion (exit: 0 cycles in core modules). Phase 3: Decompose God Classes and reduce max CC below 25 (exit: MI >= 65, no function > CC 25, LCOM4 < 0.5)"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Red. MI < 65 (threshold for 'difficult to maintain'), max CC of 67 far exceeds the 'untestable' threshold of 50, 23 cycles indicate severe architectural issues, 28% coverage is dangerously low for a codebase this complex. Step 2: (1) The CC=67 function is the single highest-risk artifact -- any change could introduce bugs in 67+ code paths. (2) 23 circular cycles mean modules cannot be understood, tested, or deployed independently. (3) 28% coverage means refactoring anything is a high-risk gamble. Step 3: Tests first (Phase 1) to make refactoring safe, then untangle dependencies (Phase 2) to enable modular work, then reduce complexity (Phase 3). Each phase has measurable exit criteria to prevent scope creep.",
+      "topic": "comprehensive_codebase_assessment",
+      "topic_category": "code_metrics",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

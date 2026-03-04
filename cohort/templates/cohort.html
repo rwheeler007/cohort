@@ -368,6 +368,13 @@
                         <button type="button" class="btn btn--secondary" id="settings-cancel">Cancel</button>
                         <button type="submit" class="btn btn--primary">Save Settings</button>
                     </div>
+
+                    <!-- Setup Wizard Re-run -->
+                    <div class="settings-section" style="margin-top:var(--space-6);border-top:1px solid var(--color-border);padding-top:var(--space-4)">
+                        <h3 class="settings-section__title">Local AI Setup</h3>
+                        <p class="settings-section__desc">Re-run the setup wizard to check Ollama, models, and content feeds.</p>
+                        <button type="button" class="btn btn--secondary" id="settings-rerun-setup">Re-run Setup Wizard</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -392,6 +399,7 @@
                     <p class="settings-section__desc">
                         Add API keys and credentials for external services.
                         Agents can only use services they have been granted access to.
+                        Common services are pre-populated below -- click Edit to add your key, or remove any you don't need.
                     </p>
                     <div id="service-keys-list">
                         <!-- Populated by JS -->
@@ -437,7 +445,9 @@
                     <div class="form-group">
                         <label for="service-type-select">Service Type</label>
                         <select class="form-input" id="service-type-select">
+                            <option value="anthropic">Anthropic API</option>
                             <option value="youtube">YouTube Data API</option>
+                            <option value="linkedin">LinkedIn API</option>
                             <option value="rss">RSS Feed Reader</option>
                             <option value="email_smtp">Email (SMTP)</option>
                             <option value="email_imap">Email (IMAP)</option>
@@ -446,7 +456,10 @@
                             <option value="discord">Discord Webhook</option>
                             <option value="openai">OpenAI API</option>
                             <option value="google">Google Cloud API</option>
+                            <option value="cloudflare">Cloudflare API</option>
                             <option value="aws">AWS Credentials</option>
+                            <option value="twitter">Twitter/X API</option>
+                            <option value="reddit">Reddit API</option>
                             <option value="webhook">Custom Webhook</option>
                             <option value="custom">Custom Service</option>
                         </select>
@@ -518,6 +531,182 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Create Session Modal -->
+    <div class="modal" id="create-session-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Start Session</h2>
+                <button class="btn btn--icon modal__close" id="create-session-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="create-session-form">
+                    <div class="form-group">
+                        <label for="new-session-channel">Channel</label>
+                        <select class="form-input" id="new-session-channel" required>
+                            <option value="">-- Select channel --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-session-topic">Topic</label>
+                        <input type="text" class="form-input" id="new-session-topic" placeholder="e.g. API design review" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-session-agents">Agents <span style="color: var(--color-text-muted); font-weight: normal;">(optional, comma-separated)</span></label>
+                        <input type="text" class="form-input" id="new-session-agents" placeholder="e.g. python_developer, web_developer">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-session-max-turns">Max Turns</label>
+                        <input type="number" class="form-input" id="new-session-max-turns" value="20" min="1" max="100">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="create-session-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Start</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Wizard Overlay -->
+    <div class="setup-wizard" id="setup-wizard" hidden>
+        <div class="setup-wizard__container">
+            <header class="setup-wizard__header">
+                <div>
+                    <h2 class="setup-wizard__title">Welcome to Cohort</h2>
+                    <p class="setup-wizard__subtitle">
+                        Let's get your local AI up and running. This takes about
+                        5 minutes -- no cloud, no subscription, no data leaving your computer.
+                    </p>
+                </div>
+                <button class="btn btn--icon setup-wizard__close" id="setup-wizard-close"
+                        title="Close wizard">&times;</button>
+            </header>
+
+            <!-- Step Indicators -->
+            <nav class="setup-wizard__nav">
+                <button class="setup-step" data-setup-step="1">
+                    <span class="setup-step__indicator" id="step-ind-1">1</span>
+                    <span class="setup-step__label">Hardware</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="2">
+                    <span class="setup-step__indicator" id="step-ind-2">2</span>
+                    <span class="setup-step__label">Ollama</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="3">
+                    <span class="setup-step__indicator" id="step-ind-3">3</span>
+                    <span class="setup-step__label">Model</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="4">
+                    <span class="setup-step__indicator" id="step-ind-4">4</span>
+                    <span class="setup-step__label">Verify</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="5">
+                    <span class="setup-step__indicator" id="step-ind-5">5</span>
+                    <span class="setup-step__label">Content</span>
+                </button>
+            </nav>
+
+            <!-- Step Bodies -->
+            <div class="setup-wizard__body">
+                <!-- Step 1: Hardware Detection -->
+                <div class="setup-wizard__step" data-step="1">
+                    <h3>Checking Your Hardware</h3>
+                    <p class="text-muted">Your graphics card (GPU) runs AI models 10-50x faster than your CPU alone.</p>
+                    <div class="setup-wizard__card" id="setup-hw-result">
+                        <div class="setup-wizard__loading">[*] Detecting hardware...</div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Ollama Check + Install -->
+                <div class="setup-wizard__step" data-step="2" style="display:none">
+                    <h3>Setting Up Ollama</h3>
+                    <p class="text-muted">Ollama is a free tool that runs AI models on your computer.</p>
+                    <div class="setup-wizard__card" id="setup-ollama-result">
+                        <div class="setup-wizard__loading">[*] Checking for Ollama...</div>
+                    </div>
+                    <div id="setup-ollama-install" style="display:none">
+                        <div class="setup-wizard__card setup-wizard__card--info">
+                            <h4>Install Ollama</h4>
+                            <p id="setup-ollama-instructions"></p>
+                            <a id="setup-ollama-link" href="https://ollama.com/download" target="_blank"
+                               class="btn btn--primary" style="margin-top:var(--space-3)">Download Ollama</a>
+                        </div>
+                        <button class="btn btn--secondary" id="setup-ollama-recheck" style="margin-top:var(--space-3)">
+                            I've installed it -- check again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Model Download -->
+                <div class="setup-wizard__step" data-step="3" style="display:none">
+                    <h3>Downloading Your AI Model</h3>
+                    <p class="text-muted">This is the brain that powers your agents.</p>
+                    <div class="setup-wizard__card" id="setup-model-info">
+                        <div class="setup-wizard__model-name" id="setup-model-name"></div>
+                        <div class="setup-wizard__model-desc" id="setup-model-desc"></div>
+                    </div>
+                    <div id="setup-model-progress" style="display:none">
+                        <div class="setup-wizard__progress-bar">
+                            <div class="setup-wizard__progress-fill" id="setup-progress-fill"></div>
+                        </div>
+                        <div class="setup-wizard__progress-text" id="setup-progress-text">Preparing download...</div>
+                    </div>
+                    <div id="setup-model-actions">
+                        <button class="btn btn--primary" id="setup-download-btn">Download Model</button>
+                    </div>
+                    <div id="setup-model-done" style="display:none">
+                        <div class="setup-wizard__status setup-wizard__status--ok">[OK] Model ready!</div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Verify -->
+                <div class="setup-wizard__step" data-step="4" style="display:none">
+                    <h3>Testing Everything</h3>
+                    <p class="text-muted">Let's make sure your AI model responds correctly.</p>
+                    <div class="setup-wizard__card" id="setup-verify-result" style="display:none"></div>
+                    <button class="btn btn--primary" id="setup-verify-btn">Run Test</button>
+                    <div id="setup-verify-loading" style="display:none">
+                        <div class="setup-wizard__loading">[*] Asking the model a question... this may take a moment on first run.</div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Content Pipeline -->
+                <div class="setup-wizard__step" data-step="5" style="display:none">
+                    <h3>Set Up Your Content Pipeline (Optional)</h3>
+                    <p class="text-muted">
+                        Your Marketing and Content Strategy agents can monitor RSS feeds
+                        to find trends and draft posts for you.
+                    </p>
+                    <div id="setup-topic-picker">
+                        <p>What topic or industry are you in?</p>
+                        <div class="setup-wizard__topic-grid" id="setup-topic-grid"></div>
+                    </div>
+                    <div id="setup-feed-picker" style="display:none">
+                        <p>Here are some feeds I'd suggest:</p>
+                        <div id="setup-feed-list"></div>
+                        <div class="form-actions" style="margin-top:var(--space-4)">
+                            <button class="btn btn--secondary" id="setup-topic-back">Pick different topic</button>
+                            <button class="btn btn--primary" id="setup-save-feeds">Save selected feeds</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Navigation -->
+            <footer class="setup-wizard__footer">
+                <button class="btn btn--secondary" id="setup-back-btn" style="display:none">Back</button>
+                <div class="setup-wizard__footer-spacer"></div>
+                <button class="btn btn--secondary" id="setup-skip-btn">Skip</button>
+                <button class="btn btn--primary" id="setup-next-btn">Next</button>
+                <button class="btn btn--primary" id="setup-finish-btn" style="display:none">Finish Setup</button>
+            </footer>
         </div>
     </div>
 

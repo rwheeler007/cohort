@@ -20,6 +20,12 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.urls]
+Homepage = "https://github.com/rwheeler007/cohort"
+Repository = "https://github.com/rwheeler007/cohort"
+Issues = "https://github.com/rwheeler007/cohort/issues"
+Changelog = "https://github.com/rwheeler007/cohort/releases"
+
 [project.optional-dependencies]
 claude = ["httpx>=0.27", "fastmcp>=0.1"]
 server = ["starlette>=0.37", "uvicorn[standard]>=0.29", "python-socketio[asyncio]>=5.10"]

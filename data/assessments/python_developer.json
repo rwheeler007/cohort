@@ -1,0 +1,1613 @@
+{
+  "agent_id": "python_developer",
+  "source": "Senior Python certification level (PCAP+/professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "PY001",
+      "question": "What is the output of the following code?\n\ndef make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n    return increment\n\nc = make_counter()\nprint(c(), c(), c())",
+      "choices": {
+        "A": "0 0 0",
+        "B": "1 2 3",
+        "C": "0 1 2",
+        "D": "1 1 1"
+      },
+      "answer": "B",
+      "explanation": "The nonlocal keyword allows increment() to modify the enclosing scope's count variable. Each call increments and returns the updated value, producing 1, 2, 3.",
+      "topic": "closures_and_nonlocal",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY002",
+      "question": "Which of the following correctly describes the behavior of a generator function when it encounters a return statement with a value?",
+      "choices": {
+        "A": "A SyntaxError is raised at definition time",
+        "B": "The value is silently discarded and StopIteration is raised with no value",
+        "C": "The value is stored in the StopIteration exception's value attribute",
+        "D": "The value is yielded as the final item"
+      },
+      "answer": "C",
+      "explanation": "In Python 3, a generator's return value is attached to the StopIteration exception as its .value attribute. It is not yielded and is not discarded.",
+      "topic": "generators",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY003",
+      "question": "What does the walrus operator (:=) accomplish in the following code?\n\nimport re\nif m := re.match(r'(\\d+)', 'abc123'):\n    print(m.group(1))",
+      "choices": {
+        "A": "It assigns m only if re.match returns a truthy value",
+        "B": "It assigns the result of re.match to m and evaluates m as the if condition",
+        "C": "It is equivalent to m == re.match(...)",
+        "D": "It creates a named constant m that cannot be reassigned"
+      },
+      "answer": "B",
+      "explanation": "The walrus operator (:=) assigns the value to m AND returns that value for the if condition. The assignment happens regardless of truthiness; the if branch just may not execute if the value is falsy.",
+      "topic": "walrus_operator",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY004",
+      "question": "Given this dataclass definition, what happens when you try to create an instance with Item(name='widget', price=-5)?\n\nfrom dataclasses import dataclass\n\n@dataclass\nclass Item:\n    name: str\n    price: float\n\n    def __post_init__(self):\n        if self.price < 0:\n            raise ValueError('Price must be non-negative')",
+      "choices": {
+        "A": "A TypeError is raised because negative floats are not allowed in dataclasses",
+        "B": "The instance is created with price=-5 and __post_init__ is never called",
+        "C": "A ValueError is raised because __post_init__ runs after __init__",
+        "D": "The instance is created but price is silently set to 0"
+      },
+      "answer": "C",
+      "explanation": "__post_init__ is automatically called at the end of the generated __init__ method, so the validation runs and raises ValueError for negative prices.",
+      "topic": "dataclasses",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY005",
+      "question": "What is the primary purpose of __slots__ in a Python class?",
+      "choices": {
+        "A": "To make all listed attributes read-only",
+        "B": "To restrict which methods can be called on instances",
+        "C": "To replace the instance __dict__ with a fixed set of attribute slots, reducing memory usage",
+        "D": "To enforce type checking on attribute assignments at runtime"
+      },
+      "answer": "C",
+      "explanation": "__slots__ tells Python to use a more compact internal representation instead of a per-instance __dict__. This saves memory, especially with many instances, but does not enforce types or read-only access.",
+      "topic": "slots",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY006",
+      "question": "What HTTP status code should a REST API return when a POST request successfully creates a new resource?",
+      "choices": {
+        "A": "202 Accepted",
+        "B": "200 OK",
+        "C": "204 No Content",
+        "D": "201 Created"
+      },
+      "answer": "D",
+      "explanation": "201 Created is the standard response for successful resource creation via POST. 200 is for general success, 204 for success with no body, and 202 for async processing.",
+      "topic": "http_status_codes",
+      "topic_category": "api_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY007",
+      "question": "In pytest, what is the purpose of the conftest.py file?",
+      "choices": {
+        "A": "It must contain exactly one fixture per test module",
+        "B": "It provides fixtures and hooks that are automatically available to all tests in the same directory and subdirectories",
+        "C": "It configures pytest's internal settings like timeout and verbosity",
+        "D": "It replaces setup.cfg for test discovery configuration"
+      },
+      "answer": "B",
+      "explanation": "conftest.py files are automatically loaded by pytest and make their fixtures, hooks, and plugins available to all tests in the containing directory and its subdirectories without requiring explicit imports.",
+      "topic": "pytest_conftest",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY008",
+      "question": "Which of the following correctly awaits multiple coroutines concurrently and returns their results in order?\n\nimport asyncio\n\nasync def fetch(n):\n    await asyncio.sleep(n)\n    return n",
+      "choices": {
+        "A": "results = await asyncio.wait(fetch(1), fetch(2), fetch(3))",
+        "B": "results = await [fetch(1), fetch(2), fetch(3)]",
+        "C": "results = await asyncio.run(fetch(1), fetch(2), fetch(3))",
+        "D": "results = await asyncio.gather(fetch(1), fetch(2), fetch(3))"
+      },
+      "answer": "D",
+      "explanation": "asyncio.gather() runs awaitables concurrently and returns results in the same order as the arguments. You cannot await a list directly, asyncio.wait() has a different signature and return type, and asyncio.run() is for starting the event loop.",
+      "topic": "asyncio_gather",
+      "topic_category": "async",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY009",
+      "question": "In SQLAlchemy, what problem does the 'N+1 query' pattern describe?",
+      "choices": {
+        "A": "A query that returns N+1 columns instead of the expected N",
+        "B": "A transaction that requires N+1 commits to complete",
+        "C": "One query loads N parent objects, then N additional queries each load one child, resulting in N+1 total queries",
+        "D": "A schema migration that creates N+1 temporary tables"
+      },
+      "answer": "C",
+      "explanation": "The N+1 problem occurs when lazy loading relationships: one query fetches N parent rows, then accessing each parent's children triggers a separate query, resulting in N+1 total queries instead of a joined or subquery load.",
+      "topic": "n_plus_one_queries",
+      "topic_category": "orm_database",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY010",
+      "question": "What is the correct way to parametrize a pytest test to run with multiple inputs?\n\n@pytest.mark.parametrize('x, expected', [(1, 2), (2, 4), (3, 6)])\ndef test_double(x, expected):\n    assert x * 2 == expected",
+      "choices": {
+        "A": "The test will run once with x=(1,2,3) and expected=(2,4,6)",
+        "B": "This will raise an error because parametrize requires keyword arguments",
+        "C": "The parametrize decorator is incorrect; the first argument must be a list",
+        "D": "This is correct and will generate three separate test cases"
+      },
+      "answer": "D",
+      "explanation": "pytest.mark.parametrize with a comma-separated string of parameter names and a list of tuples generates one test case per tuple. This produces test_double[1-2], test_double[2-4], test_double[3-6].",
+      "topic": "pytest_parametrize",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY011",
+      "question": "Which pandas method is most appropriate for applying a function element-wise to a DataFrame column while preserving the index?",
+      "choices": {
+        "A": "df['col'].pipe(func)",
+        "B": "df['col'].aggregate(func)",
+        "C": "df['col'].transform(func)",
+        "D": "df['col'].reduce(func)"
+      },
+      "answer": "C",
+      "explanation": "transform() applies a function element-wise and returns a Series with the same index. aggregate() reduces to a scalar, reduce() is not a pandas method, and pipe() passes the entire Series to the function.",
+      "topic": "pandas_transform",
+      "topic_category": "data_processing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY012",
+      "question": "What is the main risk of using pickle.loads() on untrusted input?",
+      "choices": {
+        "A": "It raises TypeError for any non-built-in types",
+        "B": "It only supports Python 2 object formats",
+        "C": "It can execute arbitrary code during deserialization via __reduce__",
+        "D": "It can cause memory leaks due to circular references"
+      },
+      "answer": "C",
+      "explanation": "Pickle deserialization invokes __reduce__ methods which can execute arbitrary Python code. An attacker can craft pickle payloads that run os.system() or similar during loads(), making it a critical deserialization vulnerability.",
+      "topic": "deserialization_attacks",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY013",
+      "question": "In a pyproject.toml file, which section specifies the project's runtime dependencies?",
+      "choices": {
+        "A": "[tool.setuptools].install_requires",
+        "B": "[project].dependencies",
+        "C": "[project].requires-python",
+        "D": "[build-system].requires"
+      },
+      "answer": "B",
+      "explanation": "[project].dependencies lists runtime dependencies per PEP 621. [build-system].requires lists build-time dependencies, [tool.setuptools].install_requires is the legacy setuptools equivalent, and requires-python specifies the Python version constraint.",
+      "topic": "pyproject_toml",
+      "topic_category": "devops",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY014",
+      "question": "What does the GIL (Global Interpreter Lock) in CPython prevent?",
+      "choices": {
+        "A": "Multiple interpreters from being embedded in the same process",
+        "B": "Asyncio coroutines from running concurrently",
+        "C": "Multiple processes from accessing the same file",
+        "D": "Multiple native threads from executing Python bytecodes simultaneously"
+      },
+      "answer": "D",
+      "explanation": "The GIL is a mutex that protects CPython's reference counting mechanism by ensuring only one thread executes Python bytecode at a time. It does not affect multiprocessing, asyncio, or sub-interpreters.",
+      "topic": "gil",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY015",
+      "question": "Which SQLAlchemy relationship loading strategy issues a single JOIN query when the parent is loaded?",
+      "choices": {
+        "A": "lazy='select'",
+        "B": "lazy='joined'",
+        "C": "lazy='dynamic'",
+        "D": "lazy='subquery'"
+      },
+      "answer": "B",
+      "explanation": "lazy='joined' (or joinedload()) generates a SQL JOIN in the parent query to load related objects in one round trip. 'select' fires a separate SELECT on access, 'subquery' uses a subquery, and 'dynamic' returns a query object.",
+      "topic": "relationship_loading",
+      "topic_category": "orm_database",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY016",
+      "question": "What is the correct way to prevent SQL injection when using raw SQL with SQLAlchemy?",
+      "choices": {
+        "A": "Use text() with bound parameters via the :param syntax",
+        "B": "Use html.escape() on all user inputs",
+        "C": "Wrap user input in str() before concatenation",
+        "D": "Use f-strings to interpolate user input into the query"
+      },
+      "answer": "A",
+      "explanation": "SQLAlchemy's text() construct with :param placeholders sends parameters separately from the query, preventing SQL injection. String formatting, concatenation, and HTML escaping do not prevent SQL injection.",
+      "topic": "sql_injection_prevention",
+      "topic_category": "security",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY017",
+      "question": "In REST API design, which HTTP method should be idempotent according to the HTTP specification?",
+      "choices": {
+        "A": "PATCH only",
+        "B": "POST only",
+        "C": "GET only",
+        "D": "PUT and DELETE"
+      },
+      "answer": "D",
+      "explanation": "PUT and DELETE are specified as idempotent: repeating them produces the same server state. GET is also idempotent (and safe). POST is not idempotent by specification. PATCH is not required to be idempotent.",
+      "topic": "http_idempotency",
+      "topic_category": "api_design",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY018",
+      "question": "What is the output of this code?\n\nfrom typing import Protocol\n\nclass Drawable(Protocol):\n    def draw(self) -> str: ...\n\nclass Circle:\n    def draw(self) -> str:\n        return 'circle'\n\ndef render(shape: Drawable) -> str:\n    return shape.draw()\n\nprint(render(Circle()))",
+      "choices": {
+        "A": "NotImplementedError from the Protocol",
+        "B": "TypeError because Circle doesn't explicitly inherit from Drawable",
+        "C": "AttributeError because Protocol methods are abstract",
+        "D": "'circle' — structural subtyping doesn't require explicit inheritance"
+      },
+      "answer": "D",
+      "explanation": "Protocol enables structural subtyping: Circle satisfies the Drawable protocol because it has a draw() method with a matching signature, no explicit inheritance needed. This prints 'circle'.",
+      "topic": "protocols",
+      "topic_category": "core_python",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY019",
+      "question": "Which Docker best practice reduces Python image layer size most effectively?",
+      "choices": {
+        "A": "Running pip cache purge in a separate RUN instruction",
+        "B": "Installing all dependencies with pip install --user",
+        "C": "Using a multi-stage build with python:3.12-slim as the final stage",
+        "D": "Using python:latest as the base image"
+      },
+      "answer": "C",
+      "explanation": "Multi-stage builds with a slim final image exclude build tools and intermediate files. python:latest is large (~900MB), --user doesn't reduce layer size, and a separate RUN for cache purge creates an extra layer without removing from previous layers.",
+      "topic": "docker_python",
+      "topic_category": "devops",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY020",
+      "question": "What does pytest's monkeypatch.setattr() do differently from unittest.mock.patch()?",
+      "choices": {
+        "A": "monkeypatch only works with module-level attributes, not class attributes",
+        "B": "monkeypatch restores the original value at the end of the test via fixture teardown, while patch uses a context manager or decorator",
+        "C": "monkeypatch creates a Mock object automatically, while patch requires you to provide the replacement",
+        "D": "monkeypatch works across test sessions, while patch only works within a single test"
+      },
+      "answer": "B",
+      "explanation": "monkeypatch is a pytest fixture that automatically undoes changes during fixture teardown. patch typically uses a context manager or decorator for cleanup. monkeypatch requires you to specify the replacement value explicitly.",
+      "topic": "monkeypatch_vs_mock",
+      "topic_category": "testing",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "PY021",
+      "question": "What is the output of this code?\n\nclass Meta(type):\n    def __new__(mcs, name, bases, namespace):\n        namespace['registry'] = name\n        return super().__new__(mcs, name, bases, namespace)\n\nclass Base(metaclass=Meta):\n    pass\n\nclass Child(Base):\n    pass\n\nprint(Base.registry, Child.registry)",
+      "choices": {
+        "A": "Base Base",
+        "B": "AttributeError: 'registry' not defined",
+        "C": "Base Child",
+        "D": "Child Child"
+      },
+      "answer": "C",
+      "explanation": "The metaclass __new__ is called for both Base and Child class creation. Each time, it sets namespace['registry'] to the class name being created. So Base.registry='Base' and Child.registry='Child'.",
+      "topic": "metaclasses",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY022",
+      "question": "What happens when you call asyncio.run() from within an already-running event loop?",
+      "choices": {
+        "A": "A nested event loop is created",
+        "B": "The outer loop is paused and resumed after the inner one completes",
+        "C": "The new coroutine is scheduled on the existing loop",
+        "D": "RuntimeError is raised because you cannot run a loop inside a loop"
+      },
+      "answer": "D",
+      "explanation": "asyncio.run() creates a new event loop and runs the coroutine. If an event loop is already running in the current thread, it raises RuntimeError('This event loop is already running'). Use asyncio.create_task() or await instead.",
+      "topic": "asyncio_event_loop",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY023",
+      "question": "In REST API pagination, what is the primary advantage of cursor-based pagination over offset-based pagination?",
+      "choices": {
+        "A": "Cursor-based pagination always returns fewer total queries",
+        "B": "Cursor-based pagination is simpler to implement",
+        "C": "Cursor-based pagination allows random access to any page",
+        "D": "Cursor-based pagination avoids skipped or duplicate results when data is inserted or deleted between pages"
+      },
+      "answer": "D",
+      "explanation": "Cursor-based pagination uses an opaque marker (usually an encoded ID or timestamp) so new inserts/deletes don't shift the window. Offset-based pagination can skip or duplicate rows when the underlying data changes between requests.",
+      "topic": "api_pagination",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY024",
+      "question": "What does this descriptor produce?\n\nclass Validate:\n    def __set_name__(self, owner, name):\n        self.name = '_' + name\n\n    def __get__(self, obj, objtype=None):\n        if obj is None:\n            return self\n        return getattr(obj, self.name, None)\n\n    def __set__(self, obj, value):\n        if not isinstance(value, int):\n            raise TypeError(f'{self.name[1:]} must be int')\n        setattr(obj, self.name, value)\n\nclass Config:\n    timeout = Validate()\n\nc = Config()\nc.timeout = 30\nprint(c.timeout, c._timeout)",
+      "choices": {
+        "A": "30 AttributeError",
+        "B": "TypeError: timeout must be int",
+        "C": "30 30",
+        "D": "None 30"
+      },
+      "answer": "C",
+      "explanation": "__set__ stores the value under '_timeout' on the instance. __get__ retrieves from '_timeout'. Both c.timeout (via descriptor) and c._timeout (direct attribute) return 30.",
+      "topic": "descriptors",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY025",
+      "question": "Which pytest fixture scope causes the fixture to run once per test session, shared across all test modules?",
+      "choices": {
+        "A": "scope='class'",
+        "B": "scope='session'",
+        "C": "scope='module'",
+        "D": "scope='package'"
+      },
+      "answer": "B",
+      "explanation": "scope='session' creates the fixture once for the entire test session. 'module' creates once per module, 'class' once per class, and 'package' once per package.",
+      "topic": "pytest_fixture_scopes",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY026",
+      "question": "What is the output of this async generator code?\n\nimport asyncio\n\nasync def gen():\n    yield 1\n    await asyncio.sleep(0)\n    yield 2\n    await asyncio.sleep(0)\n    yield 3\n\nasync def main():\n    results = []\n    async for val in gen():\n        results.append(val)\n        if val == 2:\n            break\n    print(results)\n\nasyncio.run(main())",
+      "choices": {
+        "A": "RuntimeError: async generator cannot be broken",
+        "B": "[1, 2, 3]",
+        "C": "[1]",
+        "D": "[1, 2]"
+      },
+      "answer": "D",
+      "explanation": "async for iterates the async generator. When val==2, break exits the loop. The async generator's aclose() is called implicitly. The results list contains [1, 2].",
+      "topic": "async_generators",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY027",
+      "question": "In SQLAlchemy 2.0, what is the recommended way to execute a SELECT query and get all results?",
+      "choices": {
+        "A": "session.select(User).results()",
+        "B": "session.run(select(User)).fetchall()",
+        "C": "session.execute(select(User)).scalars().all()",
+        "D": "session.query(User).all()"
+      },
+      "answer": "C",
+      "explanation": "SQLAlchemy 2.0 uses session.execute() with select() constructs. .scalars() extracts the ORM entities from Row objects, and .all() returns them as a list. session.query() is the legacy 1.x API.",
+      "topic": "sqlalchemy_2_queries",
+      "topic_category": "orm_database",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY028",
+      "question": "What is the purpose of the hypothesis library's @given decorator in property-based testing?",
+      "choices": {
+        "A": "It provides a fixed set of edge cases based on the argument types",
+        "B": "It replaces pytest fixtures with hypothesis-managed test data",
+        "C": "It mocks external dependencies with randomly generated return values",
+        "D": "It generates random inputs matching a strategy specification and runs the test many times to find counterexamples"
+      },
+      "answer": "D",
+      "explanation": "hypothesis @given generates random inputs based on strategies (e.g., st.integers(), st.text()) and runs the test function many times, shrinking failing inputs to minimal counterexamples. It's for discovering properties, not fixture replacement.",
+      "topic": "hypothesis_testing",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY029",
+      "question": "What does numpy broadcasting do when you add arrays with shapes (3, 1) and (1, 4)?",
+      "choices": {
+        "A": "Produces a (1, 1) array by taking the minimum dimensions",
+        "B": "Produces a (3, 4) array by stretching both arrays along their size-1 dimensions",
+        "C": "Produces a (3,) array by flattening both inputs",
+        "D": "Raises ValueError because shapes are incompatible"
+      },
+      "answer": "B",
+      "explanation": "Broadcasting stretches each size-1 dimension to match the other array's corresponding dimension. (3,1) stretches to (3,4) and (1,4) stretches to (3,4), producing a (3,4) result.",
+      "topic": "numpy_broadcasting",
+      "topic_category": "data_processing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY030",
+      "question": "Which of the following is a path traversal vulnerability?\n\nimport os\nfrom pathlib import Path\n\ndef read_user_file(filename: str) -> str:\n    base = Path('/app/uploads')",
+      "choices": {
+        "A": "return (base / filename).read_text()",
+        "B": "resolved = (base / filename).resolve()\n    if not str(resolved).startswith(str(base.resolve())):\n        raise ValueError('Path traversal detected')\n    return resolved.read_text()",
+        "C": "return open(os.path.join('/app/uploads', filename)).read()",
+        "D": "Both A and C are vulnerable"
+      },
+      "answer": "D",
+      "explanation": "Both A and C allow filename='../../etc/passwd' to escape the base directory. Only B validates the resolved path stays within the base directory. os.path.join and pathlib / both follow '..' components without checking.",
+      "topic": "path_traversal",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY031",
+      "question": "What is the difference between asyncio.gather() and asyncio.wait() when handling exceptions?",
+      "choices": {
+        "A": "gather() propagates the first exception by default; wait() returns done/pending sets and never raises",
+        "B": "wait() propagates all exceptions simultaneously; gather() only propagates the first",
+        "C": "gather() cancels all tasks on first exception by default; wait() never cancels",
+        "D": "Both behave identically with exceptions"
+      },
+      "answer": "A",
+      "explanation": "gather() raises the first exception from its awaitables (unless return_exceptions=True). wait() returns two sets (done, pending) and never raises — you must check each task's result manually for exceptions.",
+      "topic": "gather_vs_wait",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY032",
+      "question": "What Python 3.10+ feature does this code use, and what does it print?\n\ndef classify(status: int) -> str:\n    match status:\n        case 200 | 201:\n            return 'success'\n        case 301 | 302:\n            return 'redirect'\n        case 400:\n            return 'bad_request'\n        case _:\n            return 'other'\n\nprint(classify(301))",
+      "choices": {
+        "A": "Uses match/case structural pattern matching; prints 'redirect'",
+        "B": "Uses match/case; prints 'other' because 301 doesn't match an OR pattern",
+        "C": "Uses match/case; raises SyntaxError because | is not supported in patterns",
+        "D": "Uses switch/case; prints 'redirect'"
+      },
+      "answer": "A",
+      "explanation": "Python 3.10+ match/case supports OR patterns with |. The value 301 matches the 301 | 302 pattern, returning 'redirect'.",
+      "topic": "match_case",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY033",
+      "question": "In REST API versioning, what is the key trade-off of URL path versioning (e.g., /api/v2/users) compared to header-based versioning?",
+      "choices": {
+        "A": "URL versioning breaks caching; header versioning does not",
+        "B": "URL versioning is easier to discover and test but can lead to URI proliferation; header versioning keeps URIs clean but is less visible",
+        "C": "Header versioning requires HTTPS; URL versioning works with HTTP",
+        "D": "URL versioning is deprecated in HTTP/2"
+      },
+      "answer": "B",
+      "explanation": "URL versioning is highly discoverable (visible in browser, curl, docs) but leads to many versioned endpoints. Header versioning (Accept or custom) keeps URIs stable but requires tools that support custom headers for testing.",
+      "topic": "api_versioning",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY034",
+      "question": "What is the difference between pytest.fixture(autouse=True) and an explicit fixture parameter?",
+      "choices": {
+        "A": "autouse fixtures can only be defined in conftest.py",
+        "B": "autouse fixtures run for every test in scope without being requested; explicit fixtures only run when named as a test parameter",
+        "C": "There is no difference; autouse is just syntactic sugar",
+        "D": "autouse fixtures are slower because they cannot be cached"
+      },
+      "answer": "B",
+      "explanation": "autouse=True causes the fixture to be automatically applied to all tests in its scope without needing to list it as a parameter. Regular fixtures only execute when explicitly requested by a test function's parameter list.",
+      "topic": "pytest_autouse",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY035",
+      "question": "What does polars' lazy evaluation accomplish that pandas' eager evaluation does not?",
+      "choices": {
+        "A": "Lazy evaluation makes polars single-threaded for safety",
+        "B": "Lazy evaluation allows polars to run on GPUs",
+        "C": "Lazy evaluation builds a query plan that can be optimized (predicate pushdown, projection pruning) before execution",
+        "D": "Lazy evaluation automatically distributes computation across a cluster"
+      },
+      "answer": "C",
+      "explanation": "Polars lazy mode constructs a logical query plan that is optimized before execution. Optimizations include predicate pushdown (filter early), projection pruning (drop unused columns), and query rewriting. Pandas evaluates each operation immediately.",
+      "topic": "polars_lazy",
+      "topic_category": "data_processing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY036",
+      "question": "What is the correct way to handle CORS in a REST API that needs to accept requests from specific origins?",
+      "choices": {
+        "A": "Set Access-Control-Allow-Origin to the server's own domain",
+        "B": "Set Access-Control-Allow-Origin: * on all responses",
+        "C": "Validate the Origin header against an allowlist and echo it back in Access-Control-Allow-Origin if allowed",
+        "D": "Disable CORS entirely in production since it's a browser-only concern"
+      },
+      "answer": "C",
+      "explanation": "The secure approach is to check the incoming Origin header against an explicit allowlist and only set Access-Control-Allow-Origin to that specific origin if permitted. Wildcard (*) is too permissive and disabling CORS ignores legitimate browser security.",
+      "topic": "cors",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY037",
+      "question": "What is the output of this code using ABC (Abstract Base Classes)?\n\nfrom abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self) -> float: ...\n\n    def describe(self) -> str:\n        return f'Area: {self.area()}'\n\nclass Square(Shape):\n    def __init__(self, side: float):\n        self.side = side\n\n    def area(self) -> float:\n        return self.side ** 2\n\nprint(Square(5).describe())",
+      "choices": {
+        "A": "Area: 25",
+        "B": "TypeError: Can't instantiate abstract class Square",
+        "C": "NotImplementedError",
+        "D": "Area: 25.0"
+      },
+      "answer": "A",
+      "explanation": "Square implements the abstract area() method so it can be instantiated. describe() calls area() which returns 5**2 = 25 (int). The f-string produces 'Area: 25'. Type hints do not coerce return values at runtime.",
+      "topic": "abstract_base_classes",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY038",
+      "question": "What problem does asyncio.shield() solve?",
+      "choices": {
+        "A": "It prevents a coroutine from raising any exceptions",
+        "B": "It creates a timeout around a coroutine",
+        "C": "It protects an awaitable from being cancelled when the outer task is cancelled",
+        "D": "It runs a coroutine in a separate thread to avoid blocking the event loop"
+      },
+      "answer": "C",
+      "explanation": "asyncio.shield() wraps an awaitable so that if the outer coroutine is cancelled, the shielded inner coroutine continues to run. This is useful for critical operations (e.g., database commits) that must complete even if the parent task is cancelled.",
+      "topic": "asyncio_cancellation",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY039",
+      "question": "When building a Python wheel, what is the key difference between a pure Python wheel and a platform wheel?",
+      "choices": {
+        "A": "Pure wheels are platform-independent (any OS/arch); platform wheels contain compiled C extensions tied to a specific platform",
+        "B": "Pure wheels contain .pyc files; platform wheels contain .py files",
+        "C": "Pure wheels require pip >= 20.0; platform wheels work with any pip version",
+        "D": "Platform wheels are larger because they include the Python interpreter"
+      },
+      "answer": "A",
+      "explanation": "Pure Python wheels (tagged py3-none-any) contain only Python code and work everywhere. Platform wheels contain compiled extensions (.so/.pyd) and are tagged with platform specifics (e.g., cp312-cp312-manylinux_2_17_x86_64).",
+      "topic": "python_wheels",
+      "topic_category": "devops",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY040",
+      "question": "In SQLAlchemy, what does session.expire_on_commit control?",
+      "choices": {
+        "A": "The timeout duration before uncommitted sessions are rolled back",
+        "B": "Whether all attributes of committed objects are expired (marked stale) after commit, requiring re-fetch on next access",
+        "C": "Whether expired sessions raise an error or silently reconnect",
+        "D": "Whether the session is closed after commit"
+      },
+      "answer": "B",
+      "explanation": "When expire_on_commit=True (default), all instance attributes are expired after session.commit(). The next attribute access triggers a fresh SELECT. Setting it to False keeps in-memory values, avoiding extra queries but risking stale data.",
+      "topic": "sqlalchemy_session",
+      "topic_category": "orm_database",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY041",
+      "question": "What advantage does an async context manager have over a regular context manager for database connection pools?",
+      "choices": {
+        "A": "Async context managers automatically retry on connection failure",
+        "B": "Async context managers can await during __aenter__ and __aexit__, allowing non-blocking pool acquisition and release",
+        "C": "Regular context managers cannot be used with connection pools",
+        "D": "Async context managers use less memory"
+      },
+      "answer": "B",
+      "explanation": "Async context managers (__aenter__/__aexit__) can await coroutines, allowing connection acquisition from a pool to yield to the event loop while waiting for an available connection instead of blocking the entire thread.",
+      "topic": "async_context_managers",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY042",
+      "question": "What does the following type hint mean?\n\ndef process(items: list[str | int]) -> dict[str, list[int]]: ...",
+      "choices": {
+        "A": "items must be a list of str followed by a list of int",
+        "B": "items is a union of list[str] and list[int]",
+        "C": "items must be a list where each element is either str or int; returns a dict mapping strings to lists of ints",
+        "D": "This is invalid syntax in Python 3.10+"
+      },
+      "answer": "C",
+      "explanation": "In Python 3.10+, str | int is a union type. list[str | int] means a list where each element can be str or int. The return type dict[str, list[int]] maps strings to lists of integers. This uses PEP 604 union syntax.",
+      "topic": "advanced_type_hints",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY043",
+      "question": "In a REST API, what is the standard way to indicate that a request failed because the resource's current state conflicts with the requested operation?",
+      "choices": {
+        "A": "412 Precondition Failed",
+        "B": "409 Conflict",
+        "C": "422 Unprocessable Entity",
+        "D": "400 Bad Request"
+      },
+      "answer": "B",
+      "explanation": "409 Conflict indicates the request cannot be completed because it conflicts with the current state of the resource (e.g., duplicate creation, edit conflict). 400 is for malformed requests, 422 for semantic validation errors, 412 for failed precondition headers.",
+      "topic": "http_conflict",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY044",
+      "question": "What does pytest's capsys fixture capture?",
+      "choices": {
+        "A": "Both sys.stdout and sys.stderr output from the test",
+        "B": "All file I/O including file writes",
+        "C": "Only print() calls, not sys.stdout.write()",
+        "D": "Only sys.stdout output"
+      },
+      "answer": "A",
+      "explanation": "capsys captures writes to sys.stdout and sys.stderr. It captures both print() calls and direct sys.stdout.write() calls. Use capsys.readouterr() to retrieve the captured output as a namedtuple with .out and .err attributes.",
+      "topic": "pytest_capsys",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY045",
+      "question": "When processing a large CSV file that doesn't fit in memory, which pandas approach is most memory-efficient?",
+      "choices": {
+        "A": "pd.read_csv('large.csv', chunksize=10000) to iterate over chunks",
+        "B": "pd.read_csv('large.csv') followed by downcast",
+        "C": "pd.read_csv('large.csv', engine='python')",
+        "D": "pd.read_csv('large.csv', low_memory=True)"
+      },
+      "answer": "A",
+      "explanation": "chunksize returns a TextFileReader iterator that yields DataFrames of the specified size. This allows processing arbitrarily large files in bounded memory. low_memory only affects dtype inference, and engine='python' is slower but doesn't reduce memory.",
+      "topic": "chunked_processing",
+      "topic_category": "data_processing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY046",
+      "question": "What is the security risk of using subprocess.call(command, shell=True) with user-provided input in the command string?",
+      "choices": {
+        "A": "An attacker can inject shell metacharacters to execute arbitrary commands (e.g., '; rm -rf /')",
+        "B": "It bypasses file permissions",
+        "C": "It runs slower than shell=False",
+        "D": "It only works on Unix, not Windows"
+      },
+      "answer": "A",
+      "explanation": "With shell=True, the command string is passed to the system shell. An attacker can inject shell metacharacters (;, |, &&, $()) into user-controlled parts to execute arbitrary commands. Always use shell=False with a list of arguments.",
+      "topic": "subprocess_injection",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY047",
+      "question": "What is the purpose of Python's __init_subclass__ hook?",
+      "choices": {
+        "A": "It prevents a class from being subclassed",
+        "B": "It is called on the parent class when a subclass is defined, allowing the parent to customize subclass creation without a metaclass",
+        "C": "It initializes class-level attributes before __init__ runs",
+        "D": "It replaces __init__ for all subclasses"
+      },
+      "answer": "B",
+      "explanation": "__init_subclass__ is a classmethod hook called on the parent class whenever a new subclass is created. It provides metaclass-like customization (e.g., registration, validation) with simpler syntax. It was added in Python 3.6.",
+      "topic": "init_subclass",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY048",
+      "question": "What is the correct error response format recommended by RFC 7807 (Problem Details for HTTP APIs)?",
+      "choices": {
+        "A": "{\"code\": int, \"errors\": [...]}",
+        "B": "{\"error\": \"message\"}",
+        "C": "{\"type\": \"URI\", \"title\": \"string\", \"status\": int, \"detail\": \"string\"}",
+        "D": "{\"success\": false, \"message\": \"string\"}"
+      },
+      "answer": "C",
+      "explanation": "RFC 7807 defines Problem Details with required fields: type (URI identifying the problem), title (short summary), status (HTTP status code), and detail (human-readable explanation). Optional: instance (URI for the occurrence).",
+      "topic": "error_response_format",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY049",
+      "question": "What does asyncio.TaskGroup (Python 3.11+) provide that asyncio.gather() does not?",
+      "choices": {
+        "A": "TaskGroup automatically cancels all remaining tasks if any task raises an exception, and collects all exceptions into an ExceptionGroup",
+        "B": "TaskGroup supports an unlimited number of tasks while gather() is limited to 1000",
+        "C": "TaskGroup runs tasks in separate threads",
+        "D": "TaskGroup runs tasks sequentially instead of concurrently"
+      },
+      "answer": "A",
+      "explanation": "TaskGroup provides structured concurrency: if any task fails, all other tasks in the group are cancelled, and all exceptions are collected into an ExceptionGroup. gather() propagates only the first exception by default.",
+      "topic": "task_groups",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY050",
+      "question": "In SQLAlchemy, what is the purpose of the 'scoped_session' pattern?",
+      "choices": {
+        "A": "It automatically commits after each query",
+        "B": "It encrypts session data for security",
+        "C": "It provides a thread-local session registry so each thread gets its own session instance",
+        "D": "It limits the number of concurrent sessions to prevent connection pool exhaustion"
+      },
+      "answer": "C",
+      "explanation": "scoped_session wraps a session factory and maintains a registry (thread-local by default) that returns the same session for the same thread. This prevents session sharing across threads, which is not safe in SQLAlchemy.",
+      "topic": "scoped_session",
+      "topic_category": "orm_database",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY051",
+      "question": "What is content negotiation in REST APIs, and how is it typically implemented?",
+      "choices": {
+        "A": "The client and server negotiate an encryption protocol",
+        "B": "The client specifies desired response format via the Accept header, and the server responds with the best match indicated by Content-Type",
+        "C": "The server compresses responses based on available bandwidth",
+        "D": "The server chooses the database based on the API key"
+      },
+      "answer": "B",
+      "explanation": "Content negotiation uses the Accept header (e.g., application/json, application/xml) to let the client request a specific representation. The server responds with the best match and sets the Content-Type header accordingly.",
+      "topic": "content_negotiation",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY052",
+      "question": "What does the following decorator do?\n\nimport functools\n\ndef retry(max_attempts=3):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(max_attempts):\n                try:\n                    return func(*args, **kwargs)\n                except Exception:\n                    if attempt == max_attempts - 1:\n                        raise\n        return wrapper\n    return decorator",
+      "choices": {
+        "A": "Limits the function to max_attempts concurrent calls",
+        "B": "Caches the function result for max_attempts calls",
+        "C": "Runs the function max_attempts times and returns the best result",
+        "D": "Retries the decorated function up to max_attempts times on exception, re-raising on the final failure"
+      },
+      "answer": "D",
+      "explanation": "This is a parameterized retry decorator. It calls the function, catches exceptions, and retries up to max_attempts times. If the last attempt also fails, it re-raises the exception. functools.wraps preserves the original function's metadata.",
+      "topic": "decorator_patterns",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY053",
+      "question": "What is the primary difference between pytest markers @pytest.mark.skip and @pytest.mark.xfail?",
+      "choices": {
+        "A": "skip prevents the test from running; xfail runs the test but expects it to fail",
+        "B": "skip is for unit tests; xfail is for integration tests",
+        "C": "They are aliases for the same behavior",
+        "D": "skip logs a warning; xfail raises an error"
+      },
+      "answer": "A",
+      "explanation": "skip prevents test execution entirely. xfail runs the test but marks it as expected to fail — if it passes, it's reported as XPASS (unexpected pass). This is useful for known bugs that haven't been fixed yet.",
+      "topic": "pytest_markers",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY054",
+      "question": "What is the best practice for storing secrets in a Python application?",
+      "choices": {
+        "A": "Hardcode them in a config.py file excluded from version control",
+        "B": "Store them in a SQLite database in the project directory",
+        "C": "Use environment variables or a dedicated secrets manager; never store secrets in code or config files checked into version control",
+        "D": "Encrypt them with a key stored in the same repository"
+      },
+      "answer": "C",
+      "explanation": "Secrets should be injected via environment variables, mounted secret files, or a secrets manager (e.g., AWS Secrets Manager, HashiCorp Vault). Hardcoded secrets risk exposure through version control, and co-located encryption keys defeat the purpose.",
+      "topic": "secrets_management",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY055",
+      "question": "In a CI/CD pipeline for a Python project, what is the purpose of running 'pip install -e .[dev]'?",
+      "choices": {
+        "A": "It installs only the package's runtime dependencies in a virtual environment",
+        "B": "It runs the dev test suite during installation",
+        "C": "It creates an .egg directory for distribution",
+        "D": "It installs the package in editable mode with development dependencies, allowing both the package and its dev tools to be available"
+      },
+      "answer": "D",
+      "explanation": "The -e flag installs in editable/development mode (symlinks to source). [dev] installs the 'dev' optional dependency group (typically pytest, mypy, linters). This gives CI access to both the package and its testing tools.",
+      "topic": "ci_cd_patterns",
+      "topic_category": "devops",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY056",
+      "question": "What does Python's garbage collector do with reference cycles that the reference counting mechanism cannot handle?",
+      "choices": {
+        "A": "It ignores them, leading to memory leaks",
+        "B": "It raises a MemoryError when cycles are detected",
+        "C": "It breaks cycles by setting one reference to None",
+        "D": "It uses a generational collector that periodically detects and frees unreachable cycles of objects"
+      },
+      "answer": "D",
+      "explanation": "CPython uses reference counting as the primary GC mechanism, but it cannot handle reference cycles. The cyclic garbage collector uses a generational algorithm (3 generations) to periodically detect and collect unreachable cycles.",
+      "topic": "garbage_collection",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY057",
+      "question": "When designing a REST API rate limiter, what HTTP headers should be included in responses to inform clients about their rate limit status?",
+      "choices": {
+        "A": "X-Rate-Limit only",
+        "B": "X-RateLimit-Limit (max requests), X-RateLimit-Remaining (requests left), X-RateLimit-Reset (window reset time)",
+        "C": "Content-Length and Retry-After only",
+        "D": "Cache-Control: max-rate=100"
+      },
+      "answer": "B",
+      "explanation": "Standard rate limiting headers include the total limit, remaining requests, and reset timestamp. When rate limited (429 Too Many Requests), Retry-After should also be included. These help clients implement adaptive request pacing.",
+      "topic": "rate_limiting",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY058",
+      "question": "What does the following pandas operation produce?\n\nimport pandas as pd\n\ndf = pd.DataFrame({'A': [1, 1, 2, 2], 'B': [10, 20, 30, 40]})\nresult = df.groupby('A')['B'].transform('mean')",
+      "choices": {
+        "A": "A scalar value representing the overall mean",
+        "B": "A Series with values [15.0, 35.0] indexed by group",
+        "C": "A Series with values [15.0, 15.0, 35.0, 35.0] aligned with the original index",
+        "D": "A DataFrame with group means as a new column"
+      },
+      "answer": "C",
+      "explanation": "transform('mean') computes the group mean but broadcasts the result back to the original DataFrame's index. Group A=1 has mean 15.0 (applied to rows 0,1) and group A=2 has mean 35.0 (applied to rows 2,3).",
+      "topic": "pandas_groupby_transform",
+      "topic_category": "data_processing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY059",
+      "question": "What is the difference between asyncio.create_task() and simply awaiting a coroutine?",
+      "choices": {
+        "A": "There is no difference; create_task() is just a wrapper around await",
+        "B": "create_task() is for CPU-bound work; await is for I/O-bound work",
+        "C": "create_task() runs the coroutine in a separate thread",
+        "D": "create_task() schedules the coroutine to run concurrently on the event loop and returns a Task; await runs it immediately and blocks until complete"
+      },
+      "answer": "D",
+      "explanation": "create_task() wraps a coroutine in a Task and schedules it for concurrent execution. The task starts running at the next await point. Directly awaiting a coroutine runs it synchronously (from the caller's perspective), blocking until it completes.",
+      "topic": "asyncio_tasks",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY060",
+      "question": "What is the purpose of SQLAlchemy's 'connection pooling' and what is the default pool implementation?",
+      "choices": {
+        "A": "It maintains a pool of reusable database connections to avoid the overhead of creating new ones; the default is QueuePool",
+        "B": "It caches query results; the default is ResultPool",
+        "C": "It pools ORM sessions, not raw connections; the default is SessionPool",
+        "D": "It creates a new database connection for each request; the default is NullPool"
+      },
+      "answer": "A",
+      "explanation": "Connection pooling reuses existing database connections instead of creating new ones for each operation. SQLAlchemy's default QueuePool maintains a configurable number of persistent connections (default pool_size=5, max_overflow=10).",
+      "topic": "connection_pooling",
+      "topic_category": "orm_database",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY061",
+      "question": "What is the security concern with YAML deserialization using yaml.load() without a Loader argument?",
+      "choices": {
+        "A": "It creates temporary files on disk",
+        "B": "It silently truncates large files",
+        "C": "It can execute arbitrary Python objects via YAML tags like !!python/object, leading to remote code execution",
+        "D": "It only supports ASCII characters"
+      },
+      "answer": "C",
+      "explanation": "yaml.load() with the default FullLoader (or the old default Loader) can construct arbitrary Python objects from YAML tags. An attacker can craft a YAML payload that executes code. Always use yaml.safe_load() for untrusted input.",
+      "topic": "yaml_deserialization",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY062",
+      "question": "What is the OpenAPI Specification primarily used for in REST API development?",
+      "choices": {
+        "A": "Load balancing API traffic across servers",
+        "B": "Encrypting API payloads in transit",
+        "C": "Defining and documenting the API contract in a machine-readable format (paths, parameters, schemas, responses)",
+        "D": "Authenticating API consumers"
+      },
+      "answer": "C",
+      "explanation": "OpenAPI (formerly Swagger) provides a standardized, language-agnostic format for describing REST APIs. It enables auto-generated documentation, client SDKs, server stubs, and contract testing from a single specification file.",
+      "topic": "openapi",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY063",
+      "question": "What is the output of this code using test isolation with tmp_path?\n\nimport pytest\n\ndef test_write_read(tmp_path):\n    f = tmp_path / 'data.txt'\n    f.write_text('hello')\n    assert f.read_text() == 'hello'\n    assert tmp_path.exists()",
+      "choices": {
+        "A": "The test fails because tmp_path is read-only",
+        "B": "The test passes; tmp_path provides a unique temporary directory per test that is automatically cleaned up",
+        "C": "The test passes but the file persists after the test suite completes",
+        "D": "FileNotFoundError because tmp_path is not a real path"
+      },
+      "answer": "B",
+      "explanation": "tmp_path is a built-in pytest fixture providing a pathlib.Path to a unique temporary directory for each test. Files can be read and written. The directory is automatically cleaned up after the test session.",
+      "topic": "test_isolation",
+      "topic_category": "testing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY064",
+      "question": "What is the advantage of using virtual environments over system-wide Python package installation?",
+      "choices": {
+        "A": "Virtual environments make Python run faster",
+        "B": "Virtual environments isolate project dependencies, preventing version conflicts between projects",
+        "C": "Virtual environments provide additional security sandboxing",
+        "D": "Virtual environments allow running multiple Python versions simultaneously"
+      },
+      "answer": "B",
+      "explanation": "Virtual environments create isolated Python environments with their own site-packages directory. This prevents dependency conflicts between projects (e.g., project A needs requests==2.28, project B needs requests==2.31).",
+      "topic": "virtual_environments",
+      "topic_category": "devops",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY065",
+      "question": "What does CPython's memory allocator (pymalloc) do for small objects?",
+      "choices": {
+        "A": "It uses a custom arena-based allocator with pools of fixed-size blocks (8-512 bytes) to reduce system call overhead",
+        "B": "It stores small objects on the stack instead of the heap",
+        "C": "It pre-allocates 1GB of memory at startup",
+        "D": "It delegates all allocation to the OS malloc"
+      },
+      "answer": "A",
+      "explanation": "pymalloc manages small objects (up to 512 bytes) using arenas (256KB) divided into pools of fixed-size blocks. This avoids frequent malloc/free system calls and reduces memory fragmentation for the many small objects Python creates.",
+      "topic": "memory_model",
+      "topic_category": "core_python",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY066",
+      "question": "In a pandas DataFrame, what is the difference between .loc[] and .iloc[]?",
+      "choices": {
+        "A": ".loc is faster; .iloc is more memory-efficient",
+        "B": ".loc is for rows; .iloc is for columns",
+        "C": ".loc uses label-based indexing; .iloc uses integer position-based indexing",
+        "D": "There is no difference; they are aliases"
+      },
+      "answer": "C",
+      "explanation": ".loc[] selects by label (index values, column names) and is inclusive on both ends. .iloc[] selects by integer position (0-based) and is exclusive on the end, like Python slicing.",
+      "topic": "pandas_indexing",
+      "topic_category": "data_processing",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY067",
+      "question": "What is the purpose of the HATEOAS constraint in REST API design?",
+      "choices": {
+        "A": "It mandates XML responses instead of JSON",
+        "B": "It requires all APIs to use HTTPS",
+        "C": "Responses include hypermedia links that tell the client what actions/transitions are available, enabling discoverability without out-of-band documentation",
+        "D": "It prevents clients from caching responses"
+      },
+      "answer": "C",
+      "explanation": "HATEOAS (Hypermedia As The Engine Of Application State) means API responses include links to related resources and available actions. Clients navigate the API through these links rather than constructing URLs from documentation.",
+      "topic": "hateoas",
+      "topic_category": "api_design",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY068",
+      "question": "What does Python 3.11+'s ExceptionGroup enable that was not possible before?",
+      "choices": {
+        "A": "Logging exceptions to multiple handlers at once",
+        "B": "Raising and catching multiple unrelated exceptions simultaneously, useful for concurrent task failures",
+        "C": "Converting warnings to exceptions automatically",
+        "D": "Grouping exceptions by severity level"
+      },
+      "answer": "B",
+      "explanation": "ExceptionGroup can hold multiple exceptions and is raised with 'raise ExceptionGroup(msg, exceptions)'. The 'except*' syntax catches specific exception types from the group while letting others propagate. This is essential for structured concurrency (TaskGroup).",
+      "topic": "exception_groups",
+      "topic_category": "async",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY069",
+      "question": "What is the transaction isolation level 'READ COMMITTED' and when would you choose it over the default in PostgreSQL?",
+      "choices": {
+        "A": "It allows reading uncommitted changes from other transactions for maximum speed",
+        "B": "It locks all rows read until the transaction completes",
+        "C": "It prevents all concurrent access to touched tables",
+        "D": "Each query in a transaction sees only data committed before that query began, preventing dirty reads but allowing non-repeatable reads"
+      },
+      "answer": "D",
+      "explanation": "READ COMMITTED (PostgreSQL's default) ensures each statement sees only previously committed data, preventing dirty reads. However, running the same query twice may return different results if another transaction commits between them (non-repeatable read).",
+      "topic": "transaction_isolation",
+      "topic_category": "orm_database",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY070",
+      "question": "What is the primary benefit of using input validation with Pydantic models for API request bodies?",
+      "choices": {
+        "A": "Pydantic validates, coerces, and documents request data structure at the boundary, rejecting malformed input before it reaches business logic",
+        "B": "Pydantic models are faster than dataclasses",
+        "C": "Pydantic automatically generates database schemas",
+        "D": "Pydantic replaces the need for authentication"
+      },
+      "answer": "A",
+      "explanation": "Pydantic models define expected types and constraints, validate incoming data, coerce compatible types, and provide clear error messages. This boundary validation ensures business logic only receives well-structured, type-safe data.",
+      "topic": "input_validation",
+      "topic_category": "security",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "PY071",
+      "question": "Consider this async producer-consumer setup:\n\nimport asyncio\n\nasync def producer(queue: asyncio.Queue):\n    for i in range(5):\n        await queue.put(i)\n        print(f'produced {i}')\n    await queue.put(None)  # sentinel\n\nasync def consumer(queue: asyncio.Queue):\n    while True:\n        item = await queue.get()\n        if item is None:\n            break\n        await asyncio.sleep(0.1)\n        print(f'consumed {item}')\n        queue.task_done()\n\nasync def main():\n    queue = asyncio.Queue(maxsize=2)\n    await asyncio.gather(producer(queue), consumer(queue))\n\nasyncio.run(main())\n\nWhat is the interleaving behavior when maxsize=2?",
+      "choices": {
+        "A": "The sentinel None causes a TypeError because Queue doesn't accept None",
+        "B": "Producer puts 0 and 1, then blocks on put(2) until consumer takes an item. Production and consumption interleave due to the bounded queue",
+        "C": "All 5 items are produced first, then all consumed, because gather runs tasks sequentially",
+        "D": "The program deadlocks because the queue fills up and neither task can proceed"
+      },
+      "answer": "B",
+      "explanation": "With maxsize=2, the producer can put items 0 and 1 immediately. put(2) blocks until the consumer takes an item. This creates a natural backpressure interleaving pattern. The consumer's sleep(0.1) determines the pacing. No deadlock occurs because gather runs both concurrently.",
+      "topic": "async_producer_consumer",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY072",
+      "question": "Given this code, what is the final value of results?\n\nimport asyncio\n\nasync def flaky(n):\n    if n == 2:\n        raise ValueError(f'bad {n}')\n    return n * 10\n\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        tasks = [tg.create_task(flaky(i)) for i in range(4)]\n    results = [t.result() for t in tasks]\n    return results\n\ntry:\n    r = asyncio.run(main())\nexcept* ValueError as eg:\n    print(f'caught {len(eg.exceptions)} errors')\n    print(type(eg))",
+      "choices": {
+        "A": "results = [0, 10, ValueError('bad 2'), 30]",
+        "B": "results = [0, 10, 30] — the error is silently skipped",
+        "C": "The code prints 'caught 4 errors' because all tasks are cancelled",
+        "D": "The code prints 'caught 1 errors' and the type is ExceptionGroup. results is never assigned because TaskGroup cancels all tasks and raises ExceptionGroup when any task fails"
+      },
+      "answer": "D",
+      "explanation": "When flaky(2) raises ValueError, TaskGroup cancels all remaining tasks and raises ExceptionGroup containing the ValueError. The line assigning results is never reached. The except* clause catches the group with 1 ValueError inside it.",
+      "topic": "taskgroup_exception_handling",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY073",
+      "question": "You have this SQLAlchemy model with a self-referential relationship:\n\nclass Employee(Base):\n    __tablename__ = 'employee'\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    manager_id = Column(Integer, ForeignKey('employee.id'))\n    subordinates = relationship('Employee', backref=backref('manager', remote_side=[id]))\n\nA query loads all employees with joinedload on subordinates:\nsession.execute(select(Employee).options(joinedload(Employee.subordinates))).unique().scalars().all()\n\nThe database has: Alice(id=1, manager=None), Bob(id=2, manager=1), Carol(id=3, manager=1), Dave(id=4, manager=2).\n\nHow many SQL queries are issued and how many Employee objects are instantiated?",
+      "choices": {
+        "A": "1 query, 7 objects. The JOIN creates duplicate rows that become separate objects",
+        "B": "2 queries, 4 objects. One for employees, one for the self-join",
+        "C": "1 query, 4 objects. The JOIN loads all subordinate relationships in one query, and SQLAlchemy's identity map deduplicates",
+        "D": "4 queries, 4 objects. Each employee triggers a separate query for subordinates"
+      },
+      "answer": "C",
+      "explanation": "joinedload issues a single query with a LEFT OUTER JOIN. The self-join produces rows with duplicates (Alice appears 3 times: once per subordinate + once for herself), but unique() deduplicates and SQLAlchemy's identity map ensures only 4 distinct Employee objects are created.",
+      "topic": "self_referential_joins",
+      "topic_category": "orm_database",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY074",
+      "question": "Consider this decorator stack:\n\nimport functools\n\ndef log(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        print(f'calling {func.__name__}')\n        return func(*args, **kwargs)\n    return wrapper\n\ndef validate(func):\n    @functools.wraps(func)\n    def wrapper(x):\n        if x < 0:\n            raise ValueError('negative')\n        return func(x)\n    return wrapper\n\n@log\n@validate\ndef double(x):\n    return x * 2\n\nprint(double(5))\nprint(double.__name__)",
+      "choices": {
+        "A": "Prints 'calling wrapper', then 10, then 'wrapper'",
+        "B": "Raises TypeError because the decorator stack is applied in the wrong order",
+        "C": "Prints 'calling double', then 10, then 'double'. log wraps validate's wrapper, which wraps double. functools.wraps preserves the original name through both layers",
+        "D": "Prints 'calling validate', then 10, then 'validate'"
+      },
+      "answer": "C",
+      "explanation": "@log @validate is equivalent to double = log(validate(double)). validate wraps double with @wraps(func) preserving __name__='double'. log then wraps that with @wraps(func) where func is validate's wrapper — but wraps copied the name 'double'. So func.__name__ is 'double' and double.__name__ is 'double'.",
+      "topic": "decorator_composition",
+      "topic_category": "core_python",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY075",
+      "question": "You have this test setup:\n\nimport pytest\nfrom unittest.mock import AsyncMock, patch\n\nasync def fetch_user(client, user_id):\n    response = await client.get(f'/users/{user_id}')\n    data = await response.json()\n    if data.get('deleted'):\n        raise ValueError('User is deleted')\n    return data['name']\n\n@pytest.mark.asyncio\nasync def test_fetch_deleted_user():\n    mock_client = AsyncMock()\n    mock_response = AsyncMock()\n    mock_response.json.return_value = {'name': 'Alice', 'deleted': True}\n    mock_client.get.return_value = mock_response\n\n    with pytest.raises(ValueError, match='deleted'):\n        await fetch_user(mock_client, 42)\n\n    mock_client.get.assert_called_once_with('/users/42')\n\nWhat is wrong with this test?",
+      "choices": {
+        "A": "mock_response.json should use return_value for an AsyncMock — but json() is awaited so it needs to return a coroutine. AsyncMock handles this automatically, so the test is actually correct",
+        "B": "mock_response.json.return_value should be wrapped in a coroutine, otherwise await response.json() will fail",
+        "C": "The test will fail because pytest.raises cannot be used with async functions",
+        "D": "Nothing is wrong; the test correctly verifies the exception and the call"
+      },
+      "answer": "A",
+      "explanation": "AsyncMock automatically makes all attribute access return AsyncMock instances whose __call__ returns a coroutine. Setting mock_response.json.return_value = {...} works because awaiting the AsyncMock's return produces that value. The test is correct as written.",
+      "topic": "async_mocking",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY076",
+      "question": "Given this code that uses a descriptor with __set_name__ and a metaclass:\n\nclass Tracked:\n    def __set_name__(self, owner, name):\n        self.public_name = name\n        self.private_name = f'_{name}'\n\n    def __get__(self, obj, objtype=None):\n        return getattr(obj, self.private_name, 'unset')\n\n    def __set__(self, obj, value):\n        setattr(obj, self.private_name, value)\n        obj._changes.append(self.public_name)\n\nclass ChangeTracker(type):\n    def __call__(cls, *args, **kwargs):\n        instance = super().__call__(*args, **kwargs)\n        instance._changes = []\n        return instance\n\nclass Model(metaclass=ChangeTracker):\n    name = Tracked()\n    age = Tracked()\n\nm = Model()\nm.name = 'Alice'\nm.age = 30\nm.name = 'Bob'\nprint(m._changes)",
+      "choices": {
+        "A": "AttributeError: _changes not found",
+        "B": "[] — the metaclass resets _changes after __init__",
+        "C": "['name', 'age', 'name']",
+        "D": "['Alice', 30, 'Bob']"
+      },
+      "answer": "C",
+      "explanation": "ChangeTracker.__call__ creates the instance and sets _changes = []. Each Tracked.__set__ appends the public attribute name to _changes. Three assignments (name, age, name) produce ['name', 'age', 'name']. The metaclass runs after __init__, so _changes starts empty.",
+      "topic": "metaclass_descriptor_interaction",
+      "topic_category": "core_python",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY077",
+      "question": "You're implementing a REST API endpoint that accepts a file upload and processes it asynchronously. The client needs to check the processing status later. Which sequence of responses follows REST conventions?\n\n1. Client POSTs file to /api/documents\n2. Client checks processing status\n3. Client retrieves the processed result",
+      "choices": {
+        "A": "Step 1 returns 102 Processing. Step 2 returns 102 Processing. Step 3 returns 200 OK",
+        "B": "Step 1 returns 200 with {\"status\": \"processing\"}. Step 2 polls the same URL. Step 3 returns 200 with the result",
+        "C": "Step 1 returns 201 Created with the final result immediately",
+        "D": "Step 1 returns 202 Accepted with a Location header pointing to /api/documents/123/status. Step 2 GETs that URL returning 200 with progress. Step 3 returns 303 See Other redirecting to /api/documents/123 when complete"
+      },
+      "answer": "D",
+      "explanation": "202 Accepted indicates the request was accepted but processing is not complete. The Location header provides the status URL. Polling that URL returns progress. When done, 303 See Other redirects to the finished resource. This is the RESTful async processing pattern.",
+      "topic": "async_rest_pattern",
+      "topic_category": "api_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY078",
+      "question": "Consider this pytest fixture hierarchy across files:\n\n# conftest.py (root)\n@pytest.fixture(scope='session')\ndef db():\n    conn = create_connection()\n    yield conn\n    conn.close()\n\n# conftest.py (tests/integration/)\n@pytest.fixture(autouse=True)\ndef clean_db(db):\n    db.execute('DELETE FROM users')\n    yield\n    db.rollback()\n\n# tests/integration/test_users.py\ndef test_create_user(db):\n    db.execute('INSERT INTO users VALUES (1, \"Alice\")')\n    assert db.execute('SELECT count(*) FROM users').scalar() == 1\n\ndef test_list_users(db):\n    assert db.execute('SELECT count(*) FROM users').scalar() == 0\n\nWhat happens when both tests run?",
+      "choices": {
+        "A": "test_create_user passes. test_list_users passes only if tests run in alphabetical order",
+        "B": "test_create_user passes. test_list_users fails because the DELETE in clean_db runs before the test but the INSERT from the previous test was committed",
+        "C": "Both tests pass. clean_db's autouse ensures DELETE runs before each test and rollback after, isolating the tests. The session-scoped db connection is shared",
+        "D": "Both tests fail because the session-scoped db connection is closed between tests"
+      },
+      "answer": "C",
+      "explanation": "The session-scoped db fixture creates one connection. The autouse clean_db fixture runs for every test: DELETE before yield clears data, rollback after yield undoes changes. test_list_users sees 0 rows because clean_db cleared the table and rolled back any uncommitted INSERTs.",
+      "topic": "fixture_hierarchy",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY079",
+      "question": "You have this async pipeline:\n\nimport asyncio\n\nasync def stage1(data):\n    await asyncio.sleep(0.1)\n    return [x * 2 for x in data]\n\nasync def stage2(data):\n    await asyncio.sleep(0.1)\n    return [x + 1 for x in data]\n\nasync def pipeline(batches):\n    results = []\n    prev_task = None\n    for batch in batches:\n        if prev_task:\n            s1_result = await prev_task\n            results.append(await stage2(s1_result))\n        prev_task = asyncio.create_task(stage1(batch))\n    if prev_task:\n        s1_result = await prev_task\n        results.append(await stage2(s1_result))\n    return results\n\nprint(asyncio.run(pipeline([[1,2], [3,4], [5,6]])))\n\nWhat does this pipeline achieve compared to a sequential approach?",
+      "choices": {
+        "A": "Nothing — it's effectively sequential because each stage is awaited before the next batch starts",
+        "B": "It runs all 3 batches through stage1 concurrently, then all through stage2",
+        "C": "It overlaps stage1 of batch N+1 with stage2 of batch N, achieving pipeline parallelism. Total time is ~0.5s instead of ~0.6s for 3 batches",
+        "D": "It deadlocks because create_task and await are used in the same loop"
+      },
+      "answer": "C",
+      "explanation": "For each batch except the first, stage1 of the current batch runs concurrently (via create_task) while stage2 processes the previous batch's result. This is pipeline parallelism: stage1(batch2) overlaps with stage2(batch1). The result is [[3,5], [7,9], [11,13]].",
+      "topic": "async_pipeline_parallelism",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY080",
+      "question": "Consider this SQLAlchemy migration scenario:\n\nYou have a 'users' table with a nullable 'email' column. You need to:\n1. Add a NOT NULL constraint to 'email'\n2. Handle existing NULL values\n3. Make this migration reversible\n\nWhich Alembic migration approach is correct?",
+      "choices": {
+        "A": "First op.execute(\"UPDATE users SET email='unknown@placeholder.com' WHERE email IS NULL\"), then op.alter_column('users', 'email', nullable=False). Downgrade reverses with op.alter_column('users', 'email', nullable=True)",
+        "B": "Use op.add_column with a new 'email_v2' column and drop the old one",
+        "C": "op.alter_column('users', 'email', nullable=False) — this handles NULLs automatically",
+        "D": "Drop the column and recreate it as NOT NULL"
+      },
+      "answer": "A",
+      "explanation": "Adding NOT NULL requires all existing rows to have values. Step 1: data migration fills NULLs with a placeholder. Step 2: alter_column sets nullable=False. The downgrade only needs to restore nullable=True (the placeholder data is harmless). Dropping/recreating columns loses data.",
+      "topic": "alembic_migrations",
+      "topic_category": "orm_database",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY081",
+      "question": "What is the output of this code involving __mro__ and cooperative multiple inheritance?\n\nclass A:\n    def method(self):\n        return ['A']\n\nclass B(A):\n    def method(self):\n        return ['B'] + super().method()\n\nclass C(A):\n    def method(self):\n        return ['C'] + super().method()\n\nclass D(B, C):\n    def method(self):\n        return ['D'] + super().method()\n\nprint(D().method())\nprint([cls.__name__ for cls in D.__mro__])",
+      "choices": {
+        "A": "['D', 'B', 'C', 'A'] and ['D', 'B', 'C', 'A', 'object'] — C3 linearization ensures each class appears once",
+        "B": "TypeError: cannot create a consistent MRO",
+        "C": "['D', 'B', 'A'] and ['D', 'B', 'A', 'object'] — C is skipped",
+        "D": "['D', 'B', 'A', 'C', 'A'] and ['D', 'B', 'A', 'C', 'A', 'object'] — A appears twice"
+      },
+      "answer": "A",
+      "explanation": "Python's C3 linearization produces MRO: D -> B -> C -> A -> object. super() follows the MRO, so D.method calls B.method calls C.method calls A.method. Each class appears exactly once, and cooperative super() traverses the entire chain.",
+      "topic": "mro_cooperative_inheritance",
+      "topic_category": "core_python",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY082",
+      "question": "You're designing a rate-limited API client with exponential backoff. Consider this implementation:\n\nimport asyncio\nimport random\n\nasync def fetch_with_retry(client, url, max_retries=5):\n    for attempt in range(max_retries):\n        response = await client.get(url)\n        if response.status == 429:\n            retry_after = response.headers.get('Retry-After')\n            if retry_after:\n                wait = float(retry_after)\n            else:\n                wait = min(2 ** attempt + random.uniform(0, 1), 60)\n            await asyncio.sleep(wait)\n            continue\n        response.raise_for_status()\n        return await response.json()\n    raise Exception(f'Max retries exceeded for {url}')\n\nWhat happens if the server returns 429 with Retry-After: 3600 (1 hour)?",
+      "choices": {
+        "A": "The function caps the wait at 60 seconds because of the min() call",
+        "B": "The function ignores Retry-After and always uses exponential backoff",
+        "C": "The function waits exactly 3600 seconds because the Retry-After header takes priority over the exponential backoff, and there is no cap applied to the server-specified value",
+        "D": "The function raises an exception immediately on 429"
+      },
+      "answer": "C",
+      "explanation": "When Retry-After is present, the code uses float(retry_after) directly — the min(..., 60) cap only applies to the else branch (exponential backoff). A server-specified 3600 is used as-is, causing a 1-hour wait. This is a common bug: the cap should apply to both paths.",
+      "topic": "rate_limit_backoff",
+      "topic_category": "api_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY083",
+      "question": "Consider this pytest test using hypothesis for a function that merges sorted lists:\n\nfrom hypothesis import given, settings\nfrom hypothesis import strategies as st\n\ndef merge_sorted(a: list[int], b: list[int]) -> list[int]:\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            j += 1\n    result.extend(a[i:])\n    result.extend(b[j:])\n    return result\n\n@given(\n    a=st.lists(st.integers(), min_size=0, max_size=100).map(sorted),\n    b=st.lists(st.integers(), min_size=0, max_size=100).map(sorted)\n)\ndef test_merge_sorted_properties(a, b):\n    result = merge_sorted(a, b)\n    assert len(result) == len(a) + len(b)\n    assert result == sorted(result)\n    assert all(x in result for x in a)\n    assert all(x in result for x in b)\n\nWhat property is this test NOT checking that could hide a bug?",
+      "choices": {
+        "A": "It doesn't check that the function terminates",
+        "B": "It doesn't test with negative numbers",
+        "C": "It doesn't check the return type",
+        "D": "It doesn't verify element counts — if merge_sorted drops duplicates, the length check passes but 'all(x in result for x in a)' also passes because at least one copy remains. It should check that each element appears the correct number of times"
+      },
+      "answer": "D",
+      "explanation": "If a=[1,1] and b=[1], the correct merge is [1,1,1]. A buggy implementation returning [1,1] would fail the length check but one returning [1,1,1] with wrong frequencies might not be caught. The 'in' check only verifies presence, not count. Using Counter equality would be more thorough.",
+      "topic": "property_based_testing",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY084",
+      "question": "You have this pandas data processing pipeline:\n\nimport pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\n    'user_id': [1, 1, 2, 2, 3, 3],\n    'timestamp': pd.to_datetime(['2024-01-01', '2024-01-02', '2024-01-01', '2024-01-03', '2024-01-02', '2024-01-02']),\n    'amount': [100, 200, 150, None, 300, 50]\n})\n\nresult = (\n    df\n    .assign(amount=lambda d: d['amount'].fillna(d.groupby('user_id')['amount'].transform('mean')))\n    .groupby('user_id')\n    .agg(total=('amount', 'sum'), count=('amount', 'count'), last_date=('timestamp', 'max'))\n    .query('total > 200')\n)\n\nWhat does user_id=2's row look like in the result?",
+      "choices": {
+        "A": "total=150.0, count=2, last_date=2024-01-03 — fillna replaces NaN with 0",
+        "B": "User 2 is excluded by the query filter because total <= 200",
+        "C": "total=150.0, count=1, last_date=2024-01-03 — the NaN row is dropped by fillna",
+        "D": "total=300.0, count=2, last_date=2024-01-03 — the NaN is filled with user 2's mean (150.0), so both rows have 150.0, summing to 300.0"
+      },
+      "answer": "D",
+      "explanation": "groupby('user_id')['amount'].transform('mean') computes user 2's mean as 150.0 (only non-NaN value). fillna replaces the NaN with 150.0. Now user 2 has amounts [150, 150]. After groupby.agg: total=300.0, count=2, last_date=2024-01-03. 300 > 200 passes the query filter.",
+      "topic": "pandas_pipeline",
+      "topic_category": "data_processing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY085",
+      "question": "Consider this web application vulnerability scenario:\n\nfrom flask import Flask, request, jsonify\nimport subprocess\n\napp = Flask(__name__)\n\n@app.route('/api/lookup')\ndef dns_lookup():\n    hostname = request.args.get('host', '')\n    if not hostname.isalnum():\n        # Sanitize: only allow alphanumeric hostnames\n        return jsonify(error='Invalid hostname'), 400\n    result = subprocess.run(\n        f'nslookup {hostname}',\n        shell=True, capture_output=True, text=True\n    )\n    return jsonify(output=result.stdout)\n\nIs this endpoint secure against command injection?",
+      "choices": {
+        "A": "No, because isalnum() doesn't block semicolons",
+        "B": "Yes, because shell=True is safe when combined with input validation",
+        "C": "No, because valid hostnames contain dots and hyphens which isalnum() rejects, so the developer will likely relax the validation. Also, even 'alphanumeric' hostnames can exploit environment-dependent shell behaviors",
+        "D": "Yes, isalnum() blocks all special characters including shell metacharacters"
+      },
+      "answer": "C",
+      "explanation": "isalnum() rejects dots and hyphens, making it reject all real hostnames (e.g., 'example.com'). This forces the developer to weaken validation. The real fix is using shell=False with a list: subprocess.run(['nslookup', hostname]). The validation and shell=True combination is a security anti-pattern.",
+      "topic": "command_injection_analysis",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY086",
+      "question": "Consider this async semaphore pattern for limiting concurrent HTTP requests:\n\nimport asyncio\nimport aiohttp\n\nasync def fetch_all(urls: list[str], max_concurrent: int = 10):\n    semaphore = asyncio.Semaphore(max_concurrent)\n    results = {}\n\n    async def fetch_one(session, url):\n        async with semaphore:\n            async with session.get(url) as resp:\n                results[url] = await resp.text()\n\n    async with aiohttp.ClientSession() as session:\n        tasks = [asyncio.create_task(fetch_one(session, u)) for u in urls]\n        await asyncio.gather(*tasks, return_exceptions=True)\n\n    return results\n\nIf 5 of 100 URLs raise ConnectionError, what happens to the results dict and the other 95 requests?",
+      "choices": {
+        "A": "The function raises the first ConnectionError and cancels remaining tasks",
+        "B": "All 100 requests fail because gather() cancels on first exception",
+        "C": "All 100 URLs populate results, with the 5 failed ones having None values",
+        "D": "95 URLs populate results successfully. The 5 failed URLs are not in results because their exceptions are captured by return_exceptions=True but the dict assignment is skipped. No exceptions propagate"
+      },
+      "answer": "D",
+      "explanation": "return_exceptions=True prevents gather from propagating exceptions. Each failed fetch_one raises before assigning to results, so those URLs are absent from the dict. The 95 successful fetches complete normally. The semaphore properly limits concurrency throughout.",
+      "topic": "async_semaphore_error_handling",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY087",
+      "question": "You're building a Docker image for a Python application. Consider these two Dockerfile approaches:\n\n# Approach A\nFROM python:3.12\nCOPY . /app\nWORKDIR /app\nRUN pip install -r requirements.txt\nCMD [\"python\", \"app.py\"]\n\n# Approach B\nFROM python:3.12-slim AS builder\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/install -r requirements.txt\n\nFROM python:3.12-slim\nCOPY --from=builder /install /usr/local\nCOPY . /app\nWORKDIR /app\nRUN useradd -r appuser && chown -R appuser /app\nUSER appuser\nCMD [\"python\", \"app.py\"]\n\nWhat are three specific improvements Approach B makes over Approach A?",
+      "choices": {
+        "A": "Smaller image (slim base + no build artifacts), better layer caching (requirements.txt copied before source), improved security (non-root user)",
+        "B": "Faster build time, GPU support, automatic scaling",
+        "C": "Cross-platform compatibility, faster startup, encrypted dependencies",
+        "D": "Smaller image, parallel builds, automatic dependency updates"
+      },
+      "answer": "A",
+      "explanation": "Approach B: (1) Uses slim base + multi-stage to exclude build tools and pip cache from final image. (2) Copies requirements.txt separately so dependency install layer is cached when only source code changes. (3) Runs as non-root appuser, following the principle of least privilege.",
+      "topic": "docker_multistage",
+      "topic_category": "devops",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY088",
+      "question": "What is the output of this code involving generators and send()?\n\ndef accumulator():\n    total = 0\n    while True:\n        value = yield total\n        if value is None:\n            break\n        total += value\n\ng = accumulator()\nnext(g)        # prime the generator\nprint(g.send(10))\nprint(g.send(20))\nprint(g.send(5))\ntry:\n    g.send(None)\nexcept StopIteration as e:\n    print(f'stopped with: {e.value}')",
+      "choices": {
+        "A": "10, 20, 5, stopped with: 35",
+        "B": "10, 30, 35, stopped with: None",
+        "C": "0, 10, 30, stopped with: 35",
+        "D": "10, 30, 35, stopped with: 35"
+      },
+      "answer": "B",
+      "explanation": "next(g) runs to first yield, yielding total=0 (discarded). send(10): value=10, total=10, yields 10. send(20): value=20, total=30, yields 30. send(5): value=5, total=35, yields 35. send(None): value=None, breaks the loop. The generator function returns None implicitly, so StopIteration.value is None.",
+      "topic": "generator_send",
+      "topic_category": "core_python",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY089",
+      "question": "Consider this API design for a resource that supports partial updates:\n\nPATCH /api/users/123\nContent-Type: application/merge-patch+json\n\n{\"name\": \"Bob\", \"email\": null}\n\nAccording to RFC 7396 (JSON Merge Patch), what should the server do with the 'email' field?",
+      "choices": {
+        "A": "Ignore the null value and keep email unchanged",
+        "B": "Return 400 Bad Request because null is not a valid value",
+        "C": "Remove the email field from the resource (delete/unset it)",
+        "D": "Set email to the string 'null'"
+      },
+      "answer": "C",
+      "explanation": "In JSON Merge Patch (RFC 7396), a null value means 'remove this field'. Non-null values are set/updated. Absent fields are left unchanged. This differs from JSON Patch (RFC 6902) which uses explicit operations. This is a key distinction when designing PATCH endpoints.",
+      "topic": "json_merge_patch",
+      "topic_category": "api_design",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY090",
+      "question": "You have this SQLAlchemy setup with a session and a deferred column:\n\nclass Document(Base):\n    __tablename__ = 'documents'\n    id = Column(Integer, primary_key=True)\n    title = Column(String)\n    content = deferred(Column(Text))  # Large text, loaded on access\n\nsession = Session()\ndocs = session.execute(select(Document).limit(100)).scalars().all()\n\n# Later, in a loop:\nfor doc in docs:\n    if 'important' in doc.title:\n        print(doc.content)  # Accesses deferred column\n\nsession.close()\n\nIf 10 of 100 documents have 'important' in their title, how many SQL queries are executed in total?",
+      "choices": {
+        "A": "11 queries — 1 initial + 10 separate queries to load content for each accessed document",
+        "B": "101 queries — 1 initial + 100 for each document's content",
+        "C": "1 query — deferred columns are loaded in the initial query",
+        "D": "2 queries — 1 initial + 1 batch load for all deferred columns"
+      },
+      "answer": "A",
+      "explanation": "deferred() postpones loading the column until it's accessed on an instance. The initial query loads id and title for 100 docs (1 query). Each access to doc.content triggers a separate SELECT for that row's content column. 10 documents are accessed, so 10 + 1 = 11 queries total.",
+      "topic": "deferred_column_loading",
+      "topic_category": "orm_database",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY091",
+      "question": "Consider this Polars vs Pandas comparison for a large dataset operation:\n\n# Pandas\nimport pandas as pd\ndf = pd.read_csv('large.csv')  # 10M rows\nresult = df[df['status'] == 'active'].groupby('category')['revenue'].sum()\n\n# Polars\nimport polars as pl\nresult = (\n    pl.scan_csv('large.csv')\n    .filter(pl.col('status') == 'active')\n    .group_by('category')\n    .agg(pl.col('revenue').sum())\n    .collect()\n)\n\nWhat are two specific optimizations Polars' lazy evaluation performs that Pandas cannot?",
+      "choices": {
+        "A": "Polars pushes the filter predicate into the CSV scan (predicate pushdown) so filtered rows are never fully materialized, and projects only 'status', 'category', 'revenue' columns (projection pruning) instead of loading all columns",
+        "B": "Polars uses memory-mapped files and zero-copy reads",
+        "C": "Polars compiles to C++ and uses SIMD instructions",
+        "D": "Polars uses GPU acceleration and distributed computing"
+      },
+      "answer": "A",
+      "explanation": "Polars' query optimizer performs predicate pushdown (applying the status=='active' filter during scan, reducing memory) and projection pruning (only reading the 3 needed columns from the CSV). Pandas loads all rows and all columns into memory before filtering.",
+      "topic": "polars_optimizations",
+      "topic_category": "data_processing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY092",
+      "question": "You discover this code in a Flask application:\n\nfrom flask import Flask, request, render_template_string\n\napp = Flask(__name__)\n\n@app.route('/greet')\ndef greet():\n    name = request.args.get('name', 'World')\n    template = f'<h1>Hello, {name}!</h1>'\n    return render_template_string(template)\n\nWhat vulnerability exists and what is the correct fix?",
+      "choices": {
+        "A": "CSRF vulnerability; fix by adding a CSRF token",
+        "B": "SQL injection; fix by using parameterized queries",
+        "C": "Server-Side Template Injection (SSTI); the user-controlled name is injected into the template string before Jinja2 processes it, allowing {{config}} or {{''.__class__.__mro__}} exploitation. Fix: use render_template_string('<h1>Hello, {{ name }}!</h1>', name=name)",
+        "D": "XSS vulnerability; fix by HTML-escaping name with markupsafe.escape()"
+      },
+      "answer": "C",
+      "explanation": "The f-string inserts user input into the template before Jinja2 renders it. An attacker can inject Jinja2 expressions like {{config}} to leak secrets or {{''.__class__.__mro__[1].__subclasses__()}} for RCE. The fix passes name as a template variable, so Jinja2 auto-escapes it.",
+      "topic": "ssti_vulnerability",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY093",
+      "question": "Consider this testing pattern for a function with complex dependencies:\n\nclass PaymentProcessor:\n    def __init__(self, gateway, notifier, audit_log):\n        self.gateway = gateway\n        self.notifier = notifier\n        self.audit_log = audit_log\n\n    def process(self, amount: float, user_id: int) -> dict:\n        if amount <= 0:\n            raise ValueError('Amount must be positive')\n        charge = self.gateway.charge(user_id, amount)\n        if charge['status'] == 'success':\n            self.notifier.send(user_id, f'Charged ${amount}')\n            self.audit_log.record('charge', user_id, amount)\n        return charge\n\ndef test_successful_payment():\n    gateway = Mock()\n    gateway.charge.return_value = {'status': 'success', 'id': 'tx_123'}\n    notifier = Mock()\n    audit = Mock()\n    \n    processor = PaymentProcessor(gateway, notifier, audit)\n    result = processor.process(50.0, 42)\n    \n    assert result == {'status': 'success', 'id': 'tx_123'}\n    gateway.charge.assert_called_once_with(42, 50.0)\n    notifier.send.assert_called_once_with(42, 'Charged $50.0')\n    audit.record.assert_called_once_with('charge', 42, 50.0)\n\nWhat testing principle does this test violate, and why is it fragile?",
+      "choices": {
+        "A": "It doesn't test the error path",
+        "B": "It over-specifies implementation details by asserting exact call arguments on all three collaborators. If the notification message format changes from 'Charged $50.0' to 'Payment of $50.00 processed', the test breaks even though the business logic is correct",
+        "C": "It should use real implementations instead of mocks",
+        "D": "It violates DRY — the mock setup should be in a fixture"
+      },
+      "answer": "B",
+      "explanation": "The test is tightly coupled to implementation details (exact message format, exact call signatures for all collaborators). A better approach: assert the gateway was called and notification was sent (assert_called_once()) without checking exact strings, or use a spy that verifies the important parts.",
+      "topic": "test_coupling",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY094",
+      "question": "Consider this context manager implementation:\n\nfrom contextlib import asynccontextmanager\nimport asyncio\n\nclass ConnectionPool:\n    def __init__(self, max_size=5):\n        self._pool = asyncio.Queue(maxsize=max_size)\n        self._size = 0\n        self._max_size = max_size\n        self._lock = asyncio.Lock()\n\n    @asynccontextmanager\n    async def acquire(self):\n        conn = None\n        try:\n            conn = self._pool.get_nowait()\n        except asyncio.QueueEmpty:\n            async with self._lock:\n                if self._size < self._max_size:\n                    conn = await self._create_connection()\n                    self._size += 1\n            if conn is None:\n                conn = await self._pool.get()  # block until available\n        try:\n            yield conn\n        finally:\n            await self._pool.put(conn)\n\nWhat race condition exists in this implementation?",
+      "choices": {
+        "A": "No race condition exists; the lock properly protects creation",
+        "B": "The finally block can put a connection back while another coroutine is reading from the queue",
+        "C": "Between the get_nowait() failure and acquiring the lock, another coroutine could create a connection AND return it to the pool, causing the blocking get() to never be reached but the pool to exceed max_size",
+        "D": "The _create_connection() call inside the lock can await (yielding control), but asyncio.Lock is not reentrant so no other coroutine enters the critical section during that await. The real issue is that get_nowait() and the lock-protected creation are not atomic: a connection could be returned to the pool between the failed get_nowait() and the lock acquisition, causing an unnecessary new connection to be created when _size < _max_size, potentially wasting resources but not exceeding max_size"
+      },
+      "answer": "A",
+      "explanation": "The implementation is correct. asyncio.Lock ensures only one coroutine checks _size and creates a connection at a time. get_nowait tries the fast path. If the pool is empty and under capacity, the lock serializes creation. If at capacity, coroutines block on _pool.get() until a connection is returned. The lock properly guards the size check and increment.",
+      "topic": "async_connection_pool",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY095",
+      "question": "Consider this CI/CD pipeline configuration for a Python monorepo:\n\n# .github/workflows/ci.yml\njobs:\n  test:\n    strategy:\n      matrix:\n        python-version: ['3.10', '3.11', '3.12']\n        os: [ubuntu-latest, windows-latest]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: ${{ matrix.python-version }}\n      - run: pip install -e '.[dev]'\n      - run: pytest --cov=src --cov-report=xml\n      - run: mypy src/\n\n  publish:\n    needs: test\n    if: github.ref == 'refs/heads/main'\n    steps:\n      - run: pip install build twine\n      - run: python -m build\n      - run: twine upload dist/*\n\nWhat is the critical flaw in the publish job?",
+      "choices": {
+        "A": "It doesn't pin dependency versions",
+        "B": "python -m build should be replaced with setup.py sdist",
+        "C": "twine upload requires authentication tokens that are missing",
+        "D": "It runs on all matrix combinations, publishing the package 6 times. The publish job inherits the matrix strategy from test, creating duplicate uploads. It should use a separate job without matrix or use a conditional to run on only one combination"
+      },
+      "answer": "C",
+      "explanation": "The publish job is missing authentication configuration for twine. Without TWINE_USERNAME/TWINE_PASSWORD environment variables or a PyPI API token, twine upload will fail with an authentication error. Additionally, the job is missing checkout and setup-python steps, but the authentication issue is the critical security and functionality flaw. The publish job does NOT inherit the test job's matrix — 'needs' only creates a dependency ordering.",
+      "topic": "ci_cd_pipeline_design",
+      "topic_category": "devops",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY096",
+      "question": "Consider this memory optimization scenario:\n\nimport sys\n\nclass PointDict:\n    def __init__(self, x, y, z):\n        self.x = x\n        self.y = y\n        self.z = z\n\nclass PointSlots:\n    __slots__ = ('x', 'y', 'z')\n    def __init__(self, x, y, z):\n        self.x = x\n        self.y = y\n        self.z = z\n\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass PointDataclass:\n    x: float\n    y: float\n    z: float\n\nYou need to store 10 million points in a list. Rank these three approaches by memory usage (lowest to highest).",
+      "choices": {
+        "A": "PointDataclass < PointSlots < PointDict — dataclasses have special optimization",
+        "B": "PointDict < PointSlots < PointDataclass — __dict__ is more compact than slots for 3 attributes",
+        "C": "PointSlots = PointDataclass < PointDict — slots eliminates __dict__, saving ~100 bytes per instance. The dataclass with slots=True is equivalent to manual __slots__",
+        "D": "All three use the same memory because Python optimizes small objects equally"
+      },
+      "answer": "C",
+      "explanation": "PointSlots and PointDataclass(slots=True) both use __slots__, eliminating the per-instance __dict__ (typically 100+ bytes). They use roughly equal memory. PointDict stores each instance's attributes in a __dict__, adding significant overhead per instance. At 10M instances, this difference is substantial (potentially ~1GB).",
+      "topic": "memory_optimization",
+      "topic_category": "core_python",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY097",
+      "question": "You need to safely handle user-uploaded JSON that may contain deeply nested structures. Consider:\n\nimport json\n\ndef safe_parse(raw: str, max_depth: int = 20) -> dict:\n    def check_depth(obj, depth=0):\n        if depth > max_depth:\n            raise ValueError(f'Nesting exceeds {max_depth} levels')\n        if isinstance(obj, dict):\n            for v in obj.values():\n                check_depth(v, depth + 1)\n        elif isinstance(obj, list):\n            for item in obj:\n                check_depth(item, depth + 1)\n    \n    parsed = json.loads(raw)\n    check_depth(parsed)\n    return parsed\n\nWhat is the vulnerability in this approach?",
+      "choices": {
+        "A": "json.loads() is safe against all nesting depths because it uses an iterative parser",
+        "B": "check_depth doesn't handle tuples",
+        "C": "The max_depth limit is too high",
+        "D": "json.loads() fully parses the input BEFORE check_depth runs. A maliciously crafted JSON with thousands of nesting levels can cause a stack overflow or memory exhaustion in json.loads() itself, before the depth check ever executes"
+      },
+      "answer": "D",
+      "explanation": "The depth check happens after json.loads() completes. A JSON payload like '{\"a\":{\"a\":{...}}}' nested 100,000 levels deep will crash CPython's json.loads() with a RecursionError or consume excessive memory before check_depth runs. The check must happen during parsing, not after.",
+      "topic": "json_depth_attack",
+      "topic_category": "security",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY098",
+      "question": "Consider this numpy operation for batch distance calculation:\n\nimport numpy as np\n\n# points shape: (1000, 3) — 1000 3D points\n# centers shape: (50, 3) — 50 cluster centers\npoints = np.random.randn(1000, 3)\ncenters = np.random.randn(50, 3)\n\n# Calculate distance from each point to each center\ndiff = points[:, np.newaxis, :] - centers[np.newaxis, :, :]\ndistances = np.sqrt(np.sum(diff**2, axis=2))\n\nWhat are the intermediate shapes, and what is the final shape of distances?",
+      "choices": {
+        "A": "This raises a broadcasting error because the shapes are incompatible",
+        "B": "diff is (1000, 3), distances is (1000,)",
+        "C": "diff is (50, 1000, 3), distances is (50, 1000)",
+        "D": "points[:, np.newaxis, :] is (1000, 1, 3), centers[np.newaxis, :, :] is (1, 50, 3), diff is (1000, 50, 3) via broadcasting, sum over axis=2 gives (1000, 50), so distances is (1000, 50)"
+      },
+      "answer": "D",
+      "explanation": "np.newaxis adds dimensions: points becomes (1000,1,3) and centers becomes (1,50,3). Broadcasting produces diff of shape (1000,50,3). Squaring preserves shape. sum(axis=2) collapses the last axis to (1000,50). sqrt preserves shape. Each row i contains distances from point i to all 50 centers.",
+      "topic": "numpy_batch_computation",
+      "topic_category": "data_processing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY099",
+      "question": "Consider this advanced pytest fixture pattern using factory fixtures:\n\n@pytest.fixture\ndef make_user(db_session):\n    created = []\n    def _make_user(name='Test', email=None, active=True):\n        email = email or f'{name.lower()}@test.com'\n        user = User(name=name, email=email, active=active)\n        db_session.add(user)\n        db_session.flush()\n        created.append(user)\n        return user\n    yield _make_user\n    for user in created:\n        db_session.delete(user)\n    db_session.flush()\n\ndef test_deactivate_user(make_user):\n    admin = make_user('Admin', active=True)\n    target = make_user('Target', active=True)\n    deactivate(target.id, by=admin.id)\n    assert not target.active\n\nWhat advantage does this factory fixture pattern provide over a simple fixture that returns a single user?",
+      "choices": {
+        "A": "It automatically generates random test data",
+        "B": "It allows tests to create multiple users with custom attributes while the fixture tracks all created objects for cleanup. Each test gets an independent factory that manages its own lifecycle",
+        "C": "It replaces the need for a test database",
+        "D": "It's faster because it uses connection pooling"
+      },
+      "answer": "B",
+      "explanation": "The factory fixture returns a callable that creates users with customizable attributes. The fixture tracks all created objects in the 'created' list and cleans them up after the test. This lets tests like test_deactivate_user create exactly the users they need with specific attributes.",
+      "topic": "factory_fixtures",
+      "topic_category": "testing",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "PY100",
+      "question": "You have a FastAPI application that needs to handle both synchronous database calls and async HTTP calls. Consider:\n\nfrom fastapi import FastAPI, Depends\nfrom sqlalchemy.orm import Session\nimport httpx\n\napp = FastAPI()\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n@app.get('/users/{user_id}/enriched')\nasync def get_enriched_user(user_id: int, db: Session = Depends(get_db)):\n    user = db.query(User).get(user_id)  # Sync ORM call\n    async with httpx.AsyncClient() as client:\n        profile = await client.get(f'https://api.example.com/profiles/{user_id}')\n    return {**user.__dict__, 'profile': profile.json()}\n\nWhat is the performance problem with this endpoint?",
+      "choices": {
+        "A": "The endpoint should use PUT instead of GET for enrichment",
+        "B": "The synchronous db.query().get() blocks the event loop thread because it's called inside an async function. FastAPI runs async endpoints on the event loop, so blocking ORM calls prevent other requests from being processed. The fix is to either use async SQLAlchemy, run the sync call in a thread via run_in_executor, or make the endpoint a regular def function (FastAPI auto-threads sync endpoints)",
+        "C": "httpx.AsyncClient is slower than requests for single calls",
+        "D": "The Depends(get_db) creates a new database connection per request instead of using pooling"
+      },
+      "answer": "B",
+      "explanation": "In an async def endpoint, synchronous I/O (like SQLAlchemy's sync engine) blocks the event loop thread, stalling all concurrent request handling. Solutions: (1) use async SQLAlchemy with asyncpg, (2) wrap sync calls in asyncio.to_thread() or run_in_executor, or (3) use a regular def endpoint so FastAPI runs it in a thread pool automatically.",
+      "topic": "async_sync_mixing",
+      "topic_category": "async",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}

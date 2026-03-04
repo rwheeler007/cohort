@@ -519,13 +519,21 @@ def _invoke_agent_sync(item: dict) -> None:
     # D5: Try local router first, fallback to Claude CLI transparently
     response_content: str | None = None
     response_metadata: dict[str, Any] = {}
+
+    # Load per-agent temperature from agent_config.json (if available)
+    agent_temperature: float | None = None
+    if _agent_store is not None:
+        agent_cfg = _agent_store.get(agent_id)
+        if agent_cfg and agent_cfg.model_params:
+            agent_temperature = agent_cfg.model_params.get("temperature")
+
     try:
         from cohort.local import LocalRouter
 
         router = LocalRouter()
         # Infer task type from message content (simple heuristic)
         task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
-        route_result = router.route(full_prompt, task_type=task_type)
+        route_result = router.route(full_prompt, task_type=task_type, temperature=agent_temperature)
         if route_result is not None and route_result.text:
             response_content = route_result.text
             response_metadata = {

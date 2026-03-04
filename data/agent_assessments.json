@@ -1,0 +1,887 @@
+{
+  "_meta": {
+    "description": "Certification-level assessment questions for Cohort agents. Sources: PCAP (Python Institute), JSE (JS Institute), ISTQB CTFL v4.0, OWASP Top 10 2025, IAAP WAS (Web Accessibility Specialist).",
+    "created": "2026-03-02",
+    "questions_per_agent": 10,
+    "passing_score": 70
+  },
+  "python_developer": {
+    "source": "PCAP-31-03 / PCEP-30-02 certification level",
+    "questions": [
+      {
+        "id": "PY01",
+        "question": "What is the output of the following code?\n\ndef func(a, b=[]):\n    b.append(a)\n    return b\n\nprint(func(1))\nprint(func(2))",
+        "choices": {
+          "A": "[1] then [2]",
+          "B": "[1] then [1, 2]",
+          "C": "[1, 2] then [1, 2]",
+          "D": "TypeError"
+        },
+        "answer": "B",
+        "explanation": "Mutable default arguments persist between calls. The list b is created once at definition time.",
+        "topic": "mutable_defaults",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "PY02",
+        "question": "Which statement about Python's GIL (Global Interpreter Lock) is TRUE?",
+        "choices": {
+          "A": "It prevents all forms of concurrent execution in Python",
+          "B": "It allows only one thread to execute Python bytecode at a time in CPython",
+          "C": "It is present in all Python implementations including PyPy and Jython",
+          "D": "It makes Python programs thread-safe by default"
+        },
+        "answer": "B",
+        "explanation": "The GIL is specific to CPython and allows only one thread to execute bytecode at a time, though I/O-bound threads can release it.",
+        "topic": "concurrency",
+        "difficulty": "advanced"
+      },
+      {
+        "id": "PY03",
+        "question": "What does the following code print?\n\ntry:\n    x = 1 / 0\nexcept ArithmeticError:\n    print('A')\nexcept ZeroDivisionError:\n    print('B')",
+        "choices": {
+          "A": "A",
+          "B": "B",
+          "C": "A then B",
+          "D": "ZeroDivisionError is raised"
+        },
+        "answer": "A",
+        "explanation": "ZeroDivisionError is a subclass of ArithmeticError. The first matching except block executes, so 'A' prints.",
+        "topic": "exception_handling",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "PY04",
+        "question": "Which of the following is the correct way to open a file for reading in Python while ensuring it is properly closed?",
+        "choices": {
+          "A": "f = open('file.txt', 'r'); data = f.read(); f.close()",
+          "B": "with open('file.txt', 'r') as f: data = f.read()",
+          "C": "f = open('file.txt'); data = f.read()  # Python auto-closes",
+          "D": "Both A and B are correct and equally safe"
+        },
+        "answer": "B",
+        "explanation": "The with statement (context manager) guarantees the file is closed even if an exception occurs. Option A can leak the handle on exception.",
+        "topic": "context_managers",
+        "difficulty": "basic"
+      },
+      {
+        "id": "PY05",
+        "question": "What is the output of: list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(6))))?",
+        "choices": {
+          "A": "[0, 4, 16]",
+          "B": "[4, 16]",
+          "C": "[0, 1, 4, 9, 16, 25]",
+          "D": "[1, 9, 25]"
+        },
+        "answer": "A",
+        "explanation": "filter keeps even numbers from range(6): [0, 2, 4]. map squares them: [0, 4, 16].",
+        "topic": "functional_programming",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "PY06",
+        "question": "Which of the following correctly describes the difference between @staticmethod and @classmethod?",
+        "choices": {
+          "A": "@staticmethod receives the class as first argument; @classmethod does not",
+          "B": "@classmethod receives the class (cls) as first argument; @staticmethod receives neither self nor cls",
+          "C": "Both receive self as first argument but differ in inheritance behavior",
+          "D": "There is no practical difference; they are interchangeable"
+        },
+        "answer": "B",
+        "explanation": "@classmethod gets cls (the class) as first parameter. @staticmethod gets no implicit first parameter -- it's just a regular function namespaced in the class.",
+        "topic": "oop",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "PY07",
+        "question": "What happens when you execute: import this?",
+        "choices": {
+          "A": "ImportError -- 'this' is not a standard module",
+          "B": "It prints The Zen of Python",
+          "C": "It returns a reference to the current module",
+          "D": "It imports the __this__ builtin namespace"
+        },
+        "answer": "B",
+        "explanation": "'import this' is an Easter egg that prints The Zen of Python (PEP 20), Python's design principles.",
+        "topic": "python_culture",
+        "difficulty": "basic"
+      },
+      {
+        "id": "PY08",
+        "question": "Given:\n\nd = {'a': 1, 'b': 2, 'c': 3}\nresult = {v: k for k, v in d.items()}\n\nWhat is result?",
+        "choices": {
+          "A": "{'a': 1, 'b': 2, 'c': 3}",
+          "B": "{1: 'a', 2: 'b', 3: 'c'}",
+          "C": "[('a', 1), ('b', 2), ('c', 3)]",
+          "D": "SyntaxError"
+        },
+        "answer": "B",
+        "explanation": "Dict comprehension swaps keys and values. v becomes the new key, k becomes the new value.",
+        "topic": "dict_comprehension",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "PY09",
+        "question": "What is the output of:\n\na = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)",
+        "choices": {
+          "A": "[1, 2, 3]",
+          "B": "[1, 2, 3, 4]",
+          "C": "TypeError",
+          "D": "[4]"
+        },
+        "answer": "B",
+        "explanation": "b = a creates a reference, not a copy. Both a and b point to the same list object. Modifying b modifies a.",
+        "topic": "references_vs_copies",
+        "difficulty": "basic"
+      },
+      {
+        "id": "PY10",
+        "question": "Which approach is correct for making a SQL query safe from injection in Python?",
+        "choices": {
+          "A": "cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+          "B": "cursor.execute(\"SELECT * FROM users WHERE id = \" + user_id)",
+          "C": "cursor.execute(\"SELECT * FROM users WHERE id = %s\", (user_id,))",
+          "D": "cursor.execute(\"SELECT * FROM users WHERE id = \" + str(int(user_id)))"
+        },
+        "answer": "C",
+        "explanation": "Parameterized queries (%s with tuple) let the database driver handle escaping. String formatting (A, B) and manual casting (D) are injection-prone.",
+        "topic": "security",
+        "difficulty": "intermediate"
+      }
+    ]
+  },
+  "javascript_developer": {
+    "source": "JSE-40-01 / Salesforce JS-Dev-101 certification level",
+    "questions": [
+      {
+        "id": "JS01",
+        "question": "What is the output of:\nconsole.log(typeof null);",
+        "choices": {
+          "A": "\"null\"",
+          "B": "\"undefined\"",
+          "C": "\"object\"",
+          "D": "\"NaN\""
+        },
+        "answer": "C",
+        "explanation": "typeof null returns 'object' -- this is a well-known JavaScript bug from the language's first implementation that was never fixed for backwards compatibility.",
+        "topic": "type_system",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "JS02",
+        "question": "What does the following output?\nconst arr = [1, 2, 3];\narr.push(4);\nconsole.log(arr.length);",
+        "choices": {
+          "A": "3",
+          "B": "4",
+          "C": "TypeError -- cannot modify const",
+          "D": "undefined"
+        },
+        "answer": "B",
+        "explanation": "const prevents reassignment of the variable, not mutation of the object. The array itself can be modified with push, pop, etc.",
+        "topic": "const_vs_immutable",
+        "difficulty": "basic"
+      },
+      {
+        "id": "JS03",
+        "question": "What is the output of:\nconsole.log(0.1 + 0.2 === 0.3);",
+        "choices": {
+          "A": "true",
+          "B": "false",
+          "C": "NaN",
+          "D": "TypeError"
+        },
+        "answer": "B",
+        "explanation": "IEEE 754 floating-point arithmetic: 0.1 + 0.2 = 0.30000000000000004, which is not strictly equal to 0.3.",
+        "topic": "floating_point",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "JS04",
+        "question": "In React, what happens when you call setState with the same value as the current state?",
+        "choices": {
+          "A": "React always re-renders the component",
+          "B": "React bails out of the re-render (shallow comparison)",
+          "C": "React throws a warning in development mode",
+          "D": "React queues the update but delays rendering indefinitely"
+        },
+        "answer": "B",
+        "explanation": "React uses Object.is() for comparison. If the new state is the same as current state, React skips re-rendering (bail out optimization).",
+        "topic": "react_rendering",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "JS05",
+        "question": "What is the key difference between Promise.all() and Promise.allSettled()?",
+        "choices": {
+          "A": "Promise.all() runs sequentially; Promise.allSettled() runs in parallel",
+          "B": "Promise.all() rejects on first failure; Promise.allSettled() waits for all promises to settle",
+          "C": "Promise.allSettled() is synchronous; Promise.all() is asynchronous",
+          "D": "There is no difference; allSettled is just an alias"
+        },
+        "answer": "B",
+        "explanation": "Promise.all() short-circuits on first rejection. Promise.allSettled() always waits for every promise to either resolve or reject, returning status for each.",
+        "topic": "async_patterns",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "JS06",
+        "question": "What does this TypeScript code produce?\n\ninterface User { name: string; age?: number; }\nconst u: User = { name: 'Alice' };\nconsole.log(u.age);",
+        "choices": {
+          "A": "TypeScript compilation error",
+          "B": "null",
+          "C": "undefined",
+          "D": "0"
+        },
+        "answer": "C",
+        "explanation": "The ? makes age optional. When not provided, accessing it returns undefined (not null or 0).",
+        "topic": "typescript",
+        "difficulty": "basic"
+      },
+      {
+        "id": "JS07",
+        "question": "Which hook should you use to perform side effects (data fetching, subscriptions) in a React functional component?",
+        "choices": {
+          "A": "useMemo",
+          "B": "useCallback",
+          "C": "useEffect",
+          "D": "useRef"
+        },
+        "answer": "C",
+        "explanation": "useEffect is the hook for side effects. useMemo/useCallback are for memoization. useRef is for mutable references that don't trigger re-renders.",
+        "topic": "react_hooks",
+        "difficulty": "basic"
+      },
+      {
+        "id": "JS08",
+        "question": "What is the output of:\n\nconst a = [1, 2, 3];\nconst b = [...a];\nb.push(4);\nconsole.log(a.length, b.length);",
+        "choices": {
+          "A": "4 4",
+          "B": "3 4",
+          "C": "3 3",
+          "D": "TypeError"
+        },
+        "answer": "B",
+        "explanation": "Spread operator creates a shallow copy. Modifying b doesn't affect a. a remains [1,2,3] (length 3), b becomes [1,2,3,4] (length 4).",
+        "topic": "spread_immutability",
+        "difficulty": "basic"
+      },
+      {
+        "id": "JS09",
+        "question": "What does 'use strict' at the top of a JavaScript file do?",
+        "choices": {
+          "A": "Enables TypeScript-like type checking at runtime",
+          "B": "Prevents assigning to undeclared variables and makes silent errors throw exceptions",
+          "C": "Activates async/await syntax support",
+          "D": "Enables ES6 module import/export syntax"
+        },
+        "answer": "B",
+        "explanation": "Strict mode catches common coding mistakes: undeclared variables throw ReferenceError, duplicate params are errors, 'this' is undefined in functions (not window).",
+        "topic": "strict_mode",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "JS10",
+        "question": "What is a closure in JavaScript?",
+        "choices": {
+          "A": "A function that has been called and returned a value",
+          "B": "A function that retains access to variables from its outer (enclosing) scope even after the outer function has returned",
+          "C": "A function defined inside a class constructor",
+          "D": "A function that cannot be called more than once"
+        },
+        "answer": "B",
+        "explanation": "A closure is a function bundled with its lexical environment. It remembers variables from its outer scope even when executed outside that scope.",
+        "topic": "closures",
+        "difficulty": "intermediate"
+      }
+    ]
+  },
+  "web_developer": {
+    "source": "IAAP WAS (Web Accessibility Specialist) / W3C WCAG 2.1 certification level",
+    "questions": [
+      {
+        "id": "WEB01",
+        "question": "According to WCAG 2.1 Level AA, what is the minimum contrast ratio for normal-sized text against its background?",
+        "choices": {
+          "A": "3:1",
+          "B": "4.5:1",
+          "C": "7:1",
+          "D": "2:1"
+        },
+        "answer": "B",
+        "explanation": "WCAG 2.1 SC 1.4.3 requires 4.5:1 for normal text and 3:1 for large text (18pt+ or 14pt bold) at Level AA.",
+        "topic": "wcag_contrast",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB02",
+        "question": "Which HTML element is the most semantically correct for a page's primary navigation?",
+        "choices": {
+          "A": "<div class=\"nav\">",
+          "B": "<nav role=\"navigation\">",
+          "C": "<nav>",
+          "D": "<ul class=\"navigation\">"
+        },
+        "answer": "C",
+        "explanation": "<nav> is the semantic HTML5 element for navigation. Adding role='navigation' (B) is redundant -- the implicit role of <nav> is already 'navigation'.",
+        "topic": "semantic_html",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "WEB03",
+        "question": "What CSS property creates a layout where child elements wrap to the next line when they exceed the container width?",
+        "choices": {
+          "A": "display: flex; flex-wrap: wrap;",
+          "B": "display: flex; flex-direction: column;",
+          "C": "display: block; overflow: hidden;",
+          "D": "display: inline; white-space: nowrap;"
+        },
+        "answer": "A",
+        "explanation": "flex-wrap: wrap allows flex items to wrap to the next line. flex-direction: column stacks vertically but doesn't wrap.",
+        "topic": "flexbox",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB04",
+        "question": "An image is purely decorative (adds no information). What is the correct accessibility treatment?",
+        "choices": {
+          "A": "alt=\"decorative image\"",
+          "B": "Remove the alt attribute entirely",
+          "C": "alt=\"\" (empty alt attribute)",
+          "D": "aria-label=\"decoration\""
+        },
+        "answer": "C",
+        "explanation": "Empty alt (alt='') tells screen readers to skip the image. Removing alt entirely causes screen readers to announce the filename. A non-empty alt would be announced.",
+        "topic": "alt_text",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB05",
+        "question": "In CSS Grid, what does 'grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))' achieve?",
+        "choices": {
+          "A": "Creates exactly 4 columns of 250px each",
+          "B": "Creates responsive columns that are at least 250px wide, filling available space, wrapping as needed",
+          "C": "Creates a single column that is 250px wide",
+          "D": "Creates columns that are always exactly 1fr wide regardless of content"
+        },
+        "answer": "B",
+        "explanation": "auto-fit + minmax creates a responsive grid: columns are at least 250px, expand to fill space (1fr), and auto-wrap when the container is too narrow.",
+        "topic": "css_grid",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "WEB06",
+        "question": "Which ARIA role should be used for a modal dialog that requires user interaction before returning to the page?",
+        "choices": {
+          "A": "role=\"dialog\"",
+          "B": "role=\"alertdialog\"",
+          "C": "role=\"alert\"",
+          "D": "role=\"tooltip\""
+        },
+        "answer": "B",
+        "explanation": "alertdialog is for modal dialogs requiring user acknowledgment. dialog is for non-modal. alert is for dynamic notifications. tooltip is for hover info.",
+        "topic": "aria_roles",
+        "difficulty": "advanced"
+      },
+      {
+        "id": "WEB07",
+        "question": "What is the mobile-first approach to responsive design?",
+        "choices": {
+          "A": "Design for desktop first, then use max-width media queries to override for mobile",
+          "B": "Write base styles for mobile, then use min-width media queries to enhance for larger screens",
+          "C": "Create separate CSS files for mobile and desktop",
+          "D": "Use viewport units (vw, vh) for all sizing"
+        },
+        "answer": "B",
+        "explanation": "Mobile-first means base CSS targets small screens. min-width breakpoints progressively add complexity for wider viewports. This sends less CSS to mobile devices.",
+        "topic": "responsive_design",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB08",
+        "question": "A developer removes the default :focus outline on buttons with 'outline: none'. What accessibility problem does this create?",
+        "choices": {
+          "A": "Screen readers can no longer find the button",
+          "B": "Keyboard users cannot see which element currently has focus",
+          "C": "The button becomes unclickable on mobile devices",
+          "D": "The button loses its click event handler"
+        },
+        "answer": "B",
+        "explanation": "Removing focus outline makes it impossible for keyboard users to track their position on the page. WCAG 2.4.7 requires a visible focus indicator.",
+        "topic": "focus_management",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB09",
+        "question": "What is the difference between 'rem' and 'em' units in CSS?",
+        "choices": {
+          "A": "rem is relative to the root element font-size; em is relative to the parent element font-size",
+          "B": "rem is for margins; em is for padding",
+          "C": "They are identical and interchangeable",
+          "D": "rem is a fixed unit; em is relative"
+        },
+        "answer": "A",
+        "explanation": "rem = root em (relative to <html> font-size, typically 16px). em = relative to the current element's or parent's font-size, which can compound.",
+        "topic": "css_units",
+        "difficulty": "basic"
+      },
+      {
+        "id": "WEB10",
+        "question": "Which of the following is NOT one of the four principles of WCAG (POUR)?",
+        "choices": {
+          "A": "Perceivable",
+          "B": "Operable",
+          "C": "Universal",
+          "D": "Robust"
+        },
+        "answer": "C",
+        "explanation": "POUR stands for Perceivable, Operable, Understandable, Robust. 'Universal' is not one of the four principles.",
+        "topic": "wcag_principles",
+        "difficulty": "basic"
+      }
+    ]
+  },
+  "security_agent": {
+    "source": "OWASP Top 10 2025 / CompTIA Security+ / CEH certification level",
+    "questions": [
+      {
+        "id": "SEC01",
+        "question": "Bob is logged in as a regular user. He discovers that by accessing https://example.com/admin/deleteUser?userId=500 he can delete user accounts, even though he's not an administrator. This is an example of:",
+        "choices": {
+          "A": "Horizontal privilege escalation (IDOR)",
+          "B": "Vertical privilege escalation (elevation of privilege)",
+          "C": "Authentication failure",
+          "D": "Session hijacking"
+        },
+        "answer": "B",
+        "explanation": "A regular user performing admin actions is vertical privilege escalation. Horizontal would be accessing another user at the same privilege level.",
+        "topic": "access_control",
+        "difficulty": "intermediate",
+        "source_url": "https://dev.to/fosres/owasp-top-10-2025-quiz-test-your-appsec-interview-readiness-51-questions-397n"
+      },
+      {
+        "id": "SEC02",
+        "question": "User Alice (ID=100) changes her profile URL from userId=100 to userId=200 and sees Bob's private data. This is an example of:",
+        "choices": {
+          "A": "Vertical privilege escalation",
+          "B": "Horizontal privilege escalation (IDOR)",
+          "C": "Client-side access control bypass",
+          "D": "Authentication failure"
+        },
+        "answer": "B",
+        "explanation": "Accessing another user's data at the same privilege level by manipulating a direct object reference is Insecure Direct Object Reference (IDOR), a form of horizontal privilege escalation.",
+        "topic": "idor",
+        "difficulty": "intermediate",
+        "source_url": "https://dev.to/fosres/owasp-top-10-2025-quiz-test-your-appsec-interview-readiness-51-questions-397n"
+      },
+      {
+        "id": "SEC03",
+        "question": "Which of the following is the MOST secure way to store user passwords?",
+        "choices": {
+          "A": "SHA-256 hash of the password",
+          "B": "AES-256 encryption of the password",
+          "C": "bcrypt or Argon2 with a unique salt per user",
+          "D": "Base64 encoding of the password"
+        },
+        "answer": "C",
+        "explanation": "Adaptive hashing (bcrypt, Argon2, PBKDF2) with per-user salts is the standard. SHA-256 is too fast (brute-forceable). AES is reversible. Base64 is encoding, not security.",
+        "topic": "cryptography",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "SEC04",
+        "question": "Which OWASP Top 10 category does SQL injection fall under?",
+        "choices": {
+          "A": "A01:2021 Broken Access Control",
+          "B": "A02:2021 Cryptographic Failures",
+          "C": "A03:2021 Injection",
+          "D": "A07:2021 Identification and Authentication Failures"
+        },
+        "answer": "C",
+        "explanation": "SQL injection, XSS, command injection, and LDAP injection all fall under A03:2021 Injection in the OWASP Top 10.",
+        "topic": "owasp_top10",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SEC05",
+        "question": "A developer implements access control on a user profile endpoint. What critical check is most commonly MISSING?",
+        "choices": {
+          "A": "Authentication check (is user logged in?)",
+          "B": "Authorization check (should the current user access THIS specific resource?)",
+          "C": "Input validation (is the ID a valid format?)",
+          "D": "Rate limiting (prevent automated enumeration)"
+        },
+        "answer": "B",
+        "explanation": "Many apps check authentication (who are you?) but skip authorization (are you allowed to access THIS resource?). This leads to IDOR and privilege escalation.",
+        "topic": "authz_vs_authn",
+        "difficulty": "intermediate",
+        "source_url": "https://dev.to/fosres/owasp-top-10-2025-quiz-test-your-appsec-interview-readiness-51-questions-397n"
+      },
+      {
+        "id": "SEC06",
+        "question": "What is the primary defense against Cross-Site Request Forgery (CSRF)?",
+        "choices": {
+          "A": "Input validation on all form fields",
+          "B": "Using HTTPS for all requests",
+          "C": "Anti-CSRF tokens (synchronizer token pattern) or SameSite cookies",
+          "D": "Content Security Policy headers"
+        },
+        "answer": "C",
+        "explanation": "CSRF tokens ensure the request came from your site's form. SameSite=Strict/Lax cookies prevent cross-origin cookie sending. HTTPS doesn't prevent CSRF.",
+        "topic": "csrf",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "SEC07",
+        "question": "Is a parameterized SQL query completely safe from ALL injection attacks?",
+        "choices": {
+          "A": "Yes, completely safe from all injection",
+          "B": "No, parameterized queries are no better than string concatenation",
+          "C": "Yes for SQL injection, but other injection risks (OS command, LDAP) may still exist",
+          "D": "No, you must use an ORM instead"
+        },
+        "answer": "C",
+        "explanation": "Parameterized queries prevent SQL injection specifically. But the same input might be used in OS commands, LDAP queries, or other injection contexts that need separate defense.",
+        "topic": "injection",
+        "difficulty": "advanced",
+        "source_url": "https://dev.to/fosres/owasp-top-10-2025-quiz-test-your-appsec-interview-readiness-51-questions-397n"
+      },
+      {
+        "id": "SEC08",
+        "question": "Which teams should include functional access control testing in unit and integration tests?",
+        "choices": {
+          "A": "Only the security team",
+          "B": "Only QA engineers",
+          "C": "Developers and QA staff",
+          "D": "Only penetration testers"
+        },
+        "answer": "C",
+        "explanation": "Access control testing should be embedded in development and QA processes, not siloed to security-only activities. Shift left.",
+        "topic": "secure_sdlc",
+        "difficulty": "basic",
+        "source_url": "https://dev.to/fosres/owasp-top-10-2025-quiz-test-your-appsec-interview-readiness-51-questions-397n"
+      },
+      {
+        "id": "SEC09",
+        "question": "What is the primary risk of using eval() or exec() in Python with user-supplied input?",
+        "choices": {
+          "A": "Performance degradation due to interpretation overhead",
+          "B": "Arbitrary code execution -- the user can run any Python code on the server",
+          "C": "Memory leaks from uncollectable objects",
+          "D": "Type coercion errors"
+        },
+        "answer": "B",
+        "explanation": "eval()/exec() with user input allows Remote Code Execution (RCE). An attacker could run os.system('rm -rf /') or exfiltrate data.",
+        "topic": "code_injection",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "SEC10",
+        "question": "A requirements.txt pins 'requests==2.28.0' which has a known CVE. What is the BEST remediation approach?",
+        "choices": {
+          "A": "Remove the pin and use latest",
+          "B": "Run pip-audit, review the CVE severity, and upgrade to the nearest patched version",
+          "C": "Switch to a different HTTP library",
+          "D": "Add a comment noting the vulnerability exists"
+        },
+        "answer": "B",
+        "explanation": "Audit first (understand the CVE), then upgrade to the nearest patched version. Unpinning (A) risks breaking changes. Switching libraries (C) is disproportionate.",
+        "topic": "supply_chain",
+        "difficulty": "intermediate"
+      }
+    ]
+  },
+  "qa_agent": {
+    "source": "ISTQB CTFL v4.0 certification level",
+    "questions": [
+      {
+        "id": "QA01",
+        "question": "Which of the following is a good testing practice that applies regardless of the software development lifecycle being used?",
+        "choices": {
+          "A": "Prompt attendance to stand-up meetings",
+          "B": "Step-by-step test case documentation",
+          "C": "Ensuring there is a corresponding testing activity for every software development activity",
+          "D": "Involving stakeholders in reviewing all acceptance criteria before designing test cases"
+        },
+        "answer": "C",
+        "explanation": "ISTQB principle: for every development activity, there should be a corresponding test activity. This applies to waterfall, agile, or any lifecycle.",
+        "topic": "testing_principles",
+        "difficulty": "intermediate",
+        "source_url": "https://www.itexams.com/exam/CTFL-v4-0"
+      },
+      {
+        "id": "QA02",
+        "question": "What is one potential benefit of using a test automation tool?",
+        "choices": {
+          "A": "The quality of defects will improve",
+          "B": "Ease of access to statistics about test progress",
+          "C": "Disk space is not required to track test artifacts",
+          "D": "Less network traffic generated"
+        },
+        "answer": "B",
+        "explanation": "Test automation tools typically provide dashboards and reports on test progress, pass rates, and coverage -- making statistics easily accessible.",
+        "topic": "test_automation",
+        "difficulty": "basic",
+        "source_url": "https://www.itexams.com/exam/CTFL-v4-0"
+      },
+      {
+        "id": "QA03",
+        "question": "In an Agile development model, what defines 'done' for testing?",
+        "choices": {
+          "A": "Project management approval",
+          "B": "Entry criteria",
+          "C": "Exit criteria",
+          "D": "The expected test completion date"
+        },
+        "answer": "C",
+        "explanation": "Exit criteria (or Definition of Done in Agile) define when testing is complete -- e.g., all test cases passed, coverage met, no critical bugs open.",
+        "topic": "agile_testing",
+        "difficulty": "basic",
+        "source_url": "https://www.itexams.com/exam/CTFL-v4-0"
+      },
+      {
+        "id": "QA04",
+        "question": "What is the key difference between verification and validation in testing?",
+        "choices": {
+          "A": "Verification checks if we built the product right; validation checks if we built the right product",
+          "B": "Verification is done by developers; validation is done by testers",
+          "C": "Verification uses dynamic testing; validation uses static testing",
+          "D": "They are the same thing with different names"
+        },
+        "answer": "A",
+        "explanation": "Verification = 'Are we building it right?' (conformance to spec). Validation = 'Are we building the right thing?' (meets user needs).",
+        "topic": "testing_fundamentals",
+        "difficulty": "basic"
+      },
+      {
+        "id": "QA05",
+        "question": "Which testing technique is MOST appropriate for testing a login form that accepts username (1-50 chars) and password (8-128 chars)?",
+        "choices": {
+          "A": "Statement coverage testing",
+          "B": "Boundary value analysis",
+          "C": "State transition testing",
+          "D": "Use case testing"
+        },
+        "answer": "B",
+        "explanation": "Boundary value analysis tests at the edges of valid ranges: username at 0, 1, 50, 51 chars; password at 7, 8, 128, 129 chars. Most defects cluster at boundaries.",
+        "topic": "test_techniques",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "QA06",
+        "question": "A tester finds a bug but cannot consistently reproduce it. What should they do?",
+        "choices": {
+          "A": "Close the bug as 'not reproducible' and move on",
+          "B": "File the bug with all available information including environment, steps tried, and frequency observed",
+          "C": "Wait until they can reproduce it 100% of the time before filing",
+          "D": "Ask a developer to fix it verbally without filing a report"
+        },
+        "answer": "B",
+        "explanation": "Intermittent bugs are still bugs. File with all context (env, timing, frequency, logs). Developers may recognize the pattern. Closing without reporting loses information.",
+        "topic": "bug_reporting",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "QA07",
+        "question": "What is regression testing?",
+        "choices": {
+          "A": "Testing new features before they are fully implemented",
+          "B": "Testing to confirm that recent code changes have not adversely affected existing functionality",
+          "C": "Testing the system under extreme load conditions",
+          "D": "Testing performed by end users in production"
+        },
+        "answer": "B",
+        "explanation": "Regression testing verifies that changes (bug fixes, new features, refactoring) haven't broken existing functionality. It's a key candidate for automation.",
+        "topic": "regression",
+        "difficulty": "basic"
+      },
+      {
+        "id": "QA08",
+        "question": "Which severity classification is appropriate for: 'The company logo on the About page is 2px off-center'?",
+        "choices": {
+          "A": "Critical -- brand integrity issue",
+          "B": "High -- visual defect visible to all users",
+          "C": "Low/Cosmetic -- minor visual imperfection with no functional impact",
+          "D": "Medium -- should be fixed in the next sprint"
+        },
+        "answer": "C",
+        "explanation": "A 2px misalignment has zero functional impact and minimal user notice. Low/Cosmetic severity. Should not block a release.",
+        "topic": "defect_triage",
+        "difficulty": "basic"
+      },
+      {
+        "id": "QA09",
+        "question": "Which is a benefit of early stakeholder feedback during testing?",
+        "choices": {
+          "A": "It can be gathered early and used after the product goes to production",
+          "B": "The project manager gets a better view of changes for the next version",
+          "C": "The developers get a better understanding of what they are building",
+          "D": "The testers get better test automation requirements"
+        },
+        "answer": "C",
+        "explanation": "Early stakeholder feedback helps developers understand requirements and expectations, reducing misunderstandings and rework later.",
+        "topic": "shift_left",
+        "difficulty": "intermediate",
+        "source_url": "https://www.itexams.com/exam/CTFL-v4-0"
+      },
+      {
+        "id": "QA10",
+        "question": "What is the difference between black-box and white-box testing?",
+        "choices": {
+          "A": "Black-box tests internal code structure; white-box tests external behavior",
+          "B": "Black-box tests external behavior without knowledge of internal code; white-box tests with knowledge of internal code structure",
+          "C": "Black-box is manual testing; white-box is automated testing",
+          "D": "Black-box is negative testing; white-box is positive testing"
+        },
+        "answer": "B",
+        "explanation": "Black-box = test inputs/outputs without seeing code (specification-based). White-box = test with knowledge of code structure (structural testing).",
+        "topic": "testing_fundamentals",
+        "difficulty": "basic"
+      }
+    ]
+  },
+  "setup_guide": {
+    "source": "Ollama documentation / Hardware fundamentals / User onboarding best practices",
+    "questions": [
+      {
+        "id": "SG01",
+        "question": "A user's hardware detection shows: gpu_name='NVIDIA RTX 3060', vram_mb=12288. What model would you recommend?",
+        "choices": {
+          "A": "llama3.1:70b -- the biggest model for best quality",
+          "B": "llama3.1:8b -- fits comfortably with room to spare",
+          "C": "phi3:mini -- always use the smallest model to be safe",
+          "D": "No model will work -- 12GB is insufficient for local AI"
+        },
+        "answer": "B",
+        "explanation": "12GB VRAM comfortably runs 8B parameter models. 70B needs 40GB+ VRAM. phi3:mini would work but wastes the available VRAM. 12GB is excellent for local AI.",
+        "topic": "model_selection",
+        "difficulty": "intermediate"
+      },
+      {
+        "id": "SG02",
+        "question": "After a user installs Ollama, what command should they run to verify the installation succeeded?",
+        "choices": {
+          "A": "ollama --version",
+          "B": "ollama list",
+          "C": "ollama status",
+          "D": "pip show ollama"
+        },
+        "answer": "B",
+        "explanation": "'ollama list' verifies both that the binary is on PATH and the service is running. It should return an empty list or installed models. A failed install would error.",
+        "topic": "ollama_setup",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG03",
+        "question": "A user reports 'Error: model requires more system memory (8.0 GiB) than is available (6.0 GiB)'. What do you recommend?",
+        "choices": {
+          "A": "Install more RAM",
+          "B": "Try a smaller model like phi3:mini that fits in their available memory",
+          "C": "Delete other programs to free memory",
+          "D": "Ollama is broken -- reinstall it"
+        },
+        "answer": "B",
+        "explanation": "The error means the model is too large for available VRAM/RAM. The right fix is choosing a model that fits. Smaller models (phi3:mini, gemma:2b) work in 4-6GB.",
+        "topic": "troubleshooting",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG04",
+        "question": "What does 'VRAM' stand for and why does it matter for running local AI models?",
+        "choices": {
+          "A": "Virtual Random Access Memory -- it determines download speed",
+          "B": "Video Random Access Memory -- it determines how large a model the GPU can run simultaneously",
+          "C": "Variable RAM -- it fluctuates based on system load",
+          "D": "Volatile Read-Access Memory -- it stores temporary GPU calculations"
+        },
+        "answer": "B",
+        "explanation": "VRAM is the GPU's dedicated memory. Model parameters must fit in VRAM for GPU-accelerated inference. More VRAM = larger models = better quality responses.",
+        "topic": "hardware_concepts",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG05",
+        "question": "A user's hardware detection shows cpu_only=True. How should you frame this to the user?",
+        "choices": {
+          "A": "'Your computer cannot run AI models. You need a GPU.'",
+          "B": "'Your computer can still run AI models, just a bit slower. Smaller models like phi3:mini work great on CPU.'",
+          "C": "'You should buy a new computer with a GPU.'",
+          "D": "'CPU mode is actually faster than GPU for most tasks.'"
+        },
+        "answer": "B",
+        "explanation": "CPU-only is slower but functional. The setup guide should be encouraging, set realistic expectations, and recommend appropriately-sized models.",
+        "topic": "communication_style",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG06",
+        "question": "What is Ollama?",
+        "choices": {
+          "A": "A cloud-based AI service that requires a subscription",
+          "B": "A tool for running large language models locally on your own computer",
+          "C": "A programming language for building AI applications",
+          "D": "A GPU driver required for AI acceleration"
+        },
+        "answer": "B",
+        "explanation": "Ollama is a free, open-source tool that downloads and runs LLMs locally. No cloud, no subscription, data stays on the user's machine.",
+        "topic": "ollama_basics",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG07",
+        "question": "Which command pulls a model in Ollama?",
+        "choices": {
+          "A": "ollama install llama3.1:8b",
+          "B": "ollama download llama3.1:8b",
+          "C": "ollama pull llama3.1:8b",
+          "D": "pip install llama3.1"
+        },
+        "answer": "C",
+        "explanation": "'ollama pull' downloads a model from the Ollama registry. It uses Docker-like terminology (pull/push).",
+        "topic": "ollama_commands",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG08",
+        "question": "A user asks 'Is my data sent to the cloud when I use Cohort with Ollama?' What is the correct answer?",
+        "choices": {
+          "A": "Yes, all data is processed in the cloud",
+          "B": "No, everything runs locally on your computer. Your data never leaves your machine.",
+          "C": "Only metadata is sent to improve the service",
+          "D": "It depends on your internet connection"
+        },
+        "answer": "B",
+        "explanation": "Ollama runs models entirely locally. No data is sent to any cloud service. This is a key selling point for privacy-conscious users.",
+        "topic": "privacy",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG09",
+        "question": "When introducing Cohort's agents to a new user, what is the best approach?",
+        "choices": {
+          "A": "List all agents with full capability descriptions in one message",
+          "B": "Introduce agents one at a time with a single sentence each, letting the user ask follow-up questions",
+          "C": "Skip the introduction and let users discover agents on their own",
+          "D": "Only mention the most advanced agent to impress the user"
+        },
+        "answer": "B",
+        "explanation": "Avoid information overload. Introduce progressively: one sentence per agent, let curiosity drive deeper exploration. New users absorb better in small chunks.",
+        "topic": "onboarding_ux",
+        "difficulty": "basic"
+      },
+      {
+        "id": "SG10",
+        "question": "A setup guide recommends running 'curl -fsSL https://ollama.com/install.sh | sh' on Linux. What security caveat should accompany this?",
+        "choices": {
+          "A": "No caveat needed -- it's a standard install method",
+          "B": "Always verify the URL and source before piping to shell. This is the official install script from ollama.com.",
+          "C": "Never use curl for installation -- always download manually",
+          "D": "Run the command with sudo for extra security"
+        },
+        "answer": "B",
+        "explanation": "Pipe-to-shell is convenient but users should verify the URL is legitimate. A good setup guide acknowledges this practice while providing the official source.",
+        "topic": "setup_security",
+        "difficulty": "intermediate"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1613 @@
+{
+  "agent_id": "hardware_agent",
+  "source": "Hardware engineering & home lab design (professional grade)",
+  "total_questions": 100,
+  "difficulty_distribution": {
+    "intermediate": 20,
+    "advanced": 50,
+    "expert": 30
+  },
+  "multi_step_count": 30,
+  "questions": [
+    {
+      "id": "HW001",
+      "question": "A CPU has 8 cores running at 4.0 GHz with an IPC of 5. What is the theoretical peak throughput in billion operations per second?",
+      "choices": {
+        "A": "160",
+        "B": "40",
+        "C": "20",
+        "D": "32"
+      },
+      "answer": "A",
+      "explanation": "Peak throughput = cores x clock x IPC = 8 x 4.0 x 5 = 160 billion ops/sec. Each core executes IPC instructions per clock cycle, and all cores run in parallel.",
+      "topic": "core_count_vs_clock_speed",
+      "topic_category": "cpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW002",
+      "question": "Which level of CPU cache is typically shared among all cores on a modern desktop processor?",
+      "choices": {
+        "A": "L0 micro-op cache",
+        "B": "L3 cache",
+        "C": "L1 instruction cache",
+        "D": "L2 cache"
+      },
+      "answer": "B",
+      "explanation": "L3 (last-level cache) is the shared cache accessible by all cores. L1 and L2 are private per-core, and the micro-op cache is an internal per-core structure.",
+      "topic": "cache_hierarchy",
+      "topic_category": "cpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW003",
+      "question": "What is the primary advantage of DDR5 over DDR4 for memory-bandwidth-sensitive workloads?",
+      "choices": {
+        "A": "Higher per-module bandwidth due to doubled data rates and dual 32-bit channels",
+        "B": "Backwards compatibility with DDR4 slots",
+        "C": "Ability to use ECC on consumer platforms",
+        "D": "Lower CAS latency in absolute nanoseconds"
+      },
+      "answer": "A",
+      "explanation": "DDR5 doubles the internal channels per DIMM (two 32-bit vs one 64-bit) and starts at higher data rates (4800 MT/s+), significantly increasing bandwidth. DDR5 actually has higher CAS latency in clock cycles, and is not backward compatible with DDR4 slots.",
+      "topic": "ddr4_vs_ddr5",
+      "topic_category": "memory",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW004",
+      "question": "Which RAID level provides striping with no redundancy, offering maximum performance and capacity but zero fault tolerance?",
+      "choices": {
+        "A": "RAID 5",
+        "B": "RAID 0",
+        "C": "RAID 1",
+        "D": "RAID 10"
+      },
+      "answer": "B",
+      "explanation": "RAID 0 stripes data across all drives with no parity or mirroring. Any single drive failure destroys the entire array. It maximizes both sequential throughput and usable capacity.",
+      "topic": "raid_levels",
+      "topic_category": "storage",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW005",
+      "question": "What does the 80 Plus Gold certification guarantee about a PSU's efficiency at 50% load?",
+      "choices": {
+        "A": "87% minimum efficiency",
+        "B": "90% minimum efficiency",
+        "C": "92% minimum efficiency",
+        "D": "85% minimum efficiency"
+      },
+      "answer": "B",
+      "explanation": "80 Plus Gold requires at least 90% efficiency at 50% load (the peak efficiency point), 87% at 20% load, and 87% at 100% load for 115V systems.",
+      "topic": "psu_efficiency",
+      "topic_category": "power_cooling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW006",
+      "question": "Which Ethernet cabling standard is required to reliably support 10GbE at distances up to 100 meters?",
+      "choices": {
+        "A": "Cat6",
+        "B": "Cat5",
+        "C": "Cat6a",
+        "D": "Cat5e"
+      },
+      "answer": "C",
+      "explanation": "Cat6a supports 10GBASE-T up to 100 meters. Cat6 can handle 10GbE only up to 55 meters. Cat5e is limited to 1GbE.",
+      "topic": "cabling_standards",
+      "topic_category": "networking",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW007",
+      "question": "What does Intel VT-x provide to a hypervisor?",
+      "choices": {
+        "A": "Memory encryption for VM isolation",
+        "B": "Hardware-assisted CPU virtualization with separate privilege rings for guests",
+        "C": "Direct GPU passthrough to virtual machines",
+        "D": "Network I/O virtualization for virtual NICs"
+      },
+      "answer": "B",
+      "explanation": "VT-x provides hardware CPU virtualization extensions (VMX root/non-root modes), allowing the hypervisor to run guests at near-native speed with proper privilege separation. GPU passthrough requires VT-d/IOMMU, not VT-x alone.",
+      "topic": "cpu_virtualization",
+      "topic_category": "virtualization",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW008",
+      "question": "Which form factor is the largest standard consumer motherboard size at 305mm x 244mm?",
+      "choices": {
+        "A": "Micro-ATX",
+        "B": "E-ATX",
+        "C": "ATX",
+        "D": "Mini-ITX"
+      },
+      "answer": "C",
+      "explanation": "Standard ATX measures 305mm x 244mm. E-ATX is wider (up to 330mm) but is considered extended/enthusiast, not standard consumer. Micro-ATX is 244mm x 244mm and Mini-ITX is 170mm x 170mm.",
+      "topic": "motherboard_form_factors",
+      "topic_category": "form_factors",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW009",
+      "question": "What is the primary function of IPMI on a server motherboard?",
+      "choices": {
+        "A": "Accelerating network packet processing",
+        "B": "Providing hardware RAID functionality",
+        "C": "Out-of-band remote management independent of the host OS",
+        "D": "Enabling PXE boot over the network"
+      },
+      "answer": "C",
+      "explanation": "IPMI (Intelligent Platform Management Interface) provides out-of-band management through a dedicated BMC (Baseboard Management Controller), allowing remote power control, console access, and hardware monitoring even when the host OS is down.",
+      "topic": "ipmi_basics",
+      "topic_category": "remote_management",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW010",
+      "question": "When comparing NVMe and SATA SSDs, what is the primary reason NVMe achieves higher throughput?",
+      "choices": {
+        "A": "NVMe drives spin faster than SATA drives",
+        "B": "NVMe uses a wider data bus than SATA's 6 Gbps interface",
+        "C": "NVMe connects via PCIe lanes, bypassing the AHCI protocol's queue depth limitations",
+        "D": "NVMe uses larger NAND flash cells"
+      },
+      "answer": "C",
+      "explanation": "NVMe uses PCIe lanes directly and supports 64K queues with 64K commands each, versus SATA/AHCI's single queue with 32 commands. This, combined with PCIe's higher bandwidth, yields dramatically better throughput and IOPS.",
+      "topic": "nvme_vs_sata",
+      "topic_category": "storage",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW011",
+      "question": "CUDA cores on an NVIDIA GPU are best described as:",
+      "choices": {
+        "A": "Fixed-function units for video encoding",
+        "B": "Scalar processing units that execute single floating-point or integer operations per clock",
+        "C": "Memory controllers that manage VRAM allocation",
+        "D": "Dedicated ray-tracing units for real-time lighting"
+      },
+      "answer": "B",
+      "explanation": "CUDA cores are scalar processors (streaming processors) that each perform one floating-point or integer operation per clock cycle. They are the general-purpose compute units in NVIDIA GPUs, distinct from RT cores and tensor cores.",
+      "topic": "cuda_cores",
+      "topic_category": "gpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW012",
+      "question": "What is the purpose of XMP (Extreme Memory Profile) in DDR4/DDR5 modules?",
+      "choices": {
+        "A": "Providing memory encryption for security",
+        "B": "Compressing data in RAM to increase effective capacity",
+        "C": "Storing pre-tested overclock profiles that exceed JEDEC base specifications",
+        "D": "Enabling ECC functionality on consumer motherboards"
+      },
+      "answer": "C",
+      "explanation": "XMP profiles are stored on the SPD EEPROM and contain validated higher-than-JEDEC speed, timing, and voltage settings. Enabling XMP in BIOS applies these profiles automatically, effectively overclocking the memory to its rated speed.",
+      "topic": "xmp_expo_profiles",
+      "topic_category": "memory",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW013",
+      "question": "Which PCIe generation provides approximately 32 GB/s of unidirectional bandwidth for an x16 link?",
+      "choices": {
+        "A": "PCIe 6.0",
+        "B": "PCIe 4.0",
+        "C": "PCIe 5.0",
+        "D": "PCIe 3.0"
+      },
+      "answer": "C",
+      "explanation": "PCIe 5.0 provides ~32 GB/s unidirectional (64 GB/s bidirectional) for x16. Each generation doubles bandwidth: PCIe 3.0 is ~16 GB/s, PCIe 4.0 is ~32 GB/s bidirectional (~16 GB/s unidirectional), and PCIe 5.0 doubles that again.",
+      "topic": "pcie_generations",
+      "topic_category": "cpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW014",
+      "question": "In positive-pressure airflow design for a PC case, which statement is correct?",
+      "choices": {
+        "A": "All fans are set to exhaust, relying on passive intake through vents",
+        "B": "Equal intake and exhaust creates positive pressure",
+        "C": "Intake fans move more air than exhaust fans, pushing filtered air in and forcing unfiltered gaps to exhaust",
+        "D": "Exhaust fans move more air than intake fans, pulling air through filtered intakes"
+      },
+      "answer": "C",
+      "explanation": "Positive pressure means more air enters than exits, creating higher internal pressure. Dust is reduced because air exits through unfiltered gaps rather than being sucked in through them. This requires more intake CFM than exhaust CFM.",
+      "topic": "airflow_design",
+      "topic_category": "power_cooling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW015",
+      "question": "What is the key advantage of SFP+ over RJ45 for 10GbE connections?",
+      "choices": {
+        "A": "SFP+ supports longer distances with fiber optics and uses less power",
+        "B": "SFP+ is cheaper than RJ45 in all scenarios",
+        "C": "SFP+ does not require a network switch",
+        "D": "SFP+ provides higher bandwidth than 10 Gbps"
+      },
+      "answer": "A",
+      "explanation": "SFP+ with fiber supports distances up to 10km+ (vs 100m for copper) and consumes significantly less power per port (~1W vs ~5W for 10GBASE-T). SFP+ DAC cables are also cheaper for short runs.",
+      "topic": "sfp_vs_rj45",
+      "topic_category": "networking",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW016",
+      "question": "What does TDP (Thermal Design Power) represent for a CPU?",
+      "choices": {
+        "A": "The total power draw of the entire system including the CPU",
+        "B": "The maximum power the CPU can ever draw under any workload",
+        "C": "The heat dissipation the cooling solution must handle under sustained typical workload",
+        "D": "The idle power consumption of the processor"
+      },
+      "answer": "C",
+      "explanation": "TDP specifies the amount of heat (in watts) a cooling system must dissipate under sustained load. It is not the absolute maximum power draw (which can exceed TDP during boost) nor the idle consumption.",
+      "topic": "tdp_pbp_mtp",
+      "topic_category": "cpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW017",
+      "question": "Which type of NAND flash offers the highest endurance (P/E cycles) per cell?",
+      "choices": {
+        "A": "TLC (Triple-Level Cell)",
+        "B": "PLC (Penta-Level Cell)",
+        "C": "MLC (Multi-Level Cell, 2 bits)",
+        "D": "QLC (Quad-Level Cell)"
+      },
+      "answer": "C",
+      "explanation": "MLC (2 bits per cell) has significantly higher endurance (~10,000 P/E cycles) than TLC (~3,000) or QLC (~1,000). SLC has the highest overall, but among the listed options, MLC is most enduring. PLC has the lowest endurance.",
+      "topic": "nand_types",
+      "topic_category": "storage",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW018",
+      "question": "In a home lab, what is the primary reason to choose a rack-mountable UPS over a tower UPS?",
+      "choices": {
+        "A": "Rack UPS integrates into a server rack, saving floor space and organizing power distribution",
+        "B": "Rack UPS units are significantly cheaper",
+        "C": "Rack UPS units are always more powerful",
+        "D": "Rack UPS provides pure sine wave output while tower units do not"
+      },
+      "answer": "A",
+      "explanation": "Rack-mount UPS units fit into standard 19-inch racks alongside servers and switches, consolidating equipment and cabling. Tower and rack units can both offer pure sine wave output; the form factor choice is primarily about space and organization.",
+      "topic": "ups_sizing",
+      "topic_category": "power_cooling",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW019",
+      "question": "What does Hyper-Threading (Intel) or SMT (AMD) allow a single physical CPU core to do?",
+      "choices": {
+        "A": "Run two separate operating systems concurrently",
+        "B": "Access twice as much L1 cache",
+        "C": "Execute instructions from two threads simultaneously by sharing execution resources",
+        "D": "Double its clock speed dynamically"
+      },
+      "answer": "C",
+      "explanation": "SMT/Hyper-Threading duplicates architectural state (registers, etc.) so one physical core presents as two logical cores, allowing it to fill execution pipeline bubbles by interleaving instructions from two threads.",
+      "topic": "hyperthreading_smt",
+      "topic_category": "cpu",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW020",
+      "question": "Which M.2 key type supports both SATA and NVMe protocols?",
+      "choices": {
+        "A": "B key only",
+        "B": "M key only",
+        "C": "B+M key",
+        "D": "A key"
+      },
+      "answer": "C",
+      "explanation": "B+M keyed drives are physically compatible with both B-key and M-key slots. B-key supports SATA and PCIe x2, M-key supports PCIe x4 and SATA. A B+M drive typically runs SATA or PCIe x2 depending on the slot.",
+      "topic": "m2_key_types",
+      "topic_category": "form_factors",
+      "difficulty": "intermediate",
+      "type": "standard"
+    },
+    {
+      "id": "HW021",
+      "question": "In a NUMA (Non-Uniform Memory Access) topology with two CPU sockets, what performance penalty occurs when a thread on Socket 0 accesses memory physically attached to Socket 1?",
+      "choices": {
+        "A": "No penalty; the memory controller abstracts the physical location",
+        "B": "The data is automatically migrated to Socket 0's memory before access",
+        "C": "The thread is migrated to Socket 1 to avoid remote access",
+        "D": "The access must traverse the inter-socket link (UPI/Infinity Fabric), adding 40-100ns latency"
+      },
+      "answer": "D",
+      "explanation": "Remote NUMA access crosses the inter-socket interconnect (Intel UPI or AMD Infinity Fabric), adding significant latency. The penalty is typically 40-100ns over local access. Automatic migration does not occur without explicit OS/VM NUMA policies.",
+      "topic": "numa_topology",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW022",
+      "question": "NVIDIA tensor cores differ from CUDA cores primarily by performing:",
+      "choices": {
+        "A": "Integer operations at double the rate of CUDA cores",
+        "B": "Memory decompression for faster VRAM access",
+        "C": "Ray-tracing intersection calculations for real-time rendering",
+        "D": "Mixed-precision matrix multiply-accumulate (MMA) operations on 4x4 matrices per clock"
+      },
+      "answer": "D",
+      "explanation": "Tensor cores are specialized matrix math units that perform fused multiply-accumulate on small matrices (e.g., 4x4 FP16 multiply + FP32 accumulate) in a single operation, providing massive throughput for deep learning and HPC workloads.",
+      "topic": "tensor_cores",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW023",
+      "question": "A DDR5-6000 module operating in dual-channel mode provides approximately what peak theoretical bandwidth?",
+      "choices": {
+        "A": "96 GB/s",
+        "B": "192 GB/s",
+        "C": "24 GB/s",
+        "D": "48 GB/s"
+      },
+      "answer": "A",
+      "explanation": "DDR5-6000 = 6000 MT/s x 8 bytes = 48 GB/s per channel. Dual-channel doubles this to 96 GB/s. Each DDR5 DIMM has two 32-bit sub-channels, but dual-channel refers to two DIMMs on separate memory channels.",
+      "topic": "memory_bandwidth_calculation",
+      "topic_category": "memory",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW024",
+      "question": "In a ZFS pool, what is the purpose of a SLOG (Separate ZFS Intent Log) device?",
+      "choices": {
+        "A": "Storing ZFS metadata and deduplication tables",
+        "B": "Providing a hot spare that activates on drive failure",
+        "C": "Caching frequently read data to improve read IOPS",
+        "D": "Accelerating synchronous write operations by persisting the ZIL to fast storage"
+      },
+      "answer": "D",
+      "explanation": "The SLOG is a dedicated device for the ZFS Intent Log (ZIL). It accelerates synchronous writes (e.g., NFS, database commits) by providing a fast, persistent location for write intents before they are flushed to the main pool. Async writes are unaffected.",
+      "topic": "zfs_slog",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW025",
+      "question": "What does IOMMU (VT-d on Intel, AMD-Vi on AMD) enable for virtualization?",
+      "choices": {
+        "A": "Live migration of VMs between physical hosts",
+        "B": "Faster virtual CPU scheduling by the hypervisor",
+        "C": "Direct assignment of physical PCIe devices to VMs with DMA isolation",
+        "D": "Shared memory pages between VMs for deduplication"
+      },
+      "answer": "C",
+      "explanation": "IOMMU remaps DMA addresses so physical devices can be safely passed through to VMs. Without IOMMU, a passthrough device could DMA to arbitrary host memory. VT-d/AMD-Vi provides the memory isolation necessary for secure device passthrough.",
+      "topic": "iommu_passthrough",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW026",
+      "question": "What is the maximum unidirectional bandwidth of a single PCIe 4.0 x4 NVMe link?",
+      "choices": {
+        "A": "8 GB/s",
+        "B": "2 GB/s",
+        "C": "4 GB/s",
+        "D": "16 GB/s"
+      },
+      "answer": "A",
+      "explanation": "PCIe 4.0 provides approximately 2 GB/s per lane (after encoding overhead). An x4 link therefore delivers ~8 GB/s unidirectional, which is why Gen4 NVMe drives top out around 7-7.4 GB/s sequential reads.",
+      "topic": "pcie_bandwidth",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW027",
+      "question": "When estimating VRAM required to load a large language model for inference at FP16 precision, which formula is most accurate?",
+      "choices": {
+        "A": "Parameters (billions) x 0.5 GB",
+        "B": "Parameters (billions) x 4 GB",
+        "C": "Parameters (billions) x 2 GB, plus 10-20% overhead for KV cache and activations",
+        "D": "Parameters (billions) x 1 GB"
+      },
+      "answer": "C",
+      "explanation": "At FP16, each parameter is 2 bytes, so a 7B model needs ~14 GB for weights alone. The KV cache, activations, and framework overhead add 10-20% on top, making the formula roughly params x 2 + overhead.",
+      "topic": "vram_estimation_llm",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW028",
+      "question": "RAID-Z2 in ZFS is most analogous to which traditional RAID level?",
+      "choices": {
+        "A": "RAID 6",
+        "B": "RAID 1",
+        "C": "RAID 5",
+        "D": "RAID 10"
+      },
+      "answer": "A",
+      "explanation": "RAID-Z2 uses dual parity, tolerating any two drive failures in the vdev, similar to RAID 6. RAID-Z1 is analogous to RAID 5 (single parity), and RAID-Z3 provides triple parity with no traditional equivalent.",
+      "topic": "raidz_levels",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW029",
+      "question": "SR-IOV (Single Root I/O Virtualization) allows a physical NIC to:",
+      "choices": {
+        "A": "Automatically configure VLANs without switch support",
+        "B": "Present multiple virtual functions (VFs) that VMs can use as dedicated hardware NICs",
+        "C": "Bond multiple physical ports into a single logical interface",
+        "D": "Encrypt all network traffic at the hardware level"
+      },
+      "answer": "B",
+      "explanation": "SR-IOV partitions a single physical NIC into multiple Virtual Functions (VFs), each assignable to a different VM via IOMMU passthrough. This gives near-native network performance without the overhead of software-emulated virtual NICs.",
+      "topic": "sriov",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW030",
+      "question": "What advantage does ECC (Error-Correcting Code) memory provide over non-ECC in a server environment?",
+      "choices": {
+        "A": "Higher clock speeds due to tighter timing control",
+        "B": "Detection and correction of single-bit errors, and detection of multi-bit errors",
+        "C": "Lower power consumption due to reduced voltage requirements",
+        "D": "Larger maximum capacity per DIMM due to extra chips"
+      },
+      "answer": "B",
+      "explanation": "ECC memory uses an extra chip per rank to store parity bits, enabling SECDED (Single Error Correction, Double Error Detection). This prevents silent data corruption from cosmic rays or electrical noise, critical for long-running server workloads.",
+      "topic": "ecc_memory",
+      "topic_category": "memory",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW031",
+      "question": "Intel's hybrid architecture uses P-cores and E-cores. Which statement accurately describes the E-core design?",
+      "choices": {
+        "A": "E-cores are dedicated to GPU-accelerated tasks",
+        "B": "E-cores use the same microarchitecture as P-cores but at lower clock speeds",
+        "C": "E-cores are only active when the system is in sleep mode",
+        "D": "E-cores use a smaller, power-efficient microarchitecture (Gracemont/Crestmont) without Hyper-Threading"
+      },
+      "answer": "D",
+      "explanation": "E-cores use a compact, power-efficient microarchitecture (Gracemont in 12th gen, Crestmont in 14th gen) that lacks Hyper-Threading. They handle background tasks efficiently while P-cores handle latency-sensitive foreground work.",
+      "topic": "p_cores_e_cores",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW032",
+      "question": "GDDR6X achieves higher bandwidth than standard GDDR6 primarily through:",
+      "choices": {
+        "A": "Wider memory bus (512-bit vs 256-bit)",
+        "B": "On-package integration with the GPU die",
+        "C": "Higher operating voltage enabling faster switching",
+        "D": "PAM4 signaling that encodes 2 bits per signal transition instead of 1"
+      },
+      "answer": "D",
+      "explanation": "GDDR6X uses PAM4 (Pulse Amplitude Modulation with 4 levels) to transmit 2 bits per clock transition instead of GDDR6's NRZ (1 bit). This effectively doubles throughput per pin without requiring higher clock speeds.",
+      "topic": "vram_types",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW033",
+      "question": "What is the ARC (Adaptive Replacement Cache) in ZFS?",
+      "choices": {
+        "A": "A hardware RAID controller's write-back cache",
+        "B": "A RAM-based read cache that adaptively balances recently-used and frequently-used data",
+        "C": "An SSD caching tier between RAM and spinning disks",
+        "D": "A deduplication hash table stored on disk"
+      },
+      "answer": "B",
+      "explanation": "ZFS ARC is an in-memory (RAM) read cache that uses a sophisticated algorithm to balance MRU (most recently used) and MFU (most frequently used) data, dynamically adjusting the balance based on workload patterns.",
+      "topic": "zfs_arc",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW034",
+      "question": "When configuring LACP (Link Aggregation Control Protocol) between a server and a managed switch, what is required on both ends?",
+      "choices": {
+        "A": "Matching LACP mode (active/active or active/passive), same speed, same duplex, and the switch must support 802.3ad",
+        "B": "Both devices must be from the same manufacturer",
+        "C": "Only matching port speeds; LACP auto-negotiates everything else",
+        "D": "A dedicated LACP controller card on the server"
+      },
+      "answer": "A",
+      "explanation": "LACP requires both ends to participate in the 802.3ad protocol, with compatible mode settings (at least one side active), matching link speeds, and full duplex. The switch must support 802.3ad in its firmware.",
+      "topic": "link_aggregation",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW035",
+      "question": "What determines the true latency of memory in nanoseconds, given CAS latency (CL) and clock speed?",
+      "choices": {
+        "A": "Latency (ns) = (CL / (data rate / 2)) x 1000",
+        "B": "Latency (ns) = CL x frequency (MHz)",
+        "C": "Latency (ns) = CL / frequency (MHz) x 1000",
+        "D": "Latency (ns) = data rate / CL"
+      },
+      "answer": "A",
+      "explanation": "True latency = CL / actual_clock x 10^9. Since DDR data rate is 2x the actual clock, the formula is CL / (data_rate_MHz / 2) x 1000. For example, DDR5-6000 CL30: 30 / 3000 x 1000 = 10ns.",
+      "topic": "memory_timings",
+      "topic_category": "memory",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW036",
+      "question": "A Type 1 (bare-metal) hypervisor differs from a Type 2 (hosted) hypervisor in that:",
+      "choices": {
+        "A": "Type 1 runs directly on hardware without a host OS, providing lower overhead and better performance",
+        "B": "Type 1 cannot support GPU passthrough",
+        "C": "Type 1 is limited to Linux guests only",
+        "D": "Type 1 requires more RAM because it includes a full OS kernel"
+      },
+      "answer": "A",
+      "explanation": "Type 1 hypervisors (ESXi, Proxmox/KVM, Hyper-V Server) run directly on bare metal, eliminating the overhead of a host OS. Type 2 (VirtualBox, VMware Workstation) runs atop a host OS, adding a layer of indirection.",
+      "topic": "hypervisor_types",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW037",
+      "question": "AMD's chiplet design in Zen 3/4 processors connects multiple CCDs (Core Complex Dies) to an IOD (I/O Die) via Infinity Fabric. What is a key benefit of this approach?",
+      "choices": {
+        "A": "Higher yields and lower costs because smaller dies have fewer defects per wafer",
+        "B": "Each CCD can run at a different clock speed independently",
+        "C": "The IOD provides dedicated GPU compute for each CCD",
+        "D": "Chiplets eliminate the need for an L3 cache"
+      },
+      "answer": "A",
+      "explanation": "Chiplet design improves manufacturing yields because smaller dies are less likely to have defects. AMD can also mix process nodes (e.g., 5nm CCDs with 6nm IOD) and scale core counts by adding CCDs, all reducing cost.",
+      "topic": "chiplet_design",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW038",
+      "question": "When configuring VLANs on a managed switch for a home lab, traffic between VLANs requires:",
+      "choices": {
+        "A": "A crossover cable between switch ports",
+        "B": "All ports set to the same VLAN with different subnet masks",
+        "C": "A Layer 3 switch or an external router performing inter-VLAN routing",
+        "D": "Disabling spanning tree protocol"
+      },
+      "answer": "C",
+      "explanation": "VLANs create separate Layer 2 broadcast domains. For traffic to pass between them, Layer 3 routing is required via either a Layer 3 switch with SVI interfaces or a router-on-a-stick configuration with trunk links.",
+      "topic": "vlan_basics",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW039",
+      "question": "What is DWPD (Drive Writes Per Day) and how does it relate to SSD endurance?",
+      "choices": {
+        "A": "The maximum sequential write speed in gigabytes per day",
+        "B": "The number of times the entire drive capacity can be written per day over its warranty period",
+        "C": "The amount of data written before the drive's cache is exhausted",
+        "D": "The number of power cycles the drive can endure daily"
+      },
+      "answer": "B",
+      "explanation": "DWPD measures how many times the full drive capacity can be written daily throughout the warranty period. A 1TB drive rated at 1 DWPD over 5 years can sustain 1TB of writes per day for 5 years (totaling ~1,825 TBW).",
+      "topic": "endurance_metrics",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW040",
+      "question": "When sizing a UPS for a home lab, the critical specification is VA/watt rating. If your equipment draws 600W and your UPS is rated at 1000VA with a 0.6 power factor, can it handle the load?",
+      "choices": {
+        "A": "No, because UPS ratings are always peak, not sustained",
+        "B": "No, because 1000VA x 0.6 PF = 600W, leaving zero headroom for surge",
+        "C": "Yes, because UPS power factor does not affect watt capacity",
+        "D": "Yes, because 1000VA exceeds 600W"
+      },
+      "answer": "B",
+      "explanation": "The UPS can deliver 1000VA x 0.6 = 600W of real power. Running at exactly 100% capacity leaves no margin for inrush current or load spikes. A minimum 20-30% headroom is recommended, so a larger UPS is needed.",
+      "topic": "ups_sizing",
+      "topic_category": "power_cooling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW041",
+      "question": "In a multi-GPU setup for ML training, NVLink differs from PCIe interconnect by:",
+      "choices": {
+        "A": "Only working with AMD GPUs",
+        "B": "Providing a high-bandwidth, low-latency direct GPU-to-GPU link that bypasses the CPU and PCIe bus",
+        "C": "Using standard Ethernet protocols between GPUs",
+        "D": "Requiring a specialized motherboard with NVLink slots"
+      },
+      "answer": "B",
+      "explanation": "NVLink creates a direct high-bandwidth interconnect between GPUs (up to 900 GB/s on NVLink 4.0), bypassing PCIe entirely. This dramatically reduces latency and increases bandwidth for multi-GPU all-reduce operations during distributed training.",
+      "topic": "nvlink_vs_pcie",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW042",
+      "question": "Registered (RDIMM) memory differs from unbuffered (UDIMM) memory in that:",
+      "choices": {
+        "A": "RDIMMs use less power per module due to lower voltage",
+        "B": "RDIMMs include a register chip that buffers address/command signals, allowing more DIMMs per channel",
+        "C": "RDIMMs are faster due to fewer signal integrity constraints",
+        "D": "RDIMMs are required for DDR5 but optional for DDR4"
+      },
+      "answer": "B",
+      "explanation": "The register chip on RDIMMs buffers the address and command bus, reducing electrical load per DIMM. This allows servers to populate more DIMMs per channel (e.g., 8 vs 2) at the cost of one additional clock cycle of latency.",
+      "topic": "registered_vs_unbuffered",
+      "topic_category": "memory",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW043",
+      "question": "AVX-512 instructions provide performance benefits for vectorized workloads but also cause:",
+      "choices": {
+        "A": "The CPU to switch from SMT mode to single-thread mode",
+        "B": "Automatic clock speed reduction (frequency throttling) due to higher power draw per core",
+        "C": "L3 cache to be disabled during execution",
+        "D": "No measurable side effects on modern CPUs"
+      },
+      "answer": "B",
+      "explanation": "AVX-512 operations use wide 512-bit execution units that draw significantly more power. Intel CPUs reduce their boost clock when AVX-512 is active (the AVX offset) to stay within thermal/power limits, which can reduce single-core performance for mixed workloads.",
+      "topic": "avx512",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW044",
+      "question": "The L2ARC in ZFS serves what purpose?",
+      "choices": {
+        "A": "An SSD-based deduplication acceleration tier",
+        "B": "A write cache on SSD to accelerate synchronous writes",
+        "C": "A backup copy of the L1 ARC stored on disk for persistence",
+        "D": "A second-level read cache on SSD that extends the ARC beyond available RAM"
+      },
+      "answer": "D",
+      "explanation": "L2ARC (Level 2 ARC) is an SSD-based extension of the RAM-based ARC read cache. Data evicted from ARC can be cached on the L2ARC device before going to spinning disks, improving read performance for working sets larger than RAM.",
+      "topic": "zfs_l2arc",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW045",
+      "question": "What is the key difference between iDRAC (Dell) and iLO (HPE) compared to basic IPMI?",
+      "choices": {
+        "A": "iDRAC and iLO replace IPMI entirely with a proprietary protocol",
+        "B": "iDRAC and iLO provide a full HTML5 remote console, virtual media, and lifecycle management beyond basic IPMI sensor/power control",
+        "C": "There is no functional difference; they are brand names for IPMI",
+        "D": "iDRAC and iLO only work on blade servers, not tower or rack servers"
+      },
+      "answer": "B",
+      "explanation": "While iDRAC and iLO implement IPMI at their core, they add extensive features: HTML5 KVM console, virtual media mounting, firmware lifecycle management, hardware diagnostics, and REST APIs. Basic IPMI provides only sensor readings and power control.",
+      "topic": "idrac_ilo",
+      "topic_category": "remote_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW046",
+      "question": "When building in a Mini-ITX case, which constraint is most commonly encountered?",
+      "choices": {
+        "A": "Cannot use standard ATX power supplies",
+        "B": "Only supports low-profile RAM modules",
+        "C": "Maximum of 8GB RAM due to two DIMM slots",
+        "D": "Single PCIe x16 slot and limited CPU cooler height clearance"
+      },
+      "answer": "D",
+      "explanation": "Mini-ITX boards have exactly one PCIe x16 slot and the compact cases severely limit CPU cooler height (typically 50-70mm). While some ITX cases accept SFX or ATX PSUs and two DIMM slots support 64GB+, expansion and cooling are the real constraints.",
+      "topic": "itx_building",
+      "topic_category": "form_factors",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW047",
+      "question": "HBM (High Bandwidth Memory) used in data center GPUs differs from GDDR6 by:",
+      "choices": {
+        "A": "Using the same PCB traces as standard DDR5",
+        "B": "Running at higher clock speeds on a narrower bus",
+        "C": "Being soldered directly to the GPU die instead of on separate packages",
+        "D": "Using a wider bus and 3D-stacked DRAM dies connected via silicon interposer for much higher bandwidth"
+      },
+      "answer": "D",
+      "explanation": "HBM uses vertically stacked DRAM dies connected via TSVs (Through-Silicon Vias) on a silicon interposer next to the GPU. Its 1024-bit+ bus per stack delivers bandwidth exceeding 2 TB/s (HBM3e) despite lower clock speeds than GDDR6.",
+      "topic": "hbm_memory",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW048",
+      "question": "SAS (Serial Attached SCSI) drives offer which key advantage over SATA drives in enterprise storage?",
+      "choices": {
+        "A": "Dual-port connectivity for multipath I/O and higher command queue depth",
+        "B": "Lower cost per gigabyte",
+        "C": "Higher maximum capacity per drive",
+        "D": "Compatible with consumer motherboard SATA ports"
+      },
+      "answer": "A",
+      "explanation": "SAS drives have dual ports enabling multipath I/O for redundancy and failover (two HBAs can access the same drive). SAS also supports deeper command queues (up to 256 vs SATA's 32) and full-duplex communication.",
+      "topic": "sas_vs_sata",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW049",
+      "question": "Jumbo frames (9000 byte MTU) in a 10GbE network improve performance by:",
+      "choices": {
+        "A": "Allowing more simultaneous TCP connections",
+        "B": "Increasing the link speed beyond 10 Gbps",
+        "C": "Reducing CPU overhead per byte transferred by sending fewer, larger packets",
+        "D": "Enabling encryption at the frame level"
+      },
+      "answer": "C",
+      "explanation": "Jumbo frames reduce the number of packets needed to transfer a given amount of data, lowering per-packet CPU overhead (interrupt handling, header processing). This is particularly beneficial for bulk data transfers like iSCSI and NFS.",
+      "topic": "jumbo_frames",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW050",
+      "question": "CPU pinning in a virtualization environment means:",
+      "choices": {
+        "A": "Binding a VM's virtual CPUs to specific physical CPU cores, preventing scheduler migration",
+        "B": "Setting a maximum clock speed for a virtual CPU",
+        "C": "Restricting the VM to use only E-cores on a hybrid CPU",
+        "D": "Permanently disabling specific CPU cores"
+      },
+      "answer": "A",
+      "explanation": "CPU pinning (affinity) locks a VM's vCPUs to specific physical cores, ensuring consistent performance by avoiding cache thrashing from core migration. It is critical for latency-sensitive workloads like GPU passthrough VMs and real-time applications.",
+      "topic": "cpu_pinning",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW051",
+      "question": "Intel's Processor Base Power (PBP) and Maximum Turbo Power (MTP) replace the traditional TDP specification. What does MTP represent?",
+      "choices": {
+        "A": "The combined power of CPU and chipset",
+        "B": "The maximum sustained power draw when all cores are boosting to their rated turbo frequency",
+        "C": "The power consumed only by the integrated GPU",
+        "D": "The idle power consumption of the processor"
+      },
+      "answer": "B",
+      "explanation": "MTP defines the maximum power the CPU can draw when running at maximum turbo across all cores for extended periods. PBP is the base guaranteed clock power. A cooler must handle MTP for sustained turbo without throttling.",
+      "topic": "tdp_pbp_mtp",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW052",
+      "question": "When running FP16 (half-precision) inference on a GPU instead of FP32, the primary benefit is:",
+      "choices": {
+        "A": "Approximately 2x reduction in VRAM usage and higher throughput from tensor core utilization",
+        "B": "Only possible on NVIDIA GPUs with RT cores",
+        "C": "The model produces identical results with no accuracy difference",
+        "D": "Higher numerical accuracy due to reduced rounding errors"
+      },
+      "answer": "A",
+      "explanation": "FP16 halves the memory per parameter (2 bytes vs 4 bytes), roughly doubling the model size that fits in VRAM. Tensor cores are optimized for FP16/BF16, providing significant throughput gains. There is a small accuracy tradeoff that is acceptable for most inference tasks.",
+      "topic": "precision_formats",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW053",
+      "question": "What is the minimum number of drives required for a RAID-Z3 vdev in ZFS?",
+      "choices": {
+        "A": "3",
+        "B": "6",
+        "C": "5",
+        "D": "4"
+      },
+      "answer": "D",
+      "explanation": "RAID-Z3 uses triple parity, requiring a minimum of 4 drives (3 parity + 1 data). However, practical deployments use at least 5-8 drives for reasonable capacity after parity overhead. RAID-Z3 tolerates any 3 simultaneous drive failures.",
+      "topic": "raidz_levels",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW054",
+      "question": "ROCm (Radeon Open Compute) differs from CUDA in that:",
+      "choices": {
+        "A": "ROCm only supports Windows operating systems",
+        "B": "ROCm provides higher performance than CUDA on equivalent hardware",
+        "C": "ROCm and CUDA are binary-compatible",
+        "D": "ROCm is AMD's open-source GPU compute platform, compatible with a subset of AMD GPUs, with growing but less mature ML framework support than CUDA"
+      },
+      "answer": "D",
+      "explanation": "ROCm is AMD's alternative to CUDA for GPU compute. It is open-source and supports HIP (a CUDA translation layer). However, it supports fewer GPU models, has a smaller ecosystem, and ML framework support (PyTorch, TensorFlow) lags behind CUDA's maturity.",
+      "topic": "rocm_vs_cuda",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW055",
+      "question": "In iSCSI storage networking, the initiator and target roles are:",
+      "choices": {
+        "A": "Initiator handles only writes; target handles only reads",
+        "B": "Initiator is the storage server; target is the client requesting data",
+        "C": "Both terms refer to the same device in different contexts",
+        "D": "Initiator is the client (e.g., hypervisor) that sends SCSI commands; target is the storage system exposing LUNs"
+      },
+      "answer": "D",
+      "explanation": "The iSCSI initiator is the client that encapsulates SCSI commands in TCP/IP packets. The target is the storage system (NAS/SAN) that receives these commands and serves block storage (LUNs). This mirrors the SCSI host/device model over Ethernet.",
+      "topic": "iscsi",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW056",
+      "question": "AIO (All-In-One) liquid coolers provide better cooling than air coolers primarily when:",
+      "choices": {
+        "A": "Always, in all scenarios regardless of TDP",
+        "B": "Only when used with Intel processors",
+        "C": "Cooling high-TDP processors (200W+) where large air coolers cannot fit or when radiator placement enables better heat exhaust",
+        "D": "The ambient temperature is below 15 degrees C"
+      },
+      "answer": "C",
+      "explanation": "AIOs excel for high-TDP chips where their radiator surface area and pump-driven convection outperform even premium tower coolers. They also help when case dimensions prevent large tower coolers. For moderate TDP (<150W), premium air coolers often match AIO performance.",
+      "topic": "aio_vs_air",
+      "topic_category": "power_cooling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW057",
+      "question": "The vGPU technology from NVIDIA allows:",
+      "choices": {
+        "A": "Software emulation of a GPU without physical hardware",
+        "B": "A single physical GPU to be time-sliced into multiple virtual GPUs, each assignable to a VM with driver support",
+        "C": "Any CPU to perform GPU computations through virtualization",
+        "D": "Multiple physical GPUs to appear as one large GPU to the OS"
+      },
+      "answer": "B",
+      "explanation": "NVIDIA vGPU partitions a supported physical GPU into multiple virtual GPUs using a hardware scheduler. Each VM gets a dedicated VRAM slice and time-sliced access to GPU compute, with full driver support for graphics and compute workloads.",
+      "topic": "vgpu",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW058",
+      "question": "Which PCIe slot configuration is correct for a standard ATX motherboard with a consumer CPU providing 20 PCIe lanes?",
+      "choices": {
+        "A": "One x16 slot at full bandwidth, with remaining slots sharing lanes via PCIe switches or chipset-provided lanes",
+        "B": "Twenty individual x1 slots",
+        "C": "Two x16 slots running at x16/x16 simultaneously",
+        "D": "Three x16 slots all running at full x16 bandwidth simultaneously"
+      },
+      "answer": "A",
+      "explanation": "A consumer CPU with 20 lanes typically allocates 16 to the primary GPU slot and 4 to an M.2 NVMe. Additional PCIe slots use chipset-provided lanes (via a DMI/PCIe link to the chipset) or share CPU lanes via bifurcation, running at reduced widths.",
+      "topic": "pcie_slot_configuration",
+      "topic_category": "form_factors",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW059",
+      "question": "NFS vs SMB for a mixed Linux/Windows home lab NAS: which statement is most accurate?",
+      "choices": {
+        "A": "SMB is only usable on Windows clients",
+        "B": "NFS and SMB are functionally identical protocols with different names",
+        "C": "NFS excels for Linux-native workloads with strong POSIX semantics; SMB (via SMB3) provides better Windows integration and supports multichannel for higher throughput",
+        "D": "NFS is always faster than SMB regardless of workload"
+      },
+      "answer": "C",
+      "explanation": "NFS (v4.x) is native to Linux with full POSIX permission support. SMB3 offers multichannel (aggregating NICs), encryption, and seamless Windows ACL integration. In mixed environments, many labs run both protocols from the same NAS.",
+      "topic": "nfs_vs_smb",
+      "topic_category": "networking",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW060",
+      "question": "Memory overcommit in a hypervisor allows:",
+      "choices": {
+        "A": "Each VM to access the full physical RAM simultaneously",
+        "B": "VMs to use faster memory by overclocking DIMMs",
+        "C": "Running VMs without any physical RAM using disk swap only",
+        "D": "Allocating more total virtual RAM to VMs than physical RAM exists, using techniques like ballooning and transparent page sharing"
+      },
+      "answer": "D",
+      "explanation": "Memory overcommit lets a hypervisor promise more RAM to VMs than physically installed, banking on VMs not using their full allocation simultaneously. Techniques include balloon drivers (reclaiming idle pages), TPS (deduplicating identical pages), and swap to disk as a last resort.",
+      "topic": "memory_overcommit",
+      "topic_category": "virtualization",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW061",
+      "question": "Intel IPC (Instructions Per Clock) improvements between Zen 3 and Zen 4 were approximately:",
+      "choices": {
+        "A": "13%, from wider pipelines, better branch prediction, and doubled L2 cache",
+        "B": "50%, due to the move from 7nm to 5nm",
+        "C": "25%, entirely from higher clock speeds",
+        "D": "0-5%, primarily from cache improvements"
+      },
+      "answer": "A",
+      "explanation": "AMD's Zen 4 achieved approximately 13% IPC uplift over Zen 3 through wider front-end, improved branch prediction, doubled L2 cache (1MB per core), and AVX-512 support. Process node improvements contributed to clock speed, not IPC directly.",
+      "topic": "ipc_improvements",
+      "topic_category": "cpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW062",
+      "question": "When choosing between a NAS, DAS, and SAN for a home lab, a SAN is distinguished by:",
+      "choices": {
+        "A": "Only supporting file-level protocols like NFS and SMB",
+        "B": "Being limited to a single host connection",
+        "C": "Using USB or Thunderbolt for direct connection",
+        "D": "Presenting block-level storage over a dedicated network (Fibre Channel or iSCSI), allowing multiple hosts to access shared storage"
+      },
+      "answer": "D",
+      "explanation": "A SAN provides block-level storage over a network, enabling multiple servers to access shared LUNs as if they were local disks. DAS is directly attached to one host. NAS provides file-level access. SANs use Fibre Channel, iSCSI, or NVMe-oF.",
+      "topic": "nas_das_san",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW063",
+      "question": "A BMC (Baseboard Management Controller) on a server board operates:",
+      "choices": {
+        "A": "Independently on standby power (5V SB), functioning even when the server is off or the OS has crashed",
+        "B": "Only during BIOS POST to check hardware health",
+        "C": "Only when the server is powered on and the OS is running",
+        "D": "As a software daemon within the host operating system"
+      },
+      "answer": "A",
+      "explanation": "The BMC is an independent embedded controller with its own processor, RAM, and network stack. It runs on standby power from the PSU, enabling remote management (power on/off, console access, sensor monitoring) even when the main system is completely down.",
+      "topic": "bmc",
+      "topic_category": "remote_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW064",
+      "question": "When calculating PSU wattage for a system with a 253W MTP CPU and a 350W TGP GPU, the recommended PSU size is:",
+      "choices": {
+        "A": "603W (exact sum of components)",
+        "B": "At least 850W, accounting for transient spikes, other components, and 20-30% headroom",
+        "C": "500W if using 80 Plus Titanium",
+        "D": "1600W to maximize efficiency at low load"
+      },
+      "answer": "B",
+      "explanation": "Total base draw is ~603W for CPU+GPU alone. Adding motherboard, RAM, storage, and fans brings it to ~650-700W. GPU transient spikes can reach 2x TGP momentarily. A 850W+ PSU operates at peak efficiency around 50% load and handles spikes safely.",
+      "topic": "psu_wattage_calculation",
+      "topic_category": "power_cooling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW065",
+      "question": "ZFS vdevs are the fundamental building blocks of a zpool. Which statement about vdev design is correct?",
+      "choices": {
+        "A": "Mirror vdevs and RAID-Z vdevs can be mixed within the same pool without consequences",
+        "B": "You can add drives to an existing RAID-Z vdev to expand its capacity",
+        "C": "Vdevs can be freely removed from a pool after creation",
+        "D": "A zpool's redundancy is only as strong as its weakest vdev; losing a vdev means losing the pool"
+      },
+      "answer": "D",
+      "explanation": "ZFS stripes data across vdevs. If any single vdev suffers an unrecoverable failure (e.g., 2 drives fail in a RAID-Z1 vdev), the entire pool is lost. This is why all vdevs should have consistent redundancy levels.",
+      "topic": "zfs_vdevs",
+      "topic_category": "storage",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW066",
+      "question": "Thermal throttling on a CPU occurs when:",
+      "choices": {
+        "A": "The system fan speed exceeds its maximum RPM",
+        "B": "The CPU die temperature exceeds its Tjunction max, causing automatic clock speed reduction to prevent damage",
+        "C": "The CPU's power delivery phases exceed their temperature limit",
+        "D": "Ambient temperature drops below the CPU's minimum operating temperature"
+      },
+      "answer": "B",
+      "explanation": "When on-die temperature sensors report values at or above Tjunction max (typically 100-105C), the CPU's built-in thermal protection reduces clock multiplier and voltage to lower heat output, sacrificing performance to prevent physical damage.",
+      "topic": "thermal_throttling",
+      "topic_category": "power_cooling",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW067",
+      "question": "GPU memory bandwidth for an RTX 4090 with a 384-bit bus running GDDR6X at 21 Gbps is approximately:",
+      "choices": {
+        "A": "1,008 GB/s",
+        "B": "252 GB/s",
+        "C": "504 GB/s",
+        "D": "2,016 GB/s"
+      },
+      "answer": "A",
+      "explanation": "Bandwidth = bus_width x data_rate / 8. For 384-bit bus at 21 Gbps: (384/8) x 21 = 48 x 21 = 1,008 GB/s. This massive bandwidth feeds the 16,384 CUDA cores and 512 tensor cores.",
+      "topic": "gpu_memory_bandwidth",
+      "topic_category": "gpu",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW068",
+      "question": "Quad-channel memory requires which configuration on a platform that supports it?",
+      "choices": {
+        "A": "Eight DIMMs with four matched pairs",
+        "B": "Four DIMMs installed in the correct color-coded slots (one per channel), with matched capacity and speed",
+        "C": "Any two DIMMs on a quad-channel-capable motherboard",
+        "D": "Four DIMMs installed in any four available slots"
+      },
+      "answer": "B",
+      "explanation": "Quad-channel requires one DIMM per channel (4 DIMMs minimum) in the motherboard's designated slots (usually color-coded). DIMMs should match in capacity, speed, and rank configuration for optimal interleaving. HEDT and server platforms support this.",
+      "topic": "memory_channels",
+      "topic_category": "memory",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW069",
+      "question": "U.2 is a storage connector found primarily in enterprise environments that:",
+      "choices": {
+        "A": "Only supports SATA protocol at 6 Gbps",
+        "B": "Is physically identical to M.2 M-key but with different electrical signaling",
+        "C": "Carries PCIe/NVMe over a 2.5-inch form factor connector, enabling hot-swap NVMe drives in drive bays",
+        "D": "Is a replacement for USB Type-C on workstations"
+      },
+      "answer": "C",
+      "explanation": "U.2 (formerly SFF-8639) provides PCIe NVMe connectivity in a 2.5-inch hot-swappable drive bay format. It is common in servers where M.2 slots are impractical and hot-swap capability is required for maintenance without downtime.",
+      "topic": "u2_connector",
+      "topic_category": "form_factors",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW070",
+      "question": "Out-of-band management via IPMI/iDRAC/iLO is preferred over in-band management (SSH/RDP) because:",
+      "choices": {
+        "A": "It functions independently of the host OS state, enabling recovery from kernel panics, BIOS misconfigurations, and unresponsive systems",
+        "B": "It provides faster data transfer speeds for file access",
+        "C": "It encrypts all management traffic while SSH does not",
+        "D": "It requires no network connectivity"
+      },
+      "answer": "A",
+      "explanation": "Out-of-band management operates through a dedicated BMC with its own network interface, completely independent of the host OS. This allows remote power cycling, BIOS access, and console viewing even when the OS is crashed, hung, or not yet installed.",
+      "topic": "out_of_band_management",
+      "topic_category": "remote_management",
+      "difficulty": "advanced",
+      "type": "standard"
+    },
+    {
+      "id": "HW071",
+      "question": "You are building a Proxmox virtualization host with 2x NVIDIA RTX 4070 Ti (285W TGP each) for GPU passthrough to separate VMs. The CPU is an AMD Ryzen 9 7950X (170W TDP, 230W PPT). You have 5x NVMe SSDs and 8x HDDs. Your UPS is rated 1500VA at 0.9 power factor. Step 1: Calculate total system draw. Step 2: Determine if the UPS provides adequate runtime headroom. Step 3: Identify the limiting factor.",
+      "choices": {
+        "A": "Total draw ~600W; UPS is more than adequate",
+        "B": "Total draw ~920W; UPS provides 1350W but with transient GPU spikes up to 2x TGP, the UPS lacks headroom for dual-GPU spike events",
+        "C": "Total draw ~920W; the CPU is the bottleneck, not the UPS",
+        "D": "Total draw ~920W; UPS is sufficient with 1350W capacity and 32% headroom"
+      },
+      "answer": "B",
+      "explanation": "Base draw: 2x285W (GPUs) + 230W (CPU PPT) + ~50W (5 NVMEs) + ~80W (8 HDDs) + ~30W (fans/board) = ~960W. UPS real power: 1500 x 0.9 = 1350W. While base load fits, RTX cards have transient spikes reaching 150-200% TGP, potentially exceeding 1350W momentarily and triggering UPS overload protection.",
+      "topic": "ups_gpu_sizing",
+      "topic_category": "power_cooling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW072",
+      "question": "A home lab user wants to run a 70B parameter LLM at Q4 quantization on local GPUs. Step 1: Calculate VRAM needed for the model weights. Step 2: Determine if 2x RTX 3090 (24GB each) can host it. Step 3: Identify the performance bottleneck of splitting across PCIe-connected GPUs.",
+      "choices": {
+        "A": "~35GB needed; fits across 2x 3090s (48GB total); the PCIe 4.0 x16 inter-GPU transfer bandwidth (~32 GB/s bidirectional) becomes the bottleneck for tensor parallelism",
+        "B": "~35GB needed; fits on a single 3090 with 24GB",
+        "C": "~35GB needed; fits across 2x 3090s; NVLink bottleneck limits throughput",
+        "D": "~70GB needed; does not fit on 2x 3090s"
+      },
+      "answer": "A",
+      "explanation": "At Q4 (4 bits/param): 70B x 0.5 bytes = 35GB for weights plus ~2-3GB overhead. This fits across 2x 24GB GPUs (48GB total). Without NVLink (3090s support it but consumer boards lack bridges), tensor parallelism relies on PCIe transfers, limiting tokens/sec due to the ~32 GB/s bidirectional PCIe 4.0 x16 link versus NVLink's 112.5 GB/s.",
+      "topic": "llm_gpu_planning",
+      "topic_category": "gpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW073",
+      "question": "You need to design a ZFS storage pool for a Proxmox server handling VM images and NFS shares. Requirements: 100TB usable, survive 2 drive failures, use 18TB drives. Step 1: Choose RAID-Z level. Step 2: Calculate drives per vdev and number of vdevs. Step 3: Determine the recommended SLOG and L2ARC configuration.",
+      "choices": {
+        "A": "RAID-Z3 with 1x vdev of 16 drives; SLOG unnecessary",
+        "B": "Mirrors with 8 pairs; SLOG on HDD; no L2ARC",
+        "C": "RAID-Z1 with 6x vdevs of 4 drives; no SLOG needed; L2ARC optional",
+        "D": "RAID-Z2 with 2x vdevs of 8 drives (12 data + 4 parity = 216TB raw, ~192TB usable); SLOG on mirrored NVMe for NFS sync writes; L2ARC on spare NVMe for VM random reads"
+      },
+      "answer": "D",
+      "explanation": "RAID-Z2 tolerates 2 failures. With 8-drive vdevs: 6 data drives x 18TB = 108TB usable per vdev; 2 vdevs = 216TB raw, ~192TB usable after overhead (exceeding 100TB requirement). A mirrored SLOG pair accelerates NFS sync writes. L2ARC on NVMe caches hot VM blocks beyond RAM ARC capacity.",
+      "topic": "zfs_pool_design",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW074",
+      "question": "A user's Proxmox host has an AMD EPYC 7543 (2 NUMA nodes, 64 PCIe 4.0 lanes). They want to pass through 2x GPUs and 1x 10GbE NIC to separate VMs while keeping an NVMe boot drive on the host. Step 1: Map the PCIe topology to IOMMU groups. Step 2: Assign devices to VMs respecting NUMA locality. Step 3: Identify the configuration that avoids IOMMU group conflicts.",
+      "choices": {
+        "A": "Each GPU must be on a separate physical riser card to avoid conflicts",
+        "B": "Any PCIe device can be passed through regardless of IOMMU group; NUMA does not matter",
+        "C": "IOMMU groups are only relevant for NVMe, not GPUs",
+        "D": "Devices in the same IOMMU group must all be passed to the same VM; VMs should use CPUs and memory from the same NUMA node as their passthrough devices for optimal performance"
+      },
+      "answer": "D",
+      "explanation": "IOMMU groups are the smallest units of device isolation. All devices in a group must be assigned to the same VM (or none). NUMA-aware assignment (pinning VM CPUs to the same NUMA node as the GPU's PCIe root port) avoids cross-socket QPI/IF transfers, reducing latency by 30-50% for GPU passthrough workloads.",
+      "topic": "iommu_numa_passthrough",
+      "topic_category": "virtualization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW075",
+      "question": "You are building a quiet home lab in a living space. The system has 2x servers (each 200W idle, 500W load), a 24-port managed switch (30W), and a NAS (80W idle). Step 1: Calculate total heat output at idle in BTU/hr. Step 2: Assess if passive cooling is viable. Step 3: Recommend the noise-optimized configuration.",
+      "choices": {
+        "A": "~1,740 BTU/hr at idle; replace all fans with water cooling to eliminate noise entirely",
+        "B": "~1,740 BTU/hr at idle; passive cooling is viable for a well-ventilated room; use Noctua fans, 80mm minimum, under 25 dBA",
+        "C": "~1,740 BTU/hr at idle; passive cooling is insufficient; require a dedicated AC unit for the room",
+        "D": "~500 BTU/hr at idle; noise is not a concern at these power levels"
+      },
+      "answer": "B",
+      "explanation": "Idle draw: 2x200W + 30W + 80W = 510W. 510W x 3.412 BTU/W = ~1,740 BTU/hr. This is manageable in a ventilated room without AC (typical small room AC handles 5,000+ BTU/hr). Noise optimization: replace server fans with Noctua aftermarket (25 dBA), use fan curves, set BIOS to quiet mode, and consider a half-rack with acoustic foam lining.",
+      "topic": "noise_and_heat",
+      "topic_category": "home_lab",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW076",
+      "question": "A 10GbE home network uses Cat6a cabling, Mikrotik CRS310 switch, and Mellanox ConnectX-3 NICs. The user reports only 3 Gbps throughput during iperf3 tests. Step 1: Identify likely bottleneck categories. Step 2: Determine the most probable cause. Step 3: Recommend the diagnostic sequence.",
+      "choices": {
+        "A": "The switch is defective; replace with a Ubiquiti switch",
+        "B": "10GbE is theoretical; 3 Gbps is the expected real-world maximum",
+        "C": "CPU bottleneck on the iperf3 host; ConnectX-3 may need driver update or firmware reflash; verify MTU settings match end-to-end (including switch) and check for flow control mismatches",
+        "D": "The Cat6a cable is faulty; replace all cables first"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Bottleneck categories are CPU (interrupt handling), NIC (driver/firmware), and network config (MTU/flow control). Step 2: ConnectX-3 cards need up-to-date firmware and proper multi-queue driver configuration. MTU mismatch (9000 on NIC, 1500 on switch) causes fragmentation. Step 3: Check ethtool link status, verify MTU end-to-end, test with multiple iperf3 streams (-P 4), and monitor CPU usage during transfer.",
+      "topic": "10gbe_troubleshooting",
+      "topic_category": "networking",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW077",
+      "question": "You want to run 4x VMs simultaneously, each needing GPU acceleration for ML inference. Your budget allows one NVIDIA A100 80GB. Step 1: Evaluate vGPU vs MIG (Multi-Instance GPU) partitioning. Step 2: Determine memory allocation per instance with MIG. Step 3: Identify the tradeoff between MIG and time-sliced vGPU.",
+      "choices": {
+        "A": "MIG can create up to 7 instances on A100; 4x 20GB instances provide dedicated compute slices with hardware isolation but each gets only 1/7 of SM count; time-sliced vGPU shares all SMs but without hardware isolation between tenants",
+        "B": "Run all workloads in one VM with CUDA MPS instead",
+        "C": "MIG and vGPU are identical; choose either one",
+        "D": "Use time-sliced vGPU for all 4 VMs; MIG is only for A30 GPUs"
+      },
+      "answer": "A",
+      "explanation": "Step 1: MIG provides hardware-level partitioning with dedicated SMs, memory, and L2 cache per instance. vGPU time-slices all resources. Step 2: A100 80GB MIG profiles allow 4x 20GB instances (4g.20gb profile) or various other splits. Step 3: MIG guarantees consistent performance with isolation but limits each instance's compute to a fraction of total SMs. vGPU allows bursty access to all SMs but with noisy-neighbor risk.",
+      "topic": "mig_vs_vgpu",
+      "topic_category": "gpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW078",
+      "question": "A home lab user is choosing between Intel Xeon W-3475X (36C, 300W PBP, 8-channel DDR5) and AMD EPYC 9454 (48C, 290W TDP, 12-channel DDR5) for a virtualization-heavy workload with 512GB RAM. Step 1: Compare memory bandwidth. Step 2: Evaluate core density vs clock speed. Step 3: Determine which is better for running 30+ VMs with mixed workloads.",
+      "choices": {
+        "A": "EPYC 9454 is superior: 12 DDR5 channels provide ~50% more memory bandwidth, 48 cores give more vCPU headroom, and 128 PCIe 5.0 lanes allow more device passthrough than Xeon's 112 PCIe 5.0 lanes",
+        "B": "Both are equivalent; choose the cheaper option",
+        "C": "Neither is suitable; ARM-based processors are required for 30+ VMs",
+        "D": "Xeon W-3475X wins due to higher single-core clocks for all-core VM workloads"
+      },
+      "answer": "A",
+      "explanation": "Step 1: EPYC's 12 channels vs Xeon's 8 channels yields ~460 GB/s vs ~307 GB/s bandwidth, critical for 30+ VMs competing for memory. Step 2: EPYC's 48 cores provide 33% more vCPU allocation than 36 cores, allowing denser VM packing. Step 3: For mixed VM workloads, memory bandwidth and core count dominate; the Xeon's slightly higher single-core boost matters less when spread across 30+ VMs.",
+      "topic": "intel_vs_amd_server",
+      "topic_category": "cpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW079",
+      "question": "A user has 6x 2TB NVMe SSDs and wants to maximize both performance and redundancy for a VM datastore. Step 1: Compare RAID 10 (3 mirrored pairs striped) vs RAID-Z2 (6-drive vdev). Step 2: Calculate usable capacity for each. Step 3: Identify which configuration provides better random write IOPS for VM workloads.",
+      "choices": {
+        "A": "RAID-Z2 provides 8TB usable with better write IOPS due to parity distribution",
+        "B": "Both provide identical IOPS; choose RAID-Z2 for more capacity",
+        "C": "RAID 10 provides 6TB usable (vs RAID-Z2's 8TB) but delivers significantly higher random write IOPS because mirror writes avoid the read-modify-write parity penalty of RAID-Z2",
+        "D": "RAID-Z2 is not possible with NVMe drives"
+      },
+      "answer": "C",
+      "explanation": "Step 1: RAID 10 = 3 mirror pairs striped (50% usable). RAID-Z2 = 4 data + 2 parity. Step 2: RAID 10 = 6TB usable, RAID-Z2 = 8TB usable. Step 3: RAID 10 writes go to a single mirror pair (write, mirror, done). RAID-Z2 random writes require read-modify-write of the parity stripe, drastically reducing IOPS. For VM random I/O, RAID 10 is strongly preferred despite lower capacity.",
+      "topic": "raid_performance_tradeoffs",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW080",
+      "question": "You are designing IOMMU passthrough for a gaming VM on Proxmox. The host has an AMD Ryzen 7950X, and the GPU (RTX 4090) shares an IOMMU group with the onboard audio device. Step 1: Explain why this is a problem. Step 2: Identify the kernel-level solution. Step 3: Describe the additional configuration needed for stable passthrough.",
+      "choices": {
+        "A": "Replace the motherboard with one that has better IOMMU groups",
+        "B": "It is not a problem; just pass through the GPU alone",
+        "C": "Disable IOMMU entirely and use software emulation for the GPU",
+        "D": "All devices in an IOMMU group must be passed together; apply the ACS override patch to split the group, then bind the GPU to vfio-pci at boot, configure CPU pinning for the gaming VM, and add hugepages for reduced memory latency"
+      },
+      "answer": "D",
+      "explanation": "Step 1: VFIO requires all devices in an IOMMU group to be bound to the same driver. Passing only the GPU leaves the audio device in conflict. Step 2: The ACS override patch (pcie_acs_override=downstream,multifunction) splits groups at a slight security cost. Step 3: Bind GPU to vfio-pci via modprobe config, pin CPU cores to the VM, enable hugepages (1GB pages), and isolate the GPU cores from the host scheduler.",
+      "topic": "gpu_passthrough_setup",
+      "topic_category": "virtualization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW081",
+      "question": "A user's DDR5 system with 4x 32GB DIMMs at DDR5-5600 shows only 4400 MT/s in BIOS after enabling XMP. The motherboard's QVL lists the kit at 5600. Step 1: Identify the likely cause of speed downgrade. Step 2: Explain the role of memory topology. Step 3: Recommend the solution.",
+      "choices": {
+        "A": "The motherboard BIOS needs updating; XMP always runs at rated speed",
+        "B": "The XMP profile is corrupted; reflash the DIMM firmware",
+        "C": "DDR5-5600 is not real; the maximum DDR5 speed is 4800 MT/s",
+        "D": "Running 4 DIMMs (2 DIMMs per channel) increases electrical load on the memory controller, forcing it to reduce speed; the user should try manually tuning BIOS settings (voltage bump to 1.35V, relaxed secondary timings) or accept 4800 MT/s as the stable 2DPC speed"
+      },
+      "answer": "D",
+      "explanation": "Step 1: 2 DIMMs per channel (2DPC) on DDR5 significantly loads the Integrated Memory Controller, which cannot maintain the same frequency as 1DPC. Step 2: DDR5's on-DIMM voltage regulator (PMIC) and the daisy-chain or T-topology of slots affect signal integrity. Step 3: Increase VDDQ/VDD slightly, relax subtimings, or test at DDR5-4800/5200 for stability. Alternatively, use 2x64GB for 1DPC at full speed.",
+      "topic": "memory_compatibility",
+      "topic_category": "memory",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW082",
+      "question": "A home lab server with an Intel Xeon E-2388G runs ESXi. The user wants to add a Tesla T4 (70W, passive cooling) to a tower chassis with only active-cooled GPU support. Step 1: Assess the cooling risk. Step 2: Evaluate the PCIe power delivery. Step 3: Design the solution.",
+      "choices": {
+        "A": "Passive GPUs cannot work in tower cases; return the T4",
+        "B": "The T4's 70W draw will damage the PCIe slot; use a riser with external power",
+        "C": "The T4 relies entirely on chassis airflow (no onboard fans); install a 120mm fan duct directing airflow across the T4's heatsink, verify the PCIe slot provides 75W (T4 has no external power connector), and set ESXi to reserve the T4 for a specific VM via DirectPath I/O",
+        "D": "Replace the T4 with an actively-cooled RTX GPU; datacenter GPUs are not suitable for tower cases"
+      },
+      "answer": "C",
+      "explanation": "Step 1: The T4 is passively cooled for servers with front-to-back airflow. A tower case with typical GPU-area airflow may leave the T4 thermally throttled. Step 2: The T4 draws exactly 70W from the PCIe slot (within the 75W spec). No auxiliary power connector is needed. Step 3: A 3D-printed or sheet-metal fan duct with a 120mm fan pointed at the T4 provides adequate airflow. Verify GPU temps stay under 85C under load.",
+      "topic": "datacenter_gpu_in_tower",
+      "topic_category": "power_cooling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW083",
+      "question": "You have a 42U server rack with 3x servers (2U each), 2x switches (1U each), 1x patch panel (1U), and 1x UPS (3U). Step 1: Calculate total rack units used and remaining. Step 2: Plan the optimal layout for airflow. Step 3: Identify the common mistake in rack planning.",
+      "choices": {
+        "A": "12U used, 30U remaining; place servers at top for natural convection; no blanking panels needed",
+        "B": "12U used, 30U remaining; place servers at the top and UPS at the highest point for better power distribution",
+        "C": "12U used, 30U remaining; place UPS at bottom (heavy, stable), switches and patch panel above, then servers in the middle with blank panels filling all unused spaces to prevent hot air recirculation",
+        "D": "12U used, 30U remaining; layout order does not matter in a home lab"
+      },
+      "answer": "C",
+      "explanation": "Step 1: 3x2U + 2x1U + 1U + 3U = 12U used, 30U free. Step 2: Heavy UPS goes at the bottom for stability and center of gravity. Network gear (switches, patch panel) goes above for short cable runs. Servers in the middle for balanced airflow. Step 3: Leaving open U-spaces without blanking panels creates a bypass path where hot exhaust recirculates to intakes, drastically reducing cooling efficiency.",
+      "topic": "rack_planning",
+      "topic_category": "home_lab",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW084",
+      "question": "A ZFS pool shows degraded performance. Investigation reveals the 8x HDD RAID-Z2 pool has fragmentation at 78% and is 92% full. Step 1: Explain why ZFS performance degrades at high capacity. Step 2: Determine if adding an L2ARC will help. Step 3: Recommend the correct remediation.",
+      "choices": {
+        "A": "Run zpool scrub to defragment the pool",
+        "B": "Replace HDDs with SSDs; ZFS performance is always poor on spinning disks",
+        "C": "Add more RAM to increase ARC size; fragmentation is irrelevant for ZFS",
+        "D": "ZFS's copy-on-write design causes increasing fragmentation as the pool fills, forcing scattered writes; above 80% capacity, the space allocation algorithm slows dramatically. L2ARC will not help write-side fragmentation. The correct fix is to add a new vdev to bring utilization below 70%, then rebalance data"
+      },
+      "answer": "D",
+      "explanation": "Step 1: ZFS COW writes new blocks for every modification. As free space shrinks, the block allocator must search harder for contiguous free regions, and writes scatter across the pool. Step 2: L2ARC only accelerates reads; it cannot help write fragmentation. Step 3: Adding a new RAID-Z2 vdev drops utilization, gives the allocator room to write contiguously, and data naturally rebalances as old blocks are freed and rewritten.",
+      "topic": "zfs_capacity_performance",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW085",
+      "question": "A user is selecting between BF16 (bfloat16) and FP16 (IEEE half-precision) for LLM training on an A100 GPU. Step 1: Compare the numerical range and precision of each format. Step 2: Explain why BF16 is preferred for training. Step 3: Identify where FP16 still has an advantage.",
+      "choices": {
+        "A": "BF16 uses less VRAM than FP16 due to compression",
+        "B": "BF16 and FP16 are identical in range and precision",
+        "C": "FP16 is always superior due to higher precision; BF16 is only for inference",
+        "D": "BF16 has the same exponent range as FP32 (8-bit exponent) but less mantissa precision than FP16; this prevents overflow/underflow during gradient updates without loss scaling. FP16 has higher precision (10-bit vs 7-bit mantissa) and is better for inference where dynamic range is less critical"
+      },
+      "answer": "D",
+      "explanation": "Step 1: BF16 = 1 sign + 8 exponent + 7 mantissa; FP16 = 1 sign + 5 exponent + 10 mantissa. Both are 16-bit. Step 2: BF16's 8-bit exponent matches FP32's range, so gradients and activations rarely overflow during training without requiring loss scaling. Step 3: FP16's 10-bit mantissa provides higher precision for inference where values are bounded and the narrower exponent range is acceptable.",
+      "topic": "bf16_vs_fp16",
+      "topic_category": "gpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW086",
+      "question": "A home server running TrueNAS SCALE has 6x 16TB SAS drives behind an LSI 9300-8i HBA in IT mode, and the user wants to add 2x NVMe SSDs as a SLOG mirror. The motherboard has 2x M.2 slots but only 1x free PCIe x4 connection from the CPU. Step 1: Identify the M.2 bandwidth constraint. Step 2: Determine if both NVMe drives can run at full speed. Step 3: Propose the optimal configuration.",
+      "choices": {
+        "A": "With only 1 CPU PCIe x4 link available, the second M.2 slot likely runs through the chipset at x2 or x1 speed; for a SLOG mirror this is acceptable because SLOG writes are bounded by network speed (1-10 Gbps), not NVMe bandwidth. Install both SSDs in M.2 slots with the primary on the CPU-direct slot",
+        "B": "Add a PCIe NVMe adapter card to bypass the M.2 limitation",
+        "C": "Both M.2 slots run at full x4 speed; install both SSDs in M.2 slots",
+        "D": "Cannot use M.2 for ZFS SLOG; requires U.2 drives"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Most consumer/prosumer boards share PCIe lanes between M.2 slots and other devices. One slot gets direct CPU lanes (x4), the other routes through the chipset. Step 2: The chipset-linked slot may be x2 or share bandwidth. Step 3: For SLOG duty, even x2 NVMe (3.5+ GB/s) vastly exceeds typical sync write rates (10GbE = 1.25 GB/s max). The SLOG's critical metric is low latency, not sustained bandwidth, so both slots work fine.",
+      "topic": "slog_design",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW087",
+      "question": "A Proxmox cluster has 3 nodes connected via 10GbE. Live migration of a VM with 128GB RAM and GPU passthrough fails. Step 1: Identify why GPU passthrough prevents standard live migration. Step 2: Calculate the minimum network time to transfer 128GB of VM memory. Step 3: Recommend the workaround for high-availability with GPU VMs.",
+      "choices": {
+        "A": "GPU passthrough VMs cannot live-migrate because the GPU's DMA mappings and device state cannot be transparently transferred; 128GB over 10GbE takes ~103 seconds minimum (128GB / 1.25 GB/s). For HA, use Proxmox HA fencing with automatic restart on another node (cold migration) rather than live migration",
+        "B": "Live migration fails because 128GB exceeds the 10GbE buffer; upgrade to 25GbE",
+        "C": "GPU passthrough supports live migration on NVIDIA GPUs with vMotion enabled",
+        "D": "The issue is that 3 nodes is insufficient; add a 4th node for quorum"
+      },
+      "answer": "A",
+      "explanation": "Step 1: VFIO/PCIe passthrough binds the physical GPU's DMA space to the VM. The hypervisor cannot snapshot and replay GPU device state on another host. Step 2: 128GB / 1.25 GB/s (10GbE) = ~103 seconds theoretical minimum, plus dirty page re-transfer. Step 3: Configure Proxmox HA groups with fencing. On node failure, HA restarts the VM on a surviving node with a compatible GPU, accepting a brief outage rather than live migration.",
+      "topic": "gpu_vm_ha",
+      "topic_category": "virtualization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW088",
+      "question": "An Intel 12th-gen CPU with P-cores and E-cores is used in a Proxmox host. A latency-sensitive VM running a real-time application experiences inconsistent performance. Step 1: Diagnose the cause related to hybrid architecture. Step 2: Explain the thread scheduling issue. Step 3: Configure the optimal solution.",
+      "choices": {
+        "A": "The hypervisor scheduler may migrate vCPU threads between P-cores and E-cores, causing inconsistent IPC. Pin the latency-sensitive VM's vCPUs exclusively to P-cores using CPU affinity (taskset or cgroup cpuset), and assign background VMs to E-cores to prevent contention",
+        "B": "The issue is caused by Spectre mitigations; disable them for the VM",
+        "C": "Enable Intel Thread Director in the VM BIOS settings",
+        "D": "Disable E-cores entirely in BIOS; they cannot be used for virtualization"
+      },
+      "answer": "A",
+      "explanation": "Step 1: P-cores and E-cores have different IPC characteristics. A vCPU thread running on a P-core then migrating to an E-core experiences a ~40% IPC drop. Step 2: Linux's CFS scheduler (used by KVM) may not be aware of core asymmetry without Intel Thread Director integration. Step 3: Pin critical VM vCPUs to specific P-cores, isolate those cores from the host scheduler (isolcpus= kernel parameter), and allocate E-cores for background/management VMs.",
+      "topic": "hybrid_cpu_virtualization",
+      "topic_category": "cpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW089",
+      "question": "A user is deploying a Ceph storage cluster across 3 home lab nodes, each with 4x NVMe SSDs and 10GbE networking. Step 1: Calculate the minimum network bandwidth needed if each NVMe can do 3.5 GB/s. Step 2: Determine the network bottleneck. Step 3: Recommend the network architecture.",
+      "choices": {
+        "A": "100GbE is the minimum for any NVMe-based Ceph cluster",
+        "B": "Ceph does not use network bandwidth for replication; it uses shared storage",
+        "C": "10GbE is sufficient for all scenarios; Ceph self-throttles to network speed",
+        "D": "4x NVMe at 3.5 GB/s = 14 GB/s aggregate per node, but Ceph replication (3x default) means each write generates 3x network traffic. 10GbE (1.25 GB/s) is severely bottlenecked; recommend 25GbE or bonded 2x 10GbE for cluster network, with separate public and cluster networks to isolate replication traffic"
+      },
+      "answer": "D",
+      "explanation": "Step 1: 4 NVMe x 3.5 GB/s = 14 GB/s aggregate storage throughput per node. Step 2: With 3x replication, a primary write triggers 2 additional network copies. 10GbE (1.25 GB/s) means storage is ~11x faster than network. Even without full utilization, replication and recovery traffic will saturate 10GbE. Step 3: Separate public (client-facing) and cluster (replication) networks. Bond 2x 10GbE or upgrade to 25GbE for the cluster network.",
+      "topic": "ceph_network_design",
+      "topic_category": "networking",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW090",
+      "question": "A user has an AMD Ryzen 9 7950X (170W TDP) cooled by a Noctua NH-D15, but HWMonitor shows sustained temps of 95C during all-core Cinebench. Step 1: Explain why this temperature is expected behavior. Step 2: Determine if the cooler is actually inadequate. Step 3: Identify the correct tuning approach.",
+      "choices": {
+        "A": "95C is dangerous and will damage the CPU within weeks",
+        "B": "95C means the cooler is failing; replace with a 360mm AIO immediately",
+        "C": "Reapply thermal paste; the NH-D15 should keep any CPU under 70C",
+        "D": "AMD Zen 4 targets 95C (Tctl/Tdie) by design using Precision Boost Overdrive, boosting clocks until hitting the thermal limit. The NH-D15 is adequate but the CPU will always reach 95C and self-regulate. To reduce temps: set PPT limit in BIOS (e.g., 142W Eco Mode) to trade ~5% performance for 15-20C lower temps"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Zen 4 uses Precision Boost Overdrive to aggressively boost clocks until reaching the 95C thermal target. This is by design, not a cooling failure. Step 2: The NH-D15 is one of the best air coolers; the CPU boosts higher with better cooling but still targets 95C. Even a 360mm AIO may show similar temps with higher clocks. Step 3: PBO Eco Mode (PPT limit at 142W or 105W) reduces temps significantly with minimal multi-threaded performance loss.",
+      "topic": "zen4_thermal_behavior",
+      "topic_category": "power_cooling",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW091",
+      "question": "A user is building a 10GbE NAS for video editing. They have a TrueNAS system with 8x 18TB HDDs in RAID-Z2 and a 10GbE NIC. Step 1: Calculate the maximum sequential read speed of the array. Step 2: Determine if 10GbE is the bottleneck. Step 3: Recommend how to saturate the 10GbE link.",
+      "choices": {
+        "A": "10GbE is far more than needed; 1GbE is sufficient for video editing",
+        "B": "8x HDDs can do ~1.6 GB/s sequential reads; 10GbE is the bottleneck at 1.25 GB/s. No additional optimization needed since the array exceeds network capacity",
+        "C": "HDDs cannot saturate 10GbE; replace all drives with SSDs",
+        "D": "RAID-Z2 with 6 data drives can read at 6x ~200 MB/s = ~1.2 GB/s theoretical. 10GbE provides 1.25 GB/s. The array barely saturates the link for sequential reads. Add an NVMe L2ARC to accelerate random reads and ensure sufficient RAM (64GB+) for ARC to cache active video project metadata"
+      },
+      "answer": "D",
+      "explanation": "Step 1: RAID-Z2 stripes reads across 6 data drives. Modern 18TB HDDs sustain ~200 MB/s sequential, yielding ~1.2 GB/s aggregate. Step 2: 10GbE = 1.25 GB/s, so the HDD array is the near-bottleneck, just barely matching the link. Step 3: L2ARC on NVMe caches frequently accessed small files (project files, thumbnails). Large ARC in RAM caches metadata. For multi-stream 4K editing, ensure enough RAM for the active working set.",
+      "topic": "nas_video_editing",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW092",
+      "question": "You are configuring SR-IOV on a Mellanox ConnectX-5 NIC to provide dedicated virtual network interfaces to 8 VMs on a Proxmox host. Step 1: Explain the VF (Virtual Function) creation process. Step 2: Determine the IOMMU requirement. Step 3: Identify the performance vs management tradeoff compared to virtio-net.",
+      "choices": {
+        "A": "ConnectX-5 does not support SR-IOV; only ConnectX-6 and newer do",
+        "B": "SR-IOV VFs are created in the switch firmware, not on the server",
+        "C": "Enable SR-IOV in BIOS and create VFs via sysfs (echo 8 > /sys/class/net/ens1f0/device/sriov_numvfs). Each VF appears as a separate PCIe device requiring IOMMU for safe assignment. SR-IOV provides near-native performance but loses live migration capability and requires per-VF MAC/VLAN management versus virtio's simplicity",
+        "D": "SR-IOV requires no BIOS or kernel configuration; just assign VFs in the VM config"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Enable SR-IOV in NIC firmware and BIOS, then create VFs via the sysfs interface. Each VF gets a unique PCIe address. Step 2: IOMMU (VT-d/AMD-Vi) must be enabled for secure VF assignment, preventing DMA attacks between VMs. Step 3: SR-IOV provides near-bare-metal throughput and low latency, but VF-assigned VMs cannot live-migrate (the physical NIC cannot be moved). Virtio-net allows live migration with ~10-15% performance overhead.",
+      "topic": "sriov_configuration",
+      "topic_category": "virtualization",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW093",
+      "question": "A user wants to build a compact 2U rack server for their home lab using an E-ATX motherboard. Step 1: Assess the compatibility issue. Step 2: Identify the cooling constraint. Step 3: Recommend the build approach.",
+      "choices": {
+        "A": "E-ATX requires a minimum of 4U for adequate cooling",
+        "B": "E-ATX (up to 330mm width) fits most 2U chassis but CPU cooler height is limited to ~70mm in 2U. Use low-profile heatsinks (e.g., Noctua NH-L9x65) or 2U rackmount coolers with high-RPM fans, and ensure the chassis supports E-ATX standoff positions. Front-to-back airflow with 80mm fans is mandatory",
+        "C": "E-ATX fits in any 2U chassis; use standard tower coolers",
+        "D": "2U chassis only support Mini-ITX and Micro-ATX boards"
+      },
+      "answer": "B",
+      "explanation": "Step 1: E-ATX at 305x330mm width fits in 2U (19-inch/~483mm wide chassis) but verify standoff compatibility. Step 2: 2U is ~89mm internal height. After motherboard and CPU socket, only ~55-70mm remains for the cooler. Tower coolers are impossible. Step 3: Use 2U-rated CPU coolers designed for rack airflow (Dynatron, Supermicro). These use high-RPM fans (loud) and rely on chassis front-to-back airflow. Consider noise impact for home lab placement.",
+      "topic": "2u_build",
+      "topic_category": "form_factors",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW094",
+      "question": "A home lab user wants to set up iDRAC for remote management of a Dell PowerEdge R740 without a dedicated management network. Step 1: Evaluate the security risk. Step 2: Identify the network configuration options. Step 3: Recommend the secure setup.",
+      "choices": {
+        "A": "iDRAC on the production network is fine; it uses HTTPS by default",
+        "B": "iDRAC cannot work without a dedicated physical management network",
+        "C": "Disable iDRAC entirely; use SSH for all management",
+        "D": "iDRAC on a shared production network exposes the BMC to LAN-based attacks (IPMI cipher-zero vulnerabilities, web UI exploits). Options: dedicated iDRAC port on a management VLAN, or shared LOM mode on a tagged VLAN. Recommended: assign iDRAC to a separate VLAN with firewall rules restricting access to the admin's IP only, enable HTTPS with a valid cert, disable IPMI-over-LAN if unused, and set strong credentials"
+      },
+      "answer": "D",
+      "explanation": "Step 1: BMC interfaces have historically had critical vulnerabilities (CVE-2019-6260, IPMI cipher-zero). Exposing iDRAC on a flat network gives any LAN device potential BMC access. Step 2: iDRAC supports a dedicated NIC port or shared LOM mode with VLAN tagging. Step 3: Use a management VLAN (e.g., VLAN 99) accessible only from the admin workstation. Disable legacy IPMI, enforce HTTPS, update iDRAC firmware regularly, and use LDAP/AD integration if available.",
+      "topic": "idrac_secure_setup",
+      "topic_category": "remote_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW095",
+      "question": "A user wants to use INT8 quantization for inference on a model originally trained in FP32. The NVIDIA GPU has 320 INT8 TOPS vs 40 FP16 TFLOPS. Step 1: Calculate the theoretical speedup of INT8 over FP16. Step 2: Explain why real-world speedup is lower. Step 3: Identify when INT8 is inappropriate.",
+      "choices": {
+        "A": "8x theoretical speedup; always achievable in practice; INT8 works for all models",
+        "B": "INT8 provides 2x speedup but requires 4x more VRAM due to scaling factors",
+        "C": "INT8 and FP16 have identical throughput on tensor cores",
+        "D": "320/40 = 8x theoretical INT8 throughput advantage. Real-world gains are 2-4x due to memory bandwidth limits, quantization overhead (calibration, dequantization), and model layers that cannot be quantized. INT8 is inappropriate for tasks requiring fine numerical discrimination (e.g., medical imaging, financial modeling) where quantization error exceeds acceptable thresholds"
+      },
+      "answer": "D",
+      "explanation": "Step 1: Pure compute ratio: 320 INT8 TOPS / 40 FP16 TFLOPS = 8x. Step 2: Real-world bottlenecks include memory bandwidth (weights still need loading), quantization calibration overhead, mixed-precision fallbacks for sensitive layers, and batch size dependencies. Step 3: INT8 introduces quantization noise that can degrade accuracy for models with wide activation ranges or tasks where small numerical differences are critical (regression, scientific computing).",
+      "topic": "int8_quantization",
+      "topic_category": "gpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW096",
+      "question": "A user is planning a power budget for a home lab in an apartment with a 15A/120V circuit shared with other appliances. The lab has: 1x server (idle 150W, peak 500W), 1x NAS (80W), 1x switch (30W), 1x UPS (15W overhead). Step 1: Calculate total lab draw at idle and peak. Step 2: Determine remaining capacity on the 15A circuit. Step 3: Identify the risk and mitigation.",
+      "choices": {
+        "A": "The lab requires a 30A circuit; 15A is insufficient even at idle",
+        "B": "Total 775W peak; 15A circuit provides 1800W; plenty of headroom for other appliances",
+        "C": "Total idle ~275W, peak ~625W. The 15A/120V circuit provides 1800W continuous (NEC 80% rule = 1440W safe continuous). With 625W peak lab draw, ~815W remains for other appliances. Risk: if server peaks while AC/microwave runs (~1200W+), the breaker trips. Mitigation: use a dedicated circuit for the lab or install a power monitoring device and set server power limits in BIOS",
+        "D": "Power budgeting is unnecessary for home labs under 1000W"
+      },
+      "answer": "C",
+      "explanation": "Step 1: Idle = 150+80+30+15 = 275W. Peak = 500+80+30+15 = 625W. Step 2: 15A x 120V = 1800W, but NEC requires 80% derating for continuous loads (1440W). With 625W lab peak, 815W remains. Step 3: Kitchen appliances (microwave 1100W, kettle 1500W) on the same circuit can cause breaker trips during server peaks. Solutions: dedicated 20A circuit, BIOS power limits (e.g., 300W cap), or load monitoring with alerts.",
+      "topic": "power_budgeting_home",
+      "topic_category": "home_lab",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW097",
+      "question": "A user wants to expand their PCIe lane allocation for a build with 3 GPUs and 2 NVMe drives on a consumer AMD Ryzen 7950X (24 CPU PCIe 5.0 lanes: 16 for GPU, 4 for NVMe, 4 for chipset downlink). Step 1: Calculate the lane deficit. Step 2: Evaluate PCIe bifurcation vs PLX switch. Step 3: Determine the optimal GPU connectivity.",
+      "choices": {
+        "A": "Consumer CPUs support unlimited PCIe devices; no lane deficit exists",
+        "B": "Use USB-C eGPU enclosures for the additional GPUs",
+        "C": "3 GPUs need 48 lanes at x16 but only 16 CPU lanes are available for GPUs. Options: bifurcate x16 into x8/x8 (BIOS support required) running 2 GPUs at x8 + 1 via chipset at x4, or use a PLX PCIe switch card. For ML inference where bandwidth is less critical, x8 per GPU loses <5% performance. The third GPU on chipset x4 will be bandwidth-limited for training but acceptable for inference",
+        "D": "Install all 3 GPUs at x16; the chipset provides enough additional lanes"
+      },
+      "answer": "C",
+      "explanation": "Step 1: 3x x16 = 48 lanes needed; only 16 available for GPU use. Deficit = 32 lanes. Step 2: Bifurcation splits the x16 slot into x8+x8 (motherboard BIOS dependent), no extra hardware needed. A PLX switch adds lanes but introduces latency. Step 3: x8 provides ~16 GB/s (Gen 5) or ~8 GB/s (Gen 4), which is adequate for inference (model weights loaded once, then compute-bound). The chipset-connected GPU at x4 has reduced bandwidth but can serve lighter inference loads.",
+      "topic": "pcie_lane_planning",
+      "topic_category": "cpu",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW098",
+      "question": "You are diagnosing a ZFS mirror pool where one drive reports reallocated sectors in SMART data but ZFS shows no errors. Step 1: Explain the discrepancy. Step 2: Assess the risk level. Step 3: Determine the correct response.",
+      "choices": {
+        "A": "The drive's internal firmware remapped bad sectors to spare sectors before ZFS saw errors. Reallocated sectors indicate the drive is in early failure: the spare sector pool is finite. Risk: once spare sectors exhaust, ZFS will see read errors. Response: schedule a proactive drive replacement during a maintenance window, initiate a resilver with the new drive, and verify the replacement completes before the old drive's spare pool exhausts",
+        "B": "Run a ZFS scrub to force the errors to appear, then replace the drive",
+        "C": "ZFS errors and SMART data are completely unrelated; check both independently",
+        "D": "No ZFS errors means the drive is fine; ignore SMART data"
+      },
+      "answer": "A",
+      "explanation": "Step 1: Hard drives maintain a pool of spare sectors. When a sector becomes unreliable, firmware transparently remaps reads/writes to a spare. ZFS never sees an error because the drive handles it internally. Step 2: Reallocated sectors are a leading indicator of drive failure. The rate of reallocated sectors matters; if it is increasing, failure is accelerating. Step 3: Order a replacement drive, offline the degraded drive, resilver the mirror with the new drive, and verify integrity with a scrub.",
+      "topic": "zfs_smart_monitoring",
+      "topic_category": "storage",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW099",
+      "question": "A user is configuring a KVM-over-IP solution for 4 servers in a home lab without enterprise-grade iDRAC/iLO. Step 1: Compare PiKVM and Raritan KX III. Step 2: Evaluate the latency and feature tradeoffs. Step 3: Recommend the cost-effective solution with remote power control.",
+      "choices": {
+        "A": "A single 4-port manual KVM switch with no IP connectivity is sufficient",
+        "B": "PiKVM (Raspberry Pi-based, ~$100-200) provides HDMI capture, virtual keyboard/mouse, virtual media (ISO mount), and GPIO-based ATX power control per server. Raritan KX III (~$2000+) offers multi-server switching, better video quality, and enterprise management but is overkill for 4 servers. Recommended: 4x PiKVM units with GPIO ATX control wired to each server's power header, accessible via web browser over the home network",
+        "C": "Use software VNC on all servers; hardware KVM is unnecessary",
+        "D": "Enterprise KVM switches are the only reliable option; PiKVM is a toy"
+      },
+      "answer": "B",
+      "explanation": "Step 1: PiKVM uses a Pi 4 + CSI-2 HDMI capture + Arduino for HID emulation. Raritan is enterprise rack-mount with multi-user, LDAP, and certified compatibility. Step 2: PiKVM has ~100-200ms video latency vs Raritan's ~50ms, but PiKVM supports virtual media mounting and H.264 streaming. Step 3: For 4 servers, 4x PiKVM units (~$800 total) provide independent KVM-over-IP with ATX power control via GPIO relays, at 1/3 the cost of a single Raritan unit.",
+      "topic": "kvm_over_ip",
+      "topic_category": "remote_management",
+      "difficulty": "expert",
+      "type": "multi_step"
+    },
+    {
+      "id": "HW100",
+      "question": "A user wants to build a complete home lab for ML development and virtualization. Budget: $8000. Requirements: run 2x 13B LLMs simultaneously at FP16 for fine-tuning, host 10+ VMs, 100TB NAS storage with 2-drive fault tolerance, 10GbE networking, and remote management. Step 1: Select the GPU configuration. Step 2: Design the storage layout. Step 3: Identify the component that forces the most expensive tradeoff.",
+      "choices": {
+        "A": "4x RTX 4070 (48GB total); distributed training across 4 GPUs",
+        "B": "2x RTX 3090 (48GB total VRAM, ~26GB needed per 13B FP16 model + overhead fits tight). Storage: 6x 18TB HDDs in RAID-Z2 (72TB usable). CPU: AMD Ryzen 9 7950X (128 PCIe 5.0 lanes via chipset). 10GbE: Mellanox ConnectX-3. The most expensive tradeoff is VRAM: 2x 3090 at ~$1300 total barely fits the models, while 2x 4090 at ~$3200 would be safer but consumes 40% of the budget on GPUs alone",
+        "C": "1x A100 80GB; skip the NAS; use cloud storage",
+        "D": "2x RTX 4090 (48GB total), single server with all storage and compute combined"
+      },
+      "answer": "B",
+      "explanation": "Step 1: 13B FP16 = ~26GB per model. 2x models = ~52GB; 2x 3090 (48GB) is tight but Q8 quantization reduces to ~26GB total, fitting. 2x 4090 (48GB) same capacity but faster. Budget pressure: 3090 pairs cost ~$1300 used vs $3200 for 4090s. Step 2: 6x 18TB RAID-Z2 = 4x18TB data = 72TB usable (~$1500). Step 3: The GPU-vs-everything-else tradeoff dominates: $3200 on 4090s leaves $4800 for CPU, RAM, storage, networking, and case. $1300 on 3090s leaves $6700, enabling 128GB DDR5, better NVMe, and a proper UPS. VRAM is the binding constraint.",
+      "topic": "complete_lab_design",
+      "topic_category": "home_lab",
+      "difficulty": "expert",
+      "type": "multi_step"
+    }
+  ]
+}
