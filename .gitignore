@@ -16,6 +16,9 @@ build/
 *.key
 *.p12
 *.pfx
+*credentials*
+*secret*
+*.token
 
 # Runtime data (generated at startup)
 data/messages.json

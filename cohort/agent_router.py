@@ -20,10 +20,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import json
+import sys
+import tempfile
+
 from cohort.chat import parse_mentions
 from cohort.agent_store import AgentStore
 from cohort.context_window import truncate_context
 from cohort.personas import load_persona
+from cohort.tool_permissions import resolve_permissions, get_central_permissions, ResolvedPermissions
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +49,70 @@ CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 HUMAN_USERS = frozenset({
     "admin", "user", "human", "system",
 })
+
+# =====================================================================
+# Tool permission helpers
+# =====================================================================
+
+
+def _build_tool_awareness(perms: ResolvedPermissions) -> str:
+    """Build a tool awareness section for the agent prompt."""
+    lines = [
+        "=== AVAILABLE TOOLS ===",
+        f"You have access to the following tools: {', '.join(perms.allowed_tools)}",
+    ]
+
+    tool_set = set(perms.allowed_tools)
+
+    if {"Read", "Glob", "Grep"} & tool_set:
+        lines.append("- File tools: Use Read to view files, Glob to find files by pattern, Grep to search file contents")
+
+    if {"Write", "Edit"} & tool_set:
+        lines.append("- Edit tools: Use Edit for surgical changes to existing files, Write for new files")
+
+    if "Bash" in tool_set:
+        lines.append("- Bash: Execute shell commands (git, tests, builds, etc.)")
+
+    if {"WebSearch", "WebFetch"} & tool_set:
+        lines.append("- Web tools: Search and fetch web content for research")
+
+    if perms.mcp_servers:
+        server_names = [s.get("name", "unknown") for s in perms.mcp_servers]
+        lines.append(f"- MCP servers: {', '.join(server_names)}")
+        if any(s.get("name") == "local_llm" for s in perms.mcp_servers):
+            lines.append("  - local_llm: Delegate sub-tasks to local Ollama models (fast, free)")
+        if any(s.get("name") == "cohort" for s in perms.mcp_servers):
+            lines.append("  - cohort: Read/post messages in team chat channels")
+
+    lines.append(f"- Max turns: {perms.max_turns}")
+    lines.append("=== END TOOLS ===\n")
+
+    return "\n".join(lines)
+
+
+def _write_mcp_config(mcp_servers: list[dict]) -> Path | None:
+    """Write a temporary MCP config JSON for Claude CLI --mcp-config flag.
+
+    Returns path to temp file, or None on failure.
+    Caller is responsible for cleanup.
+    """
+    try:
+        config: dict[str, Any] = {"mcpServers": {}}
+        for server in mcp_servers:
+            name = server.get("name", "")
+            if name:
+                config["mcpServers"][name] = {
+                    "command": server["command"],
+                    "args": server.get("args", []),
+                }
+        fd, path = tempfile.mkstemp(suffix=".json", prefix="cohort_mcp_")
+        with os.fdopen(fd, "w") as f:
+            json.dump(config, f)
+        return Path(path)
+    except Exception:
+        logger.debug("[*] Failed to write MCP config temp file")
+        return None
+
 
 # =====================================================================
 # Agent alias map
@@ -483,11 +552,21 @@ def _invoke_agent_sync(item: dict) -> None:
     channel_context = build_channel_context(channel_id)
     thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
 
+    # Resolve tool permissions (needed for both prompt injection and CLI flags)
+    agent_cfg_for_perms = _agent_store.get(agent_id) if _agent_store else None
+    perms = resolve_permissions(agent_id, agent_cfg_for_perms, get_central_permissions())
+
+    # Build tool awareness section (only for agents with tool access)
+    tool_awareness = ""
+    if perms and perms.allowed_tools:
+        tool_awareness = _build_tool_awareness(perms)
+
     # Construct the full prompt
     full_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
         f"---\n{agent_prompt}\n---\n\n"
+        f"{tool_awareness}"
         f"{channel_context}"
         f"{thread_context}"
         f"Now respond to this message:\n{message_content}"
@@ -554,24 +633,65 @@ def _invoke_agent_sync(item: dict) -> None:
     if not response_content:
         logger.info("[>>] Invoking Claude CLI for %s in #%s", agent_id, channel_id)
         cli_t0 = time.monotonic()
+        mcp_config_path: Path | None = None
 
         try:
             # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
             # when the server is launched from within a Claude Code session.
             env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
 
-            result = subprocess.run(
-                [CLAUDE_CMD, "-p", "-"],
-                input=full_prompt,
-                capture_output=True,
-                text=True,
-                cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
-                timeout=RESPONSE_TIMEOUT,
-                shell=True,
-                encoding="utf-8",
-                errors="replace",
-                env=env,
-            )
+            if perms and perms.allowed_tools:
+                # Tool-enabled invocation (follows BOSS code queue worker pattern)
+                cli_cmd = [CLAUDE_CMD, "-p"]
+
+                if perms.permission_mode:
+                    cli_cmd.extend(["--permission-mode", perms.permission_mode])
+
+                cli_cmd.extend(["--allowedTools", ",".join(perms.allowed_tools)])
+                cli_cmd.extend(["--max-turns", str(perms.max_turns)])
+                cli_cmd.extend(["--output-format", "text"])
+
+                # MCP server config (temporary file)
+                if perms.mcp_servers:
+                    mcp_config_path = _write_mcp_config(perms.mcp_servers)
+                    if mcp_config_path:
+                        cli_cmd.extend(["--mcp-config", str(mcp_config_path)])
+
+                cli_cmd.append("-")  # read from stdin
+
+                # Windows: use cmd /c for .cmd files (proven BOSS pattern)
+                if sys.platform == "win32":
+                    cli_cmd = ["cmd", "/c"] + cli_cmd
+
+                logger.info("[>>] Tool-enabled CLI: %s (profile=%s, tools=%s)",
+                            agent_id, perms.profile_name, ",".join(perms.allowed_tools))
+
+                result = subprocess.run(
+                    cli_cmd,
+                    input=full_prompt,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                    timeout=RESPONSE_TIMEOUT,
+                    shell=False,
+                    encoding="utf-8",
+                    errors="replace",
+                    env=env,
+                )
+            else:
+                # No tools -- backward compatible path (identical to original)
+                result = subprocess.run(
+                    [CLAUDE_CMD, "-p", "-"],
+                    input=full_prompt,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                    timeout=RESPONSE_TIMEOUT,
+                    shell=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    env=env,
+                )
 
             response_content = result.stdout.strip()
             if result.returncode != 0 and not response_content:
@@ -596,6 +716,13 @@ def _invoke_agent_sync(item: dict) -> None:
         except Exception as exc:
             response_content = f"[Error] Agent {agent_id} invocation failed: {exc}"
             logger.exception("[X] Claude CLI exception for %s", agent_id)
+        finally:
+            # Clean up temporary MCP config file
+            if mcp_config_path and mcp_config_path.exists():
+                try:
+                    mcp_config_path.unlink()
+                except OSError:
+                    pass
 
     # Stop typing indicator
     _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})

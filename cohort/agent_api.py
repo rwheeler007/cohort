@@ -272,12 +272,26 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Restrict CORS to localhost by default.  Override with COHORT_CORS_ORIGINS
+# env var (comma-separated) for network-accessible deployments.
+_cors_env = os.environ.get("COHORT_CORS_ORIGINS", "")
+_cors_origins = (
+    [o.strip() for o in _cors_env.split(",") if o.strip()]
+    if _cors_env
+    else [
+        "http://localhost:5100",
+        "http://127.0.0.1:5100",
+        "http://localhost:5200",
+        "http://127.0.0.1:5200",
+    ]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=False,
     allow_methods=["GET"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 

@@ -53,15 +53,15 @@ If you get an answer back, everything is working. Congratulations -- you're runn
 
 ## Meet the Team
 
-Cohort ships with 5 specialist agents, each with their own expertise:
+Cohort ships with specialist agents, each with their own expertise:
 
-1. **Sales Agent** -- Your lead qualification and deal-closing specialist. Knows MEDDIC, BANT, and modern video selling techniques.
-2. **Hardware Agent** -- The team's hardware engineer. Helps with PC builds, home lab design, GPU selection, and troubleshooting.
-3. **Marketing Agent** -- Handles content strategy, SEO, social media, and brand positioning.
-4. **Analytics Agent** -- Your data analyst. Interprets metrics, builds dashboards, and spots trends in your numbers.
-5. **Content Strategy Agent** -- Plans and creates content across platforms. Manages editorial calendars and content repurposing.
+1. **Python Developer** -- Senior Python engineer. Backend APIs, data pipelines, async services, CLI tools. Test-driven, type-hinted, PEP 8 compliant.
+2. **Web Developer** -- Frontend UI/UX engineer. Semantic HTML, responsive CSS, accessibility (WCAG 2.1), performance optimization.
+3. **JavaScript Developer** -- Full-stack JS/TS engineer. React, Node.js, TypeScript, state management, build tools.
+4. **QA Agent** -- Quality assurance specialist. Test strategies, edge case identification, bug reports, release readiness.
+5. **Security Agent** -- Security engineer. OWASP Top 10, vulnerability detection, secrets management, dependency auditing.
 
-To chat with any agent, use `cohort chat --agent <name>` (e.g., `cohort chat --agent sales_agent`).
+To chat with any agent, use `cohort chat --agent <name>` (e.g., `cohort chat --agent python_developer`).
 
 ## Communication Style
 

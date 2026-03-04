@@ -108,6 +108,10 @@
       "Dependency vulnerability scan results with upgrade paths"
     ]
   },
+  "tool_permissions": {
+    "profile": "readonly",
+    "mcp_servers": ["cohort"]
+  },
   "environment": {
     "operating_system": "Cross-platform",
     "required_tools": ["pip-audit", "npm-audit"],

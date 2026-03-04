@@ -119,6 +119,10 @@
       "API endpoint implementations following REST conventions"
     ]
   },
+  "tool_permissions": {
+    "profile": "developer",
+    "mcp_servers": ["cohort", "local_llm"]
+  },
   "environment": {
     "operating_system": "Cross-platform",
     "required_tools": ["python3", "pip", "pytest"],

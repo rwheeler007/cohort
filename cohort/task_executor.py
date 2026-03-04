@@ -327,6 +327,11 @@ class TaskExecutor:
 
         try:
             import anthropic
+        except ImportError:
+            logger.warning("[!] anthropic package not installed, falling back to CLI")
+            return self._execute_cli_task(task, confirmed_brief)
+
+        try:
             client = anthropic.Anthropic(api_key=self.api_key)
             response = client.messages.create(
                 model=os.environ.get("COHORT_MODEL", "claude-sonnet-4-20250514"),
@@ -335,12 +340,16 @@ class TaskExecutor:
                 messages=[{"role": "user", "content": user_message}],
             )
             return response.content[0].text
-        except ImportError:
-            logger.warning("[!] anthropic package not installed, falling back to CLI")
-            return self._execute_cli_task(task, confirmed_brief)
-        except Exception as exc:
+        except anthropic.APIStatusError as exc:
+            logger.exception("[X] Anthropic API error for %s: %s", agent_id, exc)
+            # Sanitized -- never leak headers, keys, or request details
+            return f"[Error] API call failed: {exc.status_code} {type(exc).__name__}"
+        except anthropic.APIConnectionError:
+            logger.exception("[X] Anthropic connection error for %s", agent_id)
+            return "[Error] API call failed: could not connect to Anthropic"
+        except Exception:
             logger.exception("[X] API call failed for %s", agent_id)
-            return f"[Error] API call failed: {exc}"
+            return "[Error] API call failed: unexpected error (see server logs)"
 
     def _execute_chat(
         self,

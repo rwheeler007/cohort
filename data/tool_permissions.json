@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "default_permission_mode": "acceptEdits",
+  "default_max_turns": 10,
+  "tool_profiles": {
+    "readonly": {
+      "description": "Read-only access to the codebase",
+      "allowed_tools": ["Read", "Glob", "Grep"],
+      "permission_mode": "acceptEdits",
+      "max_turns": 5
+    },
+    "developer": {
+      "description": "Full file editing and command execution",
+      "allowed_tools": ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+      "permission_mode": "acceptEdits",
+      "max_turns": 15
+    },
+    "researcher": {
+      "description": "Web search and reading capabilities",
+      "allowed_tools": ["WebSearch", "WebFetch", "Read"],
+      "permission_mode": "acceptEdits",
+      "max_turns": 5
+    },
+    "minimal": {
+      "description": "No tools - pure text generation",
+      "allowed_tools": [],
+      "permission_mode": null,
+      "max_turns": 1
+    }
+  },
+  "agent_defaults": {
+    "specialist": "developer",
+    "orchestrator": "readonly",
+    "utility": "minimal",
+    "infrastructure": "readonly"
+  },
+  "mcp_servers": {
+    "cohort": {
+      "command": "python",
+      "args": ["-m", "cohort.mcp.server"]
+    },
+    "local_llm": {
+      "command": "python",
+      "args": ["-m", "cohort.mcp.local_llm_server"]
+    }
+  },
+  "denied_tools": ["TodoWrite"]
+}

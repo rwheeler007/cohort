@@ -119,6 +119,10 @@
       "Bundle size analysis for production builds"
     ]
   },
+  "tool_permissions": {
+    "profile": "developer",
+    "mcp_servers": ["cohort"]
+  },
   "environment": {
     "operating_system": "Cross-platform",
     "required_tools": ["node", "npm", "typescript"],

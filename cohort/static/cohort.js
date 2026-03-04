@@ -858,12 +858,169 @@ function configCard(label, value) {
         </div>`;
 }
 
+function _editableCardWrap(label, value, toolId, key, editorHtml) {
+    const muteClass = value ? '' : ' tool-config-card__value--muted';
+    const display = value || 'Not configured';
+    return `
+        <div class="tool-config-card tool-config-card--editable" data-config-key="${escapeHtml(key)}" data-tool-id="${escapeHtml(toolId)}">
+            <div class="tool-config-card__header">
+                <p class="tool-config-card__label">${escapeHtml(label)}</p>
+                <button class="btn btn--icon btn--edit-config" title="Edit" onclick="editConfigCard(this)">
+                    [e]
+                </button>
+            </div>
+            <div class="tool-config-card__display">
+                <p class="tool-config-card__value${muteClass}">${escapeHtml(display)}</p>
+            </div>
+            <div class="tool-config-card__editor" style="display:none">
+                ${editorHtml}
+                <div class="tool-config-card__editor-actions">
+                    <button class="btn btn--primary btn--sm" onclick="saveConfigCard(this)">[ok]</button>
+                    <button class="btn btn--secondary btn--sm" onclick="cancelConfigCard(this)">[x]</button>
+                </div>
+            </div>
+        </div>`;
+}
+
+function configSelect(label, value, options, toolId, key) {
+    const opts = options.map(o => `<option value="${escapeHtml(o)}"${o === value ? ' selected' : ''}>${escapeHtml(o)}</option>`).join('');
+    return _editableCardWrap(label, value, toolId, key,
+        `<select class="tool-config-card__input">${opts}</select>`);
+}
+
+function configNumber(label, value, min, max, toolId, key, suffix) {
+    const sfx = suffix ? ` <span class="tool-config-card__suffix">${escapeHtml(suffix)}</span>` : '';
+    const displayVal = suffix ? `${value} ${suffix}` : String(value);
+    return _editableCardWrap(label, displayVal, toolId, key,
+        `<div class="tool-config-card__number-row"><input type="number" class="tool-config-card__input" value="${escapeHtml(String(value))}" min="${min}" max="${max}" />${sfx}</div>`);
+}
+
+function configText(label, value, toolId, key) {
+    return _editableCardWrap(label, value, toolId, key,
+        `<input type="text" class="tool-config-card__input" value="${escapeHtml(value || '')}" />`);
+}
+
 function configSection(title, cardsHtml) {
     return `
         <div class="tool-config-section">
             <h3 class="tool-config-section__title">${escapeHtml(title)}</h3>
             <div class="tool-config-grid">${cardsHtml}</div>
         </div>`;
+}
+
+/* ── Inline config card editing ── */
+
+async function applySavedConfigValues(toolId) {
+    try {
+        const resp = await fetch(`/api/tool-config/${encodeURIComponent(toolId)}/values`);
+        if (!resp.ok) return;
+        const saved = await resp.json();
+        document.querySelectorAll(`.tool-config-card--editable[data-tool-id="${toolId}"]`).forEach(card => {
+            const key = card.dataset.configKey;
+            if (saved[key] != null && saved[key] !== '') {
+                const valueEl = card.querySelector('.tool-config-card__value');
+                const ctrl = card.querySelector('.tool-config-card__input');
+                // For number cards with suffix, rebuild display
+                const suffix = card.querySelector('.tool-config-card__suffix');
+                valueEl.textContent = suffix ? `${saved[key]} ${suffix.textContent}` : saved[key];
+                valueEl.classList.remove('tool-config-card__value--muted');
+                if (ctrl) ctrl.value = saved[key];
+            }
+        });
+    } catch (e) {
+        console.warn('Failed to load saved config:', e);
+    }
+}
+
+function _getEditorControl(card) {
+    return card.querySelector('.tool-config-card__input');
+}
+
+function _getEditorValue(ctrl) {
+    if (!ctrl) return '';
+    if (ctrl.tagName === 'SELECT') return ctrl.value;
+    return ctrl.value.trim();
+}
+
+function editConfigCard(btn) {
+    const card = btn.closest('.tool-config-card');
+    card.querySelector('.tool-config-card__display').style.display = 'none';
+    btn.style.display = 'none';
+    const editor = card.querySelector('.tool-config-card__editor');
+    editor.style.display = '';
+    const ctrl = _getEditorControl(card);
+    ctrl.focus();
+    if (ctrl.select) ctrl.select();
+    ctrl.onkeydown = (ev) => {
+        if (ev.key === 'Enter') saveConfigCard(editor.querySelector('.btn--primary'));
+        if (ev.key === 'Escape') cancelConfigCard(editor.querySelector('.btn--secondary'));
+    };
+}
+
+function cancelConfigCard(btn) {
+    const card = btn.closest('.tool-config-card');
+    const editor = card.querySelector('.tool-config-card__editor');
+    const display = card.querySelector('.tool-config-card__display');
+    const editBtn = card.querySelector('.btn--edit-config');
+    // Reset control to current display value
+    const ctrl = _getEditorControl(card);
+    const valueText = display.querySelector('.tool-config-card__value').textContent;
+    // For number+suffix, strip the suffix to get raw value
+    const suffix = card.querySelector('.tool-config-card__suffix');
+    ctrl.value = suffix ? valueText.replace(suffix.textContent, '').trim() : valueText;
+    editor.style.display = 'none';
+    display.style.display = '';
+    editBtn.style.display = '';
+}
+
+async function saveConfigCard(btn) {
+    const card = btn.closest('.tool-config-card');
+    const ctrl = _getEditorControl(card);
+    const rawValue = _getEditorValue(ctrl);
+    if (rawValue === '') return;
+
+    // Validate number inputs
+    if (ctrl.type === 'number') {
+        const n = Number(rawValue);
+        const min = Number(ctrl.min);
+        const max = Number(ctrl.max);
+        if (isNaN(n) || n < min || n > max) {
+            ctrl.classList.add('tool-config-card__input--error');
+            setTimeout(() => ctrl.classList.remove('tool-config-card__input--error'), 1500);
+            return;
+        }
+    }
+
+    const toolId = card.dataset.toolId;
+    const configKey = card.dataset.configKey;
+
+    // Update display — for number+suffix rebuild, for select use the option text
+    const valueEl = card.querySelector('.tool-config-card__value');
+    const suffix = card.querySelector('.tool-config-card__suffix');
+    if (suffix) {
+        valueEl.textContent = `${rawValue} ${suffix.textContent}`;
+    } else if (ctrl.tagName === 'SELECT') {
+        valueEl.textContent = ctrl.options[ctrl.selectedIndex].text;
+    } else {
+        valueEl.textContent = rawValue;
+    }
+    valueEl.classList.remove('tool-config-card__value--muted');
+
+    // Close editor
+    card.querySelector('.tool-config-card__editor').style.display = 'none';
+    card.querySelector('.tool-config-card__display').style.display = '';
+    card.querySelector('.btn--edit-config').style.display = '';
+
+    // Persist to server
+    try {
+        await fetch(`/api/tool-config/${encodeURIComponent(toolId)}/values`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: configKey, value: rawValue }),
+        });
+    } catch (e) {
+        console.warn('Failed to save config:', e);
+    }
 }
 
 async function fetchServiceStatus(serviceId) {
@@ -887,13 +1044,17 @@ function renderGenericToolPanel(tool) {
     </div>`;
 }
 
+const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAY_PRESETS = ['Weekdays', 'Daily', 'Weekends'];
+
 async function renderCommsPanel(tool) {
     const status = await fetchServiceStatus('comms_service');
+    const tid = 'comms_service';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${configSection('Services',
-            configCard('Email Provider', 'Resend') +
-            configCard('Calendar', 'Google Calendar') +
+            configSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
+            configSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
             configCard('Social Platforms', 'Twitter, LinkedIn, Facebook, Threads')
         )}
         ${configSection('Safety',
@@ -901,28 +1062,38 @@ async function renderCommsPanel(tool) {
             configCard('Audit Log', 'All actions logged')
         )}
     </div>`;
+    applySavedConfigValues(tid);
 }
 
 async function renderWebSearchPanel(tool) {
     const status = await fetchServiceStatus('web_search');
+    const tid = 'web_search';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${configSection('Configuration',
-            configCard('Provider', 'SerpAPI / Serper') +
-            configCard('Port', '8005') +
-            configCard('Rate Limit', '30/min, 250/day')
+            configSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider') +
+            configCard('Port', '8005')
+        )}
+        ${configSection('Rate Limits',
+            configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
+            configNumber('Per Day', 250, 1, 10000, tid, 'rate_limit_per_day', 'req/day')
         )}
     </div>`;
+    applySavedConfigValues(tid);
 }
 
 async function renderYouTubePanel(tool) {
     const status = await fetchServiceStatus('youtube_service');
+    const tid = 'youtube_service';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${configSection('Configuration',
             configCard('API', 'YouTube Data API v3') +
-            configCard('Port', '8002') +
-            configCard('Rate Limit', '30/min, 1000/day')
+            configCard('Port', '8002')
+        )}
+        ${configSection('Rate Limits',
+            configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
+            configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day')
         )}
         ${configSection('Capabilities',
             configCard('Video Search', 'Search by keyword with filters') +
@@ -930,38 +1101,61 @@ async function renderYouTubePanel(tool) {
             configCard('Chapters', 'Auto-extract timestamps from descriptions')
         )}
     </div>`;
+    applySavedConfigValues(tid);
 }
 
 async function renderRSSPanel(tool) {
+    const tid = 'intel_scheduler';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
-        ${configSection('Schedule',
-            configCard('RSS Fetch', 'Every 4 hours (8am-6pm)') +
-            configCard('Analysis', 'Weekdays at 7am') +
-            configCard('Briefing', 'Sundays at 6pm')
+        ${configSection('RSS Fetch',
+            configNumber('Interval', 4, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
+            configNumber('Window Start', 8, 0, 23, tid, 'fetch_window_start', ':00') +
+            configNumber('Window End', 18, 0, 23, tid, 'fetch_window_end', ':00')
+        )}
+        ${configSection('Analysis',
+            configSelect('Days', 'Weekdays', DAY_PRESETS, tid, 'analysis_days') +
+            configText('Time', '07:00', tid, 'analysis_time')
+        )}
+        ${configSection('Briefing',
+            configSelect('Day', 'Sunday', DAYS_OF_WEEK, tid, 'briefing_day') +
+            configText('Time', '18:00', tid, 'briefing_time')
         )}
         ${configSection('Limits',
-            configCard('Max Fetches/Day', '6') +
-            configCard('Max Articles/Day', '200')
+            configNumber('Max Fetches/Day', 6, 1, 50, tid, 'max_fetches_day') +
+            configNumber('Max Articles/Day', 200, 1, 1000, tid, 'max_articles_day')
         )}
     </div>`;
+    applySavedConfigValues(tid);
 }
 
 async function renderContentMonitorPanel(tool) {
+    const tid = 'content_monitor_scheduler';
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
-        ${configSection('Schedule',
-            configCard('RSS Fetch', 'Every 2 hours (9am-9pm)') +
-            configCard('Analysis', 'Every 4 hours') +
-            configCard('Post Drafting', 'Weekdays at 8am') +
-            configCard('Weekly Digest', 'Sundays at 6pm')
+        ${configSection('RSS Fetch',
+            configNumber('Interval', 2, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
+            configNumber('Window Start', 9, 0, 23, tid, 'fetch_window_start', ':00') +
+            configNumber('Window End', 21, 0, 23, tid, 'fetch_window_end', ':00')
+        )}
+        ${configSection('Analysis',
+            configNumber('Interval', 4, 1, 24, tid, 'analysis_interval_hrs', 'hours')
+        )}
+        ${configSection('Post Drafting',
+            configSelect('Days', 'Weekdays', DAY_PRESETS, tid, 'drafting_days') +
+            configText('Time', '08:00', tid, 'drafting_time')
+        )}
+        ${configSection('Weekly Digest',
+            configSelect('Day', 'Sunday', DAYS_OF_WEEK, tid, 'digest_day') +
+            configText('Time', '18:00', tid, 'digest_time')
         )}
         ${configSection('Limits',
-            configCard('Max Fetches/Day', '12') +
-            configCard('Max Articles/Day', '50') +
-            configCard('Max Drafts/Day', '5')
+            configNumber('Max Fetches/Day', 12, 1, 50, tid, 'max_fetches_day') +
+            configNumber('Max Articles/Day', 50, 1, 500, tid, 'max_articles_day') +
+            configNumber('Max Drafts/Day', 5, 1, 20, tid, 'max_drafts_day')
         )}
     </div>`;
+    applySavedConfigValues(tid);
 }
 
 async function renderDocProcessorPanel(tool) {

@@ -114,6 +114,10 @@
       "WCAG-compliant color contrast and focus management"
     ]
   },
+  "tool_permissions": {
+    "profile": "developer",
+    "mcp_servers": ["cohort"]
+  },
   "environment": {
     "operating_system": "Cross-platform",
     "required_tools": ["browser_devtools"],

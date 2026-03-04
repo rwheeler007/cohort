@@ -38,6 +38,8 @@ from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secrets
+
 from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager
 from cohort.registry import JsonFileStorage
@@ -72,24 +74,36 @@ def _get_chat() -> ChatManager:
 # =====================================================================
 
 def _load_settings() -> dict[str, Any]:
-    """Load settings from {data_dir}/settings.json."""
+    """Load settings from {data_dir}/settings.json.
+
+    Secret fields (api_key, service key values) are transparently decrypted.
+    Legacy plaintext values are accepted and will be re-encrypted on next save.
+    """
     if _settings_path and _settings_path.exists():
         try:
             with open(_settings_path, encoding="utf-8") as f:
-                return json.load(f)
+                settings = json.load(f)
+            return decrypt_settings_secrets(settings)
         except (json.JSONDecodeError, OSError) as exc:
             logger.warning("Failed to load settings.json: %s", exc)
     return {}
 
 
 def _save_settings(settings: dict[str, Any]) -> None:
-    """Persist settings to {data_dir}/settings.json."""
+    """Persist settings to {data_dir}/settings.json.
+
+    Secret fields are obfuscated before writing so they are not stored as
+    plaintext.  See :mod:`cohort.secret_store` for details.
+    """
     if _settings_path is None:
         return
     try:
         _settings_path.parent.mkdir(parents=True, exist_ok=True)
+        # Deep-copy to avoid mutating the caller's dict
+        to_save = json.loads(json.dumps(settings))
+        encrypt_settings_secrets(to_save)
         with open(_settings_path, "w", encoding="utf-8") as f:
-            json.dump(settings, f, indent=2)
+            json.dump(to_save, f, indent=2)
     except OSError as exc:
         logger.warning("Failed to save settings.json: %s", exc)
 
@@ -1334,6 +1348,56 @@ async def get_tool_config(request: Request) -> JSONResponse:
     })
 
 
+def _tool_config_values_path() -> str:
+    return os.path.join(_resolved_data_dir, "tool_config_values.json")
+
+
+def _load_tool_config_values() -> dict:
+    """Load persisted tool config overrides."""
+    p = _tool_config_values_path()
+    if os.path.exists(p):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def _save_tool_config_values(data: dict) -> None:
+    with open(_tool_config_values_path(), "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+async def get_tool_config_values(request: Request) -> JSONResponse:
+    """GET /api/tool-config/{tool_id}/values -- return saved config overrides."""
+    tool_id = request.path_params["tool_id"]
+    all_values = _load_tool_config_values()
+    return JSONResponse(all_values.get(tool_id, {}))
+
+
+async def put_tool_config_value(request: Request) -> JSONResponse:
+    """PUT /api/tool-config/{tool_id}/values -- save a config value."""
+    tool_id = request.path_params["tool_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    key = body.get("key", "").strip()
+    value = body.get("value", "").strip()
+    if not key:
+        return JSONResponse({"error": "key is required"}, status_code=400)
+
+    all_values = _load_tool_config_values()
+    if tool_id not in all_values:
+        all_values[tool_id] = {}
+    all_values[tool_id][key] = value
+    _save_tool_config_values(all_values)
+
+    return JSONResponse({"ok": True, "tool_id": tool_id, "key": key, "value": value})
+
+
 async def llm_list_models(request: Request) -> JSONResponse:
     """GET /api/llm/models -- list installed Ollama models with sizes."""
     import urllib.request
@@ -1445,6 +1509,13 @@ def create_app(data_dir: str = "data") -> Starlette:
     )
     set_store(_agent_store)
 
+    # -- Load tool permissions (central defaults) ----------------------
+    from cohort.tool_permissions import load_central_permissions
+    tp = load_central_permissions(Path(resolved_dir))
+    if tp:
+        logger.info("[OK] Tool permissions loaded (%d profiles)",
+                    len(tp.get("tool_profiles", {})))
+
     # -- Load agents (file-backed + legacy agents.json) -----------------
     agents = _load_agents_from_disk(resolved_dir)
     # Merge file-backed agents into the dict
@@ -1526,6 +1597,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/roundtable/channel/{channel_id}", get_channel_roundtable, methods=["GET"]),
         # Tool dashboard endpoints
         Route("/api/service-status/{service_id}", get_service_status, methods=["GET"]),
+        Route("/api/tool-config/{tool_id}/values", get_tool_config_values, methods=["GET"]),
+        Route("/api/tool-config/{tool_id}/values", put_tool_config_value, methods=["PUT"]),
         Route("/api/tool-config/{tool_id}", get_tool_config, methods=["GET"]),
         Route("/api/llm/models", llm_list_models, methods=["GET"]),
         Route("/api/llm/pull", llm_pull_model, methods=["POST"]),
@@ -1533,12 +1606,27 @@ def create_app(data_dir: str = "data") -> Starlette:
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 
+    # Restrict CORS to localhost origins.  Override with COHORT_CORS_ORIGINS
+    # env var (comma-separated) if the server needs to be accessed from other
+    # hosts, e.g. COHORT_CORS_ORIGINS=http://192.168.1.10:5100
+    _cors_env = os.environ.get("COHORT_CORS_ORIGINS", "")
+    _cors_origins = (
+        [o.strip() for o in _cors_env.split(",") if o.strip()]
+        if _cors_env
+        else [
+            "http://localhost:5100",
+            "http://127.0.0.1:5100",
+            "http://localhost:5200",
+            "http://127.0.0.1:5200",
+        ]
+    )
+
     middleware = [
         Middleware(
             CORSMiddleware,
-            allow_origins=["*"],
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_origins=_cors_origins,
+            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
         ),
     ]
 

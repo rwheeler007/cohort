@@ -232,6 +232,9 @@ class AgentConfig:
     # -- Model parameters (optional, per-agent LLM tuning) --
     model_params: dict[str, Any] = field(default_factory=dict)
 
+    # -- Tool permissions (optional, per-agent Claude CLI tool access) --
+    tool_permissions: dict[str, Any] = field(default_factory=dict)
+
     # -- Scoring metadata (optional, used by meeting.py) --
     scoring_metadata: dict[str, Any] = field(default_factory=dict)
 
