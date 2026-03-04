@@ -375,74 +375,78 @@
                             <input type="text" class="form-input" id="settings-user-name"
                                    placeholder="Your name" maxlength="40">
                         </div>
-                    </div>
-
-                    <!-- API Key Section -->
-                    <div class="settings-section">
-                        <h3 class="settings-section__title">Anthropic API Key</h3>
-                        <p class="settings-section__desc">Required for direct API calls. Stored locally on the server.</p>
-                        <div class="form-group">
-                            <label for="settings-api-key">API Key</label>
-                            <div class="settings-secret-field">
-                                <input type="password" class="form-input" id="settings-api-key"
-                                       placeholder="sk-ant-..." autocomplete="off">
-                                <button type="button" class="btn btn--icon settings-toggle-vis" id="toggle-api-key-vis"
-                                        aria-label="Toggle visibility">[*]</button>
+                        <div class="settings-identity-row">
+                            <div class="form-group" style="flex:1">
+                                <label for="settings-user-role">Title / Role</label>
+                                <input type="text" class="form-input" id="settings-user-role"
+                                       placeholder="Operator" maxlength="40">
+                            </div>
+                            <div class="form-group" style="flex:0 0 80px">
+                                <label for="settings-user-avatar">Initials</label>
+                                <input type="text" class="form-input" id="settings-user-avatar"
+                                       placeholder="RW" maxlength="3" style="text-align:center;text-transform:uppercase">
                             </div>
                         </div>
                     </div>
 
                     <!-- Claude Code Connection -->
                     <div class="settings-section">
-                        <h3 class="settings-section__title">Claude Code Connection</h3>
-                        <p class="settings-section__desc">
-                            Connect to a running Claude Code CLI backend for agent responses.
-                            The CLI must be running and accessible on this machine.
-                        </p>
-                        <div class="form-group">
-                            <label for="settings-claude-cmd">Claude CLI Path</label>
-                            <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
-                                   placeholder="C:/Users/.../npm/claude.cmd">
+                        <div class="settings-section__header">
+                            <h3 class="settings-section__title">Claude Code Connection</h3>
+                            <label class="toggle-label toggle-label--inline" for="settings-claude-enabled">
+                                <input type="checkbox" id="settings-claude-enabled" class="toggle-input">
+                                <span class="toggle-switch"></span>
+                            </label>
                         </div>
-                        <div class="form-group">
-                            <label for="settings-agents-root">Agents Root Directory</label>
-                            <input type="text" class="form-input form-input--mono" id="settings-agents-root"
-                                   placeholder="/path/to/agents/root">
+                        <div class="settings-section__body" id="claude-connection-body">
+                            <p class="settings-section__desc">
+                                Connect to a running Claude Code CLI backend for agent responses.
+                                The CLI must be running and accessible on this machine.
+                            </p>
+                            <div class="form-group">
+                                <label for="settings-claude-cmd">Claude CLI Path</label>
+                                <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
+                                       placeholder="C:/Users/.../npm/claude.cmd">
+                            </div>
+                            <div class="form-group">
+                                <label for="settings-agents-root">Agents Root Directory</label>
+                                <input type="text" class="form-input form-input--mono" id="settings-agents-root"
+                                       placeholder="/path/to/agents/root">
+                            </div>
+                            <div class="form-group">
+                                <label for="settings-response-timeout">Response Timeout (seconds)</label>
+                                <input type="number" class="form-input" id="settings-response-timeout"
+                                       min="30" max="600" value="300">
+                            </div>
+                            <div class="form-group">
+                                <label for="settings-exec-backend">Task Execution Backend</label>
+                                <select class="form-input" id="settings-exec-backend">
+                                    <option value="cli">Claude CLI (subprocess)</option>
+                                    <option value="api">Anthropic API (direct)</option>
+                                    <option value="chat">Chat-routed (@mention)</option>
+                                </select>
+                            </div>
+                            <div class="settings-connection-status" id="settings-connection-status">
+                                <span class="settings-connection-dot" id="settings-connection-dot"></span>
+                                <span id="settings-connection-text">Not tested</span>
+                            </div>
+                            <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
                         </div>
-                        <div class="form-group">
-                            <label for="settings-response-timeout">Response Timeout (seconds)</label>
-                            <input type="number" class="form-input" id="settings-response-timeout"
-                                   min="30" max="600" value="300">
-                        </div>
-                        <div class="form-group">
-                            <label for="settings-exec-backend">Task Execution Backend</label>
-                            <select class="form-input" id="settings-exec-backend">
-                                <option value="cli">Claude CLI (subprocess)</option>
-                                <option value="api">Anthropic API (direct)</option>
-                                <option value="chat">Chat-routed (@mention)</option>
-                            </select>
-                        </div>
-                        <div class="settings-connection-status" id="settings-connection-status">
-                            <span class="settings-connection-dot" id="settings-connection-dot"></span>
-                            <span id="settings-connection-text">Not tested</span>
-                        </div>
-                        <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
                     </div>
 
                     <!-- Admin Mode -->
                     <div class="settings-section">
-                        <h3 class="settings-section__title">Dashboard Mode</h3>
-                        <p class="settings-section__desc">
-                            Admin Mode reveals advanced settings like providers, API keys, and feed sources.
-                            Leave off for day-to-day use to keep the interface simple.
-                        </p>
-                        <div class="form-group">
-                            <label class="toggle-label" for="settings-admin-mode">
+                        <div class="settings-section__header">
+                            <h3 class="settings-section__title">Admin Mode</h3>
+                            <label class="toggle-label toggle-label--inline" for="settings-admin-mode">
                                 <input type="checkbox" id="settings-admin-mode" class="toggle-input">
                                 <span class="toggle-switch"></span>
-                                Admin Mode
                             </label>
                         </div>
+                        <p class="settings-section__desc">
+                            Reveals advanced settings like providers, API keys, and feed sources.
+                            Leave off for day-to-day use.
+                        </p>
                     </div>
 
                     <div class="form-actions">

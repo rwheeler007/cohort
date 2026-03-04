@@ -138,6 +138,8 @@ function initDom() {
         settingsConnectionDot: $('#settings-connection-dot'),
         settingsConnectionText: $('#settings-connection-text'),
         settingsUserName: $('#settings-user-name'),
+        settingsUserRole: $('#settings-user-role'),
+        settingsUserAvatar: $('#settings-user-avatar'),
         testConnectionBtn: $('#test-connection-btn'),
         toggleApiKeyVis: $('#toggle-api-key-vis'),
 
@@ -318,28 +320,52 @@ async function fetchAgentRegistry() {
     }
 }
 
-/** Apply the user's display name to the 'user' profile in the agent registry. */
-function applyUserDisplayName(displayName) {
-    if (!displayName) return;
+/** Apply the user's display name, role, and initials to the 'user' profile.
+ *  Also persists to localStorage so identity survives reloads instantly. */
+function applyUserIdentity(displayName, displayRole, displayAvatar) {
+    if (!displayName && !displayRole && !displayAvatar) return;
+    const avatarText = displayAvatar || (displayName ? displayName.substring(0, 2).toUpperCase() : 'U');
     if (!state.agentProfiles['user']) {
         state.agentProfiles['user'] = {
-            name: displayName,
-            nickname: displayName,
-            avatar: displayName.substring(0, 2).toUpperCase(),
+            name: displayName || 'User',
+            nickname: displayName || 'User',
+            avatar: avatarText,
             color: '#95E1D3',
-            role: 'Operator',
+            role: displayRole || 'Operator',
             group: 'Operators',
         };
     } else {
-        state.agentProfiles['user'].name = displayName;
-        state.agentProfiles['user'].nickname = displayName;
-        state.agentProfiles['user'].avatar = displayName.substring(0, 2).toUpperCase();
+        if (displayName) {
+            state.agentProfiles['user'].name = displayName;
+            state.agentProfiles['user'].nickname = displayName;
+        }
+        state.agentProfiles['user'].avatar = avatarText;
+        if (displayRole) {
+            state.agentProfiles['user'].role = displayRole;
+        }
     }
+    // Persist to localStorage for instant restore on reload
+    try {
+        localStorage.setItem('cohort_user_identity', JSON.stringify({
+            name: displayName, role: displayRole, avatar: displayAvatar,
+        }));
+    } catch { /* ignore */ }
     // Re-render if currently viewing a channel (so existing messages update)
     if (state.currentChannel) {
         renderMessages();
         updateParticipants();
     }
+}
+
+/** Restore user identity from localStorage (runs before server fetch). */
+function restoreUserIdentity() {
+    try {
+        const raw = localStorage.getItem('cohort_user_identity');
+        if (raw) {
+            const { name, role, avatar } = JSON.parse(raw);
+            if (name || role || avatar) applyUserIdentity(name, role, avatar);
+        }
+    } catch { /* ignore */ }
 }
 
 // =====================================================================
@@ -1379,39 +1405,79 @@ const DAY_PRESETS = ['Weekdays', 'Daily', 'Weekends'];
 /* ── Email & Calendar ── */
 
 async function renderCommsPanel(tool) {
-    const status = await fetchServiceStatus('comms_service');
     const tid = 'comms_service';
 
-    // Fetch recent activity in parallel
-    let activityHtml = '';
-    try {
-        const resp = await fetch('/api/comms/recent-activity?limit=8');
-        const data = await resp.json();
-        const items = (data.activity || []).reverse().map(a => {
-            const failed = (a.channels_failed || []).length > 0;
-            return {
-                time: fmtTime(a.timestamp),
-                status: failed ? 'error' : 'success',
-                message: (a.title || a.message || '').substring(0, 80),
-                detail: `Agent: ${a.agent_id || 'unknown'}\nChannels: ${(a.channels_sent || []).join(', ') || 'none'}\n\n${a.message || ''}`,
-            };
-        });
+    // Fetch status, activity, and pending approvals in parallel
+    const [status, activityResp, pendingResp] = await Promise.all([
+        fetchServiceStatus('comms_service'),
+        fetch('/api/comms/recent-activity?limit=12').catch(() => null),
+        fetch('/api/comms/pending-approvals').catch(() => null),
+    ]);
 
-        const sent = (data.activity || []).filter(a => (a.channels_sent || []).length > 0).length;
-        const failed = (data.activity || []).filter(a => (a.channels_failed || []).length > 0).length;
+    let activityData = { activity: [] };
+    let pendingData = { count: 0, pending: [] };
+    try { activityData = activityResp ? await activityResp.json() : { activity: [] }; } catch {}
+    try { pendingData = pendingResp ? await pendingResp.json() : { count: 0, pending: [] }; } catch {}
 
-        activityHtml = statRow(
-            statCard('Sent Today', sent, { color: 'success' }) +
-            statCard('Failed', failed, { color: failed > 0 ? 'error' : 'success' }) +
-            statCard('Total', (data.activity || []).length)
-        ) + configSectionFull('Recent Activity', activityLog(items, { emptyMsg: 'No outbound messages today' }));
-    } catch {
-        activityHtml = configSectionFull('Recent Activity', activityLog([], { emptyMsg: 'Could not load activity data' }));
+    const activity = activityData.activity || [];
+    const pendingCount = pendingData.count || 0;
+    const pendingPosts = pendingData.pending || [];
+
+    // Activity log items
+    const items = activity.slice().reverse().map(a => {
+        const failed = (a.channels_failed || []).length > 0;
+        return {
+            time: fmtTime(a.timestamp),
+            status: failed ? 'error' : 'success',
+            message: (a.title || a.message || '').substring(0, 80),
+            detail: `Agent: ${a.agent_id || 'unknown'}\nPriority: ${a.priority || '--'}\nChannels: ${(a.channels_sent || []).join(', ') || 'none'}\n\n${a.message || ''}`,
+        };
+    });
+
+    // Stats
+    const sent = activity.filter(a => (a.channels_sent || []).length > 0).length;
+    const failed = activity.filter(a => (a.channels_failed || []).length > 0).length;
+    const errors = activity.filter(a => a.priority === 'error').length;
+    const warnings = activity.filter(a => a.priority === 'warning').length;
+
+    // Pending approval cards
+    let pendingHtml = '';
+    if (pendingCount > 0) {
+        const cards = pendingPosts.map(p => `<div class="comms-pending-card">
+            <span class="comms-pending-card__platform">${escapeHtml(p.platform || 'post')}</span>
+            <span class="comms-pending-card__text">${escapeHtml(p.text || '')}</span>
+            <span class="comms-pending-card__time">${p.created_at ? timeAgo(p.created_at) : '--'}</span>
+        </div>`).join('');
+        pendingHtml = configSectionFull(
+            `Pending Approval (${pendingCount})`,
+            `<div class="comms-pending-list">${cards}</div>
+            <p style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:var(--space-2)">Approve posts on the Social Media & Marketing page</p>`
+        );
     }
+
+    // Message type breakdown
+    const byAgent = {};
+    activity.forEach(a => {
+        const ag = a.agent_id || 'unknown';
+        byAgent[ag] = (byAgent[ag] || 0) + 1;
+    });
+    const agentItems = Object.entries(byAgent).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({
+        name: name.replace(/_/g, ' '),
+        status: 'up',
+        detail: `${count} message${count !== 1 ? 's' : ''}`,
+    }));
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
-        ${activityHtml}
+        ${statRow(
+            statCard('Sent Today', sent, { color: 'success' }) +
+            statCard('Failed', failed, { color: failed > 0 ? 'error' : 'success' }) +
+            statCard('Errors', errors, { color: errors > 0 ? 'error' : 'success' }) +
+            statCard('Pending', pendingCount, { color: pendingCount > 0 ? 'warning' : 'success', subtitle: 'awaiting approval' })
+        )}
+        ${pendingHtml}
+        ${configSectionFull('Today\'s Activity', activityLog(items, { emptyMsg: 'No outbound messages today' }))}
+        ${agentItems.length > 0 ? configSectionFull('Messages by Source', statusGrid(agentItems)) : ''}
         ${configSection('Services',
             configAdminSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
             configAdminSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
@@ -1419,7 +1485,7 @@ async function renderCommsPanel(tool) {
         )}
         ${configSection('Safety',
             configCard('Approval Gate', 'All outbound messages require human approval') +
-            configCard('Audit Log', 'All actions logged')
+            configCard('Audit Log', 'All actions logged with full audit trail')
         )}
     </div>`;
     applySavedConfigValues(tid);
@@ -1431,9 +1497,20 @@ async function renderCommsPanel(tool) {
 async function renderWebSearchPanel(tool) {
     const status = await fetchServiceStatus('web_search');
     const tid = 'web_search';
+    const isUp = status.status === 'up';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
-        ${configSectionFull('Try It', tryItBox('Search the web...', 'web_search', 'tryWebSearch'))}
+        ${isUp ? configSectionFull('Try It -- Web Search', `
+            <div class="ws-try-it">
+                <div class="ws-try-it__search">
+                    <input type="text" id="web_search-try-input" class="ws-try-it__input"
+                        placeholder="Search the web..." onkeydown="if(event.key==='Enter')tryWebSearch()">
+                    <button class="btn btn--primary btn--sm" onclick="tryWebSearch()">Search</button>
+                </div>
+                <div id="web_search-try-results" class="ws-try-it__results"></div>
+            </div>
+        `) : configSectionFull('Web Search', `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">Web search service is offline. Check that it is running on port 8005.</div>`)}
         ${configSection('Configuration',
             configAdminSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider')
         )}
@@ -1447,15 +1524,15 @@ async function renderWebSearchPanel(tool) {
 }
 
 async function tryWebSearch() {
-    const input = $('#web_search-try-input');
-    const results = $('#web_search-try-results');
+    const input = document.getElementById('web_search-try-input');
+    const results = document.getElementById('web_search-try-results');
     if (!input || !input.value.trim()) return;
     results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching...</p>';
     try {
         const resp = await fetch('/api/web-search/test', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: input.value.trim(), limit: 3 }),
+            body: JSON.stringify({ query: input.value.trim(), limit: 5 }),
         });
         const data = await resp.json();
         if (data.error) {
@@ -1463,11 +1540,14 @@ async function tryWebSearch() {
         } else if ((data.results || []).length === 0) {
             results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
         } else {
-            results.innerHTML = data.results.map(r => `
-                <div class="tool-try-it__result-item">
-                    <div class="tool-try-it__result-title"><a href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a></div>
-                    <div class="tool-try-it__result-snippet">${escapeHtml(r.snippet || '')}</div>
-                </div>`).join('');
+            results.innerHTML = data.results.map(r => {
+                const domain = r.url ? new URL(r.url).hostname.replace('www.', '') : '';
+                return `<div class="ws-result-card">
+                    <a class="ws-result-card__title" href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a>
+                    <span class="ws-result-card__url">${escapeHtml(domain)}</span>
+                    <p class="ws-result-card__snippet">${escapeHtml(r.snippet || '')}</p>
+                </div>`;
+            }).join('');
         }
     } catch (err) {
         results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Search failed: ${escapeHtml(err.message)}</p>`;
@@ -1479,9 +1559,20 @@ async function tryWebSearch() {
 async function renderYouTubePanel(tool) {
     const status = await fetchServiceStatus('youtube_service');
     const tid = 'youtube_service';
+    const isUp = status.status === 'up';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
-        ${configSectionFull('Try It', tryItBox('Search YouTube videos...', 'youtube', 'tryYouTubeSearch'))}
+        ${isUp ? configSectionFull('Try It -- Video Search', `
+            <div class="yt-try-it">
+                <div class="yt-try-it__search">
+                    <input type="text" id="youtube-try-input" class="yt-try-it__input"
+                        placeholder="Search YouTube videos..." onkeydown="if(event.key==='Enter')tryYouTubeSearch()">
+                    <button class="btn btn--primary btn--sm" onclick="tryYouTubeSearch()">Search</button>
+                </div>
+                <div id="youtube-try-results" class="yt-try-it__results"></div>
+            </div>
+        `) : configSectionFull('Video Search', `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">YouTube service is offline. Check that it is running on port 8002.</div>`)}
         ${configSection('Rate Limits',
             configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
             configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day') +
@@ -1489,7 +1580,7 @@ async function renderYouTubePanel(tool) {
         )}
         ${configSection('Capabilities',
             configCard('Video Search', 'Search by keyword with filters') +
-            configCard('Metadata', 'Video details, channel info') +
+            configCard('Metadata', 'Video details, channel info, view counts') +
             configCard('Chapters', 'Auto-extract timestamps from descriptions')
         )}
     </div>`;
@@ -1498,15 +1589,15 @@ async function renderYouTubePanel(tool) {
 }
 
 async function tryYouTubeSearch() {
-    const input = $('#youtube-try-input');
-    const results = $('#youtube-try-results');
+    const input = document.getElementById('youtube-try-input');
+    const results = document.getElementById('youtube-try-results');
     if (!input || !input.value.trim()) return;
     results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching...</p>';
     try {
         const resp = await fetch('/api/youtube/test', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: input.value.trim(), limit: 3 }),
+            body: JSON.stringify({ query: input.value.trim(), limit: 5 }),
         });
         const data = await resp.json();
         if (data.error) {
@@ -1514,11 +1605,18 @@ async function tryYouTubeSearch() {
         } else if ((data.results || []).length === 0) {
             results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
         } else {
-            results.innerHTML = data.results.map(r => `
-                <div class="tool-try-it__result-item">
-                    <div class="tool-try-it__result-title"><a href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a></div>
-                    <div class="tool-try-it__result-snippet">${escapeHtml(r.channel || '')}${r.duration ? ' -- ' + escapeHtml(r.duration) : ''}</div>
-                </div>`).join('');
+            results.innerHTML = `<div class="yt-results-grid">${data.results.map(r => {
+                const thumb = r.thumbnail || '';
+                const thumbHtml = thumb ? `<div class="yt-card__thumb"><img src="${escapeHtml(thumb)}" alt="" loading="lazy"><span class="yt-card__duration">${escapeHtml(r.duration || '')}</span></div>` : '';
+                return `<div class="yt-card">
+                    ${thumbHtml}
+                    <div class="yt-card__info">
+                        <a class="yt-card__title" href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a>
+                        <span class="yt-card__channel">${escapeHtml(r.channel || '')}</span>
+                        ${r.views ? `<span class="yt-card__views">${escapeHtml(r.views)}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('')}</div>`;
         }
     } catch (err) {
         results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Search failed: ${escapeHtml(err.message)}</p>`;
@@ -1548,11 +1646,12 @@ async function renderRSSPanel(tool) {
 
     // Stats from last run
     const lastRunResult = lastRun ? (lastRun.result || {}) : {};
+    const totalRecentArticles = runs.reduce((sum, r) => sum + ((r.result || {}).new_articles || 0), 0);
     const statsHtml = statRow(
         statCard('Last Run', lastRun ? timeAgo(lastRun.timestamp) : '--', { subtitle: lastRun ? (lastRunResult.status || '') : 'No runs found' }) +
-        statCard('Articles Found', lastRunResult.new_articles != null ? lastRunResult.new_articles : '--') +
-        statCard('Feeds Processed', lastRunResult.feeds_processed != null ? lastRunResult.feeds_processed : '--') +
-        statCard('Errors', lastRunResult.errors ? lastRunResult.errors.length : 0, { color: (lastRunResult.errors || []).length > 0 ? 'error' : 'success' })
+        statCard('Last Fetch', lastRunResult.new_articles != null ? lastRunResult.new_articles : '--', { subtitle: 'articles' }) +
+        statCard('Recent Total', totalRecentArticles, { subtitle: `across ${runs.length} runs` }) +
+        statCard('Feeds', lastRunResult.feeds_processed != null ? lastRunResult.feeds_processed : '--', { subtitle: 'sources' })
     );
 
     // Run history as activity log
@@ -1566,12 +1665,17 @@ async function renderRSSPanel(tool) {
         };
     });
 
-    // Recent articles
+    // Recent articles -- rich cards instead of basic log
     const articleItems = articles.map(a => ({
         time: fmtTime(a.fetched_at || a.published || ''),
-        status: 'info',
+        status: a.relevance_score >= 7 ? 'success' : a.relevance_score >= 4 ? 'warning' : 'info',
         message: a.title || a.url || 'Untitled',
-        detail: a.url ? `Source: ${a.source_feed || 'unknown'}\nScore: ${a.relevance_score != null ? a.relevance_score : '--'}\nURL: ${a.url}` : null,
+        detail: [
+            a.source_feed ? `Source: ${a.source_feed}` : null,
+            a.relevance_score != null ? `Relevance: ${a.relevance_score}/10` : null,
+            a.summary ? `Summary: ${a.summary}` : null,
+            a.url ? `URL: ${a.url}` : null,
+        ].filter(Boolean).join('\n'),
     }));
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
@@ -1610,38 +1714,109 @@ async function renderRSSPanel(tool) {
 async function renderContentMonitorPanel(tool) {
     const tid = 'content_monitor_scheduler';
 
-    // Fetch pipeline status
+    // Fetch all data in parallel
+    const [pipelineResp, postsResp, configResp] = await Promise.all([
+        fetch('/api/content-monitor/pipeline-status').catch(() => null),
+        fetch('/api/content-monitor/posts?limit=20').catch(() => null),
+        fetch('/api/content-monitor/config').catch(() => null),
+    ]);
+
     let pipelineData = { stages: {} };
-    try {
-        const resp = await fetch('/api/content-monitor/pipeline-status');
-        pipelineData = await resp.json();
-    } catch {}
+    let postsData = { posts: [] };
+    let configData = {};
+    try { pipelineData = pipelineResp ? await pipelineResp.json() : { stages: {} }; } catch {}
+    try { postsData = postsResp ? await postsResp.json() : { posts: [] }; } catch {}
+    try { configData = configResp ? await configResp.json() : {}; } catch {}
 
     const stages = pipelineData.stages || {};
+    const posts = postsData.posts || [];
+    const feedNames = configData.feed_names || [];
+    const safetyLimits = configData.safety_limits || {};
+
+    // ── Pipeline flow visualization ──
     const fetchStage = stages.rss_fetch || {};
     const analysisStage = stages.analysis || {};
     const draftStage = stages.post_drafting || {};
+    const digestStage = stages.weekly_digest || {};
 
-    const pipelineHtml = statRow(
-        statCard('Fetched', fetchStage.today_count || 0, { subtitle: fetchStage.last_run ? 'Last: ' + timeAgo(fetchStage.last_run) : 'No runs' }) +
-        statCard('Analyzed', analysisStage.today_count || 0, { subtitle: analysisStage.last_run ? 'Last: ' + timeAgo(analysisStage.last_run) : 'No runs' }) +
-        statCard('Drafted', draftStage.today_count || 0, { subtitle: draftStage.last_run ? 'Last: ' + timeAgo(draftStage.last_run) : 'No runs' })
-    );
+    const pendingPosts = posts.filter(p => p.status === 'pending');
+    const approvedPosts = posts.filter(p => p.status === 'approved');
+    const rejectedPosts = posts.filter(p => p.status === 'rejected');
 
-    // Build pipeline detail expandables
+    const pipelineFlowHtml = `<div class="social-pipeline">
+        <div class="social-pipeline__stage">
+            <span class="social-pipeline__stage-count">${fetchStage.today_count || 0}</span>
+            <span class="social-pipeline__stage-label">Fetched</span>
+            <span class="social-pipeline__stage-time">${fetchStage.last_run ? timeAgo(fetchStage.last_run) : '--'}</span>
+        </div>
+        <span class="social-pipeline__arrow">[>>]</span>
+        <div class="social-pipeline__stage">
+            <span class="social-pipeline__stage-count">${analysisStage.today_count || 0}</span>
+            <span class="social-pipeline__stage-label">Analyzed</span>
+            <span class="social-pipeline__stage-time">${analysisStage.last_run ? timeAgo(analysisStage.last_run) : '--'}</span>
+        </div>
+        <span class="social-pipeline__arrow">[>>]</span>
+        <div class="social-pipeline__stage">
+            <span class="social-pipeline__stage-count">${draftStage.today_count || 0}</span>
+            <span class="social-pipeline__stage-label">Drafted</span>
+            <span class="social-pipeline__stage-time">${draftStage.last_run ? timeAgo(draftStage.last_run) : '--'}</span>
+        </div>
+        <span class="social-pipeline__arrow">[>>]</span>
+        <div class="social-pipeline__stage">
+            <span class="social-pipeline__stage-count" style="color:var(--color-warning)">${pendingPosts.length}</span>
+            <span class="social-pipeline__stage-label">Pending</span>
+            <span class="social-pipeline__stage-time">awaiting review</span>
+        </div>
+        <span class="social-pipeline__arrow">[>>]</span>
+        <div class="social-pipeline__stage">
+            <span class="social-pipeline__stage-count" style="color:var(--color-success)">${approvedPosts.length}</span>
+            <span class="social-pipeline__stage-label">Approved</span>
+            <span class="social-pipeline__stage-time">ready to post</span>
+        </div>
+    </div>`;
+
+    // ── Daily limits progress bars ──
+    const maxFetches = safetyLimits.max_rss_fetches_per_day || 12;
+    const maxArticles = safetyLimits.max_articles_analyzed_per_day || 50;
+    const maxDrafts = safetyLimits.max_drafts_per_day || 5;
+    const totalFetched = fetchStage.today_count || 0;
+    const totalAnalyzed = analysisStage.today_count || 0;
+    const totalDrafted = draftStage.today_count || 0;
+
+    const limitsHtml = `<div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <div style="flex:1;min-width:150px">${progressBar(totalFetched, maxFetches, { label: 'Fetches', suffix: 'today' })}</div>
+        <div style="flex:1;min-width:150px">${progressBar(totalAnalyzed, maxArticles, { label: 'Analyzed', suffix: 'today' })}</div>
+        <div style="flex:1;min-width:150px">${progressBar(totalDrafted, maxDrafts, { label: 'Drafts', suffix: 'today' })}</div>
+    </div>`;
+
+    // ── Post cards with tab filtering ──
+    const postsHtml = _renderSocialPostsSection(posts, pendingPosts, approvedPosts, rejectedPosts);
+
+    // ── Feed sources ──
+    const feedsHtml = feedNames.length > 0
+        ? `<div class="social-feeds">${feedNames.map(name => `<div class="social-feed-item"><span class="social-feed-item__dot"></span><span>${escapeHtml(name)}</span></div>`).join('')}</div>`
+        : '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm);font-style:italic">No feeds configured</p>';
+
+    // ── Stage details expandables ──
     let stageDetails = '';
-    for (const [name, data] of Object.entries(stages)) {
-        const res = data.last_result || {};
-        const detailParts = Object.entries(res).map(([k, v]) => `${k}: ${v}`).join('\n');
+    for (const [name, stageData] of Object.entries(stages)) {
+        const res = stageData.last_result || {};
+        const detailLines = Object.entries(res).map(([k, v]) => {
+            const label = k.replace(/_/g, ' ');
+            return `${label}: ${Array.isArray(v) ? (v.length > 0 ? v.join(', ') : 'none') : v}`;
+        }).join('\n');
         stageDetails += expandableRow(
-            `${name} -- last run ${timeAgo(data.last_run)} (${data.today_count || 0} today)`,
-            `<pre style="margin:0;font-size:var(--font-size-xs);white-space:pre-wrap">${escapeHtml(detailParts || 'No details')}</pre>`
+            `${name.replace(/_/g, ' ')} -- last run ${timeAgo(stageData.last_run)} (${stageData.today_count || 0} runs today)`,
+            `<pre style="margin:0;font-size:var(--font-size-xs);white-space:pre-wrap">${escapeHtml(detailLines || 'No details')}</pre>`
         );
     }
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
-        ${pipelineHtml}
+        ${configSectionFull('Content Pipeline', pipelineFlowHtml)}
+        ${configSectionFull('Daily Limits', limitsHtml)}
+        ${postsHtml}
+        ${configSectionFull('Monitored Feeds (' + feedNames.length + ')', feedsHtml)}
         ${stageDetails ? configSectionFull('Pipeline Stages', stageDetails) : ''}
         ${configSection('RSS Fetch',
             configNumber('Interval', 2, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
@@ -1659,11 +1834,6 @@ async function renderContentMonitorPanel(tool) {
             configSelect('Day', 'Sunday', DAYS_OF_WEEK, tid, 'digest_day') +
             configText('Time', '18:00', tid, 'digest_time')
         )}
-        ${configSection('Limits',
-            configNumber('Max Fetches/Day', 12, 1, 50, tid, 'max_fetches_day') +
-            configNumber('Max Articles/Day', 50, 1, 500, tid, 'max_articles_day') +
-            configNumber('Max Drafts/Day', 5, 1, 20, tid, 'max_drafts_day')
-        )}
         ${state.adminMode ? configSection('Advanced',
             configAdminNumber('Min Relevance', 5, 0, 10, tid, 'min_relevance_for_draft') +
             configAdminText('Feed Sources', 'Default feeds', tid, 'feed_sources')
@@ -1671,6 +1841,158 @@ async function renderContentMonitorPanel(tool) {
     </div>`;
     applySavedConfigValues(tid);
     showToolHelpChat(tid);
+}
+
+function _renderSocialPostsSection(allPosts, pending, approved, rejected) {
+    if (allPosts.length === 0) {
+        return configSectionFull('Posts', '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm);font-style:italic">No posts yet. Posts are auto-drafted from high-relevance articles.</p>');
+    }
+
+    const tabsHtml = `<div class="social-tabs">
+        <button class="social-tab social-tab--active" onclick="_filterSocialPosts('all', this)">All (${allPosts.length})</button>
+        <button class="social-tab" onclick="_filterSocialPosts('pending', this)">Pending (${pending.length})</button>
+        <button class="social-tab" onclick="_filterSocialPosts('approved', this)">Approved (${approved.length})</button>
+        <button class="social-tab" onclick="_filterSocialPosts('rejected', this)">Rejected (${rejected.length})</button>
+    </div>`;
+
+    const cardsHtml = allPosts.map(p => _renderSocialPostCard(p)).join('');
+
+    return configSectionFull(`Posts (${allPosts.length})`,
+        tabsHtml + `<div id="social-posts-list">${cardsHtml}</div>`);
+}
+
+function _renderSocialPostCard(post) {
+    const meta = post.metadata || {};
+    const platform = post.platform || 'unknown';
+    const score = meta.relevance_score != null ? meta.relevance_score : null;
+    const painPoints = meta.pain_points || [];
+    const audience = meta.audience || '';
+    const source = meta.source || '';
+    const template = meta.template || '';
+    const postText = post.text || '';
+    const statusCls = post.status || 'pending';
+    const cardId = 'post-' + (post.post_id || '').substring(0, 8);
+
+    // Score badge coloring
+    let scoreCls = 'score-low';
+    if (score >= 7) scoreCls = 'score-high';
+    else if (score >= 4) scoreCls = 'score-med';
+
+    // Tags
+    let tagsHtml = '';
+    if (score != null) tagsHtml += `<span class="social-post-card__tag social-post-card__tag--score social-post-card__tag--${scoreCls}">Score: ${score}/10</span>`;
+    if (source) tagsHtml += `<span class="social-post-card__tag social-post-card__tag--source">${escapeHtml(source)}</span>`;
+    if (audience && audience !== 'unknown') tagsHtml += `<span class="social-post-card__tag social-post-card__tag--audience">${escapeHtml(audience)}</span>`;
+    if (template) tagsHtml += `<span class="social-post-card__tag">${escapeHtml(template.replace(/_/g, ' '))}</span>`;
+    painPoints.slice(0, 3).forEach(pp => {
+        tagsHtml += `<span class="social-post-card__tag social-post-card__tag--pain-point">${escapeHtml(pp.replace(/_/g, ' '))}</span>`;
+    });
+    if (painPoints.length > 3) {
+        tagsHtml += `<span class="social-post-card__tag">+${painPoints.length - 3} more</span>`;
+    }
+
+    // Actions
+    let actionsHtml = '';
+    if (post.status === 'pending') {
+        actionsHtml = `<div class="social-post-card__actions">
+            <button class="btn--approve" onclick="_approveSocialPost('${escapeHtml(post.post_id)}')">Approve</button>
+            <button class="btn--reject" onclick="_rejectSocialPost('${escapeHtml(post.post_id)}')">Reject</button>
+            ${meta.source_article ? `<a class="btn--view-source" href="${escapeHtml(meta.source_article)}" target="_blank">View Source</a>` : ''}
+        </div>`;
+    } else if (post.status === 'approved') {
+        actionsHtml = `<div class="social-post-card__actions">
+            <span class="social-status-badge social-status-badge--approved">Approved ${post.approved_at ? timeAgo(post.approved_at) : ''}</span>
+            ${meta.source_article ? `<a class="btn--view-source" href="${escapeHtml(meta.source_article)}" target="_blank" style="margin-left:auto">View Source</a>` : ''}
+        </div>`;
+    } else if (post.status === 'rejected') {
+        actionsHtml = `<div class="social-post-card__actions">
+            <span class="social-status-badge social-status-badge--rejected">Rejected${post.reject_reason ? ': ' + escapeHtml(post.reject_reason) : ''}</span>
+        </div>`;
+    }
+
+    return `<div class="social-post-card social-post-card--${statusCls}" id="${cardId}" data-status="${statusCls}">
+        <div class="social-post-card__header">
+            <span class="social-post-card__platform social-post-card__platform--${platform}">${escapeHtml(platform)}</span>
+            <div class="social-post-card__meta">
+                <span>${post.created_at ? timeAgo(post.created_at) : '--'}</span>
+            </div>
+        </div>
+        <div class="social-post-card__body" id="${cardId}-body">${escapeHtml(postText)}</div>
+        <span class="social-post-card__expand" onclick="_togglePostExpand('${cardId}')">Show more</span>
+        ${tagsHtml ? `<div class="social-post-card__tags">${tagsHtml}</div>` : ''}
+        ${actionsHtml}
+    </div>`;
+}
+
+function _togglePostExpand(cardId) {
+    const body = document.getElementById(cardId + '-body');
+    if (!body) return;
+    body.classList.toggle('social-post-card__body--expanded');
+    const btn = body.nextElementSibling;
+    if (btn) btn.textContent = body.classList.contains('social-post-card__body--expanded') ? 'Show less' : 'Show more';
+}
+
+function _filterSocialPosts(status, tabEl) {
+    // Update tab active state
+    const tabs = tabEl.parentElement.querySelectorAll('.social-tab');
+    tabs.forEach(t => t.classList.remove('social-tab--active'));
+    tabEl.classList.add('social-tab--active');
+
+    // Filter post cards
+    const list = document.getElementById('social-posts-list');
+    if (!list) return;
+    const cards = list.querySelectorAll('.social-post-card');
+    cards.forEach(card => {
+        if (status === 'all' || card.dataset.status === status) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+async function _approveSocialPost(postId) {
+    if (!confirm('Approve this post for publishing?')) return;
+    try {
+        const resp = await fetch(`/api/content-monitor/posts/${encodeURIComponent(postId)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'approve' }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            showToast('Post approved', 'success');
+            // Re-render the panel
+            const tool = (state.tools || []).find(t => t.id === 'content_monitor_scheduler');
+            if (tool) renderContentMonitorPanel(tool);
+        } else {
+            showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function _rejectSocialPost(postId) {
+    const reason = prompt('Rejection reason (optional):');
+    if (reason === null) return; // cancelled
+    try {
+        const resp = await fetch(`/api/content-monitor/posts/${encodeURIComponent(postId)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'reject', reason: reason || 'Rejected via dashboard' }),
+        });
+        const data = await resp.json();
+        if (data.ok) {
+            showToast('Post rejected', 'success');
+            const tool = (state.tools || []).find(t => t.id === 'content_monitor_scheduler');
+            if (tool) renderContentMonitorPanel(tool);
+        } else {
+            showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
 }
 
 /* ── Document Processing ── */
@@ -1682,22 +2004,38 @@ async function renderDocProcessorPanel(tool) {
 
     // Get model info if Ollama is running
     let modelInfo = '';
+    let modelCount = 0;
     if (isUp) {
         try {
             const resp = await fetch('/api/llm/models');
             const data = await resp.json();
             const models = data.models || [];
+            modelCount = models.length;
             modelInfo = models.length > 0 ? models[0].name : 'No models installed';
         } catch { modelInfo = 'Unknown'; }
     }
+
+    // Try-it summarize box
+    const tryItHtml = isUp ? `<div class="doc-try-it">
+        <textarea id="doc-summarize-input" class="doc-try-it__textarea" rows="6"
+            placeholder="Paste text here to summarize... (articles, meeting notes, documentation, code comments)"></textarea>
+        <div class="doc-try-it__actions">
+            <span class="doc-try-it__hint">Tip: paste an article, meeting notes, or any long text</span>
+            <button class="btn btn--primary btn--sm" onclick="tryDocSummarize()" id="doc-summarize-btn">Summarize</button>
+        </div>
+        <div id="doc-summarize-result" class="doc-try-it__result"></div>
+    </div>` : `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">
+        Ollama is offline. Start Ollama to use document summarization.
+    </div>`;
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
         ${statRow(
             statCard('Engine', isUp ? 'Ollama' : 'Offline', { color: isUp ? 'success' : 'error' }) +
             statCard('Model', modelInfo || '--') +
-            statCard('Compression', '80-95%', { subtitle: 'token reduction' })
+            statCard('Models Available', modelCount, { subtitle: 'installed' })
         )}
+        ${configSectionFull('Try It -- Summarize Text', tryItHtml)}
         ${configSection('Capabilities',
             configCard('Summarization', 'Compress PDFs and long documents to key points') +
             configCard('Code Preservation', 'Keeps code blocks intact during compression') +
@@ -1705,6 +2043,50 @@ async function renderDocProcessorPanel(tool) {
         )}
     </div>`;
     showToolHelpChat(tid);
+}
+
+async function tryDocSummarize() {
+    const input = document.getElementById('doc-summarize-input');
+    const result = document.getElementById('doc-summarize-result');
+    const btn = document.getElementById('doc-summarize-btn');
+    if (!input || !input.value.trim()) return;
+
+    const text = input.value.trim();
+    if (text.length < 50) {
+        result.innerHTML = '<p style="color:var(--color-warning);font-size:var(--font-size-sm)">Text is too short. Paste at least a few sentences to summarize.</p>';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Summarizing...';
+    result.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Processing with local AI model...</p>';
+
+    try {
+        const resp = await fetch('/api/doc-processor/summarize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text }),
+        });
+        const data = await resp.json();
+        if (data.ok && data.summary) {
+            // Render the summary with markdown-ish formatting
+            const lines = data.summary.split('\n').map(l => escapeHtml(l)).join('<br>');
+            result.innerHTML = `<div class="doc-try-it__summary">
+                <div class="doc-try-it__summary-header">
+                    <strong>Summary</strong>
+                    <span style="color:var(--color-text-muted);font-size:var(--font-size-xs)">via ${escapeHtml(data.model || 'local model')}</span>
+                </div>
+                <div class="doc-try-it__summary-body">${lines}</div>
+            </div>`;
+        } else {
+            result.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">${escapeHtml(data.error || 'Summarization failed')}</p>`;
+        }
+    } catch (err) {
+        result.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Failed: ${escapeHtml(err.message)}</p>`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Summarize';
+    }
 }
 
 /* ── System Health Monitor ── */
@@ -3047,7 +3429,7 @@ function connectSocket() {
         // Load settings (admin mode + user display name)
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
-            applyUserDisplayName(d.user_display_name || '');
+            applyUserIdentity(d.user_display_name || '', d.user_display_role || '', d.user_display_avatar || '');
         }).catch(() => {});
         showToast('Connected to Cohort', 'success');
 
@@ -3426,11 +3808,20 @@ function openSettings() {
         .then(r => r.json())
         .then(data => {
             if (dom.settingsUserName) dom.settingsUserName.value = data.user_display_name || '';
+            if (dom.settingsUserRole) dom.settingsUserRole.value = data.user_display_role || '';
+            if (dom.settingsUserAvatar) dom.settingsUserAvatar.value = data.user_display_avatar || '';
             if (dom.settingsApiKey) dom.settingsApiKey.value = data.api_key_masked || '';
             if (dom.settingsClaudeCmd) dom.settingsClaudeCmd.value = data.claude_cmd || '';
             if (dom.settingsAgentsRoot) dom.settingsAgentsRoot.value = data.agents_root || '';
             if (dom.settingsResponseTimeout) dom.settingsResponseTimeout.value = data.response_timeout || 300;
             if (dom.settingsExecBackend) dom.settingsExecBackend.value = data.execution_backend || 'cli';
+
+            // Claude Code enabled toggle
+            const claudeEnabled = document.getElementById('settings-claude-enabled');
+            const claudeBody = document.getElementById('claude-connection-body');
+            const isEnabled = !!data.claude_enabled;
+            if (claudeEnabled) claudeEnabled.checked = isEnabled;
+            if (claudeBody) claudeBody.classList.toggle('settings-section__body--collapsed', !isEnabled);
 
             // Admin mode toggle
             state.adminMode = !!data.admin_mode;
@@ -3456,8 +3847,12 @@ function saveSettings(e) {
     e.preventDefault();
 
     const adminToggle = document.getElementById('settings-admin-mode');
+    const claudeToggle = document.getElementById('settings-claude-enabled');
     const payload = {
         user_display_name: dom.settingsUserName ? dom.settingsUserName.value.trim() : '',
+        user_display_role: dom.settingsUserRole ? dom.settingsUserRole.value.trim() : '',
+        user_display_avatar: dom.settingsUserAvatar ? dom.settingsUserAvatar.value.trim().toUpperCase() : '',
+        claude_enabled: claudeToggle ? claudeToggle.checked : false,
         claude_cmd: dom.settingsClaudeCmd ? dom.settingsClaudeCmd.value.trim() : '',
         agents_root: dom.settingsAgentsRoot ? dom.settingsAgentsRoot.value.trim() : '',
         response_timeout: dom.settingsResponseTimeout ? parseInt(dom.settingsResponseTimeout.value, 10) : 300,
@@ -3480,7 +3875,7 @@ function saveSettings(e) {
         .then(data => {
             if (data.success) {
                 state.adminMode = payload.admin_mode;
-                applyUserDisplayName(payload.user_display_name);
+                applyUserIdentity(payload.user_display_name, payload.user_display_role, payload.user_display_avatar);
                 showToast('Settings saved', 'success');
                 closeSettings();
                 // Re-render current tool panel if open (tier visibility may have changed)
@@ -4240,6 +4635,15 @@ function init() {
     if (dom.settingsCancel) dom.settingsCancel.addEventListener('click', closeSettings);
     if (dom.settingsForm) dom.settingsForm.addEventListener('submit', saveSettings);
     if (dom.testConnectionBtn) dom.testConnectionBtn.addEventListener('click', testClaudeConnection);
+
+    // Claude Code enabled toggle -- collapse/expand the connection fields
+    const claudeEnabledToggle = document.getElementById('settings-claude-enabled');
+    const claudeConnectionBody = document.getElementById('claude-connection-body');
+    if (claudeEnabledToggle && claudeConnectionBody) {
+        claudeEnabledToggle.addEventListener('change', () => {
+            claudeConnectionBody.classList.toggle('settings-section__body--collapsed', !claudeEnabledToggle.checked);
+        });
+    }
     if (dom.toggleApiKeyVis) dom.toggleApiKeyVis.addEventListener('click', toggleApiKeyVisibility);
 
     // Permissions modal
@@ -4281,8 +4685,9 @@ function init() {
         }
     });
 
-    // Load agent registry, then connect
+    // Load agent registry, restore user identity from localStorage, then connect
     fetchAgentRegistry().then(() => {
+        restoreUserIdentity();
         connectSocket();
     });
 

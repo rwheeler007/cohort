@@ -558,13 +558,21 @@ async def get_agent_registry(request: Request) -> JSONResponse:
     from cohort.agent_registry import get_all_agents
     profiles = get_all_agents()
 
-    # Apply user display name from settings to the 'user' profile
+    # Apply user identity from settings to the 'user' profile
     settings = _load_settings()
     user_name = settings.get("user_display_name", "")
-    if user_name and "user" in profiles:
-        profiles["user"]["name"] = user_name
-        profiles["user"]["nickname"] = user_name
-        profiles["user"]["avatar"] = user_name[:2].upper()
+    user_role = settings.get("user_display_role", "")
+    user_avatar = settings.get("user_display_avatar", "")
+    if "user" in profiles:
+        if user_name:
+            profiles["user"]["name"] = user_name
+            profiles["user"]["nickname"] = user_name
+        if user_avatar:
+            profiles["user"]["avatar"] = user_avatar
+        elif user_name:
+            profiles["user"]["avatar"] = user_name[:2].upper()
+        if user_role:
+            profiles["user"]["role"] = user_role
 
     return JSONResponse(profiles)
 
@@ -1090,6 +1098,7 @@ async def get_settings(request: Request) -> JSONResponse:
 
     return JSONResponse({
         "api_key_masked": masked,
+        "claude_enabled": settings.get("claude_enabled", False),
         "claude_cmd": claude_cmd,
         "agents_root": settings.get("agents_root", ""),
         "response_timeout": settings.get("response_timeout", 300),
@@ -1097,6 +1106,8 @@ async def get_settings(request: Request) -> JSONResponse:
         "claude_code_connected": claude_connected,
         "admin_mode": settings.get("admin_mode", False),
         "user_display_name": settings.get("user_display_name", ""),
+        "user_display_role": settings.get("user_display_role", ""),
+        "user_display_avatar": settings.get("user_display_avatar", ""),
     })
 
 
@@ -1123,11 +1134,19 @@ async def post_settings(request: Request) -> JSONResponse:
     if "execution_backend" in body:
         if body["execution_backend"] in ("cli", "api", "chat"):
             settings["execution_backend"] = body["execution_backend"]
+    if "claude_enabled" in body:
+        settings["claude_enabled"] = bool(body["claude_enabled"])
     if "admin_mode" in body:
         settings["admin_mode"] = bool(body["admin_mode"])
     if "user_display_name" in body:
         name = str(body["user_display_name"]).strip()[:40]
         settings["user_display_name"] = name
+    if "user_display_role" in body:
+        role = str(body["user_display_role"]).strip()[:40]
+        settings["user_display_role"] = role
+    if "user_display_avatar" in body:
+        avatar = str(body["user_display_avatar"]).strip().upper()[:3]
+        settings["user_display_avatar"] = avatar
 
     _save_settings(settings)
 
@@ -2052,6 +2071,154 @@ async def get_content_monitor_pipeline(request: Request) -> JSONResponse:
     return JSONResponse({"stages": stages})
 
 
+async def get_social_posts(request: Request) -> JSONResponse:
+    """GET /api/content-monitor/posts -- list social media post drafts."""
+    status_filter = request.query_params.get("status", "")  # pending, approved, posted, rejected
+    limit = int(request.query_params.get("limit", "50"))
+
+    posts_dir = _boss_data_dir() / "comms_service" / "social_posts"
+    posts = []
+    try:
+        if posts_dir.is_dir():
+            for f in sorted(posts_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
+                try:
+                    with open(f, "r", encoding="utf-8") as fh:
+                        post = json.load(fh)
+                        if status_filter and post.get("status") != status_filter:
+                            continue
+                        posts.append(post)
+                        if len(posts) >= limit:
+                            break
+                except Exception:
+                    continue
+    except Exception:
+        pass
+
+    return JSONResponse({"posts": posts, "total": len(posts)})
+
+
+async def update_social_post(request: Request) -> JSONResponse:
+    """PATCH /api/content-monitor/posts/{post_id} -- approve or reject a social post."""
+    post_id = request.path_params["post_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    action = body.get("action", "")  # approve or reject
+    if action not in ("approve", "reject"):
+        return JSONResponse({"error": "action must be 'approve' or 'reject'"}, status_code=400)
+
+    posts_dir = _boss_data_dir() / "comms_service" / "social_posts"
+    post_path = posts_dir / f"{post_id}.json"
+    if not post_path.exists():
+        return JSONResponse({"error": "Post not found"}, status_code=404)
+
+    try:
+        with open(post_path, "r", encoding="utf-8") as f:
+            post = json.load(f)
+
+        now = datetime.now().isoformat()
+        if action == "approve":
+            post["status"] = "approved"
+            post["approved_at"] = now
+            post["approved_by"] = "cohort_user"
+        else:
+            post["status"] = "rejected"
+            post["rejected_at"] = now
+            post["reject_reason"] = body.get("reason", "Rejected via dashboard")
+
+        with open(post_path, "w", encoding="utf-8") as f:
+            json.dump(post, f, indent=2)
+
+        return JSONResponse({"ok": True, "post_id": post_id, "status": post["status"]})
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def get_content_articles(request: Request) -> JSONResponse:
+    """GET /api/content-monitor/articles -- list analyzed content articles."""
+    limit = int(request.query_params.get("limit", "20"))
+    min_score = int(request.query_params.get("min_score", "0"))
+
+    # Check content monitor articles DB (separate from tech_intel)
+    # The content monitor stores articles in its own state
+    articles = []
+
+    # Try the content monitor's articles database
+    for candidate in [
+        _boss_data_dir() / "content_monitor_logs" / "articles_db.json",
+        _boss_data_dir() / "content_monitor" / "articles_db.json",
+    ]:
+        data = _read_json_safe(candidate)
+        if data and isinstance(data, dict) and "articles" in data:
+            articles = data["articles"]
+            break
+        elif isinstance(data, list):
+            articles = data
+            break
+
+    # Filter by min relevance score
+    if min_score > 0:
+        articles = [a for a in articles
+                     if (a.get("analysis", {}).get("relevance_score", 0)
+                         if isinstance(a.get("analysis"), dict)
+                         else a.get("relevance_score", 0)) >= min_score]
+
+    # Sort by fetch date descending
+    try:
+        articles.sort(key=lambda a: a.get("fetched_date", a.get("published_date", "")), reverse=True)
+    except Exception:
+        pass
+
+    return JSONResponse({"articles": articles[:limit], "total_available": len(articles)})
+
+
+async def get_content_config(request: Request) -> JSONResponse:
+    """GET /api/content-monitor/config -- return content monitor configuration."""
+    cfg_path = _boss_data_dir() / "content_monitor_config.json"
+    data = _read_json_safe(cfg_path)
+    if data is None:
+        return JSONResponse({"error": "Config not found"})
+
+    # Return safe subset (no internal paths)
+    sources = data.get("sources", {})
+    feed_names = []
+    for section in sources.values():
+        if isinstance(section, list):
+            for s in section:
+                if isinstance(s, dict):
+                    feed_names.append(s.get("name", "unknown"))
+                elif isinstance(s, str):
+                    feed_names.append(s)
+
+    schedules = data.get("schedules", {})
+    schedule_summary = {}
+    for task_name, task_cfg in schedules.items():
+        if isinstance(task_cfg, dict):
+            schedule_summary[task_name] = {
+                "enabled": task_cfg.get("enabled", True),
+                "description": task_cfg.get("description", ""),
+                "interval_hours": task_cfg.get("interval_hours"),
+                "time": task_cfg.get("time"),
+                "day": task_cfg.get("day"),
+                "days": task_cfg.get("days"),
+            }
+
+    safety = data.get("safety", {})
+
+    return JSONResponse({
+        "project": data.get("project", ""),
+        "description": data.get("description", ""),
+        "enabled": data.get("enabled", False),
+        "feed_names": feed_names,
+        "schedules": schedule_summary,
+        "safety_limits": safety,
+        "post_settings": data.get("post_settings", {}),
+        "notifications": data.get("notifications", {}),
+    })
+
+
 async def web_search_test(request: Request) -> JSONResponse:
     """POST /api/web-search/test -- proxy a test search to the web search service."""
     import urllib.request
@@ -2108,6 +2275,78 @@ async def youtube_search_test(request: Request) -> JSONResponse:
             return JSONResponse(data)
     except Exception as exc:
         return JSONResponse({"error": f"YouTube service unavailable: {exc}"})
+
+
+async def doc_summarize(request: Request) -> JSONResponse:
+    """POST /api/doc-processor/summarize -- summarize text via local Ollama."""
+    from cohort.local.ollama import OllamaClient
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    text = body.get("text", "").strip()
+    if not text:
+        return JSONResponse({"error": "text is required"}, status_code=400)
+    if len(text) > 50000:
+        return JSONResponse({"error": "Text too long (max 50000 chars)"}, status_code=400)
+
+    # Use the configured model from settings, fallback to a small dense model
+    settings_path = _PACKAGE_DIR.parent / "data" / "settings.json"
+    model = "qwen3.5:9b"
+    try:
+        if settings_path.exists():
+            s = json.loads(settings_path.read_text(encoding="utf-8"))
+            model = s.get("model_name", model)
+    except Exception:
+        pass
+
+    client = OllamaClient(timeout=120)
+    prompt = (
+        "Summarize the following text in 3-5 concise bullet points. "
+        "Focus on key facts, decisions, and actionable items.\n\n"
+        f"TEXT:\n{text[:30000]}"
+    )
+    try:
+        result = await asyncio.to_thread(
+            client.generate,
+            model=model,
+            prompt=prompt,
+            temperature=0.3,
+        )
+        if result and result.text:
+            return JSONResponse({
+                "ok": True,
+                "summary": result.text,
+                "model": model,
+                "tokens": getattr(result, "total_tokens", None),
+            })
+        return JSONResponse({"ok": False, "error": "Model returned no output. Is Ollama running?"})
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": str(exc)})
+
+
+async def get_comms_pending_approvals(request: Request) -> JSONResponse:
+    """GET /api/comms/pending-approvals -- count and list pending social post drafts."""
+    boss_data = _boss_data_dir()
+    posts_dir = boss_data / "comms_service" / "social_posts"
+    pending = []
+    if posts_dir.is_dir():
+        for fp in posts_dir.glob("*.json"):
+            try:
+                data = json.loads(fp.read_text(encoding="utf-8"))
+                if data.get("status") == "pending":
+                    pending.append({
+                        "post_id": data.get("post_id"),
+                        "platform": data.get("platform"),
+                        "text": (data.get("text") or "")[:120],
+                        "created_at": data.get("created_at"),
+                    })
+            except Exception:
+                continue
+    pending.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    return JSONResponse({"count": len(pending), "pending": pending[:10]})
 
 
 # =====================================================================
@@ -2289,8 +2528,14 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/comms/recent-activity", get_comms_recent_activity, methods=["GET"]),
         Route("/api/intel/recent-articles", get_intel_recent_articles, methods=["GET"]),
         Route("/api/content-monitor/pipeline-status", get_content_monitor_pipeline, methods=["GET"]),
+        Route("/api/content-monitor/posts", get_social_posts, methods=["GET"]),
+        Route("/api/content-monitor/posts/{post_id}", update_social_post, methods=["PATCH"]),
+        Route("/api/content-monitor/articles", get_content_articles, methods=["GET"]),
+        Route("/api/content-monitor/config", get_content_config, methods=["GET"]),
         Route("/api/web-search/test", web_search_test, methods=["POST"]),
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
+        Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
+        Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 
