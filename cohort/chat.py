@@ -233,6 +233,16 @@ class ChatManager:
         self._storage.save_message(channel_id, msg.to_dict())
         return msg
 
+    def delete_message(
+        self,
+        message_id: str,
+        channel_id: str | None = None,
+    ) -> bool:
+        """Delete a message by ID. Returns True on success."""
+        if hasattr(self._storage, "delete_message"):
+            return self._storage.delete_message(message_id, channel_id=channel_id)
+        return False
+
     def get_channel_messages(
         self,
         channel_id: str,

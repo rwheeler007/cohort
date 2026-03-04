@@ -885,10 +885,13 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
             logger.info("[*] Skipping @%s -- no agent found", mention)
             continue
 
-        # Validate prompt exists
+        # Validate prompt exists (file on disk or persona in memory)
         if not get_agent_prompt_path(resolved):
-            logger.info("[*] Skipping @%s -- no prompt file", resolved)
-            continue
+            # Gateway agents may have persona_text in memory but no disk file
+            agent_cfg = _agent_store.get(resolved) if _agent_store else None
+            if not (agent_cfg and agent_cfg.persona_text):
+                logger.info("[*] Skipping @%s -- no prompt file or persona", resolved)
+                continue
 
         # Session gating (if orchestrator is wired up and session is active)
         if has_active_session and _orchestrator:

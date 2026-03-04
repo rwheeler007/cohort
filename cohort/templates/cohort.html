@@ -114,16 +114,6 @@
                     </ul>
                 </div>
 
-                <div class="sidebar-nav__section open" data-section="sessions">
-                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('sessions')">
-                        <span class="sidebar-nav__toggle">></span>
-                        <h2 class="sidebar-nav__title">Sessions</h2>
-                        <button class="sidebar-nav__add-btn" id="add-session-btn" title="Start session" onclick="event.stopPropagation()">+</button>
-                    </div>
-                    <ul class="sidebar-nav__section-body sidebar-nav__sessions" id="session-list">
-                        <!-- Sessions populated by JS -->
-                    </ul>
-                </div>
             </nav>
 
             <div class="sidebar__footer">
@@ -268,7 +258,7 @@
                     </div>
                 </div>
                 <div class="tool-help-chat" id="tool-help-chat" style="display:none">
-                    <div class="tool-help-chat__toggle" onclick="toggleToolHelpChat()">
+                    <div class="tool-help-chat__toggle" id="tool-help-toggle">
                         <span class="tool-help-chat__label">[?] Need help configuring this tool?</span>
                         <span class="tool-help-chat__arrow" id="tool-help-arrow">[^]</span>
                     </div>

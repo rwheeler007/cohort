@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from typing import Any
 
 import socketio
@@ -271,8 +272,10 @@ async def join_channel(sid: str, data: dict | None = None) -> None:
         )
 
         # Post a greeting from the agent in DM channels
+        # Handles dm-{agent_id} and dm-{agent_id}-{n} patterns
         if channel_id.startswith("dm-"):
-            agent_id = channel_id[3:]
+            stripped = channel_id[3:]  # remove "dm-" prefix
+            agent_id = re.sub(r"-\d+$", "", stripped)  # remove trailing -N
             _post_agent_greeting(agent_id, channel_id)
 
     # Join the Socket.IO room for this channel
@@ -309,10 +312,13 @@ async def send_message(sid: str, data: dict) -> dict:
             description=f"Auto-created channel: {channel_id}",
         )
 
+    thread_id = data.get("thread_id")
+
     msg = _chat.post_message(
         channel_id=channel_id,
         sender=sender,
         content=content,
+        thread_id=thread_id,
     )
 
     # Broadcast to all clients
@@ -325,8 +331,10 @@ async def send_message(sid: str, data: dict) -> dict:
     # Auto-route in DM channels: if this is a dm-<agent> channel and the
     # sender is a human (not the agent itself), inject the agent as a mention
     # so the routing pipeline fires without requiring an explicit @mention.
+    # Handles dm-{agent_id} and dm-{agent_id}-{n} patterns.
     if channel_id.startswith("dm-") and sender != "system":
-        dm_agent = channel_id[3:]  # strip "dm-" prefix
+        stripped = channel_id[3:]  # strip "dm-" prefix
+        dm_agent = re.sub(r"-\d+$", "", stripped)  # remove trailing -N
         if dm_agent and dm_agent != sender and dm_agent not in mentions:
             mentions = list(mentions) + [dm_agent]
 
@@ -335,6 +343,27 @@ async def send_message(sid: str, data: dict) -> dict:
         route_mentions(msg, mentions)
 
     return {"status": "ok", "message_id": msg.id}
+
+
+@sio.event
+async def delete_message(sid: str, data: dict) -> dict:
+    """Client requests deletion of a message."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+
+    message_id = data.get("message_id")
+    channel_id = data.get("channel_id")
+    if not message_id:
+        return {"error": "Missing message_id"}
+
+    success = _chat.delete_message(message_id, channel_id=channel_id)
+    if success:
+        await sio.emit("message_deleted", {
+            "message_id": message_id,
+            "channel_id": channel_id,
+        })
+        return {"success": True}
+    return {"error": "Message not found"}
 
 
 # =====================================================================

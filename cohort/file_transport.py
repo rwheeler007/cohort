@@ -114,6 +114,34 @@ class JsonlFileStorage:
 
         return filtered[-limit:]
 
+    def delete_message(
+        self,
+        message_id: str,
+        channel_id: str | None = None,
+    ) -> bool:
+        if not self._jsonl_path.exists():
+            return False
+        lines: list[str] = []
+        found = False
+        with open(self._jsonl_path, encoding="utf-8") as f:
+            for line in f:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                try:
+                    record = json.loads(stripped)
+                except json.JSONDecodeError:
+                    lines.append(line)
+                    continue
+                if record.get("id") == message_id:
+                    found = True
+                    continue  # skip this line (delete it)
+                lines.append(line)
+        if found:
+            with open(self._jsonl_path, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+        return found
+
     # -- channels -------------------------------------------------------
 
     def save_channel(self, channel_id: str, metadata: dict) -> None:

@@ -2292,22 +2292,32 @@ async def doc_summarize(request: Request) -> JSONResponse:
     if len(text) > 50000:
         return JSONResponse({"error": "Text too long (max 50000 chars)"}, status_code=400)
 
-    # Use the configured model from settings, fallback to a small dense model
-    settings_path = _PACKAGE_DIR.parent / "data" / "settings.json"
-    model = "qwen3.5:9b"
-    try:
-        if settings_path.exists():
-            s = json.loads(settings_path.read_text(encoding="utf-8"))
-            model = s.get("model_name", model)
-    except Exception:
-        pass
+    mode = body.get("mode", "summary")  # summary, outline, extract_key_points
+    model_override = body.get("model", "")
 
-    client = OllamaClient(timeout=120)
-    prompt = (
-        "Summarize the following text in 3-5 concise bullet points. "
-        "Focus on key facts, decisions, and actionable items.\n\n"
-        f"TEXT:\n{text[:30000]}"
-    )
+    # Use explicit model from request, else configured model from settings
+    model = model_override.strip() if model_override and model_override.strip() else _get_configured_model()
+
+    prompts = {
+        "summary": (
+            "Summarize the following text in 3-5 concise bullet points. "
+            "Focus on key facts, decisions, and actionable items.\n\n"
+        ),
+        "outline": (
+            "Create a structured outline of the following text with headings "
+            "and sub-points. Use markdown formatting.\n\n"
+        ),
+        "extract_key_points": (
+            "Extract all key facts, numbers, names, dates, and actionable items "
+            "from the following text. Present as a bullet list.\n\n"
+        ),
+    }
+    prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
+
+    input_words = len(text.split())
+    client = OllamaClient(timeout=180)
+    import time
+    t0 = time.time()
     try:
         result = await asyncio.to_thread(
             client.generate,
@@ -2315,12 +2325,386 @@ async def doc_summarize(request: Request) -> JSONResponse:
             prompt=prompt,
             temperature=0.3,
         )
+        elapsed = round(time.time() - t0, 1)
         if result and result.text:
+            output_words = len(result.text.split())
+            compression = round((1 - output_words / max(input_words, 1)) * 100, 1) if input_words > 0 else 0
             return JSONResponse({
                 "ok": True,
                 "summary": result.text,
                 "model": model,
-                "tokens": getattr(result, "total_tokens", None),
+                "mode": mode,
+                "stats": {
+                    "input_words": input_words,
+                    "input_chars": len(text),
+                    "output_words": output_words,
+                    "compression_pct": compression,
+                    "tokens_in": getattr(result, "tokens_in", 0),
+                    "tokens_out": getattr(result, "tokens_out", 0),
+                    "elapsed_seconds": elapsed,
+                },
+            })
+        return JSONResponse({"ok": False, "error": "Model returned no output. Is Ollama running?"})
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": str(exc)})
+
+
+def _get_configured_model() -> str:
+    """Read model name from Cohort settings."""
+    settings_path = _PACKAGE_DIR.parent / "data" / "settings.json"
+    try:
+        if settings_path.exists():
+            s = json.loads(settings_path.read_text(encoding="utf-8"))
+            return s.get("model_name", "qwen3.5:9b")
+    except Exception:
+        pass
+    return "qwen3.5:9b"
+
+
+def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str) -> dict:
+    """Extract text from various file formats.  Returns dict with keys:
+    text, format, pages (optional), error (optional).
+    """
+    ext = Path(filename).suffix.lower() if filename else ""
+    result: dict = {"text": "", "format": ext or content_type, "pages": None, "error": None}
+
+    try:
+        # ── PDF ──
+        if ext == ".pdf" or content_type == "application/pdf":
+            import pdfplumber
+            import io
+            pages_text = []
+            with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+                result["pages"] = len(pdf.pages)
+                for page in pdf.pages:
+                    t = page.extract_text() or ""
+                    if t.strip():
+                        pages_text.append(t)
+            result["text"] = "\n\n".join(pages_text)
+            result["format"] = "pdf"
+
+        # ── Word (.docx) ──
+        elif ext == ".docx" or content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            import docx
+            import io
+            doc = docx.Document(io.BytesIO(file_bytes))
+            paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+            result["text"] = "\n\n".join(paragraphs)
+            result["format"] = "docx"
+
+        # ── Excel (.xlsx) ──
+        elif ext in (".xlsx", ".xls") or "spreadsheet" in content_type:
+            import openpyxl
+            import io
+            wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
+            sheets_text = []
+            for ws in wb.worksheets:
+                rows = []
+                for row in ws.iter_rows(values_only=True):
+                    cells = [str(c) if c is not None else "" for c in row]
+                    if any(cells):
+                        rows.append(" | ".join(cells))
+                if rows:
+                    sheets_text.append(f"Sheet: {ws.title}\n" + "\n".join(rows[:200]))
+            wb.close()
+            result["text"] = "\n\n".join(sheets_text)
+            result["format"] = "xlsx"
+
+        # ── HTML ──
+        elif ext in (".html", ".htm") or "html" in content_type:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(file_bytes, "lxml")
+            for tag in soup(["script", "style", "nav", "footer", "header"]):
+                tag.decompose()
+            result["text"] = soup.get_text(separator="\n", strip=True)
+            result["format"] = "html"
+
+        # ── CSV ──
+        elif ext == ".csv" or "csv" in content_type:
+            import csv
+            import io
+            text = file_bytes.decode("utf-8", errors="replace")
+            reader = csv.reader(io.StringIO(text))
+            rows = []
+            for i, row in enumerate(reader):
+                if i > 200:
+                    rows.append("... (truncated)")
+                    break
+                rows.append(" | ".join(row))
+            result["text"] = "\n".join(rows)
+            result["format"] = "csv"
+
+        # ── JSON ──
+        elif ext == ".json" or "json" in content_type:
+            parsed = json.loads(file_bytes.decode("utf-8", errors="replace"))
+            result["text"] = json.dumps(parsed, indent=2)[:30000]
+            result["format"] = "json"
+
+        # ── Markdown / plain text / code ──
+        elif ext in (".md", ".txt", ".log", ".py", ".js", ".ts", ".css", ".yaml", ".yml",
+                      ".toml", ".ini", ".cfg", ".xml", ".sql", ".sh", ".bat", ".ps1",
+                      ".rs", ".go", ".java", ".c", ".cpp", ".h", ".rb", ".php") \
+                or "text/" in content_type:
+            result["text"] = file_bytes.decode("utf-8", errors="replace")
+            result["format"] = ext.lstrip(".") or "text"
+
+        else:
+            # Try as plain text as fallback
+            try:
+                result["text"] = file_bytes.decode("utf-8", errors="replace")
+                result["format"] = "text"
+            except Exception:
+                result["error"] = f"Unsupported file type: {ext or content_type}"
+
+    except Exception as exc:
+        result["error"] = f"Extraction failed: {exc}"
+
+    return result
+
+
+def _is_image_type(filename: str, content_type: str) -> bool:
+    ext = Path(filename).suffix.lower() if filename else ""
+    return ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".tif", ".svg") \
+        or content_type.startswith("image/")
+
+
+def _is_video_type(filename: str, content_type: str) -> bool:
+    ext = Path(filename).suffix.lower() if filename else ""
+    return ext in (".mp4", ".avi", ".mov", ".mkv", ".webm", ".flv", ".wmv", ".m4v") \
+        or content_type.startswith("video/")
+
+
+def _extract_video_frames(file_bytes: bytes, max_frames: int = 4) -> list[bytes]:
+    """Extract evenly-spaced keyframes from video as JPEG bytes."""
+    import cv2
+    import tempfile
+    import numpy as np
+
+    frames = []
+    tmp = None
+    try:
+        tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+        tmp.write(file_bytes)
+        tmp.close()
+
+        cap = cv2.VideoCapture(tmp.name)
+        total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total <= 0:
+            return frames
+
+        # Pick evenly spaced frame indices
+        indices = [int(i * total / (max_frames + 1)) for i in range(1, max_frames + 1)]
+        for idx in indices:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+            ret, frame = cap.read()
+            if ret:
+                # Resize to max 512px on longest edge to keep payload reasonable
+                h, w = frame.shape[:2]
+                if max(h, w) > 512:
+                    scale = 512 / max(h, w)
+                    frame = cv2.resize(frame, (int(w * scale), int(h * scale)))
+                _, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+                frames.append(buf.tobytes())
+        cap.release()
+    except Exception:
+        pass
+    finally:
+        if tmp:
+            try:
+                os.unlink(tmp.name)
+            except Exception:
+                pass
+    return frames
+
+
+def _ollama_vision_request(model: str, prompt: str, image_b64_list: list[str],
+                           timeout: int = 180) -> dict | None:
+    """Send a vision request to Ollama /api/chat with images."""
+    import urllib.request
+
+    payload = json.dumps({
+        "model": model,
+        "messages": [{
+            "role": "user",
+            "content": prompt,
+            "images": image_b64_list,
+        }],
+        "stream": False,
+        "options": {"temperature": 0.3, "num_predict": 1024},
+        "keep_alive": "0",
+        "think": False,
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        "http://127.0.0.1:11434/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+async def doc_process_file(request: Request) -> JSONResponse:
+    """POST /api/doc-processor/process -- universal file processor.
+
+    Accepts multipart file upload.  Extracts text from documents, analyzes
+    images via vision model, extracts video keyframes and describes them.
+    Then summarizes the content.
+    """
+    import base64
+    import time
+
+    form = await request.form()
+    upload = form.get("file")
+    if not upload:
+        return JSONResponse({"error": "No file uploaded"}, status_code=400)
+
+    file_bytes = await upload.read()
+    filename = upload.filename or "unknown"
+    content_type = upload.content_type or "application/octet-stream"
+    mode = form.get("mode", "summary")
+    model_override = form.get("model", "")
+
+    if len(file_bytes) > 50 * 1024 * 1024:  # 50MB limit
+        return JSONResponse({"error": "File too large (max 50MB)"}, status_code=400)
+
+    model = model_override.strip() if model_override and model_override.strip() else _get_configured_model()
+    t0 = time.time()
+
+    # ── Image handling: send directly to vision model ──
+    if _is_image_type(filename, content_type):
+        img_b64 = base64.b64encode(file_bytes).decode()
+
+        prompts = {
+            "summary": "Describe this image in detail. What does it contain? List all notable elements, text, diagrams, charts, or information visible.",
+            "outline": "Create a structured breakdown of everything visible in this image. Use headings and bullet points.",
+            "extract_key_points": "Extract all text, numbers, labels, data points, and key information visible in this image. Present as a bullet list.",
+        }
+        prompt = prompts.get(mode, prompts["summary"])
+
+        vision_result = await asyncio.to_thread(
+            _ollama_vision_request, model, prompt, [img_b64]
+        )
+
+        elapsed = round(time.time() - t0, 1)
+        if vision_result:
+            msg = vision_result.get("message", {})
+            text = msg.get("content", "")
+            if text:
+                return JSONResponse({
+                    "ok": True,
+                    "summary": text,
+                    "model": model,
+                    "mode": mode,
+                    "file_type": "image",
+                    "filename": filename,
+                    "stats": {
+                        "file_size": len(file_bytes),
+                        "output_words": len(text.split()),
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+        return JSONResponse({"ok": False, "error": "Vision model returned no output. Is Ollama running?"})
+
+    # ── Video handling: extract keyframes, send to vision model ──
+    if _is_video_type(filename, content_type):
+        frames = await asyncio.to_thread(_extract_video_frames, file_bytes, 6)
+        if not frames:
+            return JSONResponse({"ok": False, "error": "Could not extract frames from video. Is the format supported?"})
+
+        frames_b64 = [base64.b64encode(f).decode() for f in frames]
+
+        prompts = {
+            "summary": f"These are {len(frames)} evenly-spaced frames from a video called '{filename}'. Describe what happens in the video based on these frames. Provide a coherent narrative summary.",
+            "outline": f"These are {len(frames)} frames from a video. Create a structured timeline of what happens at each stage of the video.",
+            "extract_key_points": f"These are {len(frames)} frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
+        }
+        prompt = prompts.get(mode, prompts["summary"])
+
+        vision_result = await asyncio.to_thread(
+            _ollama_vision_request, model, prompt, frames_b64, 300
+        )
+
+        elapsed = round(time.time() - t0, 1)
+        if vision_result:
+            msg = vision_result.get("message", {})
+            text = msg.get("content", "")
+            if text:
+                return JSONResponse({
+                    "ok": True,
+                    "summary": text,
+                    "model": model,
+                    "mode": mode,
+                    "file_type": "video",
+                    "filename": filename,
+                    "stats": {
+                        "file_size": len(file_bytes),
+                        "frames_extracted": len(frames),
+                        "output_words": len(text.split()),
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+        return JSONResponse({"ok": False, "error": "Vision model returned no output for video frames."})
+
+    # ── Document/text handling: extract text then summarize ──
+    extraction = await asyncio.to_thread(_extract_text_from_file, file_bytes, filename, content_type)
+    if extraction.get("error"):
+        return JSONResponse({"ok": False, "error": extraction["error"]})
+
+    text = extraction.get("text", "").strip()
+    if not text:
+        return JSONResponse({"ok": False, "error": f"No text could be extracted from {filename}"})
+
+    # Now summarize the extracted text
+    from cohort.local.ollama import OllamaClient
+    prompts = {
+        "summary": (
+            "Summarize the following text in 3-5 concise bullet points. "
+            "Focus on key facts, decisions, and actionable items.\n\n"
+        ),
+        "outline": (
+            "Create a structured outline of the following text with headings "
+            "and sub-points. Use markdown formatting.\n\n"
+        ),
+        "extract_key_points": (
+            "Extract all key facts, numbers, names, dates, and actionable items "
+            "from the following text. Present as a bullet list.\n\n"
+        ),
+    }
+    prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
+
+    client = OllamaClient(timeout=180)
+    try:
+        result = await asyncio.to_thread(
+            client.generate, model=model, prompt=prompt, temperature=0.3,
+        )
+        elapsed = round(time.time() - t0, 1)
+        if result and result.text:
+            input_words = len(text.split())
+            output_words = len(result.text.split())
+            compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
+            return JSONResponse({
+                "ok": True,
+                "summary": result.text,
+                "extracted_text_preview": text[:500],
+                "model": model,
+                "mode": mode,
+                "file_type": extraction["format"],
+                "filename": filename,
+                "stats": {
+                    "file_size": len(file_bytes),
+                    "pages": extraction.get("pages"),
+                    "input_words": input_words,
+                    "input_chars": len(text),
+                    "output_words": output_words,
+                    "compression_pct": compression,
+                    "tokens_in": getattr(result, "tokens_in", 0),
+                    "tokens_out": getattr(result, "tokens_out", 0),
+                    "elapsed_seconds": elapsed,
+                },
             })
         return JSONResponse({"ok": False, "error": "Model returned no output. Is Ollama running?"})
     except Exception as exc:
@@ -2380,7 +2764,22 @@ def create_app(data_dir: str = "data") -> Starlette:
     from cohort.agent_store import set_global_store
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
-    agents_dir = Path(agents_dir_env) if agents_dir_env else Path(resolved_dir) / "agents"
+    if agents_dir_env:
+        agents_dir = Path(agents_dir_env)
+    else:
+        # Prefer agents_root from settings (e.g. "G:/cohort" -> "G:/cohort/agents")
+        # over data_dir (e.g. "G:/cohort/data" -> "G:/cohort/data/agents")
+        _agents_root = saved_settings.get("agents_root") or os.environ.get(
+            "COHORT_AGENTS_ROOT", "",
+        )
+        if _agents_root:
+            agents_dir = Path(_agents_root) / "agents"
+        else:
+            agents_dir = Path(resolved_dir) / "agents"
+    # Ensure agents_dir exists so AgentStore can cache Gateway agent prompts
+    if not agents_dir.is_dir():
+        agents_dir.mkdir(parents=True, exist_ok=True)
+        logger.info("[OK] Created agents_dir: %s", agents_dir)
     remote_url = (
         os.environ.get("COHORT_AGENTS_API_URL")
         or saved_settings.get("agents_api_url", "")
@@ -2535,6 +2934,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/web-search/test", web_search_test, methods=["POST"]),
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
         Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
+        Route("/api/doc-processor/process", doc_process_file, methods=["POST"]),
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]

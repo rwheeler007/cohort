@@ -25,6 +25,7 @@ const state = {
     currentChannel: null,    // Currently selected channel
     channels: [],            // List of channels
     messages: {},            // Messages per channel: { channelId: [msg, ...] }
+    replyingTo: null,        // Message ID being replied to
 
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
@@ -560,6 +561,16 @@ function renderMessages() {
             }
         }
 
+        // Action buttons (hidden by default, shown on hover)
+        const isSystem = (message.message_type || 'chat') === 'system';
+        const actionsHtml = isSystem ? '' : `
+            <div class="message__actions">
+                <button class="message__action-btn" onclick="replyToMessage('${message.id}', '${escapeHtml(profile.nickname)}')" title="Reply">Reply</button>
+                <button class="message__action-btn" onclick="copyMessage('${message.id}')" title="Copy">Copy</button>
+                <button class="message__action-btn" onclick="resendMessage('${message.id}')" title="Resend">Resend</button>
+                <button class="message__action-btn message__action-btn--danger" onclick="deleteMessage('${message.id}')" title="Delete">Delete</button>
+            </div>`;
+
         return `
             <div class="message ${typeClass}" style="--agent-color: ${profile.color}" data-message-id="${message.id}">
                 <div class="message__avatar" title="${profile.name} - ${profile.role}">${profile.avatar}</div>
@@ -575,6 +586,7 @@ function renderMessages() {
                     <div class="message__body">${formatMessageContent(message.content)}</div>
                     ${confirmationCard}
                     ${roundtableCard}
+                    ${actionsHtml}
                 </div>
             </div>
         `;
@@ -808,6 +820,108 @@ function deleteSetupChannel() {
 
 // Expose to onclick handlers in rendered HTML
 window.confirmRoundtableSetup = confirmRoundtableSetup;
+
+// =====================================================================
+// Message action handlers (reply, copy, resend, delete)
+// =====================================================================
+
+function replyToMessage(messageId, senderNickname) {
+    state.replyingTo = messageId;
+    showReplyIndicator(messageId, senderNickname);
+
+    // Auto-tag the sender
+    const input = dom.messageInput;
+    if (!input) return;
+    const current = input.textContent || '';
+    const mention = `@${senderNickname}`;
+    if (!current.includes(mention)) {
+        input.textContent = current ? `${mention} ${current}` : `${mention} `;
+    }
+    input.focus();
+    // Move cursor to end
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(input);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function showReplyIndicator(messageId, senderNickname) {
+    const existing = document.querySelector('.reply-indicator');
+    if (existing) existing.remove();
+
+    const indicator = document.createElement('div');
+    indicator.className = 'reply-indicator';
+    indicator.innerHTML = `
+        <span>Replying to <strong>${escapeHtml(senderNickname)}</strong></span>
+        <button onclick="cancelReply()" title="Cancel reply">[x]</button>
+    `;
+
+    const inputArea = document.querySelector('.message-input-area');
+    if (inputArea) inputArea.insertBefore(indicator, inputArea.firstChild);
+}
+
+function cancelReply() {
+    state.replyingTo = null;
+    const indicator = document.querySelector('.reply-indicator');
+    if (indicator) indicator.remove();
+}
+
+function copyMessage(messageId) {
+    const messages = state.messages[state.currentChannel] || [];
+    const message = messages.find(m => m.id === messageId);
+    if (!message) return;
+
+    navigator.clipboard.writeText(message.content).then(() => {
+        showToast('Copied to clipboard', 'success');
+    }).catch(() => {
+        showToast('Failed to copy', 'error');
+    });
+}
+
+function resendMessage(messageId) {
+    const messages = state.messages[state.currentChannel] || [];
+    const message = messages.find(m => m.id === messageId);
+    if (!message || !dom.messageInput) return;
+
+    dom.messageInput.textContent = message.content;
+    dom.messageInput.focus();
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(dom.messageInput);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm('Delete this message?')) return;
+
+    if (!state.socket || !state.connected) {
+        showToast('Not connected', 'error');
+        return;
+    }
+
+    state.socket.emit('delete_message', { message_id: messageId, channel_id: state.currentChannel }, (resp) => {
+        if (resp && resp.success) {
+            const msgs = state.messages[state.currentChannel];
+            if (msgs) {
+                state.messages[state.currentChannel] = msgs.filter(m => m.id !== messageId);
+                renderMessages();
+            }
+        } else {
+            showToast(resp?.error || 'Failed to delete message', 'error');
+        }
+    });
+}
+
+// Expose message action handlers to onclick in rendered HTML
+window.replyToMessage = replyToMessage;
+window.copyMessage = copyMessage;
+window.resendMessage = resendMessage;
+window.deleteMessage = deleteMessage;
+window.cancelReply = cancelReply;
 
 // =====================================================================
 // Sidebar tools list rendering
@@ -1252,6 +1366,7 @@ function showToolHelpChat(toolId) {
         if (body) body.style.display = 'none';
         const arrow = document.getElementById('tool-help-arrow');
         if (arrow) arrow.textContent = '[^]';
+        el.classList.remove('tool-help-chat--expanded');
     }
 }
 
@@ -1276,18 +1391,89 @@ function _joinToolHelpChannel() {
     renderToolHelpMessages();
 }
 
+// --- Tool help chat: drag-to-resize + click-to-toggle ---
+let _toolHelpDragState = null;     // { startY, startHeight, didDrag } during drag
+let _toolHelpCustomHeight = null;  // persisted height across open/close
+const _TOOL_HELP_MIN_HEIGHT = 200; // minimum expanded height (px)
+const _TOOL_HELP_MAX_HEIGHT = 800; // maximum drag height (px)
+
 function toggleToolHelpChat() {
     const body = document.getElementById('tool-help-body');
     const arrow = document.getElementById('tool-help-arrow');
+    const chat = document.getElementById('tool-help-chat');
     if (!body) return;
     const opening = body.style.display === 'none';
     body.style.display = opening ? '' : 'none';
     if (arrow) arrow.textContent = opening ? '[v]' : '[^]';
+    if (chat) chat.classList.toggle('tool-help-chat--expanded', opening);
 
     if (opening) {
+        if (_toolHelpCustomHeight) {
+            const msgs = document.getElementById('tool-help-messages');
+            if (msgs) msgs.style.setProperty('--tool-help-height', _toolHelpCustomHeight + 'px');
+        }
         _joinToolHelpChannel();
     }
 }
+
+(function initToolHelpDrag() {
+    function bind() {
+        const toggle = document.getElementById('tool-help-toggle');
+        if (!toggle) return;
+
+        toggle.addEventListener('mousedown', function(e) {
+            const body = document.getElementById('tool-help-body');
+            const isExpanded = body && body.style.display !== 'none';
+            const msgs = document.getElementById('tool-help-messages');
+            _toolHelpDragState = {
+                startY: e.clientY,
+                startHeight: (isExpanded && msgs) ? msgs.offsetHeight : 0,
+                didDrag: false,
+                wasExpanded: isExpanded
+            };
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!_toolHelpDragState) return;
+            if (!_toolHelpDragState.wasExpanded) return; // can't resize when collapsed
+            const dy = _toolHelpDragState.startY - e.clientY;
+            if (!_toolHelpDragState.didDrag && Math.abs(dy) < 4) return;
+            _toolHelpDragState.didDrag = true;
+
+            let newHeight = _toolHelpDragState.startHeight + dy;
+            newHeight = Math.max(_TOOL_HELP_MIN_HEIGHT, Math.min(_TOOL_HELP_MAX_HEIGHT, newHeight));
+
+            const msgs = document.getElementById('tool-help-messages');
+            if (msgs) {
+                msgs.style.setProperty('--tool-help-height', newHeight + 'px');
+                msgs.style.transition = 'none';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (!_toolHelpDragState) return;
+            const wasDrag = _toolHelpDragState.didDrag;
+            if (wasDrag) {
+                const msgs = document.getElementById('tool-help-messages');
+                if (msgs) {
+                    _toolHelpCustomHeight = msgs.offsetHeight;
+                    msgs.style.transition = '';
+                }
+            } else {
+                // Click (no drag) — toggle the panel
+                toggleToolHelpChat();
+            }
+            _toolHelpDragState = null;
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind);
+    } else {
+        bind();
+    }
+})();
 
 function sendToolHelpMessage() {
     const input = document.getElementById('tool-help-input');
@@ -1999,94 +2185,335 @@ async function _rejectSocialPost(postId) {
 
 async function renderDocProcessorPanel(tool) {
     const tid = tool.id;
-    const ollamaStatus = await fetchServiceStatus('llm_manager');
+    const [ollamaStatus, runningData] = await Promise.all([
+        fetchServiceStatus('llm_manager'),
+        fetch('/api/llm/running').then(r => r.json()).catch(() => ({ status: 'down', models: [] })),
+    ]);
     const isUp = ollamaStatus.status === 'up';
 
-    // Get model info if Ollama is running
-    let modelInfo = '';
+    // Get model info + settings
+    let allModels = [];
+    let configuredModel = 'qwen3.5:9b';
     let modelCount = 0;
+    let vramHtml = '';
     if (isUp) {
         try {
-            const resp = await fetch('/api/llm/models');
-            const data = await resp.json();
-            const models = data.models || [];
-            modelCount = models.length;
-            modelInfo = models.length > 0 ? models[0].name : 'No models installed';
-        } catch { modelInfo = 'Unknown'; }
+            const [modelsResp, settingsResp] = await Promise.all([
+                fetch('/api/llm/models').then(r => r.json()),
+                fetch('/api/settings').then(r => r.json()).catch(() => ({})),
+            ]);
+            allModels = (modelsResp.models || []).map(m => m.name).sort();
+            modelCount = allModels.length;
+            configuredModel = settingsResp.model_name || 'qwen3.5:9b';
+        } catch { /* keep defaults */ }
+
+        const runningModels = runningData.models || [];
+        if (runningModels.length > 0) {
+            const totalVram = runningModels.reduce((sum, m) => sum + (m.vram_bytes || 0), 0);
+            const totalVramGB = (totalVram / 1073741824).toFixed(1);
+            vramHtml = `<div class="doc-vram-bar">${progressBar(parseFloat(totalVramGB), 12.0, { label: 'GPU Memory', suffix: 'GB' })}</div>`;
+        }
     }
 
-    // Try-it summarize box
-    const tryItHtml = isUp ? `<div class="doc-try-it">
-        <textarea id="doc-summarize-input" class="doc-try-it__textarea" rows="6"
-            placeholder="Paste text here to summarize... (articles, meeting notes, documentation, code comments)"></textarea>
-        <div class="doc-try-it__actions">
-            <span class="doc-try-it__hint">Tip: paste an article, meeting notes, or any long text</span>
-            <button class="btn btn--primary btn--sm" onclick="tryDocSummarize()" id="doc-summarize-btn">Summarize</button>
-        </div>
-        <div id="doc-summarize-result" class="doc-try-it__result"></div>
-    </div>` : `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">
-        Ollama is offline. Start Ollama to use document summarization.
-    </div>`;
+    // File format badges
+    const formats = [
+        { ext: 'PDF', icon: '[PDF]', color: '#ef4444' },
+        { ext: 'Word', icon: '[DOC]', color: '#3b82f6' },
+        { ext: 'Excel', icon: '[XLS]', color: '#22c55e' },
+        { ext: 'Images', icon: '[IMG]', color: '#a855f7' },
+        { ext: 'Video', icon: '[VID]', color: '#f59e0b' },
+        { ext: 'HTML', icon: '[HTM]', color: '#06b6d4' },
+        { ext: 'CSV', icon: '[CSV]', color: '#64748b' },
+        { ext: 'Code', icon: '[</>]', color: '#ec4899' },
+        { ext: 'JSON', icon: '[{ }]', color: '#8b5cf6' },
+        { ext: 'Text', icon: '[TXT]', color: '#94a3b8' },
+    ];
+    const formatBadgesHtml = formats.map(f =>
+        `<span class="doc-format-badge" style="--badge-color:${f.color}"><span class="doc-format-badge__icon">${f.icon}</span>${f.ext}</span>`
+    ).join('');
+
+    // Offline banner
+    const offlineHtml = !isUp ? `<div class="doc-offline-banner">
+        <strong>[!] Ollama is offline</strong>
+        <p>Start Ollama to enable document processing. File extraction still works, but AI summarization requires a running model.</p>
+    </div>` : '';
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
+        ${offlineHtml}
         ${statRow(
             statCard('Engine', isUp ? 'Ollama' : 'Offline', { color: isUp ? 'success' : 'error' }) +
-            statCard('Model', modelInfo || '--') +
-            statCard('Models Available', modelCount, { subtitle: 'installed' })
+            `<div class="stat-card">
+                <div class="stat-card__label">Model</div>
+                <select id="doc-model-select" class="doc-model-select" ${!isUp ? 'disabled' : ''}>
+                    ${allModels.length ? allModels.map(m =>
+                        `<option value="${escapeHtml(m)}" ${m === configuredModel ? 'selected' : ''}>${escapeHtml(m)}</option>`
+                    ).join('') : '<option value="">No models</option>'}
+                </select>
+                <div class="stat-card__subtitle">vision + text</div>
+            </div>` +
+            statCard('Models', modelCount, { subtitle: 'installed' })
         )}
-        ${configSectionFull('Try It -- Summarize Text', tryItHtml)}
-        ${configSection('Capabilities',
-            configCard('Summarization', 'Compress PDFs and long documents to key points') +
-            configCard('Code Preservation', 'Keeps code blocks intact during compression') +
-            configCard('Format', 'Works with PDF, text, and markdown files')
-        )}
+        ${vramHtml}
+
+        <div class="doc-processor-main">
+            <!-- Drop zone -->
+            <div class="doc-dropzone" id="doc-dropzone"
+                ondragover="event.preventDefault(); this.classList.add('doc-dropzone--hover')"
+                ondragleave="this.classList.remove('doc-dropzone--hover')"
+                ondrop="_handleDocDrop(event)">
+                <div class="doc-dropzone__content">
+                    <div class="doc-dropzone__icon">[^]</div>
+                    <div class="doc-dropzone__text">
+                        <strong>Drop any file here</strong>
+                        <p>or <label class="doc-dropzone__browse" for="doc-file-input">browse files</label></p>
+                    </div>
+                    <div class="doc-dropzone__formats">${formatBadgesHtml}</div>
+                </div>
+                <input type="file" id="doc-file-input" style="display:none"
+                    accept=".pdf,.docx,.xlsx,.xls,.html,.htm,.csv,.json,.md,.txt,.log,.py,.js,.ts,.css,.yaml,.yml,.xml,.sql,.png,.jpg,.jpeg,.gif,.bmp,.webp,.tiff,.mp4,.avi,.mov,.mkv,.webm"
+                    onchange="_handleDocFileSelect(this)">
+            </div>
+
+            <!-- Or paste text -->
+            <div class="doc-text-input">
+                <div class="doc-text-input__header">
+                    <span>Or paste text directly</span>
+                </div>
+                <textarea id="doc-summarize-input" class="doc-try-it__textarea" rows="4"
+                    placeholder="Paste articles, meeting notes, code, documentation..."></textarea>
+            </div>
+
+            <!-- Mode selector -->
+            <div class="doc-controls">
+                <div class="doc-mode-selector">
+                    <label class="doc-mode-option">
+                        <input type="radio" name="doc-mode" value="summary" checked> Summary
+                    </label>
+                    <label class="doc-mode-option">
+                        <input type="radio" name="doc-mode" value="outline"> Outline
+                    </label>
+                    <label class="doc-mode-option">
+                        <input type="radio" name="doc-mode" value="extract_key_points"> Key Points
+                    </label>
+                </div>
+                <button class="btn btn--primary" onclick="_processDocInput()" id="doc-process-btn"${!isUp ? ' disabled' : ''}>
+                    Process
+                </button>
+            </div>
+
+            <!-- Results area -->
+            <div id="doc-result-area"></div>
+        </div>
     </div>`;
     showToolHelpChat(tid);
 }
 
-async function tryDocSummarize() {
-    const input = document.getElementById('doc-summarize-input');
-    const result = document.getElementById('doc-summarize-result');
-    const btn = document.getElementById('doc-summarize-btn');
-    if (!input || !input.value.trim()) return;
+// ── Document processor helpers ──
 
-    const text = input.value.trim();
-    if (text.length < 50) {
-        result.innerHTML = '<p style="color:var(--color-warning);font-size:var(--font-size-sm)">Text is too short. Paste at least a few sentences to summarize.</p>';
-        return;
+function _getDocMode() {
+    const checked = document.querySelector('input[name="doc-mode"]:checked');
+    return checked ? checked.value : 'summary';
+}
+
+function _handleDocDrop(event) {
+    event.preventDefault();
+    const zone = document.getElementById('doc-dropzone');
+    if (zone) zone.classList.remove('doc-dropzone--hover');
+
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        _processDocFile(files[0]);
     }
+}
 
-    btn.disabled = true;
-    btn.textContent = 'Summarizing...';
-    result.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Processing with local AI model...</p>';
+function _handleDocFileSelect(input) {
+    if (input.files.length > 0) {
+        _processDocFile(input.files[0]);
+    }
+}
+
+async function _processDocInput() {
+    // Check if there's a file queued or text pasted
+    const textInput = document.getElementById('doc-summarize-input');
+    if (textInput && textInput.value.trim().length > 30) {
+        _processDocText(textInput.value.trim());
+    } else {
+        // Trigger file browser
+        const fileInput = document.getElementById('doc-file-input');
+        if (fileInput) fileInput.click();
+    }
+}
+
+async function _processDocFile(file) {
+    const resultArea = document.getElementById('doc-result-area');
+    const btn = document.getElementById('doc-process-btn');
+    if (!resultArea) return;
+
+    const sizeMB = (file.size / 1048576).toFixed(1);
+    const mode = _getDocMode();
+
+    // Determine file type icon
+    const ext = file.name.split('.').pop().toLowerCase();
+    let typeLabel = 'File';
+    if (['pdf'].includes(ext)) typeLabel = 'PDF';
+    else if (['docx', 'doc'].includes(ext)) typeLabel = 'Word';
+    else if (['xlsx', 'xls'].includes(ext)) typeLabel = 'Excel';
+    else if (['html', 'htm'].includes(ext)) typeLabel = 'HTML';
+    else if (['csv'].includes(ext)) typeLabel = 'CSV';
+    else if (['json'].includes(ext)) typeLabel = 'JSON';
+    else if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'tiff', 'tif'].includes(ext)) typeLabel = 'Image';
+    else if (['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv'].includes(ext)) typeLabel = 'Video';
+    else typeLabel = ext.toUpperCase();
+
+    // Show processing state
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+    resultArea.innerHTML = `<div class="doc-processing">
+        <div class="doc-processing__spinner"></div>
+        <div class="doc-processing__info">
+            <strong>Processing: ${escapeHtml(file.name)}</strong>
+            <span>${typeLabel} -- ${sizeMB} MB -- mode: ${mode}</span>
+            <span class="doc-processing__status" id="doc-processing-status">Uploading and extracting content...</span>
+        </div>
+    </div>`;
+
+    // Upload file
+    const modelSelect = document.getElementById('doc-model-select');
+    const selectedModel = modelSelect ? modelSelect.value : '';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('mode', mode);
+    if (selectedModel) formData.append('model', selectedModel);
+
+    try {
+        const resp = await fetch('/api/doc-processor/process', {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await resp.json();
+
+        if (data.ok) {
+            _renderDocResult(data);
+        } else {
+            resultArea.innerHTML = `<div class="doc-error">
+                <strong>[X] Processing failed</strong>
+                <p>${escapeHtml(data.error || 'Unknown error')}</p>
+            </div>`;
+        }
+    } catch (err) {
+        resultArea.innerHTML = `<div class="doc-error">
+            <strong>[X] Upload failed</strong>
+            <p>${escapeHtml(err.message)}</p>
+        </div>`;
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+    }
+}
+
+async function _processDocText(text) {
+    const resultArea = document.getElementById('doc-result-area');
+    const btn = document.getElementById('doc-process-btn');
+    if (!resultArea) return;
+
+    const mode = _getDocMode();
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+    resultArea.innerHTML = `<div class="doc-processing">
+        <div class="doc-processing__spinner"></div>
+        <div class="doc-processing__info">
+            <strong>Processing pasted text</strong>
+            <span>${text.length.toLocaleString()} characters -- mode: ${mode}</span>
+            <span class="doc-processing__status">Analyzing with local AI model...</span>
+        </div>
+    </div>`;
 
     try {
         const resp = await fetch('/api/doc-processor/summarize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text }),
+            body: JSON.stringify({ text, mode, model: (document.getElementById('doc-model-select') || {}).value || '' }),
         });
         const data = await resp.json();
-        if (data.ok && data.summary) {
-            // Render the summary with markdown-ish formatting
-            const lines = data.summary.split('\n').map(l => escapeHtml(l)).join('<br>');
-            result.innerHTML = `<div class="doc-try-it__summary">
-                <div class="doc-try-it__summary-header">
-                    <strong>Summary</strong>
-                    <span style="color:var(--color-text-muted);font-size:var(--font-size-xs)">via ${escapeHtml(data.model || 'local model')}</span>
-                </div>
-                <div class="doc-try-it__summary-body">${lines}</div>
-            </div>`;
+
+        if (data.ok) {
+            _renderDocResult(data);
         } else {
-            result.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">${escapeHtml(data.error || 'Summarization failed')}</p>`;
+            resultArea.innerHTML = `<div class="doc-error">
+                <strong>[X] Processing failed</strong>
+                <p>${escapeHtml(data.error || 'Unknown error')}</p>
+            </div>`;
         }
     } catch (err) {
-        result.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Failed: ${escapeHtml(err.message)}</p>`;
+        resultArea.innerHTML = `<div class="doc-error">
+            <strong>[X] Processing failed</strong>
+            <p>${escapeHtml(err.message)}</p>
+        </div>`;
     } finally {
-        btn.disabled = false;
-        btn.textContent = 'Summarize';
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
     }
+}
+
+function _renderDocResult(data) {
+    const resultArea = document.getElementById('doc-result-area');
+    if (!resultArea) return;
+
+    const stats = data.stats || {};
+    const mode = data.mode || 'summary';
+    const modeLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points' };
+
+    // Stats bar
+    let statsHtml = '<div class="doc-result-stats">';
+    if (data.filename) statsHtml += `<span class="doc-result-stat"><strong>File:</strong> ${escapeHtml(data.filename)}</span>`;
+    if (data.file_type) statsHtml += `<span class="doc-result-stat"><strong>Type:</strong> ${escapeHtml(data.file_type)}</span>`;
+    if (stats.pages) statsHtml += `<span class="doc-result-stat"><strong>Pages:</strong> ${stats.pages}</span>`;
+    if (stats.input_words) statsHtml += `<span class="doc-result-stat"><strong>Input:</strong> ${stats.input_words.toLocaleString()} words</span>`;
+    if (stats.output_words) statsHtml += `<span class="doc-result-stat"><strong>Output:</strong> ${stats.output_words.toLocaleString()} words</span>`;
+    if (stats.compression_pct) statsHtml += `<span class="doc-result-stat doc-result-stat--highlight"><strong>Compression:</strong> ${stats.compression_pct}%</span>`;
+    if (stats.frames_extracted) statsHtml += `<span class="doc-result-stat"><strong>Frames:</strong> ${stats.frames_extracted} extracted</span>`;
+    if (stats.file_size) statsHtml += `<span class="doc-result-stat"><strong>Size:</strong> ${(stats.file_size / 1024).toFixed(0)} KB</span>`;
+    if (stats.elapsed_seconds) statsHtml += `<span class="doc-result-stat"><strong>Time:</strong> ${stats.elapsed_seconds}s</span>`;
+    if (data.model) statsHtml += `<span class="doc-result-stat"><strong>Model:</strong> ${escapeHtml(data.model)}</span>`;
+    statsHtml += '</div>';
+
+    // Format the summary text with basic markdown rendering
+    const summaryLines = (data.summary || '').split('\n').map(line => {
+        let l = escapeHtml(line);
+        // Bold: **text**
+        l = l.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // Bullet points
+        if (l.match(/^\s*[-*]\s/)) l = '<li>' + l.replace(/^\s*[-*]\s/, '') + '</li>';
+        // Headings
+        if (l.match(/^#{1,3}\s/)) {
+            const level = l.match(/^(#+)/)[1].length;
+            l = `<h${level + 2} style="margin:var(--space-2) 0 var(--space-1)">${l.replace(/^#+\s/, '')}</h${level + 2}>`;
+        }
+        return l;
+    }).join('\n');
+
+    // Wrap consecutive <li> in <ul>
+    const formatted = summaryLines.replace(/(<li>.*?<\/li>\n?)+/gs, match => `<ul style="margin:var(--space-1) 0;padding-left:var(--space-4)">${match}</ul>`);
+
+    // Extracted text preview (for documents)
+    let previewHtml = '';
+    if (data.extracted_text_preview) {
+        previewHtml = `<div class="doc-result-preview">
+            <div class="doc-result-preview__header" onclick="this.parentElement.classList.toggle('doc-result-preview--open')">
+                <span>Extracted Text Preview</span>
+                <span class="doc-result-preview__toggle">[+]</span>
+            </div>
+            <div class="doc-result-preview__body"><pre>${escapeHtml(data.extracted_text_preview)}</pre></div>
+        </div>`;
+    }
+
+    resultArea.innerHTML = `<div class="doc-result">
+        <div class="doc-result__header">
+            <span class="doc-result__mode-badge">${modeLabels[mode] || mode}</span>
+            <button class="btn btn--sm" onclick="navigator.clipboard.writeText(document.getElementById('doc-result-text').innerText);showToast('Copied to clipboard','success')">Copy</button>
+        </div>
+        ${statsHtml}
+        <div class="doc-result__body" id="doc-result-text">${formatted}</div>
+        ${previewHtml}
+    </div>`;
 }
 
 /* ── System Health Monitor ── */
@@ -2359,6 +2786,14 @@ function renderChannels() {
     }).join('');
 }
 
+function _extractAgentIdFromDm(channelId) {
+    // dm-python_developer -> python_developer
+    // dm-python_developer-2 -> python_developer
+    const stripped = channelId.replace(/^dm-/, '');
+    // Remove trailing -N suffix (number only)
+    return stripped.replace(/-\d+$/, '');
+}
+
 function renderAgentChats() {
     if (!dom.agentChatList) return;
 
@@ -2369,19 +2804,51 @@ function renderAgentChats() {
         return;
     }
 
-    dom.agentChatList.innerHTML = dmChannels.map(ch => {
-        const isActive = ch.id === state.currentChannel;
-        // Extract agent name from dm-agent_id, format nicely
-        const agentId = ch.id.replace(/^dm-/, '');
+    // Group DM channels by agent
+    const byAgent = {};
+    for (const ch of dmChannels) {
+        const agentId = _extractAgentIdFromDm(ch.id);
+        if (!byAgent[agentId]) byAgent[agentId] = [];
+        byAgent[agentId].push(ch);
+    }
+
+    let html = '';
+    for (const [agentId, channels] of Object.entries(byAgent)) {
         const profile = state.agentProfiles[agentId];
         const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
-        return `
-            <li class="channel-item ${isActive ? 'active' : ''}"
-                data-channel="${escapeHtml(ch.id)}"
-                onclick="switchChannel('${escapeHtml(ch.id)}')">
-                <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
-            </li>`;
-    }).join('');
+
+        if (channels.length === 1) {
+            // Single chat -- render flat like before
+            const ch = channels[0];
+            const isActive = ch.id === state.currentChannel;
+            html += `
+                <li class="channel-item ${isActive ? 'active' : ''}"
+                    data-channel="${escapeHtml(ch.id)}"
+                    onclick="switchChannel('${escapeHtml(ch.id)}')">
+                    <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
+                    <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+                </li>`;
+        } else {
+            // Multiple chats -- render as a group
+            for (let i = 0; i < channels.length; i++) {
+                const ch = channels[i];
+                const isActive = ch.id === state.currentChannel;
+                const chatNum = i + 1;
+                const label = chatNum === channels.length
+                    ? `@ ${displayName} (latest)`
+                    : `@ ${displayName} #${chatNum}`;
+                html += `
+                    <li class="channel-item ${isActive ? 'active' : ''}"
+                        data-channel="${escapeHtml(ch.id)}"
+                        onclick="switchChannel('${escapeHtml(ch.id)}')">
+                        <span class="channel-item__name">${escapeHtml(label)}</span>
+                        <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+                    </li>`;
+            }
+        }
+    }
+
+    dom.agentChatList.innerHTML = html;
 }
 
 // =====================================================================
@@ -3158,8 +3625,11 @@ function renderAgentCard(agent) {
            </div>`
         : '';
 
+    const aid = escapeHtml(agent.agent_id);
+    const hasExistingChat = state.channels.some(ch => ch.id === `dm-${agent.agent_id}` || ch.id.startsWith(`dm-${agent.agent_id}-`));
+
     return `
-    <div class="agent-card" data-agent-id="${escapeHtml(agent.agent_id)}">
+    <div class="agent-card" data-agent-id="${aid}">
         <div class="agent-card__header">
             <h3 class="agent-card__name">${escapeHtml(agent.name || agent.agent_id)}</h3>
             <div class="agent-card__status">
@@ -3172,8 +3642,9 @@ function renderAgentCard(agent) {
         <div class="agent-card__footer">
             <span class="agent-card__stat">${agent.tasks_completed || 0} tasks completed</span>
             <div class="agent-card__actions">
-                <button class="btn btn--small btn--secondary" onclick="openChatForAgent('${escapeHtml(agent.agent_id)}')">Chat</button>
-                <button class="btn btn--small btn--secondary" onclick="openAssignForAgent('${escapeHtml(agent.agent_id)}')">Assign</button>
+                <button class="btn btn--small btn--secondary${hasExistingChat ? '' : ' btn--disabled'}" onclick="openChatForAgent('${aid}')"${hasExistingChat ? '' : ' disabled'}>Chat</button>
+                <button class="btn btn--small btn--primary" onclick="openNewChatForAgent('${aid}')">New Chat</button>
+                <button class="btn btn--small btn--secondary" onclick="openAssignForAgent('${aid}')">Assign</button>
             </div>
         </div>
     </div>`;
@@ -3585,6 +4056,17 @@ function connectSocket() {
         }
     });
 
+    // -- Message deletion broadcast --
+    sock.on('message_deleted', (data) => {
+        const msgs = state.messages[data.channel_id];
+        if (msgs) {
+            state.messages[data.channel_id] = msgs.filter(m => m.id !== data.message_id);
+            if (data.channel_id === state.currentChannel) {
+                renderMessages();
+            }
+        }
+    });
+
     // -- Typing indicator for agent responses --
     sock.on('user_typing', (data) => {
         // Tool-help mini-chat typing indicator
@@ -3657,25 +4139,57 @@ function insertMentionTag(agentId) {
     dom.messageInput.focus();
 }
 
+function _getDmChannelsForAgent(agentId) {
+    // Find all DM channels for this agent: dm-{agentId} or dm-{agentId}-{n}
+    return state.channels.filter(ch =>
+        ch.id === `dm-${agentId}` || ch.id.startsWith(`dm-${agentId}-`)
+    );
+}
+
 function openChatForAgent(agentId) {
-    // Navigate to (or create) a dedicated individual channel for this agent
-    const channelId = `dm-${agentId}`;
+    // Continue the most recent DM channel for this agent
+    const dmChannels = _getDmChannelsForAgent(agentId);
+    if (dmChannels.length === 0) {
+        // No existing chat -- start a new one instead
+        openNewChatForAgent(agentId);
+        return;
+    }
 
-    // Check if channel already exists in local state
-    const exists = state.channels.some((ch) => ch.id === channelId);
+    // Pick the most recently created channel (last in the list, or highest suffix)
+    const channelId = dmChannels[dmChannels.length - 1].id;
 
-    // Auto-add both user and the target agent as members immediately
     addChannelMember(channelId, 'user');
     addChannelMember(channelId, agentId);
+    switchChannel(channelId);
+}
 
-    // switchChannel will join via Socket.IO (auto-creates on server if needed)
+function openNewChatForAgent(agentId) {
+    // Create a fresh DM channel for this agent
+    const existing = _getDmChannelsForAgent(agentId);
+
+    let channelId;
+    if (existing.length === 0) {
+        // First chat: use simple dm-{agentId}
+        channelId = `dm-${agentId}`;
+    } else {
+        // Find highest suffix number, or 1 if only the base channel exists
+        let maxNum = 1;
+        for (const ch of existing) {
+            const match = ch.id.match(/^dm-.*-(\d+)$/);
+            if (match) {
+                maxNum = Math.max(maxNum, parseInt(match[1], 10));
+            }
+        }
+        channelId = `dm-${agentId}-${maxNum + 1}`;
+    }
+
+    addChannelMember(channelId, 'user');
+    addChannelMember(channelId, agentId);
     switchChannel(channelId);
 
-    if (!exists) {
-        // Refresh channel list so sidebar picks it up
-        if (state.socket && state.connected) {
-            state.socket.emit('get_channels', {});
-        }
+    // Refresh channel list so sidebar picks it up
+    if (state.socket && state.connected) {
+        state.socket.emit('get_channels', {});
     }
 }
 
@@ -4477,6 +4991,12 @@ function init() {
                 sender: 'user',
                 content: content,
             };
+
+            // Attach thread_id if replying to a message
+            if (state.replyingTo) {
+                outgoing.thread_id = state.replyingTo;
+            }
+
             state.socket.emit('send_message', outgoing);
 
             // Immediately add sender + mentioned agents as members
@@ -4487,6 +5007,8 @@ function init() {
                 handleRoundtableSetupMessage(content);
             }
 
+            // Clear reply state
+            cancelReply();
             clearInput();
             closeMentionDropdown();
         });

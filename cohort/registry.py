@@ -121,6 +121,19 @@ class JsonFileStorage:
 
         return filtered[-limit:]
 
+    def delete_message(
+        self,
+        message_id: str,
+        channel_id: str | None = None,
+    ) -> bool:
+        messages: list[dict] = self._read_json(self._messages_path, [])
+        original_len = len(messages)
+        messages = [m for m in messages if m.get("id") != message_id]
+        if len(messages) < original_len:
+            self._write_json(self._messages_path, messages)
+            return True
+        return False
+
     # -- channels -------------------------------------------------------
 
     def save_channel(self, channel_id: str, metadata: dict) -> None:
