@@ -62,9 +62,14 @@ class AgentStore:
     # =====================================================================
 
     def _ensure_all_loaded(self) -> None:
-        """Scan agents_dir and load all agent configs (lazy, once)."""
+        """Scan agents_dir and load all agent configs (lazy, once).
+
+        Also fetches the agent roster from the remote Gateway (if configured)
+        so that all served agents appear in the Team Dashboard.
+        """
         if self._loaded_all:
             return
+        # 1. Load local agents from disk
         if self._agents_dir and self._agents_dir.is_dir():
             for child in sorted(self._agents_dir.iterdir()):
                 config_path = child / "agent_config.json"
@@ -82,7 +87,48 @@ class AgentStore:
                             logger.warning(
                                 "[!] Failed to load agent %s: %s", agent_id, exc
                             )
+        # 2. Sync from remote Gateway (fetch agents not already local)
+        if self._remote_url:
+            self._sync_from_gateway()
         self._loaded_all = True
+
+    # Cohort's curated agent roster — only these are synced from the Gateway.
+    # setup_guide ships locally (not in Gateway).
+    GATEWAY_AGENTS = frozenset({
+        "coding_orchestrator",
+        "supervisor_agent",
+        "ceo_agent",
+        "python_developer",
+        "javascript_developer",
+        "web_developer",
+        "system_coder",
+        "security_agent",
+        "qa_agent",
+        "database_developer",
+        "code_archaeologist",
+        "hardware_agent",
+        "documentation_agent",
+    })
+
+    def _sync_from_gateway(self) -> None:
+        """Fetch curated agents from the Gateway that aren't already local."""
+        try:
+            import httpx
+        except ImportError:
+            return
+        loaded = 0
+        for agent_id in self.GATEWAY_AGENTS:
+            if agent_id in self._cache:
+                continue
+            try:
+                config = self._load_from_remote(agent_id)
+                if config:
+                    self._cache[agent_id] = config
+                    loaded += 1
+            except Exception as exc:
+                logger.debug("[!] Gateway fetch failed for %s: %s", agent_id, exc)
+        if loaded:
+            logger.info("[OK] Gateway sync: loaded %d agents", loaded)
 
     def load_agent(self, agent_id: str) -> AgentConfig | None:
         """Load a single agent by ID.
@@ -109,7 +155,7 @@ class AgentStore:
                 except Exception as exc:
                     logger.warning("[!] Failed to load agent %s: %s", agent_id, exc)
         # Remote fallback: fetch from Agent API if configured
-        if self._remote_url and self._api_key:
+        if self._remote_url:
             config = self._load_from_remote(agent_id)
             if config:
                 self._cache[agent_id] = config
@@ -156,6 +202,10 @@ class AgentStore:
             config_dict = data.get("config", {})
             prompt_text = data.get("prompt")
             remote_facts = data.get("recent_facts", [])
+
+            # Inject agent_id from the top-level response if missing
+            if "agent_id" not in config_dict:
+                config_dict["agent_id"] = data.get("agent_id", agent_id)
 
             # Parse into AgentConfig
             config = AgentConfig.from_dict(config_dict)

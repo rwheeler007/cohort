@@ -1852,6 +1852,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     _chat = ChatManager(storage)
 
     _settings_path = Path(resolved_dir) / "settings.json"
+    saved_settings = _load_settings()
 
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
@@ -1861,8 +1862,14 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
     agents_dir = Path(agents_dir_env) if agents_dir_env else Path(resolved_dir) / "agents"
-    remote_url = os.environ.get("COHORT_AGENTS_API_URL", "")
-    api_key = os.environ.get("COHORT_AGENTS_API_KEY", "")
+    remote_url = (
+        os.environ.get("COHORT_AGENTS_API_URL")
+        or saved_settings.get("agents_api_url", "")
+    )
+    api_key = (
+        os.environ.get("COHORT_AGENTS_API_KEY")
+        or saved_settings.get("agents_api_key", "")
+    )
     _agent_store = AgentStore(
         agents_dir=agents_dir if agents_dir.is_dir() else None,
         fallback_registry=_LEGACY_REGISTRY,
@@ -1896,8 +1903,6 @@ def create_app(data_dir: str = "data") -> Starlette:
     # -- Agent router (@mention -> agent response pipeline) -------------
     from cohort.agent_router import setup_agent_router, apply_settings as _apply_router_settings
 
-    # Load saved settings, fall back to defaults
-    saved_settings = _load_settings()
     agents_root = saved_settings.get("agents_root") or os.environ.get(
         "COHORT_AGENTS_ROOT", "",
     )

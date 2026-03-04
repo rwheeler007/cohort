@@ -29,7 +29,7 @@ class OllamaClient:
     def __init__(
         self,
         base_url: str = "http://127.0.0.1:11434",
-        timeout: int = 120,
+        timeout: int = 180,
         health_cache_seconds: int = 60,
     ):
         """Initialize Ollama client.
@@ -128,9 +128,10 @@ class OllamaClient:
                 "model": model,
                 "prompt": prompt,
                 "stream": False,
+                "think": False,  # Disable thinking to avoid long internal chains
                 "options": {
                     "temperature": temperature,
-                    "keep_alive": "0",  # Immediate unload after generation
+                    "keep_alive": "5m",  # Keep model warm for follow-up requests
                     **(options or {}),
                 },
             }
