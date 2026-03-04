@@ -53,6 +53,7 @@ logger = logging.getLogger(__name__)
 _chat: ChatManager | None = None
 _data_layer: Any = None
 _agent_store: AgentStore | None = None
+_work_queue: Any = None  # WorkQueue instance, set in create_app()
 
 # Paths
 _PACKAGE_DIR = Path(__file__).parent
@@ -425,6 +426,131 @@ async def update_task(request: Request) -> JSONResponse:
         pass
 
     return JSONResponse({"success": True, "task": task})
+
+
+# =====================================================================
+# Work Queue endpoints (sequential execution queue)
+# =====================================================================
+
+async def get_work_queue(request: Request) -> JSONResponse:
+    """GET /api/work-queue -- return sequential work queue items."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    status_filter = request.query_params.get("status")
+    items = _work_queue.list_items(status=status_filter)
+    return JSONResponse({"items": [i.to_dict() for i in items]})
+
+
+async def enqueue_work_item(request: Request) -> JSONResponse:
+    """POST /api/work-queue -- enqueue a new item."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    description = body.get("description")
+    requester = body.get("requester", "anonymous")
+    if not description:
+        return JSONResponse(
+            {"error": "Missing required field: description"}, status_code=400,
+        )
+
+    try:
+        item = _work_queue.enqueue(
+            description=description,
+            requester=requester,
+            priority=body.get("priority", "medium"),
+            agent_id=body.get("agent_id"),
+            depends_on=body.get("depends_on"),
+            metadata=body.get("metadata"),
+        )
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+    _broadcast_work_queue()
+    return JSONResponse({"success": True, "item": item.to_dict()})
+
+
+async def claim_work_item(request: Request) -> JSONResponse:
+    """POST /api/work-queue/claim -- claim the next queued item."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    result = _work_queue.claim_next()
+
+    if "error" in result:
+        return JSONResponse(result, status_code=409)
+
+    _broadcast_work_queue()
+    return JSONResponse({"success": True, **result})
+
+
+async def get_work_item(request: Request) -> JSONResponse:
+    """GET /api/work-queue/{item_id} -- return a single work queue item."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    item_id = request.path_params.get("item_id", "")
+    item = _work_queue.get_item(item_id)
+    if item is None:
+        return JSONResponse({"error": f"Item '{item_id}' not found"}, status_code=404)
+    return JSONResponse({"item": item.to_dict()})
+
+
+async def update_work_item(request: Request) -> JSONResponse:
+    """PATCH /api/work-queue/{item_id} -- update item status."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    item_id = request.path_params.get("item_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    status = body.get("status")
+    result_text = body.get("result")
+
+    if status == "completed":
+        item = _work_queue.complete(item_id, result=result_text)
+    elif status == "failed":
+        item = _work_queue.fail(item_id, reason=result_text)
+    elif status == "cancelled":
+        item = _work_queue.cancel(item_id)
+    else:
+        return JSONResponse(
+            {"error": "Invalid status. Use: completed, failed, or cancelled"},
+            status_code=400,
+        )
+
+    if item is None:
+        return JSONResponse(
+            {"error": f"Item '{item_id}' not found or invalid transition"},
+            status_code=404,
+        )
+
+    _broadcast_work_queue()
+    return JSONResponse({"success": True, "item": item.to_dict()})
+
+
+def _broadcast_work_queue() -> None:
+    """Push updated work queue to all connected dashboard clients."""
+    if _work_queue is None:
+        return
+    try:
+        from cohort.socketio_events import sio
+        items = _work_queue.list_items()
+        asyncio.create_task(
+            sio.emit("cohort:work_queue_update", {
+                "items": [i.to_dict() for i in items],
+            }),
+        )
+    except Exception:
+        pass
 
 
 async def get_agent_registry(request: Request) -> JSONResponse:
@@ -1128,6 +1254,12 @@ async def setup_detect_hardware(request: Request) -> JSONResponse:
     model = get_model_for_vram(hw.vram_mb)
     desc = MODEL_DESCRIPTIONS.get(model, {})
 
+    # Build GPU list for multi-GPU display
+    gpus_list = [
+        {"index": g.index, "name": g.name, "vram_mb": g.vram_mb}
+        for g in hw.gpus
+    ]
+
     # Persist hardware info
     settings = _load_settings()
     settings["hardware_info"] = {
@@ -1135,6 +1267,8 @@ async def setup_detect_hardware(request: Request) -> JSONResponse:
         "vram_mb": hw.vram_mb,
         "cpu_only": hw.cpu_only,
         "platform": hw.platform,
+        "gpus": gpus_list,
+        "total_vram_mb": hw.total_vram_mb,
     }
     settings["model_name"] = model
     _save_settings(settings)
@@ -1147,6 +1281,8 @@ async def setup_detect_hardware(request: Request) -> JSONResponse:
         "recommended_model": model,
         "model_size": desc.get("size", "unknown"),
         "model_summary": desc.get("summary", ""),
+        "gpus": gpus_list,
+        "total_vram_mb": hw.total_vram_mb,
     })
 
 
@@ -1328,6 +1464,108 @@ async def setup_save_config(request: Request) -> JSONResponse:
     _save_settings(settings)
 
     return JSONResponse({"success": True})
+
+
+async def setup_check_mcp(request: Request) -> JSONResponse:
+    """POST /api/setup/check-mcp -- check MCP deps, Ollama, and model availability."""
+    import shutil
+
+    # 1. Check MCP package imports (fastmcp, mcp)
+    deps: dict[str, bool] = {}
+    for pkg in ("fastmcp", "mcp"):
+        try:
+            __import__(pkg)
+            deps[pkg] = True
+        except ImportError:
+            deps[pkg] = False
+
+    all_deps_ok = all(deps.values())
+    missing = [pkg for pkg, ok in deps.items() if not ok]
+
+    # 2. Check Ollama reachability
+    ollama_ok = False
+    try:
+        from cohort.local.ollama import OllamaClient
+        client = OllamaClient(timeout=5)
+        ollama_ok = client.health_check()
+    except Exception:
+        pass
+
+    # 3. Check model availability
+    model_name = ""
+    model_installed = False
+    settings = _load_settings()
+    model_name = settings.get("model_name", "")
+    if ollama_ok and model_name:
+        try:
+            from cohort.local.ollama import OllamaClient
+            client = OllamaClient(timeout=5)
+            models = client.list_models()
+            base = model_name.split(":")[0]
+            model_installed = any(
+                m == model_name or m.startswith(base + ":") for m in models
+            )
+        except Exception:
+            pass
+
+    # 4. Check if MCP config already written
+    cohort_root = Path(__file__).resolve().parent.parent
+    claude_settings_path = cohort_root / ".claude" / "settings.local.json"
+    mcp_configured = False
+    if claude_settings_path.exists():
+        try:
+            existing = json.loads(claude_settings_path.read_text(encoding="utf-8"))
+            mcp_configured = "local_llm" in existing.get("mcpServers", {})
+        except Exception:
+            pass
+
+    return JSONResponse({
+        "deps": deps,
+        "all_deps_ok": all_deps_ok,
+        "missing": missing,
+        "ollama_ok": ollama_ok,
+        "model_name": model_name,
+        "model_installed": model_installed,
+        "mcp_configured": mcp_configured,
+        "platform": __import__("platform").system().lower(),
+    })
+
+
+async def setup_write_mcp_config(request: Request) -> JSONResponse:
+    """POST /api/setup/write-mcp-config -- write MCP server config to .claude/settings.local.json."""
+    mcp_server_config = {
+        "mcpServers": {
+            "local_llm": {
+                "command": "python",
+                "args": ["-m", "cohort.mcp.local_llm_server"],
+            }
+        }
+    }
+
+    cohort_root = Path(__file__).resolve().parent.parent
+    claude_dir = cohort_root / ".claude"
+    settings_path = claude_dir / "settings.local.json"
+
+    try:
+        existing: dict = {}
+        if settings_path.exists():
+            try:
+                existing = json.loads(settings_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                existing = {}
+
+        if "mcpServers" not in existing:
+            existing["mcpServers"] = {}
+        existing["mcpServers"]["local_llm"] = mcp_server_config["mcpServers"]["local_llm"]
+
+        claude_dir.mkdir(parents=True, exist_ok=True)
+        settings_path.write_text(
+            json.dumps(existing, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return JSONResponse({"success": True})
+    except OSError as exc:
+        return JSONResponse({"success": False, "error": str(exc)}, status_code=500)
 
 
 async def setup_detect_claude(request: Request) -> JSONResponse:
@@ -1605,7 +1843,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Directory for JSON file storage.  Defaults to the
         ``COHORT_DATA_DIR`` environment variable, or ``./data``.
     """
-    global _chat, _data_layer, _agent_store  # noqa: PLW0603
+    global _chat, _data_layer, _agent_store, _work_queue  # noqa: PLW0603
 
     global _settings_path  # noqa: PLW0603
 
@@ -1675,6 +1913,13 @@ def create_app(data_dir: str = "data") -> Starlette:
     executor.set_sio(sio)
     setup_task_executor(executor)
 
+    # -- Work Queue (sequential execution queue) ------------------------
+    from cohort.work_queue import WorkQueue
+    from cohort.socketio_events import setup_work_queue
+    _work_queue = WorkQueue(Path(resolved_dir))
+    setup_work_queue(_work_queue)
+    logger.info("[OK] Work queue initialised")
+
     # -- Routes ---------------------------------------------------------
     routes = [
         Route("/", index, methods=["GET"]),
@@ -1703,6 +1948,12 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/tasks", create_task, methods=["POST"]),
         Route("/api/tasks/{task_id}", update_task, methods=["PATCH"]),
         Route("/api/outputs", get_outputs, methods=["GET"]),
+        # Work queue (sequential execution)
+        Route("/api/work-queue", get_work_queue, methods=["GET"]),
+        Route("/api/work-queue", enqueue_work_item, methods=["POST"]),
+        Route("/api/work-queue/claim", claim_work_item, methods=["POST"]),
+        Route("/api/work-queue/{item_id}", get_work_item, methods=["GET"]),
+        Route("/api/work-queue/{item_id}", update_work_item, methods=["PATCH"]),
         # Setup wizard endpoints
         Route("/api/setup/status", setup_status, methods=["GET"]),
         Route("/api/setup/detect", setup_detect_hardware, methods=["POST"]),
@@ -1712,6 +1963,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/topics", setup_get_topics, methods=["GET"]),
         Route("/api/setup/save-config", setup_save_config, methods=["POST"]),
         Route("/api/setup/detect-claude", setup_detect_claude, methods=["POST"]),
+        Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
+        Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
         # Roundtable endpoints
         Route("/api/roundtable/sessions", list_roundtable_sessions, methods=["GET"]),
         Route("/api/roundtable/setup-parse", roundtable_setup_parse, methods=["POST"]),

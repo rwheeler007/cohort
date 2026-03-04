@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "local_llm": {
+      "command": "python",
+      "args": [
+        "-m",
+        "cohort.mcp.local_llm_server"
+      ]
+    }
+  }
+}

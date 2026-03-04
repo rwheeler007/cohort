@@ -106,7 +106,7 @@ FREE_TIER_AGENTS: set[str] = {
 
 # Enterprise-only agents (factory layer -- not visible to free or pro)
 ENTERPRISE_ONLY_AGENTS: set[str] = {
-    "boss_agent",
+    "cohort_orchestrator",
     "supervisor_agent",
 }
 

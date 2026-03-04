@@ -103,14 +103,16 @@ class OllamaClient:
         model: str,
         prompt: str,
         temperature: float = 0.4,
+        system: str | None = None,
         options: dict[str, Any] | None = None,
     ) -> GenerateResult | None:
         """Generate text completion from Ollama model.
 
         Args:
             model: Model name (e.g., "qwen3:8b")
-            prompt: Input text
+            prompt: Input text (user message)
             temperature: Sampling temperature (0.0-1.0)
+            system: Optional system prompt (separate from user prompt)
             options: Additional Ollama options (num_ctx, num_predict, etc.)
 
         Returns:
@@ -122,7 +124,7 @@ class OllamaClient:
             t0 = time.monotonic()
 
             # Build request body
-            body = {
+            body: dict[str, Any] = {
                 "model": model,
                 "prompt": prompt,
                 "stream": False,
@@ -132,6 +134,9 @@ class OllamaClient:
                     **(options or {}),
                 },
             }
+
+            if system:
+                body["system"] = system
 
             req = urllib.request.Request(
                 f"{self.base_url}/api/generate",

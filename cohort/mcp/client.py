@@ -322,6 +322,73 @@ class CohortClient:
             },
         )
 
+    # -- work queue (sequential execution) --------------------------------
+
+    async def get_work_queue(
+        self, status: str | None = None,
+    ) -> list[dict[str, Any]] | None:
+        """GET /api/work-queue -> sequential work queue items."""
+        params: dict[str, Any] = {}
+        if status:
+            params["status"] = status
+        data = await _request(
+            "GET", f"{self.base_url}/api/work-queue", params=params,
+        )
+        if data and "items" in data:
+            return data["items"]
+        return None
+
+    async def enqueue_work_item(
+        self,
+        description: str,
+        requester: str = "claude_code",
+        priority: str = "medium",
+        agent_id: str | None = None,
+        depends_on: list[str] | None = None,
+    ) -> dict[str, Any] | None:
+        """POST /api/work-queue -> enqueue a new item."""
+        body: dict[str, Any] = {
+            "description": description,
+            "requester": requester,
+            "priority": priority,
+        }
+        if agent_id:
+            body["agent_id"] = agent_id
+        if depends_on:
+            body["depends_on"] = depends_on
+        return await _request(
+            "POST", f"{self.base_url}/api/work-queue", json_body=body,
+        )
+
+    async def claim_work_item(self) -> dict[str, Any] | None:
+        """POST /api/work-queue/claim -> claim next queued item."""
+        return await _request(
+            "POST", f"{self.base_url}/api/work-queue/claim",
+        )
+
+    async def update_work_item(
+        self,
+        item_id: str,
+        status: str,
+        result: str | None = None,
+    ) -> dict[str, Any] | None:
+        """PATCH /api/work-queue/{item_id} -> update item status."""
+        body: dict[str, Any] = {"status": status}
+        if result is not None:
+            body["result"] = result
+        return await _request(
+            "PATCH", f"{self.base_url}/api/work-queue/{item_id}", json_body=body,
+        )
+
+    async def get_work_item(self, item_id: str) -> dict[str, Any] | None:
+        """GET /api/work-queue/{item_id} -> single item."""
+        data = await _request(
+            "GET", f"{self.base_url}/api/work-queue/{item_id}",
+        )
+        if data and "item" in data:
+            return data["item"]
+        return None
+
     # -- checklist (file-based) -----------------------------------------
 
     async def read_checklist(self) -> dict[str, Any] | None:

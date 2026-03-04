@@ -63,6 +63,11 @@ class CohortDataLayer:
                     1 for t in self._tasks.values()
                     if t.get("agent_id") == agent_id and t.get("status") == "complete"
                 ),
+                # Display metadata
+                "avatar": config.get("avatar", ""),
+                "nickname": config.get("nickname", ""),
+                "color": config.get("color", "#95A5A6"),
+                "group": config.get("group", "Other"),
             })
 
         return {

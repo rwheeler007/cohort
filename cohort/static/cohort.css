@@ -152,7 +152,7 @@ body {
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--color-border);
-    height: 100vh;
+    height: 100%;
 }
 
 .sidebar__header {
@@ -357,7 +357,8 @@ body {
 .main {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 0;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -2816,7 +2817,7 @@ textarea.form-input {
     }
 }
 
-/* Tighter step indicators for 6 steps on narrow screens */
+/* Tighter step indicators for 7 steps on narrow screens */
 @media (max-width: 680px) {
     .setup-step__label {
         display: none;
@@ -2827,11 +2828,31 @@ textarea.form-input {
     }
 }
 
+/* Code block in setup wizard (MCP config snippet) */
+.setup-wizard__code-block {
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0;
+}
+
 /* =============================================================================
    Tool Dashboard Panel
    ============================================================================= */
 
 .panel--tool {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-panel-scroll {
+    overflow-y: auto;
     padding: var(--space-4);
 }
 
@@ -3135,17 +3156,17 @@ select.tool-config-card__input option {
     background: white;
 }
 
-/* Tool help chat panel */
+/* Tool help chat — margin-top: auto pins it to the bottom of the flex parent */
 .tool-help-chat {
-    border-top: 1px solid var(--color-border);
-    margin-top: var(--space-4);
+    margin-top: auto;
+    border-top: 2px solid var(--color-border);
 }
 
 .tool-help-chat__toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-3);
+    padding: var(--space-2) var(--space-3);
     cursor: pointer;
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
@@ -3167,8 +3188,6 @@ select.tool-config-card__input option {
 
 .tool-help-chat__body {
     border-top: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
 }
 
 .tool-help-chat__messages {
@@ -3177,6 +3196,7 @@ select.tool-config-card__input option {
     padding: var(--space-3);
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: var(--space-3);
 }
 

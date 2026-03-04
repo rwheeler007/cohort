@@ -14,6 +14,7 @@ const state = {
     agents: [],
     tasks: [],
     outputs: [],
+    workQueue: [],
     filter: 'all',
     selectedVerdict: null,
     socket: null,
@@ -65,6 +66,7 @@ function initDom() {
         filterSelect: $('#filter-select'),
         agentGrid: $('#agent-grid'),
         taskList: $('#task-list'),
+        workQueueList: $('#work-queue-list'),
         outputList: $('#output-list'),
         teamBadge: $('#team-badge'),
         chatBadge: $('#chat-badge'),
@@ -1065,6 +1067,7 @@ async function saveConfigCard(btn) {
 
 let _toolHelpChannel = null;
 let _toolHelpJoined = false;
+let _toolHelpContextSent = false;
 
 function showToolHelpChat(toolId) {
     const el = document.getElementById('tool-help-chat');
@@ -1072,12 +1075,34 @@ function showToolHelpChat(toolId) {
         el.style.display = '';
         _toolHelpChannel = `tool-help-${toolId}`;
         _toolHelpJoined = false;
+        _toolHelpContextSent = false;
         // Collapse the body on tool switch
         const body = document.getElementById('tool-help-body');
         if (body) body.style.display = 'none';
         const arrow = document.getElementById('tool-help-arrow');
-        if (arrow) arrow.textContent = '[v]';
+        if (arrow) arrow.textContent = '[^]';
     }
+}
+
+function _joinToolHelpChannel() {
+    // Join channel and bind input on first activation
+    if (_toolHelpJoined || !_toolHelpChannel) return;
+    _toolHelpJoined = true;
+    if (state.socket && state.connected) {
+        state.socket.emit('join_channel', { channel_id: _toolHelpChannel });
+    }
+    // Bind Enter key on input
+    const helpInput = document.getElementById('tool-help-input');
+    if (helpInput && !helpInput._toolHelpBound) {
+        helpInput._toolHelpBound = true;
+        helpInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendToolHelpMessage();
+            }
+        });
+    }
+    renderToolHelpMessages();
 }
 
 function toggleToolHelpChat() {
@@ -1086,38 +1111,10 @@ function toggleToolHelpChat() {
     if (!body) return;
     const opening = body.style.display === 'none';
     body.style.display = opening ? '' : 'none';
-    if (arrow) arrow.textContent = opening ? '[^]' : '[v]';
+    if (arrow) arrow.textContent = opening ? '[v]' : '[^]';
 
-    // Join channel on first open
-    if (opening && !_toolHelpJoined && _toolHelpChannel) {
-        _toolHelpJoined = true;
-        if (state.socket && state.connected) {
-            state.socket.emit('join_channel', { channel_id: _toolHelpChannel });
-
-            // Send context injection so setup_guide knows which tool we're on
-            const tool = (state.tools || []).find(t => t.id === state.currentTool);
-            if (tool) {
-                const configSummary = _buildToolConfigSummary(tool);
-                state.socket.emit('send_message', {
-                    channel_id: _toolHelpChannel,
-                    sender: 'system',
-                    content: `@setup_guide The user is viewing the **${tool.name}** configuration panel. ${configSummary}Help them configure this tool.`,
-                });
-            }
-        }
-        // Bind Enter key on input
-        const helpInput = document.getElementById('tool-help-input');
-        if (helpInput && !helpInput._toolHelpBound) {
-            helpInput._toolHelpBound = true;
-            helpInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendToolHelpMessage();
-                }
-            });
-        }
-        // Render existing messages if we have them
-        renderToolHelpMessages();
+    if (opening) {
+        _joinToolHelpChannel();
     }
 }
 
@@ -1131,7 +1128,25 @@ function sendToolHelpMessage() {
         return;
     }
 
-    // Auto-mention setup_guide
+    // Ensure channel is joined
+    _joinToolHelpChannel();
+
+    // On first message in this tool session, inject tool context so the agent
+    // knows which tool the user is configuring
+    if (!_toolHelpContextSent) {
+        _toolHelpContextSent = true;
+        const tool = (state.tools || []).find(t => t.id === state.currentTool);
+        if (tool) {
+            const configSummary = _buildToolConfigSummary(tool);
+            state.socket.emit('send_message', {
+                channel_id: _toolHelpChannel,
+                sender: 'system',
+                content: `@setup_guide The user is viewing the **${tool.name}** configuration panel. ${configSummary}Help them configure this tool.`,
+            });
+        }
+    }
+
+    // Auto-mention setup_guide so the agent router picks it up
     const fullContent = content.includes('@setup_guide') ? content : `@setup_guide ${content}`;
 
     state.socket.emit('send_message', {
@@ -2469,6 +2484,48 @@ function renderTeam() {
 }
 
 function renderQueue() {
+    renderWorkQueue();
+    renderTaskList();
+    // Badge: queued work items + active tasks
+    const wqCount = state.workQueue.filter((i) => i.status === 'queued' || i.status === 'active').length;
+    const taskCount = state.tasks.filter((t) => t.status !== 'complete').length;
+    dom.queueBadge.textContent = wqCount + taskCount;
+    updatePanelCount();
+}
+
+function renderWorkQueue() {
+    if (!dom.workQueueList) return;
+    const items = state.workQueue.filter((i) => i.status !== 'completed' && i.status !== 'failed' && i.status !== 'cancelled');
+
+    if (items.length === 0) {
+        dom.workQueueList.innerHTML =
+            '<div class="empty-state" id="wq-empty">' +
+            '<p class="empty-state__text">Queue is empty</p>' +
+            '<p class="empty-state__hint">Items execute one at a time in priority order</p>' +
+            '</div>';
+        return;
+    }
+
+    dom.workQueueList.innerHTML = items.map((item, idx) => {
+        const isActive = item.status === 'active';
+        const priorityColor = { critical: '#e74c3c', high: '#e67e22', medium: '#3498db', low: '#95a5a6' }[item.priority] || '#3498db';
+        const statusLabel = isActive ? 'RUNNING' : `#${idx + 1}`;
+        const agentStr = item.agent_id ? ` @${item.agent_id}` : '';
+        const desc = (item.description || '').slice(0, 100);
+        const borderStyle = isActive ? 'border-left: 3px solid #2ecc71; animation: pulse 2s infinite;' : 'border-left: 3px solid ' + priorityColor + ';';
+
+        return '<div class="wq-item" style="' + borderStyle + ' padding: 0.5rem 0.75rem; margin-bottom: 0.4rem; background: var(--card-bg, #1e1e2e); border-radius: 4px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+            '<span style="font-weight: 600; font-size: 0.8rem; color: ' + (isActive ? '#2ecc71' : 'var(--text-secondary, #888)') + ';">' + statusLabel + '</span>' +
+            '<span style="font-size: 0.7rem; color: ' + priorityColor + '; text-transform: uppercase; font-weight: 600;">' + item.priority + '</span>' +
+            '</div>' +
+            '<p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-primary, #ccc);">' + desc + agentStr + '</p>' +
+            '<span style="font-size: 0.7rem; color: var(--text-secondary, #666);">' + item.id + '</span>' +
+            '</div>';
+    }).join('');
+}
+
+function renderTaskList() {
     let tasks = state.tasks;
     if (state.filter !== 'all') {
         tasks = tasks.filter((t) => t.status === state.filter);
@@ -2477,14 +2534,12 @@ function renderQueue() {
     const empty = $('#queue-empty');
     if (tasks.length === 0) {
         dom.taskList.innerHTML = '';
-        const emptyEl = empty || createEmpty('queue-empty', 'No tasks in queue', 'Assign tasks from the Team panel');
+        const emptyEl = empty || createEmpty('queue-empty', 'No tasks assigned', '');
         dom.taskList.appendChild(emptyEl);
         return;
     }
 
     dom.taskList.innerHTML = tasks.map(renderTaskCard).join('');
-    dom.queueBadge.textContent = state.tasks.filter((t) => t.status !== 'complete').length;
-    updatePanelCount();
 }
 
 function renderOutputs() {
@@ -2548,13 +2603,13 @@ function connectSocket() {
         }).catch(() => {});
         showToast('Connected to Cohort', 'success');
 
-        // Auto-show setup wizard on first run
+        // Always init setup wizard (wires re-run button etc.), auto-show on first run
         try {
             const resp = await fetch('/api/setup/status');
             const data = await resp.json();
+            setupWizard.init(data);
             if (!data.setup_completed) {
                 setupWizard.show();
-                setupWizard.init(data);
             }
         } catch (e) { /* setup endpoints not available -- skip */ }
     });
@@ -2607,6 +2662,11 @@ function connectSocket() {
             renderOutputs();
             showToast(`Task completed: ${task.description || task.task_id}`, 'success');
         }
+    });
+
+    sock.on('cohort:work_queue_update', (data) => {
+        state.workQueue = data.items || [];
+        renderQueue();
     });
 
     sock.on('cohort:output_ready', (data) => {
@@ -3781,13 +3841,14 @@ function init() {
 
 const setupWizard = {
     currentStep: 1,
-    totalSteps: 6,
+    totalSteps: 7,
     stepsDone: new Set(),
     hwData: null,
     ollamaData: null,
     topicsData: null,
     selectedTopic: null,
     selectedFeeds: [],
+    mcpData: null,
     claudeData: null,
 
     show() {
@@ -3834,7 +3895,11 @@ const setupWizard = {
         const saveFeedsBtn = $('#setup-save-feeds');
         if (saveFeedsBtn) saveFeedsBtn.onclick = () => this.saveFeeds();
 
-        // Step 6: Claude Code buttons
+        // Step 6: MCP Server buttons
+        const mcpWriteBtn = $('#setup-mcp-write-btn');
+        if (mcpWriteBtn) mcpWriteBtn.onclick = () => this.writeMcpConfig();
+
+        // Step 7: Claude Code buttons
         const claudeTestBtn = $('#setup-claude-test-btn');
         if (claudeTestBtn) claudeTestBtn.onclick = () => this.testClaudeSetup();
 
@@ -3862,8 +3927,10 @@ const setupWizard = {
             this.hwData = statusData.hardware_info;
         }
 
-        // Start step 1 automatically
-        this.runStep1();
+        // Start step 1 automatically (only if wizard is visible)
+        if (!dom.setupWizard.hidden) {
+            this.runStep1();
+        }
     },
 
     goToStep(n) {
@@ -3900,6 +3967,7 @@ const setupWizard = {
             else if (next === 4) this.runStep4Auto();
             else if (next === 5) this.runStep5();
             else if (next === 6) this.runStep6();
+            else if (next === 7) this.runStep7();
         }
     },
 
@@ -3932,13 +4000,29 @@ const setupWizard = {
             html += '<div class="setup-wizard__info-grid">';
             html += `<span class="text-muted">Computer:</span><span>${data.platform === 'windows' ? 'Windows PC' : data.platform === 'darwin' ? 'Mac' : 'Linux'}</span>`;
             if (!data.cpu_only) {
-                html += `<span class="text-muted">Graphics card:</span><span>${data.gpu_name}</span>`;
-                html += `<span class="text-muted">Graphics memory:</span><span>${data.vram_mb.toLocaleString()} MB (${vramGB} GB) -- ${quality}</span>`;
+                const gpus = data.gpus || [];
+                if (gpus.length > 1) {
+                    // Multi-GPU display
+                    html += `<span class="text-muted">Graphics cards:</span><span>${gpus.length} GPUs detected</span>`;
+                    for (const gpu of gpus) {
+                        const gpuVramGB = (gpu.vram_mb / 1024).toFixed(1);
+                        const marker = (gpu.vram_mb === data.vram_mb && gpu.name === data.gpu_name)
+                            ? ' <span class="text-muted" style="font-size:var(--font-size-xs)">[recommendation]</span>' : '';
+                        html += `<span class="text-muted" style="padding-left:var(--space-3)">GPU ${gpu.index}:</span>`
+                            + `<span>${escapeHtml(gpu.name)} -- ${gpu.vram_mb.toLocaleString()} MB (${gpuVramGB} GB)${marker}</span>`;
+                    }
+                    const totalGB = ((data.total_vram_mb || 0) / 1024).toFixed(1);
+                    html += `<span class="text-muted">Total memory:</span><span>${(data.total_vram_mb || 0).toLocaleString()} MB (${totalGB} GB)</span>`;
+                } else {
+                    // Single GPU display
+                    html += `<span class="text-muted">Graphics card:</span><span>${escapeHtml(data.gpu_name)}</span>`;
+                    html += `<span class="text-muted">Graphics memory:</span><span>${data.vram_mb.toLocaleString()} MB (${vramGB} GB) -- ${quality}</span>`;
+                }
             } else {
                 html += `<span class="text-muted">Graphics card:</span><span>CPU-only mode (no dedicated GPU)</span>`;
             }
-            html += `<span class="text-muted">Recommended model:</span><span><strong>${data.recommended_model}</strong> (${data.model_size})</span>`;
-            html += `<span class="text-muted">Description:</span><span>${data.model_summary}</span>`;
+            html += `<span class="text-muted">Recommended model:</span><span><strong>${escapeHtml(data.recommended_model)}</strong> (${escapeHtml(data.model_size)})</span>`;
+            html += `<span class="text-muted">Description:</span><span>${escapeHtml(data.model_summary)}</span>`;
             html += '</div>';
             container.innerHTML = html;
             this.markDone(1);
@@ -4165,8 +4249,121 @@ const setupWizard = {
         }
     },
 
-    // -- Step 6: Claude Code Connection --
+    // -- Step 6: MCP Server Setup --
     async runStep6() {
+        const resultEl = $('#setup-mcp-result');
+        const configEl = $('#setup-mcp-config');
+        resultEl.innerHTML = '<div class="setup-wizard__loading">[*] Checking MCP dependencies...</div>';
+        resultEl.style.display = '';
+        configEl.style.display = 'none';
+
+        try {
+            const resp = await fetch('/api/setup/check-mcp', { method: 'POST' });
+            const data = await resp.json();
+            this.mcpData = data;
+
+            let statusHtml = '';
+            // Dependencies check
+            if (data.all_deps_ok) {
+                statusHtml += '<div class="setup-wizard__status setup-wizard__status--ok">[OK] MCP packages installed (fastmcp, mcp)</div>';
+            } else {
+                statusHtml += '<div class="setup-wizard__status setup-wizard__status--warn">'
+                    + '[!] Missing packages: ' + escapeHtml(data.missing.join(', ')) + '</div>'
+                    + '<p class="text-muted" style="margin-top:var(--space-2)">'
+                    + 'Install them with: <code>pip install cohort[claude]</code></p>';
+            }
+
+            // Ollama check
+            if (data.ollama_ok) {
+                statusHtml += '<div class="setup-wizard__status setup-wizard__status--ok" style="margin-top:var(--space-2)">[OK] Ollama is reachable</div>';
+            } else {
+                statusHtml += '<div class="setup-wizard__status setup-wizard__status--warn" style="margin-top:var(--space-2)">'
+                    + '[!] Ollama not responding -- MCP server needs Ollama running</div>';
+            }
+
+            // Model check
+            if (data.model_name) {
+                if (data.model_installed) {
+                    statusHtml += '<div class="setup-wizard__status setup-wizard__status--ok" style="margin-top:var(--space-2)">'
+                        + '[OK] Model ' + escapeHtml(data.model_name) + ' available for MCP inference</div>';
+                } else {
+                    statusHtml += '<div class="setup-wizard__status setup-wizard__status--warn" style="margin-top:var(--space-2)">'
+                        + '[!] Model ' + escapeHtml(data.model_name) + ' not found -- pull it first</div>';
+                }
+            }
+
+            // Already configured?
+            if (data.mcp_configured) {
+                statusHtml += '<div class="setup-wizard__status setup-wizard__status--ok" style="margin-top:var(--space-2)">'
+                    + '[OK] MCP config already written to .claude/settings.local.json</div>';
+                this.markDone(6);
+            }
+
+            resultEl.innerHTML = statusHtml;
+
+            // Show config snippet + write button if deps are available
+            if (data.all_deps_ok) {
+                const snippetEl = $('#setup-mcp-snippet');
+                const codeEl = $('#setup-mcp-snippet-code');
+                const snippet = JSON.stringify({
+                    mcpServers: {
+                        local_llm: {
+                            command: "python",
+                            args: ["-m", "cohort.mcp.local_llm_server"]
+                        }
+                    }
+                }, null, 2);
+                if (codeEl) codeEl.textContent = snippet;
+                if (snippetEl) snippetEl.style.display = '';
+                configEl.style.display = '';
+
+                // Hide write button if already configured
+                const writeBtn = $('#setup-mcp-write-btn');
+                if (writeBtn && data.mcp_configured) {
+                    writeBtn.textContent = 'Re-write MCP Config';
+                }
+            }
+        } catch (e) {
+            resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">'
+                + '[X] Could not check MCP status.</div>';
+        }
+    },
+
+    async writeMcpConfig() {
+        const writeBtn = $('#setup-mcp-write-btn');
+        if (writeBtn) {
+            writeBtn.disabled = true;
+            writeBtn.textContent = 'Writing...';
+        }
+
+        try {
+            const resp = await fetch('/api/setup/write-mcp-config', { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                this.markDone(6);
+                showToast('MCP config written! Claude Code will detect it automatically.', 'success');
+                if (writeBtn) {
+                    writeBtn.textContent = 'Re-write MCP Config';
+                    writeBtn.disabled = false;
+                }
+            } else {
+                showToast(data.error || 'Failed to write MCP config', 'error');
+                if (writeBtn) {
+                    writeBtn.textContent = 'Write MCP Config';
+                    writeBtn.disabled = false;
+                }
+            }
+        } catch (e) {
+            showToast('Failed to write MCP config', 'error');
+            if (writeBtn) {
+                writeBtn.textContent = 'Write MCP Config';
+                writeBtn.disabled = false;
+            }
+        }
+    },
+
+    // -- Step 7: Claude Code Connection --
+    async runStep7() {
         const resultEl = $('#setup-claude-result');
         const configEl = $('#setup-claude-config');
         resultEl.innerHTML = '<div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>';
@@ -4271,7 +4468,7 @@ const setupWizard = {
             });
             const data = await resp.json();
             if (data.success) {
-                this.markDone(6);
+                this.markDone(7);
                 showToast('Claude Code settings saved!', 'success');
             } else {
                 showToast(data.error || 'Failed to save', 'error');

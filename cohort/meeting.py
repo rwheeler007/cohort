@@ -87,8 +87,7 @@ TOPIC_LOOKBACK_MESSAGES: int = 5
 
 _TIER_SCORES: dict[str, float] = {"high": 1.0, "medium": 0.6, "low": 0.2}
 
-# Per-agent scoring metadata defaults.  These are the built-in BOSS
-# ecosystem values.  Deployers override them by adding
+# Per-agent scoring metadata defaults.  Deployers override them by adding
 # ``complementary_agents``, ``data_sources``, and/or ``phase_roles``
 # to each agent's config dict (e.g. in agents.json).
 _DEFAULT_SCORING_METADATA: dict[str, dict[str, Any]] = {
@@ -107,7 +106,7 @@ _DEFAULT_SCORING_METADATA: dict[str, dict[str, Any]] = {
         "data_sources": [],
         "phase_roles": {"EXECUTE": "high", "DISCOVER": "low"},
     },
-    "boss_agent": {
+    "cohort_orchestrator": {
         "complementary_agents": ["supervisor_agent", "coding_orchestrator"],
         "data_sources": [
             "workflow_sessions", "delegation_logs",
@@ -116,7 +115,7 @@ _DEFAULT_SCORING_METADATA: dict[str, dict[str, Any]] = {
         "phase_roles": {"DISCOVER": "high", "PLAN": "high", "VALIDATE": "high"},
     },
     "supervisor_agent": {
-        "complementary_agents": ["python_developer", "boss_agent"],
+        "complementary_agents": ["python_developer", "cohort_orchestrator"],
         "data_sources": [
             "memory.json", "session_metrics",
             "monitoring_data", "compliance_reports",
@@ -124,7 +123,7 @@ _DEFAULT_SCORING_METADATA: dict[str, dict[str, Any]] = {
         "phase_roles": {"DISCOVER": "high", "VALIDATE": "high", "EXECUTE": "low"},
     },
     "coding_orchestrator": {
-        "complementary_agents": ["boss_agent"],
+        "complementary_agents": ["cohort_orchestrator"],
         "data_sources": [],
         "phase_roles": {"PLAN": "high"},
     },

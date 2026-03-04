@@ -497,12 +497,12 @@ class TestScoringMetadataResolution:
         assert result == {"EXECUTE": "high"}
 
     def test_data_sources_default(self):
-        result = _get_scoring_field("boss_agent", {}, "data_sources", [])
+        result = _get_scoring_field("cohort_orchestrator", {}, "data_sources", [])
         assert "workflow_sessions" in result
 
     def test_data_sources_override(self):
         config = {"data_sources": ["custom_logs"]}
-        result = _get_scoring_field("boss_agent", config, "data_sources", [])
+        result = _get_scoring_field("cohort_orchestrator", config, "data_sources", [])
         assert result == ["custom_logs"]
 
 
@@ -571,6 +571,6 @@ class TestDataOwnershipConfigOverride:
     def test_explicit_overrides_defaults(self):
         config = {"data_sources": ["custom_logs"]}
         score = calculate_data_ownership(
-            "boss_agent", ["custom_logs"], config
+            "cohort_orchestrator", ["custom_logs"], config
         )
         assert score > 0.0

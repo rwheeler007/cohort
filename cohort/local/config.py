@@ -26,22 +26,22 @@ class ModelMapping(TypedDict):
 VRAM_TIER_MODELS: list[ModelMapping] = [
     {
         "vram_range": (0, 4096),  # <4GB VRAM
-        "model": "qwen2.5-coder:1.5b",
+        "model": "qwen3.5:2b",
         "tier": 1,
     },
     {
         "vram_range": (4096, 6144),  # 4-6GB VRAM
-        "model": "gemma3:4b",
+        "model": "qwen3.5:4b",
         "tier": 2,
     },
     {
-        "vram_range": (6144, 8192),  # 6-8GB VRAM
-        "model": "qwen3:8b",
+        "vram_range": (6144, 10240),  # 6-10GB VRAM
+        "model": "qwen3.5:9b",
         "tier": 3,
     },
     {
-        "vram_range": (8192, 999999),  # 8GB+ VRAM
-        "model": "qwen3:30b-a3b",
+        "vram_range": (10240, 999999),  # 10GB+ VRAM
+        "model": "qwen3.5:9b",
         "tier": 4,
     },
 ]
@@ -68,21 +68,17 @@ DEFAULT_TEMPERATURE = 0.4
 # =====================================================================
 
 MODEL_DESCRIPTIONS: dict[str, dict[str, str]] = {
-    "qwen2.5-coder:1.5b": {
-        "size": "~1 GB",
-        "summary": "Lightweight coding model, fast on any hardware",
+    "qwen3.5:2b": {
+        "size": "~2.7 GB",
+        "summary": "Lightweight multimodal model with 256K context, fast on any hardware",
     },
-    "gemma3:4b": {
-        "size": "~2.5 GB",
-        "summary": "Compact model, good balance of speed and quality",
+    "qwen3.5:4b": {
+        "size": "~3.4 GB",
+        "summary": "Compact multimodal model with 256K context, good balance of speed and quality",
     },
-    "qwen3:8b": {
-        "size": "~4.7 GB",
-        "summary": "Strong reasoning and coding, great for most tasks",
-    },
-    "qwen3:30b-a3b": {
-        "size": "~18 GB",
-        "summary": "Top-tier mixture-of-experts, near-frontier quality",
+    "qwen3.5:9b": {
+        "size": "~6.6 GB",
+        "summary": "Strong reasoning and coding with 256K context, great for most tasks",
     },
 }
 

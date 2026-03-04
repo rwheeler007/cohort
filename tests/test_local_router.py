@@ -17,7 +17,7 @@ from cohort.local.config import (
     get_model_for_vram,
     get_temperature,
 )
-from cohort.local.detect import HardwareInfo, detect_hardware
+from cohort.local.detect import GPUInfo, HardwareInfo, detect_hardware
 from cohort.local.ollama import GenerateResult, OllamaClient
 from cohort.local.router import LocalRouter, RouteResult
 
@@ -40,6 +40,56 @@ def test_detect_hardware_gpu_found():
     assert info.vram_mb == 12288
     assert info.cpu_only is False
     assert info.platform in ("linux", "windows", "darwin")
+    assert len(info.gpus) == 1
+    assert info.gpus[0].index == 0
+    assert info.gpus[0].name == "NVIDIA GeForce RTX 3080 Ti"
+    assert info.gpus[0].vram_mb == 12288
+    assert info.total_vram_mb == 12288
+
+
+def test_detect_hardware_multi_gpu():
+    """Test multi-GPU detection with two GPUs."""
+    mock_result = Mock()
+    mock_result.returncode = 0
+    mock_result.stdout = (
+        "NVIDIA GeForce RTX 3080, 12288 MiB\n"
+        "NVIDIA GeForce RTX 3060, 8192 MiB\n"
+    )
+
+    with patch("subprocess.run", return_value=mock_result):
+        info = detect_hardware()
+
+    assert info.cpu_only is False
+    assert len(info.gpus) == 2
+    # Primary GPU should be the largest (RTX 3080)
+    assert info.gpu_name == "NVIDIA GeForce RTX 3080"
+    assert info.vram_mb == 12288
+    assert info.total_vram_mb == 20480
+    # GPU list order matches nvidia-smi output
+    assert info.gpus[0].index == 0
+    assert info.gpus[0].name == "NVIDIA GeForce RTX 3080"
+    assert info.gpus[0].vram_mb == 12288
+    assert info.gpus[1].index == 1
+    assert info.gpus[1].name == "NVIDIA GeForce RTX 3060"
+    assert info.gpus[1].vram_mb == 8192
+
+
+def test_detect_hardware_multi_gpu_largest_not_first():
+    """Test that primary GPU is the largest, even if not GPU 0."""
+    mock_result = Mock()
+    mock_result.returncode = 0
+    mock_result.stdout = (
+        "NVIDIA GeForce RTX 3060, 8192 MiB\n"
+        "NVIDIA GeForce RTX 3080, 12288 MiB\n"
+    )
+
+    with patch("subprocess.run", return_value=mock_result):
+        info = detect_hardware()
+
+    # Primary should be RTX 3080 (larger VRAM) even though it's GPU 1
+    assert info.gpu_name == "NVIDIA GeForce RTX 3080"
+    assert info.vram_mb == 12288
+    assert len(info.gpus) == 2
 
 
 def test_detect_hardware_gpu_not_found():
@@ -221,25 +271,25 @@ def test_ollama_generate_failure():
 def test_get_model_for_vram_tier1():
     """Test model selection for <4GB VRAM."""
     model = get_model_for_vram(2048)  # 2GB
-    assert model == "qwen2.5-coder:1.5b"
+    assert model == "qwen3.5:2b"
 
 
 def test_get_model_for_vram_tier2():
     """Test model selection for 4-6GB VRAM."""
     model = get_model_for_vram(5000)  # 5GB
-    assert model == "gemma3:4b"
+    assert model == "qwen3.5:4b"
 
 
 def test_get_model_for_vram_tier3():
-    """Test model selection for 6-8GB VRAM."""
+    """Test model selection for 6-10GB VRAM."""
     model = get_model_for_vram(7000)  # 7GB
-    assert model == "qwen3:8b"
+    assert model == "qwen3.5:9b"
 
 
 def test_get_model_for_vram_tier4():
-    """Test model selection for 8GB+ VRAM."""
+    """Test model selection for 10GB+ VRAM."""
     model = get_model_for_vram(12000)  # 12GB
-    assert model == "qwen3:30b-a3b"
+    assert model == "qwen3.5:9b"
 
 
 def test_get_model_for_vram_fallback():
@@ -301,10 +351,10 @@ def test_local_router_available():
     # Mock Ollama client
     mock_client = Mock(spec=OllamaClient)
     mock_client.health_check.return_value = True
-    mock_client.list_models.return_value = ["qwen3:30b-a3b"]
+    mock_client.list_models.return_value = ["qwen3.5:9b"]
     mock_client.generate.return_value = GenerateResult(
         text="Hello from local model",
-        model="qwen3:30b-a3b",
+        model="qwen3.5:9b",
         tokens_in=42,
         tokens_out=5,
         elapsed_seconds=1.2,
@@ -316,8 +366,8 @@ def test_local_router_available():
 
     assert isinstance(response, RouteResult)
     assert response.text == "Hello from local model"
-    assert response.model == "qwen3:30b-a3b"
-    assert response.tier == 4  # 8GB+ VRAM tier
+    assert response.model == "qwen3.5:9b"
+    assert response.tier == 3  # qwen3.5:9b first appears in tier 3
     assert response.tokens_in == 42
     assert response.tokens_out == 5
     mock_client.generate.assert_called_once()
@@ -384,7 +434,7 @@ def test_local_router_generation_fails():
 
     mock_client = Mock(spec=OllamaClient)
     mock_client.health_check.return_value = True
-    mock_client.list_models.return_value = ["qwen3:30b-a3b"]
+    mock_client.list_models.return_value = ["qwen3.5:9b"]
     mock_client.generate.return_value = None  # Generation failed
 
     with patch.object(router, "_detect_hardware", return_value=mock_hw_info):

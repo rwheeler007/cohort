@@ -144,7 +144,7 @@ async def test_anonymous_sees_only_free_tier_agents(
 
     Mock agents_dir has 5 agents. Of those, 3 are in FREE_TIER_AGENTS:
     python_developer, web_developer, coding_orchestrator.
-    boss_agent is enterprise-only, ceo_agent is pro-only.
+    cohort_orchestrator is enterprise-only, ceo_agent is pro-only.
     """
     resp = await agent_api_client.get("/agents", headers=no_auth_headers)
     assert resp.status_code == 200
@@ -163,7 +163,7 @@ async def test_pro_key_sees_all_non_enterprise_agents(
     """Pro key GET /agents returns free + pro agents, excludes enterprise.
 
     Expected: python_developer, web_developer, coding_orchestrator (free)
-    + ceo_agent (pro). boss_agent excluded (enterprise-only).
+    + ceo_agent (pro). cohort_orchestrator excluded (enterprise-only).
     """
     resp = await agent_api_client.get("/agents", headers=pro_headers)
     assert resp.status_code == 200
@@ -191,9 +191,9 @@ async def test_enterprise_key_sees_all_agents(
     assert body["tier"] == "enterprise"
     agent_ids = sorted(a["agent_id"] for a in body["agents"])
     assert agent_ids == [
-        "boss_agent",
         "ceo_agent",
         "coding_orchestrator",
+        "cohort_orchestrator",
         "python_developer",
         "web_developer",
     ]
@@ -205,9 +205,9 @@ async def test_enterprise_key_sees_all_agents(
 async def test_free_key_cannot_access_enterprise_agent_config(
     agent_api_client, free_headers
 ):
-    """Free key GET /agents/boss_agent/config returns 403."""
+    """Free key GET /agents/cohort_orchestrator/config returns 403."""
     resp = await agent_api_client.get(
-        "/agents/boss_agent/config", headers=free_headers
+        "/agents/cohort_orchestrator/config", headers=free_headers
     )
     assert resp.status_code == 403
 
@@ -241,9 +241,9 @@ async def test_invalid_api_key_returns_403(agent_api_client):
 async def test_free_key_blocked_from_enterprise_agent(
     agent_api_client, free_headers
 ):
-    """Free key accessing enterprise-only boss_agent/config gets 403."""
+    """Free key accessing enterprise-only cohort_orchestrator/config gets 403."""
     resp = await agent_api_client.get(
-        "/agents/boss_agent/config", headers=free_headers
+        "/agents/cohort_orchestrator/config", headers=free_headers
     )
     assert resp.status_code == 403
     body = resp.json()

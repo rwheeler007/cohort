@@ -126,7 +126,7 @@ By default, Cohort includes built-in scoring metadata for common agent roles. Yo
 **Resolution order** (3-tier fallback):
 
 1. Explicit value in agent config (from `agents.json` or `AgentConfig`)
-2. Built-in defaults (for known agent roles like `python_developer`, `boss_agent`, etc.)
+2. Built-in defaults (for known agent roles like `python_developer`, `cohort_orchestrator`, etc.)
 3. Neutral fallback (unknown agents get 0.0 for complementary/ownership, 0.5 for phase alignment)
 
 This means zero-config works out of the box -- agents with no scoring metadata still participate with neutral scores.

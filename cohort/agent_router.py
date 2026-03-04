@@ -120,7 +120,7 @@ def _write_mcp_config(mcp_servers: list[dict]) -> Path | None:
 
 AGENT_ALIASES: dict[str, str] = {
     # Leadership
-    "boss": "boss_agent",
+    "boss": "cohort_orchestrator",
     "supervisor": "supervisor_agent",
     "coding": "coding_orchestrator",
     "orch": "coding_orchestrator",

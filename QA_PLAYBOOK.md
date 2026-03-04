@@ -247,14 +247,14 @@ curl http://localhost:8200/tiers
 
 - [ ] Returns three tiers: free, pro, enterprise
 - [ ] Free tier lists 15 agent IDs
-- [ ] Enterprise tier lists boss_agent and supervisor_agent
-- [ ] Tier descriptions are accurate (not BOSS-specific language)
+- [ ] Enterprise tier lists cohort_orchestrator and supervisor_agent
+- [ ] Tier descriptions are accurate
 
 ### Enterprise Gating
 
 ```bash
-# Try to access boss_agent without enterprise key
-curl http://localhost:8200/agents/boss_agent/config
+# Try to access cohort_orchestrator without enterprise key
+curl http://localhost:8200/agents/cohort_orchestrator/config
 ```
 
 - [ ] Returns HTTP 403 (forbidden) or appropriate error

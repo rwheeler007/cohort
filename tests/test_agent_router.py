@@ -18,7 +18,7 @@ from cohort.registry import JsonFileStorage
 
 # Agent type declarations for test fixtures
 _TEST_AGENT_TYPES = {
-    "boss_agent": "orchestrator",
+    "cohort_orchestrator": "orchestrator",
     "ceo_agent": "strategic",
     "python_developer": "specialist",
     "coding_orchestrator": "orchestrator",
@@ -39,7 +39,7 @@ def chat(storage: JsonFileStorage) -> ChatManager:
 def agents_root(tmp_path: Path) -> Path:
     """Create a minimal agents directory with prompt files and configs."""
     agents_dir = tmp_path / "agents"
-    for agent_id in ("boss_agent", "ceo_agent", "python_developer", "coding_orchestrator"):
+    for agent_id in ("cohort_orchestrator", "ceo_agent", "python_developer", "coding_orchestrator"):
         agent_dir = agents_dir / agent_id
         agent_dir.mkdir(parents=True)
         (agent_dir / "agent_prompt.md").write_text(
@@ -92,20 +92,20 @@ def _get_queue() -> list:
 
 
 # =====================================================================
-# BOSS alias resolution
+# Orchestrator alias resolution
 # =====================================================================
 
-class TestBossAliasResolution:
-    def test_boss_alias_resolves(self):
-        assert router_mod.AGENT_ALIASES.get("boss") == "boss_agent"
+class TestOrchestratorAliasResolution:
+    def test_boss_alias_resolves_to_orchestrator(self):
+        assert router_mod.AGENT_ALIASES.get("boss") == "cohort_orchestrator"
 
-    def test_resolve_boss_by_alias(self, agents_root):
+    def test_resolve_boss_alias(self, agents_root):
         resolved = router_mod.resolve_agent_id("boss")
-        assert resolved == "boss_agent"
+        assert resolved == "cohort_orchestrator"
 
-    def test_resolve_boss_direct(self, agents_root):
-        resolved = router_mod.resolve_agent_id("boss_agent")
-        assert resolved == "boss_agent"
+    def test_resolve_orchestrator_direct(self, agents_root):
+        resolved = router_mod.resolve_agent_id("cohort_orchestrator")
+        assert resolved == "cohort_orchestrator"
 
 
 # =====================================================================
@@ -120,14 +120,14 @@ class TestOrchestratorFirstPriority:
     def test_orchestrator_first_mention_responds_first(self, chat):
         """Direct first-tag to an orchestrator gives it priority over other agents."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent please get @ceo_agent and @python_developer input")
+        msg = _msg("@cohort_orchestrator please get @ceo_agent and @python_developer input")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent", "ceo_agent", "python_developer"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator", "ceo_agent", "python_developer"])
 
         queue = _get_queue()
         assert len(queue) == 3
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
         assert queue[0]["priority"] == 2
         # Other agents should have higher priority numbers (lower urgency)
         for entry in queue[1:]:
@@ -136,78 +136,78 @@ class TestOrchestratorFirstPriority:
     def test_orchestrator_with_coordination_keywords_responds_first(self, chat):
         """Coordination keywords boost orchestrator even when not first mention."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@python_developer @ceo_agent @boss_agent help coordinate")
+        msg = _msg("@python_developer @ceo_agent @cohort_orchestrator help coordinate")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["python_developer", "ceo_agent", "boss_agent"])
+            router_mod.route_mentions(msg, ["python_developer", "ceo_agent", "cohort_orchestrator"])
 
         queue = _get_queue()
         assert len(queue) == 3
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
         assert queue[0]["priority"] == 5
 
     def test_orchestrator_not_first_no_keywords_normal_priority(self, chat):
         """Orchestrator mentioned last without keywords gets normal priority --
         lets more relevant agents respond first."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@python_developer @boss_agent what do you think?")
+        msg = _msg("@python_developer @cohort_orchestrator what do you think?")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["python_developer", "boss_agent"])
+            router_mod.route_mentions(msg, ["python_developer", "cohort_orchestrator"])
 
         queue = _get_queue()
         assert len(queue) == 2
         # python_developer was first mention -> priority 50
-        # boss_agent was second mention, no keywords, no first-tag -> priority 40
-        # Both get normal priority, BOSS has no special boost
-        boss_entry = next(e for e in queue if e["agent_id"] == "boss_agent")
+        # cohort_orchestrator was second mention, no keywords, no first-tag -> priority 40
+        # Both get normal priority, orchestrator has no special boost
+        orch_entry = next(e for e in queue if e["agent_id"] == "cohort_orchestrator")
         pd_entry = next(e for e in queue if e["agent_id"] == "python_developer")
-        assert boss_entry["priority"] == pd_entry["priority"] - 10
+        assert orch_entry["priority"] == pd_entry["priority"] - 10
 
     def test_orchestrator_solo_mention_first_tag(self, chat):
         """Solo orchestrator mention = first tag, gets boost."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent what's the status?")
+        msg = _msg("@cohort_orchestrator what's the status?")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator"])
 
         queue = _get_queue()
         assert len(queue) == 1
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
         assert queue[0]["priority"] == 2
 
     def test_orchestrator_first_mention_gets_extra_boost(self, chat):
         """Direct first-tag to orchestrator gets priority 2."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent get @python_developer to review this")
+        msg = _msg("@cohort_orchestrator get @python_developer to review this")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent", "python_developer"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator", "python_developer"])
 
         queue = _get_queue()
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
         assert queue[0]["priority"] == 2
 
-    def test_boss_first_mention_plus_keywords_gets_best_priority(self, chat):
+    def test_orchestrator_first_mention_plus_keywords_gets_best_priority(self, chat):
         """Direct first-tag + coordination keywords = priority 1 (absolute best)."""
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent coordinate the team on this task")
+        msg = _msg("@cohort_orchestrator coordinate the team on this task")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent", "python_developer"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator", "python_developer"])
 
         queue = _get_queue()
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
         assert queue[0]["priority"] == 1
 
 
 # =====================================================================
-# @all routes to BOSS (not coding_orchestrator)
+# @all routes to an orchestrator-type agent (discovered dynamically)
 # =====================================================================
 
-class TestAtAllRoutesToBoss:
-    def test_all_routes_to_boss_agent(self, chat):
+class TestAtAllRoutesToOrchestrator:
+    def test_all_routes_to_orchestrator_agent(self, chat):
         chat.create_channel("dev", "Dev")
         msg = _msg("@all we need to discuss the architecture")
 
@@ -216,9 +216,11 @@ class TestAtAllRoutesToBoss:
 
         queue = _get_queue()
         assert len(queue) == 1
-        assert queue[0]["agent_id"] == "boss_agent"
+        # Should route to an orchestrator-type agent (first found alphabetically)
+        assert queue[0]["agent_id"] in ("cohort_orchestrator", "coding_orchestrator")
 
-    def test_all_does_not_route_to_coding_orchestrator(self, chat):
+    def test_all_routes_to_only_one_agent(self, chat):
+        """@all should resolve to exactly one orchestrator, not broadcast."""
         chat.create_channel("dev", "Dev")
         msg = _msg("@all coordinate the team")
 
@@ -226,35 +228,47 @@ class TestAtAllRoutesToBoss:
             router_mod.route_mentions(msg, ["all"])
 
         queue = _get_queue()
-        agent_ids = [e["agent_id"] for e in queue]
-        assert "coding_orchestrator" not in agent_ids
+        assert len(queue) == 1
 
 
 # =====================================================================
-# Orchestrator priority boost applies to boss_agent
+# Orchestrator priority boost applies to orchestrator-type agents
 # =====================================================================
 
-class TestBossOrchestratorBoost:
-    def test_boss_gets_priority_boost_on_coordination_keywords(self, chat):
+class TestOrchestratorBoost:
+    def test_orchestrator_gets_priority_boost_on_coordination_keywords(self, chat):
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent coordinate this workflow task")
+        msg = _msg("@cohort_orchestrator coordinate this workflow task")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator"])
 
         queue = _get_queue()
         assert len(queue) == 1
         # With orchestrator boost, priority should be well below default 50
         assert queue[0]["priority"] < 50
-        assert queue[0]["agent_id"] == "boss_agent"
+        assert queue[0]["agent_id"] == "cohort_orchestrator"
 
-    def test_boss_priority_boost_on_delegation_keywords(self, chat):
+    def test_orchestrator_priority_boost_on_delegation_keywords(self, chat):
         chat.create_channel("dev", "Dev")
-        msg = _msg("@boss_agent please delegate this task to the team")
+        msg = _msg("@cohort_orchestrator please delegate this task to the team")
 
         with patch.object(router_mod, "_start_queue_processor"):
-            router_mod.route_mentions(msg, ["boss_agent"])
+            router_mod.route_mentions(msg, ["cohort_orchestrator"])
 
         queue = _get_queue()
         assert len(queue) == 1
+        assert queue[0]["priority"] < 50
+
+    def test_any_orchestrator_type_gets_boost(self, chat):
+        """coding_orchestrator also has agent_type=orchestrator, should get boost."""
+        chat.create_channel("dev", "Dev")
+        msg = _msg("@coding_orchestrator coordinate this workflow")
+
+        with patch.object(router_mod, "_start_queue_processor"):
+            router_mod.route_mentions(msg, ["coding_orchestrator"])
+
+        queue = _get_queue()
+        assert len(queue) == 1
+        assert queue[0]["agent_id"] == "coding_orchestrator"
         assert queue[0]["priority"] < 50

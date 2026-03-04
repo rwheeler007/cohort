@@ -454,8 +454,18 @@ def _step_detect_hardware() -> HardwareInfo:
         _print_ok("Detected your system:")
         print()
         print(f"      Computer:        {plat_name}")
-        print(f"      Graphics card:   {hw.gpu_name}")
-        print(f"      Graphics memory: {_format_vram(hw.vram_mb)} -- {_vram_quality(hw.vram_mb)}")
+
+        if len(hw.gpus) > 1:
+            print(f"      Graphics cards:  {len(hw.gpus)} GPUs detected")
+            for gpu in hw.gpus:
+                marker = "  <-- recommendation based on this" if gpu.vram_mb == hw.vram_mb and gpu.name == hw.gpu_name else ""
+                print(f"        GPU {gpu.index}: {gpu.name}  ({_format_vram(gpu.vram_mb)}){marker}")
+            total_gb = hw.total_vram_mb / 1024
+            print(f"      Total memory:    {_format_vram(hw.total_vram_mb)} ({total_gb:.1f} GB)")
+        else:
+            print(f"      Graphics card:   {hw.gpu_name}")
+            print(f"      Graphics memory: {_format_vram(hw.vram_mb)} -- {_vram_quality(hw.vram_mb)}")
+
         print()
         print("  Your graphics card (GPU) is what runs AI models. Think of it")
         print("  as a turbo engine for AI -- 10-50x faster than your regular")

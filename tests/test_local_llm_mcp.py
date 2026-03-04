@@ -76,7 +76,7 @@ class TestLocalLLMGenerate:
         )
         mock_result = GenerateResult(
             text="auto-selected output",
-            model="qwen3:30b-a3b",
+            model="qwen3.5:9b",
             tokens_in=10,
             tokens_out=5,
             elapsed_seconds=2.0,
@@ -84,12 +84,12 @@ class TestLocalLLMGenerate:
 
         with patch("cohort.local.detect.detect_hardware", return_value=hw), \
              patch.object(_client, "health_check", return_value=True), \
-             patch.object(_client, "list_models", return_value=["qwen3:30b-a3b"]), \
+             patch.object(_client, "list_models", return_value=["qwen3.5:9b"]), \
              patch.object(_client, "generate", return_value=mock_result):
             result = local_llm_generate(_make_generate_input(model=""))
 
         assert "auto-selected output" in result
-        assert "qwen3:30b-a3b" in result
+        assert "qwen3.5:9b" in result
 
     def test_generate_cpu_only_returns_error(self):
         from cohort.mcp.local_llm_server import local_llm_generate

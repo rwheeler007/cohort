@@ -67,7 +67,7 @@ MOCK_AGENT_IDS = [
     "python_developer",
     "web_developer",
     "coding_orchestrator",
-    "boss_agent",
+    "cohort_orchestrator",
     "ceo_agent",
 ]
 

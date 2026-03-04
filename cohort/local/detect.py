@@ -9,25 +9,37 @@ from __future__ import annotations
 
 import platform
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+@dataclass
+class GPUInfo:
+    """Single GPU detection result."""
+
+    index: int = 0
+    name: str = "Unknown"
+    vram_mb: int = 0
 
 
 @dataclass
 class HardwareInfo:
     """Hardware detection result."""
 
-    gpu_name: str = "Unknown"
-    vram_mb: int = 0
+    gpu_name: str = "Unknown"  # Largest GPU name (backwards compat)
+    vram_mb: int = 0  # Largest GPU VRAM in MB (backwards compat)
     cpu_only: bool = True
     platform: str = "unknown"
+    gpus: list[GPUInfo] = field(default_factory=list)  # All detected GPUs
+    total_vram_mb: int = 0  # Sum across all GPUs
 
 
 def detect_hardware() -> HardwareInfo:
     """Detect GPU and VRAM using subprocess calls.
 
     Returns:
-        HardwareInfo with gpu_name, vram_mb, cpu_only flag, and platform.
-        On any failure, returns cpu_only=True.
+        HardwareInfo with gpu_name, vram_mb, cpu_only flag, platform,
+        and a list of all detected GPUs.  On any failure, returns
+        cpu_only=True with an empty gpus list.
 
     Security:
         Uses hardcoded command strings only. No user input interpolated.
@@ -51,19 +63,27 @@ def detect_hardware() -> HardwareInfo:
                 check=False,
             )
             if result.returncode == 0 and result.stdout.strip():
-                # Parse first GPU: "NVIDIA GeForce RTX 3080 Ti, 12288 MiB"
                 lines = result.stdout.strip().split("\n")
-                if lines:
-                    parts = lines[0].split(",")
+                best_vram = 0
+                for idx, line in enumerate(lines):
+                    parts = line.split(",")
                     if len(parts) >= 2:
-                        info.gpu_name = parts[0].strip()
-                        # Parse VRAM: "12288 MiB" -> 12288
+                        name = parts[0].strip()
                         vram_str = parts[1].strip().split()[0]
                         try:
-                            info.vram_mb = int(vram_str)
-                            info.cpu_only = False
+                            vram = int(vram_str)
                         except ValueError:
-                            pass
+                            continue
+                        gpu = GPUInfo(index=idx, name=name, vram_mb=vram)
+                        info.gpus.append(gpu)
+                        info.total_vram_mb += vram
+                        if vram > best_vram:
+                            best_vram = vram
+                            info.gpu_name = name
+                            info.vram_mb = vram
+
+                if info.gpus:
+                    info.cpu_only = False
         except (FileNotFoundError, subprocess.TimeoutExpired, Exception):
             # nvidia-smi not found or failed -- graceful fallback to CPU-only
             pass

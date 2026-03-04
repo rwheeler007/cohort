@@ -980,18 +980,18 @@ async def cohort_get_mentions(params: GetMentionsInput) -> str:
 
 
 # =====================================================================
-# Tool 16: cohort_get_work_queue
+# Tool 16: cohort_get_work_queue (sequential execution queue)
 # =====================================================================
 
 class GetWorkQueueInput(BaseModel):
-    """Input for reading the work queue."""
+    """Input for reading the sequential work queue."""
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
     status: Optional[str] = Field(
         None,
         description=(
-            "Filter by task status: 'briefing', 'assigned', 'in_progress', "
-            "'complete', or None for all."
+            "Filter by status: 'queued', 'active', 'completed', 'failed', "
+            "'cancelled', or None for all."
         ),
     )
 
@@ -1007,9 +1007,76 @@ class GetWorkQueueInput(BaseModel):
     },
 )
 async def cohort_get_work_queue(params: GetWorkQueueInput) -> str:
-    """Read the work queue with optional status filtering.
+    """Read the sequential work queue.
 
-    Returns task cards showing agent, priority, status, and description.
+    Items execute one at a time (FIFO with priority ordering).
+    Only one item can be 'active' at a time.
+    Status lifecycle: queued -> active -> completed/failed/cancelled.
+    """
+    items = await _client.get_work_queue(status=params.status)
+    if items is None:
+        return _error_msg(service_down=True)
+    if not items:
+        scope = f"(status={params.status})" if params.status else ""
+        return f"Work queue is empty {scope}".strip() + "."
+
+    active_count = sum(1 for i in items if i.get("status") == "active")
+    queued_count = sum(1 for i in items if i.get("status") == "queued")
+    lines = [f"## Work Queue ({len(items)} items, {active_count} active, {queued_count} queued)"]
+
+    for pos, item in enumerate(items, 1):
+        item_id = item.get("id", "?")
+        status = item.get("status", "?")
+        priority = (item.get("priority") or "medium").upper()
+        desc = (item.get("description") or "")[:120]
+        agent = item.get("agent_id")
+        agent_str = f" @{agent}" if agent else ""
+        deps = item.get("depends_on", [])
+        dep_str = f" (depends: {', '.join(deps)})" if deps else ""
+
+        marker = " [RUNNING]" if status == "active" else ""
+        lines.append(
+            f"- **{item_id}** [{status}]{marker}{agent_str} ({priority}) "
+            f"-- {desc}{dep_str}"
+        )
+
+    result = "\n".join(lines)
+    if len(result) > CHARACTER_LIMIT:
+        result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return result
+
+
+# =====================================================================
+# Tool 16b: cohort_get_tasks (parallel agent tasks)
+# =====================================================================
+
+class GetTasksInput(BaseModel):
+    """Input for reading the parallel task queue."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    status: Optional[str] = Field(
+        None,
+        description=(
+            "Filter by task status: 'briefing', 'assigned', 'in_progress', "
+            "'complete', or None for all."
+        ),
+    )
+
+
+@mcp.tool(
+    name="cohort_get_tasks",
+    annotations={
+        "title": "Get Agent Tasks",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_tasks(params: GetTasksInput) -> str:
+    """Read agent tasks (parallel, lifecycle-driven).
+
+    Unlike the work queue (sequential), tasks run concurrently.
     Status lifecycle: briefing -> assigned -> in_progress -> complete.
     """
     tasks = await _client.get_task_queue(status=params.status)
@@ -1017,9 +1084,9 @@ async def cohort_get_work_queue(params: GetWorkQueueInput) -> str:
         return _error_msg(service_down=True)
     if not tasks:
         scope = f"(status={params.status})" if params.status else ""
-        return f"Work queue is empty {scope}".strip() + "."
+        return f"No agent tasks {scope}".strip() + "."
 
-    lines = [f"## Work Queue ({len(tasks)} tasks)"]
+    lines = [f"## Agent Tasks ({len(tasks)} tasks)"]
     for t in tasks:
         task_id = t.get("task_id", "?")
         agent = t.get("agent_id", "unassigned")
@@ -1045,6 +1112,111 @@ async def cohort_get_work_queue(params: GetWorkQueueInput) -> str:
     if len(result) > CHARACTER_LIMIT:
         result = result[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
     return result
+
+
+# =====================================================================
+# Tool 16c: cohort_enqueue_item
+# =====================================================================
+
+class EnqueueItemInput(BaseModel):
+    """Input for adding an item to the sequential work queue."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    description: str = Field(
+        ..., description="What the work item should accomplish.",
+        min_length=5, max_length=2000,
+    )
+    requester: str = Field(
+        "claude_code", description="Who is submitting the item.",
+        max_length=100,
+    )
+    priority: str = Field(
+        "medium", description="Priority: 'critical', 'high', 'medium', or 'low'.",
+    )
+    agent_id: Optional[str] = Field(
+        None, description="Optional agent to assign the item to.",
+        max_length=100,
+    )
+    depends_on: Optional[List[str]] = Field(
+        None, description="Optional list of work queue item IDs that must complete first.",
+    )
+
+
+@mcp.tool(
+    name="cohort_enqueue_item",
+    annotations={
+        "title": "Enqueue Work Item",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_enqueue_item(params: EnqueueItemInput) -> str:
+    """Add an item to the sequential work queue.
+
+    Items are executed one at a time in priority + FIFO order.
+    Use depends_on to block an item until other items complete.
+    """
+    result = await _client.enqueue_work_item(
+        description=params.description,
+        requester=params.requester,
+        priority=params.priority,
+        agent_id=params.agent_id,
+        depends_on=params.depends_on,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if result.get("success"):
+        item = result.get("item", {})
+        item_id = item.get("id", "?")
+        deps = item.get("depends_on", [])
+        dep_str = f", depends_on: {', '.join(deps)}" if deps else ""
+        return (
+            f"Enqueued: {item_id} (priority: {params.priority}, "
+            f"status: queued{dep_str})"
+        )
+    return f"Error: {result.get('error', 'Unknown')}"
+
+
+# =====================================================================
+# Tool 16d: cohort_claim_next
+# =====================================================================
+
+@mcp.tool(
+    name="cohort_claim_next",
+    annotations={
+        "title": "Claim Next Work Item",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_claim_next() -> str:
+    """Claim the next item from the sequential work queue.
+
+    Atomically transitions the highest-priority queued item to 'active'.
+    Only one item can be active at a time -- returns an error if an
+    item is already running.
+    """
+    result = await _client.claim_work_item()
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        active = result.get("active_item", {})
+        active_id = active.get("id", "?")
+        return (
+            f"Cannot claim: {result['error']}. "
+            f"Active item: {active_id} -- complete or cancel it first."
+        )
+    item = result.get("item")
+    if item is None:
+        return "Work queue is empty -- nothing to claim."
+    item_id = item.get("id", "?")
+    desc = (item.get("description") or "")[:100]
+    priority = (item.get("priority") or "medium").upper()
+    return f"Claimed: {item_id} ({priority}) -- {desc}"
 
 
 # =====================================================================
@@ -1543,6 +1715,125 @@ async def cohort_partnership_graph(params: PartnershipGraphInput) -> str:
         lines.append("")
 
     return "\n".join(lines)
+
+
+# =====================================================================
+# Tool: cohort_compiled_roundtable
+# =====================================================================
+
+class CompiledRoundtableInput(BaseModel):
+    """Input for compiled (single-call) roundtable discussion."""
+    model_config = ConfigDict(extra="forbid")
+
+    agents: List[str] = Field(
+        description="Agent IDs to participate (3-8 agents).",
+        min_length=1,
+    )
+    topic: str = Field(
+        description="Discussion topic or question.",
+        min_length=1,
+    )
+    context: str = Field(
+        default="",
+        description="Optional background context or prior discussion summary.",
+    )
+    rounds: int = Field(
+        default=2, ge=1, le=3,
+        description="Number of discussion rounds (1-3). Default 2.",
+    )
+    model: Optional[str] = Field(
+        default=None,
+        description="Ollama model to use. Auto-selects if omitted.",
+    )
+    temperature: float = Field(
+        default=0.30, ge=0.0, le=1.0,
+        description="Generation temperature.",
+    )
+    channel: Optional[str] = Field(
+        default=None,
+        description="Channel to post results to. If omitted, results are returned inline only.",
+    )
+    sender: str = Field(
+        default="claude_code",
+        description="Sender identity for channel messages.",
+    )
+
+
+@mcp.tool(
+    name="cohort_compiled_roundtable",
+    annotations={
+        "title": "Compiled Roundtable (Single-Call)",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    },
+)
+async def cohort_compiled_roundtable(params: CompiledRoundtableInput) -> str:
+    """Run a compiled roundtable: all agent personas in a single LLM call.
+
+    ~90% token reduction vs separate per-agent calls. Best for 3-8 agent
+    planning/review discussions. Uses local Ollama inference.
+
+    If a channel is specified, individual agent responses are posted as
+    separate messages to the channel.
+    """
+    from cohort.compiled_roundtable import run_compiled_roundtable
+
+    result = run_compiled_roundtable(
+        agents=params.agents,
+        topic=params.topic,
+        context=params.context,
+        rounds=params.rounds,
+        model=params.model,
+        temperature=params.temperature,
+    )
+
+    if result.error:
+        return f"Compiled roundtable failed: {result.error}"
+
+    # Format output
+    lines = [
+        f"## Compiled Roundtable ({len(result.agent_responses)}/{len(params.agents)} agents)",
+    ]
+
+    if result.metadata:
+        model_used = result.metadata.get("model", "unknown")
+        latency = result.metadata.get("latency_ms", 0)
+        lines.append(f"*Model: {model_used}, {latency}ms*\n")
+
+    for agent_id, response in result.agent_responses.items():
+        lines.append(f"### > {agent_id}:")
+        lines.append(response)
+        lines.append("")
+
+    if result.synthesis:
+        lines.append("### Synthesis:")
+        lines.append(result.synthesis)
+        lines.append("")
+
+    # Post to channel if specified
+    if params.channel and result.agent_responses:
+        for agent_id, response in result.agent_responses.items():
+            await _client.post_message(
+                params.channel, agent_id, response,
+            )
+        if result.synthesis:
+            await _client.post_message(
+                params.channel, params.sender,
+                f"**Roundtable Synthesis:**\n{result.synthesis}",
+            )
+        lines.append(f"\n*Results posted to #{params.channel}*")
+
+    # Warn about missing agents
+    missing = set(params.agents) - set(result.agent_responses.keys())
+    if missing:
+        lines.append(f"\n*Missing responses from: {', '.join(sorted(missing))}*")
+
+    output = "\n".join(lines)
+    if len(output) > CHARACTER_LIMIT:
+        output = output[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return output
 
 
 # =====================================================================

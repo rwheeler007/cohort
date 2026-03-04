@@ -36,12 +36,12 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
     },
 
     # -- Leadership --
-    "boss_agent": {
-        "name": "Boss Agent",
-        "nickname": "Boss",
-        "avatar": "BO",
+    "cohort_orchestrator": {
+        "name": "Cohort Orchestrator",
+        "nickname": "Orch",
+        "avatar": "CO",
         "color": "#C0392B",
-        "role": "Supervisor",
+        "role": "Orchestrator",
         "group": "Leadership",
     },
     "ceo_agent": {

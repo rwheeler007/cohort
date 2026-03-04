@@ -286,6 +286,11 @@ class AgentStore:
                 "domain_expertise": config.domain_expertise,
                 "agent_type": config.agent_type,
                 "status": config.status,
+                # Display metadata (used by team dashboard)
+                "avatar": config.avatar,
+                "nickname": config.nickname,
+                "color": config.color,
+                "group": config.group,
             }
             # Include scoring metadata if present
             if config.scoring_metadata:

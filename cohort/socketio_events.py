@@ -12,6 +12,7 @@ Events (server -> client) -- Dashboard:
     cohort:output_ready      Code diff / test results available
     cohort:review_submitted  Human review verdict
     cohort:status_change     Agent or session status change
+    cohort:work_queue_update Work queue snapshot (sequential execution queue)
     cohort:error             Error notification
 
 Events (server -> client) -- Chat:
@@ -24,6 +25,7 @@ Events (client -> server) -- Dashboard:
     request_team_update      Client requests fresh team snapshot
     submit_review            Human submits review verdict
     assign_task              Human assigns a task to an agent
+    request_work_queue       Client requests current work queue state
 
 Events (client -> server) -- Chat:
     get_channels             Client requests channel list
@@ -56,6 +58,7 @@ sio = socketio.AsyncServer(
 _data_layer: Any = None
 _chat: Any = None
 _task_executor: Any = None
+_work_queue: Any = None
 
 
 def setup_socketio(data_layer: Any, chat: Any = None) -> None:
@@ -71,6 +74,13 @@ def setup_task_executor(executor: Any) -> None:
     global _task_executor  # noqa: PLW0603
     _task_executor = executor
     logger.info("[OK] Task executor wired into Socket.IO events")
+
+
+def setup_work_queue(wq: Any) -> None:
+    """Wire the work queue for real-time updates."""
+    global _work_queue  # noqa: PLW0603
+    _work_queue = wq
+    logger.info("[OK] Work queue wired into Socket.IO events")
 
 
 # =====================================================================
@@ -89,12 +99,20 @@ async def disconnect(sid: str) -> None:
 
 @sio.event
 async def join(sid: str, data: dict | None = None) -> dict:
-    """Client joins and receives initial team snapshot."""
+    """Client joins and receives initial team snapshot + work queue."""
     logger.info("[*] Client %s joined", sid)
     if _data_layer is None:
         return {"error": "Data layer not initialised"}
     snapshot = _data_layer.get_team_snapshot()
     await sio.emit("cohort:team_update", snapshot, to=sid)
+    # Send work queue state
+    if _work_queue is not None:
+        items = _work_queue.list_items()
+        await sio.emit(
+            "cohort:work_queue_update",
+            {"items": [i.to_dict() for i in items]},
+            to=sid,
+        )
     return {"status": "ok"}
 
 
@@ -105,6 +123,19 @@ async def request_team_update(sid: str, data: dict | None = None) -> None:
         return
     snapshot = _data_layer.get_team_snapshot()
     await sio.emit("cohort:team_update", snapshot, to=sid)
+
+
+@sio.event
+async def request_work_queue(sid: str, data: dict | None = None) -> None:
+    """Client requests current work queue state."""
+    if _work_queue is None:
+        return
+    items = _work_queue.list_items()
+    await sio.emit(
+        "cohort:work_queue_update",
+        {"items": [i.to_dict() for i in items]},
+        to=sid,
+    )
 
 
 @sio.event

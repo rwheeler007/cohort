@@ -32,10 +32,12 @@ except ImportError:
 COHORT_ROOT = Path(__file__).parent.parent
 ASSESSMENTS_DIR = COHORT_ROOT / "data" / "assessments"
 LEGACY_ASSESSMENTS_FILE = COHORT_ROOT / "data" / "agent_assessments.json"
-RESULTS_DIR = COHORT_ROOT / "data" / "assessment_results"
+RESULTS_DIR = COHORT_ROOT / "data" / "assessment_results"  # updated dynamically for --model
 AGENTS_DIR = COHORT_ROOT / "agents"
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen3:30b-a3b"
+DEFAULT_OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = DEFAULT_OLLAMA_URL  # overridden by --ollama-url flag
+DEFAULT_MODEL = "qwen3.5:9b"
+MODEL = DEFAULT_MODEL  # overridden by --model flag
 PASSING_SCORE = 70
 REQUEST_TIMEOUT = 180  # 3 min for multi-step questions
 
@@ -109,7 +111,7 @@ def ask_ollama(system_prompt: str, question_text: str, temperature: float = 0.15
             "temperature": temperature,
             "num_predict": 5000,
         },
-        "keep_alive": "0",
+        "keep_alive": "30m",
         "think": False,
     }
 
@@ -222,11 +224,15 @@ def filter_questions(questions: list, difficulty: str | None = None,
 
 
 def assess_agent(agent_id: str, questions: list, dry_run: bool = False,
-                 resume: bool = False) -> dict:
+                 resume: bool = False, bare: bool = False) -> dict:
     """Run assessment for one agent. Returns results dict."""
     config = load_agent_config(agent_id)
-    system_prompt = load_agent_prompt(agent_id)
-    temperature = config.get("model_params", {}).get("temperature", 0.15)
+    if bare:
+        system_prompt = "You are a helpful assistant."
+        temperature = 0.8  # Ollama default -- no tuning
+    else:
+        system_prompt = load_agent_prompt(agent_id)
+        temperature = config.get("model_params", {}).get("temperature", 0.15)
 
     # Check for resumable partial results
     answered_ids = set()
@@ -493,6 +499,9 @@ def parse_args():
         "difficulty": None,
         "category": None,
         "limit": None,
+        "model": None,
+        "ollama_url": None,
+        "bare": False,
         "agents": [],
     }
 
@@ -517,6 +526,14 @@ def parse_args():
         elif arg == "--limit" and i + 1 < len(argv):
             i += 1
             args["limit"] = int(argv[i])
+        elif arg == "--model" and i + 1 < len(argv):
+            i += 1
+            args["model"] = argv[i]
+        elif arg == "--ollama-url" and i + 1 < len(argv):
+            i += 1
+            args["ollama_url"] = argv[i]
+        elif arg == "--bare":
+            args["bare"] = True
         elif not arg.startswith("-"):
             args["agents"].append(arg)
         i += 1
@@ -525,7 +542,23 @@ def parse_args():
 
 
 def main():
+    global MODEL, OLLAMA_URL
     args = parse_args()
+
+    if args.get("model"):
+        MODEL = args["model"]
+    if args.get("ollama_url"):
+        OLLAMA_URL = args["ollama_url"]
+
+    # Use model-specific results directory to avoid overwriting across runs
+    model_slug = MODEL.replace(':', '_').replace('/', '_')
+    bare_suffix = "_bare" if args.get("bare") else ""
+    if MODEL != DEFAULT_MODEL or args.get("bare"):
+        RESULTS_DIR = COHORT_ROOT / "data" / f"assessment_results_{model_slug}{bare_suffix}"
+    else:
+        RESULTS_DIR = COHORT_ROOT / "data" / "assessment_results"
+    # Patch module-level so helpers see it
+    globals()["RESULTS_DIR"] = RESULTS_DIR
 
     if args["report"]:
         print_report()
@@ -577,7 +610,7 @@ def main():
         print(f"    {len(questions)} questions ({multi_step} multi-step)")
 
         result = assess_agent(agent_id, questions, dry_run=args["dry_run"],
-                              resume=args["resume"])
+                              resume=args["resume"], bare=args.get("bare", False))
         all_results.append(result)
 
         if not args["dry_run"]:

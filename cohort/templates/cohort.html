@@ -224,14 +224,28 @@
 
             <!-- Work Queue Panel -->
             <section class="panel panel--queue" id="panel-queue" role="region" aria-label="Work Queue" style="display: none;">
-                <div class="task-list" id="task-list">
-                    <div class="empty-state" id="queue-empty">
-                        <p class="empty-state__text">No tasks in queue</p>
-                        <p class="empty-state__hint">Assign tasks from the Team panel or use the button below</p>
+                <!-- Sequential Execution Queue -->
+                <div class="wq-section">
+                    <h3 class="section-title" style="margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary, #888);">Execution Queue</h3>
+                    <div class="work-queue-list" id="work-queue-list">
+                        <div class="empty-state" id="wq-empty">
+                            <p class="empty-state__text">Queue is empty</p>
+                            <p class="empty-state__hint">Items execute one at a time in priority order</p>
+                        </div>
                     </div>
                 </div>
-                <div class="queue-actions">
-                    <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
+                <hr style="border: none; border-top: 1px solid var(--border-color, #333); margin: 1rem 0;">
+                <!-- Agent Tasks (parallel) -->
+                <div class="task-section">
+                    <h3 class="section-title" style="margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary, #888);">Agent Tasks</h3>
+                    <div class="task-list" id="task-list">
+                        <div class="empty-state" id="queue-empty">
+                            <p class="empty-state__text">No tasks assigned</p>
+                        </div>
+                    </div>
+                    <div class="queue-actions">
+                        <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
+                    </div>
                 </div>
             </section>
 
@@ -247,7 +261,7 @@
 
             <!-- Tool Dashboard Panel -->
             <section class="panel panel--tool" id="panel-tool" role="region" aria-label="Tool Dashboard" style="display: none;">
-                <div id="tool-panel-content">
+                <div class="tool-panel-scroll" id="tool-panel-content">
                     <div class="empty-state">
                         <p class="empty-state__text">Select a tool</p>
                         <p class="empty-state__hint">Click a tool in the sidebar to view its status and configuration</p>
@@ -256,7 +270,7 @@
                 <div class="tool-help-chat" id="tool-help-chat" style="display:none">
                     <div class="tool-help-chat__toggle" onclick="toggleToolHelpChat()">
                         <span class="tool-help-chat__label">[?] Need help configuring this tool?</span>
-                        <span class="tool-help-chat__arrow" id="tool-help-arrow">[v]</span>
+                        <span class="tool-help-chat__arrow" id="tool-help-arrow">[^]</span>
                     </div>
                     <div class="tool-help-chat__body" id="tool-help-body" style="display:none">
                         <div class="tool-help-chat__messages" id="tool-help-messages">
@@ -632,6 +646,11 @@
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="6">
                     <span class="setup-step__indicator" id="step-ind-6">6</span>
+                    <span class="setup-step__label">MCP</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="7">
+                    <span class="setup-step__indicator" id="step-ind-7">7</span>
                     <span class="setup-step__label">Claude</span>
                 </button>
             </nav>
@@ -721,8 +740,34 @@
                     </div>
                 </div>
 
-                <!-- Step 6: Claude Code Connection (Optional) -->
+                <!-- Step 6: MCP Server Setup (Optional) -->
                 <div class="setup-wizard__step" data-step="6" style="display:none">
+                    <h3>MCP Server Setup (Optional)</h3>
+                    <p class="text-muted">
+                        The Cohort MCP server lets Claude Code use your local AI model
+                        as a tool -- draft code, transform data, and more, all running
+                        on your machine for free.
+                    </p>
+                    <div class="setup-wizard__card" id="setup-mcp-result">
+                        <div class="setup-wizard__loading">[*] Checking MCP dependencies...</div>
+                    </div>
+                    <div id="setup-mcp-config" style="display:none">
+                        <div class="setup-wizard__card" id="setup-mcp-snippet" style="display:none">
+                            <h4 style="margin-bottom:var(--space-2)">Claude Code Config</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                This will be written to <code>.claude/settings.local.json</code>
+                                so Claude Code auto-discovers your local MCP server.
+                            </p>
+                            <pre class="setup-wizard__code-block" id="setup-mcp-snippet-code"></pre>
+                        </div>
+                        <button class="btn btn--primary" id="setup-mcp-write-btn" style="margin-top:var(--space-3)">
+                            Write MCP Config
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 7: Claude Code Connection (Optional) -->
+                <div class="setup-wizard__step" data-step="7" style="display:none">
                     <h3>Connect Claude Code (Optional)</h3>
                     <p class="text-muted">
                         Claude Code is an AI coding assistant by Anthropic. Connecting it
