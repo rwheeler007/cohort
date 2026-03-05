@@ -2185,6 +2185,138 @@ async function _rejectSocialPost(postId) {
 
 /* ── Document Processing ── */
 
+let _docHistory = [];
+
+async function _loadDocHistory() {
+    try {
+        const resp = await fetch('/api/doc-processor/history');
+        const data = await resp.json();
+        if (data.ok) _docHistory = data.history || [];
+    } catch { _docHistory = []; }
+}
+
+async function _addDocHistoryEntry(data, source, isAllMode) {
+    const entry = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        source: source || 'Unknown',
+        mode: isAllMode ? 'all' : (data.mode || 'summary'),
+        status: 'success',
+        model: data.model || '',
+        file_type: data.file_type || '',
+    };
+    if (isAllMode && Array.isArray(data)) {
+        entry.stats = data[0] ? data[0].stats : {};
+        entry.fullData = data.map(d => ({
+            ok: true, summary: (d.summary || '').substring(0, 2000),
+            mode: d.mode, model: d.model, file_type: d.file_type,
+            filename: d.filename, stats: d.stats,
+        }));
+        entry.model = data[0] ? data[0].model : '';
+        entry.file_type = data[0] ? data[0].file_type : '';
+    } else {
+        entry.stats = data.stats || {};
+        entry.fullData = {
+            ok: true, summary: (data.summary || '').substring(0, 2000),
+            mode: data.mode, model: data.model, file_type: data.file_type,
+            filename: data.filename, stats: data.stats,
+        };
+    }
+    _docHistory.unshift(entry);
+    _refreshDocHistory();
+    try {
+        await fetch('/api/doc-processor/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entry }),
+        });
+    } catch { /* server save failed, still in memory for this session */ }
+}
+
+function _restoreDocResult(entryId) {
+    const entry = _docHistory.find(h => h.id === entryId);
+    if (!entry) return;
+    if (entry.mode === 'all' && Array.isArray(entry.fullData)) {
+        _renderDocResultAll(entry.fullData);
+    } else if (entry.fullData) {
+        _renderDocResult(entry.fullData);
+    }
+    const resultArea = document.getElementById('doc-result-area');
+    if (resultArea) resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function _clearDocHistory() {
+    _docHistory = [];
+    _refreshDocHistory();
+    try {
+        await fetch('/api/doc-processor/history', { method: 'DELETE' });
+    } catch { /* ignore */ }
+}
+
+let _docHistoryShowArchive = false;
+const _DOC_HISTORY_VISIBLE = 10;
+
+function _toggleDocArchive() {
+    _docHistoryShowArchive = !_docHistoryShowArchive;
+    _refreshDocHistory();
+}
+
+function _buildDocHistoryRow(h) {
+    const modeLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points', all: 'All Modes' };
+    const stats = h.stats || {};
+    let detail = '';
+    if (stats.input_words) detail += `Input: ${stats.input_words.toLocaleString()} words`;
+    if (stats.output_words) detail += `${detail ? ' | ' : ''}Output: ${stats.output_words.toLocaleString()} words`;
+    if (stats.elapsed_seconds) detail += `${detail ? ' | ' : ''}Time: ${stats.elapsed_seconds}s`;
+    if (h.model) detail += `${detail ? ' | ' : ''}Model: ${h.model}`;
+
+    return `<div class="tool-activity-log__item tool-activity-log__item--clickable" onclick="_restoreDocResult(${h.id})">
+        <span class="tool-activity-log__time">${escapeHtml(fmtTime(h.timestamp))}</span>
+        <span class="tool-activity-log__dot tool-activity-log__dot--${h.status === 'success' ? 'success' : 'error'}"></span>
+        <span class="tool-activity-log__msg">${escapeHtml(h.source)} -- ${escapeHtml(modeLabels[h.mode] || h.mode)}${detail ? `<div class="tool-activity-log__detail" style="display:block;margin-top:var(--space-1)">${escapeHtml(detail)}</div>` : ''}</span>
+    </div>`;
+}
+
+function _refreshDocHistory() {
+    const el = document.getElementById('doc-history-section');
+    if (!el) return;
+    if (_docHistory.length === 0) { el.innerHTML = ''; return; }
+
+    const recent = _docHistory.slice(0, _DOC_HISTORY_VISIBLE);
+    const archived = _docHistory.slice(_DOC_HISTORY_VISIBLE);
+    const recentRows = recent.map(_buildDocHistoryRow).join('');
+
+    let archiveHtml = '';
+    if (archived.length > 0) {
+        if (_docHistoryShowArchive) {
+            const archiveRows = archived.map(_buildDocHistoryRow).join('');
+            archiveHtml = `<div class="tool-config-section" style="margin-top:var(--space-3)">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                    <h3 class="tool-config-section__title">Archive (${archived.length})</h3>
+                    <button class="btn btn--sm btn--ghost" onclick="_toggleDocArchive()" style="font-size:var(--font-size-xs)">Hide Archive</button>
+                </div>
+                <div class="tool-config-grid--full">
+                    <div class="tool-activity-log">${archiveRows}</div>
+                </div>
+            </div>`;
+        } else {
+            archiveHtml = `<div style="text-align:center;margin-top:var(--space-2)">
+                <button class="btn btn--sm btn--ghost" onclick="_toggleDocArchive()">View Archive (${archived.length} older)</button>
+            </div>`;
+        }
+    }
+
+    el.innerHTML = `<div class="tool-config-section">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+            <h3 class="tool-config-section__title">Processing History (${recent.length})</h3>
+            <button class="btn btn--sm btn--ghost" onclick="_clearDocHistory()" style="font-size:var(--font-size-xs)">Clear</button>
+        </div>
+        <div class="tool-config-grid--full">
+            <div class="tool-activity-log">${recentRows}</div>
+        </div>
+    </div>${archiveHtml}`;
+}
+
 async function renderDocProcessorPanel(tool) {
     const tid = tool.id;
     const [ollamaStatus, runningData] = await Promise.all([
@@ -2315,10 +2447,11 @@ async function renderDocProcessorPanel(tool) {
                     <label class="doc-mode-option" title="Run all three modes and display results together">
                         <input type="radio" name="doc-mode" value="all"> All
                     </label>
-                    <label class="doc-mode-option" title="Describe visual content: what the image depicts, colors, composition, and notable elements">
-                        <input type="radio" name="doc-mode" value="image"> Image
-                    </label>
                 </div>
+                <div class="doc-mode-separator"></div>
+                <label class="doc-mode-option doc-mode-option--image" title="Describe visual content: what the image depicts, colors, composition, and notable elements">
+                    <input type="radio" name="doc-mode" value="image"> Image
+                </label>
                 <button class="btn btn--primary" onclick="_processDocInput()" id="doc-process-btn"${!isUp ? ' disabled' : ''}>
                     Process
                 </button>
@@ -2326,9 +2459,16 @@ async function renderDocProcessorPanel(tool) {
 
             <!-- Results area -->
             <div id="doc-result-area"></div>
+
+            <!-- Processing history -->
+            <div id="doc-history-section"></div>
         </div>
     </div>`;
     showToolHelpChat(tid);
+
+    // Load and render history from server
+    await _loadDocHistory();
+    _refreshDocHistory();
 }
 
 // ── Document processor helpers ──
@@ -2461,6 +2601,7 @@ async function _processDocFile(file) {
         }
         if (results.length > 0) {
             _renderDocResultAll(results);
+            _addDocHistoryEntry(results, file.name, true);
         } else {
             resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
         }
@@ -2494,6 +2635,7 @@ async function _processDocFile(file) {
 
         if (data.ok) {
             _renderDocResult(data);
+            _addDocHistoryEntry(data, file.name, false);
         } else {
             resultArea.innerHTML = `<div class="doc-error">
                 <strong>[X] Processing failed</strong>
@@ -2547,6 +2689,7 @@ async function _processDocText(text) {
         }
         if (results.length > 0) {
             _renderDocResultAll(results);
+            _addDocHistoryEntry(results, 'Pasted text', true);
         } else {
             resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
         }
@@ -2573,6 +2716,7 @@ async function _processDocText(text) {
 
         if (data.ok) {
             _renderDocResult(data);
+            _addDocHistoryEntry(data, 'Pasted text', false);
         } else {
             resultArea.innerHTML = `<div class="doc-error">
                 <strong>[X] Processing failed</strong>
@@ -2638,6 +2782,7 @@ async function _processDocUrl(url) {
         }
         if (results.length > 0) {
             _renderDocResultAll(results);
+            _addDocHistoryEntry(results, displayUrl, true);
         } else {
             resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
         }
@@ -2665,6 +2810,7 @@ async function _processDocUrl(url) {
 
         if (data.ok) {
             _renderDocResult(data);
+            _addDocHistoryEntry(data, displayUrl, false);
         } else {
             resultArea.innerHTML = `<div class="doc-error">
                 <strong>[X] Fetch failed</strong>
@@ -4722,6 +4868,10 @@ function openSettings() {
             if (claudeEnabled) claudeEnabled.checked = isEnabled;
             if (claudeBody) claudeBody.classList.toggle('settings-section__body--collapsed', !isEnabled);
 
+            // Force to Claude Code toggle
+            const forceClaudeToggle = document.getElementById('settings-force-claude-code');
+            if (forceClaudeToggle) forceClaudeToggle.checked = !!data.force_to_claude_code;
+
             // Admin mode toggle
             state.adminMode = !!data.admin_mode;
             const adminToggle = document.getElementById('settings-admin-mode');
@@ -4747,6 +4897,7 @@ function saveSettings(e) {
 
     const adminToggle = document.getElementById('settings-admin-mode');
     const claudeToggle = document.getElementById('settings-claude-enabled');
+    const forceClaudeCode = document.getElementById('settings-force-claude-code');
     const payload = {
         user_display_name: dom.settingsUserName ? dom.settingsUserName.value.trim() : '',
         user_display_role: dom.settingsUserRole ? dom.settingsUserRole.value.trim() : '',
@@ -4757,6 +4908,7 @@ function saveSettings(e) {
         response_timeout: dom.settingsResponseTimeout ? parseInt(dom.settingsResponseTimeout.value, 10) : 300,
         execution_backend: dom.settingsExecBackend ? dom.settingsExecBackend.value : 'cli',
         admin_mode: adminToggle ? adminToggle.checked : false,
+        force_to_claude_code: forceClaudeCode ? forceClaudeCode.checked : false,
     };
 
     // Only include API key if user typed a real value (not the masked placeholder)

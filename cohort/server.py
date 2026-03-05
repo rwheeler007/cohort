@@ -1105,6 +1105,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
         "admin_mode": settings.get("admin_mode", False),
+        "force_to_claude_code": settings.get("force_to_claude_code", False),
         "user_display_name": settings.get("user_display_name", ""),
         "user_display_role": settings.get("user_display_role", ""),
         "user_display_avatar": settings.get("user_display_avatar", ""),
@@ -1138,6 +1139,8 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["claude_enabled"] = bool(body["claude_enabled"])
     if "admin_mode" in body:
         settings["admin_mode"] = bool(body["admin_mode"])
+    if "force_to_claude_code" in body:
+        settings["force_to_claude_code"] = bool(body["force_to_claude_code"])
     if "user_display_name" in body:
         name = str(body["user_display_name"]).strip()[:40]
         settings["user_display_name"] = name
@@ -2879,6 +2882,54 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
         return JSONResponse({"ok": False, "error": str(exc)})
 
 
+_DOC_HISTORY_MAX = 50
+
+
+def _doc_history_path() -> Path:
+    return Path(_resolved_data_dir) / "doc_history.json"
+
+
+def _load_doc_history() -> list:
+    p = _doc_history_path()
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+    return []
+
+
+def _save_doc_history(history: list) -> None:
+    p = _doc_history_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+async def doc_history_get(request: Request) -> JSONResponse:
+    """GET /api/doc-processor/history -- return saved processing history."""
+    return JSONResponse({"ok": True, "history": _load_doc_history()})
+
+
+async def doc_history_post(request: Request) -> JSONResponse:
+    """POST /api/doc-processor/history -- append a processing result to history."""
+    body = await request.json()
+    entry = body.get("entry")
+    if not entry:
+        return JSONResponse({"ok": False, "error": "Missing entry"}, status_code=400)
+    history = _load_doc_history()
+    history.insert(0, entry)
+    if len(history) > _DOC_HISTORY_MAX:
+        history = history[:_DOC_HISTORY_MAX]
+    _save_doc_history(history)
+    return JSONResponse({"ok": True, "count": len(history)})
+
+
+async def doc_history_delete(request: Request) -> JSONResponse:
+    """DELETE /api/doc-processor/history -- clear all processing history."""
+    _save_doc_history([])
+    return JSONResponse({"ok": True})
+
+
 async def get_comms_pending_approvals(request: Request) -> JSONResponse:
     """GET /api/comms/pending-approvals -- count and list pending social post drafts."""
     boss_data = _boss_data_dir()
@@ -3104,6 +3155,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
         Route("/api/doc-processor/process", doc_process_file, methods=["POST"]),
         Route("/api/doc-processor/fetch-url", doc_fetch_url, methods=["POST"]),
+        Route("/api/doc-processor/history", doc_history_get, methods=["GET"]),
+        Route("/api/doc-processor/history", doc_history_post, methods=["POST"]),
+        Route("/api/doc-processor/history", doc_history_delete, methods=["DELETE"]),
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
