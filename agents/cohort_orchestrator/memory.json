@@ -1,0 +1,23 @@
+{
+  "agent_id": "cohort_orchestrator",
+  "known_paths": {},
+  "learned_facts": [],
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [
+    {
+      "timestamp": "2026-03-04T22:46:40.403413",
+      "channel": "dm-marketing_agent",
+      "input": "@cohort_orchestrator  - can you get a roundtable going about this please?",
+      "response": "The Cohort server isn't currently running on port 5000, so I can't create the session via API right now. But here's what I'd set up — let me know if you want me to start the server, or if it's running on a different port:\n\n---\n\n**Roundtable Plan: AI Call Center Replacement — Strategic Analysis**\n\n**Topic:** A major Trane D2B dealer replaced their call center with AI, saving $1.1M/year. What are the outcomes, ramifications, and strategic implications?\n\n**Recommended Agents (by relevance):**\n\n| Ag"
+    },
+    {
+      "timestamp": "2026-03-04T23:03:08.385125",
+      "channel": "dm-marketing_agent",
+      "input": "@Orchestrator yes",
+      "response": "The roundtable is live. Here's what I've set up:\n\n**Session: `ai-callcenter-strategy`** (ID: `s_20260304_230243_9c00f7`)\n\n**Channel:** `#ai-callcenter-strategy` on port 5100\n\n**Participants:**\n- **marketing_agent** — competitive positioning, reinvestment strategy, data risk (already provided initial analysis)\n- **analytics_agent** — ROI modeling, TCO framework, KPI tracking (asked to lead off)\n- **content_strategy_agent** — thought leadership positioning, contractor-facing messaging\n- **campaign"
+    }
+  ],
+  "learning_history": [],
+  "archive_history": []
+}

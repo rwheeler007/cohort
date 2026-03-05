@@ -26,6 +26,7 @@ import asyncio
 import json
 import logging
 import os
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -54,6 +55,7 @@ _chat: ChatManager | None = None
 _data_layer: Any = None
 _agent_store: AgentStore | None = None
 _work_queue: Any = None  # WorkQueue instance, set in create_app()
+_briefing: Any = None  # ExecutiveBriefing instance, set in create_app()
 
 # Paths
 _PACKAGE_DIR = Path(__file__).parent
@@ -551,6 +553,58 @@ def _broadcast_work_queue() -> None:
         )
     except Exception:
         pass
+
+
+# =====================================================================
+# Executive briefing
+# =====================================================================
+
+
+async def generate_briefing(request: Request) -> JSONResponse:
+    """POST /api/briefing/generate -- generate an executive briefing.
+
+    Optional JSON body: {"hours": 24, "post_to_channel": true, "channel": "daily-digest"}
+    """
+    if _briefing is None:
+        return JSONResponse(
+            {"error": "Briefing system not initialised"}, status_code=500
+        )
+
+    try:
+        body: dict[str, Any] = await request.json()
+    except Exception:
+        body = {}
+
+    hours = body.get("hours", 24)
+    post_to_channel = body.get("post_to_channel", True)
+    channel = body.get("channel", "daily-digest")
+
+    try:
+        report = _briefing.generate(
+            hours=hours,
+            post_to_channel=post_to_channel,
+            channel_id=channel,
+        )
+        return JSONResponse({"success": True, "report": report.to_dict()})
+    except Exception as exc:
+        logger.exception("Error generating briefing")
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def get_latest_briefing(request: Request) -> JSONResponse:
+    """GET /api/briefing/latest -- return the most recent briefing."""
+    if _briefing is None:
+        return JSONResponse(
+            {"error": "Briefing system not initialised"}, status_code=500
+        )
+
+    report = _briefing.get_latest()
+    if report is None:
+        return JSONResponse(
+            {"error": "No briefings generated yet"}, status_code=404
+        )
+
+    return JSONResponse({"success": True, "report": report.to_dict()})
 
 
 async def get_agent_registry(request: Request) -> JSONResponse:
@@ -1263,6 +1317,129 @@ async def post_permissions(request: Request) -> JSONResponse:
     _save_settings(settings)
 
     logger.info("[OK] Permissions saved (%d services)", len(updated_services))
+    return JSONResponse({"success": True})
+
+
+# =====================================================================
+# Tool Permissions API (per-agent tool access)
+# =====================================================================
+
+# Canonical list of tools that can be toggled from the dashboard.
+_ALL_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch"]
+
+
+def _tool_permissions_path() -> Path:
+    """Return the path to tool_permissions.json in the data directory."""
+    return Path(_resolved_data_dir) / "tool_permissions.json"
+
+
+def _load_tool_permissions() -> dict[str, Any]:
+    """Read tool_permissions.json from disk (bypasses module cache)."""
+    path = _tool_permissions_path()
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning("[!] Failed to read tool_permissions.json: %s", exc)
+    return {}
+
+
+def _save_tool_permissions(data: dict[str, Any]) -> None:
+    """Write tool_permissions.json and invalidate the module cache."""
+    path = _tool_permissions_path()
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    except OSError as exc:
+        logger.warning("[!] Failed to write tool_permissions.json: %s", exc)
+        return
+
+    # Invalidate the cached permissions so the next resolve_permissions()
+    # call picks up the new values immediately.
+    from cohort.tool_permissions import reload_central_permissions
+    reload_central_permissions(path.parent)
+
+
+async def get_tool_permissions(request: Request) -> JSONResponse:
+    """GET /api/tool-permissions -- profiles, defaults, and per-agent resolved view."""
+    from cohort.tool_permissions import resolve_permissions
+
+    central = _load_tool_permissions()
+    profiles = central.get("tool_profiles", {})
+    agent_defaults = central.get("agent_defaults", {})
+    denied_tools = central.get("denied_tools", [])
+    agent_overrides = central.get("agent_overrides", {})
+
+    # Build per-agent resolved view
+    agents_list: list[dict[str, Any]] = []
+    if _agent_store is not None:
+        for config in _agent_store.list_agents(include_hidden=False):
+            # Determine profile source
+            agent_perms = config.tool_permissions or {}
+            profile_name = agent_perms.get("profile", "")
+            if profile_name:
+                profile_source = "agent_config"
+            elif config.agent_type in agent_defaults:
+                profile_name = agent_defaults[config.agent_type]
+                profile_source = "agent_type_default"
+            else:
+                profile_name = "minimal"
+                profile_source = "fallback"
+
+            has_override = config.agent_id in agent_overrides
+
+            # Resolve effective tools
+            resolved = resolve_permissions(config.agent_id, config, central)
+            effective_tools = resolved.allowed_tools if resolved else []
+
+            agents_list.append({
+                "agent_id": config.agent_id,
+                "name": config.name,
+                "agent_type": config.agent_type,
+                "profile_name": profile_name,
+                "profile_source": profile_source,
+                "allowed_tools": effective_tools,
+                "has_override": has_override,
+            })
+
+    return JSONResponse({
+        "profiles": profiles,
+        "agent_defaults": agent_defaults,
+        "denied_tools": denied_tools,
+        "all_tools": _ALL_TOOLS,
+        "agent_overrides": agent_overrides,
+        "agents": agents_list,
+    })
+
+
+async def put_tool_permissions(request: Request) -> JSONResponse:
+    """PUT /api/tool-permissions -- save agent_defaults, denied_tools, and per-agent overrides."""
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    central = _load_tool_permissions()
+
+    # Merge incoming fields (only update fields that are present)
+    if "agent_defaults" in body:
+        central["agent_defaults"] = body["agent_defaults"]
+
+    if "denied_tools" in body:
+        central["denied_tools"] = body["denied_tools"]
+
+    if "agent_overrides" in body:
+        overrides = body["agent_overrides"]
+        # Clean up empty overrides (agent reverted to profile)
+        central["agent_overrides"] = {
+            aid: ov for aid, ov in overrides.items()
+            if ov.get("allowed_tools_override") is not None
+        }
+
+    _save_tool_permissions(central)
+
+    agent_count = len(central.get("agent_overrides", {}))
+    logger.info("[OK] Tool permissions saved (%d agent overrides)", agent_count)
     return JSONResponse({"success": True})
 
 
@@ -2280,8 +2457,86 @@ async def youtube_search_test(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"YouTube service unavailable: {exc}"})
 
 
+def _claude_cli_request(prompt: str, timeout: int = 120) -> str:
+    """Send a prompt to Claude Code CLI and return the text response.
+
+    Uses ``claude --print`` with stdin delivery (proven pattern from
+    agent_router.py).  Strips CLAUDECODE env vars to prevent nested
+    conflicts and runs in a temp directory to avoid CLAUDE.md context.
+    """
+    import shutil
+    import tempfile
+
+    settings = _load_settings()
+    claude_cmd = settings.get("claude_cmd", "") or shutil.which("claude") or "claude"
+
+    env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+
+    result = subprocess.run(
+        [claude_cmd, "--print", "-"],
+        input=prompt,
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+        cwd=tempfile.gettempdir(),
+        env=env,
+        shell=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if result.returncode != 0:
+        stderr = (result.stderr or "").strip()[:300]
+        raise RuntimeError(f"Claude CLI failed (rc={result.returncode}): {stderr}")
+    return (result.stdout or "").strip()
+
+
+def _claude_cli_vision_request(
+    prompt: str, image_bytes: bytes, filename: str, timeout: int = 120
+) -> str:
+    """Send an image + prompt to Claude Code CLI for vision analysis.
+
+    Writes the image to a temp file, then passes the prompt via stdin
+    referencing the temp file path so Claude can read it.
+    """
+    import shutil
+    import tempfile
+
+    settings = _load_settings()
+    claude_cmd = settings.get("claude_cmd", "") or shutil.which("claude") or "claude"
+    env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+
+    # Write image to temp file so Claude CLI can access it
+    ext = Path(filename).suffix.lower() or ".png"
+    tmp_dir = tempfile.gettempdir()
+    tmp_path = Path(tmp_dir) / f"cohort_vision_{os.getpid()}{ext}"
+    try:
+        tmp_path.write_bytes(image_bytes)
+        full_prompt = (
+            f"I have an image file at: {tmp_path}\n\n"
+            f"Please analyze this image. {prompt}"
+        )
+        result = subprocess.run(
+            [claude_cmd, "--print", "-"],
+            input=full_prompt,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=tmp_dir,
+            env=env,
+            shell=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if result.returncode != 0:
+            stderr = (result.stderr or "").strip()[:300]
+            raise RuntimeError(f"Claude CLI vision failed (rc={result.returncode}): {stderr}")
+        return (result.stdout or "").strip()
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
 async def doc_summarize(request: Request) -> JSONResponse:
-    """POST /api/doc-processor/summarize -- summarize text via local Ollama."""
+    """POST /api/doc-processor/summarize -- summarize text via local Ollama or Claude CLI."""
     from cohort.local.ollama import OllamaClient
 
     try:
@@ -2318,9 +2573,37 @@ async def doc_summarize(request: Request) -> JSONResponse:
     prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
 
     input_words = len(text.split())
-    client = OllamaClient(timeout=180)
+    engine = body.get("engine", "ollama")
     import time
     t0 = time.time()
+
+    if engine == "smart":
+        # Route through Claude Code CLI
+        try:
+            response_text = await asyncio.to_thread(_claude_cli_request, prompt)
+            elapsed = round(time.time() - t0, 1)
+            if response_text:
+                output_words = len(response_text.split())
+                compression = round((1 - output_words / max(input_words, 1)) * 100, 1) if input_words > 0 else 0
+                return JSONResponse({
+                    "ok": True,
+                    "summary": response_text,
+                    "model": "claude",
+                    "mode": mode,
+                    "stats": {
+                        "input_words": input_words,
+                        "input_chars": len(text),
+                        "output_words": output_words,
+                        "compression_pct": compression,
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+            return JSONResponse({"ok": False, "error": "Claude returned no output."})
+        except Exception as exc:
+            return JSONResponse({"ok": False, "error": f"Claude CLI error: {exc}"})
+
+    # Default: Ollama
+    client = OllamaClient(timeout=180)
     try:
         result = await asyncio.to_thread(
             client.generate,
@@ -2536,7 +2819,7 @@ def _ollama_vision_request(model: str, prompt: str, image_b64_list: list[str],
         }],
         "stream": False,
         "options": {"temperature": 0.3, "num_predict": 1024},
-        "keep_alive": "5m",
+        "keep_alive": "2m",
         "think": False,
     }).encode("utf-8")
 
@@ -2580,6 +2863,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
     content_type = upload.content_type or "application/octet-stream"
     mode = form.get("mode", "summary")
     model_override = form.get("model", "")
+    engine = form.get("engine", "ollama")
 
     if len(file_bytes) > 50 * 1024 * 1024:  # 50MB limit
         return JSONResponse({"error": "File too large (max 50MB)"}, status_code=400)
@@ -2587,10 +2871,8 @@ async def doc_process_file(request: Request) -> JSONResponse:
     model = model_override.strip() if model_override and model_override.strip() else _get_configured_model()
     t0 = time.time()
 
-    # ── Image handling: send directly to vision model ──
+    # ── Image handling ──
     if _is_image_type(filename, content_type):
-        img_b64 = base64.b64encode(file_bytes).decode()
-
         prompts = {
             "summary": "Describe this image in detail. What does it contain? List all notable elements, text, diagrams, charts, or information visible.",
             "outline": "Create a structured breakdown of everything visible in this image. Use headings and bullet points.",
@@ -2599,6 +2881,32 @@ async def doc_process_file(request: Request) -> JSONResponse:
         }
         prompt = prompts.get(mode, prompts["summary"])
 
+        if engine == "smart":
+            try:
+                response_text = await asyncio.to_thread(
+                    _claude_cli_vision_request, prompt, file_bytes, filename
+                )
+                elapsed = round(time.time() - t0, 1)
+                if response_text:
+                    return JSONResponse({
+                        "ok": True,
+                        "summary": response_text,
+                        "model": "claude",
+                        "mode": mode,
+                        "file_type": "image",
+                        "filename": filename,
+                        "stats": {
+                            "file_size": len(file_bytes),
+                            "output_words": len(response_text.split()),
+                            "elapsed_seconds": elapsed,
+                        },
+                    })
+                return JSONResponse({"ok": False, "error": "Claude returned no output for image."})
+            except Exception as exc:
+                return JSONResponse({"ok": False, "error": f"Claude CLI vision error: {exc}"})
+
+        # Ollama vision
+        img_b64 = base64.b64encode(file_bytes).decode()
         vision_result = await asyncio.to_thread(
             _ollama_vision_request, model, prompt, [img_b64]
         )
@@ -2627,22 +2935,48 @@ async def doc_process_file(request: Request) -> JSONResponse:
             err_msg += f" Error: {err_detail[:300]}"
         return JSONResponse({"ok": False, "error": err_msg})
 
-    # ── Video handling: extract keyframes, send to vision model ──
+    # ── Video handling: extract keyframes ──
     if _is_video_type(filename, content_type):
         frames = await asyncio.to_thread(_extract_video_frames, file_bytes, 6)
         if not frames:
             return JSONResponse({"ok": False, "error": "Could not extract frames from video. Is the format supported?"})
 
-        frames_b64 = [base64.b64encode(f).decode() for f in frames]
-
         prompts = {
-            "summary": f"These are {len(frames)} evenly-spaced frames from a video called '{filename}'. Describe what happens in the video based on these frames. Provide a coherent narrative summary.",
-            "outline": f"These are {len(frames)} frames from a video. Create a structured timeline of what happens at each stage of the video.",
-            "extract_key_points": f"These are {len(frames)} frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
-            "image": f"These are {len(frames)} frames from a video. Describe what is visually depicted in each frame: subjects, actions, colors, style, setting, and composition.",
+            "summary": f"These are frames from a video called '{filename}'. Describe what happens in the video. Provide a coherent narrative summary.",
+            "outline": f"These are frames from a video. Create a structured timeline of what happens at each stage.",
+            "extract_key_points": f"These are frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
+            "image": f"These are frames from a video. Describe what is visually depicted: subjects, actions, colors, style, setting, and composition.",
         }
         prompt = prompts.get(mode, prompts["summary"])
 
+        if engine == "smart":
+            # Send first keyframe to Claude CLI for analysis
+            try:
+                response_text = await asyncio.to_thread(
+                    _claude_cli_vision_request, prompt, frames[0], "frame.png"
+                )
+                elapsed = round(time.time() - t0, 1)
+                if response_text:
+                    return JSONResponse({
+                        "ok": True,
+                        "summary": response_text,
+                        "model": "claude",
+                        "mode": mode,
+                        "file_type": "video",
+                        "filename": filename,
+                        "stats": {
+                            "file_size": len(file_bytes),
+                            "frames_extracted": len(frames),
+                            "output_words": len(response_text.split()),
+                            "elapsed_seconds": elapsed,
+                        },
+                    })
+                return JSONResponse({"ok": False, "error": "Claude returned no output for video."})
+            except Exception as exc:
+                return JSONResponse({"ok": False, "error": f"Claude CLI vision error: {exc}"})
+
+        # Ollama vision with all frames
+        frames_b64 = [base64.b64encode(f).decode() for f in frames]
         vision_result = await asyncio.to_thread(
             _ollama_vision_request, model, prompt, frames_b64, 300
         )
@@ -2731,7 +3065,38 @@ async def doc_process_file(request: Request) -> JSONResponse:
             ),
         }
     prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
+    input_words = len(text.split())
 
+    if engine == "smart":
+        try:
+            response_text = await asyncio.to_thread(_claude_cli_request, prompt)
+            elapsed = round(time.time() - t0, 1)
+            if response_text:
+                output_words = len(response_text.split())
+                compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
+                return JSONResponse({
+                    "ok": True,
+                    "summary": response_text,
+                    "extracted_text_preview": text[:500],
+                    "model": "claude",
+                    "mode": mode,
+                    "file_type": extraction["format"],
+                    "filename": filename,
+                    "stats": {
+                        "file_size": len(file_bytes),
+                        "pages": extraction.get("pages"),
+                        "input_words": input_words,
+                        "input_chars": len(text),
+                        "output_words": output_words,
+                        "compression_pct": compression,
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+            return JSONResponse({"ok": False, "error": "Claude returned no output."})
+        except Exception as exc:
+            return JSONResponse({"ok": False, "error": f"Claude CLI error: {exc}"})
+
+    # Default: Ollama
     client = OllamaClient(timeout=180)
     try:
         result = await asyncio.to_thread(
@@ -2739,7 +3104,6 @@ async def doc_process_file(request: Request) -> JSONResponse:
         )
         elapsed = round(time.time() - t0, 1)
         if result and result.text:
-            input_words = len(text.split())
             output_words = len(result.text.split())
             compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
             return JSONResponse({
@@ -2829,8 +3193,8 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
     if not text:
         return JSONResponse({"ok": False, "error": f"No text could be extracted from {url}"})
 
-    # Summarize with Ollama (same as doc_process_file text path)
-    from cohort.local.ollama import OllamaClient
+    # Summarize extracted text
+    engine = body.get("engine", "ollama")
     prompts = {
         "summary": (
             "Summarize the following web page content in 3-5 concise bullet points. "
@@ -2846,7 +3210,39 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
         ),
     }
     prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
+    input_words = len(text.split())
 
+    if engine == "smart":
+        try:
+            response_text = await asyncio.to_thread(_claude_cli_request, prompt)
+            elapsed = round(time.time() - t0, 1)
+            if response_text:
+                output_words = len(response_text.split())
+                compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
+                return JSONResponse({
+                    "ok": True,
+                    "summary": response_text,
+                    "extracted_text_preview": text[:500],
+                    "model": "claude",
+                    "mode": mode,
+                    "file_type": "url",
+                    "filename": domain,
+                    "stats": {
+                        "url": url,
+                        "content_size": len(data),
+                        "input_words": input_words,
+                        "input_chars": len(text),
+                        "output_words": output_words,
+                        "compression_pct": compression,
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+            return JSONResponse({"ok": False, "error": "Claude returned no output."})
+        except Exception as exc:
+            return JSONResponse({"ok": False, "error": f"Claude CLI error: {exc}"})
+
+    # Default: Ollama
+    from cohort.local.ollama import OllamaClient
     client = OllamaClient(timeout=180)
     try:
         result = await asyncio.to_thread(
@@ -2854,7 +3250,6 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
         )
         elapsed = round(time.time() - t0, 1)
         if result and result.text:
-            input_words = len(text.split())
             output_words = len(result.text.split())
             compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
             return JSONResponse({
@@ -3062,6 +3457,18 @@ def create_app(data_dir: str = "data") -> Starlette:
     setup_work_queue(_work_queue)
     logger.info("[OK] Work queue initialised")
 
+    # -- Executive Briefing ---------------------------------------------
+    from cohort.executive_briefing import ExecutiveBriefing
+    global _briefing  # noqa: PLW0603
+    _briefing = ExecutiveBriefing(
+        data_dir=Path(resolved_dir),
+        chat=_chat,
+        work_queue=_work_queue,
+        data_layer=_data_layer,
+        orchestrator_getter=_get_session_orch,
+    )
+    logger.info("[OK] Executive briefing initialised")
+
     # -- Routes ---------------------------------------------------------
     routes = [
         Route("/", index, methods=["GET"]),
@@ -3085,6 +3492,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/settings/test-connection", test_connection, methods=["POST"]),
         Route("/api/permissions", get_permissions, methods=["GET"]),
         Route("/api/permissions", post_permissions, methods=["POST"]),
+        Route("/api/tool-permissions", get_tool_permissions, methods=["GET"]),
+        Route("/api/tool-permissions", put_tool_permissions, methods=["PUT"]),
         Route("/api/tools", list_tools, methods=["GET"]),
         Route("/api/tasks", get_task_queue, methods=["GET"]),
         Route("/api/tasks", create_task, methods=["POST"]),
@@ -3096,6 +3505,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/work-queue/claim", claim_work_item, methods=["POST"]),
         Route("/api/work-queue/{item_id}", get_work_item, methods=["GET"]),
         Route("/api/work-queue/{item_id}", update_work_item, methods=["PATCH"]),
+        # Executive briefing
+        Route("/api/briefing/generate", generate_briefing, methods=["POST"]),
+        Route("/api/briefing/latest", get_latest_briefing, methods=["GET"]),
         # Setup wizard endpoints
         Route("/api/setup/status", setup_status, methods=["GET"]),
         Route("/api/setup/detect", setup_detect_hardware, methods=["POST"]),

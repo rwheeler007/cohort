@@ -82,6 +82,7 @@ async def sio_env(sio_data_layer: CohortDataLayer, sio_chat: ChatManager):
     _mod._data_layer = None
     _mod._chat = None
     _mod._task_executor = None
+    _mod._work_queue = None
 
 
 # Convenience alias

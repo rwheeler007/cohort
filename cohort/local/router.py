@@ -17,7 +17,14 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from cohort.local.config import get_model_for_vram, get_temperature, get_tier_for_model
+from cohort.local.config import (
+    get_model_for_vram,
+    get_temperature,
+    get_tier_for_model,
+    RESPONSE_MODE_PARAMS,
+    THINKING_DRAIN_TOKEN_THRESHOLD,
+    MIN_CONTENT_CHARS,
+)
 from cohort.local.detect import detect_hardware
 from cohort.local.ollama import OllamaClient
 
@@ -99,6 +106,8 @@ class LocalRouter:
         prompt: str,
         task_type: str | None = None,
         temperature: float | None = None,
+        response_mode: str = "smart",
+        system: str | None = None,
     ) -> RouteResult | None:
         """Route prompt to local Ollama model.
 
@@ -106,6 +115,9 @@ class LocalRouter:
             prompt: Input text
             task_type: Task type hint (code, reasoning, general, creative)
             temperature: Override temperature (None = use task_type default)
+            response_mode: "smart" (thinking enabled, high budget) or
+                           "quick" (no thinking, lower budget)
+            system: Optional system prompt (grounding rules, etc.)
 
         Returns:
             RouteResult with text and metadata, or None on failure.
@@ -115,6 +127,9 @@ class LocalRouter:
         - Hardware detection failed (CPU-only)
         - Model not installed
         - Generation failed
+
+        If smart mode produces an empty response (thinking drain),
+        automatically retries in quick mode.
 
         Caller should handle None by falling back to Claude CLI.
         """
@@ -127,8 +142,6 @@ class LocalRouter:
             # Detect hardware to select model
             hw_info = self._detect_hardware()
             if hw_info.cpu_only:
-                # No GPU available -- skip local routing
-                # (could support CPU-only models in future, but skip for now)
                 return None
 
             # Select model based on VRAM
@@ -140,21 +153,53 @@ class LocalRouter:
 
             available_models = self._client.list_models()
             if model not in available_models:
-                # Requested model not installed -- fallback to Claude
                 return None
 
             # Get temperature
             temp = temperature if temperature is not None else get_temperature(task_type)
+
+            # Get response mode parameters
+            mode_params = RESPONSE_MODE_PARAMS.get(response_mode, RESPONSE_MODE_PARAMS["smart"])
 
             # Generate response
             result = self._client.generate(
                 model=model,
                 prompt=prompt,
                 temperature=temp,
+                system=system,
+                think=mode_params["think"],
+                keep_alive=mode_params["keep_alive"],
+                options={"num_predict": mode_params["num_predict"]},
             )
 
             if result is None:
                 return None
+
+            # Thinking drain retry: if smart mode produced empty/truncated
+            # content (thinking consumed the entire num_predict budget),
+            # auto-retry in quick mode.
+            if (
+                response_mode == "smart"
+                and result.tokens_out > THINKING_DRAIN_TOKEN_THRESHOLD
+                and len(result.text.strip()) < MIN_CONTENT_CHARS
+            ):
+                logger.info(
+                    "[!] Smart mode thinking drain (%d tokens out, %d chars). "
+                    "Retrying in quick mode.",
+                    result.tokens_out, len(result.text.strip()),
+                )
+                quick_params = RESPONSE_MODE_PARAMS["quick"]
+                result = self._client.generate(
+                    model=model,
+                    prompt=prompt,
+                    temperature=temp,
+                    system=system,
+                    think=quick_params["think"],
+                    keep_alive=quick_params["keep_alive"],
+                    options={"num_predict": quick_params["num_predict"]},
+                )
+                if result is None:
+                    return None
 
             tier = get_tier_for_model(model)
             return RouteResult(
@@ -178,6 +223,7 @@ class LocalRouter:
         temperature: float = 0.4,
         system: str | None = None,
         max_turns: int = 10,
+        response_mode: str = "smart",
     ) -> RouteResult | None:
         """Route a tool-enabled conversation to local Ollama model.
 
@@ -226,6 +272,8 @@ class LocalRouter:
             # Work on a mutable copy of messages
             conversation = list(messages)
 
+            mode_params = RESPONSE_MODE_PARAMS.get(response_mode, RESPONSE_MODE_PARAMS["smart"])
+
             while turn < max_turns:
                 turn += 1
 
@@ -235,6 +283,9 @@ class LocalRouter:
                     tools=tools,
                     temperature=temperature,
                     system=system if turn == 1 else None,  # System only on first call
+                    think=mode_params["think"],
+                    keep_alive=mode_params["keep_alive"],
+                    options={"num_predict": mode_params["num_predict"]},
                 )
 
                 if result is None:

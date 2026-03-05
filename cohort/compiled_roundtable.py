@@ -313,6 +313,7 @@ def _call_ollama(
         available = client.list_models()
         # Prefer large models for multi-persona generation
         preferred = [
+            "qwen3.5:9b",                     # Current primary model
             "qwen3:30b-a3b", "qwen3:30b", "qwen2.5:32b",
             "llama3.1:70b", "llama3.3:70b",
             "qwen3:8b", "llama3.2:3b",
@@ -329,6 +330,8 @@ def _call_ollama(
         prompt=user_prompt,
         system=system_prompt,
         temperature=temperature,
+        think=False,        # No thinking for compiled roundtable -- structured output only
+        keep_alive="2m",
         options={
             "num_predict": DEFAULT_NUM_PREDICT,
             "num_ctx": DEFAULT_NUM_CTX,

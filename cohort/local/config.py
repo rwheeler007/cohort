@@ -1,12 +1,13 @@
 """Local router configuration.
 
-Hardcoded VRAM-tier model mapping and task-specific temperatures.
+Hardcoded VRAM-tier model mapping, task-specific temperatures,
+and response mode presets (smart/quick).
 Zero external dependencies -- pure Python data structures.
 """
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 
 class ModelMapping(TypedDict):
@@ -81,6 +82,36 @@ MODEL_DESCRIPTIONS: dict[str, dict[str, str]] = {
         "summary": "Strong reasoning and coding with 256K context, great for most tasks",
     },
 }
+
+
+# =====================================================================
+# Response Mode Configuration
+# =====================================================================
+# "Smart by default": thinking enabled, high token budget.
+# "Quick" is opt-in for speed/cost savings.
+
+ResponseMode = Literal["smart", "quick"]
+
+RESPONSE_MODE_PARAMS: dict[str, dict] = {
+    "smart": {
+        "think": True,
+        "num_predict": 16384,   # 16K budget: ~8K thinking + ~8K response
+        "keep_alive": "2m",
+    },
+    "quick": {
+        "think": False,
+        "num_predict": 4096,    # 4K budget: response tokens only
+        "keep_alive": "2m",
+    },
+}
+
+DEFAULT_RESPONSE_MODE: ResponseMode = "smart"
+DEFAULT_KEEP_ALIVE = "2m"
+
+# Empty-response retry: if tokens_out exceeds this but visible content
+# is shorter than MIN_CONTENT_CHARS, the model spent all tokens thinking.
+THINKING_DRAIN_TOKEN_THRESHOLD = 200
+MIN_CONTENT_CHARS = 20
 
 
 def get_model_for_vram(vram_mb: int) -> str:

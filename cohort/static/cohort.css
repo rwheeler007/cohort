@@ -569,6 +569,171 @@ body {
     flex: 1;
 }
 
+/* Gear icon on agent card header */
+.agent-card__header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.agent-card__gear {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+    line-height: 1;
+    opacity: 0;
+}
+
+.agent-card:hover .agent-card__gear {
+    opacity: 1;
+}
+
+.agent-card__gear:hover {
+    color: var(--color-cohort);
+    background-color: var(--color-bg-tertiary);
+}
+
+/* =============================================================================
+   Tool Permissions Modal (per-agent)
+   ============================================================================= */
+
+.tool-perms__profile {
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.tool-perms__profile strong {
+    color: var(--color-cohort);
+}
+
+.tool-perms__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.tool-perms__tool {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+}
+
+.tool-perms__tool:hover {
+    border-color: var(--color-cohort);
+}
+
+.tool-perms__tool--denied {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tool-perms__check {
+    flex-shrink: 0;
+    accent-color: var(--color-cohort);
+}
+
+.tool-perms__tool-name {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    min-width: 80px;
+}
+
+.tool-perms__tool-desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.tool-perms__denied-tag {
+    color: var(--color-status-error);
+    font-style: italic;
+}
+
+.tool-perms__override-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-bottom: var(--space-3);
+}
+
+/* =============================================================================
+   Tool Defaults (tab in Permissions modal)
+   ============================================================================= */
+
+.tool-defaults__section {
+    margin-bottom: var(--space-4);
+}
+
+.tool-defaults__section h4 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: 0 0 var(--space-2) 0;
+}
+
+.tool-defaults__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-1);
+}
+
+.tool-defaults__type-label {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-transform: capitalize;
+}
+
+.tool-defaults__tools-preview {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.tool-defaults__profile-select {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    min-width: 120px;
+}
+
+.tool-defaults__denied-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    margin: var(--space-1);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.tool-defaults__denied-check {
+    accent-color: var(--color-status-error);
+}
+
 /* =============================================================================
    Task Cards (Work Queue)
    ============================================================================= */
@@ -1581,6 +1746,32 @@ textarea.form-input {
 
 .message-send-btn {
     padding: var(--space-2) var(--space-4);
+}
+
+/* Response Mode toggle button (Smart/Quick) */
+.response-mode-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-accent);
+    background: rgba(217, 119, 87, 0.12);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.response-mode-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-muted);
+}
+
+.response-mode-btn.quick {
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+    background: transparent;
 }
 
 /* =============================================================================
@@ -4297,6 +4488,55 @@ select.tool-config-card__input option {
     max-width: 180px;
 }
 
+/* ── Engine toggle (Ollama / Smart) ── */
+
+.doc-engine-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 2px;
+    flex-shrink: 0;
+}
+
+.doc-engine-radio {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-weight: 500;
+}
+
+.doc-engine-radio:hover {
+    color: var(--color-text);
+}
+
+.doc-engine-radio:has(input:checked) {
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.doc-engine-radio--smart:has(input:checked) {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.doc-engine-radio input[type="radio"] {
+    display: none;
+}
+
+.doc-engine-bar__model--disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
 /* ── Model selector ── */
 
 .doc-model-select {
@@ -4474,8 +4714,11 @@ select.tool-config-card__input option {
 .doc-controls {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
+    gap: var(--space-2);
+}
+
+.doc-controls > .btn {
+    margin-left: auto;
 }
 
 .doc-mode-selector {

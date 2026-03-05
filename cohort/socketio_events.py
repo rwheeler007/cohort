@@ -313,6 +313,7 @@ async def send_message(sid: str, data: dict) -> dict:
         )
 
     thread_id = data.get("thread_id")
+    response_mode = data.get("response_mode", "smart")
 
     msg = _chat.post_message(
         channel_id=channel_id,
@@ -340,7 +341,7 @@ async def send_message(sid: str, data: dict) -> dict:
 
     if mentions:
         from cohort.agent_router import route_mentions
-        route_mentions(msg, mentions)
+        route_mentions(msg, mentions, response_mode=response_mode)
 
     return {"status": "ok", "message_id": msg.id}
 

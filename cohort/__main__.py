@@ -165,6 +165,62 @@ def _cmd_next_speaker(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_briefing(args: argparse.Namespace) -> int:
+    """Generate or view executive briefings."""
+    import os
+    from pathlib import Path
+
+    from cohort.chat import ChatManager
+    from cohort.executive_briefing import ExecutiveBriefing
+    from cohort.registry import JsonFileStorage
+
+    resolved_dir = os.environ.get("COHORT_DATA_DIR", getattr(args, "data_dir", "data"))
+    storage = JsonFileStorage(resolved_dir)
+    chat = ChatManager(storage)
+
+    # Try to load work queue (optional)
+    work_queue = None
+    try:
+        from cohort.work_queue import WorkQueue
+        work_queue = WorkQueue(Path(resolved_dir))
+    except Exception:
+        pass
+
+    briefing = ExecutiveBriefing(
+        data_dir=Path(resolved_dir),
+        chat=chat,
+        work_queue=work_queue,
+    )
+
+    brief_cmd = getattr(args, "brief_command", None)
+
+    if brief_cmd == "generate":
+        report = briefing.generate(
+            hours=args.hours,
+            post_to_channel=not args.no_post,
+        )
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), indent=2))
+        else:
+            print(report.to_text())
+        return 0
+
+    elif brief_cmd == "latest":
+        report = briefing.get_latest()
+        if report is None:
+            print("[X] No briefings found.", file=sys.stderr)
+            return 1
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), indent=2))
+        else:
+            print(report.to_text())
+        return 0
+
+    else:
+        print("Usage: python -m cohort briefing [generate|latest]", file=sys.stderr)
+        return 1
+
+
 def _cmd_say(args: argparse.Namespace) -> int:
     """Append a message to the conversation."""
     from cohort.chat import ChatManager
@@ -235,6 +291,24 @@ def main() -> None:
     sa_parser.add_argument("--port", type=int, default=8200, help="Port")
     sa_parser.add_argument("--agents-dir", default=None, help="Path to agents directory")
 
+    # -- briefing -------------------------------------------------------
+    brief_parser = sub.add_parser("briefing", help="Generate or view executive briefing")
+    brief_sub = brief_parser.add_subparsers(dest="brief_command")
+
+    gen_parser = brief_sub.add_parser("generate", help="Generate a new briefing")
+    gen_parser.add_argument("--hours", type=int, default=24, help="Hours to cover")
+    gen_parser.add_argument("--data-dir", default="data", help="Data directory")
+    gen_parser.add_argument("--no-post", action="store_true", help="Don't post to channel")
+    gen_parser.add_argument(
+        "--format", choices=["json", "text"], default="text", help="Output format"
+    )
+
+    latest_parser = brief_sub.add_parser("latest", help="Show latest briefing")
+    latest_parser.add_argument("--data-dir", default="data", help="Data directory")
+    latest_parser.add_argument(
+        "--format", choices=["json", "text"], default="text", help="Output format"
+    )
+
     # -- setup ------------------------------------------------------
     sub.add_parser(
         "setup",
@@ -259,6 +333,8 @@ def main() -> None:
         sys.exit(_cmd_next_speaker(args))
     elif args.command == "say":
         sys.exit(_cmd_say(args))
+    elif args.command == "briefing":
+        sys.exit(_cmd_briefing(args))
     elif args.command == "serve-agents":
         from cohort.agent_api import serve_agents
 

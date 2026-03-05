@@ -145,8 +145,17 @@ def resolve_permissions(
     if "max_turns" in agent_perms:
         max_turns = agent_perms["max_turns"]
 
+    # Step 4.5: Apply central UI overrides (from dashboard gear icon)
+    # These take precedence over agent_config.json overrides because the
+    # dashboard is the operator's direct control surface.
+    central_overrides = central.get("agent_overrides", {}).get(agent_id, {})
+    if central_overrides.get("allowed_tools_override") is not None:
+        allowed_tools = list(central_overrides["allowed_tools_override"])
+
     # Step 5: Subtract denied tools
     agent_denied = set(agent_perms.get("denied_tools", []))
+    central_denied = set(central_overrides.get("denied_tools", []))
+    agent_denied = agent_denied | central_denied
     all_denied = global_denied | agent_denied
     if all_denied:
         allowed_tools = [t for t in allowed_tools if t not in all_denied]

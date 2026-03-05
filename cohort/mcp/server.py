@@ -1853,6 +1853,90 @@ cohort_compiled_roundtable = cohort_compiled_discussion
 
 
 # =====================================================================
+# Executive briefing
+# =====================================================================
+
+
+class GenerateBriefingInput(BaseModel):
+    """Input for generating an executive briefing."""
+
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    hours: int = Field(
+        24,
+        description="Hours of activity to cover (default 24).",
+        ge=1,
+        le=168,
+    )
+    post_to_channel: bool = Field(
+        True,
+        description="Post briefing to a channel. Default True.",
+    )
+    channel: str = Field(
+        "daily-digest",
+        description="Channel to post to (default 'daily-digest').",
+        min_length=1,
+        max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_generate_briefing",
+    annotations={
+        "title": "Generate Executive Briefing",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_generate_briefing(params: GenerateBriefingInput) -> str:
+    """Generate an executive briefing for this Cohort deployment.
+
+    Gathers stats from the work queue, chat channels, team status, and
+    discussion sessions.  Returns a formatted summary and optionally
+    posts it to a channel.  Each deployment produces a unique briefing
+    from its own activity data.
+    """
+    result = await _client.generate_briefing(
+        hours=params.hours,
+        post_to_channel=params.post_to_channel,
+        channel=params.channel,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+
+    if not result.get("success"):
+        return f"Error generating briefing: {result.get('error', 'Unknown')}"
+
+    report = result.get("report", {})
+    sections = report.get("sections", [])
+
+    lines = [
+        f"## Executive Briefing ({report.get('generated_at', 'unknown')[:19]})",
+        f"Period: {report.get('period_start', '?')[:10]} to "
+        f"{report.get('period_end', '?')[:10]}",
+        "",
+    ]
+    for section in sections:
+        lines.append(f"### {section.get('title', 'Untitled')}")
+        lines.append(section.get("content", "(no content)"))
+        lines.append("")
+
+    posted = (
+        f"Posted to #{params.channel}."
+        if params.post_to_channel
+        else "Not posted."
+    )
+    lines.append(f"---\nBriefing ID: {report.get('id', '?')}. {posted}")
+
+    text = "\n".join(lines)
+    if len(text) > CHARACTER_LIMIT:
+        text = text[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return text
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

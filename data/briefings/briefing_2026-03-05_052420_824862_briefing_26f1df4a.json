@@ -1,0 +1,121 @@
+{
+  "id": "briefing_26f1df4a",
+  "generated_at": "2026-03-05T05:24:20.680249+00:00",
+  "period_start": "2026-03-03T22:24:20.680141",
+  "period_end": "2026-03-04T22:24:20.680141",
+  "sections": [
+    {
+      "title": "Work Queue",
+      "content": "No items in the work queue.",
+      "data": {
+        "total": 0
+      }
+    },
+    {
+      "title": "Channel Activity",
+      "content": "Total messages: 78 across 16 active channels\n\nMost active channels:\n  #dm-analytics_agent: 14 messages (2 participants)\n  #tool-help-comms_service: 13 messages (2 participants)\n  #rt-our-api-authentication-design-with-the-s: 9 messages (4 participants)\n  #dm-ceo_agent: 5 messages (2 participants)\n  #dm-python_developer: 5 messages (2 participants)\n\nMost active participants:\n  @user: 28 messages\n  @analytics_agent: 7 messages\n  @python_developer: 6 messages\n  @cohort_orchestrator: 3 messages\n  @setup_guide: 3 messages\n\nMost mentioned:\n  @setup_guide: 8 mentions\n  @python_developer: 6 mentions\n  @cohort_orchestrator: 5 mentions\n  @security_agent: 5 mentions\n  @ceo_agent: 2 mentions",
+      "data": {
+        "total_messages": 78,
+        "active_channels": 16,
+        "channel_stats": [
+          {
+            "channel": "dm-analytics_agent",
+            "message_count": 14,
+            "unique_senders": 2,
+            "top_sender": "analytics_agent"
+          },
+          {
+            "channel": "tool-help-comms_service",
+            "message_count": 13,
+            "unique_senders": 2,
+            "top_sender": "user"
+          },
+          {
+            "channel": "rt-our-api-authentication-design-with-the-s",
+            "message_count": 9,
+            "unique_senders": 4,
+            "top_sender": "cohort_orchestrator"
+          },
+          {
+            "channel": "dm-ceo_agent",
+            "message_count": 5,
+            "unique_senders": 2,
+            "top_sender": "user"
+          },
+          {
+            "channel": "dm-python_developer",
+            "message_count": 5,
+            "unique_senders": 2,
+            "top_sender": "user"
+          },
+          {
+            "channel": "dm-python_developer-2",
+            "message_count": 5,
+            "unique_senders": 2,
+            "top_sender": "python_developer"
+          },
+          {
+            "channel": "dm-ceo_agent-2",
+            "message_count": 4,
+            "unique_senders": 2,
+            "top_sender": "user"
+          },
+          {
+            "channel": "tool-help-web_search",
+            "message_count": 3,
+            "unique_senders": 1,
+            "top_sender": "user"
+          },
+          {
+            "channel": "tool-help-health_monitor",
+            "message_count": 3,
+            "unique_senders": 1,
+            "top_sender": "user"
+          },
+          {
+            "channel": "dm-ceo_agent-3",
+            "message_count": 3,
+            "unique_senders": 2,
+            "top_sender": "ceo_agent"
+          }
+        ],
+        "top_senders": {
+          "user": 28,
+          "analytics_agent": 7,
+          "python_developer": 6,
+          "cohort_orchestrator": 3,
+          "setup_guide": 3,
+          "ceo_agent": 3,
+          "security_agent": 2,
+          "database_developer": 1,
+          "ceo_agent-2": 1,
+          "javascript_developer": 1
+        },
+        "top_mentioned": {
+          "setup_guide": 8,
+          "python_developer": 6,
+          "cohort_orchestrator": 5,
+          "security_agent": 5,
+          "ceo_agent": 2,
+          "distributed_systems_agent": 1,
+          "Cohort": 1,
+          "database_developer": 1,
+          "Python": 1
+        }
+      }
+    },
+    {
+      "title": "Team Status",
+      "content": "Team data not available.",
+      "data": {}
+    },
+    {
+      "title": "Discussion Sessions",
+      "content": "Session tracking not available.",
+      "data": {}
+    }
+  ],
+  "metadata": {
+    "hours": 24
+  }
+}

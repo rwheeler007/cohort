@@ -395,6 +395,32 @@ class CohortClient:
             return data["item"]
         return None
 
+    # -- briefing --------------------------------------------------------
+
+    async def generate_briefing(
+        self,
+        hours: int = 24,
+        post_to_channel: bool = True,
+        channel: str = "daily-digest",
+    ) -> dict[str, Any] | None:
+        """POST /api/briefing/generate -> generate executive briefing."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/briefing/generate",
+            json_body={
+                "hours": hours,
+                "post_to_channel": post_to_channel,
+                "channel": channel,
+            },
+        )
+
+    async def get_latest_briefing(self) -> dict[str, Any] | None:
+        """GET /api/briefing/latest -> most recent briefing."""
+        return await _request(
+            "GET",
+            f"{self.base_url}/api/briefing/latest",
+        )
+
     # -- checklist (file-based) -----------------------------------------
 
     async def read_checklist(self) -> dict[str, Any] | None:

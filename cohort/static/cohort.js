@@ -28,6 +28,9 @@ const state = {
     messages: {},            // Messages per channel: { channelId: [msg, ...] }
     replyingTo: null,        // Message ID being replied to
 
+    // Response mode: per-channel toggle (Smart is default, Quick is opt-in)
+    quickModeChannels: new Set(),  // channel IDs with Quick mode enabled
+
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
 
@@ -159,6 +162,20 @@ function initDom() {
         addServiceKeyBtn: $('#add-service-key-btn'),
         permGridHead: $('#perm-grid-head'),
         permGridBody: $('#perm-grid-body'),
+        permPanelToolDefaults: $('#perm-panel-tool-defaults'),
+        toolDefaultsGrid: $('#tool-defaults-grid'),
+        toolDefaultsDenied: $('#tool-defaults-denied'),
+
+        // Tool Permissions modal (per-agent)
+        toolPermsModal: $('#tool-perms-modal'),
+        toolPermsClose: $('#tool-perms-close'),
+        toolPermsCancel: $('#tool-perms-cancel'),
+        toolPermsSave: $('#tool-perms-save'),
+        toolPermsReset: $('#tool-perms-reset'),
+        toolPermsTitle: $('#tool-perms-title'),
+        toolPermsProfile: $('#tool-perms-profile'),
+        toolPermsGrid: $('#tool-perms-grid'),
+        toolPermsOverrideNote: $('#tool-perms-override-note'),
 
         // Add Service sub-modal
         addServiceModal: $('#add-service-modal'),
@@ -2376,11 +2393,15 @@ async function renderDocProcessorPanel(tool) {
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
         ${offlineHtml}
         <div class="doc-engine-bar">
-            <div class="doc-engine-bar__status">
-                <span class="doc-engine-bar__dot doc-engine-bar__dot--${isUp ? 'up' : 'down'}"></span>
-                <span class="doc-engine-bar__label">${isUp ? 'Ollama' : 'Offline'}</span>
+            <div class="doc-engine-toggle">
+                <label class="doc-engine-radio" title="Use local Ollama model">
+                    <input type="radio" name="doc-engine" value="ollama" checked onchange="_onDocEngineChange()"> Ollama
+                </label>
+                <label class="doc-engine-radio doc-engine-radio--smart" title="Use Claude Code CLI (cloud)">
+                    <input type="radio" name="doc-engine" value="smart" onchange="_onDocEngineChange()"> Smart
+                </label>
             </div>
-            <div class="doc-engine-bar__model">
+            <div class="doc-engine-bar__model" id="doc-engine-model-group">
                 <label class="doc-engine-bar__model-label" for="doc-model-select">Model</label>
                 <select id="doc-model-select" class="doc-model-select" ${!isUp ? 'disabled' : ''}>
                     ${allModels.length ? allModels.map(m =>
@@ -2478,6 +2499,24 @@ function _getDocMode() {
     return checked ? checked.value : 'summary';
 }
 
+function _getDocEngine() {
+    const checked = document.querySelector('input[name="doc-engine"]:checked');
+    return checked ? checked.value : 'ollama';
+}
+
+function _onDocEngineChange() {
+    const engine = _getDocEngine();
+    const modelGroup = document.getElementById('doc-engine-model-group');
+    const modelSelect = document.getElementById('doc-model-select');
+    if (engine === 'smart') {
+        if (modelGroup) modelGroup.classList.add('doc-engine-bar__model--disabled');
+        if (modelSelect) modelSelect.disabled = true;
+    } else {
+        if (modelGroup) modelGroup.classList.remove('doc-engine-bar__model--disabled');
+        if (modelSelect) modelSelect.disabled = false;
+    }
+}
+
 function _svgToPng(svgText) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -2543,6 +2582,7 @@ async function _processDocFile(file) {
 
     const sizeMB = (file.size / 1048576).toFixed(1);
     const mode = _getDocMode();
+    const engine = _getDocEngine();
 
     // Determine file type icon
     const ext = file.name.split('.').pop().toLowerCase();
@@ -2593,6 +2633,7 @@ async function _processDocFile(file) {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('mode', m);
+                formData.append('engine', engine);
                 if (selectedModel) formData.append('model', selectedModel);
                 const resp = await fetch('/api/doc-processor/process', { method: 'POST', body: formData });
                 const data = await resp.json();
@@ -2624,6 +2665,7 @@ async function _processDocFile(file) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('mode', mode);
+    formData.append('engine', engine);
     if (selectedModel) formData.append('model', selectedModel);
 
     try {
@@ -2658,7 +2700,9 @@ async function _processDocText(text) {
     if (!resultArea) return;
 
     const mode = _getDocMode();
+    const engine = _getDocEngine();
     const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
+    const engineLabel = engine === 'smart' ? 'Claude' : 'local AI model';
 
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
 
@@ -2674,14 +2718,14 @@ async function _processDocText(text) {
                 <div class="doc-processing__info">
                     <strong>Processing pasted text</strong>
                     <span>${text.length.toLocaleString()} characters -- running ${mLabels[m]} (${i + 1}/3)</span>
-                    <span class="doc-processing__status">Analyzing...</span>
+                    <span class="doc-processing__status">Analyzing with ${engineLabel}...</span>
                 </div>
             </div>`;
             try {
                 const resp = await fetch('/api/doc-processor/summarize', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, mode: m, model: selectedModel }),
+                    body: JSON.stringify({ text, mode: m, model: selectedModel, engine }),
                 });
                 const data = await resp.json();
                 if (data.ok) results.push(data);
@@ -2702,7 +2746,7 @@ async function _processDocText(text) {
         <div class="doc-processing__info">
             <strong>Processing pasted text</strong>
             <span>${text.length.toLocaleString()} characters -- mode: ${mode}</span>
-            <span class="doc-processing__status">Analyzing with local AI model...</span>
+            <span class="doc-processing__status">Analyzing with ${engineLabel}...</span>
         </div>
     </div>`;
 
@@ -2710,7 +2754,7 @@ async function _processDocText(text) {
         const resp = await fetch('/api/doc-processor/summarize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, mode, model: selectedModel }),
+            body: JSON.stringify({ text, mode, model: selectedModel, engine }),
         });
         const data = await resp.json();
 
@@ -2739,7 +2783,9 @@ async function _processDocUrl(url) {
     if (!resultArea) return;
 
     const mode = _getDocMode();
+    const engine = _getDocEngine();
     const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
+    const engineLabel = engine === 'smart' ? 'Claude' : 'local AI model';
 
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
 
@@ -2758,14 +2804,14 @@ async function _processDocUrl(url) {
                 <div class="doc-processing__info">
                     <strong>Fetching: ${escapeHtml(displayUrl)}</strong>
                     <span>URL -- running ${mLabels[m]} (${i + 1}/3)</span>
-                    <span class="doc-processing__status">${i === 0 ? 'Fetching page...' : 'Analyzing...'}</span>
+                    <span class="doc-processing__status">${i === 0 ? 'Fetching page...' : `Analyzing with ${engineLabel}...`}</span>
                 </div>
             </div>`;
             try {
                 const resp = await fetch('/api/doc-processor/fetch-url', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, mode: m, model: selectedModel }),
+                    body: JSON.stringify({ url, mode: m, model: selectedModel, engine }),
                 });
                 const data = await resp.json();
                 if (data.ok) results.push(data);
@@ -2796,7 +2842,7 @@ async function _processDocUrl(url) {
         <div class="doc-processing__info">
             <strong>Fetching: ${escapeHtml(displayUrl)}</strong>
             <span>URL -- mode: ${mode}</span>
-            <span class="doc-processing__status" id="doc-processing-status">Fetching page and extracting content...</span>
+            <span class="doc-processing__status" id="doc-processing-status">Fetching and analyzing with ${engineLabel}...</span>
         </div>
     </div>`;
 
@@ -2804,7 +2850,7 @@ async function _processDocUrl(url) {
         const resp = await fetch('/api/doc-processor/fetch-url', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, mode, model: selectedModel }),
+            body: JSON.stringify({ url, mode, model: selectedModel, engine }),
         });
         const data = await resp.json();
 
@@ -3281,6 +3327,44 @@ function _formatShortDate(isoString) {
 
 function _isCurrentChannelArchived() {
     return state.archivedChannels.some(ch => ch.id === state.currentChannel);
+}
+
+function toggleResponseMode() {
+    if (!state.currentChannel) return;
+    const btn = document.getElementById('response-mode-btn');
+    if (state.quickModeChannels.has(state.currentChannel)) {
+        // Currently Quick -> switch to Smart (default)
+        state.quickModeChannels.delete(state.currentChannel);
+        if (btn) {
+            btn.classList.remove('quick');
+            btn.textContent = '[S]';
+            btn.title = 'Smart Mode (thinking enabled, full prompt) -- click for Quick mode';
+        }
+        showToast('Smart mode -- thinking enabled, full reasoning', 'info');
+    } else {
+        // Currently Smart -> switch to Quick
+        state.quickModeChannels.add(state.currentChannel);
+        if (btn) {
+            btn.classList.add('quick');
+            btn.textContent = '[Q]';
+            btn.title = 'Quick Mode (faster, no thinking) -- click for Smart mode';
+        }
+        showToast('Quick mode -- faster responses, no thinking', 'info');
+    }
+}
+
+function _updateResponseModeBtn() {
+    const btn = document.getElementById('response-mode-btn');
+    if (!btn) return;
+    if (state.currentChannel && state.quickModeChannels.has(state.currentChannel)) {
+        btn.classList.add('quick');
+        btn.textContent = '[Q]';
+        btn.title = 'Quick Mode (faster, no thinking) -- click for Smart mode';
+    } else {
+        btn.classList.remove('quick');
+        btn.textContent = '[S]';
+        btn.title = 'Smart Mode (thinking enabled, full prompt) -- click for Quick mode';
+    }
 }
 
 function renderArchivedChats() {
@@ -3836,6 +3920,8 @@ function switchChannel(channelId) {
     updateParticipants();
     // Show archived banner if viewing an archived channel
     _updateArchivedBanner();
+    // Sync deep mode button state for this channel
+    _updateResponseModeBtn();
     // Close add-member dropdown when switching channels
     if (dom.addMemberDropdown) dom.addMemberDropdown.style.display = 'none';
 }
@@ -4144,9 +4230,12 @@ function renderAgentCard(agent) {
     <div class="agent-card" data-agent-id="${aid}">
         <div class="agent-card__header">
             <h3 class="agent-card__name">${escapeHtml(agent.name || agent.agent_id)}</h3>
-            <div class="agent-card__status">
-                <span class="agent-card__status-dot agent-card__status-dot--${agent.status}"></span>
-                ${agent.status}
+            <div class="agent-card__header-actions">
+                <button class="agent-card__gear" onclick="event.stopPropagation(); openToolPerms('${aid}')" title="Tool permissions">&#9881;</button>
+                <div class="agent-card__status">
+                    <span class="agent-card__status-dot agent-card__status-dot--${agent.status}"></span>
+                    ${agent.status}
+                </div>
             </div>
         </div>
         <div class="agent-card__skills">${skills}</div>
@@ -5105,6 +5194,7 @@ function savePermissions() {
         permState.permissions[agentId][serviceId] = cb.checked;
     });
 
+    // Save service keys + agent access
     fetch('/api/permissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -5123,6 +5213,11 @@ function savePermissions() {
             }
         })
         .catch(err => showToast('Save failed: ' + err.message, 'error'));
+
+    // Also save tool defaults if that tab has been rendered
+    if (dom.toolDefaultsGrid && dom.toolDefaultsGrid.innerHTML) {
+        saveToolDefaults();
+    }
 }
 
 function switchPermTab(tabName) {
@@ -5131,6 +5226,8 @@ function switchPermTab(tabName) {
     });
     if (dom.permPanelServices) dom.permPanelServices.style.display = tabName === 'services' ? '' : 'none';
     if (dom.permPanelAgents) dom.permPanelAgents.style.display = tabName === 'agents' ? '' : 'none';
+    if (dom.permPanelToolDefaults) dom.permPanelToolDefaults.style.display = tabName === 'tool-defaults' ? '' : 'none';
+    if (tabName === 'tool-defaults') renderToolDefaults();
 }
 
 function renderServiceKeys() {
@@ -5443,6 +5540,267 @@ function toggleServiceKeyVisibility() {
 }
 
 // =====================================================================
+// Tool Permissions (per-agent, opened from agent card gear icon)
+// =====================================================================
+
+const TOOL_DESCRIPTIONS = {
+    Read: 'Read file contents',
+    Write: 'Create or overwrite files',
+    Edit: 'Edit specific lines in files',
+    Bash: 'Execute shell commands',
+    Glob: 'Find files by pattern',
+    Grep: 'Search file contents',
+    WebSearch: 'Search the web (Claude CLI only)',
+    WebFetch: 'Fetch web page content (Claude CLI only)',
+};
+
+let toolPermsState = {
+    currentAgentId: null,
+    data: null,
+};
+
+function openToolPerms(agentId) {
+    fetch('/api/tool-permissions')
+        .then(r => r.json())
+        .then(data => {
+            toolPermsState.data = data;
+            toolPermsState.currentAgentId = agentId;
+            renderToolPermsModal(agentId, data);
+            if (dom.toolPermsModal) dom.toolPermsModal.hidden = false;
+        })
+        .catch(err => showToast('Failed to load tool permissions: ' + err.message, 'error'));
+}
+
+function closeToolPerms() {
+    if (dom.toolPermsModal) dom.toolPermsModal.hidden = true;
+    toolPermsState.currentAgentId = null;
+}
+
+function renderToolPermsModal(agentId, data) {
+    const agent = (data.agents || []).find(a => a.agent_id === agentId);
+    if (!agent) {
+        showToast('Agent not found: ' + agentId, 'error');
+        return;
+    }
+
+    if (dom.toolPermsTitle) {
+        dom.toolPermsTitle.textContent = 'Tool Permissions: ' + (agent.name || agentId);
+    }
+
+    if (dom.toolPermsProfile) {
+        const sourceLabel = {
+            'agent_config': 'agent config',
+            'agent_type_default': 'agent type: ' + agent.agent_type,
+            'fallback': 'default fallback',
+        }[agent.profile_source] || agent.profile_source;
+
+        dom.toolPermsProfile.innerHTML = agent.has_override
+            ? '<strong>Custom override</strong> (set from dashboard)'
+            : 'Profile: <strong>' + escapeHtml(agent.profile_name) + '</strong> (from ' + escapeHtml(sourceLabel) + ')';
+    }
+
+    const allTools = data.all_tools || Object.keys(TOOL_DESCRIPTIONS);
+    const agentTools = new Set(agent.allowed_tools || []);
+    const deniedGlobally = new Set(data.denied_tools || []);
+
+    if (dom.toolPermsGrid) {
+        dom.toolPermsGrid.innerHTML = allTools.map(tool => {
+            const checked = agentTools.has(tool) ? 'checked' : '';
+            const denied = deniedGlobally.has(tool);
+            const desc = TOOL_DESCRIPTIONS[tool] || '';
+            const disabledAttr = denied ? 'disabled' : '';
+            const deniedNote = denied ? ' <span class="tool-perms__denied-tag">(globally denied)</span>' : '';
+
+            return `<label class="tool-perms__tool${denied ? ' tool-perms__tool--denied' : ''}">
+                <input type="checkbox" class="tool-perms__check" data-tool="${escapeHtml(tool)}" ${checked} ${disabledAttr}>
+                <span class="tool-perms__tool-name">${escapeHtml(tool)}</span>
+                <span class="tool-perms__tool-desc">${escapeHtml(desc)}${deniedNote}</span>
+            </label>`;
+        }).join('');
+    }
+
+    if (dom.toolPermsOverrideNote) {
+        dom.toolPermsOverrideNote.textContent = agent.has_override
+            ? 'This agent has a custom tool override. Click "Reset to Profile" to revert to profile defaults.'
+            : '';
+    }
+}
+
+function saveToolPerms() {
+    if (!toolPermsState.data || !toolPermsState.currentAgentId) return;
+
+    const agentId = toolPermsState.currentAgentId;
+    const data = toolPermsState.data;
+
+    const checkedTools = [];
+    document.querySelectorAll('.tool-perms__check').forEach(cb => {
+        if (cb.checked) checkedTools.push(cb.dataset.tool);
+    });
+
+    // Check if this matches the profile default (no override needed)
+    const agent = (data.agents || []).find(a => a.agent_id === agentId);
+    const profileName = agent ? agent.profile_name : '';
+    const profileTools = (data.profiles[profileName] || {}).allowed_tools || [];
+    const profileSet = new Set(profileTools);
+    const checkedSet = new Set(checkedTools);
+    const isDefault = profileSet.size === checkedSet.size && [...profileSet].every(t => checkedSet.has(t));
+
+    const overrides = Object.assign({}, data.agent_overrides || {});
+    if (isDefault) {
+        delete overrides[agentId];
+    } else {
+        overrides[agentId] = { allowed_tools_override: checkedTools };
+    }
+
+    fetch('/api/tool-permissions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_overrides: overrides }),
+    })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                showToast('Tool permissions saved for ' + (agent ? agent.name : agentId), 'success');
+                closeToolPerms();
+            } else {
+                showToast(result.error || 'Failed to save', 'error');
+            }
+        })
+        .catch(err => showToast('Save failed: ' + err.message, 'error'));
+}
+
+function resetToolPerms() {
+    if (!toolPermsState.data || !toolPermsState.currentAgentId) return;
+
+    const agentId = toolPermsState.currentAgentId;
+    const data = toolPermsState.data;
+
+    const overrides = Object.assign({}, data.agent_overrides || {});
+    delete overrides[agentId];
+
+    fetch('/api/tool-permissions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_overrides: overrides }),
+    })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                showToast('Reset to profile defaults', 'success');
+                openToolPerms(agentId);
+            } else {
+                showToast(result.error || 'Failed to reset', 'error');
+            }
+        })
+        .catch(err => showToast('Reset failed: ' + err.message, 'error'));
+}
+
+// --- Tool Defaults tab (in Permissions modal) ---
+
+function renderToolDefaults() {
+    fetch('/api/tool-permissions')
+        .then(r => r.json())
+        .then(data => {
+            renderToolDefaultsGrid(data);
+            renderToolDefaultsDenied(data);
+        })
+        .catch(() => {});
+}
+
+function renderToolDefaultsGrid(data) {
+    if (!dom.toolDefaultsGrid) return;
+
+    const profiles = data.profiles || {};
+    const defaults = data.agent_defaults || {};
+    const types = ['specialist', 'orchestrator', 'utility', 'infrastructure'];
+    const profileNames = Object.keys(profiles);
+
+    dom.toolDefaultsGrid.innerHTML = types.map(type => {
+        const current = defaults[type] || 'minimal';
+        const options = profileNames.map(p =>
+            `<option value="${escapeHtml(p)}" ${p === current ? 'selected' : ''}>${escapeHtml(p)}</option>`
+        ).join('');
+
+        const profile = profiles[current] || {};
+        const tools = (profile.allowed_tools || []).join(', ') || '(none)';
+
+        return `<div class="tool-defaults__row">
+            <div>
+                <span class="tool-defaults__type-label">${escapeHtml(type)}</span>
+                <span class="tool-defaults__tools-preview">${escapeHtml(tools)}</span>
+            </div>
+            <select class="tool-defaults__profile-select" data-agent-type="${escapeHtml(type)}" onchange="onToolDefaultChange()">
+                ${options}
+            </select>
+        </div>`;
+    }).join('');
+}
+
+function renderToolDefaultsDenied(data) {
+    if (!dom.toolDefaultsDenied) return;
+
+    const allTools = data.all_tools || Object.keys(TOOL_DESCRIPTIONS);
+    const denied = new Set(data.denied_tools || []);
+
+    dom.toolDefaultsDenied.innerHTML = allTools.map(tool => {
+        const checked = denied.has(tool) ? 'checked' : '';
+        return `<label class="tool-defaults__denied-item">
+            <input type="checkbox" class="tool-defaults__denied-check" data-tool="${escapeHtml(tool)}" ${checked}>
+            <span>${escapeHtml(tool)}</span>
+        </label>`;
+    }).join('');
+}
+
+function onToolDefaultChange() {
+    if (!dom.toolDefaultsGrid) return;
+    fetch('/api/tool-permissions')
+        .then(r => r.json())
+        .then(data => {
+            dom.toolDefaultsGrid.querySelectorAll('.tool-defaults__row').forEach(row => {
+                const select = row.querySelector('.tool-defaults__profile-select');
+                const preview = row.querySelector('.tool-defaults__tools-preview');
+                if (select && preview) {
+                    const profile = (data.profiles || {})[select.value] || {};
+                    preview.textContent = (profile.allowed_tools || []).join(', ') || '(none)';
+                }
+            });
+        })
+        .catch(() => {});
+}
+
+function saveToolDefaults() {
+    const agentDefaults = {};
+    if (dom.toolDefaultsGrid) {
+        dom.toolDefaultsGrid.querySelectorAll('.tool-defaults__profile-select').forEach(sel => {
+            agentDefaults[sel.dataset.agentType] = sel.value;
+        });
+    }
+
+    const deniedTools = [];
+    if (dom.toolDefaultsDenied) {
+        dom.toolDefaultsDenied.querySelectorAll('.tool-defaults__denied-check').forEach(cb => {
+            if (cb.checked) deniedTools.push(cb.dataset.tool);
+        });
+    }
+
+    fetch('/api/tool-permissions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_defaults: agentDefaults, denied_tools: deniedTools }),
+    })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                showToast('Tool defaults saved', 'success');
+            } else {
+                showToast(result.error || 'Failed to save defaults', 'error');
+            }
+        })
+        .catch(err => showToast('Save failed: ' + err.message, 'error'));
+}
+
+
+// =====================================================================
 // Event listeners
 // =====================================================================
 
@@ -5528,6 +5886,9 @@ function init() {
                 sender: 'user',
                 content: content,
             };
+
+            // Pass response mode: smart (default) or quick (opt-in)
+            outgoing.response_mode = state.quickModeChannels.has(state.currentChannel) ? 'quick' : 'smart';
 
             // Attach thread_id if replying to a message
             if (state.replyingTo) {
@@ -5721,6 +6082,12 @@ function init() {
     initEnvDropZone();
     if (dom.addServiceKeyBtn) dom.addServiceKeyBtn.addEventListener('click', openAddService);
     if (dom.addServiceClose) dom.addServiceClose.addEventListener('click', closeAddService);
+
+    // Tool permissions modal (per-agent)
+    if (dom.toolPermsClose) dom.toolPermsClose.addEventListener('click', closeToolPerms);
+    if (dom.toolPermsCancel) dom.toolPermsCancel.addEventListener('click', closeToolPerms);
+    if (dom.toolPermsSave) dom.toolPermsSave.addEventListener('click', saveToolPerms);
+    if (dom.toolPermsReset) dom.toolPermsReset.addEventListener('click', resetToolPerms);
     if (dom.addServiceCancel) dom.addServiceCancel.addEventListener('click', closeAddService);
     if (dom.addServiceForm) dom.addServiceForm.addEventListener('submit', submitAddService);
     if (dom.toggleServiceKeyVis) dom.toggleServiceKeyVis.addEventListener('click', toggleServiceKeyVisibility);
@@ -5742,7 +6109,7 @@ function init() {
     }
 
     // Close modals on backdrop click
-    [dom.assignTaskModal, dom.reviewModal, dom.settingsModal, dom.permissionsModal, dom.addServiceModal, dom.createChannelModal, dom.createFolderModal, dom.setupWizard].forEach((modal) => {
+    [dom.assignTaskModal, dom.reviewModal, dom.settingsModal, dom.permissionsModal, dom.addServiceModal, dom.createChannelModal, dom.createFolderModal, dom.setupWizard, dom.toolPermsModal].forEach((modal) => {
         if (modal) {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {

@@ -122,6 +122,8 @@ class OllamaClient:
         temperature: float = 0.4,
         system: str | None = None,
         options: dict[str, Any] | None = None,
+        think: bool = True,
+        keep_alive: str = "2m",
     ) -> GenerateResult | None:
         """Generate text completion from Ollama model.
 
@@ -131,6 +133,8 @@ class OllamaClient:
             temperature: Sampling temperature (0.0-1.0)
             system: Optional system prompt (separate from user prompt)
             options: Additional Ollama options (num_ctx, num_predict, etc.)
+            think: Enable thinking mode (smart by default)
+            keep_alive: How long to keep model loaded after request
 
         Returns:
             GenerateResult with text and token metadata, or None on failure.
@@ -145,10 +149,10 @@ class OllamaClient:
                 "model": model,
                 "prompt": prompt,
                 "stream": False,
-                "think": False,  # Disable thinking to avoid long internal chains
+                "think": think,
                 "options": {
                     "temperature": temperature,
-                    "keep_alive": "5m",  # Keep model warm for follow-up requests
+                    "keep_alive": keep_alive,
                     **(options or {}),
                 },
             }
@@ -186,6 +190,8 @@ class OllamaClient:
         temperature: float = 0.4,
         system: str | None = None,
         options: dict[str, Any] | None = None,
+        think: bool = True,
+        keep_alive: str = "2m",
     ) -> ChatResult | None:
         """Chat completion with native tool calling support.
 
@@ -200,6 +206,8 @@ class OllamaClient:
             temperature: Sampling temperature
             system: Optional system prompt
             options: Additional Ollama options
+            think: Enable thinking mode (smart by default)
+            keep_alive: How long to keep model loaded after request
 
         Returns:
             ChatResult with content and/or tool_calls, or None on failure.
@@ -213,10 +221,10 @@ class OllamaClient:
                 "model": model,
                 "messages": messages,
                 "stream": False,
-                "think": True,  # Enable thinking for better tool-use reasoning
+                "think": think,
                 "options": {
                     "temperature": temperature,
-                    "keep_alive": "5m",
+                    "keep_alive": keep_alive,
                     **(options or {}),
                 },
             }

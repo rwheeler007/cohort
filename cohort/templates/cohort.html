@@ -198,6 +198,9 @@
                                          aria-label="Message input"
                                          data-placeholder="Type a message... (use @agent to mention)"></div>
                                 </div>
+                                <button type="button" class="btn btn--icon response-mode-btn" id="response-mode-btn" title="Smart Mode (thinking enabled, full prompt) -- click for Quick mode" onclick="toggleResponseMode()">
+                                    [S]
+                                </button>
                                 <button type="submit" class="btn btn--primary message-send-btn" id="send-btn">Send</button>
                             </form>
                         </div>
@@ -484,6 +487,7 @@
                 <div class="perm-tabs" id="perm-tabs">
                     <button class="perm-tab active" data-perm-tab="services">Service Keys</button>
                     <button class="perm-tab" data-perm-tab="agents">Agent Access</button>
+                    <button class="perm-tab" data-perm-tab="tool-defaults">Tool Defaults</button>
                 </div>
 
                 <!-- Tab: Service Keys -->
@@ -518,9 +522,57 @@
                     </div>
                 </div>
 
+                <!-- Tab: Tool Defaults -->
+                <div class="perm-panel" id="perm-panel-tool-defaults" style="display:none;">
+                    <p class="settings-section__desc">
+                        Set which tools each agent type gets by default.
+                        Individual agents can be overridden via the gear icon on their Team card.
+                    </p>
+
+                    <div class="tool-defaults__section">
+                        <h4>Agent Type Defaults</h4>
+                        <p class="settings-section__desc">Each agent type inherits a tool profile. Change the profile to grant or restrict tools for all agents of that type.</p>
+                        <div id="tool-defaults-grid">
+                            <!-- Populated by JS: one row per agent type with profile dropdown -->
+                        </div>
+                    </div>
+
+                    <div class="tool-defaults__section">
+                        <h4>Globally Denied Tools</h4>
+                        <p class="settings-section__desc">Checked tools are blocked for ALL agents regardless of profile.</p>
+                        <div id="tool-defaults-denied">
+                            <!-- Populated by JS: one checkbox per tool -->
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn btn--secondary" id="permissions-cancel">Cancel</button>
                     <button type="button" class="btn btn--primary" id="permissions-save">Save Permissions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Permissions Modal (per-agent, opened from agent card gear icon) -->
+    <div class="modal" id="tool-perms-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 id="tool-perms-title">Tool Permissions</h2>
+                <button class="btn btn--icon modal__close" id="tool-perms-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <div class="tool-perms__profile" id="tool-perms-profile">
+                    <!-- Profile badge populated by JS -->
+                </div>
+                <div class="tool-perms__grid" id="tool-perms-grid">
+                    <!-- Tool checkboxes populated by JS -->
+                </div>
+                <div class="tool-perms__override-note" id="tool-perms-override-note"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="tool-perms-reset">Reset to Profile</button>
+                    <button type="button" class="btn btn--secondary" id="tool-perms-cancel">Cancel</button>
+                    <button type="button" class="btn btn--primary" id="tool-perms-save">Save</button>
                 </div>
             </div>
         </div>

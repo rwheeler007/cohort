@@ -48,6 +48,24 @@ CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 # Force all agent responses through Claude Code (bypass local Ollama)
 _force_claude_code: bool = False
 
+# =====================================================================
+# Grounding rules (anti-hallucination, adapted from BOSS/SMACK)
+# =====================================================================
+
+GROUNDING_RULES = """
+GROUNDING RULES (apply to ALL responses):
+- You are an AI agent in the Cohort multi-agent system. Your team consists ONLY of other AI agents in this system.
+- DO NOT invent, reference, or delegate to human team members (no fake names like "David", "Sarah", etc.).
+- DO NOT reference external tools, channels, or platforms that are not part of the Cohort system.
+- When delegating or coordinating, refer ONLY to agents by their actual agent IDs.
+- If you do not know who should handle something, say so -- do not fabricate organizational structures.
+
+DESIGN SIMPLICITY:
+- Prefer concrete implementations over abstractions.
+- Solve the immediate problem simply. Generalize only when forced by a real second use case.
+- Each agent's contribution should solve a real problem, not add scaffolding for hypothetical futures.
+"""
+
 # Known human senders -- never route to these
 HUMAN_USERS = frozenset({
     "admin", "user", "human", "system",
@@ -411,6 +429,7 @@ def queue_agent_response(
     channel_id: str,
     thread_id: str | None = None,
     priority: int = 50,
+    response_mode: str = "smart",
 ) -> None:
     """Add an agent response to the priority queue."""
     with _state.queue_lock:
@@ -427,6 +446,7 @@ def queue_agent_response(
             "thread_id": thread_id,
             "priority": priority,
             "queued_at": time.time(),
+            "response_mode": response_mode,
         })
         # Sort: lower priority number = responds first
         _state.queue.sort(key=lambda x: x["priority"])
@@ -557,8 +577,15 @@ def _invoke_agent_sync(item: dict) -> None:
     thread_id = item["thread_id"]
     message_content = item["message_content"]
 
-    # D3/D4: Determine light vs heavy mode
-    use_full_prompt = os.environ.get("COHORT_FULL_PROMPT", "").strip() == "1"
+    # Response mode: "smart" (default, thinking enabled, full prompt) or "quick" (fast, no thinking)
+    response_mode = item.get("response_mode", "smart")
+
+    # Env override for always-full-prompt
+    if os.environ.get("COHORT_FULL_PROMPT", "").strip() == "1":
+        response_mode = "smart"
+
+    # Smart mode = full prompt; Quick mode = lightweight persona
+    use_full_prompt = (response_mode == "smart")
 
     # Load agent prompt -- persona first (light mode), full prompt as fallback
     agent_prompt: str | None = None
@@ -603,11 +630,31 @@ def _invoke_agent_sync(item: dict) -> None:
     if perms and perms.allowed_tools:
         tool_awareness = _build_tool_awareness(perms)
 
+    # Build collaboration awareness: who else is in this channel
+    _collab_section = ""
+    if _chat is not None:
+        channel_obj = _chat.get_channel(channel_id)
+        if channel_obj and hasattr(channel_obj, "members") and channel_obj.members:
+            other_members = [m for m in channel_obj.members if m != agent_id and m not in HUMAN_USERS]
+            if other_members:
+                member_list = ", ".join(f"@{m}" for m in other_members)
+                _collab_section = (
+                    "=== COLLABORATION ===\n"
+                    f"Other agents in this channel: {member_list}\n"
+                    "When your response would benefit from another agent's expertise, "
+                    "tag them with @agent_name to bring them into the conversation. "
+                    "For example, tag @cohort_orchestrator to coordinate multi-agent work, "
+                    "or tag a specialist agent for domain-specific analysis.\n"
+                    "=== END COLLABORATION ===\n\n"
+                )
+
     # Construct prompts: one with tool awareness (Claude CLI), one without (local tools)
     _base_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
         f"---\n{agent_prompt}\n---\n\n"
+        f"{GROUNDING_RULES}\n"
+        f"{_collab_section}"
     )
     _context_suffix = (
         f"{channel_context}"
@@ -679,6 +726,7 @@ def _invoke_agent_sync(item: dict) -> None:
                         tool_executor=_tool_executor,
                         temperature=agent_temperature or 0.4,
                         max_turns=min(perms.max_turns, 15),  # Cap local tool turns
+                        response_mode=response_mode,
                     )
                     if route_result is not None and route_result.text:
                         response_content = route_result.text
@@ -695,7 +743,12 @@ def _invoke_agent_sync(item: dict) -> None:
             else:
                 # No tools -- single-shot text generation
                 task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
-                route_result = router.route(full_prompt, task_type=task_type, temperature=agent_temperature)
+                route_result = router.route(
+                    full_prompt,
+                    task_type=task_type,
+                    temperature=agent_temperature,
+                    response_mode=response_mode,
+                )
                 if route_result is not None and route_result.text:
                     response_content = route_result.text
                     response_metadata = {
@@ -883,6 +936,7 @@ def _invoke_agent_sync(item: dict) -> None:
                 channel_id=channel_id,
                 thread_id=response_msg.id,
                 priority=50,
+                response_mode="smart",  # Chain responses use smart mode
             )
 
 
@@ -890,10 +944,15 @@ def _invoke_agent_sync(item: dict) -> None:
 # Entry point (called from socketio_events.py)
 # =====================================================================
 
-def route_mentions(message: Any, mentions: list[str]) -> None:
+def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "smart") -> None:
     """Route @mentions from a posted message to agent response queue.
 
     This is the main entry point, called after a message is posted and broadcast.
+
+    Args:
+        message: The posted message object.
+        mentions: List of @mentioned agent IDs.
+        response_mode: "smart" (default, thinking + full prompt) or "quick" (fast, no thinking).
     """
     if not mentions or _chat is None:
         return
@@ -985,6 +1044,7 @@ def route_mentions(message: Any, mentions: list[str]) -> None:
             channel_id=channel_id,
             thread_id=message.id,
             priority=priority,
+            response_mode=response_mode,
         )
 
     # Track depth for the triggering message
