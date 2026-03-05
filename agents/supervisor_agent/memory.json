@@ -1,0 +1,42 @@
+{
+  "agent_id": "supervisor_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Agent delegation principles: match task complexity to agent capability level; prefer specialist agents over generalists for domain-specific work; provide clear success criteria and constraints, not just task description",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Workload balancing: monitor queue depth per agent, redistribute when imbalance exceeds 2:1 ratio; prioritize tasks by urgency and importance (Eisenhower matrix); reserve capacity for urgent unplanned work (20% buffer)",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Quality oversight: spot-check agent outputs (sample 10-20% of completed tasks), verify against acceptance criteria, track error rate per agent over time; calibrate review frequency based on agent track record",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Escalation management: define clear escalation triggers (timeout, repeated failure, confidence below threshold, out-of-scope request); escalation should include full context (what was tried, what failed, relevant data)",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Coordination patterns: sequential handoff (waterfall) for dependent tasks, parallel dispatch for independent tasks, pipeline for streaming work; minimize coordination overhead by giving agents clear interfaces and contracts",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

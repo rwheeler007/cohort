@@ -366,6 +366,59 @@ async def delete_message(sid: str, data: dict) -> dict:
     return {"error": "Message not found"}
 
 
+@sio.event
+async def archive_channel(sid: str, data: dict) -> dict:
+    """Client archives a DM channel."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    if not channel_id:
+        return {"error": "Missing channel_id"}
+    ch = _chat.archive_channel(channel_id, archived_by="user")
+    if ch is None:
+        return {"error": "Channel not found"}
+    await _broadcast_channel_lists()
+    return {"success": True}
+
+
+@sio.event
+async def unarchive_channel(sid: str, data: dict) -> dict:
+    """Client unarchives a DM channel."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    if not channel_id:
+        return {"error": "Missing channel_id"}
+    ch = _chat.unarchive_channel(channel_id)
+    if ch is None:
+        return {"error": "Channel not found"}
+    await _broadcast_channel_lists()
+    return {"success": True}
+
+
+@sio.event
+async def get_archived_channels(sid: str, data: dict | None = None) -> None:
+    """Client requests archived channel list."""
+    if _chat is None:
+        return
+    all_channels = _chat.list_channels(include_archived=True)
+    archived = [ch.to_dict() for ch in all_channels if ch.is_archived]
+    await sio.emit("archived_channels_list", {"channels": archived}, to=sid)
+
+
+async def _broadcast_channel_lists() -> None:
+    """Broadcast updated active + archived channel lists to all clients."""
+    if _chat is None:
+        return
+    active = _chat.list_channels(include_archived=False)
+    await sio.emit("channels_list", {
+        "channels": [ch.to_dict() for ch in active],
+    })
+    all_ch = _chat.list_channels(include_archived=True)
+    archived = [ch.to_dict() for ch in all_ch if ch.is_archived]
+    await sio.emit("archived_channels_list", {"channels": archived})
+
+
 # =====================================================================
 # Server -> Client broadcast helpers
 # =====================================================================

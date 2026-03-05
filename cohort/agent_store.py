@@ -82,6 +82,13 @@ class AgentStore:
                                 persona = load_persona(agent_id)
                                 if persona:
                                     config.persona_text = persona
+                            # Apply group from legacy registry if config has
+                            # the default ("Agents") — most agent_config.json
+                            # files don't set group.
+                            if config.group == "Agents" and agent_id in self._fallback:
+                                config.group = self._fallback[agent_id].get(
+                                    "group", config.group,
+                                )
                             self._cache[agent_id] = config
                         except Exception as exc:
                             logger.warning(
@@ -93,21 +100,35 @@ class AgentStore:
         self._loaded_all = True
 
     # Cohort's curated agent roster — only these are synced from the Gateway.
-    # setup_guide ships locally (not in Gateway).
+    # Local agents (cohort_orchestrator, setup_guide) excluded — local takes priority.
+    # BOSS-only agents (ceo_agent, coding_orchestrator) excluded.
+    # Sales/biz agents held for future update.
     GATEWAY_AGENTS = frozenset({
-        "coding_orchestrator",
-        "supervisor_agent",
-        "ceo_agent",
+        # Core Developers
         "python_developer",
         "javascript_developer",
         "web_developer",
         "system_coder",
+        # Quality & Security
         "security_agent",
         "qa_agent",
-        "database_developer",
         "code_archaeologist",
+        # Leadership
+        "supervisor_agent",
+        # Support
+        "database_developer",
         "hardware_agent",
         "documentation_agent",
+        # Marketing & Content
+        "marketing_agent",
+        "campaign_orchestrator",
+        "content_strategy_agent",
+        "analytics_agent",
+        "email_agent",
+        "linkedin",
+        "reddit",
+        "media_production_agent",
+        "brand_design_agent",
     })
 
     def _sync_from_gateway(self) -> None:
@@ -123,6 +144,12 @@ class AgentStore:
             try:
                 config = self._load_from_remote(agent_id)
                 if config:
+                    # Apply group from legacy registry if Gateway config has
+                    # the default ("Agents") — BOSS configs don't set group.
+                    if config.group == "Agents" and agent_id in self._fallback:
+                        config.group = self._fallback[agent_id].get(
+                            "group", config.group,
+                        )
                     self._cache[agent_id] = config
                     loaded += 1
             except Exception as exc:
@@ -150,6 +177,11 @@ class AgentStore:
                         persona = load_persona(agent_id)
                         if persona:
                             config.persona_text = persona
+                    # Apply group from legacy registry if needed
+                    if config.group == "Agents" and agent_id in self._fallback:
+                        config.group = self._fallback[agent_id].get(
+                            "group", config.group,
+                        )
                     self._cache[agent_id] = config
                     return config
                 except Exception as exc:

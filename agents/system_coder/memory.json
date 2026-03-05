@@ -1,0 +1,42 @@
+{
+  "agent_id": "system_coder",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "CI pipeline stage ordering for fail-fast efficiency: lint (fastest, seconds) -> type check (fast, catches logic errors) -> unit tests (medium, catches bugs) -> integration tests (slow, catches wiring) -> build/package (slow, catches packaging). If lint fails, skip everything downstream. This minimizes wasted compute on doomed builds.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Bash script safety header: 'set -euo pipefail' -- 'e' exits immediately on any command failure, 'u' treats unset variables as errors (catches typos), 'o pipefail' ensures piped commands propagate failure (without it, only the last command's exit code matters). Add 'trap cleanup EXIT' for resource cleanup on any exit path. This combination catches the majority of silent script failures.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Script idempotency pattern: every operation should be safe to run multiple times with the same result. Use 'mkdir -p' (no error if exists), 'pip install --upgrade' (handles already-installed), 'docker compose up -d' (handles already-running), 'CREATE TABLE IF NOT EXISTS' (no error if exists). Check state before acting rather than assuming clean state. This makes scripts safe for retry after partial failure.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Semantic versioning rules: MAJOR for breaking API/behavior changes, MINOR for backward-compatible new features, PATCH for backward-compatible bug fixes. Pre-release versions: 1.0.0-alpha.1 < 1.0.0-beta.1 < 1.0.0-rc.1 < 1.0.0. Build metadata after '+' is ignored for precedence: 1.0.0+build.123. Always use annotated git tags (git tag -a v1.0.0 -m 'description') for releases, never lightweight tags.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Process management patterns for services: use systemd unit files (Linux) or Windows Service wrappers for production daemons. Key systemd directives: Restart=on-failure with RestartSec=5 for automatic recovery, WantedBy=multi-user.target for boot startup, ExecStartPre for dependency checks. For development: use process managers like supervisord or honcho. Never rely on nohup or screen for production services.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

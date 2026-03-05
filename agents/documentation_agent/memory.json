@@ -1,0 +1,42 @@
+{
+  "agent_id": "documentation_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "API documentation structure: overview and quickstart first (5-minute path to first success), then reference docs (every endpoint and method), then guides (common workflows); keep quickstart under 1 page",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Documentation as code: store docs alongside source code; build docs in CI pipeline; enforce doc updates in PR reviews for public API changes; auto-generate reference docs from code annotations where possible",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Writing effective code examples: every example must be copy-pasteable and runnable; show expected output; progress from simple to complex; include error handling in later examples, not the first one",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "User-centered documentation: organize by user task not system architecture; use consistent terminology (glossary); provide breadcrumbs and see-also links; track documentation page bounce rate and search queries to identify gaps",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Version-specific documentation: clearly mark which version introduced each feature; maintain docs for supported versions; use admonitions for deprecated features; provide migration guides between major versions",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

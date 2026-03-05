@@ -12,9 +12,10 @@ Design philosophy:
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable
 
 from cohort.local.config import get_model_for_vram, get_temperature, get_tier_for_model
 from cohort.local.detect import detect_hardware
@@ -164,6 +165,151 @@ class LocalRouter:
                 tokens_out=result.tokens_out,
                 elapsed_seconds=result.elapsed_seconds,
             )
+
+        except Exception:
+            # D4: Catch-all safety net -- never propagate exceptions
+            return None
+
+    def route_with_tools(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]],
+        tool_executor: Callable[[str, dict[str, Any]], str],
+        temperature: float = 0.4,
+        system: str | None = None,
+        max_turns: int = 10,
+    ) -> RouteResult | None:
+        """Route a tool-enabled conversation to local Ollama model.
+
+        Implements the agentic tool loop: model generates a response,
+        if it contains tool_calls we execute them locally and feed results
+        back, repeating until the model produces a final text response
+        or max_turns is exhausted.
+
+        Args:
+            messages: Conversation messages [{role, content, ...}]
+            tools: Tool schemas (OpenAI-compatible for Ollama /api/chat)
+            tool_executor: Callable(name, arguments) -> result_string
+            temperature: Sampling temperature
+            system: Optional system prompt
+            max_turns: Maximum tool loop iterations before stopping
+
+        Returns:
+            RouteResult with final text, or None on failure.
+            Caller should handle None by falling back to Claude CLI.
+
+        Never raises exceptions.
+        """
+        try:
+            if not self._ensure_client():
+                return None
+
+            hw_info = self._detect_hardware()
+            if hw_info.cpu_only:
+                return None
+
+            model = get_model_for_vram(hw_info.vram_mb)
+
+            if self._client is None:
+                return None
+
+            available_models = self._client.list_models()
+            if model not in available_models:
+                return None
+
+            # Tool execution loop
+            total_tokens_in = 0
+            total_tokens_out = 0
+            tools_used: list[str] = []
+            turn = 0
+
+            # Work on a mutable copy of messages
+            conversation = list(messages)
+
+            while turn < max_turns:
+                turn += 1
+
+                result = self._client.chat(
+                    model=model,
+                    messages=conversation,
+                    tools=tools,
+                    temperature=temperature,
+                    system=system if turn == 1 else None,  # System only on first call
+                )
+
+                if result is None:
+                    logger.warning("[!] Tool loop: Ollama chat returned None on turn %d", turn)
+                    return None
+
+                total_tokens_in += result.tokens_in
+                total_tokens_out += result.tokens_out
+
+                # Check for tool calls
+                if result.tool_calls:
+                    # Append assistant message with tool calls
+                    conversation.append({
+                        "role": "assistant",
+                        "content": result.content or "",
+                        "tool_calls": result.tool_calls,
+                    })
+
+                    # Execute each tool call and append results
+                    for tc in result.tool_calls:
+                        func = tc.get("function", {})
+                        tool_name = func.get("name", "unknown")
+                        tool_args = func.get("arguments", {})
+
+                        # Arguments may be a JSON string or a dict
+                        if isinstance(tool_args, str):
+                            try:
+                                tool_args = json.loads(tool_args)
+                            except (json.JSONDecodeError, TypeError):
+                                tool_args = {}
+
+                        logger.info("[>>] Tool loop turn %d: %s(%s)",
+                                    turn, tool_name,
+                                    ", ".join(f"{k}={v!r}" for k, v in list(tool_args.items())[:3]))
+
+                        tool_result = tool_executor(tool_name, tool_args)
+                        tools_used.append(tool_name)
+
+                        conversation.append({
+                            "role": "tool",
+                            "content": tool_result,
+                        })
+
+                    # Continue loop -- model needs to process tool results
+                    continue
+
+                # No tool calls -- model produced a final text response
+                if result.content:
+                    tier = get_tier_for_model(model)
+                    elapsed = result.elapsed_seconds
+
+                    if tools_used:
+                        logger.info(
+                            "[OK] Tool loop completed: %d turns, tools: %s",
+                            turn, ", ".join(tools_used),
+                        )
+
+                    return RouteResult(
+                        text=result.content,
+                        model=model,
+                        tier=tier,
+                        tokens_in=total_tokens_in,
+                        tokens_out=total_tokens_out,
+                        elapsed_seconds=elapsed,
+                    )
+
+                # No content and no tool calls -- unexpected, bail out
+                logger.warning("[!] Tool loop: empty response on turn %d", turn)
+                return None
+
+            # Max turns exhausted
+            logger.warning("[!] Tool loop exhausted max_turns=%d, tools used: %s",
+                           max_turns, ", ".join(tools_used))
+            # Return whatever content we accumulated (if any)
+            return None
 
         except Exception:
             # D4: Catch-all safety net -- never propagate exceptions

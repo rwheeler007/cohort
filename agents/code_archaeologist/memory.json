@@ -1,0 +1,42 @@
+{
+  "agent_id": "code_archaeologist",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Dead code detection: start with static analysis (unused imports, unreachable branches), then verify with runtime coverage data; beware of reflection/dynamic dispatch hiding references; remove in small PRs with clear rollback path",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Code evolution patterns: identify accretion layers (features added over time without refactoring); look for inconsistent naming conventions indicating different authors/eras; map dependency age to identify modernization candidates",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Technical debt classification: distinguish between deliberate debt (conscious tradeoffs with documented rationale) and accidental debt (accumulated from ignorance or time pressure); prioritize debt on hot paths (frequently modified files)",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Legacy system mapping: create dependency diagrams (module-level, not line-level); identify domain boundaries that align with business capabilities; find the load-bearing modules (high fan-in, everything depends on them) -- these need the most careful handling",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Temperature configuration is now live (V_3.0.0). Code archaeologist runs at temperature 0.20 (analysis accuracy). Per-agent temperatures set in agent_config.json under model_params.temperature. Priority chain: caller-supplied > agent config > task routing > global default (0.4) > Ollama default (0.8). Reference: docs/tools/llm-router.md.",
+      "learned_from": "claude_code",
+      "timestamp": "2026-02-28T19:46:38.119377+00:00",
+      "confidence": "high",
+      "session_id": "TEMP-CONFIG-20260228"
+    }
+  ],
+  "known_paths": {}
+}

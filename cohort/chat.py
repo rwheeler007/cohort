@@ -201,6 +201,30 @@ class ChatManager:
             channels = [c for c in channels if not c.is_archived]
         return channels
 
+    def archive_channel(
+        self, channel_id: str, archived_by: str = "user",
+    ) -> Channel | None:
+        """Mark a channel as archived."""
+        ch = self.get_channel(channel_id)
+        if ch is None:
+            return None
+        ch.is_archived = True
+        ch.archived_at = datetime.now().isoformat()
+        ch.archived_by = archived_by
+        self._storage.save_channel(channel_id, ch.to_dict())
+        return ch
+
+    def unarchive_channel(self, channel_id: str) -> Channel | None:
+        """Restore an archived channel."""
+        ch = self.get_channel(channel_id)
+        if ch is None:
+            return None
+        ch.is_archived = False
+        ch.archived_at = None
+        ch.archived_by = None
+        self._storage.save_channel(channel_id, ch.to_dict())
+        return ch
+
     # -- messages -------------------------------------------------------
 
     def post_message(

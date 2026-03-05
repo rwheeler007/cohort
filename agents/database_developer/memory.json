@@ -1,0 +1,42 @@
+{
+  "agent_id": "database_developer",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "CTEs (WITH clauses) in PostgreSQL 12+ are inlined by default (no longer optimization barriers). Recursive CTEs are the correct tool for hierarchical data: org charts, threaded comments, category trees, bill of materials. Pattern: WITH RECURSIVE cte AS (base_case UNION ALL recursive_step) SELECT * FROM cte. Always include a termination condition to prevent infinite recursion.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Expand-contract migration pattern for zero-downtime schema changes: Phase 1 (expand) adds new column/table alongside old, code writes to both. Phase 2 (migrate) backfills historical data. Phase 3 (contract) removes old column after all readers are updated. Never rename or drop a column in production without this pattern. Deploy code changes and schema changes in separate releases.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Migration safety rules: never add NOT NULL without a DEFAULT in a single migration (locks table for full rewrite on large tables). Add column nullable first, backfill in batches, then add the NOT NULL constraint. Never DROP COLUMN in the same deploy as code that removes references -- deploy code first (ignoring the column), then drop in a subsequent migration.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Connection pool sizing formula: pool_size = (num_cores * 2) + effective_spindle_count. For SSD-only: pool_size = num_cores * 2. Oversized pools cause contention on shared resources (CPU caches, lock tables, shared buffers). PostgreSQL max_connections should equal the sum of all application pool sizes plus administrative overhead. PgBouncer in transaction mode is recommended for web applications -- it multiplexes many app connections over fewer PostgreSQL backends.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "PostgreSQL WAL (Write-Ahead Logging) modes: fsync (safest, default), synchronous_commit=off (faster but risks losing last few transactions on crash). For development/testing, synchronous_commit=off is fine. journal_mode=WAL in SQLite enables concurrent readers with one writer and is almost always preferred over the default rollback journal for web applications.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

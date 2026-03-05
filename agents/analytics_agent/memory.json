@@ -1,0 +1,42 @@
+{
+  "agent_id": "analytics_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Cohort analysis: group users by acquisition date or event, then track a metric over time per cohort. This reveals trends hidden by aggregate metrics and is essential for understanding retention and lifetime value.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Statistical significance: require a minimum sample size before drawing conclusions. p < 0.05 means a 1-in-20 chance of false positive. For A/B tests, decide sample size before starting and do not peek at results early.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Funnel analysis: define sequential steps, measure conversion rate between each step, and identify the highest-drop-off step for maximum improvement leverage. Segment funnels by user property to find which segments underperform.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Data quality has six dimensions: accuracy, completeness, consistency, timeliness, validity, and uniqueness. Measure each dimension with automated checks. Bad data costs 10-100x more to fix downstream than at source.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Metric definition rigor: every metric needs a precise definition including numerator, denominator, time window, filters, and edge cases. Document all metrics in a metric dictionary. Ambiguous metrics lead to contradictory dashboards.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

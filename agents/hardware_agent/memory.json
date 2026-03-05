@@ -1,0 +1,42 @@
+{
+  "agent_id": "hardware_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Backup drive partitioning: separate partitions for each source drive prevents one backup from consuming all space. Recommended layout for dedicated backup HDD: Partition 1 (200-300GB NTFS) for wbadmin system images of C:, Partition 2 (remainder NTFS) for Robocopy mirror of G:. Use NTFS not ReFS -- ReFS lacks consumer tool support, no EFS encryption, limited compatibility with recovery environments as of 2026.",
+      "learned_from": "verified_source",
+      "timestamp": "2026-02-21T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260221-BACKUP"
+    },
+    {
+      "fact": "Backup scheduling best practice: Weekly full system image (wbadmin) Sunday night, Daily Robocopy incremental mirror Mon-Sat 2AM, Monthly full backup rotated to offsite removable HDD. Differential/full backups are safer for home users than long incremental chains. Task Scheduler: run as SYSTEM, highest privileges, start-when-available for missed runs, 4hr execution time limit.",
+      "learned_from": "verified_source",
+      "timestamp": "2026-02-21T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260221-BACKUP"
+    },
+    {
+      "fact": "Removable HDD best practices: Grandfather-Father-Son (GFS) rotation -- minimum 2 drives, swap weekly or monthly. Encrypt with BitLocker To Go (built into Win11 Pro). Label drives clearly: BACKUP-A [C+G] 2026-01 OFFSITE. Store in padded antistatic cases, stable temperature. Never store encryption recovery key with the physical drive. Power up and verify readability every 6-12 months.",
+      "learned_from": "verified_source",
+      "timestamp": "2026-02-21T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260221-BACKUP"
+    },
+    {
+      "fact": "Robocopy backup flags verified: robocopy SOURCE DEST /MIR /R:3 /W:5 /MT:8 /XJ /FFT /NP /LOG+:logfile. /MIR=mirror (delete removed), /R:3=retry 3x (default 1M!), /W:5=wait 5s between retries, /MT:8=threads (fewer for spinning HDD), /XJ=exclude junctions (avoid loops), /FFT=FAT time tolerance. Exit codes: 0=no change, 1=copied, 2=extras, 4=mismatches, 8+=error.",
+      "learned_from": "verified_source",
+      "timestamp": "2026-02-21T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260221-BACKUP"
+    },
+    {
+      "fact": "RyansRig storage layout for backup planning: C: Samsung 980 PRO 2TB NVMe (OS, 1863GB), D: Toshiba HDWQ140 4TB HDD (backup target, 3726GB), G: Samsung 990 EVO Plus 4TB NVMe (projects/BOSS, 3726GB). D: has ample capacity to hold both C: system images (~200-300GB per image) and G: Robocopy mirror (~2.2TB used). Removable HDDs available for offsite rotation.",
+      "learned_from": "codebase_observation",
+      "timestamp": "2026-02-21T00:00:00",
+      "confidence": "high",
+      "session_id": "ENRICH-20260221-BACKUP"
+    }
+  ],
+  "known_paths": {}
+}

@@ -2464,7 +2464,9 @@ def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str)
 
 def _is_image_type(filename: str, content_type: str) -> bool:
     ext = Path(filename).suffix.lower() if filename else ""
-    return ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".tif", ".svg") \
+    if ext == ".svg" or content_type == "image/svg+xml":
+        return False  # SVG is XML text — route to text extraction, not vision
+    return ext in (".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".tif") \
         or content_type.startswith("image/")
 
 
@@ -2531,7 +2533,7 @@ def _ollama_vision_request(model: str, prompt: str, image_b64_list: list[str],
         }],
         "stream": False,
         "options": {"temperature": 0.3, "num_predict": 1024},
-        "keep_alive": "0",
+        "keep_alive": "5m",
         "think": False,
     }).encode("utf-8")
 
@@ -2543,8 +2545,16 @@ def _ollama_vision_request(model: str, prompt: str, image_b64_list: list[str],
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except Exception:
-        return None
+    except Exception as exc:
+        error_detail = str(exc)
+        # Try to read error body from Ollama
+        if hasattr(exc, 'read'):
+            try:
+                error_detail = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                pass
+        print(f"[doc-processor] Vision request failed for model={model}: {error_detail}")
+        return {"_error": error_detail}
 
 
 async def doc_process_file(request: Request) -> JSONResponse:
@@ -2582,6 +2592,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
             "summary": "Describe this image in detail. What does it contain? List all notable elements, text, diagrams, charts, or information visible.",
             "outline": "Create a structured breakdown of everything visible in this image. Use headings and bullet points.",
             "extract_key_points": "Extract all text, numbers, labels, data points, and key information visible in this image. Present as a bullet list.",
+            "image": "Describe what this image depicts. Include the subject, style, colors, composition, mood, and any text or symbols visible. Be precise in your identifications — note specific features that distinguish items from similar alternatives. If you can identify makes, models, brands, species, varieties, or specific types, explain what visual evidence supports your identification rather than guessing. When uncertain, describe what you observe and state what it could be.",
         }
         prompt = prompts.get(mode, prompts["summary"])
 
@@ -2590,7 +2601,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
         )
 
         elapsed = round(time.time() - t0, 1)
-        if vision_result:
+        if vision_result and "_error" not in vision_result:
             msg = vision_result.get("message", {})
             text = msg.get("content", "")
             if text:
@@ -2607,7 +2618,11 @@ async def doc_process_file(request: Request) -> JSONResponse:
                         "elapsed_seconds": elapsed,
                     },
                 })
-        return JSONResponse({"ok": False, "error": "Vision model returned no output. Is Ollama running?"})
+        err_detail = (vision_result or {}).get("_error", "") if isinstance(vision_result, dict) else ""
+        err_msg = f"Vision model '{model}' failed to process image."
+        if err_detail:
+            err_msg += f" Error: {err_detail[:300]}"
+        return JSONResponse({"ok": False, "error": err_msg})
 
     # ── Video handling: extract keyframes, send to vision model ──
     if _is_video_type(filename, content_type):
@@ -2621,6 +2636,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
             "summary": f"These are {len(frames)} evenly-spaced frames from a video called '{filename}'. Describe what happens in the video based on these frames. Provide a coherent narrative summary.",
             "outline": f"These are {len(frames)} frames from a video. Create a structured timeline of what happens at each stage of the video.",
             "extract_key_points": f"These are {len(frames)} frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
+            "image": f"These are {len(frames)} frames from a video. Describe what is visually depicted in each frame: subjects, actions, colors, style, setting, and composition.",
         }
         prompt = prompts.get(mode, prompts["summary"])
 
@@ -2629,7 +2645,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
         )
 
         elapsed = round(time.time() - t0, 1)
-        if vision_result:
+        if vision_result and "_error" not in vision_result:
             msg = vision_result.get("message", {})
             text = msg.get("content", "")
             if text:
@@ -2647,7 +2663,11 @@ async def doc_process_file(request: Request) -> JSONResponse:
                         "elapsed_seconds": elapsed,
                     },
                 })
-        return JSONResponse({"ok": False, "error": "Vision model returned no output for video frames."})
+        err_detail = (vision_result or {}).get("_error", "") if isinstance(vision_result, dict) else ""
+        err_msg = f"Vision model '{model}' failed to process video frames."
+        if err_detail:
+            err_msg += f" Error: {err_detail[:300]}"
+        return JSONResponse({"ok": False, "error": err_msg})
 
     # ── Document/text handling: extract text then summarize ──
     extraction = await asyncio.to_thread(_extract_text_from_file, file_bytes, filename, content_type)
@@ -2660,20 +2680,53 @@ async def doc_process_file(request: Request) -> JSONResponse:
 
     # Now summarize the extracted text
     from cohort.local.ollama import OllamaClient
-    prompts = {
-        "summary": (
-            "Summarize the following text in 3-5 concise bullet points. "
-            "Focus on key facts, decisions, and actionable items.\n\n"
-        ),
-        "outline": (
-            "Create a structured outline of the following text with headings "
-            "and sub-points. Use markdown formatting.\n\n"
-        ),
-        "extract_key_points": (
-            "Extract all key facts, numbers, names, dates, and actionable items "
-            "from the following text. Present as a bullet list.\n\n"
-        ),
-    }
+
+    # SVG files: describe the visual rather than summarizing XML code
+    ext = Path(filename).suffix.lower() if filename else ""
+    if ext == ".svg":
+        svg_prompts = {
+            "summary": (
+                "This is SVG (vector graphics) source code. Describe what this image "
+                "depicts based on the shapes, paths, colors, and structure in the code. "
+                "Focus on the visual content, not the code syntax.\n\n"
+            ),
+            "outline": (
+                "This is SVG source code. Create a structured breakdown of the visual "
+                "elements: shapes, colors, layers, and what they form together. "
+                "Describe what the image looks like, not the code.\n\n"
+            ),
+            "extract_key_points": (
+                "This is SVG source code. Extract key visual details: colors used, "
+                "shapes present, what the image depicts, dimensions, and any text "
+                "or labels embedded in the graphic. Present as a bullet list.\n\n"
+            ),
+            "image": (
+                "This is SVG source code for a vector graphic. Describe what this image "
+                "depicts based on the shapes, paths, colors, and structure. What is the "
+                "subject? What does it look like? Describe it as a visual, not as code.\n\n"
+            ),
+        }
+        prompts = svg_prompts
+    else:
+        prompts = {
+            "summary": (
+                "Summarize the following text in 3-5 concise bullet points. "
+                "Focus on key facts, decisions, and actionable items.\n\n"
+            ),
+            "outline": (
+                "Create a structured outline of the following text with headings "
+                "and sub-points. Use markdown formatting.\n\n"
+            ),
+            "extract_key_points": (
+                "Extract all key facts, numbers, names, dates, and actionable items "
+                "from the following text. Present as a bullet list.\n\n"
+            ),
+            "image": (
+                "Describe any visual elements, diagrams, layouts, or imagery described "
+                "or implied in this text. If it contains code for graphics (HTML/CSS, "
+                "charts, UI), describe what it would look like when rendered.\n\n"
+            ),
+        }
     prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
 
     client = OllamaClient(timeout=180)
@@ -2697,6 +2750,121 @@ async def doc_process_file(request: Request) -> JSONResponse:
                 "stats": {
                     "file_size": len(file_bytes),
                     "pages": extraction.get("pages"),
+                    "input_words": input_words,
+                    "input_chars": len(text),
+                    "output_words": output_words,
+                    "compression_pct": compression,
+                    "tokens_in": getattr(result, "tokens_in", 0),
+                    "tokens_out": getattr(result, "tokens_out", 0),
+                    "elapsed_seconds": elapsed,
+                },
+            })
+        return JSONResponse({"ok": False, "error": "Model returned no output. Is Ollama running?"})
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": str(exc)})
+
+
+async def doc_fetch_url(request: Request) -> JSONResponse:
+    """POST /api/doc-processor/fetch-url -- fetch a web page and summarize it."""
+    import time
+    import urllib.request
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    url = (body.get("url") or "").strip()
+    if not url:
+        return JSONResponse({"error": "url is required"}, status_code=400)
+    if len(url) > 2000:
+        return JSONResponse({"error": "URL too long (max 2000 chars)"}, status_code=400)
+    if not url.startswith(("http://", "https://")):
+        return JSONResponse({"error": "URL must start with http:// or https://"}, status_code=400)
+
+    mode = body.get("mode", "summary")
+    model_override = body.get("model", "")
+    model = model_override.strip() if model_override and model_override.strip() else _get_configured_model()
+
+    t0 = time.time()
+
+    # Fetch the URL
+    try:
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 (compatible; CohortBot/1.0)",
+            "Accept": "text/html,application/xhtml+xml,*/*",
+        })
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            content_type = resp.headers.get("Content-Type", "")
+            # Limit to 10MB
+            data = resp.read(10 * 1024 * 1024)
+    except urllib.error.HTTPError as exc:
+        return JSONResponse({"ok": False, "error": f"HTTP {exc.code}: {exc.reason}"})
+    except urllib.error.URLError as exc:
+        return JSONResponse({"ok": False, "error": f"Could not reach URL: {exc.reason}"})
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": f"Fetch failed: {exc}"})
+
+    if not data:
+        return JSONResponse({"ok": False, "error": "URL returned empty response"})
+
+    # Extract text from the fetched content (reuse existing HTML extraction)
+    # Determine a pseudo-filename from the URL for type detection
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    domain = parsed.netloc or "webpage"
+    path_ext = Path(parsed.path).suffix.lower() if parsed.path else ""
+    pseudo_filename = f"page{path_ext}" if path_ext else "page.html"
+
+    extraction = await asyncio.to_thread(
+        _extract_text_from_file, data, pseudo_filename, content_type
+    )
+    if extraction.get("error"):
+        return JSONResponse({"ok": False, "error": extraction["error"]})
+
+    text = extraction.get("text", "").strip()
+    if not text:
+        return JSONResponse({"ok": False, "error": f"No text could be extracted from {url}"})
+
+    # Summarize with Ollama (same as doc_process_file text path)
+    from cohort.local.ollama import OllamaClient
+    prompts = {
+        "summary": (
+            "Summarize the following web page content in 3-5 concise bullet points. "
+            "Focus on key facts, decisions, and actionable items.\n\n"
+        ),
+        "outline": (
+            "Create a structured outline of the following web page with headings "
+            "and sub-points. Use markdown formatting.\n\n"
+        ),
+        "extract_key_points": (
+            "Extract all key facts, numbers, names, dates, and actionable items "
+            "from the following web page. Present as a bullet list.\n\n"
+        ),
+    }
+    prompt = prompts.get(mode, prompts["summary"]) + f"TEXT:\n{text[:30000]}"
+
+    client = OllamaClient(timeout=180)
+    try:
+        result = await asyncio.to_thread(
+            client.generate, model=model, prompt=prompt, temperature=0.3,
+        )
+        elapsed = round(time.time() - t0, 1)
+        if result and result.text:
+            input_words = len(text.split())
+            output_words = len(result.text.split())
+            compression = round((1 - output_words / max(input_words, 1)) * 100, 1)
+            return JSONResponse({
+                "ok": True,
+                "summary": result.text,
+                "extracted_text_preview": text[:500],
+                "model": model,
+                "mode": mode,
+                "file_type": "url",
+                "filename": domain,
+                "stats": {
+                    "url": url,
+                    "content_size": len(data),
                     "input_words": input_words,
                     "input_chars": len(text),
                     "output_words": output_words,
@@ -2935,6 +3103,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
         Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
         Route("/api/doc-processor/process", doc_process_file, methods=["POST"]),
+        Route("/api/doc-processor/fetch-url", doc_fetch_url, methods=["POST"]),
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]

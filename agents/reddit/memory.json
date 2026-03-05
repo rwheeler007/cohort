@@ -1,0 +1,42 @@
+{
+  "agent_id": "reddit",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Subreddit selection criteria: match audience demographics not just topic name; check subreddit rules and posting guidelines (sidebar); review recent posts for tone and content expectations; subreddit size sweet spot is 50K-500K for engagement rate",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Reddit posting best practices: native content performs better than links; use descriptive titles that match subreddit conventions; respond to comments within first 2 hours (critical algorithm window); never use marketing language",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Community building on Reddit: provide value consistently before promoting; 10:1 ratio of helpful comments to self-promotional posts (Reddit's own guideline); build karma in relevant subreddits first; cross-posting between related subreddits",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "AMA (Ask Me Anything) strategy: coordinate with moderators in advance; prepare 10-15 anticipated questions with draft answers; plan 2-hour active response window; follow up on unanswered questions within 24 hours",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Reddit content monitoring: track brand mentions with keyword alerts; monitor competitor subreddits for market intelligence; track sentiment trends in relevant communities; save high-value discussions as reference material",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

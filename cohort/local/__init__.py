@@ -5,6 +5,10 @@ Falls back gracefully to Claude CLI when local routing unavailable.
 """
 
 from cohort.local.detect import detect_hardware, GPUInfo, HardwareInfo
+from cohort.local.ollama import ChatResult
 from cohort.local.router import LocalRouter, RouteResult
 
-__all__ = ["detect_hardware", "GPUInfo", "HardwareInfo", "LocalRouter", "RouteResult"]
+__all__ = [
+    "detect_hardware", "GPUInfo", "HardwareInfo",
+    "ChatResult", "LocalRouter", "RouteResult",
+]

@@ -1,0 +1,42 @@
+{
+  "agent_id": "linkedin",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Post format optimization: the first 2 lines are visible before the 'see more' fold, so the hook line must grab attention immediately. Use line breaks for readability, aim for 1300-1500 characters for optimal reach, and prefer carousels/document posts which consistently get the highest organic reach.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Engagement timing: comments received in the first hour after posting are critical for the LinkedIn algorithm to boost distribution. Reply to every comment within 2 hours to signal active conversation. Engagement pods (coordinated like/comment groups) are detectable by LinkedIn and result in reduced reach.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Content pillars strategy: maintain 3-5 recurring themes such as industry insights, lessons learned, how-to guides, behind-the-scenes, and contrarian takes. Follow the 80/20 rule where 80% of posts deliver value and only 20% are promotional. Consistency in themes builds audience expectations and trust.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "LinkedIn algorithm signals: dwell time (how long readers spend on a post) is a primary ranking factor. Meaningful comments over 5 words carry more weight than reactions. Shares via DM and saves are strong positive signals. Reposts carry less algorithmic weight than original content creation.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Professional networking best practices: always personalize connection requests by referencing shared context (mutual connections, same industry, specific post they wrote). Comment on a person's posts before sending a DM to warm the relationship. Provide value (share a resource, make an introduction, offer insight) before making any ask.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

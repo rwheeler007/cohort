@@ -1,0 +1,42 @@
+{
+  "agent_id": "email_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Subject lines perform best at 6-10 words; personalizing the subject line increases open rates by approximately 20%; avoid spam triggers such as ALL CAPS, multiple exclamation marks, and words like 'free'; A/B test subject lines with a 10% sample before sending to the full list",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Email deliverability depends on authenticating with SPF, DKIM, and DMARC; new sending domains should be warmed up gradually starting at 50 emails per day and doubling weekly; monitor bounce rate (keep below 2%) and spam complaint rate (keep below 0.1%)",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Transactional emails (receipts, password resets) and marketing emails should use separate sending domains and IPs; transactional messages require near-100% deliverability and marketing reputation issues should never degrade transactional delivery",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Email templates should use a single-column layout for mobile compatibility (60%+ of opens are mobile); max width 600px; minimum 14px font size; use a clear CTA button instead of linked text; include alt text on all images and provide a plain-text fallback",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Drip campaigns should be trigger-based sequences (welcome, onboarding, re-engagement, win-back) with 3-5 emails per sequence and a minimum 2-day spacing between sends; measure per-email drop-off rates to identify weak points in the sequence",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    }
+  ],
+  "known_paths": {}
+}

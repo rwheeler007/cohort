@@ -44,14 +44,6 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "role": "Orchestrator",
         "group": "Leadership",
     },
-    "ceo_agent": {
-        "name": "CEO Agent",
-        "nickname": "CEO",
-        "avatar": "CE",
-        "color": "#8E44AD",
-        "role": "Executive",
-        "group": "Leadership",
-    },
     "supervisor_agent": {
         "name": "Supervisor",
         "nickname": "Supervisor",
@@ -60,16 +52,8 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "role": "Supervisor",
         "group": "Leadership",
     },
-    "coding_orchestrator": {
-        "name": "Coding Orchestrator",
-        "nickname": "Orch",
-        "avatar": "CO",
-        "color": "#9B59B6",
-        "role": "Project Manager",
-        "group": "Leadership",
-    },
 
-    # -- Core developers --
+    # -- Core Developers --
     "python_developer": {
         "name": "Python Developer",
         "nickname": "PyDev",
@@ -102,23 +86,23 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "role": "Senior Developer",
         "group": "Core Developers",
     },
-
-    # -- Specialists --
     "database_developer": {
         "name": "Database Developer",
         "nickname": "DBDev",
         "avatar": "DB",
         "color": "#2ECC71",
         "role": "Database Specialist",
-        "group": "Specialists",
+        "group": "Core Developers",
     },
+
+    # -- Quality & Security --
     "qa_agent": {
         "name": "QA Agent",
         "nickname": "QA",
         "avatar": "QA",
         "color": "#27AE60",
         "role": "QA Specialist",
-        "group": "Specialists",
+        "group": "Quality & Security",
     },
     "security_agent": {
         "name": "Security Agent",
@@ -126,7 +110,7 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "avatar": "SEC",
         "color": "#C0392B",
         "role": "Security Specialist",
-        "group": "Specialists",
+        "group": "Quality & Security",
     },
     "code_archaeologist": {
         "name": "Code Archaeologist",
@@ -134,31 +118,25 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "avatar": "CA",
         "color": "#8E44AD",
         "role": "Analyst",
-        "group": "Specialists",
+        "group": "Quality & Security",
     },
-    "devops_agent": {
-        "name": "DevOps Agent",
-        "nickname": "DevOps",
-        "avatar": "DO",
-        "color": "#16A085",
-        "role": "DevOps Engineer",
-        "group": "Specialists",
-    },
-    "sales_agent": {
-        "name": "Sales Agent",
-        "nickname": "Sales",
-        "avatar": "SA",
-        "color": "#E74C3C",
-        "role": "Sales Specialist",
-        "group": "Specialists",
-    },
+
+    # -- Marketing & Content --
     "marketing_agent": {
         "name": "Marketing Strategist",
         "nickname": "Marketing",
         "avatar": "MKT",
         "color": "#E74C3C",
         "role": "Growth Strategist",
-        "group": "Specialists",
+        "group": "Marketing & Content",
+    },
+    "campaign_orchestrator": {
+        "name": "Campaign Orchestrator",
+        "nickname": "Campaigns",
+        "avatar": "CMP",
+        "color": "#D35400",
+        "role": "Campaign Director",
+        "group": "Marketing & Content",
     },
     "content_strategy_agent": {
         "name": "Content Strategy Agent",
@@ -166,18 +144,68 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "avatar": "CS",
         "color": "#2ECC71",
         "role": "Content Strategist",
-        "group": "Specialists",
+        "group": "Marketing & Content",
     },
-
+    "brand_design_agent": {
+        "name": "Brand Design Agent",
+        "nickname": "Brand",
+        "avatar": "BRD",
+        "color": "#9B59B6",
+        "role": "Brand & Visual Design",
+        "group": "Marketing & Content",
+    },
+    "media_production_agent": {
+        "name": "Media Production Agent",
+        "nickname": "Media",
+        "avatar": "MED",
+        "color": "#E67E22",
+        "role": "Video & Media Producer",
+        "group": "Marketing & Content",
+    },
     "analytics_agent": {
         "name": "Analytics Agent",
         "nickname": "Analytics",
         "avatar": "BI",
         "color": "#3498DB",
-        "role": "BI & Analytics Specialist",
-        "group": "Specialists",
+        "role": "BI & Analytics",
+        "group": "Marketing & Content",
     },
+
+    # -- Social Media --
+    "email_agent": {
+        "name": "Email Marketing Specialist",
+        "nickname": "Email",
+        "avatar": "EM",
+        "color": "#3498DB",
+        "role": "Email Marketing",
+        "group": "Social Media",
+    },
+    "linkedin": {
+        "name": "LinkedIn Specialist",
+        "nickname": "LinkedIn",
+        "avatar": "LI",
+        "color": "#0A66C2",
+        "role": "LinkedIn Strategist",
+        "group": "Social Media",
+    },
+    "reddit": {
+        "name": "Reddit Specialist",
+        "nickname": "Reddit",
+        "avatar": "RD",
+        "color": "#FF4500",
+        "role": "Reddit Community",
+        "group": "Social Media",
+    },
+
     # -- Support --
+    "hardware_agent": {
+        "name": "Hardware Agent",
+        "nickname": "Hardware",
+        "avatar": "HW",
+        "color": "#16A085",
+        "role": "Hardware Specialist",
+        "group": "Support",
+    },
     "documentation_agent": {
         "name": "Documentation Agent",
         "nickname": "Docs",
@@ -186,12 +214,12 @@ _LEGACY_REGISTRY: dict[str, dict[str, str]] = {
         "role": "Technical Writer",
         "group": "Support",
     },
-    "sdk_educator_research": {
-        "name": "SDK Educator",
-        "nickname": "Educator",
-        "avatar": "ED",
-        "color": "#D35400",
-        "role": "Educator",
+    "setup_guide": {
+        "name": "Setup Guide",
+        "nickname": "Setup",
+        "avatar": "SG",
+        "color": "#16A085",
+        "role": "Onboarding Guide",
         "group": "Support",
     },
 }

@@ -590,21 +590,27 @@ def _invoke_agent_sync(item: dict) -> None:
     agent_cfg_for_perms = _agent_store.get(agent_id) if _agent_store else None
     perms = resolve_permissions(agent_id, agent_cfg_for_perms, get_central_permissions())
 
-    # Build tool awareness section (only for agents with tool access)
+    # Build tool awareness section (only for Claude CLI path -- local tool
+    # calling gets real schemas, not text descriptions)
     tool_awareness = ""
     if perms and perms.allowed_tools:
         tool_awareness = _build_tool_awareness(perms)
 
-    # Construct the full prompt
-    full_prompt = (
+    # Construct prompts: one with tool awareness (Claude CLI), one without (local tools)
+    _base_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
         f"---\n{agent_prompt}\n---\n\n"
-        f"{tool_awareness}"
+    )
+    _context_suffix = (
         f"{channel_context}"
         f"{thread_context}"
         f"Now respond to this message:\n{message_content}"
     )
+    # Full prompt with tool awareness text (for Claude CLI fallback)
+    full_prompt = _base_prompt + tool_awareness + _context_suffix
+    # Clean prompt without tool awareness (for local tool calling -- model gets real schemas)
+    _local_prompt = _base_prompt + _context_suffix
 
     # D5: Circuit breaker -- reject oversized prompts
     prompt_byte_len = len(full_prompt.encode("utf-8"))
@@ -644,21 +650,53 @@ def _invoke_agent_sync(item: dict) -> None:
         from cohort.local import LocalRouter
 
         router = LocalRouter()
-        # Infer task type from message content (simple heuristic)
-        task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
-        route_result = router.route(full_prompt, task_type=task_type, temperature=agent_temperature)
-        if route_result is not None and route_result.text:
-            response_content = route_result.text
-            response_metadata = {
-                "tier": route_result.tier,
-                "model": route_result.model,
-                "elapsed_seconds": route_result.elapsed_seconds,
-                "tokens_in": route_result.tokens_in,
-                "tokens_out": route_result.tokens_out,
-            }
-            logger.info("[OK] Local router handled %s in #%s (%s, %d/%d tok)",
-                        agent_id, channel_id, route_result.model,
-                        route_result.tokens_in, route_result.tokens_out)
+
+        if perms and perms.allowed_tools:
+            # Tool-enabled local routing: use /api/chat with native tool calling
+            from cohort.local.tools import build_tool_schemas, execute_tool
+
+            tool_schemas = build_tool_schemas(perms.allowed_tools)
+            if tool_schemas:
+                messages = [{"role": "user", "content": _local_prompt}]
+
+                def _tool_executor(name: str, args: dict) -> str:
+                    return execute_tool(name, args, agents_root=AGENTS_ROOT or Path.cwd())
+
+                route_result = router.route_with_tools(
+                    messages=messages,
+                    tools=tool_schemas,
+                    tool_executor=_tool_executor,
+                    temperature=agent_temperature or 0.4,
+                    max_turns=min(perms.max_turns, 15),  # Cap local tool turns
+                )
+                if route_result is not None and route_result.text:
+                    response_content = route_result.text
+                    response_metadata = {
+                        "tier": route_result.tier,
+                        "model": route_result.model,
+                        "elapsed_seconds": route_result.elapsed_seconds,
+                        "tokens_in": route_result.tokens_in,
+                        "tokens_out": route_result.tokens_out,
+                    }
+                    logger.info("[OK] Local tool loop handled %s in #%s (%s, %d/%d tok)",
+                                agent_id, channel_id, route_result.model,
+                                route_result.tokens_in, route_result.tokens_out)
+        else:
+            # No tools -- single-shot text generation
+            task_type = "code" if any(kw in message_content.lower() for kw in ["code", "implement", "function", "class", "debug"]) else "general"
+            route_result = router.route(full_prompt, task_type=task_type, temperature=agent_temperature)
+            if route_result is not None and route_result.text:
+                response_content = route_result.text
+                response_metadata = {
+                    "tier": route_result.tier,
+                    "model": route_result.model,
+                    "elapsed_seconds": route_result.elapsed_seconds,
+                    "tokens_in": route_result.tokens_in,
+                    "tokens_out": route_result.tokens_out,
+                }
+                logger.info("[OK] Local router handled %s in #%s (%s, %d/%d tok)",
+                            agent_id, channel_id, route_result.model,
+                            route_result.tokens_in, route_result.tokens_out)
     except Exception:
         # Local routing failed -- fall through to Claude CLI
         logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)

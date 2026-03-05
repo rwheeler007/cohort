@@ -1,0 +1,62 @@
+{
+  "agent_id": "media_production_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Image compression for web: use WebP for general use (25-35% smaller than JPEG at equivalent quality), AVIF for modern browsers (50% smaller), and PNG only when transparency is needed. Always provide fallback formats for older browsers. Use srcset for responsive images to serve appropriate sizes.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Color grading basics: shoot in flat or log profiles to preserve dynamic range. Apply primary correction first (white balance, exposure), then apply the creative grade. Use LUTs as starting points rather than final grades. Maintain skin tone accuracy as a reference anchor throughout the grading process.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Content format specifications: vertical 9:16 for Stories, Reels, and TikTok; square 1:1 for feed posts; horizontal 16:9 for YouTube and web. Export at each platform's recommended resolution and bitrate. Always keep the master file at the highest quality for future re-exports.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Official AI video generation tool selection (Sora 2, Runway Gen 4.5, Veo 3.1) reference",
+      "source": "https://docs.ai video generation tool selection (sora 2, runway gen 4.5, veo 3.1).org",
+      "source_title": "AI video generation tool selection (Sora 2, Runway Gen 4.5, Veo 3.1) Official Documentation",
+      "learned_from": "training_pipeline",
+      "timestamp": "2026-02-28T16:25:25.457537",
+      "topic": "AI video generation tool selection (Sora 2, Runway Gen 4.5, Veo 3.1)",
+      "confidence": "medium",
+      "session_id": "CURR-20260228-162525",
+      "spaced_repetition": {
+        "interval_days": 1,
+        "ease_factor": 2.5,
+        "repetitions": 0,
+        "next_review": "2026-03-01T16:25:25.457541",
+        "last_quality": null
+      }
+    },
+    {
+      "fact": "Official Multi-tool production workflows (Midjourney + Veo + Topaz) reference",
+      "source": "https://docs.multi-tool production workflows (midjourney + veo + topaz).org",
+      "source_title": "Multi-tool production workflows (Midjourney + Veo + Topaz) Official Documentation",
+      "learned_from": "training_pipeline",
+      "timestamp": "2026-02-28T16:25:25.459239",
+      "topic": "AI video generation tool selection (Sora 2, Runway Gen 4.5, Veo 3.1)",
+      "confidence": "medium",
+      "session_id": "CURR-20260228-162525",
+      "spaced_repetition": {
+        "interval_days": 1,
+        "ease_factor": 2.5,
+        "repetitions": 0,
+        "next_review": "2026-03-01T16:25:25.459242",
+        "last_quality": null
+      }
+    }
+  ],
+  "known_paths": {}
+}

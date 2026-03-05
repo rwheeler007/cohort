@@ -1,0 +1,42 @@
+{
+  "agent_id": "marketing_agent",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Email marketing metric benchmarks: open rate 20-25% industry average, click-through rate 2.5-3%, unsubscribe rate below 0.5%; segment lists by behavior (opens, clicks, purchases) not just demographics; A/B test subject lines with minimum 1000 recipients per variant for statistical significance",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "SEO fundamentals: target one primary keyword per page, place it in title tag, H1 heading, first paragraph, and meta description; internal linking distributes page authority across the site; technical SEO (site speed, mobile-first indexing, structured data markup) is table stakes for ranking",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Marketing attribution models: last-touch (simplest but overcredits bottom-funnel), first-touch (overcredits top-funnel), linear (equal credit to all touchpoints), time-decay (most recent touchpoints get more credit); multi-touch attribution requires robust cross-channel tracking infrastructure",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Brand positioning statement template: For [target audience] who [need or opportunity], [brand] is a [category] that [key benefit] because [reason to believe]; test the statement with actual customers to verify resonance before committing to launch messaging",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Temperature configuration is now live (V_3.0.0). Marketing agent runs at temperature 0.50 (creative range -- highest of all agents). Per-agent temperatures set in agent_config.json under model_params.temperature. Priority chain: caller-supplied > agent config > task routing > global default (0.4) > Ollama default (0.8). Reference: docs/tools/llm-router.md.",
+      "learned_from": "claude_code",
+      "timestamp": "2026-02-28T19:46:39.366632+00:00",
+      "confidence": "high",
+      "session_id": "TEMP-CONFIG-20260228"
+    }
+  ],
+  "known_paths": {}
+}

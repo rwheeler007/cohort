@@ -23,7 +23,8 @@ const state = {
     // Chat state
     agentProfiles: {},       // Agent registry (avatar, color, nickname, role)
     currentChannel: null,    // Currently selected channel
-    channels: [],            // List of channels
+    channels: [],            // List of active (non-archived) channels
+    archivedChannels: [],    // List of archived channels
     messages: {},            // Messages per channel: { channelId: [msg, ...] }
     replyingTo: null,        // Message ID being replied to
 
@@ -102,6 +103,7 @@ function initDom() {
         messageInput: $('#message-input'),
         channelList: $('#channel-list'),
         agentChatList: $('#agent-chat-list'),
+        archivedChatList: $('#archived-chat-list'),
         folderList: $('#folder-list'),
         sidebarTaskList: $('#sidebar-task-list'),
         sidebarSessionList: $('#session-list'),
@@ -2241,20 +2243,22 @@ async function renderDocProcessorPanel(tool) {
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(ollamaStatus.status))}
         ${offlineHtml}
-        ${statRow(
-            statCard('Engine', isUp ? 'Ollama' : 'Offline', { color: isUp ? 'success' : 'error' }) +
-            `<div class="stat-card">
-                <div class="stat-card__label">Model</div>
+        <div class="doc-engine-bar">
+            <div class="doc-engine-bar__status">
+                <span class="doc-engine-bar__dot doc-engine-bar__dot--${isUp ? 'up' : 'down'}"></span>
+                <span class="doc-engine-bar__label">${isUp ? 'Ollama' : 'Offline'}</span>
+            </div>
+            <div class="doc-engine-bar__model">
+                <label class="doc-engine-bar__model-label" for="doc-model-select">Model</label>
                 <select id="doc-model-select" class="doc-model-select" ${!isUp ? 'disabled' : ''}>
                     ${allModels.length ? allModels.map(m =>
                         `<option value="${escapeHtml(m)}" ${m === configuredModel ? 'selected' : ''}>${escapeHtml(m)}</option>`
                     ).join('') : '<option value="">No models</option>'}
                 </select>
-                <div class="stat-card__subtitle">vision + text</div>
-            </div>` +
-            statCard('Models', modelCount, { subtitle: 'installed' })
-        )}
-        ${vramHtml}
+                <span class="doc-engine-bar__cap">${modelCount} available</span>
+            </div>
+            ${vramHtml ? `<div class="doc-engine-bar__vram">${vramHtml}</div>` : ''}
+        </div>
 
         <div class="doc-processor-main">
             <!-- Drop zone -->
@@ -2275,6 +2279,18 @@ async function renderDocProcessorPanel(tool) {
                     onchange="_handleDocFileSelect(this)">
             </div>
 
+            <!-- Or fetch URL -->
+            <div class="doc-url-input">
+                <div class="doc-url-input__header">
+                    <span>Or enter a web address</span>
+                </div>
+                <div class="doc-url-input__row">
+                    <input type="url" id="doc-url-input" class="doc-url-input__field"
+                        placeholder="https://example.com/article..."
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();_processDocInput()}">
+                </div>
+            </div>
+
             <!-- Or paste text -->
             <div class="doc-text-input">
                 <div class="doc-text-input__header">
@@ -2287,14 +2303,20 @@ async function renderDocProcessorPanel(tool) {
             <!-- Mode selector -->
             <div class="doc-controls">
                 <div class="doc-mode-selector">
-                    <label class="doc-mode-option">
+                    <label class="doc-mode-option" title="Concise paragraph summarizing the main ideas and conclusions">
                         <input type="radio" name="doc-mode" value="summary" checked> Summary
                     </label>
-                    <label class="doc-mode-option">
+                    <label class="doc-mode-option" title="Structured hierarchical outline with headings and sub-points">
                         <input type="radio" name="doc-mode" value="outline"> Outline
                     </label>
-                    <label class="doc-mode-option">
+                    <label class="doc-mode-option" title="Bullet list of the most important facts, findings, and takeaways">
                         <input type="radio" name="doc-mode" value="extract_key_points"> Key Points
+                    </label>
+                    <label class="doc-mode-option" title="Run all three modes and display results together">
+                        <input type="radio" name="doc-mode" value="all"> All
+                    </label>
+                    <label class="doc-mode-option" title="Describe visual content: what the image depicts, colors, composition, and notable elements">
+                        <input type="radio" name="doc-mode" value="image"> Image
                     </label>
                 </div>
                 <button class="btn btn--primary" onclick="_processDocInput()" id="doc-process-btn"${!isUp ? ' disabled' : ''}>
@@ -2316,6 +2338,29 @@ function _getDocMode() {
     return checked ? checked.value : 'summary';
 }
 
+function _svgToPng(svgText) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+            const w = img.naturalWidth || 1024;
+            const h = img.naturalHeight || 1024;
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('SVG render failed')); };
+        img.src = url;
+    });
+}
+
 function _handleDocDrop(event) {
     event.preventDefault();
     const zone = document.getElementById('doc-dropzone');
@@ -2334,7 +2379,13 @@ function _handleDocFileSelect(input) {
 }
 
 async function _processDocInput() {
-    // Check if there's a file queued or text pasted
+    // Check URL field first
+    const urlInput = document.getElementById('doc-url-input');
+    if (urlInput && urlInput.value.trim().match(/^https?:\/\/.+/)) {
+        _processDocUrl(urlInput.value.trim());
+        return;
+    }
+    // Check if there's text pasted
     const textInput = document.getElementById('doc-summarize-input');
     if (textInput && textInput.value.trim().length > 30) {
         _processDocText(textInput.value.trim());
@@ -2366,8 +2417,58 @@ async function _processDocFile(file) {
     else if (['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv'].includes(ext)) typeLabel = 'Video';
     else typeLabel = ext.toUpperCase();
 
-    // Show processing state
+    // SVG + image mode: render to PNG in browser so vision model can see it
+    if (ext === 'svg' && mode === 'image') {
+        try {
+            const svgText = await file.text();
+            const pngBlob = await _svgToPng(svgText);
+            const pngFile = new File([pngBlob], file.name.replace(/\.svg$/i, '.png'), { type: 'image/png' });
+            file = pngFile;
+        } catch (e) {
+            console.warn('SVG to PNG conversion failed, sending as-is:', e);
+        }
+    }
+
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+
+    // "All" mode: run all 3 modes sequentially
+    if (mode === 'all') {
+        const allModes = ['summary', 'outline', 'extract_key_points'];
+        const results = [];
+        const modelSelect = document.getElementById('doc-model-select');
+        const selectedModel = modelSelect ? modelSelect.value : '';
+
+        for (let i = 0; i < allModes.length; i++) {
+            const m = allModes[i];
+            const mLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points' };
+            resultArea.innerHTML = `<div class="doc-processing">
+                <div class="doc-processing__spinner"></div>
+                <div class="doc-processing__info">
+                    <strong>Processing: ${escapeHtml(file.name)}</strong>
+                    <span>${typeLabel} -- ${sizeMB} MB -- running ${mLabels[m]} (${i + 1}/3)</span>
+                    <span class="doc-processing__status">Analyzing...</span>
+                </div>
+            </div>`;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('mode', m);
+                if (selectedModel) formData.append('model', selectedModel);
+                const resp = await fetch('/api/doc-processor/process', { method: 'POST', body: formData });
+                const data = await resp.json();
+                if (data.ok) results.push(data);
+            } catch { /* skip failed mode */ }
+        }
+        if (results.length > 0) {
+            _renderDocResultAll(results);
+        } else {
+            resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
+        }
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+        return;
+    }
+
+    // Single mode
     resultArea.innerHTML = `<div class="doc-processing">
         <div class="doc-processing__spinner"></div>
         <div class="doc-processing__info">
@@ -2377,7 +2478,6 @@ async function _processDocFile(file) {
         </div>
     </div>`;
 
-    // Upload file
     const modelSelect = document.getElementById('doc-model-select');
     const selectedModel = modelSelect ? modelSelect.value : '';
     const formData = new FormData();
@@ -2416,8 +2516,44 @@ async function _processDocText(text) {
     if (!resultArea) return;
 
     const mode = _getDocMode();
+    const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
 
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+
+    // "All" mode: run all 3 modes sequentially
+    if (mode === 'all') {
+        const allModes = ['summary', 'outline', 'extract_key_points'];
+        const results = [];
+        for (let i = 0; i < allModes.length; i++) {
+            const m = allModes[i];
+            const mLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points' };
+            resultArea.innerHTML = `<div class="doc-processing">
+                <div class="doc-processing__spinner"></div>
+                <div class="doc-processing__info">
+                    <strong>Processing pasted text</strong>
+                    <span>${text.length.toLocaleString()} characters -- running ${mLabels[m]} (${i + 1}/3)</span>
+                    <span class="doc-processing__status">Analyzing...</span>
+                </div>
+            </div>`;
+            try {
+                const resp = await fetch('/api/doc-processor/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, mode: m, model: selectedModel }),
+                });
+                const data = await resp.json();
+                if (data.ok) results.push(data);
+            } catch { /* skip failed mode */ }
+        }
+        if (results.length > 0) {
+            _renderDocResultAll(results);
+        } else {
+            resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
+        }
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+        return;
+    }
+
     resultArea.innerHTML = `<div class="doc-processing">
         <div class="doc-processing__spinner"></div>
         <div class="doc-processing__info">
@@ -2431,7 +2567,7 @@ async function _processDocText(text) {
         const resp = await fetch('/api/doc-processor/summarize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, mode, model: (document.getElementById('doc-model-select') || {}).value || '' }),
+            body: JSON.stringify({ text, mode, model: selectedModel }),
         });
         const data = await resp.json();
 
@@ -2453,18 +2589,112 @@ async function _processDocText(text) {
     }
 }
 
+async function _processDocUrl(url) {
+    const resultArea = document.getElementById('doc-result-area');
+    const btn = document.getElementById('doc-process-btn');
+    if (!resultArea) return;
+
+    const mode = _getDocMode();
+    const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
+
+    // Truncate display URL for the spinner
+    const displayUrl = url.length > 60 ? url.substring(0, 57) + '...' : url;
+
+    // "All" mode: run all 3 modes sequentially
+    if (mode === 'all') {
+        const allModes = ['summary', 'outline', 'extract_key_points'];
+        const results = [];
+        for (let i = 0; i < allModes.length; i++) {
+            const m = allModes[i];
+            const mLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points' };
+            resultArea.innerHTML = `<div class="doc-processing">
+                <div class="doc-processing__spinner"></div>
+                <div class="doc-processing__info">
+                    <strong>Fetching: ${escapeHtml(displayUrl)}</strong>
+                    <span>URL -- running ${mLabels[m]} (${i + 1}/3)</span>
+                    <span class="doc-processing__status">${i === 0 ? 'Fetching page...' : 'Analyzing...'}</span>
+                </div>
+            </div>`;
+            try {
+                const resp = await fetch('/api/doc-processor/fetch-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, mode: m, model: selectedModel }),
+                });
+                const data = await resp.json();
+                if (data.ok) results.push(data);
+                else if (i === 0) {
+                    // First mode failed — show error and stop
+                    resultArea.innerHTML = `<div class="doc-error">
+                        <strong>[X] Fetch failed</strong>
+                        <p>${escapeHtml(data.error || 'Unknown error')}</p>
+                    </div>`;
+                    if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+                    return;
+                }
+            } catch { /* skip failed mode */ }
+        }
+        if (results.length > 0) {
+            _renderDocResultAll(results);
+        } else {
+            resultArea.innerHTML = `<div class="doc-error"><strong>[X] All modes failed</strong></div>`;
+        }
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+        return;
+    }
+
+    // Single mode
+    resultArea.innerHTML = `<div class="doc-processing">
+        <div class="doc-processing__spinner"></div>
+        <div class="doc-processing__info">
+            <strong>Fetching: ${escapeHtml(displayUrl)}</strong>
+            <span>URL -- mode: ${mode}</span>
+            <span class="doc-processing__status" id="doc-processing-status">Fetching page and extracting content...</span>
+        </div>
+    </div>`;
+
+    try {
+        const resp = await fetch('/api/doc-processor/fetch-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, mode, model: selectedModel }),
+        });
+        const data = await resp.json();
+
+        if (data.ok) {
+            _renderDocResult(data);
+        } else {
+            resultArea.innerHTML = `<div class="doc-error">
+                <strong>[X] Fetch failed</strong>
+                <p>${escapeHtml(data.error || 'Unknown error')}</p>
+            </div>`;
+        }
+    } catch (err) {
+        resultArea.innerHTML = `<div class="doc-error">
+            <strong>[X] Fetch failed</strong>
+            <p>${escapeHtml(err.message)}</p>
+        </div>`;
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Process'; }
+    }
+}
+
 function _renderDocResult(data) {
     const resultArea = document.getElementById('doc-result-area');
     if (!resultArea) return;
 
     const stats = data.stats || {};
     const mode = data.mode || 'summary';
-    const modeLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points' };
+    const modeLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points', image: 'Image' };
 
     // Stats bar
     let statsHtml = '<div class="doc-result-stats">';
-    if (data.filename) statsHtml += `<span class="doc-result-stat"><strong>File:</strong> ${escapeHtml(data.filename)}</span>`;
+    if (stats.url) statsHtml += `<span class="doc-result-stat"><strong>URL:</strong> <a href="${escapeHtml(stats.url)}" target="_blank" rel="noopener" style="color:var(--color-accent)">${escapeHtml(data.filename || stats.url)}</a></span>`;
+    else if (data.filename) statsHtml += `<span class="doc-result-stat"><strong>File:</strong> ${escapeHtml(data.filename)}</span>`;
     if (data.file_type) statsHtml += `<span class="doc-result-stat"><strong>Type:</strong> ${escapeHtml(data.file_type)}</span>`;
+    if (stats.content_size) statsHtml += `<span class="doc-result-stat"><strong>Page size:</strong> ${(stats.content_size / 1024).toFixed(0)} KB</span>`;
     if (stats.pages) statsHtml += `<span class="doc-result-stat"><strong>Pages:</strong> ${stats.pages}</span>`;
     if (stats.input_words) statsHtml += `<span class="doc-result-stat"><strong>Input:</strong> ${stats.input_words.toLocaleString()} words</span>`;
     if (stats.output_words) statsHtml += `<span class="doc-result-stat"><strong>Output:</strong> ${stats.output_words.toLocaleString()} words</span>`;
@@ -2512,6 +2742,74 @@ function _renderDocResult(data) {
         </div>
         ${statsHtml}
         <div class="doc-result__body" id="doc-result-text">${formatted}</div>
+        ${previewHtml}
+    </div>`;
+}
+
+function _formatDocMarkdown(text) {
+    const lines = (text || '').split('\n').map(line => {
+        let l = escapeHtml(line);
+        l = l.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        if (l.match(/^\s*[-*]\s/)) l = '<li>' + l.replace(/^\s*[-*]\s/, '') + '</li>';
+        if (l.match(/^#{1,3}\s/)) {
+            const level = l.match(/^(#+)/)[1].length;
+            l = `<h${level + 2} style="margin:var(--space-2) 0 var(--space-1)">${l.replace(/^#+\s/, '')}</h${level + 2}>`;
+        }
+        return l;
+    }).join('\n');
+    return lines.replace(/(<li>.*?<\/li>\n?)+/gs, match => `<ul style="margin:var(--space-1) 0;padding-left:var(--space-4)">${match}</ul>`);
+}
+
+function _renderDocResultAll(results) {
+    const resultArea = document.getElementById('doc-result-area');
+    if (!resultArea) return;
+
+    const modeLabels = { summary: 'Summary', outline: 'Outline', extract_key_points: 'Key Points', image: 'Image' };
+
+    // Build stats from first result (shared metadata)
+    const first = results[0];
+    const stats = first.stats || {};
+    let statsHtml = '<div class="doc-result-stats">';
+    if (first.filename) statsHtml += `<span class="doc-result-stat"><strong>File:</strong> ${escapeHtml(first.filename)}</span>`;
+    if (first.file_type) statsHtml += `<span class="doc-result-stat"><strong>Type:</strong> ${escapeHtml(first.file_type)}</span>`;
+    if (stats.pages) statsHtml += `<span class="doc-result-stat"><strong>Pages:</strong> ${stats.pages}</span>`;
+    if (stats.input_words) statsHtml += `<span class="doc-result-stat"><strong>Input:</strong> ${stats.input_words.toLocaleString()} words</span>`;
+    const totalTime = results.reduce((s, r) => s + ((r.stats || {}).elapsed_seconds || 0), 0);
+    if (totalTime) statsHtml += `<span class="doc-result-stat"><strong>Total time:</strong> ${totalTime.toFixed(1)}s</span>`;
+    if (first.model) statsHtml += `<span class="doc-result-stat"><strong>Model:</strong> ${escapeHtml(first.model)}</span>`;
+    statsHtml += '</div>';
+
+    // Build sections for each mode
+    const sectionsHtml = results.map(data => {
+        const mode = data.mode || 'summary';
+        const formatted = _formatDocMarkdown(data.summary);
+        return `<div class="doc-result-all__section">
+            <div class="doc-result-all__section-header">
+                <span class="doc-result__mode-badge">${modeLabels[mode] || mode}</span>
+            </div>
+            <div class="doc-result__body">${formatted}</div>
+        </div>`;
+    }).join('');
+
+    // Extracted text preview from first result
+    let previewHtml = '';
+    if (first.extracted_text_preview) {
+        previewHtml = `<div class="doc-result-preview">
+            <div class="doc-result-preview__header" onclick="this.parentElement.classList.toggle('doc-result-preview--open')">
+                <span>Extracted Text Preview</span>
+                <span class="doc-result-preview__toggle">[+]</span>
+            </div>
+            <div class="doc-result-preview__body"><pre>${escapeHtml(first.extracted_text_preview)}</pre></div>
+        </div>`;
+    }
+
+    resultArea.innerHTML = `<div class="doc-result">
+        <div class="doc-result__header">
+            <span class="doc-result__mode-badge">All Modes</span>
+            <button class="btn btn--sm" onclick="navigator.clipboard.writeText(document.getElementById('doc-result-all-content').innerText);showToast('Copied to clipboard','success')">Copy All</button>
+        </div>
+        ${statsHtml}
+        <div id="doc-result-all-content">${sectionsHtml}</div>
         ${previewHtml}
     </div>`;
 }
@@ -2804,9 +3102,54 @@ function renderAgentChats() {
         return;
     }
 
-    // Group DM channels by agent
+    // Group DM channels by agent, keep only the latest (last created)
     const byAgent = {};
     for (const ch of dmChannels) {
+        const agentId = _extractAgentIdFromDm(ch.id);
+        byAgent[agentId] = ch; // overwrite: last one wins (creation order)
+    }
+
+    let html = '';
+    for (const [agentId, ch] of Object.entries(byAgent)) {
+        const profile = state.agentProfiles[agentId];
+        const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
+        const isActive = ch.id === state.currentChannel;
+        html += `
+            <li class="channel-item ${isActive ? 'active' : ''}"
+                data-channel="${escapeHtml(ch.id)}"
+                onclick="switchChannel('${escapeHtml(ch.id)}')">
+                <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
+                <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'dm', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+            </li>`;
+    }
+
+    dom.agentChatList.innerHTML = html;
+}
+
+function _formatShortDate(isoString) {
+    try {
+        const d = new Date(isoString);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch { return ''; }
+}
+
+function _isCurrentChannelArchived() {
+    return state.archivedChannels.some(ch => ch.id === state.currentChannel);
+}
+
+function renderArchivedChats() {
+    if (!dom.archivedChatList) return;
+
+    const archivedDms = state.archivedChannels.filter(ch => ch.id.startsWith('dm-'));
+
+    if (archivedDms.length === 0) {
+        dom.archivedChatList.innerHTML = '<li style="padding: 8px 16px; color: var(--color-text-muted); font-size: 12px;">No archived chats</li>';
+        return;
+    }
+
+    // Group by agent, newest first within each agent
+    const byAgent = {};
+    for (const ch of archivedDms) {
         const agentId = _extractAgentIdFromDm(ch.id);
         if (!byAgent[agentId]) byAgent[agentId] = [];
         byAgent[agentId].push(ch);
@@ -2817,38 +3160,22 @@ function renderAgentChats() {
         const profile = state.agentProfiles[agentId];
         const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
 
-        if (channels.length === 1) {
-            // Single chat -- render flat like before
-            const ch = channels[0];
+        // Sort newest first (by archived_at or created_at)
+        channels.sort((a, b) => (b.archived_at || b.created_at || '').localeCompare(a.archived_at || a.created_at || ''));
+
+        for (const ch of channels) {
             const isActive = ch.id === state.currentChannel;
+            const dateLabel = _formatShortDate(ch.archived_at || ch.created_at);
             html += `
-                <li class="channel-item ${isActive ? 'active' : ''}"
+                <li class="channel-item channel-item--archived ${isActive ? 'active' : ''}"
                     data-channel="${escapeHtml(ch.id)}"
                     onclick="switchChannel('${escapeHtml(ch.id)}')">
-                    <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
-                    <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+                    <span class="channel-item__name">@ ${escapeHtml(displayName)}${dateLabel ? ' - ' + escapeHtml(dateLabel) : ''}</span>
                 </li>`;
-        } else {
-            // Multiple chats -- render as a group
-            for (let i = 0; i < channels.length; i++) {
-                const ch = channels[i];
-                const isActive = ch.id === state.currentChannel;
-                const chatNum = i + 1;
-                const label = chatNum === channels.length
-                    ? `@ ${displayName} (latest)`
-                    : `@ ${displayName} #${chatNum}`;
-                html += `
-                    <li class="channel-item ${isActive ? 'active' : ''}"
-                        data-channel="${escapeHtml(ch.id)}"
-                        onclick="switchChannel('${escapeHtml(ch.id)}')">
-                        <span class="channel-item__name">${escapeHtml(label)}</span>
-                        <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
-                    </li>`;
-            }
         }
     }
 
-    dom.agentChatList.innerHTML = html;
+    dom.archivedChatList.innerHTML = html;
 }
 
 // =====================================================================
@@ -3167,8 +3494,11 @@ function openEditMenu(btnEl, itemType, itemId) {
         menu.innerHTML = `
             <button class="item-edit-menu__option" data-action="rename">Rename</button>
             <button class="item-edit-menu__option item-edit-menu__option--danger" data-action="delete">Delete</button>`;
+    } else if (itemType === 'dm') {
+        menu.innerHTML = `
+            <button class="item-edit-menu__option" data-action="archive">Archive</button>`;
     } else {
-        // channel
+        // regular channel
         menu.innerHTML = `
             <button class="item-edit-menu__option" data-action="rename">Rename</button>
             <button class="item-edit-menu__option item-edit-menu__option--danger" data-action="delete">Delete</button>`;
@@ -3181,6 +3511,7 @@ function openEditMenu(btnEl, itemType, itemId) {
         closeEditMenu();
         if (action === 'rename') handleRenameItem(itemType, itemId);
         if (action === 'delete') handleDeleteItem(itemType, itemId);
+        if (action === 'archive') handleArchiveChannel(itemId);
     });
 
     // Position as fixed overlay near the button
@@ -3231,6 +3562,38 @@ function handleDeleteItem(itemType, itemId) {
     } else {
         // Channel delete -- just a toast for now since channels are server-managed
         showToast('Channel delete coming soon', 'info');
+    }
+}
+
+function handleArchiveChannel(channelId) {
+    if (!state.socket || !state.connected) return;
+    state.socket.emit('archive_channel', { channel_id: channelId });
+    // If viewing this channel, switch to another
+    if (state.currentChannel === channelId) {
+        const remaining = state.channels.filter(ch => ch.id !== channelId);
+        if (remaining.length > 0) {
+            switchChannel(remaining[0].id);
+        }
+    }
+    showToast('Chat archived', 'success');
+}
+
+function _updateArchivedBanner() {
+    // Remove any existing banner
+    const existing = document.querySelector('.archived-banner');
+    if (existing) existing.remove();
+    // Show banner if viewing an archived channel
+    if (_isCurrentChannelArchived() && dom.messageForm) {
+        const banner = document.createElement('div');
+        banner.className = 'archived-banner';
+        banner.textContent = 'This chat is archived. Send a message to continue the conversation.';
+        banner.onclick = () => {
+            if (state.socket && state.connected) {
+                state.socket.emit('unarchive_channel', { channel_id: state.currentChannel });
+                showToast('Chat unarchived', 'success');
+            }
+        };
+        dom.messageForm.parentElement.insertBefore(banner, dom.messageForm);
     }
 }
 
@@ -3321,9 +3684,12 @@ function switchChannel(channelId) {
 
     renderChannels();
     renderAgentChats();
+    renderArchivedChats();
     renderFolders();
     renderMessages();
     updateParticipants();
+    // Show archived banner if viewing an archived channel
+    _updateArchivedBanner();
     // Close add-member dropdown when switching channels
     if (dom.addMemberDropdown) dom.addMemberDropdown.style.display = 'none';
 }
@@ -3704,7 +4070,7 @@ function renderOutputCard(task) {
 // Agent group collapse state (localStorage-persisted)
 // =====================================================================
 
-const GROUP_ORDER = ['Leadership', 'Core Developers', 'Specialists', 'Support', 'Operators'];
+const GROUP_ORDER = ['Leadership', 'Core Developers', 'Quality & Security', 'Marketing & Content', 'Social Media', 'Support', 'Operators'];
 
 function loadGroupState() {
     try {
@@ -3895,6 +4261,7 @@ function connectSocket() {
         dom.connectionStatus.className = 'sidebar__status connected';
         sock.emit('join', {});
         sock.emit('get_channels', {});
+        sock.emit('get_archived_channels', {});
         fetchTools();
         fetchSessions();
         // Load settings (admin mode + user display name)
@@ -4003,7 +4370,13 @@ function connectSocket() {
         state.channels = data.channels || [];
         renderChannels();
         renderAgentChats();
+        renderArchivedChats();
         renderFolders();
+    });
+
+    sock.on('archived_channels_list', (data) => {
+        state.archivedChannels = data.channels || [];
+        renderArchivedChats();
     });
 
     sock.on('channel_messages', (data) => {
@@ -4164,20 +4537,32 @@ function openChatForAgent(agentId) {
 }
 
 function openNewChatForAgent(agentId) {
-    // Create a fresh DM channel for this agent
+    // Archive all existing active DM channels for this agent
     const existing = _getDmChannelsForAgent(agentId);
+    if (existing.length > 0 && state.socket && state.connected) {
+        for (const ch of existing) {
+            state.socket.emit('archive_channel', { channel_id: ch.id });
+        }
+    }
 
+    // Calculate next channel ID, checking both active and archived to avoid collisions
     let channelId;
-    if (existing.length === 0) {
-        // First chat: use simple dm-{agentId}
+    if (existing.length === 0 && state.archivedChannels.filter(ch =>
+        ch.id === `dm-${agentId}` || ch.id.startsWith(`dm-${agentId}-`)
+    ).length === 0) {
         channelId = `dm-${agentId}`;
     } else {
-        // Find highest suffix number, or 1 if only the base channel exists
         let maxNum = 1;
+        // Check active channels
         for (const ch of existing) {
             const match = ch.id.match(/^dm-.*-(\d+)$/);
-            if (match) {
-                maxNum = Math.max(maxNum, parseInt(match[1], 10));
+            if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
+        }
+        // Check archived channels too
+        for (const ch of state.archivedChannels) {
+            if (ch.id === `dm-${agentId}` || ch.id.startsWith(`dm-${agentId}-`)) {
+                const match = ch.id.match(/^dm-.*-(\d+)$/);
+                if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
             }
         }
         channelId = `dm-${agentId}-${maxNum + 1}`;
@@ -4995,6 +5380,14 @@ function init() {
             // Attach thread_id if replying to a message
             if (state.replyingTo) {
                 outgoing.thread_id = state.replyingTo;
+            }
+
+            // Auto-unarchive if sending in an archived channel
+            if (_isCurrentChannelArchived()) {
+                state.socket.emit('unarchive_channel', { channel_id: state.currentChannel });
+                // Remove archived banner
+                const banner = document.querySelector('.archived-banner');
+                if (banner) banner.remove();
             }
 
             state.socket.emit('send_message', outgoing);

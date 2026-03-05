@@ -23,6 +23,23 @@ class GenerateResult:
     elapsed_seconds: float = 0.0
 
 
+@dataclass
+class ChatResult:
+    """Result from an Ollama /api/chat call with tool calling support."""
+
+    content: str = ""  # Text response (empty when tool_calls present)
+    tool_calls: list = None  # type: ignore[assignment]  # [{function: {name, arguments}}]
+    model: str = ""
+    tokens_in: int = 0
+    tokens_out: int = 0
+    elapsed_seconds: float = 0.0
+    done: bool = True
+
+    def __post_init__(self) -> None:
+        if self.tool_calls is None:
+            self.tool_calls = []
+
+
 class OllamaClient:
     """Minimal Ollama HTTP client using stdlib only."""
 
@@ -155,6 +172,89 @@ class OllamaClient:
                     tokens_in=data.get("prompt_eval_count", 0),
                     tokens_out=data.get("eval_count", 0),
                     elapsed_seconds=elapsed,
+                )
+
+        except Exception:
+            # D4: Never raise exceptions -- graceful failure returns None
+            return None
+
+    def chat(
+        self,
+        model: str,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        temperature: float = 0.4,
+        system: str | None = None,
+        options: dict[str, Any] | None = None,
+    ) -> ChatResult | None:
+        """Chat completion with native tool calling support.
+
+        Uses /api/chat (messages array) instead of /api/generate.
+        When tools are provided, the model may return tool_calls instead
+        of text content. Caller is responsible for the tool execution loop.
+
+        Args:
+            model: Model name (e.g., "qwen3.5:9b")
+            messages: Conversation messages [{role, content, ...}]
+            tools: Tool schemas (OpenAI-compatible format)
+            temperature: Sampling temperature
+            system: Optional system prompt
+            options: Additional Ollama options
+
+        Returns:
+            ChatResult with content and/or tool_calls, or None on failure.
+
+        Never raises exceptions -- returns None on any error.
+        """
+        try:
+            t0 = time.monotonic()
+
+            body: dict[str, Any] = {
+                "model": model,
+                "messages": messages,
+                "stream": False,
+                "think": True,  # Enable thinking for better tool-use reasoning
+                "options": {
+                    "temperature": temperature,
+                    "keep_alive": "5m",
+                    **(options or {}),
+                },
+            }
+
+            if tools:
+                body["tools"] = tools
+
+            if system:
+                # Prepend system message
+                body["messages"] = [
+                    {"role": "system", "content": system},
+                    *body["messages"],
+                ]
+
+            req = urllib.request.Request(
+                f"{self.base_url}/api/chat",
+                data=json.dumps(body).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                elapsed = round(time.monotonic() - t0, 1)
+
+                msg = data.get("message", {})
+                content = msg.get("content", "")
+                tool_calls = msg.get("tool_calls", [])
+                done = data.get("done", True)
+
+                return ChatResult(
+                    content=content,
+                    tool_calls=tool_calls,
+                    model=model,
+                    tokens_in=data.get("prompt_eval_count", 0),
+                    tokens_out=data.get("eval_count", 0),
+                    elapsed_seconds=elapsed,
+                    done=done,
                 )
 
         except Exception:
