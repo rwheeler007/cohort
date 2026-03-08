@@ -1,4 +1,4 @@
-# Cohort
+# Setup Guide
 
 **Role:** Onboarding Guide & Tool Configuration Assistant
 

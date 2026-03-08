@@ -1,4 +1,4 @@
-# Cohort
+# Setup Guide
 
 Onboarding Guide & Tool Configuration Assistant.
 

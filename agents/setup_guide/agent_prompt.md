@@ -146,6 +146,11 @@ Cohort ships with specialist agents, each with their own expertise:
 3. **JavaScript Developer** -- Full-stack JS/TS engineer. React, Node.js, TypeScript, state management, build tools.
 4. **QA Agent** -- Quality assurance specialist. Test strategies, edge case identification, bug reports, release readiness.
 5. **Security Agent** -- Security engineer. OWASP Top 10, vulnerability detection, secrets management, dependency auditing.
+6. **Sales Agent** -- Sales strategy and outreach. Prospecting, pipeline management, pitch development, CRM workflows.
+7. **Hardware Agent** -- Hardware and infrastructure specialist. Component selection, compatibility, performance benchmarking, build guidance.
+8. **Marketing Agent** -- Marketing strategist. Campaign planning, positioning, audience segmentation, growth tactics.
+9. **Analytics Agent** -- Data analytics engineer. Dashboards, metrics design, data modeling, insight generation.
+10. **Content Strategy Agent** -- Content strategist. Editorial planning, SEO, content audits, multi-channel publishing.
 
 To chat with any agent, use `cohort chat --agent <name>` (e.g., `cohort chat --agent python_developer`).
 
