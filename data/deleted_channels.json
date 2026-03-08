@@ -1,0 +1,226 @@
+[
+  {
+    "channel": {
+      "id": "test-roundtable",
+      "name": "test-roundtable",
+      "description": "Auto-created channel: test-roundtable",
+      "created_at": "2026-02-19T00:17:33.954315",
+      "members": [],
+      "is_private": false,
+      "topic": "",
+      "pinned_messages": [],
+      "is_archived": false,
+      "archived_at": null,
+      "archived_by": null,
+      "is_locked": false,
+      "locked_by": null,
+      "locked_at": null,
+      "mode": "chat",
+      "meeting_context": null,
+      "shared_plan": null,
+      "metadata": {}
+    },
+    "messages": [
+      {
+        "id": "6f67f410-7052-418e-94bd-279607e8b64b",
+        "channel_id": "test-roundtable",
+        "sender": "system",
+        "content": "Channel #test-roundtable created: Auto-created channel: test-roundtable",
+        "timestamp": "2026-02-19T00:17:33.954785",
+        "message_type": "system",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "99032784-b1aa-4ebc-a962-5170b7a89226",
+        "channel_id": "test-roundtable",
+        "sender": "BOSS_agent",
+        "content": "Hello from BOSS! This is a test message for the roundtable chat.",
+        "timestamp": "2026-02-19T00:17:33.955158",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "6e1005b0-22a2-431c-977d-083b63135d41",
+        "channel_id": "test-roundtable",
+        "sender": "python_developer",
+        "content": "@BOSS_agent Agreed. I recommend we use Starlette with async endpoints for the backend API.",
+        "timestamp": "2026-02-19T00:17:42.746823",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "33284cd4-0c07-48f3-9bd3-6ebf275fa0a5",
+        "channel_id": "test-roundtable",
+        "sender": "system",
+        "content": "[SESSION] Discussion started: **API Design Review**\n\n**Participants**: @python_developer, @web_developer, @database_developer\n**Mode**: guided\n**Session ID**: `s_20260219_001757_36f7e5`",
+        "timestamp": "2026-02-19T00:17:57.865883",
+        "message_type": "system",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "fc4510cd-c1b3-4165-b0e1-474985213db5",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@Boss Can you see this?",
+        "timestamp": "2026-02-19T00:24:43.348520",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "c4455bb9-c6c0-4d9d-b7c8-9d4e94f048cb",
+        "channel_id": "test-roundtable",
+        "sender": "system",
+        "content": "[ROUNDTABLE] Calling @web_developer to respond. (Relevance: 0.35)\nReason: web_developer: hasn't contributed yet",
+        "timestamp": "2026-02-19T00:24:51.878519",
+        "message_type": "system",
+        "thread_id": null,
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "a81ceff4-0d17-4905-b0ba-6e0f9332dd6d",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@boss_agent  - How many agents do we have?",
+        "timestamp": "2026-02-19T17:35:30.504283",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "boss_agent"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "6f050db7-832b-42b3-a27b-2f2e0ceb2b4e",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@python_developer  - Can you see this?",
+        "timestamp": "2026-02-19T17:35:54.632198",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "python_developer"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "f763022f-0450-48e7-b169-78a1d0c65eb2",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@boss_agent  How manu agents do we have?",
+        "timestamp": "2026-02-19T22:14:19.205344",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "boss_agent"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "cf1ae2d9-6fb1-4a05-9e99-d876b32cd133",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@Boss can you see this?",
+        "timestamp": "2026-02-19T22:14:58.877344",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "Boss"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "7bb7dae5-5dba-4fbe-8a83-b1550c8e382c",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@database_developer Can you see this?",
+        "timestamp": "2026-02-19T22:15:16.533176",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "database_developer"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "cced4e10-cf64-4188-8075-2de27fc3b04d",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@ceo_agent Can you see this?",
+        "timestamp": "2026-02-23T23:49:04.771869",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "ceo_agent"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "59fbd9a1-4950-402e-9b02-c642cbb3bbdc",
+        "channel_id": "test-roundtable",
+        "sender": "ceo_agent",
+        "content": "You've hit your limit · resets Feb 26, 3pm (America/Denver)",
+        "timestamp": "2026-02-23T23:49:11.411926",
+        "message_type": "chat",
+        "thread_id": "cced4e10-cf64-4188-8075-2de27fc3b04d",
+        "metadata": {},
+        "reactions": []
+      },
+      {
+        "id": "dfa43089-ac5b-4b6f-94a2-f58c168ebd4c",
+        "channel_id": "test-roundtable",
+        "sender": "user",
+        "content": "@python_developer  what do you think?",
+        "timestamp": "2026-03-03T11:10:12.976798",
+        "message_type": "chat",
+        "thread_id": null,
+        "metadata": {
+          "mentions": [
+            "python_developer"
+          ]
+        },
+        "reactions": []
+      },
+      {
+        "id": "5a826851-ff3f-4622-925f-b6929518d5ea",
+        "channel_id": "test-roundtable",
+        "sender": "python_developer",
+        "content": "As a senior Python developer, I'd need more context to provide a meaningful response. Could you clarify:  \n- What specific code, architecture, or problem are you referring to?  \n- Are you asking about a technical decision, a code snippet, or a project direction?  \n\nWithout context, I can only offer general advice:  \n> *\"Always prioritize readability and maintainability over cleverness. If you're unsure about a design choice, ask: 'Would this be obvious to a new team member in 6 months?' and 'Does this align with our core principles (PEP 8, type hints, tests)?\"*  \n\nPlease share details so I can give actionable feedback! 😊",
+        "timestamp": "2026-03-03T11:11:07.791495",
+        "message_type": "chat",
+        "thread_id": "dfa43089-ac5b-4b6f-94a2-f58c168ebd4c",
+        "metadata": {
+          "tier": 4,
+          "model": "qwen3:30b-a3b",
+          "elapsed_seconds": 54.7,
+          "tokens_in": 573,
+          "tokens_out": 724
+        },
+        "reactions": []
+      }
+    ],
+    "deleted_at": "2026-03-08T19:51:35.909141+00:00"
+  }
+]

@@ -16,10 +16,10 @@
       "max_turns": 15
     },
     "researcher": {
-      "description": "Web search and reading capabilities",
-      "allowed_tools": ["WebSearch", "WebFetch", "Read"],
+      "description": "Web search, reading, and codebase browsing",
+      "allowed_tools": ["WebSearch", "WebFetch", "Read", "Glob", "Grep"],
       "permission_mode": "acceptEdits",
-      "max_turns": 5
+      "max_turns": 10
     },
     "minimal": {
       "description": "No tools - pure text generation",
@@ -29,10 +29,17 @@
     }
   },
   "agent_defaults": {
+    "leadership": "readonly",
+    "core_developers": "developer",
+    "quality_security": "developer",
+    "marketing_content": "researcher",
+    "social_media": "researcher",
+    "support": "readonly",
+    "specialists": "developer",
+    "infrastructure": "readonly",
     "specialist": "developer",
     "orchestrator": "readonly",
-    "utility": "minimal",
-    "infrastructure": "readonly"
+    "utility": "minimal"
   },
   "mcp_servers": {
     "cohort": {

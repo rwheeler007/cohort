@@ -313,7 +313,9 @@ async def send_message(sid: str, data: dict) -> dict:
         )
 
     thread_id = data.get("thread_id")
-    response_mode = data.get("response_mode", "smart")
+    response_mode = data.get("response_mode", "smarter")
+    if response_mode not in ("smart", "smarter", "smartest"):
+        response_mode = "smarter"
 
     msg = _chat.post_message(
         channel_id=channel_id,
@@ -368,6 +370,22 @@ async def delete_message(sid: str, data: dict) -> dict:
 
 
 @sio.event
+async def rename_channel(sid: str, data: dict) -> dict:
+    """Rename a channel's display name."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    new_name = data.get("name", "").strip()
+    if not channel_id or not new_name:
+        return {"error": "Missing channel_id or name"}
+    ch = _chat.rename_channel(channel_id, new_name)
+    if ch is None:
+        return {"error": "Channel not found"}
+    await _broadcast_channel_lists()
+    return {"success": True, "channel": ch.to_dict()}
+
+
+@sio.event
 async def archive_channel(sid: str, data: dict) -> dict:
     """Client archives a DM channel."""
     if _chat is None:
@@ -379,6 +397,58 @@ async def archive_channel(sid: str, data: dict) -> dict:
     if ch is None:
         return {"error": "Channel not found"}
     await _broadcast_channel_lists()
+    return {"success": True}
+
+
+@sio.event
+async def delete_channel(sid: str, data: dict) -> dict:
+    """Soft-delete a channel (recoverable for 30 days)."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    if not channel_id:
+        return {"error": "Missing channel_id"}
+    success = _chat.delete_channel(channel_id)
+    if not success:
+        return {"error": "Channel not found"}
+    await _broadcast_channel_lists()
+    return {"success": True}
+
+
+@sio.event
+async def list_deleted_channels(sid: str, data: dict | None = None) -> dict:
+    """Return soft-deleted channels available for recovery."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    return {"channels": _chat.list_deleted_channels()}
+
+
+@sio.event
+async def restore_channel(sid: str, data: dict) -> dict:
+    """Restore a soft-deleted channel."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    if not channel_id:
+        return {"error": "Missing channel_id"}
+    success = _chat.restore_channel(channel_id)
+    if not success:
+        return {"error": "Channel not found in trash"}
+    await _broadcast_channel_lists()
+    return {"success": True}
+
+
+@sio.event
+async def permanently_delete_channel(sid: str, data: dict) -> dict:
+    """Permanently remove a channel from trash."""
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+    channel_id = data.get("channel_id")
+    if not channel_id:
+        return {"error": "Missing channel_id"}
+    success = _chat.permanently_delete_channel(channel_id)
+    if not success:
+        return {"error": "Channel not found in trash"}
     return {"success": True}
 
 

@@ -43,6 +43,7 @@ from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secre
 
 from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager
+from cohort.local.config import DEFAULT_MODEL
 from cohort.registry import JsonFileStorage
 
 logger = logging.getLogger(__name__)
@@ -245,8 +246,10 @@ async def get_messages(request: Request) -> JSONResponse:
 async def send_message(request: Request) -> JSONResponse:
     """POST /api/send -- post a message to a channel.
 
-    Expects JSON body: ``{"channel": "...", "sender": "...", "message": "..."}``.
+    Expects JSON body: ``{"channel": "...", "sender": "...", "message": "...",
+    "response_mode": "smart|smarter|smartest"}``.
     Auto-creates the channel if it does not exist yet.
+    ``response_mode`` is optional (default: ``"smarter"``).
     """
     try:
         body: dict[str, Any] = await request.json()
@@ -287,10 +290,14 @@ async def send_message(request: Request) -> JSONResponse:
         )
 
         # Route @mentions to agent response pipeline
+        response_mode = body.get("response_mode", "smarter")
+        if response_mode not in ("smart", "smarter", "smartest"):
+            response_mode = "smarter"
+
         mentions = msg.metadata.get("mentions", [])
         if mentions:
             from cohort.agent_router import route_mentions
-            route_mentions(msg, mentions)
+            route_mentions(msg, mentions, response_mode=response_mode)
 
         return JSONResponse({"success": True, "message_id": msg.id})
     except Exception as exc:
@@ -1150,6 +1157,14 @@ async def get_settings(request: Request) -> JSONResponse:
     claude_cmd = settings.get("claude_cmd", "")
     claude_connected = bool(claude_cmd and Path(claude_cmd).exists())
 
+    # Check if Claude CLI is available for Smartest mode
+    smartest_available = False
+    try:
+        from cohort.agent_router import check_claude_cli_available
+        smartest_available = check_claude_cli_available()
+    except ImportError:
+        pass
+
     return JSONResponse({
         "api_key_masked": masked,
         "claude_enabled": settings.get("claude_enabled", False),
@@ -1158,6 +1173,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "response_timeout": settings.get("response_timeout", 300),
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
+        "smartest_available": smartest_available,
         "admin_mode": settings.get("admin_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
         "user_display_name": settings.get("user_display_name", ""),
@@ -1362,6 +1378,7 @@ def _save_tool_permissions(data: dict[str, Any]) -> None:
 
 async def get_tool_permissions(request: Request) -> JSONResponse:
     """GET /api/tool-permissions -- profiles, defaults, and per-agent resolved view."""
+    import re
     from cohort.tool_permissions import resolve_permissions
 
     central = _load_tool_permissions()
@@ -1376,9 +1393,14 @@ async def get_tool_permissions(request: Request) -> JSONResponse:
         for config in _agent_store.list_agents(include_hidden=False):
             # Determine profile source
             agent_perms = config.tool_permissions or {}
+            raw_group = config.group or ""
+            group_key = re.sub(r"[^a-z0-9]+", "_", raw_group.lower()).strip("_") if raw_group else ""
             profile_name = agent_perms.get("profile", "")
             if profile_name:
                 profile_source = "agent_config"
+            elif group_key and group_key in agent_defaults:
+                profile_name = agent_defaults[group_key]
+                profile_source = "group_default"
             elif config.agent_type in agent_defaults:
                 profile_name = agent_defaults[config.agent_type]
                 profile_source = "agent_type_default"
@@ -1395,6 +1417,8 @@ async def get_tool_permissions(request: Request) -> JSONResponse:
             agents_list.append({
                 "agent_id": config.agent_id,
                 "name": config.name,
+                "nickname": config.nickname or config.name,
+                "group": config.group or "Agents",
                 "agent_type": config.agent_type,
                 "profile_name": profile_name,
                 "profile_source": profile_source,
@@ -2641,10 +2665,10 @@ def _get_configured_model() -> str:
     try:
         if settings_path.exists():
             s = json.loads(settings_path.read_text(encoding="utf-8"))
-            return s.get("model_name", "qwen3.5:9b")
+            return s.get("model_name", DEFAULT_MODEL)
     except Exception:
         pass
-    return "qwen3.5:9b"
+    return DEFAULT_MODEL
 
 
 def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str) -> dict:
@@ -3175,14 +3199,51 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
     if not data:
         return JSONResponse({"ok": False, "error": "URL returned empty response"})
 
-    # Extract text from the fetched content (reuse existing HTML extraction)
-    # Determine a pseudo-filename from the URL for type detection
     from urllib.parse import urlparse
     parsed = urlparse(url)
     domain = parsed.netloc or "webpage"
     path_ext = Path(parsed.path).suffix.lower() if parsed.path else ""
     pseudo_filename = f"page{path_ext}" if path_ext else "page.html"
 
+    # ── Image URL: route to vision model ──
+    if _is_image_type(pseudo_filename, content_type):
+        import base64
+        b64 = base64.b64encode(data).decode("ascii")
+        vision_prompts = {
+            "summary": "Describe this image in detail. What does it contain? List all notable elements, text, diagrams, charts, or information visible.",
+            "outline": "Create a structured breakdown of everything visible in this image. Use headings and bullet points.",
+            "extract_key_points": "Extract all text, numbers, labels, data points, and key information visible in this image. Present as a bullet list.",
+            "image": "Describe what this image depicts. Include the subject, style, colors, composition, mood, and any text or symbols visible. Be precise in your identifications.",
+        }
+        vprompt = vision_prompts.get(mode, vision_prompts["summary"])
+        vision_result = await asyncio.to_thread(
+            _ollama_vision_request, model, vprompt, [b64], 180
+        )
+        elapsed = round(time.time() - t0, 1)
+        if vision_result and "_error" not in vision_result:
+            msg = vision_result.get("message", {})
+            response_text = msg.get("content", "") if isinstance(msg, dict) else ""
+            if response_text:
+                return JSONResponse({
+                    "ok": True,
+                    "summary": response_text,
+                    "model": model,
+                    "mode": mode,
+                    "file_type": "image",
+                    "filename": domain,
+                    "stats": {
+                        "url": url,
+                        "file_size": len(data),
+                        "output_words": len(response_text.split()),
+                        "elapsed_seconds": elapsed,
+                    },
+                })
+        error_detail = ""
+        if vision_result and "_error" in vision_result:
+            error_detail = f": {vision_result['_error']}"
+        return JSONResponse({"ok": False, "error": f"Vision model failed for image URL{error_detail}"})
+
+    # ── Text/document URL: extract text and summarize ──
     extraction = await asyncio.to_thread(
         _extract_text_from_file, data, pseudo_filename, content_type
     )

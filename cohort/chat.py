@@ -201,6 +201,15 @@ class ChatManager:
             channels = [c for c in channels if not c.is_archived]
         return channels
 
+    def rename_channel(self, channel_id: str, new_name: str) -> Channel | None:
+        """Rename a channel (display name only, id stays the same)."""
+        ch = self.get_channel(channel_id)
+        if ch is None:
+            return None
+        ch.name = new_name
+        self._storage.save_channel(channel_id, ch.to_dict())
+        return ch
+
     def archive_channel(
         self, channel_id: str, archived_by: str = "user",
     ) -> Channel | None:
@@ -224,6 +233,32 @@ class ChatManager:
         ch.archived_by = None
         self._storage.save_channel(channel_id, ch.to_dict())
         return ch
+
+    def delete_channel(self, channel_id: str) -> bool:
+        """Soft-delete a channel (recoverable for 30 days)."""
+        ch = self.get_channel(channel_id)
+        if ch is None:
+            return False
+        self._channels.pop(channel_id, None)
+        return self._storage.delete_channel(channel_id)
+
+    def list_deleted_channels(self) -> list[dict]:
+        """Return channels in trash."""
+        return self._storage.list_deleted_channels()
+
+    def restore_channel(self, channel_id: str) -> bool:
+        """Restore a soft-deleted channel."""
+        success = self._storage.restore_channel(channel_id)
+        if success:
+            # Reload into memory cache
+            raw = self._storage.get_channel(channel_id)
+            if raw:
+                self._channels[channel_id] = Channel.from_dict(raw)
+        return success
+
+    def permanently_delete_channel(self, channel_id: str) -> bool:
+        """Permanently remove from trash."""
+        return self._storage.permanently_delete_channel(channel_id)
 
     # -- messages -------------------------------------------------------
 

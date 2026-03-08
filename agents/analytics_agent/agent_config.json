@@ -11,7 +11,7 @@
   "model_params": {
     "temperature": 0.25
   },
-  "avatar": "[BI]",
+  "avatar": "BI",
   "aliases": [
     "analytics",
     "bi",
@@ -177,5 +177,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "analytics_agent"
+  "agent_id": "analytics_agent",
+  "name": "Analytics Agent",
+  "nickname": "Analytics",
+  "color": "#3498DB",
+  "group": "Marketing & Content"
 }

@@ -28,6 +28,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from cohort.local.config import DEFAULT_MODEL, ROUNDTABLE_MODEL_PREFERENCES
+
 logger = logging.getLogger(__name__)
 
 # =========================================================================
@@ -312,12 +314,7 @@ def _call_ollama(
     if not model:
         available = client.list_models()
         # Prefer large models for multi-persona generation
-        preferred = [
-            "qwen3.5:9b",                     # Current primary model
-            "qwen3:30b-a3b", "qwen3:30b", "qwen2.5:32b",
-            "llama3.1:70b", "llama3.3:70b",
-            "qwen3:8b", "llama3.2:3b",
-        ]
+        preferred = ROUNDTABLE_MODEL_PREFERENCES
         model = next((m for m in preferred if m in available), None)
         if not model and available:
             model = available[0]  # last resort: whatever is installed

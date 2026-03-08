@@ -141,11 +141,15 @@ async def server_app(data_dir: Path, agents_dir: Path):
 async def server_client(server_app) -> AsyncGenerator[httpx.AsyncClient, None]:
     """httpx.AsyncClient wired to the Starlette server via ASGITransport."""
     transport = httpx.ASGITransport(app=server_app)
-    async with httpx.AsyncClient(
-        transport=transport,
-        base_url="http://testserver",
-    ) as client:
-        yield client
+    # Patch route_mentions to prevent background thread spawning during tests.
+    # The send_message endpoint lazily imports route_mentions from agent_router,
+    # and the background thread outlives the test event loop causing teardown errors.
+    with patch("cohort.agent_router.route_mentions"):
+        async with httpx.AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+        ) as client:
+            yield client
 
 
 # =====================================================================

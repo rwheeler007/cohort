@@ -48,6 +48,43 @@ CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 # Force all agent responses through Claude Code (bypass local Ollama)
 _force_claude_code: bool = False
 
+# Cache Claude CLI availability for Smartest mode
+_claude_cli_available: bool | None = None  # None = not checked yet
+
+
+def check_claude_cli_available() -> bool:
+    """Check if Claude CLI is installed and runnable.
+
+    Caches the result after first check. Call reset_claude_cli_cache()
+    after settings changes to re-check.
+    """
+    global _claude_cli_available  # noqa: PLW0603
+    if _claude_cli_available is not None:
+        return _claude_cli_available
+
+    import shutil
+
+    cmd = CLAUDE_CMD
+    # Check explicit path first
+    if os.path.isfile(cmd):
+        _claude_cli_available = True
+        return True
+    # Check PATH
+    found = shutil.which(cmd)
+    _claude_cli_available = found is not None
+    if found:
+        logger.info("[OK] Claude CLI detected: %s", found)
+    else:
+        logger.info("[*] Claude CLI not found -- Smartest mode unavailable")
+    return _claude_cli_available
+
+
+def reset_claude_cli_cache() -> None:
+    """Reset the cached CLI availability check."""
+    global _claude_cli_available  # noqa: PLW0603
+    _claude_cli_available = None
+
+
 # =====================================================================
 # Grounding rules (anti-hallucination, adapted from BOSS/SMACK)
 # =====================================================================
@@ -264,6 +301,7 @@ def apply_settings(settings: dict) -> None:
 
     if settings.get("claude_cmd"):
         CLAUDE_CMD = settings["claude_cmd"]
+        reset_claude_cli_cache()  # Re-check availability with new path
         logger.info("[OK] Claude CLI path updated: %s", CLAUDE_CMD)
 
     if settings.get("response_timeout"):
@@ -429,7 +467,7 @@ def queue_agent_response(
     channel_id: str,
     thread_id: str | None = None,
     priority: int = 50,
-    response_mode: str = "smart",
+    response_mode: str = "smarter",
 ) -> None:
     """Add an agent response to the priority queue."""
     with _state.queue_lock:
@@ -570,6 +608,143 @@ def _build_thread_context(thread_id: str, channel_id: str) -> str:
     return "\n".join(parts)
 
 
+def _invoke_smartest_pipeline(
+    agent_id: str,
+    user_message: str,
+    local_prompt: str,
+    agent_temperature: float | None,
+) -> tuple[str | None, dict[str, Any]]:
+    """Execute the Smartest 3-phase pipeline: Qwen reason -> distill -> Claude.
+
+    Returns:
+        (response_content, response_metadata). Content is None if pipeline failed entirely.
+        On Phase 3 failure, returns Qwen draft with degraded metadata.
+
+    Never raises exceptions.
+    """
+    metadata: dict[str, Any] = {}
+    t0 = time.monotonic()
+
+    # Phase 1: Qwen reasoning pass
+    try:
+        from cohort.local import LocalRouter
+
+        router = LocalRouter()
+        task_type = "code" if any(
+            kw in user_message.lower()
+            for kw in ("code", "implement", "function", "class", "debug")
+        ) else "general"
+
+        phase1_result = router.route(
+            local_prompt,
+            task_type=task_type,
+            temperature=agent_temperature,
+            response_mode="smarter",
+        )
+
+        if phase1_result is None or not phase1_result.text.strip():
+            logger.warning("[!] Smartest Phase 1 failed for %s", agent_id)
+            return None, {}
+
+        qwen_draft = phase1_result.text
+        logger.info("[OK] Smartest Phase 1: %s (%d/%d tok)",
+                    agent_id, phase1_result.tokens_in, phase1_result.tokens_out)
+    except Exception:
+        logger.exception("[X] Smartest Phase 1 exception for %s", agent_id)
+        return None, {}
+
+    # Phase 2: Distillation
+    try:
+        distilled = router.distill(qwen_draft)
+
+        if not distilled:
+            logger.warning("[!] Smartest Phase 2 failed for %s, truncating raw draft", agent_id)
+            distilled = qwen_draft[:2000]
+        else:
+            logger.info("[OK] Smartest Phase 2: %s (%d chars)", agent_id, len(distilled))
+    except Exception:
+        logger.exception("[X] Smartest Phase 2 exception for %s", agent_id)
+        distilled = qwen_draft[:2000]
+
+    # Phase 3: Claude CLI
+    try:
+        from cohort.local.config import SMARTEST_CLAUDE_PROMPT
+
+        # Load lightweight persona (not full agent_prompt.md)
+        persona = ""
+        if _agent_store is not None:
+            config = _agent_store.get(agent_id)
+            if config and config.persona_text:
+                persona = config.persona_text
+        if not persona:
+            persona = load_persona(agent_id) or f"You are the {agent_id} agent."
+
+        claude_prompt = SMARTEST_CLAUDE_PROMPT.format(
+            agent_id=agent_id,
+            persona=persona,
+            grounding_rules=GROUNDING_RULES,
+            distilled_briefing=distilled,
+            user_message=user_message,
+        )
+
+        # Strip CLAUDECODE env vars
+        env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+
+        cli_cmd = [CLAUDE_CMD, "-p", "-"]
+        if sys.platform == "win32":
+            cli_cmd = ["cmd", "/c"] + cli_cmd
+
+        result = subprocess.run(
+            cli_cmd,
+            input=claude_prompt,
+            capture_output=True,
+            text=True,
+            cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+            timeout=RESPONSE_TIMEOUT,
+            shell=False,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+
+        elapsed = round(time.monotonic() - t0, 1)
+
+        if result.returncode == 0 and result.stdout.strip():
+            response_text = result.stdout.strip()
+            est_claude_in = len(claude_prompt) // 4
+            est_claude_out = len(response_text) // 4
+            metadata = {
+                "tier": 6,
+                "model": f"{phase1_result.model}+claude",
+                "pipeline": "smartest",
+                "elapsed_seconds": elapsed,
+                "tokens_in": phase1_result.tokens_in + est_claude_in,
+                "tokens_out": phase1_result.tokens_out + est_claude_out,
+            }
+            logger.info("[OK] Smartest Phase 3: %s (%.1fs total)", agent_id, elapsed)
+            return response_text, metadata
+
+        # Claude CLI failed -- return Qwen draft
+        logger.warning("[!] Smartest Phase 3 failed for %s (rc=%d), returning Qwen draft",
+                       agent_id, result.returncode)
+    except subprocess.TimeoutExpired:
+        logger.error("[X] Smartest Phase 3 timeout for %s", agent_id)
+    except Exception:
+        logger.exception("[X] Smartest Phase 3 exception for %s", agent_id)
+
+    # Degraded: return Qwen's draft answer
+    elapsed = round(time.monotonic() - t0, 1)
+    metadata = {
+        "tier": phase1_result.tier,
+        "model": phase1_result.model,
+        "pipeline": "smartest-degraded",
+        "elapsed_seconds": elapsed,
+        "tokens_in": phase1_result.tokens_in,
+        "tokens_out": phase1_result.tokens_out,
+    }
+    return qwen_draft, metadata
+
+
 def _invoke_agent_sync(item: dict) -> None:
     """Load agent prompt, call Claude CLI, post response back to chat."""
     agent_id = item["agent_id"]
@@ -577,15 +752,15 @@ def _invoke_agent_sync(item: dict) -> None:
     thread_id = item["thread_id"]
     message_content = item["message_content"]
 
-    # Response mode: "smart" (default, thinking enabled, full prompt) or "quick" (fast, no thinking)
-    response_mode = item.get("response_mode", "smart")
+    # Response mode: "smarter" (default), "smart" (fast), or "smartest" (Qwen+Claude)
+    response_mode = item.get("response_mode", "smarter")
 
     # Env override for always-full-prompt
     if os.environ.get("COHORT_FULL_PROMPT", "").strip() == "1":
-        response_mode = "smart"
+        response_mode = "smarter"
 
-    # Smart mode = full prompt; Quick mode = lightweight persona
-    use_full_prompt = (response_mode == "smart")
+    # Smarter/Smartest = full prompt; Smart = lightweight persona
+    use_full_prompt = (response_mode in ("smarter", "smartest"))
 
     # Load agent prompt -- persona first (light mode), full prompt as fallback
     agent_prompt: str | None = None
@@ -703,7 +878,28 @@ def _invoke_agent_sync(item: dict) -> None:
     # Skip local router entirely when force_to_claude_code is enabled
     if _force_claude_code:
         logger.info("[>>] Force Claude Code enabled, skipping local router for %s", agent_id)
-    else:
+
+    # Smartest pipeline: Qwen reasoning -> distill -> Claude CLI
+    elif response_mode == "smartest":
+        if check_claude_cli_available():
+            response_content, response_metadata = _invoke_smartest_pipeline(
+                agent_id=agent_id,
+                user_message=message_content,
+                local_prompt=_local_prompt,
+                agent_temperature=agent_temperature,
+            )
+            if response_content:
+                logger.info("[OK] Smartest pipeline handled %s in #%s", agent_id, channel_id)
+            else:
+                logger.warning("[!] Smartest pipeline failed for %s, falling back to smarter",
+                               agent_id)
+                response_mode = "smarter"  # Degrade for fallback below
+        else:
+            logger.warning("[!] Claude CLI unavailable, falling back to smarter for %s", agent_id)
+            response_mode = "smarter"
+
+    # Standard local routing (smart / smarter modes)
+    if not response_content and not _force_claude_code:
         try:
             from cohort.local import LocalRouter
 
@@ -815,15 +1011,19 @@ def _invoke_agent_sync(item: dict) -> None:
                     env=env,
                 )
             else:
-                # No tools -- backward compatible path (identical to original)
+                # No tools -- simple CLI path
+                cli_cmd = [CLAUDE_CMD, "-p", "-"]
+                if sys.platform == "win32":
+                    cli_cmd = ["cmd", "/c"] + cli_cmd
+
                 result = subprocess.run(
-                    [CLAUDE_CMD, "-p", "-"],
+                    cli_cmd,
                     input=full_prompt,
                     capture_output=True,
                     text=True,
                     cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
                     timeout=RESPONSE_TIMEOUT,
-                    shell=True,
+                    shell=False,
                     encoding="utf-8",
                     errors="replace",
                     env=env,
@@ -936,7 +1136,7 @@ def _invoke_agent_sync(item: dict) -> None:
                 channel_id=channel_id,
                 thread_id=response_msg.id,
                 priority=50,
-                response_mode="smart",  # Chain responses use smart mode
+                response_mode="smarter",  # Chain responses use smarter mode
             )
 
 
@@ -944,7 +1144,7 @@ def _invoke_agent_sync(item: dict) -> None:
 # Entry point (called from socketio_events.py)
 # =====================================================================
 
-def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "smart") -> None:
+def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "smarter") -> None:
     """Route @mentions from a posted message to agent response queue.
 
     This is the main entry point, called after a message is posted and broadcast.
@@ -952,7 +1152,7 @@ def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "s
     Args:
         message: The posted message object.
         mentions: List of @mentioned agent IDs.
-        response_mode: "smart" (default, thinking + full prompt) or "quick" (fast, no thinking).
+        response_mode: "smart", "smarter" (default), or "smartest".
     """
     if not mentions or _chat is None:
         return

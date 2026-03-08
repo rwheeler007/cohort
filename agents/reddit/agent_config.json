@@ -275,7 +275,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "🤖",
+  "avatar": "RD",
   "aliases": [
     "reddit",
     "rdt",
@@ -289,5 +289,9 @@
     }
   },
   "claude_code_model": "haiku",
-  "agent_id": "reddit"
+  "agent_id": "reddit",
+  "name": "Reddit Specialist",
+  "nickname": "Reddit",
+  "color": "#FF4500",
+  "group": "Social Media"
 }

@@ -82,13 +82,6 @@ class AgentStore:
                                 persona = load_persona(agent_id)
                                 if persona:
                                     config.persona_text = persona
-                            # Apply group from legacy registry if config has
-                            # the default ("Agents") — most agent_config.json
-                            # files don't set group.
-                            if config.group == "Agents" and agent_id in self._fallback:
-                                config.group = self._fallback[agent_id].get(
-                                    "group", config.group,
-                                )
                             self._cache[agent_id] = config
                         except Exception as exc:
                             logger.warning(
@@ -144,12 +137,6 @@ class AgentStore:
             try:
                 config = self._load_from_remote(agent_id)
                 if config:
-                    # Apply group from legacy registry if Gateway config has
-                    # the default ("Agents") — BOSS configs don't set group.
-                    if config.group == "Agents" and agent_id in self._fallback:
-                        config.group = self._fallback[agent_id].get(
-                            "group", config.group,
-                        )
                     self._cache[agent_id] = config
                     loaded += 1
             except Exception as exc:
@@ -177,11 +164,6 @@ class AgentStore:
                         persona = load_persona(agent_id)
                         if persona:
                             config.persona_text = persona
-                    # Apply group from legacy registry if needed
-                    if config.group == "Agents" and agent_id in self._fallback:
-                        config.group = self._fallback[agent_id].get(
-                            "group", config.group,
-                        )
                     self._cache[agent_id] = config
                     return config
                 except Exception as exc:

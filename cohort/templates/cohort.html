@@ -39,17 +39,17 @@
                         </button>
                     </li>
                     <li>
-                        <button class="sidebar-nav__item" data-panel="chat">
-                            <span class="sidebar-nav__icon">[C]</span>
-                            <span class="sidebar-nav__label">Chat</span>
-                            <span class="sidebar-nav__badge" id="chat-badge">0</span>
-                        </button>
-                    </li>
-                    <li>
                         <button class="sidebar-nav__item" data-panel="queue">
                             <span class="sidebar-nav__icon">[Q]</span>
                             <span class="sidebar-nav__label">Work Queue</span>
                             <span class="sidebar-nav__badge" id="queue-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="tasks">
+                            <span class="sidebar-nav__icon">[K]</span>
+                            <span class="sidebar-nav__label">Tasks</span>
+                            <span class="sidebar-nav__badge" id="task-badge">0</span>
                         </button>
                     </li>
                     <li>
@@ -113,16 +113,6 @@
                     </div>
                 </div>
 
-                <div class="sidebar-nav__section open" data-section="tasks">
-                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('tasks')">
-                        <span class="sidebar-nav__toggle">></span>
-                        <h2 class="sidebar-nav__title">Tasks</h2>
-                        <button class="sidebar-nav__add-btn" id="sidebar-add-task-btn" title="Assign task" onclick="event.stopPropagation()">+</button>
-                    </div>
-                    <ul class="sidebar-nav__section-body sidebar-nav__tasks" id="sidebar-task-list">
-                        <!-- Task list populated by JS -->
-                    </ul>
-                </div>
 
             </nav>
 
@@ -198,8 +188,8 @@
                                          aria-label="Message input"
                                          data-placeholder="Type a message... (use @agent to mention)"></div>
                                 </div>
-                                <button type="button" class="btn btn--icon response-mode-btn" id="response-mode-btn" title="Smart Mode (thinking enabled, full prompt) -- click for Quick mode" onclick="toggleResponseMode()">
-                                    [S]
+                                <button type="button" class="btn btn--icon response-mode-btn" id="response-mode-btn" title="Smarter mode (thinking enabled) -- click to change" onclick="toggleResponseMode()">
+                                    [S+]
                                 </button>
                                 <button type="submit" class="btn btn--primary message-send-btn" id="send-btn">Send</button>
                             </form>
@@ -225,11 +215,9 @@
                 </div>
             </section>
 
-            <!-- Work Queue Panel -->
+            <!-- Work Queue Panel (Execution Queue only) -->
             <section class="panel panel--queue" id="panel-queue" role="region" aria-label="Work Queue" style="display: none;">
-                <!-- Sequential Execution Queue -->
                 <div class="wq-section">
-                    <h3 class="section-title" style="margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary, #888);">Execution Queue</h3>
                     <div class="work-queue-list" id="work-queue-list">
                         <div class="empty-state" id="wq-empty">
                             <p class="empty-state__text">Queue is empty</p>
@@ -237,18 +225,18 @@
                         </div>
                     </div>
                 </div>
-                <hr style="border: none; border-top: 1px solid var(--border-color, #333); margin: 1rem 0;">
-                <!-- Agent Tasks (parallel) -->
-                <div class="task-section">
-                    <h3 class="section-title" style="margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary, #888);">Agent Tasks</h3>
-                    <div class="task-list" id="task-list">
-                        <div class="empty-state" id="queue-empty">
-                            <p class="empty-state__text">No tasks assigned</p>
-                        </div>
+            </section>
+
+            <!-- Tasks Panel -->
+            <section class="panel panel--tasks" id="panel-tasks" role="region" aria-label="Tasks" style="display: none;">
+                <div class="task-list" id="task-list">
+                    <div class="empty-state" id="tasks-empty">
+                        <p class="empty-state__text">No tasks assigned</p>
+                        <p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>
                     </div>
-                    <div class="queue-actions">
-                        <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
-                    </div>
+                </div>
+                <div class="queue-actions" style="padding: 0.75rem;">
+                    <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
                 </div>
             </section>
 
@@ -359,118 +347,150 @@
 
     <!-- Settings Modal -->
     <div class="modal" id="settings-modal" hidden>
-        <div class="modal__content">
+        <div class="modal__content settings-modal">
             <header class="modal__header">
                 <h2>Settings</h2>
                 <button class="btn btn--icon modal__close" id="settings-close">&times;</button>
             </header>
-            <div class="modal__body">
-                <form id="settings-form">
-                    <!-- User Identity -->
-                    <div class="settings-section">
-                        <h3 class="settings-section__title">Your Identity</h3>
-                        <p class="settings-section__desc">
-                            Your name as shown in chat. AI agents are labeled by their role &mdash;
-                            this keeps the distinction clear between human operators and AI assistants.
-                        </p>
-                        <div class="form-group">
-                            <label for="settings-user-name">Display Name</label>
-                            <input type="text" class="form-input" id="settings-user-name"
-                                   placeholder="Your name" maxlength="40">
-                        </div>
-                        <div class="settings-identity-row">
-                            <div class="form-group" style="flex:1">
-                                <label for="settings-user-role">Title / Role</label>
-                                <input type="text" class="form-input" id="settings-user-role"
-                                       placeholder="Operator" maxlength="40">
-                            </div>
-                            <div class="form-group" style="flex:0 0 80px">
-                                <label for="settings-user-avatar">Initials</label>
-                                <input type="text" class="form-input" id="settings-user-avatar"
-                                       placeholder="RW" maxlength="3" style="text-align:center;text-transform:uppercase">
-                            </div>
-                        </div>
-                    </div>
+            <div class="settings-layout">
+                <!-- Tab bar -->
+                <nav class="settings-tabs">
+                    <button class="settings-tab active" data-settings-tab="general" onclick="switchSettingsTab('general')">General</button>
+                    <button class="settings-tab" data-settings-tab="connections" onclick="switchSettingsTab('connections')">Connections</button>
+                    <button class="settings-tab" data-settings-tab="data" onclick="switchSettingsTab('data')">Data</button>
+                </nav>
 
-                    <!-- Claude Code Connection -->
-                    <div class="settings-section">
-                        <div class="settings-section__header">
-                            <h3 class="settings-section__title">Claude Code Connection</h3>
-                            <label class="toggle-label toggle-label--inline" for="settings-claude-enabled">
-                                <input type="checkbox" id="settings-claude-enabled" class="toggle-input">
-                                <span class="toggle-switch"></span>
-                            </label>
-                        </div>
-                        <div class="settings-section__body" id="claude-connection-body">
-                            <p class="settings-section__desc">
-                                Connect to a running Claude Code CLI backend for agent responses.
-                                The CLI must be running and accessible on this machine.
-                            </p>
-                            <div class="form-group">
-                                <label for="settings-claude-cmd">Claude CLI Path</label>
-                                <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
-                                       placeholder="C:/Users/.../npm/claude.cmd">
-                            </div>
-                            <div class="form-group">
-                                <label for="settings-agents-root">Agents Root Directory</label>
-                                <input type="text" class="form-input form-input--mono" id="settings-agents-root"
-                                       placeholder="/path/to/agents/root">
-                            </div>
-                            <div class="form-group">
-                                <label for="settings-response-timeout">Response Timeout (seconds)</label>
-                                <input type="number" class="form-input" id="settings-response-timeout"
-                                       min="30" max="600" value="300">
-                            </div>
-                            <div class="form-group">
-                                <label for="settings-exec-backend">Task Execution Backend</label>
-                                <select class="form-input" id="settings-exec-backend">
-                                    <option value="cli">Claude CLI (subprocess)</option>
-                                    <option value="api">Anthropic API (direct)</option>
-                                    <option value="chat">Chat-routed (@mention)</option>
-                                </select>
-                            </div>
-                            <div class="settings-connection-status" id="settings-connection-status">
-                                <span class="settings-connection-dot" id="settings-connection-dot"></span>
-                                <span id="settings-connection-text">Not tested</span>
-                            </div>
-                            <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
-                            <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle, #333);">
-                                <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                                    <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
-                                    <span class="toggle-switch"></span>
-                                    <span>Force all responses through Claude Code <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Tab panels -->
+                <div class="settings-panels">
+                    <form id="settings-form">
 
-                    <!-- Admin Mode -->
-                    <div class="settings-section">
-                        <div class="settings-section__header">
-                            <h3 class="settings-section__title">Admin Mode</h3>
-                            <label class="toggle-label toggle-label--inline" for="settings-admin-mode">
-                                <input type="checkbox" id="settings-admin-mode" class="toggle-input">
-                                <span class="toggle-switch"></span>
-                            </label>
+                        <!-- === General Tab === -->
+                        <div class="settings-panel active" data-settings-panel="general">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Your Identity</h3>
+                                <p class="settings-section__desc">
+                                    Your name as shown in chat. AI agents are labeled by their role &mdash;
+                                    this keeps the distinction clear between human operators and AI assistants.
+                                </p>
+                                <div class="form-group">
+                                    <label for="settings-user-name">Display Name</label>
+                                    <input type="text" class="form-input" id="settings-user-name"
+                                           placeholder="Your name" maxlength="40">
+                                </div>
+                                <div class="settings-identity-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label for="settings-user-role">Title / Role</label>
+                                        <input type="text" class="form-input" id="settings-user-role"
+                                               placeholder="Operator" maxlength="40">
+                                    </div>
+                                    <div class="form-group" style="flex:0 0 80px">
+                                        <label for="settings-user-avatar">Initials</label>
+                                        <input type="text" class="form-input" id="settings-user-avatar"
+                                               placeholder="RW" maxlength="3" style="text-align:center;text-transform:uppercase">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Admin Mode</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-admin-mode">
+                                        <input type="checkbox" id="settings-admin-mode" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <p class="settings-section__desc">
+                                    Reveals advanced settings like providers, API keys, and feed sources.
+                                    Leave off for day-to-day use.
+                                </p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" id="settings-cancel">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
                         </div>
-                        <p class="settings-section__desc">
-                            Reveals advanced settings like providers, API keys, and feed sources.
-                            Leave off for day-to-day use.
-                        </p>
-                    </div>
 
-                    <div class="form-actions">
-                        <button type="button" class="btn btn--secondary" id="settings-cancel">Cancel</button>
-                        <button type="submit" class="btn btn--primary">Save Settings</button>
-                    </div>
+                        <!-- === Connections Tab === -->
+                        <div class="settings-panel" data-settings-panel="connections">
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Claude Code Connection</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-claude-enabled">
+                                        <input type="checkbox" id="settings-claude-enabled" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-section__body" id="claude-connection-body">
+                                    <p class="settings-section__desc">
+                                        Connect to a running Claude Code CLI backend for agent responses.
+                                        The CLI must be running and accessible on this machine.
+                                    </p>
+                                    <div class="form-group">
+                                        <label for="settings-claude-cmd">Claude CLI Path</label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
+                                               placeholder="C:/Users/.../npm/claude.cmd">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-agents-root">Agents Root Directory</label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-agents-root"
+                                               placeholder="/path/to/agents/root">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-response-timeout">Response Timeout (seconds)</label>
+                                        <input type="number" class="form-input" id="settings-response-timeout"
+                                               min="30" max="600" value="300">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-exec-backend">Task Execution Backend</label>
+                                        <select class="form-input" id="settings-exec-backend">
+                                            <option value="cli">Claude CLI (subprocess)</option>
+                                            <option value="api">Anthropic API (direct)</option>
+                                            <option value="chat">Chat-routed (@mention)</option>
+                                        </select>
+                                    </div>
+                                    <div class="settings-connection-status" id="settings-connection-status">
+                                        <span class="settings-connection-dot" id="settings-connection-dot"></span>
+                                        <span id="settings-connection-text">Not tested</span>
+                                    </div>
+                                    <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
+                                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle, #333);">
+                                        <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                            <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
+                                            <span class="toggle-switch"></span>
+                                            <span>Force all responses through Claude Code <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Setup Wizard Re-run -->
-                    <div class="settings-section" style="margin-top:var(--space-6);border-top:1px solid var(--color-border);padding-top:var(--space-4)">
-                        <h3 class="settings-section__title">Local AI Setup</h3>
-                        <p class="settings-section__desc">Re-run the setup wizard to check Ollama, models, and content feeds.</p>
-                        <button type="button" class="btn btn--secondary" id="settings-rerun-setup">Re-run Setup Wizard</button>
-                    </div>
-                </form>
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Local AI Setup</h3>
+                                <p class="settings-section__desc">Re-run the setup wizard to check Ollama, models, and content feeds.</p>
+                                <button type="button" class="btn btn--secondary" id="settings-rerun-setup">Re-run Setup Wizard</button>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Data Tab === -->
+                        <div class="settings-panel" data-settings-panel="data">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Deleted Channels</h3>
+                                <p class="settings-section__desc">
+                                    Channels are kept for 30 days after deletion. Restore or permanently remove them here.
+                                </p>
+                                <div id="deleted-channels-list" class="deleted-channels-list">
+                                    <p style="color: var(--color-text-muted); font-size: 12px;">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -525,15 +545,15 @@
                 <!-- Tab: Tool Defaults -->
                 <div class="perm-panel" id="perm-panel-tool-defaults" style="display:none;">
                     <p class="settings-section__desc">
-                        Set which tools each agent type gets by default.
+                        Set which tools each agent group gets by default.
                         Individual agents can be overridden via the gear icon on their Team card.
                     </p>
 
                     <div class="tool-defaults__section">
-                        <h4>Agent Type Defaults</h4>
-                        <p class="settings-section__desc">Each agent type inherits a tool profile. Change the profile to grant or restrict tools for all agents of that type.</p>
+                        <h4>Group Defaults</h4>
+                        <p class="settings-section__desc">Each agent group inherits a tool profile. Change the profile to grant or restrict tools for all agents in that group.</p>
                         <div id="tool-defaults-grid">
-                            <!-- Populated by JS: one row per agent type with profile dropdown -->
+                            <!-- Populated by JS: one row per agent group with profile dropdown -->
                         </div>
                     </div>
 

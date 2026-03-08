@@ -277,7 +277,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "[MKT]",
+  "avatar": "MKT",
   "aliases": [
     "marketing",
     "ma",
@@ -326,5 +326,9 @@
     "template": "# Competitive Ad Analysis\n\n## Competitors Analyzed\n- [Company A]\n- [Company B]\n\n## Messaging Patterns\n[Common themes and approaches]\n\n## Creative Formats\n[Video vs Image, CTAs used]\n\n## Positioning Analysis\n[How competitors position themselves]\n\n## Gaps & Opportunities\n[Underserved angles or messages]\n\n## Recommendations\n[How to differentiate]"
   },
   "claude_code_model": "sonnet",
-  "agent_id": "marketing_agent"
+  "agent_id": "marketing_agent",
+  "name": "Marketing Strategist",
+  "nickname": "Marketing",
+  "color": "#E74C3C",
+  "group": "Marketing & Content"
 }

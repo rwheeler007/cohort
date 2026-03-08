@@ -28,8 +28,9 @@ const state = {
     messages: {},            // Messages per channel: { channelId: [msg, ...] }
     replyingTo: null,        // Message ID being replied to
 
-    // Response mode: per-channel toggle (Smart is default, Quick is opt-in)
-    quickModeChannels: new Set(),  // channel IDs with Quick mode enabled
+    // Response mode: per-channel toggle (Smarter is default)
+    responseModeChannels: {},  // channel_id -> "smart" | "smarter" | "smartest"
+    smartestAvailable: false,  // Set to true when Claude CLI is detected
 
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
@@ -61,6 +62,7 @@ function initDom() {
         panelTeam: $('#panel-team'),
         panelChat: $('#panel-chat'),
         panelQueue: $('#panel-queue'),
+        panelTasks: $('#panel-tasks'),
         panelOutput: $('#panel-output'),
         panelTool: $('#panel-tool'),
         toolPanelContent: $('#tool-panel-content'),
@@ -71,6 +73,7 @@ function initDom() {
         filterSelect: $('#filter-select'),
         agentGrid: $('#agent-grid'),
         taskList: $('#task-list'),
+        taskBadge: $('#task-badge'),
         workQueueList: $('#work-queue-list'),
         outputList: $('#output-list'),
         teamBadge: $('#team-badge'),
@@ -108,9 +111,7 @@ function initDom() {
         agentChatList: $('#agent-chat-list'),
         archivedChatList: $('#archived-chat-list'),
         folderList: $('#folder-list'),
-        sidebarTaskList: $('#sidebar-task-list'),
         sidebarSessionList: $('#session-list'),
-        sidebarAddTaskBtn: $('#sidebar-add-task-btn'),
         sidebarToolList: $('#tool-list'),
         participantsList: $('#participants-list'),
         mentionDropdown: $('#mention-dropdown'),
@@ -225,8 +226,14 @@ const panelConfig = {
     },
     queue: {
         title: 'Work Queue',
-        subtitle: 'Task assignment and progress',
+        subtitle: 'Sequential execution queue',
         panel: () => dom.panelQueue,
+        filter: false,
+    },
+    tasks: {
+        title: 'Tasks',
+        subtitle: 'Agent task assignment and progress',
+        panel: () => dom.panelTasks,
         filter: true,
     },
     output: {
@@ -255,7 +262,7 @@ function switchPanel(panelName) {
     });
 
     // Hide all panels
-    [dom.panelTeam, dom.panelChat, dom.panelQueue, dom.panelOutput, dom.panelTool].forEach((p) => {
+    [dom.panelTeam, dom.panelChat, dom.panelQueue, dom.panelTasks, dom.panelOutput, dom.panelTool].forEach((p) => {
         if (p) {
             p.style.display = 'none';
             p.classList.remove('active');
@@ -288,7 +295,12 @@ function updatePanelCount() {
             count = `${msgs.length} messages`;
             break;
         }
-        case 'queue':
+        case 'queue': {
+            const wqItems = state.workQueue.filter((i) => i.status !== 'completed' && i.status !== 'failed' && i.status !== 'cancelled');
+            count = `${wqItems.length} items`;
+            break;
+        }
+        case 'tasks':
             count = `${state.tasks.length} tasks`;
             break;
         case 'output':
@@ -559,12 +571,16 @@ function renderMessages() {
         if (message.metadata) {
             const model = message.metadata.model;
             const tier = message.metadata.tier;
+            const pipeline = message.metadata.pipeline;
             if (model) {
                 const tierLabel = tier != null ? `T${tier}` : '';
                 const modelShort = model.length > 20 ? model.substring(0, 20) : model;
                 const elapsed = message.metadata.elapsed_seconds;
                 const elapsedStr = elapsed != null ? ` ${elapsed}s` : '';
-                modelBadge = `<span class="message__model-badge" title="Tier ${tier || '?'} - ${model}${elapsedStr}">${tierLabel} ${modelShort}${elapsedStr}</span>`;
+                const pipelineLabel = pipeline === 'smartest' ? ' [S++]'
+                    : pipeline === 'smartest-degraded' ? ' [S++ degraded]'
+                    : '';
+                modelBadge = `<span class="message__model-badge${pipeline === 'smartest' ? ' smartest-pipeline' : pipeline === 'smartest-degraded' ? ' degraded-pipeline' : ''}" title="Tier ${tier || '?'} - ${model}${elapsedStr}${pipeline ? ' | pipeline: ' + pipeline : ''}">${tierLabel} ${modelShort}${elapsedStr}${pipelineLabel}</span>`;
             }
         }
 
@@ -616,46 +632,16 @@ function renderMessages() {
 }
 
 function scrollToBottom() {
-    if (dom.messagesContainer) {
-        dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
-    }
+    if (!dom.messagesContainer) return;
+    // Defer scroll until after the browser has laid out new content.
+    // Double-rAF ensures innerHTML reflow is complete before reading scrollHeight.
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            dom.messagesContainer.scrollTop = dom.messagesContainer.scrollHeight;
+        });
+    });
 }
 
-// =====================================================================
-// Sidebar task list rendering
-// =====================================================================
-
-function renderSidebarTasks() {
-    if (!dom.sidebarTaskList) return;
-
-    const tasks = state.tasks || [];
-    // Show active tasks (not complete) in the sidebar
-    const activeTasks = tasks.filter(t => t.status !== 'complete');
-
-    if (activeTasks.length === 0) {
-        dom.sidebarTaskList.innerHTML = '<li style="padding: 4px 16px; color: var(--color-text-muted); font-size: 11px;">No active tasks</li>';
-        return;
-    }
-
-    dom.sidebarTaskList.innerHTML = activeTasks.map(task => {
-        const channelId = 'task-' + task.task_id;
-        const isActive = channelId === state.currentChannel;
-        const statusDot = task.status === 'briefing' ? 'briefing'
-            : task.status === 'in_progress' ? 'busy'
-            : 'idle';
-        const label = task.description.length > 30 ? task.description.slice(0, 30) + '...' : task.description;
-
-        return `
-            <li class="channel-item ${isActive ? 'active' : ''}"
-                data-channel="${escapeHtml(channelId)}"
-                onclick="switchChannel('${escapeHtml(channelId)}')"
-                title="${escapeHtml(task.description)}">
-                <span class="sidebar-task-dot sidebar-task-dot--${statusDot}"></span>
-                <span class="channel-item__name">${escapeHtml(label)}</span>
-                <span class="sidebar-task-agent">${escapeHtml(task.agent_id.split('_')[0])}</span>
-            </li>`;
-    }).join('');
-}
 
 // =====================================================================
 // Sidebar session list rendering
@@ -3287,35 +3273,93 @@ function _extractAgentIdFromDm(channelId) {
 function renderAgentChats() {
     if (!dom.agentChatList) return;
 
+    const SKIP_IDS = new Set(['user', 'system']);
+
+    // Build lookup: agentId -> latest DM channel (if any)
     const dmChannels = state.channels.filter(ch => ch.id.startsWith('dm-'));
-
-    if (dmChannels.length === 0) {
-        dom.agentChatList.innerHTML = '<li style="padding: 8px 16px; color: var(--color-text-muted); font-size: 12px;">No agent chats yet</li>';
-        return;
-    }
-
-    // Group DM channels by agent, keep only the latest (last created)
-    const byAgent = {};
+    const dmByAgent = {};
     for (const ch of dmChannels) {
         const agentId = _extractAgentIdFromDm(ch.id);
-        byAgent[agentId] = ch; // overwrite: last one wins (creation order)
+        dmByAgent[agentId] = ch;
     }
 
+    // Collect all agents from profiles registry, grouped
+    const groups = {};
+    for (const [agentId, profile] of Object.entries(state.agentProfiles)) {
+        if (SKIP_IDS.has(agentId)) continue;
+        const group = profile.group || 'Other';
+        if (!groups[group]) groups[group] = [];
+        groups[group].push({ agentId, profile });
+    }
+
+    // Sort groups by GROUP_ORDER
+    const sortedGroupNames = Object.keys(groups).sort((a, b) => {
+        const ia = GROUP_ORDER.indexOf(a);
+        const ib = GROUP_ORDER.indexOf(b);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    });
+
+    // Load persisted collapse state
+    const collapseKey = 'cohort_agent_chat_groups';
+    let groupState = {};
+    try { groupState = JSON.parse(localStorage.getItem(collapseKey) || '{}'); } catch { /* ignore */ }
+
     let html = '';
-    for (const [agentId, ch] of Object.entries(byAgent)) {
-        const profile = state.agentProfiles[agentId];
-        const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
-        const isActive = ch.id === state.currentChannel;
-        html += `
-            <li class="channel-item ${isActive ? 'active' : ''}"
-                data-channel="${escapeHtml(ch.id)}"
-                onclick="switchChannel('${escapeHtml(ch.id)}')">
-                <span class="channel-item__name">@ ${escapeHtml(displayName)}</span>
-                <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'dm', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
-            </li>`;
+    for (const groupName of sortedGroupNames) {
+        const agents = groups[groupName];
+        // Sort agents alphabetically by display name
+        agents.sort((a, b) => {
+            const na = a.profile.nickname || a.profile.name || a.agentId;
+            const nb = b.profile.nickname || b.profile.name || b.agentId;
+            return na.localeCompare(nb);
+        });
+
+        const isOpen = groupState[groupName] !== false; // default open
+        html += `<li class="agent-chat-group ${isOpen ? 'open' : ''}" data-agent-group="${escapeHtml(groupName)}">
+            <div class="agent-chat-group__header" onclick="toggleAgentChatGroup('${escapeHtml(groupName)}')">
+                <span class="sidebar-nav__toggle">></span>
+                <span class="agent-chat-group__name">${escapeHtml(groupName)}</span>
+                <span class="agent-chat-group__count">${agents.length}</span>
+            </div>
+            <ul class="agent-chat-group__body">`;
+
+        for (const { agentId, profile } of agents) {
+            const dm = dmByAgent[agentId];
+            const displayName = profile.name || profile.nickname || agentId.replace(/_/g, ' ');
+            const hasChat = !!dm;
+            const isActive = dm && dm.id === state.currentChannel;
+
+            // Status from live agent state; offline if not connected
+            const liveAgent = state.agents.find(a => a.agent_id === agentId);
+            const status = liveAgent ? (liveAgent.status || 'idle') : 'offline';
+
+            // Click: open existing chat or start new one
+            const clickAction = hasChat
+                ? `switchChannel('${escapeHtml(dm.id)}')`
+                : `openChatForAgent('${escapeHtml(agentId)}')`;
+
+            html += `
+                <li class="channel-item ${isActive ? 'active' : ''}"
+                    onclick="${clickAction}">
+                    <span class="agent-chat-dot agent-chat-dot--${status}"></span>
+                    <span class="channel-item__name">${escapeHtml(displayName)}</span>
+                    ${hasChat ? `<button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'dm', '${escapeHtml(dm.id)}')" title="Edit">[:]</button>` : ''}
+                </li>`;
+        }
+
+        html += `</ul></li>`;
     }
 
     dom.agentChatList.innerHTML = html;
+}
+
+function toggleAgentChatGroup(groupName) {
+    const collapseKey = 'cohort_agent_chat_groups';
+    let gs = {};
+    try { gs = JSON.parse(localStorage.getItem(collapseKey) || '{}'); } catch { /* ignore */ }
+    gs[groupName] = !(gs[groupName] !== false);
+    localStorage.setItem(collapseKey, JSON.stringify(gs));
+    renderAgentChats();
 }
 
 function _formatShortDate(isoString) {
@@ -3329,41 +3373,62 @@ function _isCurrentChannelArchived() {
     return state.archivedChannels.some(ch => ch.id === state.currentChannel);
 }
 
+function _getResponseMode() {
+    if (!state.currentChannel) return 'smarter';
+    return state.responseModeChannels[state.currentChannel] || 'smarter';
+}
+
 function toggleResponseMode() {
     if (!state.currentChannel) return;
-    const btn = document.getElementById('response-mode-btn');
-    if (state.quickModeChannels.has(state.currentChannel)) {
-        // Currently Quick -> switch to Smart (default)
-        state.quickModeChannels.delete(state.currentChannel);
-        if (btn) {
-            btn.classList.remove('quick');
-            btn.textContent = '[S]';
-            btn.title = 'Smart Mode (thinking enabled, full prompt) -- click for Quick mode';
-        }
-        showToast('Smart mode -- thinking enabled, full reasoning', 'info');
+    const current = _getResponseMode();
+
+    let next;
+    if (current === 'smart') {
+        next = 'smarter';
+    } else if (current === 'smarter') {
+        next = state.smartestAvailable ? 'smartest' : 'smart';
     } else {
-        // Currently Smart -> switch to Quick
-        state.quickModeChannels.add(state.currentChannel);
-        if (btn) {
-            btn.classList.add('quick');
-            btn.textContent = '[Q]';
-            btn.title = 'Quick Mode (faster, no thinking) -- click for Smart mode';
-        }
-        showToast('Quick mode -- faster responses, no thinking', 'info');
+        // smartest -> smart
+        next = 'smart';
     }
+
+    if (next === 'smarter') {
+        // Default -- remove from map
+        delete state.responseModeChannels[state.currentChannel];
+    } else {
+        state.responseModeChannels[state.currentChannel] = next;
+    }
+
+    _updateResponseModeBtn();
+
+    const toasts = {
+        smart: 'Smart mode -- fast responses, no thinking',
+        smarter: 'Smarter mode -- thinking enabled, full reasoning',
+        smartest: 'Smartest mode -- Qwen reasoning + Claude polish',
+    };
+    showToast(toasts[next], 'info');
 }
 
 function _updateResponseModeBtn() {
     const btn = document.getElementById('response-mode-btn');
     if (!btn) return;
-    if (state.currentChannel && state.quickModeChannels.has(state.currentChannel)) {
-        btn.classList.add('quick');
-        btn.textContent = '[Q]';
-        btn.title = 'Quick Mode (faster, no thinking) -- click for Smart mode';
-    } else {
-        btn.classList.remove('quick');
+
+    const mode = _getResponseMode();
+    btn.classList.remove('smart', 'smartest');
+
+    if (mode === 'smart') {
+        btn.classList.add('smart');
         btn.textContent = '[S]';
-        btn.title = 'Smart Mode (thinking enabled, full prompt) -- click for Quick mode';
+        btn.title = 'Smart mode (no thinking) -- click for Smarter';
+    } else if (mode === 'smartest') {
+        btn.classList.add('smartest');
+        btn.textContent = '[S++]';
+        btn.title = 'Smartest mode (Qwen + Claude) -- click for Smart';
+    } else {
+        // smarter (default)
+        btn.textContent = '[S+]';
+        btn.title = 'Smarter mode (thinking enabled) -- click for '
+            + (state.smartestAvailable ? 'Smartest' : 'Smart');
     }
 }
 
@@ -3774,8 +3839,24 @@ function handleRenameItem(itemType, itemId) {
             showToast(`Folder renamed to "${folder.name}"`, 'success');
         }
     } else {
-        // Channel rename -- just a toast for now since channel names are server-managed
-        showToast('Channel rename coming soon', 'info');
+        // Channel rename via server
+        const ch = state.channels.find(c => c.id === itemId);
+        const currentName = ch ? (ch.name || ch.id) : itemId;
+        const newName = prompt('Rename channel:', currentName);
+        if (newName && newName.trim() && newName.trim() !== currentName) {
+            state.socket.emit('rename_channel',
+                { channel_id: itemId, name: newName.trim() },
+                (resp) => {
+                    if (resp && resp.success) {
+                        if (ch) ch.name = newName.trim();
+                        renderChannels();
+                        showToast(`Channel renamed to "${newName.trim()}"`, 'success');
+                    } else {
+                        showToast(resp?.error || 'Failed to rename channel', 'error');
+                    }
+                }
+            );
+        }
     }
 }
 
@@ -3789,9 +3870,30 @@ function handleDeleteItem(itemType, itemId) {
         renderFolders();
         renderChannels();
         showToast(`Folder "${folder.name}" deleted`, 'success');
+    } else if (itemType === 'dm') {
+        if (!confirm('Delete this chat and all its messages? This cannot be undone.')) return;
+        if (state.socket && state.connected) {
+            state.socket.emit('delete_channel', { channel_id: itemId }, (resp) => {
+                if (resp && resp.success) {
+                    if (state.currentChannel === itemId) switchPanel('team');
+                    showToast('Chat deleted', 'success');
+                } else {
+                    showToast('Failed to delete chat: ' + (resp?.error || 'unknown'), 'error');
+                }
+            });
+        }
     } else {
-        // Channel delete -- just a toast for now since channels are server-managed
-        showToast('Channel delete coming soon', 'info');
+        if (!confirm('Delete this channel and all its messages? This cannot be undone.')) return;
+        if (state.socket && state.connected) {
+            state.socket.emit('delete_channel', { channel_id: itemId }, (resp) => {
+                if (resp && resp.success) {
+                    if (state.currentChannel === itemId) switchPanel('team');
+                    showToast('Channel deleted', 'success');
+                } else {
+                    showToast('Failed to delete channel: ' + (resp?.error || 'unknown'), 'error');
+                }
+            });
+        }
     }
 }
 
@@ -4387,10 +4489,12 @@ function renderTeam() {
 function renderQueue() {
     renderWorkQueue();
     renderTaskList();
-    // Badge: queued work items + active tasks
+    // Badge: queued/active work items only
     const wqCount = state.workQueue.filter((i) => i.status === 'queued' || i.status === 'active').length;
+    dom.queueBadge.textContent = wqCount;
+    // Task badge
     const taskCount = state.tasks.filter((t) => t.status !== 'complete').length;
-    dom.queueBadge.textContent = wqCount + taskCount;
+    if (dom.taskBadge) dom.taskBadge.textContent = taskCount;
     updatePanelCount();
 }
 
@@ -4427,16 +4531,18 @@ function renderWorkQueue() {
 }
 
 function renderTaskList() {
+    if (!dom.taskList) return;
     let tasks = state.tasks;
     if (state.filter !== 'all') {
         tasks = tasks.filter((t) => t.status === state.filter);
     }
 
-    const empty = $('#queue-empty');
     if (tasks.length === 0) {
-        dom.taskList.innerHTML = '';
-        const emptyEl = empty || createEmpty('queue-empty', 'No tasks assigned', '');
-        dom.taskList.appendChild(emptyEl);
+        dom.taskList.innerHTML =
+            '<div class="empty-state" id="tasks-empty">' +
+            '<p class="empty-state__text">No tasks assigned</p>' +
+            '<p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>' +
+            '</div>';
         return;
     }
 
@@ -4502,6 +4608,7 @@ function connectSocket() {
         // Load settings (admin mode + user display name)
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
+            state.smartestAvailable = !!d.smartest_available;
             applyUserIdentity(d.user_display_name || '', d.user_display_role || '', d.user_display_avatar || '');
         }).catch(() => {});
         showToast('Connected to Cohort', 'success');
@@ -4533,6 +4640,7 @@ function connectSocket() {
     sock.on('cohort:team_update', (data) => {
         state.agents = data.agents || [];
         renderTeam();
+        renderAgentChats();
     });
 
     sock.on('cohort:task_assigned', (task) => {
@@ -4543,7 +4651,6 @@ function connectSocket() {
             state.tasks.unshift(task);
         }
         renderQueue();
-        renderSidebarTasks();
         showToast(`Task assigned to ${task.agent_id}`, 'info');
     });
 
@@ -4552,7 +4659,6 @@ function connectSocket() {
         if (task) {
             Object.assign(task, data);
             renderQueue();
-            renderSidebarTasks();
         }
     });
 
@@ -4561,7 +4667,6 @@ function connectSocket() {
         if (task) {
             Object.assign(task, data);
             renderQueue();
-            renderSidebarTasks();
             renderOutputs();
             showToast(`Task completed: ${task.description || task.task_id}`, 'success');
         }
@@ -4936,6 +5041,16 @@ function formatTimeAgo(isoStr) {
 // Settings
 // =====================================================================
 
+function switchSettingsTab(tabName) {
+    document.querySelectorAll('.settings-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.settingsTab === tabName);
+    });
+    document.querySelectorAll('.settings-panel').forEach(p => {
+        p.classList.toggle('active', p.dataset.settingsPanel === tabName);
+    });
+    if (tabName === 'data') loadDeletedChannels();
+}
+
 function openSettings() {
     // Load current settings from server
     fetch('/api/settings')
@@ -4975,6 +5090,66 @@ function openSettings() {
         });
 
     if (dom.settingsModal) dom.settingsModal.hidden = false;
+    switchSettingsTab('general');
+}
+
+function loadDeletedChannels() {
+    const container = document.getElementById('deleted-channels-list');
+    if (!container || !state.socket || !state.connected) return;
+
+    state.socket.emit('list_deleted_channels', {}, (resp) => {
+        if (!resp || resp.error) {
+            container.innerHTML = '<p style="color: var(--color-text-muted); font-size: 12px;">Could not load deleted channels</p>';
+            return;
+        }
+        const channels = resp.channels || [];
+        if (channels.length === 0) {
+            container.innerHTML = '<p style="color: var(--color-text-muted); font-size: 12px;">No deleted channels</p>';
+            return;
+        }
+
+        container.innerHTML = channels.map(ch => {
+            const daysAgo = Math.floor((Date.now() - new Date(ch.deleted_at).getTime()) / 86400000);
+            const daysLeft = Math.max(0, 30 - daysAgo);
+            const name = ch.name || ch.id;
+            return `
+                <div class="deleted-channel-row">
+                    <div class="deleted-channel-info">
+                        <span class="deleted-channel-name">${escapeHtml(name)}</span>
+                        <span class="deleted-channel-meta">${ch.message_count} messages -- expires in ${daysLeft} days</span>
+                    </div>
+                    <div class="deleted-channel-actions">
+                        <button class="btn btn--small btn--primary" onclick="restoreDeletedChannel('${escapeHtml(ch.id)}')">Restore</button>
+                        <button class="btn btn--small btn--danger" onclick="permDeleteChannel('${escapeHtml(ch.id)}')">Delete</button>
+                    </div>
+                </div>`;
+        }).join('');
+    });
+}
+
+function restoreDeletedChannel(channelId) {
+    if (!state.socket || !state.connected) return;
+    state.socket.emit('restore_channel', { channel_id: channelId }, (resp) => {
+        if (resp && resp.success) {
+            showToast('Channel restored', 'success');
+            loadDeletedChannels();
+        } else {
+            showToast('Failed to restore: ' + (resp?.error || 'unknown'), 'error');
+        }
+    });
+}
+
+function permDeleteChannel(channelId) {
+    if (!confirm('Permanently delete this channel? This cannot be undone.')) return;
+    if (!state.socket || !state.connected) return;
+    state.socket.emit('permanently_delete_channel', { channel_id: channelId }, (resp) => {
+        if (resp && resp.success) {
+            showToast('Channel permanently deleted', 'success');
+            loadDeletedChannels();
+        } else {
+            showToast('Failed to delete: ' + (resp?.error || 'unknown'), 'error');
+        }
+    });
 }
 
 function closeSettings() {
@@ -5263,16 +5438,19 @@ function renderServiceKeys() {
 function renderPermGrid() {
     if (!dom.permGridHead || !dom.permGridBody) return;
 
-    if (permState.services.length === 0) {
+    // Only show services that have a key configured
+    const activeServices = permState.services.filter(svc => svc.has_key);
+
+    if (activeServices.length === 0) {
         dom.permGridHead.innerHTML = '';
-        dom.permGridBody.innerHTML = '<tr><td colspan="99" class="perm-empty">Add services first, then configure agent access here.</td></tr>';
+        dom.permGridBody.innerHTML = '<tr><td colspan="99" class="perm-empty">No services with API keys configured. Add keys in the Service Keys tab first.</td></tr>';
         return;
     }
 
     // Header: Agent | Service1 | Service2 | ...
     dom.permGridHead.innerHTML = `<tr>
         <th>Agent</th>
-        ${permState.services.map(svc => {
+        ${activeServices.map(svc => {
             const meta = SERVICE_TYPES[svc.type] || SERVICE_TYPES.custom;
             return `<th title="${escapeHtml(svc.name || meta.name)}">${meta.icon}</th>`;
         }).join('')}
@@ -5285,7 +5463,7 @@ function renderPermGrid() {
 
     dom.permGridBody.innerHTML = agents.map(([agentId, profile]) => {
         const agentPerms = permState.permissions[agentId] || {};
-        const cells = permState.services.map(svc => {
+        const cells = activeServices.map(svc => {
             const checked = agentPerms[svc.id] ? 'checked' : '';
             return `<td><input type="checkbox" class="perm-grid__check" data-agent="${escapeHtml(agentId)}" data-service="${escapeHtml(svc.id)}" ${checked}></td>`;
         }).join('');
@@ -5712,24 +5890,40 @@ function renderToolDefaultsGrid(data) {
 
     const profiles = data.profiles || {};
     const defaults = data.agent_defaults || {};
-    const types = ['specialist', 'orchestrator', 'utility', 'infrastructure'];
+    const agents = data.agents || [];
     const profileNames = Object.keys(profiles);
 
-    dom.toolDefaultsGrid.innerHTML = types.map(type => {
-        const current = defaults[type] || 'minimal';
+    // Build groups from agent store data
+    const groupMap = {};  // group_key -> { label, agents: [...] }
+    for (const agent of agents) {
+        const groupLabel = agent.group || 'Agents';
+        const groupKey = groupLabel.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        if (!groupMap[groupKey]) {
+            groupMap[groupKey] = { label: groupLabel, agents: [] };
+        }
+        groupMap[groupKey].agents.push(agent);
+    }
+
+    // Sort groups by label
+    const groups = Object.entries(groupMap).sort((a, b) => a[1].label.localeCompare(b[1].label));
+
+    dom.toolDefaultsGrid.innerHTML = groups.map(([groupKey, group]) => {
+        const current = defaults[groupKey] || 'minimal';
         const options = profileNames.map(p =>
             `<option value="${escapeHtml(p)}" ${p === current ? 'selected' : ''}>${escapeHtml(p)}</option>`
         ).join('');
 
         const profile = profiles[current] || {};
         const tools = (profile.allowed_tools || []).join(', ') || '(none)';
+        const agentNames = group.agents.map(a => a.nickname || a.name).sort().join(', ');
 
         return `<div class="tool-defaults__row">
             <div>
-                <span class="tool-defaults__type-label">${escapeHtml(type)}</span>
+                <span class="tool-defaults__type-label">${escapeHtml(group.label)}</span>
                 <span class="tool-defaults__tools-preview">${escapeHtml(tools)}</span>
+                <span class="tool-defaults__agents-list">${escapeHtml(agentNames)}</span>
             </div>
-            <select class="tool-defaults__profile-select" data-agent-type="${escapeHtml(type)}" onchange="onToolDefaultChange()">
+            <select class="tool-defaults__profile-select" data-agent-type="${escapeHtml(groupKey)}" onchange="onToolDefaultChange()">
                 ${options}
             </select>
         </div>`;
@@ -5756,11 +5950,12 @@ function onToolDefaultChange() {
     fetch('/api/tool-permissions')
         .then(r => r.json())
         .then(data => {
+            const profiles = data.profiles || {};
             dom.toolDefaultsGrid.querySelectorAll('.tool-defaults__row').forEach(row => {
                 const select = row.querySelector('.tool-defaults__profile-select');
                 const preview = row.querySelector('.tool-defaults__tools-preview');
                 if (select && preview) {
-                    const profile = (data.profiles || {})[select.value] || {};
+                    const profile = profiles[select.value] || {};
                     preview.textContent = (profile.allowed_tools || []).join(', ') || '(none)';
                 }
             });
@@ -5888,7 +6083,7 @@ function init() {
             };
 
             // Pass response mode: smart (default) or quick (opt-in)
-            outgoing.response_mode = state.quickModeChannels.has(state.currentChannel) ? 'quick' : 'smart';
+            outgoing.response_mode = _getResponseMode();
 
             // Attach thread_id if replying to a message
             if (state.replyingTo) {
@@ -5976,10 +6171,6 @@ function init() {
         });
     }
 
-    // [+] Sidebar task button -- opens assign modal
-    if (dom.sidebarAddTaskBtn) {
-        dom.sidebarAddTaskBtn.addEventListener('click', () => openAssignForAgent(null));
-    }
 
     // [+] Session button -- opens guided session setup chat
     if (dom.addSessionBtn) {

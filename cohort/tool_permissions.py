@@ -116,12 +116,21 @@ def resolve_permissions(
     # Extract per-agent tool_permissions
     agent_perms: dict[str, Any] = {}
     agent_type = "specialist"
+    agent_group_key = ""
     if agent_config is not None:
         agent_perms = getattr(agent_config, "tool_permissions", {}) or {}
         agent_type = getattr(agent_config, "agent_type", "specialist") or "specialist"
+        # Derive group key (e.g. "Core Developers" -> "core_developers")
+        raw_group = getattr(agent_config, "group", "") or ""
+        if raw_group:
+            import re
+            agent_group_key = re.sub(r"[^a-z0-9]+", "_", raw_group.lower()).strip("_")
 
     # Step 1: Determine profile name
+    # Priority: agent override > group default > agent_type default > minimal
     profile_name = agent_perms.get("profile")
+    if not profile_name and agent_group_key:
+        profile_name = agent_defaults.get(agent_group_key)
     if not profile_name:
         profile_name = agent_defaults.get(agent_type, "minimal")
 

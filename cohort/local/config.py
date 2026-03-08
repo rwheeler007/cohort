@@ -1,7 +1,7 @@
 """Local router configuration.
 
 Hardcoded VRAM-tier model mapping, task-specific temperatures,
-and response mode presets (smart/quick).
+and response mode presets (smart/smarter/smartest).
 Zero external dependencies -- pure Python data structures.
 """
 
@@ -16,6 +16,15 @@ class ModelMapping(TypedDict):
     vram_range: tuple[int, int]  # MB range (min, max)
     model: str
     tier: int
+
+
+# =====================================================================
+# Default Model
+# =====================================================================
+# Single source of truth for the primary model name.
+# All fallbacks and preference lists reference this constant.
+
+DEFAULT_MODEL = "qwen3.5:9b"
 
 
 # =====================================================================
@@ -87,26 +96,102 @@ MODEL_DESCRIPTIONS: dict[str, dict[str, str]] = {
 # =====================================================================
 # Response Mode Configuration
 # =====================================================================
-# "Smart by default": thinking enabled, high token budget.
-# "Quick" is opt-in for speed/cost savings.
+# Three tiers: Smart (fast), Smarter (thinking, default), Smartest (Qwen+Claude).
+# Smartest requires Claude CLI -- gated at runtime.
 
-ResponseMode = Literal["smart", "quick"]
+ResponseMode = Literal["smart", "smarter", "smartest"]
 
 RESPONSE_MODE_PARAMS: dict[str, dict] = {
     "smart": {
-        "think": True,
-        "num_predict": 16384,   # 16K budget: ~8K thinking + ~8K response
-        "keep_alive": "2m",
-    },
-    "quick": {
         "think": False,
         "num_predict": 4096,    # 4K budget: response tokens only
         "keep_alive": "2m",
     },
+    "smarter": {
+        "think": True,
+        "num_predict": 16384,   # 16K budget: ~8K thinking + ~8K response
+        "keep_alive": "2m",
+    },
+    "smartest": {
+        "think": True,
+        "num_predict": 16384,   # Phase 1 params (same as smarter)
+        "keep_alive": "2m",
+    },
 }
 
-DEFAULT_RESPONSE_MODE: ResponseMode = "smart"
+DEFAULT_RESPONSE_MODE: ResponseMode = "smarter"
 DEFAULT_KEEP_ALIVE = "2m"
+
+# =====================================================================
+# Distillation Configuration (Phase 2 of Smartest pipeline)
+# =====================================================================
+# Qwen compresses its own reasoning into a structured briefing for Claude.
+
+DISTILLATION_PARAMS: dict = {
+    "think": False,
+    "num_predict": 8192,
+    "keep_alive": "2m",
+    "temperature": 0.15,        # Very deterministic extraction
+}
+
+DISTILLATION_PROMPT = (
+    "You are distilling an AI agent's detailed analysis into a briefing "
+    "for a senior AI model (Claude). Your job is to preserve ALL substantive "
+    "content while stripping noise. Remove meta-commentary, hedging, filler, "
+    "and repetition -- but keep every concrete fact, data point, code snippet, "
+    "specific recommendation, and technical detail.\n\n"
+    "Scale your output to match the substance:\n"
+    "- Simple question with a clear answer: 50-200 words\n"
+    "- Moderate analysis with several points: 200-1000 words\n"
+    "- Complex multi-faceted analysis: 1000-5000 words\n"
+    "Never pad short answers. Never truncate rich analysis.\n\n"
+    "Output these sections (skip any that are empty):\n\n"
+    "### Key Findings\n"
+    "- Core observations, conclusions, data points, and code examples\n\n"
+    "### Recommended Approach\n"
+    "- Specific actions, implementations, or solutions proposed\n\n"
+    "### Constraints & Caveats\n"
+    "- Limitations, risks, or things explicitly noted to avoid\n\n"
+    "### Confidence Assessment\n"
+    "- One line: High/Medium/Low and why\n\n"
+    "--- ORIGINAL ANALYSIS ---\n"
+    "{qwen_output}\n"
+    "--- END ---\n\n"
+    "Distilled briefing:"
+)
+
+# =====================================================================
+# Smartest Claude Prompt (Phase 3 of Smartest pipeline)
+# =====================================================================
+# Claude gets persona + distilled briefing, NOT full channel history.
+
+SMARTEST_CLAUDE_PROMPT = (
+    "You are responding as the {agent_id} agent.\n\n"
+    "Follow this persona exactly:\n"
+    "---\n{persona}\n---\n\n"
+    "{grounding_rules}\n\n"
+    "A local AI model has analyzed the conversation and produced this briefing:\n\n"
+    "--- ANALYSIS BRIEFING ---\n"
+    "{distilled_briefing}\n"
+    "--- END BRIEFING ---\n\n"
+    "Now respond to the user's message. Use the briefing as your research/context, "
+    "but write your response in your own voice. Do not reference the briefing or "
+    "the local model's analysis.\n\n"
+    "User message:\n{user_message}"
+)
+
+# =====================================================================
+# Roundtable Model Preferences
+# =====================================================================
+# Auto-selection fallback order for compiled roundtable when no model
+# is explicitly provided. First match against installed models wins.
+
+ROUNDTABLE_MODEL_PREFERENCES: list[str] = [
+    DEFAULT_MODEL,
+    "qwen3:30b-a3b", "qwen3:30b", "qwen2.5:32b",
+    "llama3.1:70b", "llama3.3:70b",
+    "qwen3:8b", "llama3.2:3b",
+]
 
 # Empty-response retry: if tokens_out exceeds this but visible content
 # is shorter than MIN_CONTENT_CHARS, the model spent all tokens thinking.

@@ -434,7 +434,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "🗄️",
+  "avatar": "DB",
   "aliases": [
     "database",
     "dd"
@@ -453,5 +453,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "database_developer"
+  "agent_id": "database_developer",
+  "name": "Database Developer",
+  "nickname": "DBDev",
+  "color": "#2ECC71",
+  "group": "Core Developers"
 }

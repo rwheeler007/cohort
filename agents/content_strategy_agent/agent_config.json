@@ -71,7 +71,7 @@
     "weekly content",
     "newsletter"
   ],
-  "avatar": "[CS]",
+  "avatar": "CS",
   "task_context": {
     "description": "Generate weekly content plans from intelligence data, draft multi-platform content bundles (blog + social + newsletter), and manage a propose-approve-publish workflow",
     "requirements": [
@@ -160,5 +160,9 @@
     "research_sources": 0
   },
   "claude_code_model": "sonnet",
-  "agent_id": "content_strategy_agent"
+  "agent_id": "content_strategy_agent",
+  "name": "Content Strategy Agent",
+  "nickname": "Content",
+  "color": "#2ECC71",
+  "group": "Marketing & Content"
 }

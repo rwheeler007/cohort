@@ -7,7 +7,7 @@
   "version": "1.0",
   "last_updated": "2026-01-22T00:00:00Z",
   "status": "active",
-  "avatar": "[DIG]",
+  "avatar": "DIG",
   "aliases": [
     "archaeologist",
     "digger",
@@ -386,5 +386,9 @@
     "last_training_date": "2026-02-10"
   },
   "claude_code_model": "sonnet",
-  "agent_id": "code_archaeologist"
+  "agent_id": "code_archaeologist",
+  "name": "Code Archaeologist",
+  "nickname": "Archeo",
+  "color": "#8E44AD",
+  "group": "Quality & Security"
 }

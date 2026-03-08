@@ -11,7 +11,9 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 
 from cohort.local.config import (
+    DEFAULT_MODEL,
     DEFAULT_TEMPERATURE,
+    ROUNDTABLE_MODEL_PREFERENCES,
     TASK_TEMPERATURES,
     VRAM_TIER_MODELS,
     get_model_for_vram,
@@ -329,6 +331,43 @@ def test_get_temperature_unknown_task():
     """Test fallback to default for unknown task types."""
     temp = get_temperature("unknown_task_type")
     assert temp == DEFAULT_TEMPERATURE
+
+
+# =====================================================================
+# Model Centralization Tests
+# =====================================================================
+
+
+def test_default_model_is_single_source_of_truth():
+    """VRAM tiers and roundtable preferences reference DEFAULT_MODEL."""
+    # Top-tier VRAM models should match DEFAULT_MODEL
+    top_tier = VRAM_TIER_MODELS[-1]
+    assert top_tier["model"] == DEFAULT_MODEL
+
+    # Roundtable preference list should start with DEFAULT_MODEL
+    assert ROUNDTABLE_MODEL_PREFERENCES[0] == DEFAULT_MODEL
+
+
+def test_server_fallback_uses_default_model():
+    """_get_configured_model falls back to DEFAULT_MODEL, not a hardcoded string."""
+    from cohort.server import _get_configured_model
+
+    # With no settings file at a fake path, should return DEFAULT_MODEL
+    with patch("cohort.server._PACKAGE_DIR", MagicMock()):
+        result = _get_configured_model()
+    assert result == DEFAULT_MODEL
+
+
+def test_roundtable_preferences_not_empty():
+    """Roundtable preference list has at least one model."""
+    assert len(ROUNDTABLE_MODEL_PREFERENCES) >= 1
+
+
+def test_all_vram_tiers_have_valid_models():
+    """Every VRAM tier maps to a non-empty model string."""
+    for tier in VRAM_TIER_MODELS:
+        assert tier["model"], f"Tier {tier['tier']} has empty model"
+        assert isinstance(tier["model"], str)
 
 
 # =====================================================================

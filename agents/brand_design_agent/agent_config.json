@@ -10,7 +10,7 @@
   "model_params": {
     "temperature": 0.45
   },
-  "avatar": "[BRAND]",
+  "avatar": "BD",
   "aliases": [
     "brand",
     "logo",
@@ -138,5 +138,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "brand_design_agent"
+  "agent_id": "brand_design_agent",
+  "name": "Brand Design Agent",
+  "nickname": "Brand",
+  "color": "#9B59B6",
+  "group": "Marketing & Content"
 }

@@ -404,7 +404,7 @@
     }
   },
   "agent_type": "specialist",
-  "avatar": "🤖",
+  "avatar": "MP",
   "aliases": [
     "media_production",
     "media",
@@ -444,5 +444,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "media_production_agent"
+  "agent_id": "media_production_agent",
+  "name": "Media Production Agent",
+  "nickname": "Media",
+  "color": "#E67E22",
+  "group": "Marketing & Content"
 }

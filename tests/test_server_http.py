@@ -50,11 +50,13 @@ async def server_client(data_dir: Path, agents_dir: Path):
         app = create_app(data_dir=str(data_dir))
 
     transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(
-        transport=transport,
-        base_url="http://testserver",
-    ) as client:
-        yield client
+    # Patch route_mentions to prevent background thread spawning during tests
+    with patch("cohort.agent_router.route_mentions"):
+        async with httpx.AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+        ) as client:
+            yield client
 
 
 # =====================================================================

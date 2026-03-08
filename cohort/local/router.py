@@ -18,12 +18,16 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from cohort.local.config import (
+    DEFAULT_MODEL,
+    DEFAULT_RESPONSE_MODE,
+    DISTILLATION_PARAMS,
+    DISTILLATION_PROMPT,
+    MIN_CONTENT_CHARS,
+    RESPONSE_MODE_PARAMS,
+    THINKING_DRAIN_TOKEN_THRESHOLD,
     get_model_for_vram,
     get_temperature,
     get_tier_for_model,
-    RESPONSE_MODE_PARAMS,
-    THINKING_DRAIN_TOKEN_THRESHOLD,
-    MIN_CONTENT_CHARS,
 )
 from cohort.local.detect import detect_hardware
 from cohort.local.ollama import OllamaClient
@@ -39,6 +43,7 @@ class RouteResult:
     tokens_in: int = 0
     tokens_out: int = 0
     elapsed_seconds: float = 0.0
+    pipeline: str = "local"  # "local", "smartest", "smartest-degraded", "claude"
 
 logger = logging.getLogger(__name__)
 
@@ -101,12 +106,45 @@ class LocalRouter:
                 self._hardware_info = HardwareInfo(cpu_only=True, platform="unknown")
         return self._hardware_info
 
+    def distill(self, raw_output: str) -> str | None:
+        """Phase 2 distillation: compress Qwen reasoning into a briefing.
+
+        Args:
+            raw_output: Raw text from Phase 1 (Qwen reasoning pass).
+
+        Returns:
+            Compressed briefing string, or None on failure.
+
+        Never raises exceptions.
+        """
+        try:
+            if not self._ensure_client() or self._client is None:
+                return None
+
+            prompt = DISTILLATION_PROMPT.format(qwen_output=raw_output)
+
+            result = self._client.generate(
+                model=DEFAULT_MODEL,
+                prompt=prompt,
+                temperature=DISTILLATION_PARAMS["temperature"],
+                think=DISTILLATION_PARAMS["think"],
+                keep_alive=DISTILLATION_PARAMS["keep_alive"],
+                options={"num_predict": DISTILLATION_PARAMS["num_predict"]},
+            )
+
+            if result is None or not result.text.strip():
+                return None
+
+            return result.text.strip()
+        except Exception:
+            return None
+
     def route(
         self,
         prompt: str,
         task_type: str | None = None,
         temperature: float | None = None,
-        response_mode: str = "smart",
+        response_mode: str = "smarter",
         system: str | None = None,
     ) -> RouteResult | None:
         """Route prompt to local Ollama model.
@@ -115,8 +153,8 @@ class LocalRouter:
             prompt: Input text
             task_type: Task type hint (code, reasoning, general, creative)
             temperature: Override temperature (None = use task_type default)
-            response_mode: "smart" (thinking enabled, high budget) or
-                           "quick" (no thinking, lower budget)
+            response_mode: "smart" (no thinking), "smarter" (thinking enabled),
+                           or "smartest" (handled by caller, uses smarter params here)
             system: Optional system prompt (grounding rules, etc.)
 
         Returns:
@@ -128,8 +166,8 @@ class LocalRouter:
         - Model not installed
         - Generation failed
 
-        If smart mode produces an empty response (thinking drain),
-        automatically retries in quick mode.
+        If smarter/smartest mode produces an empty response (thinking drain),
+        automatically retries in smart mode.
 
         Caller should handle None by falling back to Claude CLI.
         """
@@ -159,7 +197,9 @@ class LocalRouter:
             temp = temperature if temperature is not None else get_temperature(task_type)
 
             # Get response mode parameters
-            mode_params = RESPONSE_MODE_PARAMS.get(response_mode, RESPONSE_MODE_PARAMS["smart"])
+            mode_params = RESPONSE_MODE_PARAMS.get(
+                response_mode, RESPONSE_MODE_PARAMS[DEFAULT_RESPONSE_MODE]
+            )
 
             # Generate response
             result = self._client.generate(
@@ -175,28 +215,28 @@ class LocalRouter:
             if result is None:
                 return None
 
-            # Thinking drain retry: if smart mode produced empty/truncated
+            # Thinking drain retry: if smarter/smartest mode produced empty/truncated
             # content (thinking consumed the entire num_predict budget),
-            # auto-retry in quick mode.
+            # auto-retry in smart mode (no thinking).
             if (
-                response_mode == "smart"
+                response_mode in ("smarter", "smartest")
                 and result.tokens_out > THINKING_DRAIN_TOKEN_THRESHOLD
                 and len(result.text.strip()) < MIN_CONTENT_CHARS
             ):
                 logger.info(
-                    "[!] Smart mode thinking drain (%d tokens out, %d chars). "
-                    "Retrying in quick mode.",
-                    result.tokens_out, len(result.text.strip()),
+                    "[!] %s mode thinking drain (%d tokens out, %d chars). "
+                    "Retrying in smart mode.",
+                    response_mode, result.tokens_out, len(result.text.strip()),
                 )
-                quick_params = RESPONSE_MODE_PARAMS["quick"]
+                smart_params = RESPONSE_MODE_PARAMS["smart"]
                 result = self._client.generate(
                     model=model,
                     prompt=prompt,
                     temperature=temp,
                     system=system,
-                    think=quick_params["think"],
-                    keep_alive=quick_params["keep_alive"],
-                    options={"num_predict": quick_params["num_predict"]},
+                    think=smart_params["think"],
+                    keep_alive=smart_params["keep_alive"],
+                    options={"num_predict": smart_params["num_predict"]},
                 )
                 if result is None:
                     return None
@@ -223,7 +263,7 @@ class LocalRouter:
         temperature: float = 0.4,
         system: str | None = None,
         max_turns: int = 10,
-        response_mode: str = "smart",
+        response_mode: str = "smarter",
     ) -> RouteResult | None:
         """Route a tool-enabled conversation to local Ollama model.
 
@@ -272,7 +312,9 @@ class LocalRouter:
             # Work on a mutable copy of messages
             conversation = list(messages)
 
-            mode_params = RESPONSE_MODE_PARAMS.get(response_mode, RESPONSE_MODE_PARAMS["smart"])
+            mode_params = RESPONSE_MODE_PARAMS.get(
+                response_mode, RESPONSE_MODE_PARAMS[DEFAULT_RESPONSE_MODE]
+            )
 
             while turn < max_turns:
                 turn += 1

@@ -246,7 +246,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "📝",
+  "avatar": "DOC",
   "aliases": [
     "documentation",
     "da"
@@ -261,5 +261,9 @@
     }
   },
   "claude_code_model": "haiku",
-  "agent_id": "documentation_agent"
+  "agent_id": "documentation_agent",
+  "name": "Documentation Agent",
+  "nickname": "Docs",
+  "color": "#2980B9",
+  "group": "Support"
 }

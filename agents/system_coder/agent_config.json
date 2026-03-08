@@ -452,7 +452,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "🖥️",
+  "avatar": "SC",
   "aliases": [
     "system",
     "sc"
@@ -467,5 +467,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "system_coder"
+  "agent_id": "system_coder",
+  "name": "System Coder",
+  "nickname": "SysCoder",
+  "color": "#1ABC9C",
+  "group": "Core Developers"
 }

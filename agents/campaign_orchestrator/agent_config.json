@@ -271,7 +271,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "📢",
+  "avatar": "CA",
   "aliases": [
     "campaign",
     "co"
@@ -287,5 +287,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "campaign_orchestrator"
+  "agent_id": "campaign_orchestrator",
+  "name": "Campaign Orchestrator",
+  "nickname": "Campaigns",
+  "color": "#D35400",
+  "group": "Marketing & Content"
 }

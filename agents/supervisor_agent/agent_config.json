@@ -325,7 +325,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "👁️",
+  "avatar": "SUP",
   "aliases": [
     "supervisor",
     "sa"
@@ -341,5 +341,9 @@
     }
   },
   "claude_code_model": "sonnet",
-  "agent_id": "supervisor_agent"
+  "agent_id": "supervisor_agent",
+  "name": "Supervisor",
+  "nickname": "Supervisor",
+  "color": "#E74C3C",
+  "group": "Leadership"
 }

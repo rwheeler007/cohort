@@ -141,6 +141,7 @@ body {
     display: grid;
     grid-template-columns: var(--sidebar-width) 1fr;
     height: 100vh;
+    overflow: hidden;
 }
 
 /* =============================================================================
@@ -364,6 +365,7 @@ body {
 
 .panel {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: var(--space-4);
 }
@@ -460,6 +462,8 @@ body {
     flex-direction: column;
     flex: 1 1 260px;
     min-height: 200px;
+    max-height: 220px;
+    overflow: hidden;
 }
 
 .agent-card:hover {
@@ -472,6 +476,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--space-3);
+    flex-shrink: 0;
 }
 
 .agent-card__name {
@@ -516,10 +521,34 @@ body {
 .agent-card__skills {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     gap: var(--space-1);
-    max-height: calc(3 * (2em + var(--space-1)));
-    overflow: hidden;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     font-size: var(--font-size-xs);
+    margin-bottom: var(--space-2);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+/* Webkit thin scrollbar for skills area */
+.agent-card__skills::-webkit-scrollbar {
+    width: 3px;
+}
+
+.agent-card__skills::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.agent-card__skills::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 3px;
+}
+
+.agent-card__skills::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-text-muted);
 }
 
 .agent-card__skill {
@@ -553,6 +582,7 @@ body {
     margin-top: auto;
     padding-top: var(--space-3);
     border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
 }
 
 .agent-card__stat {
@@ -708,6 +738,14 @@ body {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     margin-top: 2px;
+}
+
+.tool-defaults__agents-list {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    opacity: 0.7;
+    margin-top: 1px;
 }
 
 .tool-defaults__profile-select {
@@ -1189,7 +1227,7 @@ body {
 }
 
 .modal__content--wide {
-    max-width: 700px;
+    max-width: 900px;
 }
 
 .modal__header {
@@ -1457,6 +1495,7 @@ textarea.form-input {
     flex-direction: column;
     flex: 1;
     min-width: 0;
+    min-height: 0;
 }
 
 /* =============================================================================
@@ -1540,6 +1579,16 @@ textarea.form-input {
     background-color: rgba(59, 130, 246, 0.1);
     border-radius: var(--radius-sm);
     white-space: nowrap;
+}
+
+.message__model-badge.smartest-pipeline {
+    color: #c084fc;
+    background-color: rgba(168, 85, 247, 0.12);
+}
+
+.message__model-badge.degraded-pipeline {
+    color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.12);
 }
 
 .message__token-badge {
@@ -1748,7 +1797,7 @@ textarea.form-input {
     padding: var(--space-2) var(--space-4);
 }
 
-/* Response Mode toggle button (Smart/Quick) */
+/* Response Mode toggle button (Smart/Smarter/Smartest) */
 .response-mode-btn {
     padding: var(--space-1) var(--space-2);
     font-size: 11px;
@@ -1768,10 +1817,21 @@ textarea.form-input {
     border-color: var(--color-text-muted);
 }
 
-.response-mode-btn.quick {
+.response-mode-btn.smart {
     color: var(--color-text-muted);
     border-color: var(--color-border);
     background: transparent;
+}
+
+.response-mode-btn.smartest {
+    color: #c084fc;
+    border-color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+}
+
+.response-mode-btn.smartest:hover {
+    color: var(--color-text-primary);
+    border-color: #a855f7;
 }
 
 /* =============================================================================
@@ -2087,6 +2147,97 @@ textarea.form-input {
     margin: 0;
 }
 
+.sidebar-nav__agent-chats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Agent Chat Groups (collapsible sub-sections within Agent Chats) */
+.agent-chat-group {
+    list-style: none;
+}
+
+.agent-chat-group__header {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px 4px 16px;
+    cursor: pointer;
+    user-select: none;
+    gap: 6px;
+}
+
+.agent-chat-group__header:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.agent-chat-group__name {
+    flex: 1;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+}
+
+.agent-chat-group__count {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    opacity: 0.6;
+}
+
+.agent-chat-group__body {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.agent-chat-group__body .channel-item {
+    padding-left: var(--space-4);
+    font-size: 12px;
+}
+
+.agent-chat-group.open .agent-chat-group__body {
+    display: block;
+}
+
+.agent-chat-group .sidebar-nav__toggle {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    transition: transform 0.15s ease;
+}
+
+.agent-chat-group.open .sidebar-nav__toggle {
+    transform: rotate(90deg);
+}
+
+.agent-chat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.agent-chat-dot--idle {
+    background-color: var(--color-status-idle);
+}
+
+.agent-chat-dot--busy {
+    background-color: var(--color-status-busy);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.agent-chat-dot--error {
+    background-color: var(--color-status-error);
+}
+
+.agent-chat-dot--offline {
+    background-color: var(--color-text-muted);
+    opacity: 0.4;
+}
+
 .sidebar-nav__add-btn {
     background: none;
     border: none;
@@ -2272,7 +2423,8 @@ textarea.form-input {
     animation: pulse 2s ease-in-out infinite;
 }
 
-.sidebar-task-agent {
+.sidebar-task-agent,
+.sidebar-task-priority {
     font-size: 10px;
     color: var(--color-text-muted);
     flex-shrink: 0;
@@ -2422,6 +2574,65 @@ textarea.form-input {
    Settings Modal
    ============================================================================= */
 
+.settings-modal {
+    max-width: 680px;
+    width: 95%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.settings-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 var(--space-4);
+    flex-shrink: 0;
+    background: var(--color-bg-secondary);
+}
+
+.settings-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text-muted);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.settings-tab:hover {
+    color: var(--color-text-primary);
+}
+
+.settings-tab.active {
+    color: var(--color-cohort);
+    border-bottom-color: var(--color-cohort);
+}
+
+.settings-panels {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.settings-panel {
+    display: none;
+}
+
+.settings-panel.active {
+    display: block;
+}
+
 .settings-section {
     margin-bottom: var(--space-6);
     padding-bottom: var(--space-4);
@@ -2471,6 +2682,62 @@ textarea.form-input {
     color: var(--color-text-muted);
     margin: 0 0 var(--space-3);
     line-height: 1.5;
+}
+
+/* Deleted Channels (Trash) in Settings */
+.deleted-channels-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.deleted-channel-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.deleted-channel-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.deleted-channel-name {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.deleted-channel-meta {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.deleted-channel-actions {
+    display: flex;
+    gap: var(--space-1);
+    flex-shrink: 0;
+}
+
+.btn--danger {
+    background-color: var(--color-status-error);
+    color: #fff;
+    border: none;
+}
+
+.btn--danger:hover {
+    background-color: #c0392b;
 }
 
 .settings-secret-field {

@@ -258,7 +258,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "💼",
+  "avatar": "LI",
   "aliases": [
     "linkedin",
     "li",
@@ -272,5 +272,9 @@
     }
   },
   "claude_code_model": "haiku",
-  "agent_id": "linkedin"
+  "agent_id": "linkedin",
+  "name": "LinkedIn Specialist",
+  "nickname": "LinkedIn",
+  "color": "#0A66C2",
+  "group": "Social Media"
 }

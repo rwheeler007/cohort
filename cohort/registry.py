@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
@@ -42,6 +42,10 @@ class StorageBackend(Protocol):
     def save_channel(self, channel_id: str, metadata: dict) -> None: ...
     def get_channel(self, channel_id: str) -> dict | None: ...
     def list_channels(self) -> list[dict]: ...
+    def delete_channel(self, channel_id: str) -> bool: ...
+    def list_deleted_channels(self) -> list[dict]: ...
+    def restore_channel(self, channel_id: str) -> bool: ...
+    def permanently_delete_channel(self, channel_id: str) -> bool: ...
 
 
 # =====================================================================
@@ -56,11 +60,14 @@ class JsonFileStorage:
     (no file locking -- adequate for CLI and small-team scenarios).
     """
 
+    TRASH_RETENTION_DAYS = 30
+
     def __init__(self, data_dir: Path | str = "data") -> None:
         self._data_dir = Path(data_dir)
         self._data_dir.mkdir(parents=True, exist_ok=True)
         self._messages_path = self._data_dir / "messages.json"
         self._channels_path = self._data_dir / "channels.json"
+        self._trash_path = self._data_dir / "deleted_channels.json"
 
     # -- helpers --------------------------------------------------------
 
@@ -151,3 +158,101 @@ class JsonFileStorage:
     def list_channels(self) -> list[dict]:
         channels: dict[str, dict] = self._read_json(self._channels_path, {})
         return list(channels.values())
+
+    def delete_channel(self, channel_id: str) -> bool:
+        """Soft-delete a channel: move to trash with 30-day retention."""
+        channels: dict[str, dict] = self._read_json(self._channels_path, {})
+        if channel_id not in channels:
+            return False
+
+        # Collect channel + its messages
+        channel_data = channels.pop(channel_id)
+        messages: list[dict] = self._read_json(self._messages_path, [])
+        channel_msgs = [m for m in messages if m.get("channel_id") == channel_id]
+        remaining_msgs = [m for m in messages if m.get("channel_id") != channel_id]
+
+        # Write to trash
+        trash: list[dict] = self._read_json(self._trash_path, [])
+        trash.append({
+            "channel": channel_data,
+            "messages": channel_msgs,
+            "deleted_at": datetime.now(timezone.utc).isoformat(),
+        })
+        self._write_json(self._trash_path, trash)
+
+        # Remove from active storage
+        self._write_json(self._channels_path, channels)
+        self._write_json(self._messages_path, remaining_msgs)
+
+        # Purge expired entries
+        self._purge_expired_trash()
+        return True
+
+    def list_deleted_channels(self) -> list[dict]:
+        """Return trash entries still within retention period."""
+        self._purge_expired_trash()
+        trash: list[dict] = self._read_json(self._trash_path, [])
+        result = []
+        for entry in trash:
+            ch = entry.get("channel", {})
+            result.append({
+                "id": ch.get("id", ""),
+                "name": ch.get("name", ch.get("id", "")),
+                "deleted_at": entry.get("deleted_at", ""),
+                "message_count": len(entry.get("messages", [])),
+            })
+        return result
+
+    def restore_channel(self, channel_id: str) -> bool:
+        """Restore a soft-deleted channel and its messages."""
+        trash: list[dict] = self._read_json(self._trash_path, [])
+        entry = None
+        for i, e in enumerate(trash):
+            if e.get("channel", {}).get("id") == channel_id:
+                entry = trash.pop(i)
+                break
+        if entry is None:
+            return False
+
+        # Restore channel
+        channels: dict[str, dict] = self._read_json(self._channels_path, {})
+        channels[channel_id] = entry["channel"]
+        self._write_json(self._channels_path, channels)
+
+        # Restore messages
+        messages: list[dict] = self._read_json(self._messages_path, [])
+        messages.extend(entry.get("messages", []))
+        self._write_json(self._messages_path, messages)
+
+        # Update trash
+        self._write_json(self._trash_path, trash)
+        return True
+
+    def permanently_delete_channel(self, channel_id: str) -> bool:
+        """Remove a channel from trash permanently."""
+        trash: list[dict] = self._read_json(self._trash_path, [])
+        original_len = len(trash)
+        trash = [e for e in trash if e.get("channel", {}).get("id") != channel_id]
+        if len(trash) == original_len:
+            return False
+        self._write_json(self._trash_path, trash)
+        return True
+
+    def _purge_expired_trash(self) -> None:
+        """Remove trash entries older than retention period."""
+        trash: list[dict] = self._read_json(self._trash_path, [])
+        if not trash:
+            return
+        cutoff = datetime.now(timezone.utc) - timedelta(days=self.TRASH_RETENTION_DAYS)
+        kept = []
+        for entry in trash:
+            try:
+                deleted_at = datetime.fromisoformat(entry["deleted_at"])
+                if deleted_at.tzinfo is None:
+                    deleted_at = deleted_at.replace(tzinfo=timezone.utc)
+                if deleted_at > cutoff:
+                    kept.append(entry)
+            except (KeyError, ValueError):
+                kept.append(entry)  # keep unparseable entries
+        if len(kept) != len(trash):
+            self._write_json(self._trash_path, kept)

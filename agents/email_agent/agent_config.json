@@ -279,7 +279,7 @@
     "expert_modules_completed": 7,
     "research_sources": 10
   },
-  "avatar": "📧",
+  "avatar": "EM",
   "aliases": [
     "email",
     "ea"
@@ -291,5 +291,9 @@
     }
   },
   "claude_code_model": "haiku",
-  "agent_id": "email_agent"
+  "agent_id": "email_agent",
+  "name": "Email Marketing Specialist",
+  "nickname": "Email",
+  "color": "#3498DB",
+  "group": "Social Media"
 }
