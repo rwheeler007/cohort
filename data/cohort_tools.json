@@ -23,7 +23,7 @@
   },
   "descriptions": {
     "comms_service": "Send emails, manage calendar events, and post to social media with human approval gates",
-    "web_search": "Search the internet for current information using SerpAPI or Serper",
+    "web_search": "Search the internet using API providers (SerpAPI, Serper) or locally via DuckDuckGo (free)",
     "youtube_service": "Search YouTube videos, get metadata, and extract chapters",
     "intel_scheduler": "Monitor RSS feeds for tech trends, score articles, and generate briefings",
     "content_monitor_scheduler": "Discover content on Reddit and forums, draft social media posts for your brand",

@@ -1937,6 +1937,243 @@ async def cohort_generate_briefing(params: GenerateBriefingInput) -> str:
 
 
 # =====================================================================
+# Tool: internal_web_search
+# =====================================================================
+
+class InternalWebSearchInput(BaseModel):
+    """Input for searching the web via local DuckDuckGo scraping (no API key)."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    query: str = Field(
+        ..., description="Search query string",
+        min_length=1, max_length=500,
+    )
+    max_results: int = Field(
+        10, description="Maximum number of results to return (1-25)",
+        ge=1, le=25,
+    )
+    region: str = Field(
+        "us-en", description="Region code for search results (e.g. 'us-en', 'uk-en')",
+        max_length=10,
+    )
+    time_range: Optional[str] = Field(
+        None, description="Time filter: 'd' (day), 'w' (week), 'm' (month), 'y' (year)",
+    )
+
+
+@mcp.tool(
+    name="internal_web_search",
+    annotations={
+        "title": "Internal Web Search",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+)
+async def internal_web_search(params: InternalWebSearchInput) -> str:
+    """Search the web locally using DuckDuckGo (no API cost).
+
+    Returns search results with titles, URLs, and snippets.  Uses the ddgs
+    library to scrape DuckDuckGo results directly -- no API key, no external
+    service, completely free.  Pair with internal_web_fetch to read full pages.
+    """
+    import asyncio
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        return (
+            "Error: ddgs library not installed. "
+            "Run: pip install ddgs"
+        )
+
+    # --- Run search in thread pool (ddgs is synchronous) ---
+    def _do_search() -> list[dict]:
+        kwargs: dict = {
+            "query": params.query,
+            "max_results": params.max_results,
+            "region": params.region,
+        }
+        if params.time_range and params.time_range in ("d", "w", "m", "y"):
+            kwargs["timelimit"] = params.time_range
+        with DDGS() as ddgs:
+            return list(ddgs.text(**kwargs))
+
+    try:
+        results = await asyncio.get_event_loop().run_in_executor(None, _do_search)
+    except Exception as e:
+        logger.exception("[X] InternalWebSearch failed for query: %s", params.query)
+        return f"Search failed: {e}"
+
+    if not results:
+        return f"No results found for: {params.query}"
+
+    # --- Format results ---
+    lines = [f"Search results for: {params.query}", f"Results: {len(results)}", ""]
+    for i, r in enumerate(results, 1):
+        title = r.get("title", "No title")
+        url = r.get("href", r.get("url", ""))
+        snippet = r.get("body", r.get("content", ""))
+        lines.append(f"{i}. {title}")
+        lines.append(f"   URL: {url}")
+        if snippet:
+            lines.append(f"   {snippet}")
+        lines.append("")
+
+    output = "\n".join(lines)
+    if len(output) > CHARACTER_LIMIT:
+        output = output[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return output
+
+
+# =====================================================================
+# Tool: internal_web_fetch
+# =====================================================================
+
+class InternalWebFetchInput(BaseModel):
+    """Input for fetching a web page via the local Playwright renderer."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    url: str = Field(
+        ..., description="HTTPS URL to fetch and render locally",
+        min_length=8, max_length=2048,
+    )
+    extract_text: bool = Field(
+        True, description="Extract readable text from the page (default True). "
+        "If False, only returns metadata and screenshot paths.",
+    )
+
+
+@mcp.tool(
+    name="internal_web_fetch",
+    annotations={
+        "title": "Internal Web Fetch",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+)
+async def internal_web_fetch(params: InternalWebFetchInput) -> str:
+    """Fetch and render a web page locally using Playwright (no API cost).
+
+    Validates the URL (HTTPS-only, no private IPs), renders the page in a
+    headless browser, dismisses cookie banners, triggers lazy loading, and
+    returns extracted text content.  Screenshots are cached locally for
+    later processing by the document pipeline.
+    """
+    import asyncio
+    import hashlib
+    import importlib
+    import logging
+    from pathlib import Path
+    from urllib.parse import urlparse
+
+    logger = logging.getLogger(__name__)
+
+    # --- Lazy-import WebAdapter from BOSS ---
+    try:
+        web_adapter = importlib.import_module("src.ingestion.web_adapter")
+    except ImportError:
+        # Try absolute path fallback
+        import sys
+        boss_root = Path(__file__).resolve().parents[3]  # cohort -> G:/cohort -> G:/
+        adapter_candidates = [
+            boss_root / "BOSS",
+            Path("G:/BOSS"),
+        ]
+        web_adapter = None
+        for candidate in adapter_candidates:
+            if (candidate / "src" / "ingestion" / "web_adapter.py").exists():
+                if str(candidate) not in sys.path:
+                    sys.path.insert(0, str(candidate))
+                try:
+                    from src.ingestion import web_adapter  # type: ignore[no-redef]
+                    break
+                except ImportError:
+                    continue
+        if web_adapter is None:
+            return "Error: WebAdapter not available. BOSS src/ingestion/web_adapter.py not found."
+
+    # --- Validate URL ---
+    if not web_adapter.validate_url(params.url):
+        return f"Error: URL validation failed for {params.url}. Must be HTTPS and not resolve to a private IP."
+
+    # --- Generate stable source_id from URL ---
+    url_hash = hashlib.sha256(params.url.encode()).hexdigest()[:12]
+    hostname = urlparse(params.url).hostname or "unknown"
+    source_id = f"web_{hostname}_{url_hash}"
+
+    # --- Determine cache directory ---
+    cache_dir = Path("G:/BOSS/data/web_cache")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    # --- Render page ---
+    try:
+        paths = await web_adapter.process_url(
+            params.url, source_id, output_dir=str(cache_dir)
+        )
+    except Exception as e:
+        logger.exception("[X] WebAdapter render failed for %s", params.url)
+        return f"Error rendering page: {e}"
+
+    num_pages = len(paths)
+    result_lines = [
+        f"Fetched: {params.url}",
+        f"Pages rendered: {num_pages}",
+        f"Cache: {cache_dir / source_id}",
+    ]
+
+    # --- Extract text if requested ---
+    if params.extract_text and paths:
+        try:
+            # Use Playwright to extract DOM text (faster than Surya for text-only)
+            from playwright.async_api import async_playwright
+
+            async with async_playwright() as pw:
+                browser = await pw.chromium.launch(headless=True)
+                try:
+                    page = await browser.new_page()
+                    await page.goto(params.url, timeout=30_000, wait_until="domcontentloaded")
+                    await web_adapter.dismiss_cookie_consent(page)
+
+                    # Extract readable text via DOM
+                    text = await page.evaluate("""
+                        () => {
+                            // Remove scripts, styles, nav, footer
+                            for (const el of document.querySelectorAll('script, style, nav, footer, header, [role="navigation"]')) {
+                                el.remove();
+                            }
+                            return document.body.innerText;
+                        }
+                    """)
+
+                    # Truncate to reasonable size for agent consumption
+                    if text:
+                        text = text.strip()
+                        if len(text) > 15000:
+                            text = text[:15000] + "\n\n[...truncated at 15000 chars]"
+                        result_lines.append("")
+                        result_lines.append("--- Page Content ---")
+                        result_lines.append(text)
+                finally:
+                    await browser.close()
+        except Exception as e:
+            logger.warning("[!] Text extraction failed for %s: %s", params.url, e)
+            result_lines.append(f"\nText extraction failed: {e}")
+            result_lines.append("Screenshots are still available in the cache directory.")
+
+    output = "\n".join(result_lines)
+    if len(output) > CHARACTER_LIMIT:
+        output = output[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+    return output
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

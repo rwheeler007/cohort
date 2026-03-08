@@ -1341,7 +1341,7 @@ async def post_permissions(request: Request) -> JSONResponse:
 # =====================================================================
 
 # Canonical list of tools that can be toggled from the dashboard.
-_ALL_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch"]
+_ALL_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch", "InternalWebFetch", "InternalWebSearch"]
 
 
 def _tool_permissions_path() -> Path:
@@ -1424,7 +1424,10 @@ async def get_tool_permissions(request: Request) -> JSONResponse:
                 "profile_source": profile_source,
                 "allowed_tools": effective_tools,
                 "has_override": has_override,
+                "file_permissions": resolved.file_permissions if resolved else [],
             })
+
+    file_permissions = central.get("file_permissions", {"defaults": {}, "agent_overrides": {}})
 
     return JSONResponse({
         "profiles": profiles,
@@ -1433,6 +1436,7 @@ async def get_tool_permissions(request: Request) -> JSONResponse:
         "all_tools": _ALL_TOOLS,
         "agent_overrides": agent_overrides,
         "agents": agents_list,
+        "file_permissions": file_permissions,
     })
 
 
@@ -1458,13 +1462,69 @@ async def put_tool_permissions(request: Request) -> JSONResponse:
         central["agent_overrides"] = {
             aid: ov for aid, ov in overrides.items()
             if ov.get("allowed_tools_override") is not None
+            or ov.get("file_permissions_override") is not None
         }
+
+    if "file_permissions" in body:
+        central["file_permissions"] = body["file_permissions"]
 
     _save_tool_permissions(central)
 
     agent_count = len(central.get("agent_overrides", {}))
     logger.info("[OK] Tool permissions saved (%d agent overrides)", agent_count)
     return JSONResponse({"success": True})
+
+
+async def get_internal_web_status(request: Request) -> JSONResponse:
+    """GET /api/internal-web/status -- check if Internal Web Accessor is available."""
+    status: dict[str, Any] = {
+        "available": False,
+        "web_adapter": False,
+        "playwright": False,
+        "cache_dir": "G:/BOSS/data/web_cache",
+    }
+
+    # Check WebAdapter
+    try:
+        import importlib
+        import sys
+        from pathlib import Path
+        boss_root = Path("G:/BOSS")
+        adapter_dir = boss_root / "src" / "ingestion"
+        if (adapter_dir / "web_adapter.py").exists():
+            if str(boss_root) not in sys.path:
+                sys.path.insert(0, str(boss_root))
+            importlib.import_module("src.ingestion.web_adapter")
+            status["web_adapter"] = True
+    except Exception:
+        pass
+
+    # Check Playwright
+    try:
+        import playwright  # noqa: F401
+        status["playwright"] = True
+    except ImportError:
+        pass
+
+    status["available"] = status["web_adapter"] and status["playwright"]
+    return JSONResponse(status)
+
+
+async def get_internal_web_search_status(request: Request) -> JSONResponse:
+    """GET /api/internal-web-search/status -- check if Internal Web Search is available."""
+    status: dict[str, Any] = {
+        "available": False,
+        "ddgs": False,
+    }
+
+    try:
+        import ddgs as _ddgs_mod  # noqa: F401
+        status["ddgs"] = True
+    except ImportError:
+        pass
+
+    status["available"] = status["ddgs"]
+    return JSONResponse(status)
 
 
 # =====================================================================
@@ -2450,6 +2510,44 @@ async def web_search_test(request: Request) -> JSONResponse:
             return JSONResponse(data)
     except Exception as exc:
         return JSONResponse({"error": f"Web search service unavailable: {exc}"})
+
+
+async def web_search_local_test(request: Request) -> JSONResponse:
+    """POST /api/web-search/test-local -- test search via local ddgs (DuckDuckGo)."""
+    import asyncio
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    query = body.get("query", "").strip()
+    if not query:
+        return JSONResponse({"error": "query is required"}, status_code=400)
+    limit = min(body.get("limit", 5), 25)
+
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        return JSONResponse({"error": "ddgs not installed. Run: pip install ddgs"})
+
+    def _search():
+        with DDGS() as ddgs:
+            return list(ddgs.text(query=query, max_results=limit))
+
+    try:
+        raw = await asyncio.get_event_loop().run_in_executor(None, _search)
+    except Exception as exc:
+        return JSONResponse({"error": f"Local search failed: {exc}"})
+
+    results = []
+    for r in raw:
+        results.append({
+            "title": r.get("title", ""),
+            "url": r.get("href", r.get("url", "")),
+            "snippet": r.get("body", r.get("content", "")),
+        })
+    return JSONResponse({"results": results, "provider": "ddgs_local"})
 
 
 async def youtube_search_test(request: Request) -> JSONResponse:
@@ -3555,6 +3653,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/permissions", post_permissions, methods=["POST"]),
         Route("/api/tool-permissions", get_tool_permissions, methods=["GET"]),
         Route("/api/tool-permissions", put_tool_permissions, methods=["PUT"]),
+        Route("/api/internal-web/status", get_internal_web_status, methods=["GET"]),
+        Route("/api/internal-web-search/status", get_internal_web_search_status, methods=["GET"]),
         Route("/api/tools", list_tools, methods=["GET"]),
         Route("/api/tasks", get_task_queue, methods=["GET"]),
         Route("/api/tasks", create_task, methods=["POST"]),
@@ -3624,6 +3724,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/content-monitor/articles", get_content_articles, methods=["GET"]),
         Route("/api/content-monitor/config", get_content_config, methods=["GET"]),
         Route("/api/web-search/test", web_search_test, methods=["POST"]),
+        Route("/api/web-search/test-local", web_search_local_test, methods=["POST"]),
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
         Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
         Route("/api/doc-processor/process", doc_process_file, methods=["POST"]),

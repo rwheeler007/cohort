@@ -16,8 +16,20 @@
       "max_turns": 15
     },
     "researcher": {
-      "description": "Web search, reading, and codebase browsing",
+      "description": "Web search via API (paid) and codebase browsing",
       "allowed_tools": ["WebSearch", "WebFetch", "Read", "Glob", "Grep"],
+      "permission_mode": "acceptEdits",
+      "max_turns": 10
+    },
+    "research_local": {
+      "description": "Local web rendering via Playwright (free, no API cost)",
+      "allowed_tools": ["InternalWebFetch", "InternalWebSearch", "Read", "Glob", "Grep"],
+      "permission_mode": "acceptEdits",
+      "max_turns": 10
+    },
+    "research_hybrid": {
+      "description": "Both API and local web access",
+      "allowed_tools": ["WebSearch", "WebFetch", "InternalWebFetch", "InternalWebSearch", "Read", "Glob", "Grep"],
       "permission_mode": "acceptEdits",
       "max_turns": 10
     },
@@ -51,5 +63,33 @@
       "args": ["-m", "cohort.mcp.local_llm_server"]
     }
   },
-  "denied_tools": ["TodoWrite"]
+  "denied_tools": ["TodoWrite"],
+  "file_permissions": {
+    "defaults": {
+      "core_developers": [
+        { "path": "G:/**", "access": "write" }
+      ],
+      "quality_security": [
+        { "path": "G:/**", "access": "write" }
+      ],
+      "specialists": [
+        { "path": "G:/**", "access": "write" }
+      ],
+      "leadership": [
+        { "path": "G:/**", "access": "read" }
+      ],
+      "infrastructure": [
+        { "path": "G:/**", "access": "read" }
+      ],
+      "support": [
+        { "path": "G:/**", "access": "read" }
+      ],
+      "marketing_content": [
+        { "path": "G:/**", "access": "read" }
+      ],
+      "social_media": [],
+      "utility": []
+    },
+    "agent_overrides": {}
+  }
 }

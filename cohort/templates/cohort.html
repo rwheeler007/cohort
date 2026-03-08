@@ -508,6 +508,7 @@
                     <button class="perm-tab active" data-perm-tab="services">Service Keys</button>
                     <button class="perm-tab" data-perm-tab="agents">Agent Access</button>
                     <button class="perm-tab" data-perm-tab="tool-defaults">Tool Defaults</button>
+                    <button class="perm-tab" data-perm-tab="file-perms">File Permissions</button>
                 </div>
 
                 <!-- Tab: Service Keys -->
@@ -563,6 +564,18 @@
                         <div id="tool-defaults-denied">
                             <!-- Populated by JS: one checkbox per tool -->
                         </div>
+                    </div>
+                </div>
+
+                <!-- Tab: File Permissions -->
+                <div class="perm-panel" id="perm-panel-file-perms" style="display:none;">
+                    <p class="settings-section__desc">
+                        Control which filesystem paths each agent group can read or write.
+                        Paths use glob syntax: <code>G:/**</code> = all files on G drive.
+                        Individual agents can be overridden via the gear icon on their Team card.
+                    </p>
+                    <div id="file-perms-grid">
+                        <!-- Populated by JS: one card per agent group with path rule rows -->
                     </div>
                 </div>
 
@@ -625,6 +638,7 @@
                             <option value="aws">AWS Credentials</option>
                             <option value="twitter">Twitter/X API</option>
                             <option value="reddit">Reddit API</option>
+                            <option value="internal_web">Internal Web Accessor (Local)</option>
                             <option value="webhook">Custom Webhook</option>
                             <option value="custom">Custom Service</option>
                         </select>
@@ -633,19 +647,8 @@
                         <label for="service-custom-name">Service Name</label>
                         <input type="text" class="form-input" id="service-custom-name" placeholder="e.g. My CRM API">
                     </div>
-                    <div class="form-group">
-                        <label for="service-key-input">API Key / Token</label>
-                        <div class="settings-secret-field">
-                            <input type="password" class="form-input" id="service-key-input"
-                                   placeholder="Paste API key or token..." autocomplete="off">
-                            <button type="button" class="btn btn--icon settings-toggle-vis" id="toggle-service-key-vis">[*]</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="service-extra-input">Extra Config (optional)</label>
-                        <textarea class="form-input form-input--mono" id="service-extra-input" rows="3"
-                                  placeholder='{"endpoint": "...", "region": "us-east-1"}'></textarea>
-                    </div>
+                    <!-- Dynamic service fields rendered by JS -->
+                    <div id="service-dynamic-fields"></div>
                     <div class="form-actions">
                         <button type="button" class="btn btn--secondary" id="add-service-cancel">Cancel</button>
                         <button type="submit" class="btn btn--primary">Add Service</button>

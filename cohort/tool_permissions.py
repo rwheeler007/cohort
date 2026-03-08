@@ -36,6 +36,37 @@ class ResolvedPermissions:
     max_turns: int = 10
     mcp_servers: list[dict[str, Any]] = field(default_factory=list)
     profile_name: str = ""
+    file_permissions: list[dict[str, str]] = field(default_factory=list)
+
+
+def resolve_file_access(target_path: str, rules: list[dict[str, str]]) -> str | None:
+    """Check a target path against file permission rules.
+
+    Returns "read", "write", "none", or None (no rule matched = unrestricted).
+    Most-specific match wins (longest path pattern).
+    """
+    import fnmatch
+
+    if not rules:
+        return None
+
+    # Normalize target path separators
+    target = target_path.replace("\\", "/")
+
+    best_match: str | None = None
+    best_specificity = -1
+
+    for rule in rules:
+        pattern = rule.get("path", "").replace("\\", "/")
+        access = rule.get("access", "none")
+        if fnmatch.fnmatch(target, pattern):
+            # Specificity = length of the pattern without wildcards
+            specificity = len(pattern.replace("*", "").replace("?", ""))
+            if specificity > best_specificity:
+                best_specificity = specificity
+                best_match = access
+
+    return best_match
 
 
 def load_central_permissions(data_dir: Path | None = None) -> dict[str, Any]:
@@ -183,6 +214,21 @@ def resolve_permissions(
         else:
             logger.warning("[!] MCP server '%s' not found in central config", name)
 
+    # Step 7: Resolve file permissions
+    file_perms_config = central.get("file_permissions", {})
+    file_perms_defaults = file_perms_config.get("defaults", {})
+    file_perms_agent_overrides = file_perms_config.get("agent_overrides", {})
+    central_file_override = central_overrides.get("file_permissions_override")
+
+    if central_file_override is not None:
+        file_rules = list(central_file_override)
+    elif agent_id in file_perms_agent_overrides:
+        file_rules = list(file_perms_agent_overrides[agent_id])
+    elif agent_group_key and agent_group_key in file_perms_defaults:
+        file_rules = list(file_perms_defaults[agent_group_key])
+    else:
+        file_rules = []
+
     # Return None if no tools (backward compatible)
     if not allowed_tools:
         return None
@@ -193,4 +239,5 @@ def resolve_permissions(
         max_turns=max_turns,
         mcp_servers=resolved_mcp,
         profile_name=profile_name,
+        file_permissions=file_rules,
     )

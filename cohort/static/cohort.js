@@ -44,6 +44,9 @@ const state = {
 
     // Roundtable sessions
     sessions: [],
+
+    // Social media pending posts (for Pending Review panel)
+    pendingSocialPosts: [],
 };
 
 // =====================================================================
@@ -164,8 +167,10 @@ function initDom() {
         permGridHead: $('#perm-grid-head'),
         permGridBody: $('#perm-grid-body'),
         permPanelToolDefaults: $('#perm-panel-tool-defaults'),
+        permPanelFilePerms: $('#perm-panel-file-perms'),
         toolDefaultsGrid: $('#tool-defaults-grid'),
         toolDefaultsDenied: $('#tool-defaults-denied'),
+        filePermsGrid: $('#file-perms-grid'),
 
         // Tool Permissions modal (per-agent)
         toolPermsModal: $('#tool-perms-modal'),
@@ -186,9 +191,7 @@ function initDom() {
         serviceTypeSelect: $('#service-type-select'),
         serviceCustomNameGroup: $('#service-custom-name-group'),
         serviceCustomName: $('#service-custom-name'),
-        serviceKeyInput: $('#service-key-input'),
-        serviceExtraInput: $('#service-extra-input'),
-        toggleServiceKeyVis: $('#toggle-service-key-vis'),
+        serviceDynamicFields: $('#service-dynamic-fields'),
 
         // Members sidebar
         addMemberBtn: $('#add-member-btn'),
@@ -238,7 +241,7 @@ const panelConfig = {
     },
     output: {
         title: 'Pending Review',
-        subtitle: 'Task outputs awaiting approval',
+        subtitle: 'Task outputs and social posts awaiting approval',
         panel: () => dom.panelOutput,
         filter: true,
     },
@@ -303,9 +306,12 @@ function updatePanelCount() {
         case 'tasks':
             count = `${state.tasks.length} tasks`;
             break;
-        case 'output':
-            count = `${state.outputs.length} outputs`;
+        case 'output': {
+            const socialCount = (state.pendingSocialPosts || []).length;
+            const totalItems = state.outputs.length + socialCount;
+            count = `${totalItems} items`;
             break;
+        }
     }
     dom.panelCount.textContent = count;
 }
@@ -1690,19 +1696,90 @@ async function renderWebSearchPanel(tool) {
     const tid = 'web_search';
     const isUp = status.status === 'up';
 
+    // Check local ddgs availability
+    let localAvailable = false;
+    try {
+        const localResp = await fetch('/api/internal-web-search/status');
+        const localData = await localResp.json();
+        localAvailable = localData.available;
+    } catch {}
+
+    // Load saved toggle states (default: both on)
+    let apiEnabled = true, localEnabled = true;
+    try {
+        const cfgResp = await fetch(`/api/tool-config/${tid}/values`);
+        if (cfgResp.ok) {
+            const cfg = await cfgResp.json();
+            if (cfg.api_search_enabled === 'false') apiEnabled = false;
+            if (cfg.local_search_enabled === 'false') localEnabled = false;
+        }
+    } catch {}
+
+    const localDot = localAvailable
+        ? '<span class="tool-status-dot tool-status-dot--up"></span> Available'
+        : '<span class="tool-status-dot tool-status-dot--down"></span> Not installed';
+
+    // Combined header status: green if any enabled provider is available
+    const anyActive = (isUp && apiEnabled) || (localAvailable && localEnabled);
+    const headerStatus = anyActive
+        ? '<span class="tool-status-dot tool-status-dot--up"></span> Online'
+        : statusDotHtml('down');
+
+    const apiCardOpacity = apiEnabled ? '1' : '0.45';
+    const localCardOpacity = localEnabled ? '1' : '0.45';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, statusDotHtml(status.status))}
-        ${isUp ? configSectionFull('Try It -- Web Search', `
+        ${toolHeader(tool, headerStatus)}
+        ${configSectionFull('Providers', `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+                <div class="tool-config-card" style="padding:var(--space-3);opacity:${apiCardOpacity};transition:opacity .2s" id="ws-provider-api">
+                    <div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)">
+                        <strong>API Search</strong>
+                        <span style="margin-left:auto;font-size:var(--font-size-xs)">${statusDotHtml(status.status)}</span>
+                    </div>
+                    <p style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin:0 0 var(--space-2) 0">SerpAPI / Serper / Google -- requires API key, billed per request</p>
+                    <label class="toggle-label" style="margin-top:auto">
+                        <input type="checkbox" class="toggle-input" id="ws-toggle-api" ${apiEnabled ? 'checked' : ''} onchange="toggleWebSearchProvider('api_search_enabled', this.checked)">
+                        <span class="toggle-switch"></span>
+                        <span style="font-size:var(--font-size-xs)">${apiEnabled ? 'Enabled' : 'Disabled'}</span>
+                    </label>
+                </div>
+                <div class="tool-config-card" style="padding:var(--space-3);opacity:${localCardOpacity};transition:opacity .2s" id="ws-provider-local">
+                    <div style="display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)">
+                        <strong>Local Search</strong>
+                        <span style="margin-left:auto;font-size:var(--font-size-xs)">${localDot}</span>
+                    </div>
+                    <p style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin:0 0 var(--space-2) 0">DuckDuckGo via ddgs -- free, no API key, runs locally${!localAvailable ? '<br><code style="font-size:var(--font-size-xs)">pip install ddgs</code>' : ''}</p>
+                    <label class="toggle-label" style="margin-top:auto">
+                        <input type="checkbox" class="toggle-input" id="ws-toggle-local" ${localEnabled ? 'checked' : ''} onchange="toggleWebSearchProvider('local_search_enabled', this.checked)">
+                        <span class="toggle-switch"></span>
+                        <span style="font-size:var(--font-size-xs)">${localEnabled ? 'Enabled' : 'Disabled'}</span>
+                    </label>
+                </div>
+            </div>
+        `)}
+        ${isUp && apiEnabled ? configSectionFull('Try It -- API Search', `
             <div class="ws-try-it">
                 <div class="ws-try-it__search">
                     <input type="text" id="web_search-try-input" class="ws-try-it__input"
-                        placeholder="Search the web..." onkeydown="if(event.key==='Enter')tryWebSearch()">
+                        placeholder="Search via API provider..." onkeydown="if(event.key==='Enter')tryWebSearch()">
                     <button class="btn btn--primary btn--sm" onclick="tryWebSearch()">Search</button>
                 </div>
                 <div id="web_search-try-results" class="ws-try-it__results"></div>
             </div>
-        `) : configSectionFull('Web Search', `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">Web search service is offline. Check that it is running on port 8005.</div>`)}
-        ${configSection('Configuration',
+        `) : ''}
+        ${localAvailable && localEnabled ? configSectionFull('Try It -- Local Search (free)', `
+            <div class="ws-try-it">
+                <div class="ws-try-it__search">
+                    <input type="text" id="web_search_local-try-input" class="ws-try-it__input"
+                        placeholder="Search via DuckDuckGo (free)..." onkeydown="if(event.key==='Enter')tryWebSearchLocal()">
+                    <button class="btn btn--primary btn--sm" style="background:var(--color-success)" onclick="tryWebSearchLocal()">Search</button>
+                </div>
+                <div id="web_search_local-try-results" class="ws-try-it__results"></div>
+            </div>
+        `) : ''}
+        ${!anyActive ? configSectionFull('Web Search', `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">No search providers active. Enable a provider above, or install ddgs: <code>pip install ddgs</code></div>`) : ''}
+        ${configSection('API Configuration',
             configAdminSelect('Provider', 'SerpAPI', ['SerpAPI', 'Serper', 'Google'], tid, 'provider')
         )}
         ${configSection('Rate Limits',
@@ -1714,6 +1791,38 @@ async function renderWebSearchPanel(tool) {
     showToolHelpChat(tid);
 }
 
+async function toggleWebSearchProvider(key, enabled) {
+    const tid = 'web_search';
+    // Update label text next to toggle
+    const toggle = key === 'api_search_enabled'
+        ? document.getElementById('ws-toggle-api')
+        : document.getElementById('ws-toggle-local');
+    if (toggle) {
+        const label = toggle.closest('.toggle-label').querySelector('span:last-child');
+        if (label) label.textContent = enabled ? 'Enabled' : 'Disabled';
+    }
+    // Update card opacity
+    const card = key === 'api_search_enabled'
+        ? document.getElementById('ws-provider-api')
+        : document.getElementById('ws-provider-local');
+    if (card) card.style.opacity = enabled ? '1' : '0.45';
+
+    // Persist toggle state
+    try {
+        await fetch(`/api/tool-config/${tid}/values`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, value: String(enabled) }),
+        });
+    } catch (e) {
+        console.warn('Failed to save provider toggle:', e);
+    }
+
+    // Re-render panel to update Try It sections and header status
+    const tool = { id: tid, name: 'Web Search', description: 'Search the internet using API providers (SerpAPI, Serper) or locally via DuckDuckGo (free)' };
+    renderWebSearchPanel(tool);
+}
+
 async function tryWebSearch() {
     const input = document.getElementById('web_search-try-input');
     const results = document.getElementById('web_search-try-results');
@@ -1721,6 +1830,37 @@ async function tryWebSearch() {
     results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching...</p>';
     try {
         const resp = await fetch('/api/web-search/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: input.value.trim(), limit: 5 }),
+        });
+        const data = await resp.json();
+        if (data.error) {
+            results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">${escapeHtml(data.error)}</p>`;
+        } else if ((data.results || []).length === 0) {
+            results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
+        } else {
+            results.innerHTML = data.results.map(r => {
+                const domain = r.url ? new URL(r.url).hostname.replace('www.', '') : '';
+                return `<div class="ws-result-card">
+                    <a class="ws-result-card__title" href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a>
+                    <span class="ws-result-card__url">${escapeHtml(domain)}</span>
+                    <p class="ws-result-card__snippet">${escapeHtml(r.snippet || '')}</p>
+                </div>`;
+            }).join('');
+        }
+    } catch (err) {
+        results.innerHTML = `<p style="color:var(--color-error);font-size:var(--font-size-sm)">Search failed: ${escapeHtml(err.message)}</p>`;
+    }
+}
+
+async function tryWebSearchLocal() {
+    const input = document.getElementById('web_search_local-try-input');
+    const results = document.getElementById('web_search_local-try-results');
+    if (!input || !input.value.trim()) return;
+    results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Searching locally...</p>';
+    try {
+        const resp = await fetch('/api/web-search/test-local', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: input.value.trim(), limit: 5 }),
@@ -2153,9 +2293,10 @@ async function _approveSocialPost(postId) {
         const data = await resp.json();
         if (data.ok) {
             showToast('Post approved', 'success');
-            // Re-render the panel
+            // Re-render both the tool panel and the pending review panel
             const tool = (state.tools || []).find(t => t.id === 'content_monitor_scheduler');
             if (tool) renderContentMonitorPanel(tool);
+            fetchPendingSocialPosts();
         } else {
             showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
         }
@@ -2178,12 +2319,70 @@ async function _rejectSocialPost(postId) {
             showToast('Post rejected', 'success');
             const tool = (state.tools || []).find(t => t.id === 'content_monitor_scheduler');
             if (tool) renderContentMonitorPanel(tool);
+            fetchPendingSocialPosts();
         } else {
             showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
         }
     } catch (err) {
         showToast('Failed: ' + err.message, 'error');
     }
+}
+
+/* ── Pending Social Posts (for Pending Review panel) ── */
+
+async function fetchPendingSocialPosts() {
+    try {
+        const resp = await fetch('/api/comms/pending-approvals');
+        const data = await resp.json();
+        state.pendingSocialPosts = (data.pending || []).filter(p => p.status === 'pending');
+    } catch {
+        state.pendingSocialPosts = [];
+    }
+    // Update badge even if we're not on the output panel
+    const taskReviewCount = state.tasks.filter(t => t.status === 'complete' && !t.review).length;
+    const totalPending = taskReviewCount + state.pendingSocialPosts.length;
+    if (dom.outputBadge) dom.outputBadge.textContent = totalPending;
+    if (state.currentPanel === 'output') renderOutputs();
+}
+
+function renderSocialPostOutputCard(post) {
+    const postText = post.text || '';
+    const platform = post.platform || 'unknown';
+    const meta = post.metadata || {};
+    const score = meta.relevance_score != null ? meta.relevance_score : null;
+    const painPoints = meta.pain_points || [];
+
+    let tagsHtml = '';
+    if (score != null) {
+        let scoreCls = 'score-low';
+        if (score >= 7) scoreCls = 'score-high';
+        else if (score >= 4) scoreCls = 'score-med';
+        tagsHtml += `<span class="social-post-card__tag social-post-card__tag--score social-post-card__tag--${scoreCls}">Score: ${score}/10</span>`;
+    }
+    if (meta.source) tagsHtml += `<span class="social-post-card__tag social-post-card__tag--source">${escapeHtml(meta.source)}</span>`;
+    painPoints.slice(0, 3).forEach(pp => {
+        tagsHtml += `<span class="social-post-card__tag social-post-card__tag--pain-point">${escapeHtml(pp.replace(/_/g, ' '))}</span>`;
+    });
+
+    return `
+    <div class="output-card output-card--social" data-post-id="${escapeHtml(post.post_id)}">
+        <div class="output-card__header">
+            <h4 class="output-card__title">
+                <span class="social-post-card__platform social-post-card__platform--${platform}">${escapeHtml(platform)}</span>
+                Social Media Post
+            </h4>
+            <span class="output-card__agent">content_monitor</span>
+        </div>
+        <div class="output-card__body">
+            <div class="output-card__diff">${escapeHtml(postText)}</div>
+            ${tagsHtml ? `<div class="social-post-card__tags" style="margin-top:var(--space-2)">${tagsHtml}</div>` : ''}
+        </div>
+        <div class="output-card__footer">
+            <button class="btn btn--primary btn--small" onclick="_approveSocialPost('${escapeHtml(post.post_id)}')">Approve</button>
+            <button class="btn btn--danger btn--small" onclick="_rejectSocialPost('${escapeHtml(post.post_id)}')">Reject</button>
+            ${meta.source_article ? `<a class="btn--view-source" href="${escapeHtml(meta.source_article)}" target="_blank" style="margin-left:auto">View Source</a>` : ''}
+        </div>
+    </div>`;
 }
 
 /* ── Document Processing ── */
@@ -4562,15 +4761,25 @@ function renderOutputs() {
         filtered = outputs.filter((t) => t.review && t.review.verdict === 'rejected');
     }
 
-    if (filtered.length === 0) {
+    // Include pending social media posts in the review panel
+    const socialPosts = state.pendingSocialPosts || [];
+    const showSocial = state.filter === 'all' || state.filter === 'needs_review';
+
+    const taskCardsHtml = filtered.map(renderOutputCard).join('');
+    const socialCardsHtml = showSocial ? socialPosts.map(renderSocialPostOutputCard).join('') : '';
+    const combinedHtml = socialCardsHtml + taskCardsHtml;
+
+    if (!combinedHtml) {
         dom.outputList.innerHTML = '';
-        const emptyEl = createEmpty('output-empty', 'No outputs to review', 'Completed task outputs will appear here');
+        const emptyEl = createEmpty('output-empty', 'No outputs to review', 'Completed task outputs and pending social posts will appear here');
         dom.outputList.appendChild(emptyEl);
-        return;
+    } else {
+        dom.outputList.innerHTML = combinedHtml;
     }
 
-    dom.outputList.innerHTML = filtered.map(renderOutputCard).join('');
-    dom.outputBadge.textContent = outputs.filter((t) => !t.review).length;
+    const taskReviewCount = outputs.filter((t) => !t.review).length;
+    const totalPending = taskReviewCount + socialPosts.length;
+    dom.outputBadge.textContent = totalPending;
     updatePanelCount();
 }
 
@@ -4605,6 +4814,7 @@ function connectSocket() {
         sock.emit('get_archived_channels', {});
         fetchTools();
         fetchSessions();
+        fetchPendingSocialPosts();
         // Load settings (admin mode + user display name)
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
@@ -5254,6 +5464,7 @@ const SERVICE_TYPES = {
     rss:        { name: 'RSS Feed Reader',   color: '#F99830', icon: 'RS' },
     email_smtp: { name: 'Email (SMTP)',      color: '#4CAF50', icon: 'SM' },
     email_imap: { name: 'Email (IMAP)',      color: '#2196F3', icon: 'IM' },
+    resend:     { name: 'Resend Email API', color: '#000000', icon: 'RE' },
     github:     { name: 'GitHub API',        color: '#333',    icon: 'GH' },
     slack:      { name: 'Slack Webhook',     color: '#4A154B', icon: 'SL' },
     discord:    { name: 'Discord Webhook',   color: '#5865F2', icon: 'DC' },
@@ -5263,8 +5474,63 @@ const SERVICE_TYPES = {
     aws:        { name: 'AWS Credentials',   color: '#FF9900', icon: 'AW' },
     twitter:    { name: 'Twitter/X API',     color: '#1DA1F2', icon: 'TW' },
     reddit:     { name: 'Reddit API',        color: '#FF4500', icon: 'RD' },
+    internal_web: { name: 'Internal Web Accessor', color: '#00BCD4', icon: 'IW', local: true },
     webhook:    { name: 'Custom Webhook',    color: '#9C27B0', icon: 'WH' },
     custom:     { name: 'Custom Service',    color: '#607D8B', icon: 'CS' },
+};
+
+// Per-service-type field schemas.
+// Fields with key === 'key' map to the main credential; others go into extra JSON.
+const SERVICE_SCHEMAS = {
+    anthropic:    [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-ant-...' }],
+    youtube:      [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...' }],
+    github:       [{ key: 'key', label: 'Token', type: 'password', placeholder: 'ghp_...' }],
+    openai:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-...' }],
+    cloudflare:   [{ key: 'key', label: 'API Token', type: 'password', placeholder: '' }],
+    resend:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 're_...' }],
+    slack:        [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://hooks.slack.com/...' }],
+    discord:      [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://discord.com/api/webhooks/...' }],
+    email_smtp:   [
+        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password' },
+        { key: 'SMTP_HOST', label: 'SMTP Host', type: 'text', placeholder: 'smtp.gmail.com' },
+        { key: 'SMTP_PORT', label: 'SMTP Port', type: 'text', placeholder: '587' },
+        { key: 'SMTP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com' },
+    ],
+    email_imap:   [
+        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password' },
+        { key: 'IMAP_HOST', label: 'IMAP Host', type: 'text', placeholder: 'imap.gmail.com' },
+        { key: 'IMAP_PORT', label: 'IMAP Port', type: 'text', placeholder: '993' },
+        { key: 'IMAP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com' },
+    ],
+    aws:          [
+        { key: 'key', label: 'Access Key ID', type: 'password', placeholder: 'AKIA...' },
+        { key: 'AWS_SECRET_ACCESS_KEY', label: 'Secret Access Key', type: 'password', placeholder: '' },
+        { key: 'AWS_DEFAULT_REGION', label: 'Default Region', type: 'text', placeholder: 'us-east-1' },
+    ],
+    google:       [
+        { key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...' },
+        { key: 'GOOGLE_APPLICATION_CREDENTIALS', label: 'Service Account JSON Path', type: 'text', placeholder: '/path/to/service-account.json' },
+    ],
+    linkedin:     [
+        { key: 'key', label: 'Client ID', type: 'password', placeholder: '' },
+        { key: 'LINKEDIN_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '' },
+    ],
+    twitter:      [
+        { key: 'key', label: 'API Key', type: 'password', placeholder: '' },
+        { key: 'TWITTER_API_SECRET', label: 'API Secret', type: 'password', placeholder: '' },
+        { key: 'TWITTER_BEARER_TOKEN', label: 'Bearer Token', type: 'password', placeholder: '' },
+    ],
+    reddit:       [
+        { key: 'key', label: 'Client ID', type: 'password', placeholder: '' },
+        { key: 'REDDIT_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '' },
+    ],
+    webhook:      [
+        { key: 'key', label: 'API Key', type: 'password', placeholder: '' },
+        { key: 'WEBHOOK_URL', label: 'Webhook URL', type: 'text', placeholder: 'https://...' },
+    ],
+    custom:       [
+        { key: 'key', label: 'API Key / Token', type: 'password', placeholder: '' },
+    ],
 };
 
 // Default services to pre-populate when no services exist yet.
@@ -5317,6 +5583,7 @@ const ENV_KEY_MAP = [
     { pattern: 'email_smtp',             type: 'email_smtp', name: 'Email (SMTP)' },
     { pattern: 'imap_',                  type: 'email_imap', name: 'Email (IMAP)' },
     { pattern: 'email_imap',             type: 'email_imap', name: 'Email (IMAP)' },
+    { pattern: 'resend_api_key',        type: 'resend',     name: 'Resend Email API' },
     { pattern: 'rss_',                   type: 'rss',        name: 'RSS Feed Reader' },
 ];
 
@@ -5393,6 +5660,11 @@ function savePermissions() {
     if (dom.toolDefaultsGrid && dom.toolDefaultsGrid.innerHTML) {
         saveToolDefaults();
     }
+
+    // Also save file permissions if that tab has been rendered
+    if (dom.filePermsGrid && dom.filePermsGrid.innerHTML) {
+        saveFilePerms();
+    }
 }
 
 function switchPermTab(tabName) {
@@ -5402,7 +5674,9 @@ function switchPermTab(tabName) {
     if (dom.permPanelServices) dom.permPanelServices.style.display = tabName === 'services' ? '' : 'none';
     if (dom.permPanelAgents) dom.permPanelAgents.style.display = tabName === 'agents' ? '' : 'none';
     if (dom.permPanelToolDefaults) dom.permPanelToolDefaults.style.display = tabName === 'tool-defaults' ? '' : 'none';
+    if (dom.permPanelFilePerms) dom.permPanelFilePerms.style.display = tabName === 'file-perms' ? '' : 'none';
     if (tabName === 'tool-defaults') renderToolDefaults();
+    if (tabName === 'file-perms') renderFilePerms();
 }
 
 function renderServiceKeys() {
@@ -5416,19 +5690,70 @@ function renderServiceKeys() {
     dom.serviceKeysList.innerHTML = permState.services.map((svc, idx) => {
         const meta = SERVICE_TYPES[svc.type] || SERVICE_TYPES.custom;
         const displayName = svc.name || meta.name;
-        const statusClass = svc.has_key ? 'active' : 'missing';
-        const statusText = svc.has_key ? 'Configured' : 'No key';
+        const isLocal = meta.local || false;
+
+        let statusClass, statusText, keyDisplay;
+        if (isLocal) {
+            // Local services don't need API keys -- show availability status
+            const checkId = `local-status-${idx}`;
+            statusClass = 'checking';
+            statusText = 'Checking...';
+            keyDisplay = '(local service -- no key needed)';
+            // Async status check for local services
+            if (svc.type === 'internal_web') {
+                fetch('/api/internal-web/status')
+                    .then(r => r.json())
+                    .then(data => {
+                        const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
+                        const keyEl = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__key`);
+                        if (el) {
+                            if (data.available) {
+                                el.className = 'service-key-card__status service-key-card__status--active';
+                                el.textContent = 'Available';
+                                svc.has_key = true;  // mark as "configured" for Agent Access grid
+                            } else {
+                                el.className = 'service-key-card__status service-key-card__status--missing';
+                                el.textContent = 'Unavailable';
+                                svc.has_key = false;
+                            }
+                        }
+                        if (keyEl) {
+                            const parts = [];
+                            parts.push(data.web_adapter ? 'WebAdapter: OK' : 'WebAdapter: missing');
+                            parts.push(data.playwright ? 'Playwright: OK' : 'Playwright: missing');
+                            keyEl.textContent = parts.join(' | ');
+                        }
+                        // Re-render Agent Access grid now that has_key is resolved
+                        renderPermGrid();
+                    })
+                    .catch(() => {
+                        const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
+                        if (el) {
+                            el.className = 'service-key-card__status service-key-card__status--missing';
+                            el.textContent = 'Error';
+                        }
+                    });
+            }
+        } else {
+            statusClass = svc.has_key ? 'active' : 'missing';
+            statusText = svc.has_key ? 'Configured' : 'No key';
+            keyDisplay = svc.key_masked || '(not set)';
+        }
+
+        const editBtn = isLocal
+            ? ''
+            : `<button class="btn btn--small btn--secondary" onclick="editServiceKey(${idx})" title="Edit key">Edit</button>`;
 
         return `
             <div class="service-key-card" data-service-idx="${idx}">
                 <div class="service-key-card__icon" style="background-color: ${meta.color}">${meta.icon}</div>
                 <div class="service-key-card__info">
                     <div class="service-key-card__name">${escapeHtml(displayName)}</div>
-                    <div class="service-key-card__key">${escapeHtml(svc.key_masked || '(not set)')}</div>
+                    <div class="service-key-card__key">${escapeHtml(keyDisplay)}</div>
                 </div>
                 <span class="service-key-card__status service-key-card__status--${statusClass}">${statusText}</span>
                 <div class="service-key-card__actions">
-                    <button class="btn btn--small btn--secondary" onclick="editServiceKey(${idx})" title="Edit key">Edit</button>
+                    ${editBtn}
                     <button class="btn btn--small btn--danger" onclick="removeServiceKey(${idx})" title="Remove">&times;</button>
                 </div>
             </div>`;
@@ -5618,12 +5943,96 @@ function initEnvDropZone() {
     panel.addEventListener('drop', handleEnvDrop);
 }
 
+function renderServiceFields(serviceType, existingValues) {
+    // Render dynamic form fields based on SERVICE_SCHEMAS for the given type.
+    // existingValues: { key: '...', extra_field: '...' } for pre-populating on edit.
+    const container = dom.serviceDynamicFields;
+    if (\!container) return;
+    container.innerHTML = '';
+
+    const meta = SERVICE_TYPES[serviceType] || SERVICE_TYPES.custom;
+    const isLocal = meta.local || false;
+    if (isLocal) return; // No fields for local services
+
+    const schema = SERVICE_SCHEMAS[serviceType] || SERVICE_SCHEMAS.custom;
+    const values = existingValues || {};
+
+    schema.forEach((fieldDef) => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const label = document.createElement('label');
+        label.textContent = fieldDef.label;
+        label.setAttribute('for', 'svc-field-' + fieldDef.key);
+        group.appendChild(label);
+
+        if (fieldDef.type === 'password') {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'settings-secret-field';
+
+            const input = document.createElement('input');
+            input.type = 'password';
+            input.className = 'form-input';
+            input.id = 'svc-field-' + fieldDef.key;
+            input.dataset.fieldKey = fieldDef.key;
+            input.placeholder = fieldDef.placeholder || '';
+            input.autocomplete = 'off';
+            if (values[fieldDef.key] \!== undefined) input.value = values[fieldDef.key];
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'btn btn--icon settings-toggle-vis';
+            toggleBtn.textContent = '[*]';
+            toggleBtn.addEventListener('click', () => {
+                input.type = input.type === 'password' ? 'text' : 'password';
+            });
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(toggleBtn);
+            group.appendChild(wrapper);
+        } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-input';
+            input.id = 'svc-field-' + fieldDef.key;
+            input.dataset.fieldKey = fieldDef.key;
+            input.placeholder = fieldDef.placeholder || '';
+            if (values[fieldDef.key] \!== undefined) input.value = values[fieldDef.key];
+            group.appendChild(input);
+        }
+
+        container.appendChild(group);
+    });
+}
+
+function collectServiceFields() {
+    // Collect values from dynamically rendered fields.
+    // Returns { key: mainKeyValue, extra: JSON string of extra fields }.
+    const container = dom.serviceDynamicFields;
+    if (\!container) return { key: '', extra: '' };
+
+    let mainKey = '';
+    const extraObj = {};
+
+    container.querySelectorAll('[data-field-key]').forEach((input) => {
+        const fieldKey = input.dataset.fieldKey;
+        const val = input.value.trim();
+        if (fieldKey === 'key') {
+            mainKey = val;
+        } else if (val) {
+            extraObj[fieldKey] = val;
+        }
+    });
+
+    const extra = Object.keys(extraObj).length > 0 ? JSON.stringify(extraObj) : '';
+    return { key: mainKey, extra };
+}
+
 function openAddService() {
     if (dom.serviceTypeSelect) dom.serviceTypeSelect.value = 'anthropic';
     if (dom.serviceCustomNameGroup) dom.serviceCustomNameGroup.style.display = 'none';
     if (dom.serviceCustomName) dom.serviceCustomName.value = '';
-    if (dom.serviceKeyInput) { dom.serviceKeyInput.value = ''; dom.serviceKeyInput.type = 'password'; }
-    if (dom.serviceExtraInput) dom.serviceExtraInput.value = '';
+    renderServiceFields('anthropic', {});
     if (dom.addServiceModal) dom.addServiceModal.hidden = false;
 
     // Reset editing state
@@ -5640,8 +6049,9 @@ function submitAddService(e) {
     const meta = SERVICE_TYPES[type] || SERVICE_TYPES.custom;
     const customName = (dom.serviceCustomName && dom.serviceCustomName.value.trim()) || '';
     const name = (type === 'custom' || type === 'webhook') && customName ? customName : meta.name;
-    const key = dom.serviceKeyInput ? dom.serviceKeyInput.value.trim() : '';
-    const extra = dom.serviceExtraInput ? dom.serviceExtraInput.value.trim() : '';
+    const collected = collectServiceFields();
+    const key = collected.key;
+    const extra = collected.extra;
 
     const editIdx = dom.addServiceForm.dataset.editIdx;
 
@@ -5662,13 +6072,15 @@ function submitAddService(e) {
     } else {
         // New service
         const id = type + '_' + Date.now();
+        const meta = SERVICE_TYPES[type] || SERVICE_TYPES.custom;
+        const isLocal = meta.local || false;
         permState.services.push({
             id,
             type,
             name,
-            new_key: key,
-            has_key: !!key,
-            key_masked: key ? (key.length > 8 ? '...' + key.slice(-4) : '...(set)') : '',
+            new_key: isLocal ? '' : key,
+            has_key: isLocal ? true : !!key,
+            key_masked: isLocal ? '(local)' : (key ? (key.length > 8 ? '...' + key.slice(-4) : '...(set)') : ''),
             extra,
         });
     }
@@ -5687,8 +6099,23 @@ function editServiceKey(idx) {
         dom.serviceCustomNameGroup.style.display = (svc.type === 'custom' || svc.type === 'webhook') ? '' : 'none';
     }
     if (dom.serviceCustomName) dom.serviceCustomName.value = svc.name || '';
-    if (dom.serviceKeyInput) { dom.serviceKeyInput.value = ''; dom.serviceKeyInput.type = 'password'; dom.serviceKeyInput.placeholder = svc.has_key ? '(leave blank to keep current)' : 'Paste API key...'; }
-    if (dom.serviceExtraInput) dom.serviceExtraInput.value = svc.extra || '';
+
+    // Parse extra JSON to pre-populate multi-field values
+    const existingValues = {};
+    if (svc.extra) {
+        try {
+            const parsed = JSON.parse(svc.extra);
+            Object.assign(existingValues, parsed);
+        } catch (_) { /* non-JSON extra, ignore */ }
+    }
+    // Leave main key blank on edit (user must re-enter or leave blank to keep)
+    renderServiceFields(svc.type, existingValues);
+    // Update main key placeholder for edit mode
+    const mainKeyInput = dom.serviceDynamicFields ? dom.serviceDynamicFields.querySelector('[data-field-key="key"]') : null;
+    if (mainKeyInput) {
+        mainKeyInput.placeholder = svc.has_key ? '(leave blank to keep current)' : 'Paste API key...';
+    }
+
     dom.addServiceForm.dataset.editIdx = idx;
     if (dom.addServiceModal) dom.addServiceModal.hidden = false;
 }
@@ -5709,12 +6136,7 @@ function removeServiceKey(idx) {
 }
 
 function toggleServiceKeyVisibility() {
-    if (!dom.serviceKeyInput) return;
-    const isPassword = dom.serviceKeyInput.type === 'password';
-    dom.serviceKeyInput.type = isPassword ? 'text' : 'password';
-    if (dom.toggleServiceKeyVis) {
-        dom.toggleServiceKeyVis.textContent = isPassword ? '[.]' : '[*]';
-    }
+    // Toggle is now handled per-field in renderServiceFields
 }
 
 // =====================================================================
@@ -5802,6 +6224,71 @@ function renderToolPermsModal(agentId, data) {
             ? 'This agent has a custom tool override. Click "Reset to Profile" to revert to profile defaults.'
             : '';
     }
+
+    // File permissions section in per-agent modal
+    const filePermsSection = document.getElementById('tool-perms-file-section');
+    if (filePermsSection) filePermsSection.remove();
+
+    if (dom.toolPermsGrid) {
+        const agentFilePerms = agent.file_permissions || [];
+        const hasFileOverride = (data.agent_overrides || {})[agentId] && (data.agent_overrides[agentId]).file_permissions_override;
+
+        const rulesHtml = agentFilePerms.map((rule, i) =>
+            `<div class="file-perms__rule" data-idx="${i}">
+                <input type="text" class="file-perms__path-input tool-perms-file-path" value="${escapeHtml(rule.path || '')}" placeholder="G:/**" spellcheck="false">
+                <select class="file-perms__access-select tool-perms-file-access">
+                    <option value="write"${rule.access === 'write' ? ' selected' : ''}>Write</option>
+                    <option value="read"${rule.access === 'read' ? ' selected' : ''}>Read</option>
+                    <option value="none"${rule.access === 'none' ? ' selected' : ''}>None</option>
+                </select>
+                <button class="btn btn--small btn--danger file-perms__remove" onclick="removeFilePermRule(this)">&times;</button>
+            </div>`
+        ).join('');
+
+        const sectionHtml = `<div id="tool-perms-file-section" class="tool-perms__file-section">
+            <h4 style="margin: var(--space-3) 0 var(--space-1) 0; font-size: var(--font-size-sm);">File Permissions</h4>
+            <p class="file-perms__empty" style="margin-bottom: var(--space-1);">${hasFileOverride ? 'Custom override' : 'Inherited from group'}</p>
+            <div class="file-perms__rules" id="tool-perms-file-rules">
+                ${rulesHtml || '<div class="file-perms__empty">No path rules (unrestricted)</div>'}
+            </div>
+            <button class="btn btn--small btn--secondary file-perms__add-btn" onclick="addAgentFilePermRule()">+ Add Rule</button>
+        </div>`;
+
+        dom.toolPermsGrid.insertAdjacentHTML('afterend', sectionHtml);
+    }
+}
+
+function addAgentFilePermRule() {
+    const rulesContainer = document.getElementById('tool-perms-file-rules');
+    if (!rulesContainer) return;
+
+    const empty = rulesContainer.querySelector('.file-perms__empty');
+    if (empty) empty.remove();
+
+    const idx = rulesContainer.querySelectorAll('.file-perms__rule').length;
+    const div = document.createElement('div');
+    div.innerHTML = `<div class="file-perms__rule" data-idx="${idx}">
+        <input type="text" class="file-perms__path-input tool-perms-file-path" value="" placeholder="G:/**" spellcheck="false">
+        <select class="file-perms__access-select tool-perms-file-access">
+            <option value="write">Write</option>
+            <option value="read" selected>Read</option>
+            <option value="none">None</option>
+        </select>
+        <button class="btn btn--small btn--danger file-perms__remove" onclick="removeFilePermRule(this)">&times;</button>
+    </div>`;
+    rulesContainer.appendChild(div.firstElementChild);
+}
+
+function collectAgentFilePerms() {
+    const rulesContainer = document.getElementById('tool-perms-file-rules');
+    if (!rulesContainer) return null;
+    const rules = [];
+    rulesContainer.querySelectorAll('.file-perms__rule').forEach(ruleEl => {
+        const path = (ruleEl.querySelector('.tool-perms-file-path') || {}).value || '';
+        const access = (ruleEl.querySelector('.tool-perms-file-access') || {}).value || 'read';
+        if (path.trim()) rules.push({ path: path.trim(), access });
+    });
+    return rules.length > 0 ? rules : null;
 }
 
 function saveToolPerms() {
@@ -5815,6 +6302,9 @@ function saveToolPerms() {
         if (cb.checked) checkedTools.push(cb.dataset.tool);
     });
 
+    // Collect file permission overrides
+    const filePermsOverride = collectAgentFilePerms();
+
     // Check if this matches the profile default (no override needed)
     const agent = (data.agents || []).find(a => a.agent_id === agentId);
     const profileName = agent ? agent.profile_name : '';
@@ -5824,10 +6314,24 @@ function saveToolPerms() {
     const isDefault = profileSet.size === checkedSet.size && [...profileSet].every(t => checkedSet.has(t));
 
     const overrides = Object.assign({}, data.agent_overrides || {});
-    if (isDefault) {
+    if (isDefault && !filePermsOverride) {
         delete overrides[agentId];
     } else {
-        overrides[agentId] = { allowed_tools_override: checkedTools };
+        overrides[agentId] = overrides[agentId] || {};
+        if (!isDefault) {
+            overrides[agentId].allowed_tools_override = checkedTools;
+        } else {
+            delete overrides[agentId].allowed_tools_override;
+        }
+        if (filePermsOverride) {
+            overrides[agentId].file_permissions_override = filePermsOverride;
+        } else {
+            delete overrides[agentId].file_permissions_override;
+        }
+        // Clean up empty override objects
+        if (!overrides[agentId].allowed_tools_override && !overrides[agentId].file_permissions_override) {
+            delete overrides[agentId];
+        }
     }
 
     fetch('/api/tool-permissions', {
@@ -5996,6 +6500,154 @@ function saveToolDefaults() {
 
 
 // =====================================================================
+// File Permissions (tab in Permissions modal)
+// =====================================================================
+
+let _filePermsData = null;  // cached API data for file perms tab
+
+function renderFilePerms() {
+    if (!dom.filePermsGrid) return;
+    fetch('/api/tool-permissions')
+        .then(r => r.json())
+        .then(data => {
+            _filePermsData = data;
+            renderFilePermsGrid(data);
+        })
+        .catch(err => {
+            dom.filePermsGrid.innerHTML = '<div class="file-perms__empty">Failed to load file permissions.</div>';
+        });
+}
+
+function renderFilePermsGrid(data) {
+    if (!dom.filePermsGrid) return;
+
+    const agents = data.agents || [];
+    const filePerms = data.file_permissions || {};
+    const defaults = filePerms.defaults || {};
+
+    // Build groups from agent store data (same pattern as renderToolDefaultsGrid)
+    const groupMap = {};
+    for (const agent of agents) {
+        const groupLabel = agent.group || 'Agents';
+        const groupKey = groupLabel.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        if (!groupMap[groupKey]) {
+            groupMap[groupKey] = { label: groupLabel, agents: [] };
+        }
+        groupMap[groupKey].agents.push(agent);
+    }
+
+    const groups = Object.entries(groupMap).sort((a, b) => a[1].label.localeCompare(b[1].label));
+
+    dom.filePermsGrid.innerHTML = groups.map(([groupKey, group]) => {
+        const rules = defaults[groupKey] || [];
+        const agentNames = group.agents.map(a => a.nickname || a.name).sort().join(', ');
+
+        const rulesHtml = rules.map((rule, idx) => filePermRuleHtml(groupKey, idx, rule)).join('');
+
+        return `<div class="file-perms__card" data-group="${escapeHtml(groupKey)}">
+            <div class="file-perms__card-header">
+                <span class="tool-defaults__type-label">${escapeHtml(group.label)}</span>
+                <span class="tool-defaults__agents-list">${escapeHtml(agentNames)}</span>
+            </div>
+            <div class="file-perms__rules">${rulesHtml || '<div class="file-perms__empty">No path rules (unrestricted)</div>'}</div>
+            <button class="btn btn--small btn--secondary file-perms__add-btn" onclick="addFilePermRule('${escapeHtml(groupKey)}')">+ Add Rule</button>
+        </div>`;
+    }).join('');
+}
+
+function filePermRuleHtml(groupKey, idx, rule) {
+    const path = rule ? rule.path || '' : '';
+    const access = rule ? rule.access || 'read' : 'read';
+    return `<div class="file-perms__rule" data-group="${escapeHtml(groupKey)}" data-idx="${idx}">
+        <input type="text" class="file-perms__path-input" value="${escapeHtml(path)}" placeholder="G:/**" spellcheck="false">
+        <select class="file-perms__access-select">
+            <option value="write"${access === 'write' ? ' selected' : ''}>Write</option>
+            <option value="read"${access === 'read' ? ' selected' : ''}>Read</option>
+            <option value="none"${access === 'none' ? ' selected' : ''}>None</option>
+        </select>
+        <button class="btn btn--small btn--danger file-perms__remove" onclick="removeFilePermRule(this)">&times;</button>
+    </div>`;
+}
+
+function addFilePermRule(groupKey) {
+    const card = dom.filePermsGrid.querySelector(`.file-perms__card[data-group="${groupKey}"]`);
+    if (!card) return;
+    const rulesContainer = card.querySelector('.file-perms__rules');
+    if (!rulesContainer) return;
+
+    // Remove "No path rules" placeholder if present
+    const empty = rulesContainer.querySelector('.file-perms__empty');
+    if (empty) empty.remove();
+
+    const idx = rulesContainer.querySelectorAll('.file-perms__rule').length;
+    const div = document.createElement('div');
+    div.innerHTML = filePermRuleHtml(groupKey, idx, null);
+    rulesContainer.appendChild(div.firstElementChild);
+}
+
+function removeFilePermRule(btn) {
+    const ruleEl = btn.closest('.file-perms__rule');
+    if (!ruleEl) return;
+    const rulesContainer = ruleEl.parentElement;
+    ruleEl.remove();
+
+    // Restore placeholder if no rules remain
+    if (rulesContainer && rulesContainer.querySelectorAll('.file-perms__rule').length === 0) {
+        rulesContainer.innerHTML = '<div class="file-perms__empty">No path rules (unrestricted)</div>';
+    }
+}
+
+function collectFilePerms() {
+    const defaults = {};
+    if (!dom.filePermsGrid) return defaults;
+
+    dom.filePermsGrid.querySelectorAll('.file-perms__card').forEach(card => {
+        const groupKey = card.dataset.group;
+        const rules = [];
+        card.querySelectorAll('.file-perms__rule').forEach(ruleEl => {
+            const pathInput = ruleEl.querySelector('.file-perms__path-input');
+            const accessSelect = ruleEl.querySelector('.file-perms__access-select');
+            const path = pathInput ? pathInput.value.trim() : '';
+            const access = accessSelect ? accessSelect.value : 'read';
+            if (path) {
+                rules.push({ path, access });
+            }
+        });
+        defaults[groupKey] = rules;
+    });
+    return defaults;
+}
+
+function saveFilePerms() {
+    const defaults = collectFilePerms();
+    // Preserve existing agent_overrides
+    const existingOverrides = (_filePermsData && _filePermsData.file_permissions)
+        ? _filePermsData.file_permissions.agent_overrides || {}
+        : {};
+
+    fetch('/api/tool-permissions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            file_permissions: {
+                defaults: defaults,
+                agent_overrides: existingOverrides,
+            },
+        }),
+    })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                showToast('File permissions saved', 'success');
+            } else {
+                showToast(result.error || 'Failed to save file permissions', 'error');
+            }
+        })
+        .catch(err => showToast('Save failed: ' + err.message, 'error'));
+}
+
+
+// =====================================================================
 // Event listeners
 // =====================================================================
 
@@ -6026,6 +6678,7 @@ function init() {
                 state.socket.emit('request_team_update', {});
                 state.socket.emit('get_channels', {});
                 fetchSessions();
+                fetchPendingSocialPosts();
                 if (state.currentChannel) {
                     state.socket.emit('join_channel', { channel_id: state.currentChannel });
                 }
@@ -6281,7 +6934,7 @@ function init() {
     if (dom.toolPermsReset) dom.toolPermsReset.addEventListener('click', resetToolPerms);
     if (dom.addServiceCancel) dom.addServiceCancel.addEventListener('click', closeAddService);
     if (dom.addServiceForm) dom.addServiceForm.addEventListener('submit', submitAddService);
-    if (dom.toggleServiceKeyVis) dom.toggleServiceKeyVis.addEventListener('click', toggleServiceKeyVisibility);
+    // Toggle visibility now handled per-field in renderServiceFields
 
     // Permissions tab switching
     if (dom.permTabs) {
@@ -6291,11 +6944,13 @@ function init() {
         });
     }
 
-    // Show/hide custom name field based on service type
+    // Show/hide custom name field and render dynamic fields based on service type
     if (dom.serviceTypeSelect) {
         dom.serviceTypeSelect.addEventListener('change', () => {
-            const isCustom = dom.serviceTypeSelect.value === 'custom' || dom.serviceTypeSelect.value === 'webhook';
+            const type = dom.serviceTypeSelect.value;
+            const isCustom = type === 'custom' || type === 'webhook';
             if (dom.serviceCustomNameGroup) dom.serviceCustomNameGroup.style.display = isCustom ? '' : 'none';
+            renderServiceFields(type, {});
         });
     }
 

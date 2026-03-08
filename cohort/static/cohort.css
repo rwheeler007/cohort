@@ -773,6 +773,79 @@ body {
 }
 
 /* =============================================================================
+   File Permissions (tab in Permissions modal)
+   ============================================================================= */
+
+.file-perms__card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.file-perms__card-header {
+    margin-bottom: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.file-perms__rules {
+    margin-bottom: var(--space-2);
+}
+
+.file-perms__rule {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.file-perms__path-input {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-mono);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.file-perms__path-input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.file-perms__access-select {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-width: 80px;
+}
+
+.file-perms__remove {
+    padding: 2px 8px;
+    line-height: 1;
+    font-size: var(--font-size-sm);
+}
+
+.file-perms__empty {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    padding: var(--space-1) 0;
+}
+
+.file-perms__add-btn {
+    margin-top: var(--space-1);
+}
+
+/* =============================================================================
    Task Cards (Work Queue)
    ============================================================================= */
 
@@ -2887,6 +2960,11 @@ textarea.form-input {
 .service-key-card__status--missing {
     background-color: rgba(237, 66, 69, 0.2);
     color: var(--color-error);
+}
+
+.service-key-card__status--checking {
+    background-color: rgba(114, 137, 218, 0.2);
+    color: var(--color-text-muted);
 }
 
 .service-key-card__actions {

@@ -3,7 +3,8 @@
     "email_provider": "Resend"
   },
   "web_search": {
-    "provider": "SerpAPI"
+    "provider": "SerpAPI",
+    "api_search_enabled": "false"
   },
   "youtube_service": {
     "rate_limit_per_min": "30"
