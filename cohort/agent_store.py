@@ -94,7 +94,7 @@ class AgentStore:
 
     # Cohort's curated agent roster — only these are synced from the Gateway.
     # Local agents (cohort_orchestrator, setup_guide) excluded — local takes priority.
-    # BOSS-only agents (ceo_agent, coding_orchestrator) excluded.
+    # Orchestration agents (ceo_agent, coding_orchestrator) excluded from sync.
     # Sales/biz agents held for future update.
     GATEWAY_AGENTS = frozenset({
         # Core Developers

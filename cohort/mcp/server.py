@@ -2075,29 +2075,14 @@ async def internal_web_fetch(params: InternalWebFetchInput) -> str:
 
     logger = logging.getLogger(__name__)
 
-    # --- Lazy-import WebAdapter from BOSS ---
+    # --- Lazy-import WebAdapter ---
     try:
         web_adapter = importlib.import_module("src.ingestion.web_adapter")
     except ImportError:
-        # Try absolute path fallback
-        import sys
-        boss_root = Path(__file__).resolve().parents[3]  # cohort -> G:/cohort -> G:/
-        adapter_candidates = [
-            boss_root / "BOSS",
-            Path("G:/BOSS"),
-        ]
         web_adapter = None
-        for candidate in adapter_candidates:
-            if (candidate / "src" / "ingestion" / "web_adapter.py").exists():
-                if str(candidate) not in sys.path:
-                    sys.path.insert(0, str(candidate))
-                try:
-                    from src.ingestion import web_adapter  # type: ignore[no-redef]
-                    break
-                except ImportError:
-                    continue
-        if web_adapter is None:
-            return "Error: WebAdapter not available. BOSS src/ingestion/web_adapter.py not found."
+
+    if web_adapter is None:
+        return "Error: WebAdapter not available. Install the web_adapter package or configure PYTHONPATH."
 
     # --- Validate URL ---
     if not web_adapter.validate_url(params.url):
@@ -2109,7 +2094,8 @@ async def internal_web_fetch(params: InternalWebFetchInput) -> str:
     source_id = f"web_{hostname}_{url_hash}"
 
     # --- Determine cache directory ---
-    cache_dir = Path("G:/BOSS/data/web_cache")
+    cohort_root = Path(__file__).resolve().parents[2]  # mcp/server.py -> cohort/ -> cohort project root
+    cache_dir = cohort_root / "data" / "services" / "web_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     # --- Render page ---

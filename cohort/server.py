@@ -563,6 +563,166 @@ def _broadcast_work_queue() -> None:
 
 
 # =====================================================================
+# Schedule endpoints
+# =====================================================================
+
+_task_store: Any = None  # TaskStore instance, set in create_app()
+_scheduler: Any = None  # TaskScheduler instance, set in create_app()
+
+
+async def get_schedules(request: Request) -> JSONResponse:
+    """GET /api/schedules -- list all task schedules."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+    enabled_only = request.query_params.get("enabled") == "true"
+    schedules = _task_store.list_schedules(enabled_only=enabled_only)
+    scheduler_status = _scheduler.status if _scheduler else {"running": False}
+    return JSONResponse({
+        "schedules": [s.to_dict() for s in schedules],
+        "scheduler": scheduler_status,
+    })
+
+
+async def create_schedule_endpoint(request: Request) -> JSONResponse:
+    """POST /api/schedules -- create a new task schedule."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    agent_id = body.get("agent_id")
+    description = body.get("description")
+    schedule_type = body.get("schedule_type")
+    schedule_expr = body.get("schedule_expr")
+    priority = body.get("priority", "medium")
+    preset = body.get("preset")
+
+    if not agent_id or not description:
+        return JSONResponse({"error": "Missing agent_id or description"}, status_code=400)
+
+    # Resolve preset
+    if preset:
+        try:
+            from cohort.cron import resolve_preset
+            schedule_type, schedule_expr = resolve_preset(preset)
+        except ValueError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    if not schedule_type or not schedule_expr:
+        return JSONResponse(
+            {"error": "Missing schedule_type/schedule_expr or preset"},
+            status_code=400,
+        )
+
+    try:
+        from cohort.cron import compute_next_run
+        from datetime import timezone
+        next_run = compute_next_run(
+            schedule_type, schedule_expr, datetime.now(timezone.utc),
+        )
+        schedule = _task_store.create_schedule(
+            agent_id=agent_id,
+            description=description,
+            schedule_type=schedule_type,
+            schedule_expr=schedule_expr,
+            priority=priority,
+            next_run_at=next_run,
+            created_by="user",
+            metadata=body.get("metadata", {}),
+        )
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+    return JSONResponse({"success": True, "schedule": schedule.to_dict()})
+
+
+async def get_schedule_detail(request: Request) -> JSONResponse:
+    """GET /api/schedules/{schedule_id} -- get a single schedule."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+    schedule_id = request.path_params.get("schedule_id", "")
+    schedule = _task_store.get_schedule(schedule_id)
+    if schedule is None:
+        return JSONResponse({"error": "Schedule not found"}, status_code=404)
+    # Include recent runs
+    runs = _task_store.list_tasks(schedule_id=schedule_id, limit=10)
+    return JSONResponse({
+        "schedule": schedule.to_dict(),
+        "recent_runs": runs,
+    })
+
+
+async def update_schedule_endpoint(request: Request) -> JSONResponse:
+    """PATCH /api/schedules/{schedule_id} -- update a schedule."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+    schedule_id = request.path_params.get("schedule_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    updates = {k: v for k, v in body.items() if k != "schedule_id"}
+    schedule = _task_store.update_schedule(schedule_id, **updates)
+    if schedule is None:
+        return JSONResponse({"error": "Schedule not found"}, status_code=404)
+    return JSONResponse({"success": True, "schedule": schedule.to_dict()})
+
+
+async def delete_schedule_endpoint(request: Request) -> JSONResponse:
+    """DELETE /api/schedules/{schedule_id} -- delete a schedule."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+    schedule_id = request.path_params.get("schedule_id", "")
+    success = _task_store.delete_schedule(schedule_id)
+    if not success:
+        return JSONResponse({"error": "Schedule not found"}, status_code=404)
+    return JSONResponse({"success": True})
+
+
+async def toggle_schedule_endpoint(request: Request) -> JSONResponse:
+    """POST /api/schedules/{schedule_id}/toggle -- toggle enabled/disabled."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+    schedule_id = request.path_params.get("schedule_id", "")
+    schedule = _task_store.toggle_schedule(schedule_id)
+    if schedule is None:
+        return JSONResponse({"error": "Schedule not found"}, status_code=404)
+    return JSONResponse({"success": True, "enabled": schedule.enabled})
+
+
+async def force_run_schedule_endpoint(request: Request) -> JSONResponse:
+    """POST /api/schedules/{schedule_id}/run -- manually trigger a schedule."""
+    if _scheduler is None:
+        return JSONResponse({"error": "Scheduler not initialised"}, status_code=500)
+    schedule_id = request.path_params.get("schedule_id", "")
+    result = await _scheduler.force_run(schedule_id)
+    if result is None:
+        return JSONResponse({"error": "Schedule not found"}, status_code=404)
+    return JSONResponse(result)
+
+
+async def get_scheduler_status(request: Request) -> JSONResponse:
+    """GET /api/scheduler/status -- get scheduler heartbeat info."""
+    if _scheduler is None:
+        return JSONResponse({"running": False})
+    return JSONResponse(_scheduler.status)
+
+
+async def get_schedule_presets(request: Request) -> JSONResponse:
+    """GET /api/schedules/presets -- list available schedule presets."""
+    from cohort.cron import PRESETS, preset_label
+    presets = [
+        {"id": name, "label": preset_label(name), "type": ptype, "expr": pexpr}
+        for name, (ptype, pexpr) in PRESETS.items()
+    ]
+    return JSONResponse({"presets": presets})
+
+
+# =====================================================================
 # Executive briefing
 # =====================================================================
 
@@ -1066,74 +1226,31 @@ async def condense_channel(request: Request) -> JSONResponse:
 
 
 # =====================================================================
-# Tools endpoint (reads from boss_config.yaml)
+# Tools endpoint (reads from cohort_tools.json)
 # =====================================================================
 
 async def list_tools(request: Request) -> JSONResponse:
-    """GET /api/tools -- return workflow tools from boss_config.yaml, filtered by cohort_tools.json."""
-    settings = _load_settings()
-    agents_root = settings.get("agents_root", "")
-    if not agents_root:
-        agents_root = os.environ.get("COHORT_AGENTS_ROOT", "")
-
-    if not agents_root:
-        return JSONResponse({"tools": []})
-
+    """GET /api/tools -- return workflow tools defined in cohort_tools.json."""
     tool_filter = _load_tool_filter()
     allowed_ids = tool_filter[0] if tool_filter else None
     display_names = tool_filter[1] if tool_filter else {}
     tools_cfg = _load_tools_config()
     native_descriptions = tools_cfg.get("descriptions", {})
 
-    config_path = Path(agents_root) / "config" / "boss_config.yaml" if agents_root else None
-
     tools: list[dict[str, Any]] = []
 
-    # Load from boss_config.yaml if available
-    if config_path and config_path.exists():
-        try:
-            import yaml
-
-            with open(config_path, encoding="utf-8") as f:
-                cfg = yaml.safe_load(f) or {}
-
-            raw_tools = cfg.get("boss", {}).get("tools", {})
-            for tool_id, info in raw_tools.items():
-                if allowed_ids is not None and tool_id not in allowed_ids:
-                    continue
-                name = display_names.get(tool_id) or tool_id.replace("_", " ").title()
-                tools.append({
-                    "id": tool_id,
-                    "name": name,
-                    "description": info.get("description", ""),
-                    "phases": info.get("phases", []),
-                    "features": info.get("features", []),
-                    "path": info.get("path", ""),
-                    "implemented": bool(info.get("path")),
-                })
-        except Exception as exc:
-            logger.warning("Failed to load tools from boss_config.yaml: %s", exc)
-
-    # Fill in any tools from cohort_tools.json not already loaded
     if allowed_ids is not None:
-        existing_ids = {t["id"] for t in tools}
         for tid in allowed_ids:
-            if tid not in existing_ids:
-                name = display_names.get(tid) or tid.replace("_", " ").title()
-                tools.append({
-                    "id": tid,
-                    "name": name,
-                    "description": native_descriptions.get(tid, ""),
-                    "phases": [],
-                    "features": [],
-                    "path": "",
-                    "implemented": True,
-                })
-
-    # Preserve curated ordering from cohort_tools.json
-    if allowed_ids is not None:
-        order = {tid: i for i, tid in enumerate(allowed_ids)}
-        tools.sort(key=lambda t: order.get(t["id"], 999))
+            name = display_names.get(tid) or tid.replace("_", " ").title()
+            tools.append({
+                "id": tid,
+                "name": name,
+                "description": native_descriptions.get(tid, ""),
+                "phases": [],
+                "features": [],
+                "path": "",
+                "implemented": True,
+            })
 
     return JSONResponse({"tools": tools})
 
@@ -1481,32 +1598,27 @@ async def get_internal_web_status(request: Request) -> JSONResponse:
         "available": False,
         "web_adapter": False,
         "playwright": False,
-        "cache_dir": "G:/BOSS/data/web_cache",
+        "ddgs": False,
+        "cache_dir": str(_cohort_data_dir() / "web_cache"),
     }
 
-    # Check WebAdapter
-    try:
-        import importlib
-        import sys
-        from pathlib import Path
-        boss_root = Path("G:/BOSS")
-        adapter_dir = boss_root / "src" / "ingestion"
-        if (adapter_dir / "web_adapter.py").exists():
-            if str(boss_root) not in sys.path:
-                sys.path.insert(0, str(boss_root))
-            importlib.import_module("src.ingestion.web_adapter")
-            status["web_adapter"] = True
-    except Exception:
-        pass
-
-    # Check Playwright
+    # Check Playwright (for internal_web_fetch)
     try:
         import playwright  # noqa: F401
         status["playwright"] = True
     except ImportError:
         pass
 
-    status["available"] = status["web_adapter"] and status["playwright"]
+    # Check ddgs (for internal_web_search)
+    try:
+        import ddgs as _ddgs_mod  # noqa: F401
+        status["ddgs"] = True
+    except ImportError:
+        pass
+
+    # Available if either capability works
+    status["available"] = status["playwright"] or status["ddgs"]
+
     return JSONResponse(status)
 
 
@@ -2135,23 +2247,28 @@ async def llm_delete_model(request: Request) -> JSONResponse:
 # Tool Dashboard Data Endpoints
 # =====================================================================
 
-def _boss_data_dir() -> Path:
-    """Resolve BOSS data directory.  Tries (in order):
-    1. BOSS_DATA_DIR env var
-    2. Sibling G:/BOSS/data
-    3. ../../BOSS/data relative to cohort root
+def _cohort_data_dir() -> Path:
+    """Resolve Cohort's own service data directory.
+
+    Returns ``<data_dir>/services/`` where ``<data_dir>`` is the directory
+    used by the data layer (typically ``G:/cohort/data``).
+
+    Override with the ``COHORT_SERVICE_DATA`` environment variable.
     """
-    env = os.environ.get("BOSS_DATA_DIR")
+    if _settings_path is not None:
+        candidate = _settings_path.parent / "services"
+        if candidate.is_dir():
+            return candidate
+
+    env = os.environ.get("COHORT_SERVICE_DATA")
     if env:
         p = Path(env)
         if p.is_dir():
             return p
 
-    for candidate in [Path("G:/BOSS/data"), Path(__file__).resolve().parent.parent.parent / "BOSS" / "data"]:
-        if candidate.is_dir():
-            return candidate
-
-    return Path("G:/BOSS/data")  # fallback even if missing
+    # Fallback: relative to this file  (cohort/cohort/server.py -> cohort/data/services)
+    fallback = Path(__file__).resolve().parent.parent / "data" / "services"
+    return fallback
 
 
 def _read_json_safe(path: Path) -> dict | list | None:
@@ -2167,7 +2284,7 @@ def _read_json_safe(path: Path) -> dict | list | None:
 
 async def get_health_monitor_state(request: Request) -> JSONResponse:
     """GET /api/health-monitor/state -- return full health monitor state."""
-    state_path = _boss_data_dir() / "health_monitor" / "state.json"
+    state_path = _cohort_data_dir() / "health_monitor" / "state.json"
     data = _read_json_safe(state_path)
     if data is None:
         return JSONResponse({"error": "Health monitor state not available", "services": [], "alerts": {}})
@@ -2178,7 +2295,7 @@ async def get_health_monitor_alerts(request: Request) -> JSONResponse:
     """GET /api/health-monitor/alerts -- return recent alerts from today's log."""
     limit = int(request.query_params.get("limit", "20"))
     today = datetime.now().strftime("%Y-%m-%d")
-    log_path = _boss_data_dir() / "health_monitor" / "logs" / f"{today}_alerts.log"
+    log_path = _cohort_data_dir() / "health_monitor" / "logs" / f"{today}_alerts.log"
 
     alerts = []
     try:
@@ -2207,9 +2324,9 @@ async def get_scheduler_recent_runs(request: Request) -> JSONResponse:
     month_str = now.strftime("%Y%m")
 
     if source == "content_monitor":
-        runs_path = _boss_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
+        runs_path = _cohort_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
     else:
-        runs_path = _boss_data_dir() / "scheduler_logs" / f"runs_{month_str}.json"
+        runs_path = _cohort_data_dir() / "scheduler_logs" / f"runs_{month_str}.json"
 
     data = _read_json_safe(runs_path)
     if not isinstance(data, list):
@@ -2225,7 +2342,7 @@ async def get_comms_recent_activity(request: Request) -> JSONResponse:
     """GET /api/comms/recent-activity -- return recent outbound communication logs."""
     limit = int(request.query_params.get("limit", "10"))
     today = datetime.now().strftime("%Y-%m-%d")
-    log_path = _boss_data_dir() / "comms_service" / "webhook_logs" / f"{today}.json"
+    log_path = _cohort_data_dir() / "comms_service" / "webhook_logs" / f"{today}.json"
 
     data = _read_json_safe(log_path)
     if not isinstance(data, list):
@@ -2237,7 +2354,7 @@ async def get_comms_recent_activity(request: Request) -> JSONResponse:
 async def get_intel_recent_articles(request: Request) -> JSONResponse:
     """GET /api/intel/recent-articles -- return recent tech intel articles."""
     limit = int(request.query_params.get("limit", "10"))
-    db_path = _boss_data_dir() / "tech_intel" / "articles_db.json"
+    db_path = _cohort_data_dir() / "tech_intel" / "articles_db.json"
 
     data = _read_json_safe(db_path)
     if not isinstance(data, list):
@@ -2308,7 +2425,7 @@ async def get_content_monitor_pipeline(request: Request) -> JSONResponse:
     """GET /api/content-monitor/pipeline-status -- aggregated content pipeline stats."""
     now = datetime.now()
     month_str = now.strftime("%Y%m")
-    runs_path = _boss_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
+    runs_path = _cohort_data_dir() / "content_monitor_logs" / f"runs_{month_str}.json"
 
     data = _read_json_safe(runs_path)
     if not isinstance(data, list):
@@ -2340,7 +2457,7 @@ async def get_social_posts(request: Request) -> JSONResponse:
     status_filter = request.query_params.get("status", "")  # pending, approved, posted, rejected
     limit = int(request.query_params.get("limit", "50"))
 
-    posts_dir = _boss_data_dir() / "comms_service" / "social_posts"
+    posts_dir = _cohort_data_dir() / "comms_service" / "social_posts"
     posts = []
     try:
         if posts_dir.is_dir():
@@ -2373,7 +2490,7 @@ async def update_social_post(request: Request) -> JSONResponse:
     if action not in ("approve", "reject"):
         return JSONResponse({"error": "action must be 'approve' or 'reject'"}, status_code=400)
 
-    posts_dir = _boss_data_dir() / "comms_service" / "social_posts"
+    posts_dir = _cohort_data_dir() / "comms_service" / "social_posts"
     post_path = posts_dir / f"{post_id}.json"
     if not post_path.exists():
         return JSONResponse({"error": "Post not found"}, status_code=404)
@@ -2411,8 +2528,8 @@ async def get_content_articles(request: Request) -> JSONResponse:
 
     # Try the content monitor's articles database
     for candidate in [
-        _boss_data_dir() / "content_monitor_logs" / "articles_db.json",
-        _boss_data_dir() / "content_monitor" / "articles_db.json",
+        _cohort_data_dir() / "content_monitor_logs" / "articles_db.json",
+        _cohort_data_dir() / "content_monitor" / "articles_db.json",
     ]:
         data = _read_json_safe(candidate)
         if data and isinstance(data, dict) and "articles" in data:
@@ -2440,7 +2557,7 @@ async def get_content_articles(request: Request) -> JSONResponse:
 
 async def get_content_config(request: Request) -> JSONResponse:
     """GET /api/content-monitor/config -- return content monitor configuration."""
-    cfg_path = _boss_data_dir() / "content_monitor_config.json"
+    cfg_path = _cohort_data_dir() / "content_monitor_config.json"
     data = _read_json_safe(cfg_path)
     if data is None:
         return JSONResponse({"error": "Config not found"})
@@ -3486,8 +3603,8 @@ async def doc_history_delete(request: Request) -> JSONResponse:
 
 async def get_comms_pending_approvals(request: Request) -> JSONResponse:
     """GET /api/comms/pending-approvals -- count and list pending social post drafts."""
-    boss_data = _boss_data_dir()
-    posts_dir = boss_data / "comms_service" / "social_posts"
+    svc_data = _cohort_data_dir()
+    posts_dir = svc_data / "comms_service" / "social_posts"
     pending = []
     if posts_dir.is_dir():
         for fp in posts_dir.glob("*.json"):
@@ -3519,7 +3636,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Directory for JSON file storage.  Defaults to the
         ``COHORT_DATA_DIR`` environment variable, or ``./data``.
     """
-    global _chat, _data_layer, _agent_store, _work_queue  # noqa: PLW0603
+    global _chat, _data_layer, _agent_store, _work_queue, _task_store, _scheduler  # noqa: PLW0603
 
     global _settings_path  # noqa: PLW0603
 
@@ -3597,7 +3714,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     agents_root = saved_settings.get("agents_root") or os.environ.get(
         "COHORT_AGENTS_ROOT", "",
     )
-    setup_agent_router(chat=_chat, sio=sio, agents_root=agents_root, store=_agent_store)
+    setup_agent_router(chat=_chat, sio=sio, agents_root=agents_root, store=_agent_store, settings_path=_settings_path)
     _apply_router_settings(saved_settings)
 
     # -- Task executor (briefing + execution layer) ---------------------
@@ -3615,6 +3732,25 @@ def create_app(data_dir: str = "data") -> Starlette:
     _work_queue = WorkQueue(Path(resolved_dir))
     setup_work_queue(_work_queue)
     logger.info("[OK] Work queue initialised")
+
+    # -- Task Store (file-backed tasks + schedules) -----------------------
+    from cohort.task_store import TaskStore
+    from cohort.socketio_events import setup_task_store, setup_scheduler
+    global _task_store, _scheduler  # noqa: PLW0603
+    _task_store = TaskStore(Path(resolved_dir))
+    setup_task_store(_task_store)
+    executor.set_task_store(_task_store)
+    logger.info("[OK] Task store initialised")
+
+    # -- Task Scheduler (asyncio background tick loop) --------------------
+    from cohort.scheduler import TaskScheduler
+    _scheduler = TaskScheduler(
+        task_store=_task_store,
+        task_executor=executor,
+        sio=sio,
+    )
+    setup_scheduler(_scheduler)
+    logger.info("[OK] Task scheduler initialised (starts on event loop capture)")
 
     # -- Executive Briefing ---------------------------------------------
     from cohort.executive_briefing import ExecutiveBriefing
@@ -3666,6 +3802,16 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/work-queue/claim", claim_work_item, methods=["POST"]),
         Route("/api/work-queue/{item_id}", get_work_item, methods=["GET"]),
         Route("/api/work-queue/{item_id}", update_work_item, methods=["PATCH"]),
+        # Schedules
+        Route("/api/schedules", get_schedules, methods=["GET"]),
+        Route("/api/schedules", create_schedule_endpoint, methods=["POST"]),
+        Route("/api/schedules/presets", get_schedule_presets, methods=["GET"]),
+        Route("/api/scheduler/status", get_scheduler_status, methods=["GET"]),
+        Route("/api/schedules/{schedule_id}", get_schedule_detail, methods=["GET"]),
+        Route("/api/schedules/{schedule_id}", update_schedule_endpoint, methods=["PATCH"]),
+        Route("/api/schedules/{schedule_id}", delete_schedule_endpoint, methods=["DELETE"]),
+        Route("/api/schedules/{schedule_id}/toggle", toggle_schedule_endpoint, methods=["POST"]),
+        Route("/api/schedules/{schedule_id}/run", force_run_schedule_endpoint, methods=["POST"]),
         # Executive briefing
         Route("/api/briefing/generate", generate_briefing, methods=["POST"]),
         Route("/api/briefing/latest", get_latest_briefing, methods=["GET"]),
@@ -3712,7 +3858,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/llm/models/{name:path}", llm_delete_model, methods=["DELETE"]),
         Route("/api/llm/running", get_llm_running, methods=["GET"]),
         Route("/api/llm/model-info/{name:path}", get_llm_model_info, methods=["GET"]),
-        # Tool data endpoints (read from BOSS data directory)
+        # Tool data endpoints (read from Cohort service data directory)
         Route("/api/health-monitor/state", get_health_monitor_state, methods=["GET"]),
         Route("/api/health-monitor/alerts", get_health_monitor_alerts, methods=["GET"]),
         Route("/api/scheduler/recent-runs", get_scheduler_recent_runs, methods=["GET"]),
@@ -3761,12 +3907,17 @@ def create_app(data_dir: str = "data") -> Starlette:
     ]
 
     async def on_startup() -> None:
-        """Capture the running event loop for the agent router's sync->async bridge."""
+        """Capture the running event loop and start background services."""
         loop = asyncio.get_running_loop()
         from cohort.agent_router import set_event_loop
         set_event_loop(loop)
         executor.set_event_loop(loop)
         logger.info("[OK] Event loop captured for agent router + task executor")
+
+        # Start the task scheduler background loop
+        if _scheduler is not None:
+            _scheduler.start()
+            logger.info("[OK] Task scheduler started")
 
     starlette_app = Starlette(
         routes=routes,

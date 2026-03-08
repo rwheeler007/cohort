@@ -378,6 +378,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    width: 100%;
 }
 
 .agent-group {
@@ -5670,5 +5671,388 @@ select.tool-config-card__input option {
 .archived-banner:hover {
     background: var(--color-bg-hover);
     color: var(--color-text-secondary);
+}
+
+/* =============================================================================
+   Task Sub-tabs & Schedule UI
+   ============================================================================= */
+
+.task-sub-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 var(--space-3);
+    background: var(--color-bg-secondary);
+}
+
+.task-sub-tab {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    position: relative;
+}
+
+.task-sub-tab:hover {
+    color: var(--color-text-secondary);
+}
+
+.task-sub-tab.active {
+    color: var(--color-cohort);
+    border-bottom-color: var(--color-cohort);
+}
+
+.task-sub-tab__badge {
+    display: inline-block;
+    background: var(--color-bg-active);
+    color: var(--color-text-secondary);
+    font-size: 0.65rem;
+    font-weight: 600;
+    min-width: 1.2em;
+    text-align: center;
+    padding: 1px 5px;
+    border-radius: 10px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.task-sub-tab.active .task-sub-tab__badge {
+    background: var(--color-cohort);
+    color: #fff;
+}
+
+.task-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-3);
+}
+
+/* Task panel footer */
+.task-panel__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+}
+
+/* Scheduler heartbeat indicator */
+.scheduler-heartbeat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.scheduler-heartbeat__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.scheduler-heartbeat__dot--active {
+    background: var(--color-priority-low);
+    animation: pulse-dot 2s infinite;
+}
+
+.scheduler-heartbeat__dot--inactive {
+    background: var(--color-text-muted);
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Schedule cards */
+.schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.schedule-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    border-left: 3px solid var(--color-cohort);
+    transition: opacity var(--transition-fast);
+}
+
+.schedule-card--disabled {
+    opacity: 0.5;
+    border-left-color: var(--color-text-muted);
+}
+
+.schedule-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-2);
+}
+
+.schedule-card__agent-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.schedule-card__agent {
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+}
+
+.schedule-card__priority {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.schedule-card__description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-2);
+    line-height: 1.4;
+}
+
+.schedule-card__schedule {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.schedule-card__frequency {
+    font-size: var(--font-size-xs);
+    color: var(--color-cohort);
+    font-weight: 500;
+}
+
+.schedule-card__warning {
+    font-size: var(--font-size-xs);
+    color: var(--color-priority-high);
+    font-weight: 500;
+}
+
+.schedule-card__meta {
+    display: flex;
+    gap: var(--space-4);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.schedule-card__status--success {
+    color: var(--color-priority-low);
+}
+
+.schedule-card__status--failed {
+    color: var(--color-priority-high);
+}
+
+.schedule-card__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+/* Toggle switch */
+.schedule-toggle {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.schedule-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.schedule-toggle__slider {
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    background: var(--color-bg-active);
+    border-radius: 10px;
+    position: relative;
+    transition: background var(--transition-fast);
+}
+
+.schedule-toggle__slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform var(--transition-fast);
+}
+
+.schedule-toggle input:checked + .schedule-toggle__slider {
+    background: var(--color-cohort);
+}
+
+.schedule-toggle input:checked + .schedule-toggle__slider::after {
+    transform: translateX(16px);
+}
+
+.schedule-toggle input:focus-visible + .schedule-toggle__slider {
+    outline: 2px solid var(--color-cohort);
+    outline-offset: 2px;
+}
+
+/* Modal tabs */
+.modal-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-4);
+}
+
+.modal-tab {
+    flex: 1;
+    padding: var(--space-3);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.modal-tab:hover {
+    color: var(--color-text-secondary);
+}
+
+.modal-tab.active {
+    color: var(--color-cohort);
+    border-bottom-color: var(--color-cohort);
+}
+
+.modal-tab__hint {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+}
+
+/* Schedule when fieldset */
+.schedule-when {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    margin: 0 0 var(--space-4);
+}
+
+.schedule-when legend {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    padding: 0 var(--space-2);
+}
+
+.schedule-presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.schedule-preset {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.schedule-preset:hover {
+    border-color: var(--color-cohort);
+}
+
+.schedule-preset input:checked ~ .schedule-preset__label {
+    color: var(--color-cohort);
+    font-weight: 500;
+}
+
+.schedule-preset input {
+    margin: 0;
+    accent-color: var(--color-cohort);
+}
+
+.schedule-custom {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+}
+
+/* Input with suffix */
+.input-with-suffix {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.input-with-suffix .form-input {
+    flex: 1;
+    max-width: 120px;
+}
+
+.input-suffix {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.form-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: 4px;
+}
+
+/* Task card badges */
+.task-card__badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+}
+
+.task-card__badge--recurring {
+    background: rgba(114, 137, 218, 0.2);
+    color: var(--color-cohort);
+}
+
+/* Completed / failed task card variants */
+.task-card--complete {
+    border-left-color: var(--color-priority-low);
+}
+
+.task-card--failed {
+    border-left-color: var(--color-priority-high);
 }
 

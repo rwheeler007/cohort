@@ -15,6 +15,7 @@ import asyncio
 import logging
 import os
 import subprocess
+import sys
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -398,6 +399,91 @@ class TaskExecutor:
             route_mentions(msg, mentions)
 
     # =================================================================
+    # Scheduled execution (skips briefing)
+    # =================================================================
+
+    async def execute_scheduled(
+        self,
+        task: dict[str, Any],
+        confirmed_brief: dict[str, Any],
+    ) -> None:
+        """Execute a scheduled task -- skips briefing, goes straight to execution.
+
+        Uses the same execution pipeline as manual tasks but without
+        creating a task channel or running the conversational intake.
+        """
+        task_id = task["task_id"]
+        agent_id = task["agent_id"]
+
+        # Transition to in_progress
+        if self.data_layer:
+            updated = self.data_layer.update_task_progress(task_id, "in_progress")
+            if updated:
+                await self._emit("cohort:task_progress", updated)
+
+        # Run execution in a background thread
+        thread = threading.Thread(
+            target=self._execute_scheduled_sync,
+            args=(task, confirmed_brief),
+            daemon=True,
+        )
+        thread.start()
+
+    def _execute_scheduled_sync(
+        self,
+        task: dict[str, Any],
+        confirmed_brief: dict[str, Any],
+    ) -> None:
+        """Background thread: run scheduled task execution."""
+        agent_id = task["agent_id"]
+        task_id = task["task_id"]
+        backend = self.execution_backend
+
+        logger.info(
+            "[>>] Executing scheduled task %s for %s via %s",
+            task_id, agent_id, backend,
+        )
+
+        try:
+            if backend == "api":
+                result = self._execute_api(task, confirmed_brief)
+            else:
+                result = self._execute_cli_task(task, confirmed_brief)
+        except Exception as exc:
+            logger.exception("[X] Scheduled execution failed for task %s", task_id)
+            result = f"[Error] Execution failed: {exc}"
+
+        # Mark task complete (task_store handles schedule stats)
+        output = {
+            "content": result,
+            "backend": backend,
+            "completed_at": datetime.now().isoformat(),
+            "scheduled": True,
+        }
+
+        # Use task_store if available, otherwise fall back to data_layer
+        completed = None
+        if hasattr(self, '_task_store') and self._task_store:
+            if result.startswith("[Error]") or result.startswith("[Timeout]"):
+                completed = self._task_store.fail_task(task_id, reason=result)
+            else:
+                completed = self._task_store.complete_task(task_id, output)
+        elif self.data_layer:
+            completed = self.data_layer.complete_task(task_id, output)
+
+        if completed:
+            self._emit_sync("cohort:task_complete", completed)
+            if self.data_layer:
+                self._emit_sync(
+                    "cohort:team_update",
+                    self.data_layer.get_team_snapshot(),
+                )
+
+    def set_task_store(self, store: Any) -> None:
+        """Wire the TaskStore for scheduled task persistence."""
+        self._task_store = store
+
+    # =================================================================
     # Helpers
     # =================================================================
 
@@ -444,14 +530,19 @@ class TaskExecutor:
     def _call_cli(self, full_prompt: str) -> str:
         """Invoke Claude CLI with the given prompt and return response text."""
         try:
+            cli_cmd = [self.claude_cmd, "-p", "-"]
+            # Windows: use cmd /c for .cmd files (matches agent_router pattern)
+            if sys.platform == "win32":
+                cli_cmd = ["cmd", "/c"] + cli_cmd
+
             result = subprocess.run(
-                [self.claude_cmd, "-p", "-"],
+                cli_cmd,
                 input=full_prompt,
                 capture_output=True,
                 text=True,
                 cwd=str(self.agents_root) if self.agents_root else None,
                 timeout=self.response_timeout,
-                shell=True,
+                shell=False,
                 encoding="utf-8",
                 errors="replace",
             )

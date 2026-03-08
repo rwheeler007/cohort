@@ -43,6 +43,127 @@ RESPONSE_TIMEOUT = 300  # 5 min timeout for Claude CLI
 CONTEXT_HISTORY_LIMIT = int(os.environ.get("COHORT_HISTORY_LIMIT", "50"))
 CIRCUIT_BREAKER_CHAR_LIMIT = int(os.environ.get("COHORT_CIRCUIT_BREAKER", "240000"))
 
+# =====================================================================
+# Credential injection for agent subprocess environments
+# =====================================================================
+
+# Canonical mapping: service_type -> env var mappings.
+# 'key' always maps to the primary credential. Extra fields map to their env var names.
+_SERVICE_ENV_MAP: dict[str, dict[str, str]] = {
+    "anthropic":    {"key": "ANTHROPIC_API_KEY"},
+    "github":       {"key": "GITHUB_TOKEN"},
+    "youtube":      {"key": "YOUTUBE_API_KEY"},
+    "openai":       {"key": "OPENAI_API_KEY"},
+    "cloudflare":   {"key": "CLOUDFLARE_API_TOKEN"},
+    "resend":       {"key": "RESEND_API_KEY"},
+    "slack":        {"key": "SLACK_WEBHOOK_URL"},
+    "discord":      {"key": "DISCORD_WEBHOOK_URL"},
+    "email_smtp":   {
+        "key": "SMTP_PASS",
+        "SMTP_HOST": "SMTP_HOST",
+        "SMTP_PORT": "SMTP_PORT",
+        "SMTP_USER": "SMTP_USER",
+    },
+    "email_imap":   {
+        "key": "IMAP_PASS",
+        "IMAP_HOST": "IMAP_HOST",
+        "IMAP_PORT": "IMAP_PORT",
+        "IMAP_USER": "IMAP_USER",
+    },
+    "aws":          {
+        "key": "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY": "AWS_SECRET_ACCESS_KEY",
+        "AWS_DEFAULT_REGION": "AWS_DEFAULT_REGION",
+    },
+    "google":       {
+        "key": "GOOGLE_CLOUD_API_KEY",
+        "GOOGLE_APPLICATION_CREDENTIALS": "GOOGLE_APPLICATION_CREDENTIALS",
+    },
+    "linkedin":     {
+        "key": "LINKEDIN_CLIENT_ID",
+        "LINKEDIN_CLIENT_SECRET": "LINKEDIN_CLIENT_SECRET",
+    },
+    "twitter":      {
+        "key": "TWITTER_API_KEY",
+        "TWITTER_API_SECRET": "TWITTER_API_SECRET",
+        "TWITTER_BEARER_TOKEN": "TWITTER_BEARER_TOKEN",
+    },
+    "reddit":       {
+        "key": "REDDIT_CLIENT_ID",
+        "REDDIT_CLIENT_SECRET": "REDDIT_CLIENT_SECRET",
+    },
+    "webhook":      {
+        "key": "WEBHOOK_API_KEY",
+        "WEBHOOK_URL": "WEBHOOK_URL",
+    },
+    "rss":          {"key": "RSS_API_KEY"},
+    "custom":       {"key": "CUSTOM_API_KEY"},
+}
+
+
+def _load_agent_credentials(agent_id: str) -> dict[str, str]:
+    """Load credentials for services an agent is permitted to access.
+
+    Reads settings.json, decrypts secrets, checks agent_permissions,
+    and returns a dict of env var name -> value for injection into subprocess env.
+    """
+    if _settings_path is None or not _settings_path.exists():
+        return {}
+
+    try:
+        with open(_settings_path, encoding="utf-8") as f:
+            settings = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+    # Decrypt secrets in-place (same as server._load_settings)
+    from cohort.secret_store import decrypt_settings_secrets
+    decrypt_settings_secrets(settings)
+
+    service_keys = settings.get("service_keys", [])
+    permissions = settings.get("agent_permissions", {})
+    agent_perms = permissions.get(agent_id, {})
+
+    # Build service lookup: id -> service dict
+    svc_by_id = {svc.get("id", ""): svc for svc in service_keys}
+
+    env_vars: dict[str, str] = {}
+
+    for svc_id, allowed in agent_perms.items():
+        if not allowed:
+            continue
+        svc = svc_by_id.get(svc_id)
+        if not svc:
+            continue
+
+        svc_type = svc.get("type", "custom")
+        mapping = _SERVICE_ENV_MAP.get(svc_type)
+        if not mapping:
+            continue
+
+        main_key = svc.get("key", "")
+        # Parse extra JSON for multi-field services
+        extra: dict[str, str] = {}
+        extra_raw = svc.get("extra", "")
+        if extra_raw:
+            try:
+                extra = json.loads(extra_raw)
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        for field_key, env_name in mapping.items():
+            if field_key == "key":
+                if main_key:
+                    env_vars[env_name] = main_key
+            else:
+                val = extra.get(field_key, "")
+                if val:
+                    env_vars[env_name] = val
+
+    return env_vars
+
+
+
 CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 
 # Force all agent responses through Claude Code (bypass local Ollama)
@@ -249,6 +370,7 @@ _orchestrator: Any = None
 _event_loop: asyncio.AbstractEventLoop | None = None
 _agent_store: AgentStore | None = None
 AGENTS_ROOT: Path | None = None
+_settings_path: Path | None = None
 
 
 def setup_agent_router(
@@ -257,14 +379,16 @@ def setup_agent_router(
     agents_root: str | Path,
     orchestrator: Any = None,
     store: AgentStore | None = None,
+    settings_path: Path | None = None,
 ) -> None:
     """Initialize the agent router.  Called once from server.py create_app()."""
-    global _chat, _sio, _state, AGENTS_ROOT, _orchestrator, _event_loop, _agent_store  # noqa: PLW0603
+    global _chat, _sio, _state, AGENTS_ROOT, _orchestrator, _event_loop, _agent_store, _settings_path  # noqa: PLW0603
     _chat = chat
     _sio = sio
     AGENTS_ROOT = Path(agents_root)
     _orchestrator = orchestrator
     _agent_store = store
+    _settings_path = settings_path
     _state = _RouterState()
 
     # Capture the running event loop so the background thread can schedule coroutines
@@ -689,6 +813,8 @@ def _invoke_smartest_pipeline(
 
         # Strip CLAUDECODE env vars
         env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+        # Inject permitted service credentials
+        env.update(_load_agent_credentials(agent_id))
 
         cli_cmd = [CLAUDE_CMD, "-p", "-"]
         if sys.platform == "win32":
@@ -971,6 +1097,8 @@ def _invoke_agent_sync(item: dict) -> None:
             # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
             # when the server is launched from within a Claude Code session.
             env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+            # Inject permitted service credentials into agent environment
+            env.update(_load_agent_credentials(agent_id))
 
             if perms and perms.allowed_tools:
                 # Tool-enabled invocation (follows BOSS code queue worker pattern)

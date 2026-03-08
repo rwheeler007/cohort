@@ -580,42 +580,23 @@ class TestPermissions:
 
 class TestTools:
     async def test_list_tools_no_config(self, server_client):
-        """Tools endpoint returns empty list when no boss_config.yaml exists."""
+        """Tools endpoint returns empty list when no cohort_tools.json exists."""
         resp = await server_client.get("/api/tools")
         assert resp.status_code == 200
         assert resp.json() == {"tools": []}
 
-    async def test_list_tools_with_config(self, server_client, data_dir):
-        """Tools endpoint reads from boss_config.yaml when agents_root is set."""
-        # Set up agents_root in settings so tools can find config
-        agents_root = data_dir.parent
-        config_dir = agents_root / "config"
-        config_dir.mkdir(parents=True, exist_ok=True)
+    async def test_list_tools_with_cohort_tools(self, server_client, data_dir):
+        """Tools endpoint reads from cohort_tools.json."""
+        import json
 
-        # Write a minimal boss_config.yaml
-        import yaml
-
-        config_path = config_dir / "boss_config.yaml"
-        config_path.write_text(
-            yaml.dump({
-                "boss": {
-                    "tools": {
-                        "code_review": {
-                            "description": "Review code changes",
-                            "phases": ["review"],
-                            "features": ["diff"],
-                            "path": "tools/review.py",
-                        },
-                    },
-                },
-            }),
-            encoding="utf-8",
-        )
-
-        # Update settings to point to agents_root
-        await server_client.post(
-            "/api/settings",
-            json={"agents_root": str(agents_root)},
+        cohort_tools = {
+            "version": 1,
+            "tools": ["code_review"],
+            "display_names": {"code_review": "Code Review"},
+            "descriptions": {"code_review": "Review code changes"},
+        }
+        (data_dir / "cohort_tools.json").write_text(
+            json.dumps(cohort_tools), encoding="utf-8"
         )
 
         resp = await server_client.get("/api/tools")
@@ -623,6 +604,8 @@ class TestTools:
         tools = resp.json()["tools"]
         assert len(tools) == 1
         assert tools[0]["id"] == "code_review"
+        assert tools[0]["name"] == "Code Review"
+        assert tools[0]["description"] == "Review code changes"
         assert tools[0]["implemented"] is True
 
 

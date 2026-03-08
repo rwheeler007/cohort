@@ -38,7 +38,7 @@ const state = {
     // Channel members: { channelId: [agentId, ...] }
     channelMembers: {},
 
-    // Tools from boss_config.yaml
+    // Tools from cohort_tools.json
     tools: [],
     adminMode: false,
 
@@ -4560,11 +4560,12 @@ function renderTaskCard(task) {
         ? `onclick="switchChannel('task-${escapeHtml(task.task_id)}')" style="cursor: pointer;"`
         : '';
     const statusLabel = isBriefing ? 'briefing - click to chat' : escapeHtml(task.status);
+    const recurringBadge = task.schedule_id ? ' <span class="task-card__badge task-card__badge--recurring">[R]</span>' : '';
 
     return `
     <div class="task-card task-card--${priority} ${isBriefing ? 'task-card--briefing' : ''}" data-task-id="${escapeHtml(task.task_id)}" ${clickAction}>
         <div class="task-card__header">
-            <span class="task-card__agent">${escapeHtml(task.agent_id)}</span>
+            <span class="task-card__agent">${escapeHtml(task.agent_id)}${recurringBadge}</span>
             <span class="task-card__priority task-card__priority--${priority}">${priority}</span>
         </div>
         <p class="task-card__description">${escapeHtml(task.description)}</p>
@@ -4885,6 +4886,24 @@ function connectSocket() {
     sock.on('cohort:work_queue_update', (data) => {
         state.workQueue = data.items || [];
         renderQueue();
+    });
+
+    // -- Schedule events (delegated to CohortTasks module) --
+
+    sock.on('cohort:schedules_update', (data) => {
+        if (typeof CohortTasks !== 'undefined') CohortTasks.onSchedulesUpdate(data);
+    });
+
+    sock.on('cohort:schedule_run', (data) => {
+        if (typeof CohortTasks !== 'undefined') CohortTasks.onScheduleRun(data);
+    });
+
+    sock.on('cohort:schedule_disabled', (data) => {
+        if (typeof CohortTasks !== 'undefined') CohortTasks.onScheduleDisabled(data);
+    });
+
+    sock.on('cohort:scheduler_heartbeat', (data) => {
+        if (typeof CohortTasks !== 'undefined') CohortTasks.onSchedulerHeartbeat(data);
     });
 
     sock.on('cohort:output_ready', (data) => {
@@ -5528,6 +5547,7 @@ const SERVICE_SCHEMAS = {
         { key: 'key', label: 'API Key', type: 'password', placeholder: '' },
         { key: 'WEBHOOK_URL', label: 'Webhook URL', type: 'text', placeholder: 'https://...' },
     ],
+    rss:          [{ key: 'key', label: 'API Key (optional)', type: 'password', placeholder: '' }],
     custom:       [
         { key: 'key', label: 'API Key / Token', type: 'password', placeholder: '' },
     ],
@@ -5536,17 +5556,18 @@ const SERVICE_SCHEMAS = {
 // Default services to pre-populate when no services exist yet.
 // These are the common integrations most teams will need -- users just fill in keys.
 const DEFAULT_SERVICE_PRESETS = [
-    { type: 'anthropic',  name: 'Anthropic API' },
-    { type: 'github',     name: 'GitHub API' },
-    { type: 'youtube',    name: 'YouTube Data API' },
-    { type: 'linkedin',   name: 'LinkedIn API' },
-    { type: 'google',     name: 'Google Cloud API' },
-    { type: 'openai',     name: 'OpenAI API' },
-    { type: 'cloudflare', name: 'Cloudflare API' },
-    { type: 'twitter',    name: 'Twitter/X API' },
-    { type: 'reddit',     name: 'Reddit API' },
-    { type: 'slack',      name: 'Slack Webhook' },
-    { type: 'discord',    name: 'Discord Webhook' },
+    { type: 'anthropic',    name: 'Anthropic API' },
+    { type: 'github',       name: 'GitHub API' },
+    { type: 'internal_web', name: 'Internal Web Accessor' },
+    { type: 'youtube',      name: 'YouTube Data API' },
+    { type: 'linkedin',     name: 'LinkedIn API' },
+    { type: 'google',       name: 'Google Cloud API' },
+    { type: 'openai',       name: 'OpenAI API' },
+    { type: 'cloudflare',   name: 'Cloudflare API' },
+    { type: 'twitter',      name: 'Twitter/X API' },
+    { type: 'reddit',       name: 'Reddit API' },
+    { type: 'slack',        name: 'Slack Webhook' },
+    { type: 'discord',      name: 'Discord Webhook' },
 ];
 
 // Map common .env variable names to service types.
@@ -5609,6 +5630,25 @@ function openPermissions() {
                     key_masked: '',
                     extra: '',
                 }));
+            } else {
+                // Ensure local services are always present (they don't need keys
+                // so users would never manually add them via the Service Keys tab)
+                const LOCAL_PRESETS = DEFAULT_SERVICE_PRESETS.filter(p => {
+                    const meta = SERVICE_TYPES[p.type];
+                    return meta && meta.local;
+                });
+                for (const preset of LOCAL_PRESETS) {
+                    if (!permState.services.some(s => s.type === preset.type)) {
+                        permState.services.push({
+                            id: preset.type + '_default',
+                            type: preset.type,
+                            name: preset.name,
+                            has_key: false,
+                            key_masked: '',
+                            extra: '',
+                        });
+                    }
+                }
             }
             renderServiceKeys();
             renderPermGrid();
@@ -5719,8 +5759,8 @@ function renderServiceKeys() {
                         }
                         if (keyEl) {
                             const parts = [];
-                            parts.push(data.web_adapter ? 'WebAdapter: OK' : 'WebAdapter: missing');
-                            parts.push(data.playwright ? 'Playwright: OK' : 'Playwright: missing');
+                            parts.push(data.playwright ? 'Fetch: OK' : 'Fetch: missing');
+                            parts.push(data.ddgs ? 'Search: OK' : 'Search: missing');
                             keyEl.textContent = parts.join(' | ');
                         }
                         // Re-render Agent Access grid now that has_key is resolved
@@ -5947,7 +5987,7 @@ function renderServiceFields(serviceType, existingValues) {
     // Render dynamic form fields based on SERVICE_SCHEMAS for the given type.
     // existingValues: { key: '...', extra_field: '...' } for pre-populating on edit.
     const container = dom.serviceDynamicFields;
-    if (\!container) return;
+    if (!container) return;
     container.innerHTML = '';
 
     const meta = SERVICE_TYPES[serviceType] || SERVICE_TYPES.custom;
@@ -5977,7 +6017,7 @@ function renderServiceFields(serviceType, existingValues) {
             input.dataset.fieldKey = fieldDef.key;
             input.placeholder = fieldDef.placeholder || '';
             input.autocomplete = 'off';
-            if (values[fieldDef.key] \!== undefined) input.value = values[fieldDef.key];
+            if (values[fieldDef.key] !== undefined) input.value = values[fieldDef.key];
 
             const toggleBtn = document.createElement('button');
             toggleBtn.type = 'button';
@@ -5997,7 +6037,7 @@ function renderServiceFields(serviceType, existingValues) {
             input.id = 'svc-field-' + fieldDef.key;
             input.dataset.fieldKey = fieldDef.key;
             input.placeholder = fieldDef.placeholder || '';
-            if (values[fieldDef.key] \!== undefined) input.value = values[fieldDef.key];
+            if (values[fieldDef.key] !== undefined) input.value = values[fieldDef.key];
             group.appendChild(input);
         }
 
@@ -6009,7 +6049,7 @@ function collectServiceFields() {
     // Collect values from dynamically rendered fields.
     // Returns { key: mainKeyValue, extra: JSON string of extra fields }.
     const container = dom.serviceDynamicFields;
-    if (\!container) return { key: '', extra: '' };
+    if (!container) return { key: '', extra: '' };
 
     let mainKey = '';
     const extraObj = {};
@@ -6152,6 +6192,8 @@ const TOOL_DESCRIPTIONS = {
     Grep: 'Search file contents',
     WebSearch: 'Search the web (Claude CLI only)',
     WebFetch: 'Fetch web page content (Claude CLI only)',
+    InternalWebSearch: 'Search the web locally via DuckDuckGo (free)',
+    InternalWebFetch: 'Fetch web pages locally via Playwright (free)',
 };
 
 let toolPermsState = {
@@ -6653,6 +6695,7 @@ function saveFilePerms() {
 
 function init() {
     initDom();
+    if (typeof CohortTasks !== 'undefined') CohortTasks.init();
     restoreSidebarSections();
 
     // Nav panel switching

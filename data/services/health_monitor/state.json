@@ -1,0 +1,7 @@
+{
+  "services": {
+    "cohort_server": {"status": "unknown", "last_check": null},
+    "ollama": {"status": "unknown", "last_check": null}
+  },
+  "last_updated": null
+}

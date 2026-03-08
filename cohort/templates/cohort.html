@@ -229,13 +229,42 @@
 
             <!-- Tasks Panel -->
             <section class="panel panel--tasks" id="panel-tasks" role="region" aria-label="Tasks" style="display: none;">
-                <div class="task-list" id="task-list">
-                    <div class="empty-state" id="tasks-empty">
-                        <p class="empty-state__text">No tasks assigned</p>
-                        <p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>
+                <nav class="task-sub-tabs" role="tablist" aria-label="Task views">
+                    <button class="task-sub-tab active" role="tab" aria-selected="true" data-task-view="active" onclick="CohortTasks.switchView('active')">Active</button>
+                    <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="scheduled" onclick="CohortTasks.switchView('scheduled')">
+                        Scheduled <span class="task-sub-tab__badge" id="schedule-badge">0</span>
+                    </button>
+                    <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="completed" onclick="CohortTasks.switchView('completed')">Completed</button>
+                </nav>
+                <div class="task-view" id="task-view-active">
+                    <div class="task-list" id="task-list">
+                        <div class="empty-state" id="tasks-empty">
+                            <p class="empty-state__text">No tasks assigned</p>
+                            <p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>
+                        </div>
                     </div>
                 </div>
-                <div class="queue-actions" style="padding: 0.75rem;">
+                <div class="task-view" id="task-view-scheduled" style="display: none;">
+                    <div class="schedule-list" id="schedule-list">
+                        <div class="empty-state" id="schedules-empty">
+                            <p class="empty-state__text">No scheduled tasks</p>
+                            <p class="empty-state__hint">Create recurring tasks that run on a schedule</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-view" id="task-view-completed" style="display: none;">
+                    <div class="task-list" id="completed-task-list">
+                        <div class="empty-state" id="completed-empty">
+                            <p class="empty-state__text">No completed tasks</p>
+                            <p class="empty-state__hint">Completed task runs will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-panel__footer">
+                    <div class="scheduler-heartbeat" id="scheduler-heartbeat" title="Task scheduler status">
+                        <span class="scheduler-heartbeat__dot" id="scheduler-dot"></span>
+                        <span class="scheduler-heartbeat__text" id="scheduler-text">Scheduler: starting...</span>
+                    </div>
                     <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
                 </div>
             </section>
@@ -279,15 +308,28 @@
         </main>
     </div>
 
-    <!-- Assign Task Modal -->
+    <!-- Assign Task Modal (two-tab: one-shot + schedule) -->
     <div class="modal" id="assign-task-modal" hidden>
         <div class="modal__content">
             <header class="modal__header">
-                <h2>Assign Task</h2>
+                <h2 id="task-modal-title">Assign Task</h2>
                 <button class="btn btn--icon modal__close" id="assign-task-close">&times;</button>
             </header>
             <div class="modal__body">
-                <form id="assign-task-form">
+                <!-- Tab toggle -->
+                <div class="modal-tabs" role="tablist">
+                    <button class="modal-tab active" role="tab" aria-selected="true" data-modal-tab="assign" onclick="CohortTasks.switchModalTab('assign')">
+                        Assign Task
+                        <span class="modal-tab__hint">For one-time tasks</span>
+                    </button>
+                    <button class="modal-tab" role="tab" aria-selected="false" data-modal-tab="schedule" onclick="CohortTasks.switchModalTab('schedule')">
+                        Schedule Task
+                        <span class="modal-tab__hint">For recurring tasks</span>
+                    </button>
+                </div>
+
+                <!-- One-shot assign form (existing behavior) -->
+                <form id="assign-task-form" class="modal-tab-content" data-modal-tab-content="assign">
                     <div class="form-group">
                         <label for="task-agent-select">Agent</label>
                         <select class="form-input" id="task-agent-select" required></select>
@@ -307,6 +349,85 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn--secondary" id="assign-task-cancel">Cancel</button>
                         <button type="submit" class="btn btn--primary">Assign</button>
+                    </div>
+                </form>
+
+                <!-- Schedule form (new) -->
+                <form id="schedule-task-form" class="modal-tab-content" data-modal-tab-content="schedule" style="display: none;">
+                    <div class="form-group">
+                        <label for="schedule-agent-select">Agent</label>
+                        <select class="form-input" id="schedule-agent-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-description-input">Task Description</label>
+                        <textarea class="form-input" id="schedule-description-input" rows="3" placeholder="What should the agent do each time this runs?" required maxlength="500"></textarea>
+                        <span class="form-hint" id="schedule-desc-count">0 / 500</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-priority-select">Priority</label>
+                        <select class="form-input" id="schedule-priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <fieldset class="form-group schedule-when">
+                        <legend>When should this run?</legend>
+                        <div class="schedule-presets" role="radiogroup">
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_hour" checked>
+                                <span class="schedule-preset__label">Every hour</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_2_hours">
+                                <span class="schedule-preset__label">Every 2 hours</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_6_hours">
+                                <span class="schedule-preset__label">Every 6 hours</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="daily_9am">
+                                <span class="schedule-preset__label">Daily at 9:00 AM</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="weekdays_9am">
+                                <span class="schedule-preset__label">Weekdays at 9:00 AM</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="weekly_monday">
+                                <span class="schedule-preset__label">Weekly on Monday</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="custom">
+                                <span class="schedule-preset__label">Custom...</span>
+                            </label>
+                        </div>
+                        <div class="schedule-custom" id="schedule-custom-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="schedule-type-select">Type</label>
+                                <select class="form-input" id="schedule-type-select">
+                                    <option value="interval">Interval (every N minutes)</option>
+                                    <option value="cron">Cron expression</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="schedule-interval-group">
+                                <label for="schedule-interval-input">Run every</label>
+                                <div class="input-with-suffix">
+                                    <input type="number" class="form-input" id="schedule-interval-input" min="5" value="60" step="5">
+                                    <span class="input-suffix">minutes</span>
+                                </div>
+                            </div>
+                            <div class="form-group" id="schedule-cron-group" style="display: none;">
+                                <label for="schedule-cron-input">Cron expression</label>
+                                <input type="text" class="form-input" id="schedule-cron-input" placeholder="0 9 * * 1-5" pattern="[0-9*,/\- ]+">
+                                <span class="form-hint">Format: minute hour day-of-month month day-of-week</span>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" onclick="CohortTasks.closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Schedule</button>
                     </div>
                 </form>
             </div>
@@ -629,6 +750,7 @@
                             <option value="rss">RSS Feed Reader</option>
                             <option value="email_smtp">Email (SMTP)</option>
                             <option value="email_imap">Email (IMAP)</option>
+                            <option value="resend">Resend Email API</option>
                             <option value="github">GitHub API</option>
                             <option value="slack">Slack Webhook</option>
                             <option value="discord">Discord Webhook</option>
@@ -936,5 +1058,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/cohort.js"></script>
+    <script src="/static/cohort-tasks.js"></script>
 </body>
 </html>

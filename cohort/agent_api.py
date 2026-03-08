@@ -468,7 +468,7 @@ async def get_tiers():
             ),
             TierInfo(
                 tier="enterprise",
-                description="The factory: agent creation, training pipeline, supervisor, BOSS meta-layer",
+                description="The factory: agent creation, training pipeline, supervisor, orchestration meta-layer",
                 agents=all_non_enterprise + enterprise_agents,
                 agent_count=len(all_non_enterprise) + len(enterprise_agents),
             ),

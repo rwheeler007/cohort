@@ -61,6 +61,8 @@ _chat: Any = None
 _task_executor: Any = None
 _work_queue: Any = None
 _agent_store: Any = None
+_task_store: Any = None
+_scheduler: Any = None
 
 
 def setup_socketio(data_layer: Any, chat: Any = None, agent_store: Any = None) -> None:
@@ -84,6 +86,20 @@ def setup_work_queue(wq: Any) -> None:
     global _work_queue  # noqa: PLW0603
     _work_queue = wq
     logger.info("[OK] Work queue wired into Socket.IO events")
+
+
+def setup_task_store(store: Any) -> None:
+    """Wire the task store for schedule events."""
+    global _task_store  # noqa: PLW0603
+    _task_store = store
+    logger.info("[OK] Task store wired into Socket.IO events")
+
+
+def setup_scheduler(scheduler: Any) -> None:
+    """Wire the scheduler for heartbeat and control events."""
+    global _scheduler  # noqa: PLW0603
+    _scheduler = scheduler
+    logger.info("[OK] Scheduler wired into Socket.IO events")
 
 
 # =====================================================================
@@ -116,6 +132,14 @@ async def join(sid: str, data: dict | None = None) -> dict:
             {"items": [i.to_dict() for i in items]},
             to=sid,
         )
+    # Send schedule state
+    if _task_store is not None:
+        schedules = _task_store.list_schedules()
+        scheduler_status = _scheduler.status if _scheduler else {"running": False}
+        await sio.emit("cohort:schedules_update", {
+            "schedules": [s.to_dict() for s in schedules],
+            "scheduler": scheduler_status,
+        }, to=sid)
     return {"status": "ok"}
 
 
@@ -206,6 +230,166 @@ async def confirm_task(sid: str, data: dict) -> dict:
         asyncio.create_task(_task_executor.execute_task(task, confirmed_brief))
 
     return {"status": "ok"}
+
+
+# =====================================================================
+# Client -> Server events: Schedules
+# =====================================================================
+
+@sio.event
+async def create_schedule(sid: str, data: dict) -> dict:
+    """Create a new task schedule."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    agent_id = data.get("agent_id")
+    description = data.get("description")
+    schedule_type = data.get("schedule_type")
+    schedule_expr = data.get("schedule_expr")
+    priority = data.get("priority", "medium")
+    preset = data.get("preset")
+
+    if not agent_id or not description:
+        return {"error": "Missing agent_id or description"}
+
+    # Resolve preset if provided
+    if preset:
+        try:
+            from cohort.cron import resolve_preset, compute_next_run
+            schedule_type, schedule_expr = resolve_preset(preset)
+        except ValueError as exc:
+            return {"error": str(exc)}
+
+    if not schedule_type or not schedule_expr:
+        return {"error": "Missing schedule_type/schedule_expr or preset"}
+
+    try:
+        from cohort.cron import compute_next_run
+        from datetime import datetime, timezone
+        next_run = compute_next_run(schedule_type, schedule_expr, datetime.now(timezone.utc))
+
+        schedule = _task_store.create_schedule(
+            agent_id=agent_id,
+            description=description,
+            schedule_type=schedule_type,
+            schedule_expr=schedule_expr,
+            priority=priority,
+            next_run_at=next_run,
+            created_by="user",
+            metadata=data.get("metadata", {}),
+        )
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+    # Broadcast updated schedule list
+    await _broadcast_schedules()
+    return {"status": "ok", "schedule_id": schedule.id}
+
+
+@sio.event
+async def update_schedule(sid: str, data: dict) -> dict:
+    """Update a schedule definition."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    schedule_id = data.get("schedule_id")
+    if not schedule_id:
+        return {"error": "Missing schedule_id"}
+
+    updates = {k: v for k, v in data.items() if k != "schedule_id"}
+    schedule = _task_store.update_schedule(schedule_id, **updates)
+    if schedule is None:
+        return {"error": "Schedule not found"}
+
+    await _broadcast_schedules()
+    return {"status": "ok"}
+
+
+@sio.event
+async def delete_schedule(sid: str, data: dict) -> dict:
+    """Delete a schedule."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    schedule_id = data.get("schedule_id")
+    if not schedule_id:
+        return {"error": "Missing schedule_id"}
+
+    success = _task_store.delete_schedule(schedule_id)
+    if not success:
+        return {"error": "Schedule not found"}
+
+    await _broadcast_schedules()
+    return {"status": "ok"}
+
+
+@sio.event
+async def toggle_schedule(sid: str, data: dict) -> dict:
+    """Toggle a schedule's enabled/disabled state."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    schedule_id = data.get("schedule_id")
+    if not schedule_id:
+        return {"error": "Missing schedule_id"}
+
+    schedule = _task_store.toggle_schedule(schedule_id)
+    if schedule is None:
+        return {"error": "Schedule not found"}
+
+    await _broadcast_schedules()
+    return {"status": "ok", "enabled": schedule.enabled}
+
+
+@sio.event
+async def force_run_schedule(sid: str, data: dict) -> dict:
+    """Manually trigger a schedule to run now."""
+    if _scheduler is None:
+        return {"error": "Scheduler not initialised"}
+
+    schedule_id = data.get("schedule_id")
+    if not schedule_id:
+        return {"error": "Missing schedule_id"}
+
+    result = await _scheduler.force_run(schedule_id)
+    if result is None:
+        return {"error": "Schedule not found"}
+
+    return result
+
+
+@sio.event
+async def request_schedules(sid: str, data: dict | None = None) -> None:
+    """Client requests current schedule list."""
+    if _task_store is None:
+        return
+    schedules = _task_store.list_schedules()
+    scheduler_status = _scheduler.status if _scheduler else {"running": False}
+    await sio.emit("cohort:schedules_update", {
+        "schedules": [s.to_dict() for s in schedules],
+        "scheduler": scheduler_status,
+    }, to=sid)
+
+
+@sio.event
+async def request_scheduler_status(sid: str, data: dict | None = None) -> None:
+    """Client requests scheduler heartbeat status."""
+    if _scheduler is None:
+        await sio.emit("cohort:scheduler_heartbeat", {"running": False}, to=sid)
+        return
+    await sio.emit("cohort:scheduler_heartbeat", _scheduler.status, to=sid)
+
+
+async def _broadcast_schedules() -> None:
+    """Broadcast updated schedule list to all clients."""
+    if _task_store is None:
+        return
+    schedules = _task_store.list_schedules()
+    scheduler_status = _scheduler.status if _scheduler else {"running": False}
+    await sio.emit("cohort:schedules_update", {
+        "schedules": [s.to_dict() for s in schedules],
+        "scheduler": scheduler_status,
+    })
 
 
 # =====================================================================
