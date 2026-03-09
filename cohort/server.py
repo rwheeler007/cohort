@@ -343,20 +343,20 @@ async def register_agent(request: Request) -> JSONResponse:
 
 async def get_task_queue(request: Request) -> JSONResponse:
     """GET /api/tasks -- return the task queue."""
-    if _data_layer is None:
-        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
 
     status_filter = request.query_params.get("status")
-    tasks = _data_layer.get_task_queue(status_filter=status_filter)
+    tasks = _task_store.list_tasks(status_filter=status_filter)
     return JSONResponse({"tasks": tasks})
 
 
 async def get_outputs(request: Request) -> JSONResponse:
     """GET /api/outputs -- return completed tasks awaiting review."""
-    if _data_layer is None:
-        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
 
-    outputs = _data_layer.get_outputs_for_review()
+    outputs = _task_store.get_outputs_for_review()
     return JSONResponse({"outputs": outputs})
 
 
@@ -366,8 +366,8 @@ async def create_task(request: Request) -> JSONResponse:
     Mirrors the Socket.IO ``assign_task`` event but over HTTP so MCP
     tools can submit tasks without needing a WebSocket connection.
     """
-    if _data_layer is None:
-        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
 
     try:
         body = await request.json()
@@ -384,12 +384,11 @@ async def create_task(request: Request) -> JSONResponse:
             status_code=400,
         )
 
-    task = _data_layer.assign_task(agent_id, description, priority)
+    task = _task_store.create_task(agent_id, description, priority)
 
     # Broadcast via Socket.IO if available
     try:
         from cohort.socketio_events import sio
-        import asyncio
         asyncio.create_task(sio.emit("cohort:task_assigned", task))
     except Exception:
         pass  # Socket.IO not available -- task still created
@@ -403,8 +402,8 @@ async def update_task(request: Request) -> JSONResponse:
     Supports advancing tasks through the lifecycle and attaching output
     for the review pipeline.
     """
-    if _data_layer is None:
-        return JSONResponse({"error": "Data layer not initialised"}, status_code=500)
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
 
     task_id = request.path_params.get("task_id", "")
     try:
@@ -416,9 +415,14 @@ async def update_task(request: Request) -> JSONResponse:
     output = body.get("output")
 
     if status == "complete":
-        task = _data_layer.complete_task(task_id, output=output)
+        task = _task_store.complete_task(task_id, output=output)
+    elif status == "failed":
+        task = _task_store.fail_task(task_id, reason=body.get("reason", ""))
     elif status:
-        task = _data_layer.update_task_progress(task_id, status, progress=body.get("progress"))
+        updates = {"status": status}
+        if body.get("progress"):
+            updates["progress"] = body["progress"]
+        task = _task_store.update_task(task_id, **updates)
     else:
         return JSONResponse({"error": "Missing 'status' field"}, status_code=400)
 
@@ -428,7 +432,6 @@ async def update_task(request: Request) -> JSONResponse:
     # Broadcast via Socket.IO
     try:
         from cohort.socketio_events import sio
-        import asyncio
         event = "cohort:task_complete" if status == "complete" else "cohort:task_progress"
         asyncio.create_task(sio.emit(event, task))
     except Exception:
@@ -3740,6 +3743,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     _task_store = TaskStore(Path(resolved_dir))
     setup_task_store(_task_store)
     executor.set_task_store(_task_store)
+    data_layer.set_task_store(_task_store)
     logger.info("[OK] Task store initialised")
 
     # -- Task Scheduler (asyncio background tick loop) --------------------

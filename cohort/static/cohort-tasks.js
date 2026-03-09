@@ -18,6 +18,7 @@ const CohortTasks = (() => {
     let currentView = 'active';  // 'active' | 'scheduled' | 'completed'
     let schedules = [];
     let schedulerStatus = { running: false };
+    let _editingScheduleId = null;
 
     // -- DOM cache (populated on init) --
     let _dom = {};
@@ -116,6 +117,7 @@ const CohortTasks = (() => {
         if (modal) modal.hidden = true;
         if (_dom.scheduleForm) _dom.scheduleForm.reset();
         if (_dom.assignForm) _dom.assignForm.reset();
+        _editingScheduleId = null;
         // Reset to assign tab
         switchModalTab('assign');
     }
@@ -172,6 +174,14 @@ const CohortTasks = (() => {
             ? `<span class="schedule-card__warning">[!] ${schedule.failure_streak} consecutive failures</span>`
             : '';
 
+        // Run history inline (last 3 runs)
+        const recentRuns = (schedule.recent_runs || []).slice(0, 3);
+        const runHistoryHtml = recentRuns.length > 0
+            ? `<div class="schedule-card__run-history">${recentRuns.map(r =>
+                `<span class="run-dot run-dot--${r.status === 'failed' ? 'failed' : 'success'}" title="${r.status} ${formatTimeAgo(r.completed_at || r.created_at)}"></span>`
+            ).join('')}</div>`
+            : '';
+
         return `
         <div class="schedule-card${disabledClass}" data-schedule-id="${escapeHtml(schedule.id)}">
             <div class="schedule-card__header">
@@ -193,9 +203,11 @@ const CohortTasks = (() => {
                 <span class="schedule-card__status ${statusClass}" title="Last run status">${statusIcon} Last: ${lastRun}</span>
                 <span class="schedule-card__next" title="Next scheduled run">Next: ${nextRun}</span>
                 <span class="schedule-card__runs">${schedule.run_count || 0} runs</span>
+                ${runHistoryHtml}
             </div>
             <div class="schedule-card__actions">
                 <button class="btn btn--small btn--secondary" onclick="CohortTasks.forceRun('${escapeHtml(schedule.id)}')" ${isEnabled ? '' : 'disabled'}>Run Now</button>
+                <button class="btn btn--small btn--secondary" onclick="CohortTasks.editSchedule('${escapeHtml(schedule.id)}')">Edit</button>
                 <button class="btn btn--small btn--danger" onclick="CohortTasks.deleteSchedule('${escapeHtml(schedule.id)}')">Delete</button>
             </div>
         </div>`;
@@ -290,8 +302,18 @@ const CohortTasks = (() => {
         if (data.scheduler) updateSchedulerHeartbeat(data.scheduler);
 
         // Update badge in all views
+        const enabledCount = schedules.filter(s => s.enabled).length;
+        const disabledCount = schedules.filter(s => !s.enabled && s.failure_streak >= s.max_failures).length;
         if (_dom.scheduleBadge) {
-            _dom.scheduleBadge.textContent = schedules.filter(s => s.enabled).length;
+            _dom.scheduleBadge.textContent = enabledCount;
+            // Failure badge: red indicator when schedules are auto-disabled
+            if (disabledCount > 0) {
+                _dom.scheduleBadge.classList.add('schedule-badge--has-failures');
+                _dom.scheduleBadge.title = `${disabledCount} schedule(s) auto-disabled`;
+            } else {
+                _dom.scheduleBadge.classList.remove('schedule-badge--has-failures');
+                _dom.scheduleBadge.title = '';
+            }
         }
 
         // Re-render if we're on the scheduled view
@@ -362,6 +384,57 @@ const CohortTasks = (() => {
         });
     }
 
+    function editSchedule(scheduleId) {
+        const schedule = schedules.find(s => s.id === scheduleId);
+        if (!schedule) {
+            showToast('Schedule not found', 'error');
+            return;
+        }
+
+        // Open modal on schedule tab
+        const modal = document.getElementById('assign-task-modal');
+        if (modal) modal.hidden = false;
+        switchModalTab('schedule');
+
+        // Pre-fill the form with existing schedule values
+        _populateScheduleAgentSelect();
+        if (_dom.scheduleAgentSelect) _dom.scheduleAgentSelect.value = schedule.agent_id;
+        if (_dom.scheduleDescInput) _dom.scheduleDescInput.value = schedule.description;
+        if (_dom.schedulePrioritySelect) _dom.schedulePrioritySelect.value = schedule.priority || 'medium';
+        if (_dom.scheduleDescCount) _dom.scheduleDescCount.textContent = `${schedule.description.length} / 500`;
+
+        // Select the 'custom' radio since we're editing
+        const customRadio = document.querySelector('input[name="schedule-preset"][value="custom"]');
+        if (customRadio) {
+            customRadio.checked = true;
+            if (_dom.customFields) _dom.customFields.style.display = '';
+        }
+
+        // Set type and expression
+        if (_dom.typeSelect) _dom.typeSelect.value = schedule.schedule_type === 'cron' ? 'cron' : 'interval';
+        if (schedule.schedule_type === 'interval') {
+            if (_dom.intervalInput) _dom.intervalInput.value = Math.round(parseInt(schedule.schedule_expr, 10) / 60);
+            if (_dom.intervalGroup) _dom.intervalGroup.style.display = '';
+            if (_dom.cronGroup) _dom.cronGroup.style.display = 'none';
+        } else if (schedule.schedule_type === 'cron') {
+            if (_dom.cronInput) _dom.cronInput.value = schedule.schedule_expr;
+            if (_dom.intervalGroup) _dom.intervalGroup.style.display = 'none';
+            if (_dom.cronGroup) _dom.cronGroup.style.display = '';
+        }
+
+        // Mark form as editing (stash the schedule ID for submitSchedule)
+        _editingScheduleId = scheduleId;
+    }
+
+    function onTaskComplete(task) {
+        // Toast for scheduled task completion
+        if (task && task.schedule_id) {
+            const statusLabel = task.status === 'failed' ? 'failed' : 'completed';
+            const toastType = task.status === 'failed' ? 'error' : 'success';
+            showToast(`Scheduled task ${statusLabel}: ${(task.description || '').substring(0, 60)}`, toastType);
+        }
+    }
+
     function submitSchedule() {
         if (!state.socket || !state.connected) {
             showToast('Not connected', 'error');
@@ -386,7 +459,43 @@ const CohortTasks = (() => {
 
         const presetValue = selectedPreset.value;
 
-        if (presetValue === 'custom') {
+        if (_editingScheduleId) {
+            // Editing existing schedule -- always use custom type/expr
+            const type = _dom.typeSelect ? _dom.typeSelect.value : 'interval';
+            let expr;
+            if (type === 'interval') {
+                const minutes = parseInt(_dom.intervalInput ? _dom.intervalInput.value : '60', 10);
+                if (minutes < 5) {
+                    showToast('Minimum interval is 5 minutes', 'error');
+                    return;
+                }
+                expr = String(minutes * 60);
+            } else {
+                expr = _dom.cronInput ? _dom.cronInput.value.trim() : '';
+                if (!expr) {
+                    showToast('Cron expression is required', 'error');
+                    return;
+                }
+            }
+
+            state.socket.emit('update_schedule', {
+                schedule_id: _editingScheduleId,
+                agent_id: agentId,
+                description: description,
+                priority: priority,
+                schedule_type: type,
+                schedule_expr: expr,
+            }, (response) => {
+                _editingScheduleId = null;
+                if (response && response.error) {
+                    showToast(response.error, 'error');
+                } else {
+                    showToast('Schedule updated', 'success');
+                    closeModal();
+                    switchView('scheduled');
+                }
+            });
+        } else if (presetValue === 'custom') {
             // Custom schedule
             const type = _dom.typeSelect ? _dom.typeSelect.value : 'interval';
             let expr;
@@ -497,10 +606,12 @@ const CohortTasks = (() => {
         onScheduleRun,
         onScheduleDisabled,
         onSchedulerHeartbeat,
+        onTaskComplete,
         // Actions
         toggleSchedule,
         deleteSchedule,
         forceRun,
+        editSchedule,
         submitSchedule,
     };
 })();

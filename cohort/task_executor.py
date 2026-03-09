@@ -126,6 +126,8 @@ class TaskExecutor:
 
         # Store channel_id on the task for later reference
         task["channel_id"] = channel_id
+        if hasattr(self, '_task_store') and self._task_store:
+            self._task_store.update_task(task["task_id"], channel_id=channel_id)
         task["updated_at"] = datetime.now().isoformat()
 
         # Invoke the agent in briefing mode (in background thread)
@@ -222,7 +224,11 @@ class TaskExecutor:
             task["consultations"] = consultations
 
         # Transition to in_progress
-        updated = self.data_layer.update_task_progress(task_id, "in_progress")
+        if hasattr(self, '_task_store') and self._task_store:
+            updated = self._task_store.update_task(task_id, status="in_progress")
+        else:
+            updated = None
+            logger.warning("[!] No task_store available for task %s", task_id)
         if updated:
             await self._emit("cohort:task_progress", updated)
             await self._emit("cohort:team_update", self.data_layer.get_team_snapshot())
@@ -280,20 +286,28 @@ class TaskExecutor:
         # Post result to chat
         self._post_and_broadcast(channel_id, agent_id, result)
 
-        # Mark task complete
+        # Mark task complete -- use TaskStore if available, else data_layer
         output = {
             "content": result,
             "backend": backend,
             "completed_at": datetime.now().isoformat(),
         }
-        completed = self.data_layer.complete_task(task_id, output)
+        if hasattr(self, '_task_store') and self._task_store:
+            if result.startswith("[Error]") or result.startswith("[Timeout]"):
+                completed = self._task_store.fail_task(task_id, reason=result)
+            else:
+                completed = self._task_store.complete_task(task_id, output)
+        else:
+            completed = None
+            logger.warning("[!] No task_store available for task %s", task_id)
         if completed:
             self._emit_sync("cohort:task_complete", completed)
             self._emit_sync("cohort:output_ready", completed)
-            self._emit_sync(
-                "cohort:team_update",
-                self.data_layer.get_team_snapshot(),
-            )
+            if self.data_layer:
+                self._emit_sync(
+                    "cohort:team_update",
+                    self.data_layer.get_team_snapshot(),
+                )
 
     def _execute_cli_task(
         self,
@@ -416,10 +430,13 @@ class TaskExecutor:
         agent_id = task["agent_id"]
 
         # Transition to in_progress
-        if self.data_layer:
-            updated = self.data_layer.update_task_progress(task_id, "in_progress")
-            if updated:
-                await self._emit("cohort:task_progress", updated)
+        if hasattr(self, '_task_store') and self._task_store:
+            updated = self._task_store.update_task(task_id, status="in_progress")
+        else:
+            updated = None
+            logger.warning("[!] No task_store available for scheduled task %s", task_id)
+        if updated:
+            await self._emit("cohort:task_progress", updated)
 
         # Run execution in a background thread
         thread = threading.Thread(
@@ -468,8 +485,8 @@ class TaskExecutor:
                 completed = self._task_store.fail_task(task_id, reason=result)
             else:
                 completed = self._task_store.complete_task(task_id, output)
-        elif self.data_layer:
-            completed = self.data_layer.complete_task(task_id, output)
+        else:
+            logger.warning("[!] No task_store available for scheduled task %s", task_id)
 
         if completed:
             self._emit_sync("cohort:task_complete", completed)

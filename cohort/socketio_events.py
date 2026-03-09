@@ -137,7 +137,7 @@ async def join(sid: str, data: dict | None = None) -> dict:
         schedules = _task_store.list_schedules()
         scheduler_status = _scheduler.status if _scheduler else {"running": False}
         await sio.emit("cohort:schedules_update", {
-            "schedules": [s.to_dict() for s in schedules],
+            "schedules": [_enrich_schedule(s) for s in schedules],
             "scheduler": scheduler_status,
         }, to=sid)
     return {"status": "ok"}
@@ -168,8 +168,8 @@ async def request_work_queue(sid: str, data: dict | None = None) -> None:
 @sio.event
 async def submit_review(sid: str, data: dict) -> dict:
     """Human submits a review verdict for an output."""
-    if _data_layer is None:
-        return {"error": "Data layer not initialised"}
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
 
     task_id = data.get("task_id")
     verdict = data.get("verdict")
@@ -178,7 +178,9 @@ async def submit_review(sid: str, data: dict) -> dict:
     if not task_id or not verdict:
         return {"error": "Missing task_id or verdict"}
 
-    review = _data_layer.record_review(task_id, verdict, notes)
+    review = _task_store.record_review(task_id, verdict, notes)
+    if review is None:
+        return {"error": "Task not found"}
     await sio.emit("cohort:review_submitted", review)
     return {"status": "ok"}
 
@@ -186,8 +188,8 @@ async def submit_review(sid: str, data: dict) -> dict:
 @sio.event
 async def assign_task(sid: str, data: dict) -> dict:
     """Human assigns a task to an agent."""
-    if _data_layer is None:
-        return {"error": "Data layer not initialised"}
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
 
     agent_id = data.get("agent_id")
     description = data.get("description")
@@ -196,7 +198,7 @@ async def assign_task(sid: str, data: dict) -> dict:
     if not agent_id or not description:
         return {"error": "Missing agent_id or description"}
 
-    task = _data_layer.assign_task(agent_id, description, priority)
+    task = _task_store.create_task(agent_id, description, priority)
     await sio.emit("cohort:task_assigned", task)
 
     # Start conversational briefing
@@ -209,8 +211,8 @@ async def assign_task(sid: str, data: dict) -> dict:
 @sio.event
 async def confirm_task(sid: str, data: dict) -> dict:
     """User confirms the briefing -- transition to execution."""
-    if _data_layer is None:
-        return {"error": "Data layer not initialised"}
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
 
     task_id = data.get("task_id")
     confirmed_brief = data.get("brief", {})
@@ -218,7 +220,7 @@ async def confirm_task(sid: str, data: dict) -> dict:
     if not task_id:
         return {"error": "Missing task_id"}
 
-    task = _data_layer.confirm_task(task_id, confirmed_brief)
+    task = _task_store.update_task(task_id, status="assigned", brief=confirmed_brief)
     if not task:
         return {"error": "Task not found"}
 
@@ -366,7 +368,7 @@ async def request_schedules(sid: str, data: dict | None = None) -> None:
     schedules = _task_store.list_schedules()
     scheduler_status = _scheduler.status if _scheduler else {"running": False}
     await sio.emit("cohort:schedules_update", {
-        "schedules": [s.to_dict() for s in schedules],
+        "schedules": [_enrich_schedule(s) for s in schedules],
         "scheduler": scheduler_status,
     }, to=sid)
 
@@ -380,6 +382,18 @@ async def request_scheduler_status(sid: str, data: dict | None = None) -> None:
     await sio.emit("cohort:scheduler_heartbeat", _scheduler.status, to=sid)
 
 
+def _enrich_schedule(schedule) -> dict:
+    """Add recent_runs to a schedule dict for the UI."""
+    d = schedule.to_dict()
+    if _task_store is not None:
+        runs = _task_store.list_tasks(schedule_id=schedule.id, limit=3)
+        d["recent_runs"] = [
+            {"status": r.get("status", ""), "completed_at": r.get("completed_at"), "created_at": r.get("created_at")}
+            for r in runs
+        ]
+    return d
+
+
 async def _broadcast_schedules() -> None:
     """Broadcast updated schedule list to all clients."""
     if _task_store is None:
@@ -387,7 +401,7 @@ async def _broadcast_schedules() -> None:
     schedules = _task_store.list_schedules()
     scheduler_status = _scheduler.status if _scheduler else {"running": False}
     await sio.emit("cohort:schedules_update", {
-        "schedules": [s.to_dict() for s in schedules],
+        "schedules": [_enrich_schedule(s) for s in schedules],
         "scheduler": scheduler_status,
     })
 

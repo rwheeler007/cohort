@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import threading
 import uuid
 from dataclasses import asdict, dataclass, field
@@ -50,6 +51,49 @@ def _now_iso() -> str:
 
 def _gen_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex[:8]}"
+
+
+# -- Secret scanning ---------------------------------------------------------
+
+_SECRET_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("aws_key", re.compile(r"AKIA[0-9A-Z]{16}")),
+    ("anthropic_key", re.compile(r"sk-ant-[a-zA-Z0-9\-]{20,}")),
+    ("openai_key", re.compile(r"sk-(?!ant-)[a-zA-Z0-9]{20,}")),
+    ("github_pat", re.compile(r"ghp_[a-zA-Z0-9]{36}")),
+    ("github_pat_fine", re.compile(r"github_pat_[a-zA-Z0-9_]{80,}")),
+    ("private_key", re.compile(r"-----BEGIN[A-Z ]*PRIVATE KEY-----")),
+    ("generic_secret", re.compile(r"(?:api[_-]?key|secret[_-]?key|password)\s*[=:]\s*['\"][^\s'\"]{12,}['\"]", re.IGNORECASE)),
+]
+
+
+def _scan_for_secrets(text: str) -> str:
+    """Scan text for leaked secrets and replace with [REDACTED:type].
+
+    Returns the (possibly redacted) text.
+    """
+    if not text:
+        return text
+
+    redacted = False
+    for label, pattern in _SECRET_PATTERNS:
+        if pattern.search(text):
+            text = pattern.sub(f"[REDACTED:{label}]", text)
+            redacted = True
+
+    if redacted:
+        logger.warning("[!] Secret(s) redacted from task output")
+
+    return text
+
+
+def _scan_output(output: Dict[str, Any] | None) -> Dict[str, Any] | None:
+    """Scan an output dict for secrets in its 'content' field."""
+    if output is None:
+        return None
+    content = output.get("content")
+    if isinstance(content, str):
+        output["content"] = _scan_for_secrets(content)
+    return output
 
 
 # -- Schedule dataclass ------------------------------------------------------
@@ -244,7 +288,7 @@ class TaskStore:
             task["updated_at"] = now
             task["completed_at"] = now
             if output:
-                task["output"] = output
+                task["output"] = _scan_output(output)
 
             # Update parent schedule stats if this is a scheduled run
             schedule_id = task.get("schedule_id")
@@ -273,7 +317,7 @@ class TaskStore:
             task["status"] = "failed"
             task["updated_at"] = now
             task["completed_at"] = now
-            task["output"] = {"content": reason, "backend": "error", "completed_at": now}
+            task["output"] = _scan_output({"content": reason, "backend": "error", "completed_at": now})
 
             # Update parent schedule failure tracking
             schedule_id = task.get("schedule_id")

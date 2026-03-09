@@ -5914,6 +5914,42 @@ select.tool-config-card__input option {
     outline-offset: 2px;
 }
 
+/* Run history dots */
+.schedule-card__run-history {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    margin-left: var(--space-2);
+}
+
+.run-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-bg-active);
+}
+
+.run-dot--success {
+    background: var(--color-success, #27ae60);
+}
+
+.run-dot--failed {
+    background: var(--color-danger, #e74c3c);
+}
+
+/* Failure badge on Scheduled sub-tab */
+.schedule-badge--has-failures {
+    background: var(--color-danger, #e74c3c) !important;
+    color: white !important;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 /* Modal tabs */
 .modal-tabs {
     display: flex;
