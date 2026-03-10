@@ -13,15 +13,17 @@ built_with_cohort: true
 
 # --- Brand ---
 brand:
-  primary_color: "#6366f1"       # Indigo-500
-  secondary_color: "#1e1b4b"     # Indigo-950
-  accent_color: "#e0e7ff"        # Indigo-100
-  background_color: "#ffffff"
-  text_color: "#1e1b4b"
-  font_heading: "'Inter', system-ui, -apple-system, sans-serif"
-  font_body: "'Inter', system-ui, -apple-system, sans-serif"
-  border_radius: "0.5rem"
-  primary_hover: "#4f46e5"       # Indigo-600
+  primary_color: "#D97757"       # Cohort terracotta (from dashboard)
+  secondary_color: "#2B2D31"     # Deep charcoal (dark sections, nav, footer)
+  accent_color: "#F5E6DE"        # Warm cream (light accent sections)
+  background_color: "#FAFAF8"    # Warm white (main bg, 14:1 vs text)
+  text_color: "#2B2D31"          # Deep charcoal (14:1 on warm white)
+  font_heading: "'Press Start 2P', 'Courier New', monospace"
+  font_body: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+  border_radius: "0.25rem"       # Sharper corners for retro/pixel feel
+  primary_hover: "#C56648"       # Darker terracotta (from dashboard)
+  google_fonts:
+    - "Press Start 2P"
 
 # --- SEO ---
 seo:

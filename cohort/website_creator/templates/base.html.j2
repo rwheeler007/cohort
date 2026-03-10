@@ -34,6 +34,14 @@
     <link rel="icon" href="{{ favicon }}">
     {% endif %}
 
+    {% if brand.google_fonts is defined and brand.google_fonts %}
+    {# Generic Google Fonts loader -- list font families in site_brief.yaml #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% for gf in brand.google_fonts %}
+    <link href="https://fonts.googleapis.com/css2?family={{ gf | replace(' ', '+') }}&display=swap" rel="stylesheet">
+    {% endfor %}
+    {% endif %}
     <link rel="stylesheet" href="styles.css">
     {% block head_extra %}{% endblock %}
 </head>
@@ -44,7 +52,7 @@
     <!-- Navigation -->
     <nav class="site-nav" aria-label="Main navigation">
         <div class="container">
-            <a href="index.html" class="nav-brand" style="font-weight:700; font-size:1.2rem;">
+            <a href="index.html" class="nav-brand" style="font-weight:700; font-size:1.2rem; font-family: var(--font-heading);">
                 {% if logo %}<img src="{{ logo }}" alt="{{ product_name }}" style="height:2rem;">
                 {% else %}{{ product_name }}{% endif %}
             </a>

@@ -28,6 +28,8 @@ class BrandTokens:
     font_heading: str = "system-ui, -apple-system, sans-serif"
     font_body: str = "system-ui, -apple-system, sans-serif"
     border_radius: str = "0.5rem"
+    # Google Fonts to load (e.g. ["Press Start 2P", "Inter:wght@400;700"])
+    google_fonts: list[str] = field(default_factory=list)
     # Derived from primary_color for hover states etc.
     primary_hover: str = ""
 
