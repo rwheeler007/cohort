@@ -4,7 +4,7 @@
 # "This site was built by Cohort" -- the ultimate proof of concept.
 # ============================================================
 
-product_name: "Cohort"
+product_name: "COHORT"
 tagline: "Multi-Agent Orchestration That Ships"
 description: "Cohort coordinates teams of AI agents to tackle complex tasks -- websites, code reviews, content pipelines -- in minutes, not weeks."
 logo: ""
@@ -19,6 +19,7 @@ brand:
   background_color: "#FAFAF8"    # Warm white (main bg, 14:1 vs text)
   text_color: "#2B2D31"          # Deep charcoal (14:1 on warm white)
   font_heading: "'Press Start 2P', 'Courier New', monospace"
+  font_heading_weight: "400"    # Press Start 2P is single-weight; 700 causes faux-bold blur
   font_body: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
   border_radius: "0.25rem"       # Sharper corners for retro/pixel feel
   primary_hover: "#C56648"       # Darker terracotta (from dashboard)
@@ -60,7 +61,7 @@ nav_items:
 # --- Hero ---
 hero:
   headline: "Your AI Team, Orchestrated"
-  subheadline: "Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. This website? Built by Cohort in 15 minutes."
+  subheadline: "Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. This website? The engine behind it was built by Cohort in 7 minutes and 39 seconds. That engine built the MVP for this site in 0.55 seconds -- with zero human intervention, start to finish."
   cta_primary_text: "Try the Demo"
   cta_primary_href: "https://github.com/cohort-dev/cohort"
   cta_secondary_text: "See How It Works"
@@ -235,7 +236,7 @@ pages:
       subheadline: "What teams are building with Cohort today."
       sections:
         - heading: "Website Generation"
-          body: "Input your current site + competitors, answer 20 questions, and Cohort's agents build you a complete, responsive, SEO-optimized website in 15 minutes. This site is proof."
+          body: "Input your current site + competitors, answer 20 questions, and Cohort's agents build you a complete, responsive, SEO-optimized website in minutes. This site is proof."
         - heading: "Code Review & Security Audit"
           body: "Point Cohort at a codebase and get multi-perspective analysis: security vulnerabilities, code quality issues, performance bottlenecks, and documentation gaps -- all in parallel."
         - heading: "Content Pipeline"

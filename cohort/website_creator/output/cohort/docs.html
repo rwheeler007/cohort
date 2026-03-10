@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | COHORT</title>
+    <meta name="description" content="Cohort documentation -- installation, quickstart, API reference, and agent development guide.">
+    <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
+
+    <link rel="canonical" href="https://cohort.dev/docs.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cohort.dev/docs.html">
+    <meta property="og:title" content="Documentation | COHORT">
+    <meta property="og:description" content="Cohort documentation -- installation, quickstart, API reference, and agent development guide.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Documentation | COHORT">
+    <meta name="twitter:description" content="Cohort documentation -- installation, quickstart, API reference, and agent development guide.">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="features.html">How It Works</a></li>
+                <li><a href="use-cases.html">Use Cases</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="docs.html">Docs</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+<!-- Page Header -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">Documentation</h1>
+        <p class="responsive-p-large">Everything you need to get started with Cohort.</p>
+    </div>
+</section>
+
+<!-- Content Body -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+            <div style="margin-bottom: 3rem;">
+                <h2 class="responsive-h2">Quick Start</h2>
+                <div class="responsive-p-body" style="max-width: none;">Install Cohort and run your first multi-agent task in under 5 minutes.</div>
+                <ul style="padding-left: 1.5rem; margin-top: 1rem;">
+                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">pip install cohort</li>
+                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">cohort init my-project</li>
+                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">cohort serve --port 5100</li>
+                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">Open http://localhost:5100 in your browser</li>
+                </ul>
+            </div>
+            <div style="margin-bottom: 3rem;">
+                <h2 class="responsive-h2">Core Concepts</h2>
+                <div class="responsive-p-body" style="max-width: none;">Understand the building blocks: agents, sessions, roundtables, work queues, and briefings.</div>
+            </div>
+            <div style="margin-bottom: 3rem;">
+                <h2 class="responsive-h2">API Reference</h2>
+                <div class="responsive-p-body" style="max-width: none;">Full REST API documentation for the Cohort server. All endpoints, request/response schemas, and WebSocket events.</div>
+            </div>
+            <div style="margin-bottom: 3rem;">
+                <h2 class="responsive-h2">Agent Development</h2>
+                <div class="responsive-p-body" style="max-width: none;">Create custom agents with agent_config.json, agent_persona.md, and agent_prompt.md. No base class required -- just implement the protocol.</div>
+            </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>Multi-Agent Orchestration That Ships</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="#">Privacy</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2026 Cohort. Open source under MIT License.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

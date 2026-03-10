@@ -16,6 +16,7 @@ const state = {
     outputs: [],
     workQueue: [],
     filter: 'all',
+    taskAgentFilter: null,
     selectedVerdict: null,
     socket: null,
     connected: false,
@@ -6013,10 +6014,24 @@ function renderTaskList() {
         tasks = tasks.filter((t) => t.status === state.filter);
     }
 
+    // Agent filter (from deep-link or UI)
+    const agentFilter = state.taskAgentFilter;
+    if (agentFilter) {
+        tasks = tasks.filter((t) => t.agent_id === agentFilter);
+    }
+
+    // Show filter banner when agent filter is active
+    const filterBanner = agentFilter
+        ? `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:8px;background:rgba(88,166,255,.08);border:1px solid var(--accent);border-radius:6px;font-size:12px;color:var(--accent)">` +
+          `Filtered to: <strong>${agentFilter}</strong>` +
+          `<button onclick="state.taskAgentFilter=null;renderTaskList()" style="margin-left:auto;padding:2px 8px;font-size:10px;cursor:pointer;background:transparent;border:1px solid var(--accent);border-radius:8px;color:var(--accent)">Clear</button>` +
+          `</div>`
+        : '';
+
     if (tasks.length === 0) {
-        dom.taskList.innerHTML =
+        dom.taskList.innerHTML = filterBanner +
             '<div class="empty-state" id="tasks-empty">' +
-            '<p class="empty-state__text">Assign your first task</p>' +
+            '<p class="empty-state__text">' + (agentFilter ? `No tasks for ${agentFilter}` : 'Assign your first task') + '</p>' +
             '<p class="empty-state__hint">Pick an agent and give it something to do</p>' +
             '<p class="empty-state__example">e.g., "Review my Python code for security issues"</p>' +
             '<button class="empty-state__cta" onclick="document.getElementById(\'assign-task-btn\').click()">+ Assign Task</button>' +
@@ -6024,7 +6039,7 @@ function renderTaskList() {
         return;
     }
 
-    dom.taskList.innerHTML = tasks.map(renderTaskCard).join('');
+    dom.taskList.innerHTML = filterBanner + tasks.map(renderTaskCard).join('');
 }
 
 function renderOutputs() {
@@ -6094,6 +6109,7 @@ function connectSocket() {
         fetchTools();
         fetchSessions();
         fetchPendingSocialPosts();
+        loadBriefingHistory();
         // Load settings (admin mode + user display name)
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
@@ -6111,6 +6127,46 @@ function connectSocket() {
                 setupWizard.show();
             }
         } catch (e) { /* setup endpoints not available -- skip */ }
+
+        // Deep-links from external pages (executive briefing, etc.)
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // ?panel=tasks&agent=xyz -- open Tasks panel filtered to an agent
+        const deepLinkPanel = urlParams.get('panel');
+        const deepLinkAgent = urlParams.get('agent');
+        if (deepLinkPanel === 'tasks' && deepLinkAgent) {
+            setTimeout(() => {
+                state.taskAgentFilter = deepLinkAgent;
+                switchPanel('tasks');
+                renderTaskList();
+            }, 500);
+            window.history.replaceState({}, '', '/');
+        }
+
+        // ?channel=slug -- open that channel automatically
+        const deepLinkChannel = urlParams.get('channel');
+        if (deepLinkChannel) {
+            // Small delay to let channel list populate from get_channels
+            setTimeout(() => {
+                // Auto-file article-* channels into "Intel Chats" folder
+                if (deepLinkChannel.startsWith('article-')) {
+                    let intelFolder = state.folders.find(f => f.name === 'Intel Chats');
+                    if (!intelFolder) {
+                        intelFolder = { id: 'folder_intel_chats', name: 'Intel Chats', channelIds: [], open: true };
+                        state.folders.push(intelFolder);
+                    }
+                    if (!intelFolder.channelIds.includes(deepLinkChannel)) {
+                        intelFolder.channelIds.push(deepLinkChannel);
+                    }
+                    saveFolders();
+                    renderFolders();
+                    renderChannels();
+                }
+                switchChannel(deepLinkChannel);
+            }, 500);
+            // Clean URL without reload
+            window.history.replaceState({}, '', '/');
+        }
     });
 
     sock.on('disconnect', () => {
@@ -7022,6 +7078,7 @@ function generateBriefing() {
         if (btn) btn.disabled = false;
         if (data.success) {
             _briefingStatus('[OK] Briefing generated');
+            loadBriefingHistory();
         } else {
             _briefingStatus('[!] ' + (data.error || 'Generation failed'), true);
         }
@@ -7030,6 +7087,34 @@ function generateBriefing() {
         if (btn) btn.disabled = false;
         _briefingStatus('[!] ' + err.message, true);
     });
+}
+
+function loadBriefingHistory() {
+    const list = document.getElementById('briefing-history-list');
+    if (!list) return;
+
+    fetch('/api/briefing/list')
+        .then(r => r.json())
+        .then(data => {
+            const reports = (data.reports || []).slice(0, 5);
+            if (reports.length === 0) {
+                list.innerHTML = '<li class="briefing-history-empty">No reports yet</li>';
+                return;
+            }
+            list.innerHTML = reports.map((r, i) => {
+                const d = new Date(r.date + 'T00:00:00');
+                const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                return '<li class="briefing-history-item" onclick="window.open(\'/api/briefing/' +
+                    escapeHtml(r.date) + '/html\', \'_blank\')" title="View briefing for ' +
+                    escapeHtml(r.date) + '">' +
+                    '<span class="briefing-history-item__dot"></span>' +
+                    '<span class="briefing-history-item__date">' + escapeHtml(label) + '</span>' +
+                    '</li>';
+            }).join('');
+        })
+        .catch(() => {
+            list.innerHTML = '<li class="briefing-history-empty">Failed to load</li>';
+        });
 }
 
 function viewBriefing() {

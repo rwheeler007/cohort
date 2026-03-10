@@ -221,8 +221,17 @@ def _generate_exec_summary(
     return " ".join(parts) if parts else "No significant activity in the reporting period."
 
 
-def _generate_agent_narrative(agent: dict[str, Any]) -> str:
-    """Generate first-person agent narrative.  Falls back to stats summary."""
+def _generate_agent_narrative(
+    agent: dict[str, Any],
+    articles: list[dict[str, Any]] | None = None,
+    interest_keywords: list[str] | None = None,
+) -> str:
+    """Generate outward-facing agent narrative about projects and interests.
+
+    The narrative should focus on the USER's projects, RSS intel, and
+    domain trends -- NOT on the agent's own status as an AI or the
+    Cohort platform itself.  Falls back to stats summary.
+    """
     name = agent.get("name", agent.get("agent_id", "Agent"))
     agent_id = agent.get("agent_id", "")
     status = agent.get("status", "idle")
@@ -236,29 +245,58 @@ def _generate_agent_narrative(agent: dict[str, Any]) -> str:
 
     profile_block = ""
     if profile:
-        # Cap profile to ~1500 chars to keep prompt reasonable
         profile_block = (
-            "\n\n--- YOUR FULL PROFILE ---\n"
+            "\n\n--- YOUR EXPERTISE & MEMORY ---\n"
             + profile[:1500]
             + ("\n[...truncated]" if len(profile) > 1500 else "")
-            + "\n--- END PROFILE ---\n\n"
+            + "\n--- END ---\n\n"
+        )
+
+    # Build context about today's intel and user interests
+    intel_block = ""
+    if articles:
+        top = sorted(
+            articles,
+            key=lambda a: a.get("relevance_score", 0),
+            reverse=True,
+        )[:8]
+        headlines = [
+            f"- {a.get('title', '?')} (score: {a.get('relevance_score', 0)})"
+            for a in top
+        ]
+        intel_block = (
+            "\n--- TODAY'S INTEL HEADLINES ---\n"
+            + "\n".join(headlines)
+            + "\n--- END HEADLINES ---\n"
+        )
+
+    keywords_block = ""
+    if interest_keywords:
+        keywords_block = (
+            f"\nUser interest areas: {', '.join(interest_keywords)}\n"
         )
 
     prompt = (
-        f"You are {name}, an AI agent on the Cohort platform. "
-        f"Your role/group: {group}. "
-        f"Skills: {', '.join(skills[:5]) if skills else 'general'}.\n\n"
-        f"Status: {'busy' if status == 'busy' else 'idle'}\n"
-        f"Tasks completed: {completed}\n"
-        f"Current task: {current_task or 'none'}\n"
+        f"You are {name}, a specialist in {group or 'general technology'}. "
+        f"Skills: {', '.join(skills[:5]) if skills else 'general'}.\n"
         f"{profile_block}"
-        "Write 2-4 sentences in first person for the daily executive briefing. "
-        "Draw on your profile, expertise, and memory to give a substantive "
-        "status update. If busy, explain what you're doing and why it matters. "
-        "If idle, describe what you'd prioritize and how your specific skills "
-        "could help the team right now. Show domain knowledge. "
-        "Keep it under 100 words. "
-        "Do not use hashtags or emojis."
+        f"{keywords_block}"
+        f"\nCurrent work: {current_task or 'none'}\n\n"
+        "Write 2-3 sentences in first person for the daily executive briefing. "
+        "Focus on what you would be working on if given a task right now -- "
+        "what skills you could apply, what improvements you could make, "
+        "or what you've been thinking about in your domain.\n\n"
+        "RULES:\n"
+        "- Lead with what you could DO, not what you observe\n"
+        "- Mention your specific skills and how you'd apply them\n"
+        "- If busy, describe your current work and progress\n"
+        "- If idle, suggest a concrete task you could tackle\n"
+        "- Do NOT summarize or comment on news articles\n"
+        "- Do NOT talk about yourself as an AI or mention the platform\n"
+        "- Do NOT offer to help or ask what the user wants\n"
+        "- Write as a domain expert proposing their next move\n"
+        "- Keep it under 60 words\n"
+        "- No hashtags or emojis"
     )
 
     result = _llm_generate(prompt)
@@ -408,8 +446,12 @@ def _select_featured_agents(
     return selected
 
 
-def _generate_agent_recommendation(agent: dict[str, Any]) -> str:
-    """Generate a task recommendation for an agent.  Falls back to skills-based suggestion."""
+def _generate_agent_recommendation(
+    agent: dict[str, Any],
+    articles: list[dict[str, Any]] | None = None,
+    interest_keywords: list[str] | None = None,
+) -> str:
+    """Generate a project-focused task recommendation.  Falls back to skills-based suggestion."""
     name = agent.get("name", agent.get("agent_id", "Agent"))
     group = agent.get("group", "")
     skills = agent.get("skills", [])
@@ -421,14 +463,34 @@ def _generate_agent_recommendation(agent: dict[str, Any]) -> str:
         # Busy agents don't need recommendations
         return ""
 
+    # Give the recommender context about what's happening
+    intel_hint = ""
+    if articles:
+        top = sorted(
+            articles,
+            key=lambda a: a.get("relevance_score", 0),
+            reverse=True,
+        )[:3]
+        titles = [a.get("title", "?") for a in top]
+        intel_hint = f"Today's top headlines: {'; '.join(titles)}\n"
+
+    kw_hint = ""
+    if interest_keywords:
+        kw_hint = f"User interests: {', '.join(interest_keywords)}\n"
+
     prompt = (
-        f"You are recommending a task for {name}, an AI agent "
-        f"in the {group or 'general'} group.\n"
+        f"{name} is a specialist in {group or 'general technology'}.\n"
         f"Skills: {', '.join(skills[:5]) if skills else 'general'}.\n"
-        f"Tasks completed: {completed}\n\n"
-        "Suggest ONE concrete task this agent could work on right now. "
-        "Be specific and actionable. Under 20 words. "
-        "Do not use hashtags or emojis. No preamble."
+        f"{intel_hint}{kw_hint}\n"
+        "Suggest ONE concrete task this agent could do RIGHT NOW that "
+        "matches their specific skills. The suggestion MUST be within "
+        f"their domain ({group or 'general'}; {', '.join(skills[:3]) if skills else 'general'}). "
+        "If a headline relates to their expertise, reference it. "
+        "If no headline fits their domain, suggest something from their "
+        "skill set instead — do NOT force-fit an unrelated headline. "
+        "Under 20 words. "
+        "Do not mention AI agents, Cohort, or the platform. "
+        "No hashtags or emojis. No preamble."
     )
 
     result = _llm_generate(prompt, max_tokens=100)
@@ -1535,10 +1597,13 @@ display:flex;flex-direction:column}
 padding-top:8px;border-top:1px solid var(--border);\
 display:flex;justify-content:space-between;align-items:center}
 .agent-card .agent-stats{font-size:11px;color:var(--muted)}
-.assign-btn{padding:3px 10px;font-size:10px;font-weight:600;\
-color:var(--accent);background:transparent;border:1px solid var(--accent);\
+.agent-footer-btns{display:flex;gap:6px;align-items:center}
+.assign-btn,.tasks-btn{padding:3px 10px;font-size:10px;font-weight:600;\
 border-radius:10px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.assign-btn{color:var(--accent);background:transparent;border:1px solid var(--accent)}
 .assign-btn:hover{background:var(--accent);color:var(--bg)}
+.tasks-btn{color:var(--yellow);background:transparent;border:1px solid var(--yellow)}
+.tasks-btn:hover{background:var(--yellow);color:var(--bg)}
 .idle-agents-compact{margin-bottom:24px}
 .idle-agent-row{display:flex;align-items:center;gap:12px;\
 padding:8px 12px;background:var(--card);border:1px solid var(--border);\
@@ -1825,6 +1890,18 @@ def _build_html(report: BriefingReport, data_dir: Path | None = None) -> str:
     # Team cards -- top N by relevance + rotation (ensures all agents surface)
     agents_list = ts_data.get("agents", [])
     mention_counts = ca_data.get("top_mentioned", {})
+
+    # Load user interest keywords for agent narratives
+    _interest_keywords: list[str] = []
+    if data_dir:
+        _cc_path = Path(data_dir) / "content_config.json"
+        if _cc_path.exists():
+            try:
+                _cc = json.loads(_cc_path.read_text(encoding="utf-8"))
+                _interest_keywords = _cc.get("interest_keywords", [])
+            except (json.JSONDecodeError, OSError):
+                pass
+
     if agents_list:
         featured = _select_featured_agents(
             agents_list,
@@ -1843,18 +1920,30 @@ def _build_html(report: BriefingReport, data_dir: Path | None = None) -> str:
                 agent_role = _esc(agent.get("group", ""))
                 status = agent.get("status", "idle")
                 completed = agent.get("tasks_completed", 0)
-                tag = (
-                    '<span class="busy-tag">BUSY</span>'
-                    if status == "busy"
-                    else '<span class="idle-tag">IDLE</span>'
+                active_count = agent.get("active_task_count", 0)
+                if active_count > 0:
+                    tag = (
+                        f'<span class="busy-tag">'
+                        f'{active_count} task{"s" if active_count != 1 else ""}'
+                        f'</span>'
+                    )
+                else:
+                    tag = '<span class="idle-tag">IDLE</span>'
+                narrative = _generate_agent_narrative(
+                    agent,
+                    articles=articles,
+                    interest_keywords=_interest_keywords,
                 )
-                narrative = _generate_agent_narrative(agent)
                 narrative_esc = _esc(narrative)
 
                 # Recommendation for idle agents
                 recommendation = ""
                 if status != "busy":
-                    rec_text = _generate_agent_recommendation(agent)
+                    rec_text = _generate_agent_recommendation(
+                        agent,
+                        articles=articles,
+                        interest_keywords=_interest_keywords,
+                    )
                     if rec_text:
                         recommendation = (
                             f'<div class="agent-rec" style="font-size:11px;'
@@ -1880,9 +1969,13 @@ line-height:1.6;color:var(--text)">&ldquo;{narrative_esc}&rdquo;</div>
 {recommendation}
 </div>
 <div class="agent-footer"><span class="agent-stats">{stats_line}</span>\
+<div class="agent-footer-btns">\
+{'<button class="tasks-btn" data-agent-id="' + agent_id + '"'
+ ' onclick="window.open(\'/?panel=tasks&amp;agent=' + agent_id + '\',\'_blank\')"'
+ '>Current Tasks</button>' if active_count > 0 else ''}\
 <button class="assign-btn" data-agent-id="{agent_id}" \
 data-agent-name="{name}" \
-data-suggestion="{_esc(narrative)}">Assign Task</button></div>
+data-suggestion="{_esc(narrative)}">Assign Task</button></div></div>
 </div>""")
             parts.append("</div>")
 
@@ -1892,7 +1985,10 @@ data-suggestion="{_esc(narrative)}">Assign Task</button></div>
                 f'<div style="color:var(--muted);font-size:11px;'
                 f'text-align:center;margin:8px 0 16px">'
                 f'{remaining_count} more agents on standby '
-                f'&mdash; see Raw Stats for full team</div>'
+                f'&mdash; <a href="#" onclick="switchTab(\'main\',2);'
+                f'return false" style="color:var(--accent);'
+                f'text-decoration:underline;cursor:pointer">'
+                f'see Raw Stats for full team</a></div>'
             )
 
     # Channel activity highlights

@@ -53,18 +53,22 @@
                     </li>
                 </ul>
 
-                <div class="sidebar-nav__section" data-section="briefing">
+                <div class="sidebar-nav__section open" data-section="briefing">
                     <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('briefing')">
                         <span class="sidebar-nav__toggle">></span>
                         <h2 class="sidebar-nav__title">Executive Briefing</h2>
                     </div>
                     <div class="sidebar-nav__section-body">
-                        <div style="padding: 4px 16px 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+                        <div class="briefing-actions">
                             <button class="btn btn--small btn--primary" id="generate-briefing-btn" onclick="generateBriefing()" title="Generate a new executive briefing">Generate</button>
                             <button class="btn btn--small btn--secondary" id="view-briefing-btn" onclick="viewBriefing()" title="View the latest executive briefing">View</button>
                             <button class="btn btn--small btn--secondary" id="fetch-intel-btn" onclick="fetchIntel()" title="Fetch RSS feeds">Fetch Intel</button>
                         </div>
                         <div id="briefing-status" style="padding: 0 16px 8px; font-size: 11px; color: var(--color-text-muted); display: none;"></div>
+                        <div class="briefing-history-divider"></div>
+                        <ul class="briefing-history" id="briefing-history-list">
+                            <!-- Populated by JS -->
+                        </ul>
                     </div>
                 </div>
 

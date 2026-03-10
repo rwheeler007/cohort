@@ -74,6 +74,7 @@ class CohortDataLayer:
                 "skills": config.get("capabilities", []),
                 "triggers": config.get("triggers", []),
                 "current_task": agent_tasks[0] if agent_tasks else None,
+                "active_task_count": len(agent_tasks),
                 "tasks_completed": sum(
                     1 for t in all_tasks
                     if t.get("agent_id") == agent_id and t.get("status") in ("complete", "approved")

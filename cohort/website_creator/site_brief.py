@@ -26,6 +26,7 @@ class BrandTokens:
     background_color: str = "#ffffff"    # Page background
     text_color: str = "#081020"          # Body text
     font_heading: str = "system-ui, -apple-system, sans-serif"
+    font_heading_weight: str = "700"   # Use "400" for single-weight fonts like Press Start 2P
     font_body: str = "system-ui, -apple-system, sans-serif"
     border_radius: str = "0.5rem"
     # Google Fonts to load (e.g. ["Press Start 2P", "Inter:wght@400;700"])

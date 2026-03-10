@@ -5,20 +5,20 @@
 
 :root {
     /* Brand Colors */
-    --color-primary: {{ brand.primary_color }};
-    --color-primary-hover: {{ brand.primary_hover }};
-    --color-secondary: {{ brand.secondary_color }};
-    --color-accent: {{ brand.accent_color }};
-    --color-background: {{ brand.background_color }};
-    --color-text: {{ brand.text_color }};
+    --color-primary: #D97757;
+    --color-primary-hover: #C56648;
+    --color-secondary: #2B2D31;
+    --color-accent: #F5E6DE;
+    --color-background: #FAFAF8;
+    --color-text: #2B2D31;
 
     /* Typography */
-    --font-heading: {{ brand.font_heading }};
-    --font-heading-weight: {{ brand.font_heading_weight | default('700') }};
-    --font-body: {{ brand.font_body }};
+    --font-heading: 'Press Start 2P', 'Courier New', monospace;
+    --font-heading-weight: 400;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 
     /* Spacing & Shape */
-    --radius: {{ brand.border_radius }};
+    --radius: 0.25rem;
 }
 
 /* ---- Reset & Base ---- */

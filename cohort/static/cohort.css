@@ -2619,6 +2619,69 @@ textarea.form-input {
 }
 
 /* =============================================================================
+   Executive Briefing sidebar section
+   ============================================================================= */
+
+.briefing-actions {
+    padding: 6px 16px 8px;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.briefing-history-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 4px 16px 6px;
+}
+
+.briefing-history {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.briefing-history-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4) var(--space-1) var(--space-6);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    transition: background-color var(--transition-fast);
+}
+
+.briefing-history-item:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
+}
+
+.briefing-history-item__dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-cohort);
+    opacity: 0.5;
+}
+
+.briefing-history-item:first-child .briefing-history-item__dot {
+    opacity: 1;
+}
+
+.briefing-history-item__date {
+    font-size: 12px;
+}
+
+.briefing-history-empty {
+    padding: 4px 16px 4px 24px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    list-style: none;
+}
+
+/* =============================================================================
    Archived Agent Groups (sidebar)
    ============================================================================= */
 
