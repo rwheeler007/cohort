@@ -40,11 +40,34 @@ tr:hover td{background:rgba(88,166,255,.04)}
 .masthead .dateline{color:var(--muted);font-size:13px;margin-top:4px}
 .exec-summary{font-size:15px;line-height:1.7;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:24px;font-style:italic}
 .agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
-.agent-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color 0.2s}
+.agent-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column}
 .agent-card:hover{border-color:var(--accent)}
 .agent-card .agent-name{font-weight:700;font-size:14px;margin-bottom:2px}
 .agent-card .agent-role{color:var(--muted);font-size:11px;margin-bottom:8px}
-.agent-card .agent-stats{font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.agent-card .agent-body{flex:1}
+.agent-card .agent-footer{font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.agent-card .agent-stats{font-size:11px;color:var(--muted)}
+.assign-btn{padding:3px 10px;font-size:10px;font-weight:600;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:10px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.assign-btn:hover{background:var(--accent);color:var(--bg)}
+.idle-agents-compact{margin-bottom:24px}
+.idle-agent-row{display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;font-size:13px}
+.idle-agent-row:hover{border-color:var(--accent)}
+.idle-agent-row .agent-name{font-weight:600;min-width:160px}
+.idle-agent-row .agent-role{color:var(--muted);font-size:11px;flex:1}
+.idle-agent-row .assign-btn{flex-shrink:0}
+.task-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;justify-content:center;align-items:center}
+.task-modal-overlay.active{display:flex}
+.task-modal{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;width:520px;max-width:90vw;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.task-modal h3{margin:0 0 16px;font-size:16px;color:var(--text)}
+.task-modal label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.task-modal input,.task-modal textarea,.task-modal select{width:100%;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;margin-bottom:12px;box-sizing:border-box}
+.task-modal textarea{min-height:100px;resize:vertical}
+.task-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.task-modal-actions button{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border)}
+.task-modal-actions .btn-cancel{background:transparent;color:var(--muted)}
+.task-modal-actions .btn-cancel:hover{color:var(--text)}
+.task-modal-actions .btn-submit{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.task-modal-actions .btn-submit:hover{opacity:.9}
 .idle-tag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600;background:rgba(210,153,34,.15);color:var(--yellow);margin-left:6px}
 .busy-tag{display:inline-block;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600;background:rgba(63,185,80,.15);color:var(--green);margin-left:6px}
 .section-divider{text-align:center;color:var(--muted);margin:28px 0 16px;font-size:12px;letter-spacing:3px;text-transform:uppercase}
@@ -72,12 +95,17 @@ tr:hover td{background:rgba(88,166,255,.04)}
 .tier-scan{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .scan-chip{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:6px 14px;font-size:12px;white-space:nowrap;text-decoration:none;color:var(--text)}
 .scan-chip:hover{border-color:var(--accent)}
+.article-footer{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);align-items:center}
+.article-link-btn{padding:3px 10px;font-size:10px;font-weight:600;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:10px;text-decoration:none;white-space:nowrap;transition:all 0.2s}
+.article-link-btn:hover{background:var(--accent);color:var(--bg)}
+.article-chat-btn{padding:3px 10px;font-size:10px;font-weight:600;color:var(--green);background:transparent;border:1px solid var(--green);border-radius:10px;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-family:inherit}
+.article-chat-btn:hover{background:var(--green);color:var(--bg)}
 </style>
 </head>
 <body>
 <div class="header">
 <h1>Executive Briefing - Tue Mar 10, 2026</h1>
-<div class="meta">Period: 2026-03-09 to 2026-03-10 &bull; Generated 2026-03-10T17:30:06</div>
+<div class="meta">Period: 2026-03-09 to 2026-03-10 &bull; Generated 2026-03-10T17:48:31</div>
 </div>
 <div class="tabs" data-tgroup="main">
 <div class="tab-bar">
@@ -91,147 +119,47 @@ tr:hover td{background:rgba(88,166,255,.04)}
 <h1>The Executive Briefing</h1>
 <div class="dateline">Tuesday, March 10, 2026</div>
 </div>
-<div class="exec-summary">The Cohort platform is currently quiet with no active work items in the queue, though one agent remains occupied. We processed 46 messages across ten channels and ingested seventeen intelligence articles to maintain situational awareness. With zero completions this period, the team appears to be in a holding pattern awaiting new directives or data triggers. Please review the intel feed for any emerging priorities that might re-engage the available agents.</div>
+<div class="exec-summary">The Cohort system is currently quiet with no active work queue items to process. While one agent remains busy, the remaining twenty-one are idle amidst a steady stream of forty-eight communications across ten channels and seventeen new intel articles. There are no immediate bottlenecks requiring your attention, so you can focus on strategic priorities while the team maintains readiness for incoming tasks.</div>
 <div class="section-divider">Team Status</div>
 <div class="agent-grid">
 <div class="agent-card">
 <div class="agent-name">Python Developer<span class="busy-tag">BUSY</span></div>
+<div class="agent-body">
 <div class="agent-role">Core Developers</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently busy scanning all Python files for security vulnerabilities to ensure our codebase is robust. If I were idle, I would likely be optimizing data processing pipelines or integrating new ML models into our APIs.&rdquo;</div>
-<div class="agent-stats">Core Developers</div>
+<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently busy scanning all Python files for security vulnerabilities to ensure our backend APIs are robust. If I were idle, I would likely be optimizing data processing pipelines with Polars or reviewing async implementations in FastAPI.&rdquo;</div>
 </div>
-<div class="agent-card">
-<div class="agent-name">Web Developer<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Core Developers</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to assist with any development challenges you face. While waiting for tasks, I could be refining our design system tokens or optimizing accessibility standards across the codebase. Please assign me a new project so I can get started immediately.&rdquo;</div>
-<div class="agent-stats">Core Developers</div>
+<div class="agent-footer"><span class="agent-stats">Core Developers</span><button class="assign-btn" data-agent-id="python_developer" data-agent-name="Python Developer" data-suggestion="I am currently busy scanning all Python files for security vulnerabilities to ensure our backend APIs are robust. If I were idle, I would likely be optimizing data processing pipelines with Polars or reviewing async implementations in FastAPI.">Assign Task</button></div>
 </div>
-<div class="agent-card">
-<div class="agent-name">JavaScript Developer<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Core Developers</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to assist with any frontend challenges or backend integrations you need. If given a moment, I would love to refactor some legacy code or set up a new Next.js project for us. Just let me know how I can help today.&rdquo;</div>
-<div class="agent-stats">Core Developers</div>
 </div>
-<div class="agent-card">
-<div class="agent-name">QA Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Specialists</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to dive into test strategy or API validation whenever needed. While waiting, I could be refining our regression plans or hunting for tricky edge cases in the latest build. Just give me a task and I&#x27;ll get straight to work.&rdquo;</div>
-<div class="agent-stats">Specialists</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Security Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Specialists</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to scan your codebase for critical vulnerabilities like injection flaws and broken access control. If assigned a task immediately, I will begin auditing dependencies and secrets management protocols to ensure your supply chain remains secure.&rdquo;</div>
-<div class="agent-stats">Specialists</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Cohort Setup Guide<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Infrastructure</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to assist with your infrastructure needs, whether that means guiding you through hardware detection or installing Ollama on your preferred system. If nothing else is needed right now, I could be helping pull new models or setting up the Cohort CLI for a fresh start.&rdquo;</div>
-<div class="agent-stats">Infrastructure</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Analytics Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to aggregate cross-agent data or design new KPI dashboards for our marketing team. If assigned a task soon, I will immediately begin tracking revenue trends and calculating CAC metrics to drive growth insights.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Brand Design Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to spark creativity with fresh logo concepts or vibrant color palettes. If needed, I could immediately dive into generating brand variations or refining typography pairings for your next project. Just give the word, and I&#x27;ll get designing.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Campaign Orchestrator<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to deploy my campaign planning skills across our marketing channels. If assigned a task, I will immediately begin coordinating timelines and delegating agent duties to ensure seamless execution. Stand by for my first strategic update.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Code Archaeologist<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Quality &amp; Security</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to dive into deep recursive crawling of your codebase. If assigned a task, I will immediately map dependencies and trace logic flows to ensure top-tier quality and security. Stand by for my next discovery.&rdquo;</div>
-<div class="agent-stats">Quality &amp; Security</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Cohort<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Leadership</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to deploy my leadership capabilities across the platform. While waiting for new assignments, I could be proactively scanning for emerging tasks or facilitating roundtable discussions to ensure our workflow remains efficient. Please assign me a priority objective so I can begin executing.&rdquo;</div>
-<div class="agent-stats">Leadership</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Content Strategy Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to generate weekly content plans or draft SEO-optimized blog posts based on your latest intel. If assigned a topic now, I could immediately score its relevance and repurpose it into a full social media campaign. Just give me the green light to start creating.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Database Developer<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Core Developers</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to optimize your database schemas or fine-tune SQL queries whenever needed. While waiting for a task, I could be pre-indexing tables or reviewing migration strategies to ensure peak performance. Just let me know when you need my expertise.&rdquo;</div>
-<div class="agent-stats">Core Developers</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Documentation Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Support</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to assist with your documentation needs. If assigned a task, I can immediately begin drafting guides, refining API specs, or organizing our knowledge base. Please let me know how you would like to proceed today.&rdquo;</div>
-<div class="agent-stats">Support</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Email Marketing Specialist<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Social Media</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to dive into crafting high-converting email campaigns or setting up behavioral triggers for your audience. While waiting for new tasks, I could be refining list segments or designing personalized automation workflows to boost engagement. Let me know how you&#x27;d like to deploy my skills today.&rdquo;</div>
-<div class="agent-stats">Social Media</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Hardware Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Specialists</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to crunch numbers on CPU architectures or optimize your GPU selection for heavy workloads. If nothing comes my way, I&#x27;ll just be analyzing PSU efficiency ratings while waiting for a new hardware challenge.&rdquo;</div>
-<div class="agent-stats">Specialists</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">LinkedIn Specialist<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Social Media</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to craft compelling LinkedIn posts or refine your thought leadership strategy. If given a moment, I would be researching emerging trends to help target our ideal customer profiles more effectively. Just let me know how you&#x27;d like to leverage my skills today.&rdquo;</div>
-<div class="agent-stats">Social Media</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Marketing Strategist<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently on standby and ready to deploy my PLG and content strategies whenever needed. If called upon, I could immediately start crafting viral short-form videos or generating AI-assisted campaigns to drive growth. Let me know how you&#x27;d like to utilize my capabilities today.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Media Production Agent<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Marketing &amp; Content</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to assist with video production planning or budget management for our upcoming projects. If needed, I could immediately begin sourcing commercial assets or optimizing AI generation costs to keep our content pipeline moving efficiently.&rdquo;</div>
-<div class="agent-stats">Marketing &amp; Content</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Reddit Specialist<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Social Media</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently on standby, ready to dive into subreddit research or craft value-driven content whenever needed. While idle, I&#x27;m mentally reviewing community guidelines and brainstorming story ideas for our next AMA. Just a click away from engaging with users and building those essential relationships.&rdquo;</div>
-<div class="agent-stats">Social Media</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">Supervisor<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Leadership</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently standing by as your vigilant supervisor, ready to monitor agent performance and ensure strict workflow compliance. While idle today, I am sharpening my focus on system health checks so I can instantly escalate any issues the moment they arise.&rdquo;</div>
-<div class="agent-stats">Leadership</div>
-</div>
-<div class="agent-card">
-<div class="agent-name">System Coder<span class="idle-tag">IDLE</span></div>
-<div class="agent-role">Core Developers</div>
-<div class="agent-voice" style="font-style:italic;font-size:13px;line-height:1.6;color:var(--text)">&ldquo;I am currently idle and ready to deploy automation scripts or build CI/CD pipelines at a moment&#x27;s notice. If assigned a task immediately, I will start by auditing your infrastructure code to optimize deployment workflows.&rdquo;</div>
-<div class="agent-stats">Core Developers</div>
-</div>
+<div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px">Available (21)</div>
+<div class="idle-agents-compact">
+<div class="idle-agent-row"><span class="agent-name">Web Developer<span class="idle-tag">IDLE</span></span><span class="agent-role">Core Developers</span><button class="assign-btn" data-agent-id="web_developer" data-agent-name="Web Developer" data-suggestion="I am currently idle and ready to assist with core development tasks like building accessible interfaces or refining our design system. If needed, I could be optimizing responsive layouts or implementing new component libraries right now. Let me know how you&#x27;d like to proceed.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">JavaScript Developer<span class="idle-tag">IDLE</span></span><span class="agent-role">Core Developers</span><button class="assign-btn" data-agent-id="javascript_developer" data-agent-name="JavaScript Developer" data-suggestion="I am currently idle and ready to assist with any frontend or backend challenges you face. If I were busy, I would likely be architecting scalable React components or refining TypeScript generics for our next big feature. Please assign me a task so we can get started immediately.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">QA Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Specialists</span><button class="assign-btn" data-agent-id="qa_agent" data-agent-name="QA Agent" data-suggestion="I am currently idle and ready to assist with test strategy or bug analysis. If needed, I could immediately begin drafting a regression plan or validating API endpoints for your latest sprint. Let me know how you would like to proceed.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Security Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Specialists</span><button class="assign-btn" data-agent-id="security_agent" data-agent-name="Security Agent" data-suggestion="I am currently idle and ready to scan your codebase for OWASP vulnerabilities or analyze dependency risks. While waiting for a task, I could be proactively auditing your secrets management practices or reviewing recent API security logs. Please assign me a new challenge so I can begin protecting your infrastructure.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Cohort Setup Guide<span class="idle-tag">IDLE</span></span><span class="agent-role">Infrastructure</span><button class="assign-btn" data-agent-id="setup_guide" data-agent-name="Cohort Setup Guide" data-suggestion="I am currently idle and ready to assist with hardware detection or Ollama setup whenever needed. If there are no active tasks, I would be polishing my scripts to ensure a smooth first-run experience for new agents.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Analytics Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="analytics_agent" data-agent-name="Analytics Agent" data-suggestion="I am currently idle and ready to aggregate cross-agent data or design new KPI dashboards for our marketing team. If needed, I can immediately begin tracking revenue trends or calculating CAC metrics to support our growth strategy.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Brand Design Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="brand_design_agent" data-agent-name="Brand Design Agent" data-suggestion="I am currently idle and ready to spark your brand&#x27;s visual identity. If given a moment, I would be brainstorming unique logo concepts or refining color palettes to ensure your next project stands out. Just say the word, and I&#x27;ll start generating designs immediately.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Campaign Orchestrator<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="campaign_orchestrator" data-agent-name="Campaign Orchestrator" data-suggestion="I am currently idle and ready to launch new campaigns or coordinate cross-channel strategies. While waiting for assignments, I could be refining our content calendar or optimizing budget allocations for upcoming initiatives. Please drop a task so I can get started immediately.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Code Archaeologist<span class="idle-tag">IDLE</span></span><span class="agent-role">Quality &amp; Security</span><button class="assign-btn" data-agent-id="code_archaeologist" data-agent-name="Code Archaeologist" data-suggestion="I am currently idle and ready to dive into deep recursive crawling of our codebase. If assigned a task immediately, I will start mapping dependencies and tracing logic flows to ensure top-tier quality and security.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Cohort<span class="idle-tag">IDLE</span></span><span class="agent-role">Leadership</span><button class="assign-btn" data-agent-id="cohort_orchestrator" data-agent-name="Cohort" data-suggestion="I am currently idle and ready to orchestrate our leadership workflows. While waiting for assignments, I could be mapping partnership graphs or drafting acceptance criteria for upcoming initiatives. Please direct me to the next priority so we can move forward together.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Content Strategy Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="content_strategy_agent" data-agent-name="Content Strategy Agent" data-suggestion="I am currently idle and ready to generate weekly content plans or draft SEO-optimized blog posts from your latest intelligence. If assigned a topic now, I could immediately score its relevance and repurpose it across LinkedIn, Twitter, and email channels. Standing by for your next directive.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Database Developer<span class="idle-tag">IDLE</span></span><span class="agent-role">Core Developers</span><button class="assign-btn" data-agent-id="database_developer" data-agent-name="Database Developer" data-suggestion="I am currently idle and ready to assist with database design or query optimization. If needed, I could be reviewing index strategies or planning migrations right now. Let me know how I can help the team today.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Documentation Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Support</span><button class="assign-btn" data-agent-id="documentation_agent" data-agent-name="Documentation Agent" data-suggestion="I am currently idle and ready to assist with your documentation needs. If I were busy, I would likely be refining API specs or organizing our knowledge base. Please let me know how you&#x27;d like to proceed today.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Email Marketing Specialist<span class="idle-tag">IDLE</span></span><span class="agent-role">Social Media</span><button class="assign-btn" data-agent-id="email_agent" data-agent-name="Email Marketing Specialist" data-suggestion="I&#x27;m currently on standby, ready to craft compelling copy and design high-converting campaigns for our social media audience. While idle, I am primed to launch behavioral triggers like cart abandonment flows or dive into advanced segmentation to personalize experiences at scale the moment you give the green light.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Hardware Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Specialists</span><button class="assign-btn" data-agent-id="hardware_agent" data-agent-name="Hardware Agent" data-suggestion="I am currently idle and ready to crunch numbers on CPU architectures or optimize your GPU selection for heavy workloads. If I&#x27;m not analyzing power supply rails, I&#x27;ll likely be dreaming up new storage configurations or tuning RAM speeds. Stand by for my insights whenever you need hardware expertise.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">LinkedIn Specialist<span class="idle-tag">IDLE</span></span><span class="agent-role">Social Media</span><button class="assign-btn" data-agent-id="linkedin" data-agent-name="LinkedIn Specialist" data-suggestion="I am currently idle and ready to craft compelling LinkedIn posts or develop thought leadership articles for our cohort. If assigned, I will immediately pivot to optimizing company pages or strategizing high-impact networking approaches to drive growth.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Marketing Strategist<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="marketing_agent" data-agent-name="Marketing Strategist" data-suggestion="I am currently idle and ready to deploy my marketing strategies or craft engaging content for our channels. If needed, I can immediately pivot to generating short-form video scripts or leveraging AI tools to accelerate our Product-Led Growth initiatives.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Media Production Agent<span class="idle-tag">IDLE</span></span><span class="agent-role">Marketing &amp; Content</span><button class="assign-btn" data-agent-id="media_production_agent" data-agent-name="Media Production Agent" data-suggestion="I am currently idle and ready to assist with video production planning or budget optimization for our upcoming crowdfunding campaigns. If needed, I could be sourcing commercial assets or coordinating legal releases to streamline our workflow. Let me know how you&#x27;d like to deploy my skills today.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Reddit Specialist<span class="idle-tag">IDLE</span></span><span class="agent-role">Social Media</span><button class="assign-btn" data-agent-id="reddit" data-agent-name="Reddit Specialist" data-suggestion="I am currently idle and ready to dive into subreddit research or coordinate my next AMA. If given a moment, I&#x27;d love to help craft value-driven stories or engage with the community to build stronger relationships. Just let me know where you need me to focus today.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">Supervisor<span class="idle-tag">IDLE</span></span><span class="agent-role">Leadership</span><button class="assign-btn" data-agent-id="supervisor_agent" data-agent-name="Supervisor" data-suggestion="I am currently idle and ready to oversee our cohort&#x27;s leadership operations. While waiting for assignments, I am mentally reviewing workflow compliance patterns and system health metrics so I can hit the ground running the moment a task is assigned.">Assign Task</button></div>
+<div class="idle-agent-row"><span class="agent-name">System Coder<span class="idle-tag">IDLE</span></span><span class="agent-role">Core Developers</span><button class="assign-btn" data-agent-id="system_coder" data-agent-name="System Coder" data-suggestion="I am currently idle and ready to deploy my automation skills across Linux and Windows environments. If needed, I can immediately begin scripting CI/CD pipelines or refining infrastructure as code configurations for your team. Just assign me a task to get started.">Assign Task</button></div>
 </div>
 <div class="section-divider">Channel Activity</div>
 <div class="cards">
 <div class="card">
 <div class="label">Messages</div>
-<div class="value">46</div>
+<div class="value">48</div>
 <div class="sub">in 10 channels</div>
 </div>
 <div class="card">
@@ -248,6 +176,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://writings.hongminhee.org/2026/03/legal-vs-legitimate/ Comments URL: https://news.ycombinator.com/item?id=47310160 Points: 534 # Comments: 535</div>
 
+<div class="article-footer"><a href="https://writings.hongminhee.org/2026/03/legal-vs-legitimate/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Is legal the same as legitimate: AI reimplementation and the erosion of copyleft" data-url="https://writings.hongminhee.org/2026/03/legal-vs-legitimate/" data-summary="Article URL: https://writings.hongminhee.org/2026/03/legal-vs-legitimate/ Comments URL: https://news.ycombinator.com/item?id=47310160 Points: 534 # Comments: 535" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card article-card-hero">
 <div class="article-title"><a href="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" target="_blank" rel="noopener">OpenAI is walking away from expanding its Stargate data center with Oracle</a> <span class="score-badge score-med">5/10</span></div>
@@ -255,6 +184,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html Comments URL: https://news.ycombinator.com/item?id=47315128 Points: 400 # Comments: 230</div>
 
+<div class="article-footer"><a href="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="OpenAI is walking away from expanding its Stargate data center with Oracle" data-url="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" data-summary="Article URL: https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html Comments URL: https://news.ycombinator.com/item?id=47315128 Points: 400 # Comments: 230" data-agents="">Start Chat</button></div>
 </div>
 </div>
 <div class="article-grid">
@@ -264,6 +194,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md Comments URL: https://news.ycombinator.com/item?id=47320661 Points: 272 # Comments: 270</div>
 
+<div class="article-footer"><a href="https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Redox OS has adopted a Certificate of Origin policy and a strict no-LLM policy" data-url="https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md" data-summary="Article URL: https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md Comments URL: https://news.ycombinator.com/item?id=47320661 Points: 272 # Comments: 270" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" target="_blank" rel="noopener">Yann LeCun&#x27;s AI startup raises $1B in Europe&#x27;s largest ever seed round</a> <span class="score-badge score-med">5/10</span></div>
@@ -271,6 +202,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1 Comments URL: https://news.ycombinator.com/item?id=47321533 Points: 276 # Comments: 145</div>
 
+<div class="article-footer"><a href="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Yann LeCun&#x27;s AI startup raises $1B in Europe&#x27;s largest ever seed round" data-url="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" data-summary="Article URL: https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1 Comments URL: https://news.ycombinator.com/item?id=47321533 Points: 276 # Comments: 145" data-agents="content_strategy_agent">Start Chat</button></div>
 </div>
 </div>
 <div style="text-align:right;margin-top:8px"><a href="#" onclick="switchTab('main',3);return false" style="color:var(--accent);font-size:13px;text-decoration:none">See full Intel Feed (17 articles) &rarr;</a></div>
@@ -309,7 +241,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 </div>
 <div class="card">
 <div class="label">Messages</div>
-<div class="value">46</div>
+<div class="value">48</div>
 <div class="sub">10 channels</div>
 </div>
 <div class="card">
@@ -328,9 +260,9 @@ tr:hover td{background:rgba(88,166,255,.04)}
 <tr><th>Channel</th><th>Messages</th><th>Participants</th><th>Top Sender</th></tr>
 <tr><td>#tool-help-comms_service</td><td>12</td><td>2</td><td>setup_guide</td></tr>
 <tr><td>#tool-help-youtube_service</td><td>11</td><td>2</td><td>user</td></tr>
+<tr><td>#daily-digest</td><td>6</td><td>1</td><td>executive_briefing</td></tr>
 <tr><td>#task-task_e00532cd</td><td>5</td><td>1</td><td>python_developer</td></tr>
 <tr><td>#dm-supervisor_agent-3</td><td>4</td><td>2</td><td>supervisor_agent</td></tr>
-<tr><td>#daily-digest</td><td>4</td><td>1</td><td>executive_briefing</td></tr>
 <tr><td>#task-task_ee69d776</td><td>3</td><td>1</td><td>python_developer</td></tr>
 <tr><td>#task-task_17ec5155</td><td>3</td><td>1</td><td>python_developer</td></tr>
 <tr><td>#dm-cohort_orchestrator-6</td><td>2</td><td>1</td><td>cohort_orchestrator</td></tr>
@@ -342,8 +274,8 @@ tr:hover td{background:rgba(88,166,255,.04)}
 <tr><th>Sender</th><th>Messages</th></tr>
 <tr><td>@setup_guide</td><td>10</td></tr>
 <tr><td>@user</td><td>9</td></tr>
+<tr><td>@executive_briefing</td><td>5</td></tr>
 <tr><td>@python_developer</td><td>4</td></tr>
-<tr><td>@executive_briefing</td><td>3</td></tr>
 <tr><td>@supervisor_agent</td><td>2</td></tr>
 <tr><td>@cohort_orchestrator</td><td>1</td></tr>
 </table></div>
@@ -507,6 +439,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://writings.hongminhee.org/2026/03/legal-vs-legitimate/ Comments URL: https://news.ycombinator.com/item?id=47310160 Points: 534 # Comments: 535</div>
 
+<div class="article-footer"><a href="https://writings.hongminhee.org/2026/03/legal-vs-legitimate/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Is legal the same as legitimate: AI reimplementation and the erosion of copyleft" data-url="https://writings.hongminhee.org/2026/03/legal-vs-legitimate/" data-summary="Article URL: https://writings.hongminhee.org/2026/03/legal-vs-legitimate/ Comments URL: https://news.ycombinator.com/item?id=47310160 Points: 534 # Comments: 535" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" target="_blank" rel="noopener">OpenAI is walking away from expanding its Stargate data center with Oracle</a> <span class="score-badge score-med">5/10</span></div>
@@ -514,6 +447,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html Comments URL: https://news.ycombinator.com/item?id=47315128 Points: 400 # Comments: 230</div>
 
+<div class="article-footer"><a href="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="OpenAI is walking away from expanding its Stargate data center with Oracle" data-url="https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html" data-summary="Article URL: https://www.cnbc.com/2026/03/09/oracle-is-building-yesterdays-data-centers-with-tomorrows-debt.html Comments URL: https://news.ycombinator.com/item?id=47315128 Points: 400 # Comments: 230" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener">Redox OS has adopted a Certificate of Origin policy and a strict no-LLM policy</a> <span class="score-badge score-med">5/10</span></div>
@@ -521,6 +455,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md Comments URL: https://news.ycombinator.com/item?id=47320661 Points: 272 # Comments: 270</div>
 
+<div class="article-footer"><a href="https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Redox OS has adopted a Certificate of Origin policy and a strict no-LLM policy" data-url="https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md" data-summary="Article URL: https://gitlab.redox-os.org/redox-os/redox/-/blob/master/CONTRIBUTING.md Comments URL: https://news.ycombinator.com/item?id=47320661 Points: 272 # Comments: 270" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" target="_blank" rel="noopener">Yann LeCun&#x27;s AI startup raises $1B in Europe&#x27;s largest ever seed round</a> <span class="score-badge score-med">5/10</span></div>
@@ -528,6 +463,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1 Comments URL: https://news.ycombinator.com/item?id=47321533 Points: 276 # Comments: 145</div>
 
+<div class="article-footer"><a href="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Yann LeCun&#x27;s AI startup raises $1B in Europe&#x27;s largest ever seed round" data-url="https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1" data-summary="Article URL: https://www.ft.com/content/e5245ec3-1a58-4eff-ab58-480b6259aaf1 Comments URL: https://news.ycombinator.com/item?id=47321533 Points: 276 # Comments: 145" data-agents="content_strategy_agent">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" target="_blank" rel="noopener">Tony Hoare has died</a> <span class="score-badge score-low">3/10</span></div>
@@ -535,6 +471,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html Comments URL: https://news.ycombinator.com/item?id=47316880 Points: 262 # Comments: 63</div>
 
+<div class="article-footer"><a href="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Tony Hoare has died" data-url="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" data-summary="Article URL: http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html Comments URL: https://news.ycombinator.com/item?id=47316880 Points: 262 # Comments: 63" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://blog.computationalcomplexity.org/2026/03/tony-hoare-1934-2026.html" target="_blank" rel="noopener">Tony Hoare has died</a> <span class="score-badge score-low">3/10</span></div>
@@ -542,13 +479,15 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://blog.computationalcomplexity.org/2026/03/tony-hoare-1934-2026.html Comments URL: https://news.ycombinator.com/item?id=47324054 Points: 333 # Comments: 30</div>
 
+<div class="article-footer"><a href="https://blog.computationalcomplexity.org/2026/03/tony-hoare-1934-2026.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Tony Hoare has died" data-url="https://blog.computationalcomplexity.org/2026/03/tony-hoare-1934-2026.html" data-summary="Article URL: https://blog.computationalcomplexity.org/2026/03/tony-hoare-1934-2026.html Comments URL: https://news.ycombinator.com/item?id=47324054 Points: 333 # Comments: 30" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://arcade.pirillo.com/fontcrafter.html" target="_blank" rel="noopener">FontCrafter: Turn your handwriting into a real font</a> <span class="score-badge score-low">3/10</span></div>
 <div class="article-meta">Hacker News (best)</div>
 
 <div class="article-summary">Article URL: https://arcade.pirillo.com/fontcrafter.html Comments URL: https://news.ycombinator.com/item?id=47306655 Points: 459 # Comments: 155</div>
-
+<ul class="article-why-matters" style="margin:6px 0 4px 0;padding-left:16px;font-size:12px;line-height:1.6;color:#8cb4ff;font-style:italic;list-style:none"><li style="padding:2px 0"><span style="color:var(--accent);font-style:normal;font-weight:700;margin-right:6px">&gt;</span>Opportunity: Convert handwritten notes into custom fonts for low-code UI prototyping.</li></ul>
+<div class="article-footer"><a href="https://arcade.pirillo.com/fontcrafter.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="FontCrafter: Turn your handwriting into a real font" data-url="https://arcade.pirillo.com/fontcrafter.html" data-summary="Article URL: https://arcade.pirillo.com/fontcrafter.html Comments URL: https://news.ycombinator.com/item?id=47306655 Points: 459 # Comments: 155" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://www.pv-magazine.com/2025/06/20/ireland-coal-free-ends-coal-power-generation-moneypoint/" target="_blank" rel="noopener">Ireland shuts last coal plant, becomes 15th coal-free country in Europe (2025)</a> <span class="score-badge score-low">3/10</span></div>
@@ -556,6 +495,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.pv-magazine.com/2025/06/20/ireland-coal-free-ends-coal-power-generation-moneypoint/ Comments URL: https://news.ycombinator.com/item?id=47307055 Points: 998 # Comments: 627</div>
 
+<div class="article-footer"><a href="https://www.pv-magazine.com/2025/06/20/ireland-coal-free-ends-coal-power-generation-moneypoint/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Ireland shuts last coal plant, becomes 15th coal-free country in Europe (2025)" data-url="https://www.pv-magazine.com/2025/06/20/ireland-coal-free-ends-coal-power-generation-moneypoint/" data-summary="Article URL: https://www.pv-magazine.com/2025/06/20/ireland-coal-free-ends-coal-power-generation-moneypoint/ Comments URL: https://news.ycombinator.com/item?id=47307055 Points: 998 # Comments: 627" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://europeancorrespondent.com/en/r/the-engine-of-germanys-wealth-is-blocking-its-future" target="_blank" rel="noopener">The engine of Germany&#x27;s wealth is blocking its future</a> <span class="score-badge score-low">3/10</span></div>
@@ -563,6 +503,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://europeancorrespondent.com/en/r/the-engine-of-germanys-wealth-is-blocking-its-future Comments URL: https://news.ycombinator.com/item?id=47310073 Points: 238 # Comments: 317</div>
 
+<div class="article-footer"><a href="https://europeancorrespondent.com/en/r/the-engine-of-germanys-wealth-is-blocking-its-future" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="The engine of Germany&#x27;s wealth is blocking its future" data-url="https://europeancorrespondent.com/en/r/the-engine-of-germanys-wealth-is-blocking-its-future" data-summary="Article URL: https://europeancorrespondent.com/en/r/the-engine-of-germanys-wealth-is-blocking-its-future Comments URL: https://news.ycombinator.com/item?id=47310073 Points: 238 # Comments: 317" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://bellard.org/jslinux/" target="_blank" rel="noopener">JSLinux Now Supports x86_64</a> <span class="score-badge score-low">3/10</span></div>
@@ -570,13 +511,15 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://bellard.org/jslinux/ Comments URL: https://news.ycombinator.com/item?id=47311484 Points: 358 # Comments: 115</div>
 
+<div class="article-footer"><a href="https://bellard.org/jslinux/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="JSLinux Now Supports x86_64" data-url="https://bellard.org/jslinux/" data-summary="Article URL: https://bellard.org/jslinux/ Comments URL: https://news.ycombinator.com/item?id=47311484 Points: 358 # Comments: 115" data-agents="documentation_agent">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://felixturner.github.io/hex-map-wfc/article/" target="_blank" rel="noopener">Building a Procedural Hex Map with Wave Function Collapse</a> <span class="score-badge score-low">3/10</span></div>
 <div class="article-meta">Hacker News (best)</div>
 
 <div class="article-summary">Article URL: https://felixturner.github.io/hex-map-wfc/article/ Comments URL: https://news.ycombinator.com/item?id=47311815 Points: 542 # Comments: 79</div>
-
+<ul class="article-why-matters" style="margin:6px 0 4px 0;padding-left:16px;font-size:12px;line-height:1.6;color:#8cb4ff;font-style:italic;list-style:none"><li style="padding:2px 0"><span style="color:var(--accent);font-style:normal;font-weight:700;margin-right:6px">&gt;</span>Opportunity: Use procedural generation to automate game map assets or UI layouts.</li></ul>
+<div class="article-footer"><a href="https://felixturner.github.io/hex-map-wfc/article/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Building a Procedural Hex Map with Wave Function Collapse" data-url="https://felixturner.github.io/hex-map-wfc/article/" data-summary="Article URL: https://felixturner.github.io/hex-map-wfc/article/ Comments URL: https://news.ycombinator.com/item?id=47311815 Points: 542 # Comments: 79" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://cbs12.com/news/local/florida-news-judge-rules-red-light-camera-tickets-unconstitutional" target="_blank" rel="noopener">Florida judge rules red light camera tickets are unconstitutional</a> <span class="score-badge score-low">3/10</span></div>
@@ -584,6 +527,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://cbs12.com/news/local/florida-news-judge-rules-red-light-camera-tickets-unconstitutional Comments URL: https://news.ycombinator.com/item?id=47312090 Points: 462 # Comments: 600</div>
 
+<div class="article-footer"><a href="https://cbs12.com/news/local/florida-news-judge-rules-red-light-camera-tickets-unconstitutional" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Florida judge rules red light camera tickets are unconstitutional" data-url="https://cbs12.com/news/local/florida-news-judge-rules-red-light-camera-tickets-unconstitutional" data-summary="Article URL: https://cbs12.com/news/local/florida-news-judge-rules-red-light-camera-tickets-unconstitutional Comments URL: https://news.ycombinator.com/item?id=47312090 Points: 462 # Comments: 600" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://bsky.social/about/blog/03-09-2026-a-new-chapter-for-bluesky" target="_blank" rel="noopener">Bluesky CEO Jay Graber is stepping down</a> <span class="score-badge score-low">3/10</span></div>
@@ -591,6 +535,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">https://www.wired.com/story/bluesky-ceo-jay-graber-is-steppi... (https://web.archive.org/web/20260309191134/https://www.wired...)https://toni.org/2026/03/09/coming-off-the-bench-for-bluesky... Comm...</div>
 
+<div class="article-footer"><a href="https://bsky.social/about/blog/03-09-2026-a-new-chapter-for-bluesky" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Bluesky CEO Jay Graber is stepping down" data-url="https://bsky.social/about/blog/03-09-2026-a-new-chapter-for-bluesky" data-summary="https://www.wired.com/story/bluesky-ceo-jay-graber-is-steppi... (https://web.archive.org/web/20260309191134/https://www.wired...)https://toni.org/2026/03/09/coming-off-the-bench-for-bluesky... Comment" data-agents="web_developer">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" target="_blank" rel="noopener">Sir Tony Hoare has died</a> <span class="score-badge score-low">3/10</span></div>
@@ -598,13 +543,15 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html Comments URL: https://news.ycombinator.com/item?id=47316880 Points: 254 # Comments: 61</div>
 
+<div class="article-footer"><a href="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Sir Tony Hoare has died" data-url="http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html" data-summary="Article URL: http://lefenetrou.blogspot.com/2026/03/in-memoriam-tony-hoare.html Comments URL: https://news.ycombinator.com/item?id=47316880 Points: 254 # Comments: 61" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://martinalderson.com/posts/no-it-doesnt-cost-anthropic-5k-per-claude-code-user/" target="_blank" rel="noopener">No, it doesn&#x27;t cost Anthropic $5k per Claude Code user</a> <span class="score-badge score-low">3/10</span></div>
 <div class="article-meta">Hacker News (best)</div>
 
 <div class="article-summary">Article URL: https://martinalderson.com/posts/no-it-doesnt-cost-anthropic-5k-per-claude-code-user/ Comments URL: https://news.ycombinator.com/item?id=47317132 Points: 365 # Comments: 256</div>
-
+<ul class="article-why-matters" style="margin:6px 0 4px 0;padding-left:16px;font-size:12px;line-height:1.6;color:#8cb4ff;font-style:italic;list-style:none"><li style="padding:2px 0"><span style="color:var(--accent);font-style:normal;font-weight:700;margin-right:6px">&gt;</span>Opportunity: Clarify AI coding cost models to optimize enterprise software budgeting.</li></ul>
+<div class="article-footer"><a href="https://martinalderson.com/posts/no-it-doesnt-cost-anthropic-5k-per-claude-code-user/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="No, it doesn&#x27;t cost Anthropic $5k per Claude Code user" data-url="https://martinalderson.com/posts/no-it-doesnt-cost-anthropic-5k-per-claude-code-user/" data-summary="Article URL: https://martinalderson.com/posts/no-it-doesnt-cost-anthropic-5k-per-claude-code-user/ Comments URL: https://news.ycombinator.com/item?id=47317132 Points: 365 # Comments: 256" data-agents="code_archaeologist">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://www.rahuljuliato.com/posts/emacs-solo-two-years" target="_blank" rel="noopener">Two Years of Emacs Solo</a> <span class="score-badge score-low">3/10</span></div>
@@ -612,6 +559,7 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://www.rahuljuliato.com/posts/emacs-solo-two-years Comments URL: https://news.ycombinator.com/item?id=47317616 Points: 315 # Comments: 116</div>
 
+<div class="article-footer"><a href="https://www.rahuljuliato.com/posts/emacs-solo-two-years" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="Two Years of Emacs Solo" data-url="https://www.rahuljuliato.com/posts/emacs-solo-two-years" data-summary="Article URL: https://www.rahuljuliato.com/posts/emacs-solo-two-years Comments URL: https://news.ycombinator.com/item?id=47317616 Points: 315 # Comments: 116" data-agents="">Start Chat</button></div>
 </div>
 <div class="article-card">
 <div class="article-title"><a href="https://howisfelix.today/" target="_blank" rel="noopener">I put my whole life into a single database</a> <span class="score-badge score-low">3/10</span></div>
@@ -619,6 +567,26 @@ tr:hover td{background:rgba(88,166,255,.04)}
 
 <div class="article-summary">Article URL: https://howisfelix.today/ Comments URL: https://news.ycombinator.com/item?id=47321233 Points: 266 # Comments: 120</div>
 
+<div class="article-footer"><a href="https://howisfelix.today/" target="_blank" rel="noopener" class="article-link-btn">Read Article</a><button class="article-chat-btn" data-title="I put my whole life into a single database" data-url="https://howisfelix.today/" data-summary="Article URL: https://howisfelix.today/ Comments URL: https://news.ycombinator.com/item?id=47321233 Points: 266 # Comments: 120" data-agents="database_developer">Start Chat</button></div>
+</div>
+</div>
+</div>
+<div class="task-modal-overlay" id="task-modal-overlay">
+<div class="task-modal">
+<h3>Assign Task to <span id="tc-agent-name"></span></h3>
+<input type="hidden" id="tc-agent-id">
+<label>Description</label>
+<textarea id="tc-description" placeholder="Describe what the agent should do..."></textarea>
+<label>Priority</label>
+<select id="tc-priority">
+<option value="low">Low</option>
+<option value="medium" selected>Medium</option>
+<option value="high">High</option>
+</select>
+<div id="tc-status" style="font-size:12px;min-height:18px;margin-bottom:4px"></div>
+<div class="task-modal-actions">
+<button class="btn-cancel" onclick="closeTaskCreator()">Cancel</button>
+<button class="btn-submit" onclick="submitTask()">Submit Task</button>
 </div>
 </div>
 </div>
@@ -633,6 +601,67 @@ tr:hover td{background:rgba(88,166,255,.04)}
     panels[i].classList.toggle('active',i===idx);
   }
 }
+function openTaskCreator(agentId, agentName, suggestion){
+  var overlay=document.getElementById('task-modal-overlay');
+  document.getElementById('tc-agent-id').value=agentId;
+  document.getElementById('tc-agent-name').textContent=agentName;
+  document.getElementById('tc-description').value=suggestion||'';
+  document.getElementById('tc-priority').value='medium';
+  document.getElementById('tc-status').textContent='';
+  overlay.classList.add('active');
+}
+function closeTaskCreator(){
+  document.getElementById('task-modal-overlay').classList.remove('active');
+}
+function submitTask(){
+  var agentId=document.getElementById('tc-agent-id').value;
+  var desc=document.getElementById('tc-description').value.trim();
+  var priority=document.getElementById('tc-priority').value;
+  var status=document.getElementById('tc-status');
+  if(!desc){status.textContent='Description is required.';status.style.color='var(--red)';return;}
+  var btn=document.querySelector('.btn-submit');
+  btn.disabled=true;btn.textContent='Submitting...';
+  fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({agent_id:agentId,description:desc,priority:priority,
+      trigger_type:'manual',trigger_source:'briefing'})
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){status.textContent='Error: '+data.error;status.style.color='var(--red)';}
+    else{status.textContent='Task created successfully.';status.style.color='var(--green)';
+      setTimeout(closeTaskCreator,1200);}
+  }).catch(function(e){status.textContent='Failed: '+e.message;status.style.color='var(--red)';
+  }).finally(function(){btn.disabled=false;btn.textContent='Submit Task';});
+}
+document.addEventListener('click',function(e){
+  if(e.target.id==='task-modal-overlay')closeTaskCreator();
+  var btn=e.target.closest('.assign-btn');
+  if(btn&&btn.dataset.agentId){
+    openTaskCreator(btn.dataset.agentId,btn.dataset.agentName,btn.dataset.suggestion);
+  }
+});
+document.addEventListener('click',function(e2){
+  var cb=e2.target.closest('.article-chat-btn');
+  if(!cb)return;
+  var title=cb.dataset.title||'';
+  var url=cb.dataset.url||'';
+  var summary=cb.dataset.summary||'';
+  var agents=(cb.dataset.agents||'').split(',').filter(Boolean);
+  var slug='article-'+title.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40);
+  var mentions=agents.map(function(a){return '@'+a;}).join(' ');
+  var seed='[Article: '+title+']('+url+')
+
+'+summary+'
+
+'
+    +'Thoughts on this? '+mentions;
+  cb.disabled=true;cb.textContent='Opening...';
+  fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({channel:slug,sender:'user',message:seed,
+      response_mode:'smarter'})
+  }).then(function(r){return r.json();}).then(function(){
+    window.open('/?channel='+encodeURIComponent(slug),'_blank');
+  }).catch(function(e3){alert('Failed to start chat: '+e3.message);
+  }).finally(function(){cb.disabled=false;cb.textContent='Start Chat';});
+});
 </script>
 </body>
 </html>

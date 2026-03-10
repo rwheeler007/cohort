@@ -255,6 +255,174 @@ def _generate_agent_narrative(agent: dict[str, Any]) -> str:
     return "On standby. Available for tasking."
 
 
+# =====================================================================
+# Agent Rotation + Relevance Scoring
+# =====================================================================
+
+_MAX_FEATURED_AGENTS = 5
+
+
+def _load_rotation_state(data_dir: Path) -> dict[str, Any]:
+    """Load agent briefing rotation state from disk."""
+    path = data_dir / "briefing_rotation.json"
+    if not path.exists():
+        return {"last_shown": {}, "show_counts": {}}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            data.setdefault("last_shown", {})
+            data.setdefault("show_counts", {})
+            return data
+        return {"last_shown": {}, "show_counts": {}}
+    except (json.JSONDecodeError, OSError):
+        return {"last_shown": {}, "show_counts": {}}
+
+
+def _save_rotation_state(data_dir: Path, state: dict[str, Any]) -> None:
+    """Persist rotation state."""
+    path = data_dir / "briefing_rotation.json"
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(state, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
+
+def _score_agent_for_briefing(
+    agent: dict[str, Any],
+    rotation_state: dict[str, Any],
+    mention_counts: dict[str, int],
+    now: datetime,
+) -> float:
+    """Score an agent for briefing card selection.
+
+    Combines activity signals with rotation staleness so that every
+    agent eventually surfaces, but active/relevant ones appear more often.
+
+    Score components (0-100 scale):
+      - Busy status:          +40  (always show if actively working)
+      - Tasks completed:      +15  (has recent output)
+      - Recently mentioned:   +10  (part of conversations)
+      - Days since last shown: +0.5-35 (staleness ramp -- ensures rotation)
+    """
+    agent_id = agent.get("agent_id", "")
+    score = 0.0
+
+    # Activity signals
+    if agent.get("status") == "busy":
+        score += 40.0
+    if agent.get("tasks_completed", 0) > 0:
+        score += 15.0
+    if mention_counts.get(agent_id, 0) > 0:
+        score += 10.0
+
+    # Staleness: days since last shown in briefing
+    last_shown_iso = rotation_state.get("last_shown", {}).get(agent_id)
+    if last_shown_iso:
+        try:
+            last_dt = datetime.fromisoformat(last_shown_iso)
+            if last_dt.tzinfo is None:
+                last_dt = last_dt.replace(tzinfo=timezone.utc)
+            days_stale = (now - last_dt).total_seconds() / 86400.0
+        except (ValueError, TypeError):
+            days_stale = 30.0
+    else:
+        # Never shown before -- treat as very stale so they get introduced
+        days_stale = 30.0
+
+    # Staleness ramp: 0.5 pts/day up to 35 pts at 70 days
+    # This means an idle agent unseen for 70+ days (~monthly check-in)
+    # will score 35 from staleness alone, enough to beat low-activity agents
+    staleness_score = min(days_stale * 0.5, 35.0)
+    score += staleness_score
+
+    # Small jitter from show_counts to break ties -- less-shown agents win
+    total_shows = rotation_state.get("show_counts", {}).get(agent_id, 0)
+    score -= min(total_shows * 0.1, 5.0)
+
+    return score
+
+
+def _select_featured_agents(
+    agents_list: list[dict[str, Any]],
+    data_dir: Path,
+    mention_counts: dict[str, int],
+    max_cards: int = _MAX_FEATURED_AGENTS,
+) -> list[dict[str, Any]]:
+    """Select top-N agents for featured cards in the briefing.
+
+    Always includes busy agents.  Fills remaining slots by relevance +
+    rotation score.  Updates rotation state on disk.
+    """
+    if not agents_list:
+        return []
+
+    now = datetime.now(timezone.utc)
+    rotation_state = _load_rotation_state(data_dir)
+
+    # Score all agents
+    scored: list[tuple[dict[str, Any], float]] = []
+    for agent in agents_list:
+        s = _score_agent_for_briefing(
+            agent, rotation_state, mention_counts, now,
+        )
+        scored.append((agent, s))
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+
+    # Select top N
+    selected = [agent for agent, _ in scored[:max_cards]]
+
+    # Update rotation state for selected agents
+    now_iso = now.isoformat()
+    for agent in selected:
+        aid = agent.get("agent_id", "")
+        if aid:
+            rotation_state["last_shown"][aid] = now_iso
+            rotation_state["show_counts"][aid] = (
+                rotation_state["show_counts"].get(aid, 0) + 1
+            )
+
+    _save_rotation_state(data_dir, rotation_state)
+    return selected
+
+
+def _generate_agent_recommendation(agent: dict[str, Any]) -> str:
+    """Generate a task recommendation for an agent.  Falls back to skills-based suggestion."""
+    name = agent.get("name", agent.get("agent_id", "Agent"))
+    group = agent.get("group", "")
+    skills = agent.get("skills", [])
+    status = agent.get("status", "idle")
+    completed = agent.get("tasks_completed", 0)
+    current_task = agent.get("current_task")
+
+    if status == "busy" and current_task:
+        # Busy agents don't need recommendations
+        return ""
+
+    prompt = (
+        f"You are recommending a task for {name}, an AI agent "
+        f"in the {group or 'general'} group.\n"
+        f"Skills: {', '.join(skills[:5]) if skills else 'general'}.\n"
+        f"Tasks completed: {completed}\n\n"
+        "Suggest ONE concrete task this agent could work on right now. "
+        "Be specific and actionable. Under 20 words. "
+        "Do not use hashtags or emojis. No preamble."
+    )
+
+    result = _llm_generate(prompt, max_tokens=100)
+    if result:
+        return result
+
+    # Deterministic fallback based on skills
+    if skills:
+        return f"Could run a {skills[0].lower()} task."
+    return "Available for assignment."
+
+
 def _generate_intel_summaries(
     articles: list[dict[str, Any]],
 ) -> dict[str, list[str]]:
@@ -967,7 +1135,7 @@ class ExecutiveBriefing:
             self._reports_dir.mkdir(parents=True, exist_ok=True)
             date_str = datetime.now().strftime("%Y-%m-%d")
             path = self._reports_dir / f"executive_briefing_{date_str}.html"
-            html = _build_html(report)
+            html = _build_html(report, data_dir=self._data_dir)
             path.write_text(html, encoding="utf-8")
             logger.info("[OK] HTML briefing saved: %s", path)
             return path
@@ -1204,7 +1372,7 @@ document.addEventListener('click',function(e2){
 """
 
 
-def _build_html(report: BriefingReport) -> str:
+def _build_html(report: BriefingReport, data_dir: Path | None = None) -> str:
     """Build a complete self-contained HTML briefing."""
     now = datetime.now()
     date_display = now.strftime("%A, %B %d, %Y")
@@ -1276,18 +1444,22 @@ def _build_html(report: BriefingReport) -> str:
         f'<div class="exec-summary">{_esc(exec_summary)}</div>'
     )
 
-    # Team cards -- split busy/active agents (full cards) from idle (compact rows)
+    # Team cards -- top N by relevance + rotation (ensures all agents surface)
     agents_list = ts_data.get("agents", [])
+    mention_counts = ca_data.get("top_mentioned", {})
     if agents_list:
-        busy_list = [a for a in agents_list if a.get("status") == "busy" or a.get("tasks_completed", 0) > 0]
-        idle_list = [a for a in agents_list if a not in busy_list]
+        featured = _select_featured_agents(
+            agents_list,
+            data_dir or Path("."),
+            mention_counts,
+        )
+        remaining_count = len(agents_list) - len(featured)
 
         parts.append('<div class="section-divider">Team Status</div>')
 
-        # Active/busy agents get full cards
-        if busy_list:
+        if featured:
             parts.append('<div class="agent-grid">')
-            for agent in busy_list:
+            for agent in featured:
                 name = _esc(agent.get("name", agent.get("agent_id", "?")))
                 agent_id = _esc(agent.get("agent_id", ""))
                 agent_role = _esc(agent.get("group", ""))
@@ -1300,6 +1472,21 @@ def _build_html(report: BriefingReport) -> str:
                 )
                 narrative = _generate_agent_narrative(agent)
                 narrative_esc = _esc(narrative)
+
+                # Recommendation for idle agents
+                recommendation = ""
+                if status != "busy":
+                    rec_text = _generate_agent_recommendation(agent)
+                    if rec_text:
+                        recommendation = (
+                            f'<div class="agent-rec" style="font-size:11px;'
+                            f"margin-top:6px;padding:6px 8px;"
+                            f"background:rgba(88,166,255,.08);"
+                            f"border-radius:4px;color:var(--accent);"
+                            f'line-height:1.4">'
+                            f"Suggestion: {_esc(rec_text)}</div>"
+                        )
+
                 stats_parts = []
                 if completed:
                     stats_parts.append(f"{completed} tasks completed")
@@ -1312,6 +1499,7 @@ def _build_html(report: BriefingReport) -> str:
 <div class="agent-role">{agent_role}</div>
 <div class="agent-voice" style="font-style:italic;font-size:13px;\
 line-height:1.6;color:var(--text)">&ldquo;{narrative_esc}&rdquo;</div>
+{recommendation}
 </div>
 <div class="agent-footer"><span class="agent-stats">{stats_line}</span>\
 <button class="assign-btn" data-agent-id="{agent_id}" \
@@ -1320,29 +1508,14 @@ data-suggestion="{_esc(narrative)}">Assign Task</button></div>
 </div>""")
             parts.append("</div>")
 
-        # Idle agents get compact single-line rows
-        if idle_list:
-            label = f"Available ({len(idle_list)})"
-            parts.append(f'<div style="color:var(--muted);font-size:11px;'
-                         f'text-transform:uppercase;letter-spacing:1px;'
-                         f'margin:12px 0 8px">{label}</div>')
-            parts.append('<div class="idle-agents-compact">')
-            for agent in idle_list:
-                name = _esc(agent.get("name", agent.get("agent_id", "?")))
-                agent_id = _esc(agent.get("agent_id", ""))
-                agent_role = _esc(agent.get("group", ""))
-                narrative = _generate_agent_narrative(agent)
-                parts.append(
-                    f'<div class="idle-agent-row">'
-                    f'<span class="agent-name">{name}'
-                    f'<span class="idle-tag">IDLE</span></span>'
-                    f'<span class="agent-role">{agent_role}</span>'
-                    f'<button class="assign-btn" data-agent-id="{agent_id}" '
-                    f'data-agent-name="{name}" '
-                    f'data-suggestion="{_esc(narrative)}">Assign Task</button>'
-                    f'</div>'
-                )
-            parts.append("</div>")
+        # Summary line for non-featured agents
+        if remaining_count > 0:
+            parts.append(
+                f'<div style="color:var(--muted);font-size:11px;'
+                f'text-align:center;margin:8px 0 16px">'
+                f'{remaining_count} more agents on standby '
+                f'&mdash; see Raw Stats for full team</div>'
+            )
 
     # Channel activity highlights
     ch_stats = ca_data.get("channel_stats", [])
