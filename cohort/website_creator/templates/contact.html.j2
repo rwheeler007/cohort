@@ -1,0 +1,88 @@
+{# Contact Page -- derived from ChillGuard contact.html #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Contact Hero -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{% if page.content.headline %}{{ page.content.headline }}{% else %}Get in Touch{% endif %}</h1>
+        <p class="responsive-p-large">{% if page.content.subheadline %}{{ page.content.subheadline }}{% else %}We'd love to hear from you.{% endif %}</p>
+    </div>
+</section>
+
+<!-- Contact Form + Info -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+            <!-- Form -->
+            <div class="card">
+                <h2 class="responsive-h2">Send a Message</h2>
+                <form action="{{ page.content.form_action | default('#') }}" method="POST">
+                    {% for field in contact.form_fields %}
+                    <div class="form-group">
+                        <label for="field-{{ loop.index }}">{{ field.label }}{% if field.required %} *{% endif %}</label>
+                        {% if field.type == 'textarea' %}
+                        <textarea id="field-{{ loop.index }}" name="{{ field.name }}" rows="4"{% if field.required %} required{% endif %} placeholder="{{ field.placeholder | default('') }}"></textarea>
+                        {% elif field.type == 'select' %}
+                        <select id="field-{{ loop.index }}" name="{{ field.name }}"{% if field.required %} required{% endif %}>
+                            <option value="">Select...</option>
+                            {% for opt in field.options %}
+                            <option value="{{ opt }}">{{ opt }}</option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <input type="{{ field.type | default('text') }}" id="field-{{ loop.index }}" name="{{ field.name }}"{% if field.required %} required{% endif %} placeholder="{{ field.placeholder | default('') }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% if not contact.form_fields %}
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="5" required placeholder="How can we help?"></textarea>
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div>
+                {% if contact.email %}
+                <div class="card mb-3">
+                    <h3 class="responsive-h3">Email</h3>
+                    <p><a href="mailto:{{ contact.email }}" style="color: var(--color-primary);">{{ contact.email }}</a></p>
+                </div>
+                {% endif %}
+                {% if contact.phone %}
+                <div class="card mb-3">
+                    <h3 class="responsive-h3">Phone</h3>
+                    <p>{{ contact.phone }}</p>
+                </div>
+                {% endif %}
+                {% if contact.address %}
+                <div class="card mb-3">
+                    <h3 class="responsive-h3">Address</h3>
+                    <p>{{ contact.address }}</p>
+                </div>
+                {% endif %}
+                {% if contact.social_links %}
+                <div class="card">
+                    <h3 class="responsive-h3">Follow Us</h3>
+                    {% for social in contact.social_links %}
+                    <a href="{{ social.url }}" target="_blank" rel="noopener" style="display: inline-block; margin-right: 1rem; color: var(--color-primary); font-weight: 600;">{{ social.label | default(social.platform) }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

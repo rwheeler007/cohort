@@ -1,0 +1,304 @@
+# ============================================================
+# Cohort Website -- Built by Cohort
+# This site brief defines Cohort's own marketing website.
+# "This site was built by Cohort" -- the ultimate proof of concept.
+# ============================================================
+
+product_name: "Cohort"
+tagline: "Multi-Agent Orchestration That Ships"
+description: "Cohort coordinates teams of AI agents to tackle complex tasks -- websites, code reviews, content pipelines -- in minutes, not weeks."
+logo: ""
+favicon: ""
+built_with_cohort: true
+
+# --- Brand ---
+brand:
+  primary_color: "#6366f1"       # Indigo-500
+  secondary_color: "#1e1b4b"     # Indigo-950
+  accent_color: "#e0e7ff"        # Indigo-100
+  background_color: "#ffffff"
+  text_color: "#1e1b4b"
+  font_heading: "'Inter', system-ui, -apple-system, sans-serif"
+  font_body: "'Inter', system-ui, -apple-system, sans-serif"
+  border_radius: "0.5rem"
+  primary_hover: "#4f46e5"       # Indigo-600
+
+# --- SEO ---
+seo:
+  site_title: "Cohort -- Multi-Agent Orchestration"
+  site_description: "Coordinate teams of AI agents to build websites, review code, and ship content in minutes. Open source. Self-hosted. No API costs."
+  keywords:
+    - multi-agent orchestration
+    - AI agent framework
+    - agentic AI
+    - website generator
+    - code review automation
+    - content pipeline
+    - open source AI
+    - self-hosted AI
+  canonical_base: "https://cohort.dev"
+  twitter_handle: ""
+  og_image: ""
+
+# --- Navigation ---
+nav_items:
+  - label: "Home"
+    href: "index.html"
+  - label: "How It Works"
+    href: "features.html"
+  - label: "Use Cases"
+    href: "use-cases.html"
+  - label: "Pricing"
+    href: "pricing.html"
+  - label: "Docs"
+    href: "docs.html"
+  - label: "Contact"
+    href: "contact.html"
+
+# --- Hero ---
+hero:
+  headline: "Your AI Team, Orchestrated"
+  subheadline: "Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. This website? Built by Cohort in 15 minutes."
+  cta_primary_text: "Try the Demo"
+  cta_primary_href: "https://github.com/cohort-dev/cohort"
+  cta_secondary_text: "See How It Works"
+  cta_secondary_href: "features.html"
+  background_style: "gradient"
+
+# --- Features ---
+features:
+  - title: "Compiled Roundtables"
+    description: "Load 3-8 agent personas into a single LLM call. 90% token reduction vs. sequential agent conversations. Real debate, real disagreements, real consensus."
+    icon: "[RT]"
+  - title: "Contribution Scoring"
+    description: "5-dimension relevance scoring prevents agent loops and ensures the right expert speaks at the right time. No more circular conversations."
+    icon: "[S]"
+  - title: "Work Queue"
+    description: "Break complex tasks into parallel work items with dependency tracking. Agents claim, execute, and deliver -- automatically."
+    icon: "[Q]"
+  - title: "Zero API Costs"
+    description: "Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing."
+    icon: "[$0]"
+  - title: "Protocol-First"
+    description: "Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. pip install cohort pulls nothing."
+    icon: "[P]"
+  - title: "Executive Briefings"
+    description: "Auto-generated HTML reports with agent activity narratives, intel summaries, and task execution history. Know what your AI team did overnight."
+    icon: "[B]"
+
+# --- Steps (How It Works) ---
+steps:
+  - number: 1
+    title: "Define Your Task"
+    description: "Describe what you need -- a website, a code review, a content plan, a security audit. One sentence is enough."
+  - number: 2
+    title: "Cohort Selects Agents"
+    description: "The orchestrator identifies which specialists are needed and assembles the team. No manual configuration."
+  - number: 3
+    title: "Agents Collaborate"
+    description: "Roundtable discussions, breakout groups, and parallel execution. Agents debate, disagree, and converge on the best approach."
+  - number: 4
+    title: "You Get Results"
+    description: "A complete deliverable -- not a draft, not a suggestion. Working code, live websites, formatted reports."
+
+# --- Pain Points (The Problem) ---
+pain_points:
+  - title: "Single-Agent Bottleneck"
+    description: "One AI assistant can only think one way. Complex tasks need multiple perspectives -- security, design, strategy, implementation -- simultaneously."
+    icon: "[!]"
+  - title: "API Cost Spiral"
+    description: "Cloud AI APIs charge per token. A multi-agent workflow with 5 agents across 3 rounds can cost $5-20 per task. At scale, it's unsustainable."
+    cost_range: "$5-$20 per task"
+    icon: "[$]"
+  - title: "Agent Loop Hell"
+    description: "Without proper orchestration, agents talk in circles. Agent A asks Agent B, who asks Agent C, who asks Agent A. Nothing gets done."
+    icon: "[~]"
+  - title: "No Memory Across Sessions"
+    description: "Most AI tools forget everything between conversations. Your agents should learn, accumulate expertise, and get better over time."
+    icon: "[?]"
+
+# --- Pricing ---
+pricing_tiers:
+  - name: "Open Source"
+    price: "Free"
+    period: ""
+    description: "Full framework. Self-hosted. Community support."
+    features:
+      - "Unlimited agents"
+      - "Compiled roundtables"
+      - "Work queue orchestration"
+      - "Executive briefings"
+      - "Local model support (Ollama/llama.cpp)"
+      - "MCP integration"
+      - "Community Discord"
+    cta_text: "Star on GitHub"
+    cta_href: "https://github.com/cohort-dev/cohort"
+    highlighted: false
+
+  - name: "Pro"
+    price: "$49"
+    period: "/month"
+    description: "For teams shipping with multi-agent workflows daily."
+    features:
+      - "Everything in Open Source"
+      - "Website Creator pipeline"
+      - "Priority support"
+      - "Pre-built workflow templates"
+      - "Advanced analytics dashboard"
+      - "Cloud model fallback (Claude, GPT)"
+      - "Team collaboration features"
+    cta_text: "Start Free Trial"
+    cta_href: "#"
+    badge: "Most Popular"
+    highlighted: true
+
+  - name: "Enterprise"
+    price: "Custom"
+    period: ""
+    description: "Dedicated support, custom agents, SLA guarantees."
+    features:
+      - "Everything in Pro"
+      - "Custom agent development"
+      - "SSO / SAML authentication"
+      - "99.9% uptime SLA"
+      - "Dedicated support engineer"
+      - "On-premise deployment"
+      - "Custom integrations"
+    cta_text: "Contact Sales"
+    cta_href: "contact.html"
+    highlighted: false
+
+# --- Testimonials ---
+testimonials:
+  - quote: "We pointed Cohort at our codebase and got a security audit, documentation update, and three bug fixes -- all before lunch."
+    name: "Engineering Lead"
+    company: "Series A Startup"
+  - quote: "The website creator rebuilt our marketing site in 12 minutes. It took our agency 6 weeks and $15K to do worse."
+    name: "Founder"
+    company: "SaaS Company"
+  - quote: "Finally, an AI framework that runs on my own hardware. No surprise bills, no data leaving my network."
+    name: "CTO"
+    company: "Healthcare Tech"
+
+# --- Contact ---
+contact:
+  email: "hello@cohort.dev"
+  social_links:
+    - platform: "github"
+      url: "https://github.com/cohort-dev/cohort"
+      label: "GitHub"
+    - platform: "twitter"
+      url: "https://twitter.com/cohort_dev"
+      label: "Twitter/X"
+    - platform: "discord"
+      url: "https://discord.gg/cohort"
+      label: "Discord"
+
+# --- Pages ---
+pages:
+  - slug: "index"
+    title: "Home"
+    template: "hero"
+    nav_label: "Home"
+    in_nav: true
+    meta_description: "Cohort coordinates teams of AI agents to build websites, review code, and ship content in minutes."
+    content:
+      features_heading: "What Makes Cohort Different"
+      steps_heading: "How It Works"
+      cta_heading: "Ready to Orchestrate?"
+      cta_subheading: "Open source. Self-hosted. Start in 5 minutes."
+
+  - slug: "features"
+    title: "How It Works"
+    template: "features"
+    nav_label: "How It Works"
+    in_nav: true
+    meta_description: "Learn how Cohort's multi-agent orchestration works -- compiled roundtables, contribution scoring, and parallel work queues."
+    content:
+      headline: "Under the Hood"
+      subheadline: "Cohort's architecture is designed for one thing: getting multiple AI agents to produce better results than any single agent could alone."
+      steps_heading: "The Pipeline"
+      features_heading: "Core Capabilities"
+      cta_heading: "See It In Action"
+      cta_text: "View Pricing"
+      cta_href: "pricing.html"
+
+  - slug: "use-cases"
+    title: "Use Cases"
+    template: "content"
+    nav_label: "Use Cases"
+    in_nav: true
+    meta_description: "Real-world use cases for Cohort multi-agent orchestration -- website generation, code review, content pipelines, security audits."
+    content:
+      subheadline: "What teams are building with Cohort today."
+      sections:
+        - heading: "Website Generation"
+          body: "Input your current site + competitors, answer 20 questions, and Cohort's agents build you a complete, responsive, SEO-optimized website in 15 minutes. This site is proof."
+        - heading: "Code Review & Security Audit"
+          body: "Point Cohort at a codebase and get multi-perspective analysis: security vulnerabilities, code quality issues, performance bottlenecks, and documentation gaps -- all in parallel."
+        - heading: "Content Pipeline"
+          body: "From RSS intelligence gathering to blog post drafting, social media adaptation, and newsletter formatting -- Cohort's content agents produce publish-ready bundles."
+        - heading: "Executive Briefings"
+          body: "Automated daily reports with agent activity narratives, tech intel summaries, and task execution metrics. Know exactly what your AI team accomplished."
+        - heading: "Agent Training"
+          body: "Overnight training pipelines that research topics, curate materials, inject knowledge, and assess agent performance -- all while you sleep."
+
+  - slug: "pricing"
+    title: "Pricing"
+    template: "solution"
+    nav_label: "Pricing"
+    in_nav: true
+    meta_description: "Cohort pricing -- free open source, Pro for teams, Enterprise for scale."
+    content:
+      headline: "Simple, Transparent Pricing"
+      subheadline: "Start free. Scale when you're ready."
+      pricing_heading: "Choose Your Plan"
+      cta_heading: "Questions?"
+      cta_text: "Contact Us"
+      cta_href: "contact.html"
+
+  - slug: "docs"
+    title: "Documentation"
+    template: "content"
+    nav_label: "Docs"
+    in_nav: true
+    meta_description: "Cohort documentation -- installation, quickstart, API reference, and agent development guide."
+    content:
+      subheadline: "Everything you need to get started with Cohort."
+      sections:
+        - heading: "Quick Start"
+          body: "Install Cohort and run your first multi-agent task in under 5 minutes."
+          list_items:
+            - "pip install cohort"
+            - "cohort init my-project"
+            - "cohort serve --port 5100"
+            - "Open http://localhost:5100 in your browser"
+        - heading: "Core Concepts"
+          body: "Understand the building blocks: agents, sessions, roundtables, work queues, and briefings."
+        - heading: "API Reference"
+          body: "Full REST API documentation for the Cohort server. All endpoints, request/response schemas, and WebSocket events."
+        - heading: "Agent Development"
+          body: "Create custom agents with agent_config.json, agent_persona.md, and agent_prompt.md. No base class required -- just implement the protocol."
+
+  - slug: "contact"
+    title: "Contact"
+    template: "contact"
+    nav_label: "Contact"
+    in_nav: true
+    meta_description: "Get in touch with the Cohort team -- questions, partnerships, enterprise inquiries."
+    content:
+      headline: "Let's Talk"
+      subheadline: "Whether you're exploring Cohort for your team or want to contribute, we'd love to hear from you."
+
+# --- Footer ---
+footer_text: "2026 Cohort. Open source under MIT License."
+footer_links:
+  - label: "GitHub"
+    href: "https://github.com/cohort-dev/cohort"
+    external: true
+  - label: "Documentation"
+    href: "docs.html"
+  - label: "Privacy"
+    href: "#"
+  - label: "Terms"
+    href: "#"

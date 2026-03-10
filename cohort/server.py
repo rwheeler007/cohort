@@ -772,11 +772,17 @@ async def generate_briefing(request: Request) -> JSONResponse:
     fmt = body.get("format", "json")
 
     try:
+        # Run blocking LLM-heavy generation in a thread to avoid
+        # starving the async event loop (kills WebSocket pings).
+        loop = asyncio.get_event_loop()
         if fmt == "html":
-            html_path = _briefing.generate_html(
-                hours=hours,
-                post_to_channel=post_to_channel,
-                channel_id=channel,
+            html_path = await loop.run_in_executor(
+                None,
+                lambda: _briefing.generate_html(
+                    hours=hours,
+                    post_to_channel=post_to_channel,
+                    channel_id=channel,
+                ),
             )
             report = _briefing.get_latest()
             result: dict[str, Any] = {
@@ -787,10 +793,13 @@ async def generate_briefing(request: Request) -> JSONResponse:
                 result["html_path"] = str(html_path)
             return JSONResponse(result)
         else:
-            report = _briefing.generate(
-                hours=hours,
-                post_to_channel=post_to_channel,
-                channel_id=channel,
+            report = await loop.run_in_executor(
+                None,
+                lambda: _briefing.generate(
+                    hours=hours,
+                    post_to_channel=post_to_channel,
+                    channel_id=channel,
+                ),
             )
             return JSONResponse({"success": True, "report": report.to_dict()})
     except Exception as exc:
@@ -832,6 +841,46 @@ async def get_latest_briefing_html(request: Request) -> HTMLResponse:
 
     try:
         content = html_path.read_text(encoding="utf-8")
+        return HTMLResponse(content)
+    except OSError as exc:
+        return HTMLResponse(f"<h1>Error reading briefing</h1><p>{exc}</p>", status_code=500)
+
+
+async def list_briefing_reports(request: Request) -> JSONResponse:
+    """GET /api/briefing/list -- list recent HTML briefing reports."""
+    if _briefing is None:
+        return JSONResponse({"reports": []})
+
+    reports_dir = _briefing._reports_dir
+    if not reports_dir.exists():
+        return JSONResponse({"reports": []})
+
+    import re as _re
+    files = sorted(reports_dir.glob("executive_briefing_*.html"), reverse=True)[:10]
+    reports = []
+    for f in files:
+        m = _re.search(r"executive_briefing_(\d{4}-\d{2}-\d{2})\.html", f.name)
+        if m:
+            reports.append({"date": m.group(1), "filename": f.name})
+    return JSONResponse({"reports": reports})
+
+
+async def get_briefing_by_date(request: Request) -> HTMLResponse:
+    """GET /api/briefing/{date}/html -- serve a specific date's HTML briefing."""
+    if _briefing is None:
+        return HTMLResponse("<h1>Briefing system not initialised</h1>", status_code=500)
+
+    date_str = request.path_params["date"]
+    import re as _re
+    if not _re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+        return HTMLResponse("<h1>Invalid date format</h1>", status_code=400)
+
+    path = _briefing._reports_dir / f"executive_briefing_{date_str}.html"
+    if not path.exists():
+        return HTMLResponse(f"<h1>No briefing for {date_str}</h1>", status_code=404)
+
+    try:
+        content = path.read_text(encoding="utf-8")
         return HTMLResponse(content)
     except OSError as exc:
         return HTMLResponse(f"<h1>Error reading briefing</h1><p>{exc}</p>", status_code=500)
@@ -4551,6 +4600,141 @@ async def get_comms_safety_status(request: Request) -> JSONResponse:
 
 
 # =====================================================================
+# Website Creator endpoints
+# =====================================================================
+
+async def website_create(request: Request) -> JSONResponse:
+    """POST /api/website/create -- Generate a website from a site brief or URL.
+
+    Body (JSON):
+        - brief_yaml: str (raw YAML content) -- generate from inline brief
+        - brief_path: str (file path) -- generate from YAML file
+        - url: str + competitor_urls: list[str] + answers: dict -- full pipeline
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    from cohort.website_creator.pipeline import WebsiteCreator
+    from cohort.website_creator.site_brief import SiteBrief
+    import tempfile
+
+    output_base = Path(__file__).parent / "website_creator" / "output"
+    creator = WebsiteCreator(output_base=output_base)
+
+    try:
+        if "brief_yaml" in body:
+            # Inline YAML string
+            tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".yaml",
+                                              delete=False, encoding="utf-8")
+            tmp.write(body["brief_yaml"])
+            tmp.close()
+            result = await creator.create_from_yaml(tmp.name)
+            Path(tmp.name).unlink(missing_ok=True)
+        elif "brief_path" in body:
+            result = await creator.create_from_yaml(body["brief_path"])
+        elif "url" in body:
+            answers = {int(k): v for k, v in body.get("answers", {}).items()}
+            result = await creator.create_from_url(
+                body["url"],
+                body.get("competitor_urls", []),
+                answers,
+            )
+        else:
+            return JSONResponse(
+                {"error": "Provide brief_yaml, brief_path, or url + answers"},
+                status_code=400,
+            )
+
+        # List generated files
+        files = []
+        for f in sorted(result.iterdir()):
+            if f.is_file():
+                files.append({"name": f.name, "size": f.stat().st_size})
+
+        project_name = result.name
+        return JSONResponse({
+            "status": "ok",
+            "project": project_name,
+            "output_dir": str(result),
+            "files": files,
+            "preview_url": f"/api/website/projects/{project_name}/index.html",
+        })
+    except Exception as e:
+        logger.exception("Website creation failed")
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+async def website_worksheet(request: Request) -> JSONResponse:
+    """GET /api/website/worksheet -- Return the 20 intake questions."""
+    from cohort.website_creator.intake import get_worksheet_questions
+    return JSONResponse({"questions": get_worksheet_questions()})
+
+
+async def website_list_projects(request: Request) -> JSONResponse:
+    """GET /api/website/projects -- List generated website projects."""
+    output_dir = Path(__file__).parent / "website_creator" / "output"
+    projects = []
+    if output_dir.is_dir():
+        for d in sorted(output_dir.iterdir()):
+            if d.is_dir() and (d / "index.html").exists():
+                files = [f.name for f in d.iterdir() if f.is_file()]
+                projects.append({
+                    "name": d.name,
+                    "files": files,
+                    "preview_url": f"/api/website/projects/{d.name}/index.html",
+                })
+    return JSONResponse({"projects": projects})
+
+
+async def website_serve_page(request: Request) -> Response:
+    """GET /api/website/projects/{project_name}/{path} -- Serve generated pages."""
+    from starlette.responses import HTMLResponse, Response as StarletteResponse
+    project_name = request.path_params["project_name"]
+
+    # project_name may include the filename (e.g. "cohort/index.html")
+    parts = project_name.split("/", 1)
+    if len(parts) == 2:
+        project = parts[0]
+        filename = parts[1]
+    else:
+        project = parts[0]
+        filename = "index.html"
+
+    output_dir = Path(__file__).parent / "website_creator" / "output"
+    file_path = output_dir / project / filename
+
+    if not file_path.exists() or not file_path.is_file():
+        return JSONResponse({"error": f"Not found: {project}/{filename}"}, status_code=404)
+
+    # Prevent path traversal
+    try:
+        file_path.resolve().relative_to(output_dir.resolve())
+    except ValueError:
+        return JSONResponse({"error": "Invalid path"}, status_code=403)
+
+    content = file_path.read_text(encoding="utf-8")
+
+    # Content type from extension
+    ext = file_path.suffix.lower()
+    content_types = {
+        ".html": "text/html",
+        ".css": "text/css",
+        ".js": "application/javascript",
+        ".xml": "application/xml",
+        ".txt": "text/plain",
+        ".json": "application/json",
+        ".yaml": "text/yaml",
+    }
+    ct = content_types.get(ext, "text/plain")
+
+    if ext == ".html":
+        return HTMLResponse(content)
+    return StarletteResponse(content, media_type=ct)
+
+
+# =====================================================================
 # App factory
 # =====================================================================
 
@@ -4745,6 +4929,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/briefing/generate", generate_briefing, methods=["POST"]),
         Route("/api/briefing/latest", get_latest_briefing, methods=["GET"]),
         Route("/api/briefing/latest/html", get_latest_briefing_html, methods=["GET"]),
+        Route("/api/briefing/list", list_briefing_reports, methods=["GET"]),
+        Route("/api/briefing/{date}/html", get_briefing_by_date, methods=["GET"]),
         # Intel feed
         Route("/api/intel/fetch", fetch_intel, methods=["POST"]),
         # Setup wizard endpoints
@@ -4832,6 +5018,11 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/doc-processor/history", doc_history_delete, methods=["DELETE"]),
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Route("/api/comms/safety-status", get_comms_safety_status, methods=["GET"]),
+        # Website Creator
+        Route("/api/website/create", website_create, methods=["POST"]),
+        Route("/api/website/worksheet", website_worksheet, methods=["GET"]),
+        Route("/api/website/projects", website_list_projects, methods=["GET"]),
+        Route("/api/website/projects/{project_name:path}", website_serve_page, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 

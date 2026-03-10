@@ -1,0 +1,62 @@
+{# Features / How It Works Page -- derived from ChillGuard how-it-works.html #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Features Hero -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{% if page.content.headline %}{{ page.content.headline }}{% else %}How {{ product_name }} Works{% endif %}</h1>
+        <p class="responsive-p-large">{% if page.content.subheadline %}{{ page.content.subheadline }}{% endif %}</p>
+    </div>
+</section>
+
+{% if steps %}
+<!-- Step-by-Step Process -->
+<section class="section-spacing">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">{% if page.content.steps_heading %}{{ page.content.steps_heading }}{% else %}Step by Step{% endif %}</h2>
+        <div style="max-width: 800px; margin: 2rem auto 0;">
+            {% for step in steps %}
+            <div style="display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 2.5rem;">
+                <div style="flex-shrink: 0; width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem;">{{ step.number }}</div>
+                <div>
+                    <h3 class="responsive-h3 mb-0">{{ step.title }}</h3>
+                    <p class="responsive-p-body">{{ step.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if features %}
+<!-- Detailed Features -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">{% if page.content.features_heading %}{{ page.content.features_heading }}{% else %}Features{% endif %}</h2>
+        <div class="grid-3" style="margin-top: 2rem;">
+            {% for feature in features %}
+            <div class="card text-center">
+                {% if feature.icon %}
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">{{ feature.icon }}</div>
+                {% endif %}
+                <h3 class="responsive-h3">{{ feature.title }}</h3>
+                <p class="responsive-p-body">{{ feature.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{% if page.content.cta_heading %}{{ page.content.cta_heading }}{% else %}See It in Action{% endif %}</h2>
+        <div class="button-group">
+            <a href="{{ page.content.cta_href | default('solution.html') }}" class="btn-primary">{{ page.content.cta_text | default('View Plans') }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

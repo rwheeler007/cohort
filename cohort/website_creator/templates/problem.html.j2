@@ -1,0 +1,63 @@
+{# Problem / Pain Point Page -- derived from ChillGuard problem.html #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Problem Hero -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{% if page.content.headline %}{{ page.content.headline }}{% else %}The Problem{% endif %}</h1>
+        <p class="responsive-p-large">{% if page.content.subheadline %}{{ page.content.subheadline }}{% else %}Understanding why you need {{ product_name }}.{% endif %}</p>
+    </div>
+</section>
+
+{% if pain_points %}
+<!-- Pain Points Grid -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="grid-2">
+            {% for pain in pain_points %}
+            <div class="card">
+                {% if pain.icon %}
+                <div style="font-size: 2rem; margin-bottom: 1rem;">{{ pain.icon }}</div>
+                {% endif %}
+                <h3 class="responsive-h3">{{ pain.title }}</h3>
+                <p class="responsive-p-body">{{ pain.description }}</p>
+                {% if pain.cost_range %}
+                <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: #fef2f2; border-radius: var(--radius); font-weight: 600; color: #991b1b;">
+                    Cost: {{ pain.cost_range }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if testimonials %}
+<!-- Testimonials / Evidence -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">Real Stories</h2>
+        <div style="max-width: 800px; margin: 2rem auto 0;">
+            {% for t in testimonials[:3] %}
+            <div class="testimonial">
+                <blockquote>"{{ t.quote }}"</blockquote>
+                <cite>{{ t.name }}{% if t.title %}, {{ t.title }}{% endif %}{% if t.company %} -- {{ t.company }}{% endif %}</cite>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{% if page.content.cta_heading %}{{ page.content.cta_heading }}{% else %}There's a Better Way{% endif %}</h2>
+        <div class="button-group">
+            <a href="{{ page.content.cta_href | default('solution.html') }}" class="btn-primary">{{ page.content.cta_text | default('See the Solution') }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
