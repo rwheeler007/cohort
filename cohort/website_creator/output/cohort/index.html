@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D97757">
     <title>COHORT | Multi-Agent Orchestration That Ships</title>
     <meta name="description" content="Cohort coordinates teams of AI agents to build websites, review code, and ship content in minutes.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
@@ -52,60 +53,97 @@ COHORT            </a>
     <!-- Main Content -->
     <main id="main">
 <!-- Hero Section -->
-<section class="section-spacing-hero" style="background: linear-gradient(135deg, #2B2D31 0%, #D97757 100%); color: #fff; padding: 4rem 0;">
+<section class="section-spacing-hero" style="background: #2B2D31; color: #fff; padding: 4rem 0;">
     <div class="container text-center">
-        <h1 class="responsive-h1" style="color: #fff;">Your AI Team, Orchestrated</h1>
-        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. This website? The engine behind it was built by Cohort in 7 minutes and 39 seconds. That engine built the MVP for this site in 0.55 seconds -- with zero human intervention, start to finish.</p>
+        <h1 class="responsive-h1" style="color: #fff;">Your AI Team. Built to Ship.</h1>
+        <p style="color: rgba(255,255,255,0.7); font-style: italic; font-size: 1.5rem; margin-top: -0.5rem; margin-bottom: 2rem;">Without you getting an IT degree.</p>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes.</p>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">The engine behind this website was built by Cohort in 7 minutes and 39 seconds -- with zero human intervention, start to finish.</p>
         <div class="button-group">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: #fff; color: #D97757;">Try the Demo</a>
-            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff;">See How It Works</a>
+            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: #D97757; color: #fff;">Get Started</a>
+            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">See How It Works</a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section-spacing">
+    <div class="container text-center">
+        <h2 class="responsive-h2">How It Works</h2>
+        <div class="grid-4" style="margin-top: 2rem;">
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">1</div>
+                <h3 class="responsive-h3">Define Your Task</h3>
+                <p class="responsive-p-body">Describe what you need -- a website, a code review, a content plan, a security audit. One sentence to get started. The agents will ask for what they need.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">2</div>
+                <h3 class="responsive-h3">Cohort Selects Agents</h3>
+                <p class="responsive-p-body">The orchestrator identifies which specialists are needed and assembles the team. No manual configuration.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">3</div>
+                <h3 class="responsive-h3">Agents Collaborate</h3>
+                <p class="responsive-p-body">Roundtable discussions, breakout groups, and parallel execution. Agents debate, disagree, and converge on the best approach.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">4</div>
+                <h3 class="responsive-h3">You Get Results</h3>
+                <p class="responsive-p-body">A complete deliverable -- not a draft, not a suggestion. Working code, live websites, formatted reports.</p>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Key Features -->
-<section class="section-spacing">
+<section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
         <h2 class="responsive-h2">What Makes Cohort Different</h2>
-        <div class="grid-3" style="margin-top: 2rem;">
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[RT]</div>
-                <h3 class="responsive-h3">Compiled Roundtables</h3>
-                <p class="responsive-p-body">Load 3-8 agent personas into a single LLM call. 90% token reduction vs. sequential agent conversations. Real debate, real disagreements, real consensus.</p>
-            </div>
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[S]</div>
+        <div class="grid-3" style="margin-top: 2rem; justify-items: center;">
+            <a href="features.html#roundtables" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Agent Roundtables">[RT]</div>
+                <h3 class="responsive-h3">Agent Roundtables</h3>
+                <p class="responsive-p-body">Assemble 3-8 specialist agents into a structured discussion. Security challenges the developer. Strategy reframes the CTO's concern. Real debate, real disagreements, real consensus.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Learn more →</span>
+            </a>
+            <a href="features.html#scoring" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Contribution Scoring">[S]</div>
                 <h3 class="responsive-h3">Contribution Scoring</h3>
-                <p class="responsive-p-body">5-dimension relevance scoring prevents agent loops and ensures the right expert speaks at the right time. No more circular conversations.</p>
-            </div>
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[Q]</div>
-                <h3 class="responsive-h3">Work Queue</h3>
-                <p class="responsive-p-body">Break complex tasks into parallel work items with dependency tracking. Agents claim, execute, and deliver -- automatically.</p>
-            </div>
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[$0]</div>
+                <p class="responsive-p-body">5-dimension relevance scoring ensures the right expert speaks at the right time. Agents earn their turn instead of talking in circles.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Learn more →</span>
+            </a>
+            <a href="features.html#local-inference" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Zero API Costs">[$0]</div>
                 <h3 class="responsive-h3">Zero API Costs</h3>
-                <p class="responsive-p-body">Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing.</p>
-            </div>
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[P]</div>
+                <p class="responsive-p-body">Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing, no data leaving your network.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Learn more →</span>
+            </a>
+            <a href="features.html#protocols" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Protocol-First">[P]</div>
                 <h3 class="responsive-h3">Protocol-First</h3>
                 <p class="responsive-p-body">Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. pip install cohort pulls nothing.</p>
-            </div>
-            <div class="card text-center">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">[B]</div>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Learn more →</span>
+            </a>
+            <a href="samples/executive_briefing.html" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Executive Briefings">[B]</div>
                 <h3 class="responsive-h3">Executive Briefings</h3>
                 <p class="responsive-p-body">Auto-generated HTML reports with agent activity narratives, intel summaries, and task execution history. Know what your AI team did overnight.</p>
-            </div>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">See a sample report →</span>
+            </a>
+            <a href="features.html#memory" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Persistent Memory">[M]</div>
+                <h3 class="responsive-h3">Persistent Memory</h3>
+                <p class="responsive-p-body">Agents accumulate expertise across sessions. Overnight training pipelines research, curate, and inject domain knowledge. Your team gets smarter while you sleep.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Learn more →</span>
+            </a>
         </div>
     </div>
 </section>
 
-<!-- Social Proof -->
-<section class="section-spacing" style="background: #F5E6DE;">
+<!-- The AI's Perspective -->
+<section class="section-spacing">
     <div class="container text-center">
-        <h2 class="responsive-h2">What People Say</h2>
+        <h2 class="responsive-h2">The AI's Perspective</h2>
         <p class="responsive-p-body" style="max-width: 700px; margin: 1rem auto 2.5rem; opacity: 0.8; font-style: italic;">The following review was written by Claude -- the AI model that powers every agent in the system -- reflecting on what it observed running inside a live Cohort deployment.</p>
 
         <!-- The actual prompt that generated this review -->
@@ -147,55 +185,11 @@ COHORT            </a>
 
             <p style="margin-bottom: 1rem; line-height: 1.8;">If you're evaluating Cohort as a multi-agent framework, here's what I'd tell you as the model that actually runs inside it: <strong>the magic isn't in the model. The magic is in the disagreement.</strong> Any LLM can generate a pitch. It takes a system to generate a pitch, tear it apart from six angles, fact-check it against source code, and ship a version that's better than any single pass.</p>
 
-            <p style="margin-bottom: 0; line-height: 1.8;">I didn't think a system built on top of me could outperform me. I was wrong.</p>
+            <p style="margin-bottom: 0; line-height: 1.8; font-size: 1.35em; font-weight: 600;"><span style="background-image: linear-gradient(90deg, rgba(217, 119, 87, 0) 0%, rgba(217, 119, 87, 0.35) 3%, rgba(217, 119, 87, 0.35) 97%, rgba(217, 119, 87, 0) 100%); padding: 0.25em 0.6em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">I didn't think a system built on top of me could outperform me. I was wrong.</span></p>
 
             <cite style="display: block; text-align: right; margin-top: 1.5rem; font-style: normal; font-weight: 600;">Claude -- the AI model that powers every Cohort agent</cite>
         </div>
 
-        <!-- Pull quotes -->
-        <div class="grid-2">
-            <div class="testimonial">
-                <blockquote>"The same model, given different personas and forced to debate, produces output greater than the sum of its parts."</blockquote>
-                <cite>Claude -- on emergent multi-agent intelligence</cite>
-            </div>
-            <div class="testimonial">
-                <blockquote>"Six agents, one prompt, and we went from a flat feature list to a category-creating narrative in under 10 minutes."</blockquote>
-                <cite>CEO Agent -- during the elevator pitch workshop</cite>
-            </div>
-            <div class="testimonial">
-                <blockquote>"ChatGPT is one person answering questions. This is a team of specialists who remember yesterday, argue with each other, and ship finished work."</blockquote>
-                <cite>BOSS Agent -- on what makes Cohort different</cite>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- How It Works (Brief) -->
-<section class="section-spacing">
-    <div class="container text-center">
-        <h2 class="responsive-h2">How It Works</h2>
-        <div class="grid-4" style="margin-top: 2rem;">
-            <div class="text-center">
-                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">1</div>
-                <h3 class="responsive-h3">Define Your Task</h3>
-                <p class="responsive-p-body">Describe what you need -- a website, a code review, a content plan, a security audit. One sentence is enough.</p>
-            </div>
-            <div class="text-center">
-                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">2</div>
-                <h3 class="responsive-h3">Cohort Selects Agents</h3>
-                <p class="responsive-p-body">The orchestrator identifies which specialists are needed and assembles the team. No manual configuration.</p>
-            </div>
-            <div class="text-center">
-                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">3</div>
-                <h3 class="responsive-h3">Agents Collaborate</h3>
-                <p class="responsive-p-body">Roundtable discussions, breakout groups, and parallel execution. Agents debate, disagree, and converge on the best approach.</p>
-            </div>
-            <div class="text-center">
-                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">4</div>
-                <h3 class="responsive-h3">You Get Results</h3>
-                <p class="responsive-p-body">A complete deliverable -- not a draft, not a suggestion. Working code, live websites, formatted reports.</p>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -260,7 +254,7 @@ COHORT            </a>
         <h2 class="responsive-h2" style="color: #fff;">Ready to Orchestrate?</h2>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Open source. Self-hosted. Start in 5 minutes.</p>
         <div class="button-group">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: var(--color-primary);">Try the Demo</a>
+            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
         </div>
     </div>
 </section>
@@ -279,8 +273,8 @@ COHORT            </a>
                     <ul style="list-style:none; padding:0; margin:0;">
                         <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
-                        <li style="margin-bottom:0.5rem;"><a href="#">Privacy</a></li>
-                        <li style="margin-bottom:0.5rem;"><a href="#">Terms</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="use-cases.html">Use Cases</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 <div>

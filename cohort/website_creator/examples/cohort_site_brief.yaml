@@ -70,30 +70,36 @@ hero:
 
 # --- Features ---
 features:
-  - title: "Compiled Roundtables"
-    description: "Load 3-8 agent personas into a single LLM call. 90% token reduction vs. sequential agent conversations. Real debate, real disagreements, real consensus."
+  - title: "Agent Roundtables"
+    description: "Assemble 3-8 specialist agents into a structured discussion. Security challenges the developer. Strategy reframes the CTO's concern. Real debate, real disagreements, real consensus."
     icon: "[RT]"
+    href: "features.html#roundtables"
   - title: "Contribution Scoring"
-    description: "5-dimension relevance scoring prevents agent loops and ensures the right expert speaks at the right time. No more circular conversations."
+    description: "5-dimension relevance scoring ensures the right expert speaks at the right time. Agents earn their turn instead of talking in circles."
     icon: "[S]"
-  - title: "Work Queue"
-    description: "Break complex tasks into parallel work items with dependency tracking. Agents claim, execute, and deliver -- automatically."
-    icon: "[Q]"
+    href: "features.html#scoring"
   - title: "Zero API Costs"
-    description: "Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing."
+    description: "Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing, no data leaving your network."
     icon: "[$0]"
+    href: "features.html#local-inference"
   - title: "Protocol-First"
     description: "Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. pip install cohort pulls nothing."
     icon: "[P]"
+    href: "features.html#protocols"
   - title: "Executive Briefings"
     description: "Auto-generated HTML reports with agent activity narratives, intel summaries, and task execution history. Know what your AI team did overnight."
     icon: "[B]"
+    href: "samples/executive_briefing.html"
+  - title: "Persistent Memory"
+    description: "Agents accumulate expertise across sessions. Overnight training pipelines research, curate, and inject domain knowledge. Your team gets smarter while you sleep."
+    icon: "[M]"
+    href: "features.html#memory"
 
 # --- Steps (How It Works) ---
 steps:
   - number: 1
     title: "Define Your Task"
-    description: "Describe what you need -- a website, a code review, a content plan, a security audit. One sentence is enough."
+    description: "Describe what you need -- a website, a code review, a content plan, a security audit. One sentence to get started. The agents will ask for what they need."
   - number: 2
     title: "Cohort Selects Agents"
     description: "The orchestrator identifies which specialists are needed and assembles the team. No manual configuration."
