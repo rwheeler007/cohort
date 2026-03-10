@@ -53,6 +53,21 @@
                     </li>
                 </ul>
 
+                <div class="sidebar-nav__section" data-section="briefing">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('briefing')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Executive Briefing</h2>
+                    </div>
+                    <div class="sidebar-nav__section-body">
+                        <div style="padding: 4px 16px 8px; display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button class="btn btn--small btn--primary" id="generate-briefing-btn" onclick="generateBriefing()" title="Generate a new executive briefing">Generate</button>
+                            <button class="btn btn--small btn--secondary" id="view-briefing-btn" onclick="viewBriefing()" title="View the latest executive briefing">View</button>
+                            <button class="btn btn--small btn--secondary" id="fetch-intel-btn" onclick="fetchIntel()" title="Fetch RSS feeds">Fetch Intel</button>
+                        </div>
+                        <div id="briefing-status" style="padding: 0 16px 8px; font-size: 11px; color: var(--color-text-muted); display: none;"></div>
+                    </div>
+                </div>
+
                 <div class="sidebar-nav__section open" data-section="channels">
                     <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('channels')">
                         <span class="sidebar-nav__toggle">></span>
@@ -149,8 +164,8 @@
             <section class="panel panel--team active" id="panel-team" role="region" aria-label="Team Dashboard">
                 <div class="agent-grid" id="agent-grid">
                     <div class="empty-state" id="team-empty">
-                        <p class="empty-state__text">No agents connected</p>
-                        <p class="empty-state__hint">Agents will appear here when they join a session</p>
+                        <p class="empty-state__text">No active sessions</p>
+                        <p class="empty-state__hint">Click any agent in the <strong>Agent Chats</strong> sidebar to start a conversation</p>
                     </div>
                 </div>
             </section>
@@ -212,38 +227,56 @@
 
             <!-- Tasks Panel (merged with Work Queue) -->
             <section class="panel panel--tasks" id="panel-tasks" role="region" aria-label="Tasks" style="display: none;">
-                <nav class="task-sub-tabs" role="tablist" aria-label="Task views">
-                    <button class="task-sub-tab active" role="tab" aria-selected="true" data-task-view="active" onclick="CohortTasks.switchView('active')">Active</button>
-                    <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="scheduled" onclick="CohortTasks.switchView('scheduled')">
-                        Scheduled <span class="task-sub-tab__badge" id="schedule-badge">0</span>
-                    </button>
-                    <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="completed" onclick="CohortTasks.switchView('completed')">Completed</button>
-                </nav>
-                <div class="task-view" id="task-view-active">
-                    <div class="task-list" id="task-list">
-                        <div class="empty-state" id="tasks-empty">
-                            <p class="empty-state__text">Assign your first task</p>
-                            <p class="empty-state__hint">Pick an agent and give it something to do</p>
-                            <p class="empty-state__example">e.g., "Review my Python code for security issues"</p>
-                            <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Assign Task</button>
+                <div class="task-panel-scroll">
+                    <nav class="task-sub-tabs" role="tablist" aria-label="Task views">
+                        <button class="task-sub-tab active" role="tab" aria-selected="true" data-task-view="active" onclick="CohortTasks.switchView('active')">Active</button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="scheduled" onclick="CohortTasks.switchView('scheduled')">
+                            Scheduled <span class="task-sub-tab__badge" id="schedule-badge">0</span>
+                        </button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="completed" onclick="CohortTasks.switchView('completed')">Completed</button>
+                    </nav>
+                    <div class="task-view" id="task-view-active">
+                        <div class="task-list" id="task-list">
+                            <div class="empty-state" id="tasks-empty">
+                                <p class="empty-state__text">Assign your first task</p>
+                                <p class="empty-state__hint">Pick an agent and give it something to do</p>
+                                <p class="empty-state__example">e.g., "Review my Python code for security issues"</p>
+                                <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Assign Task</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-scheduled" style="display: none;">
+                        <div class="schedule-list" id="schedule-list">
+                            <div class="empty-state" id="schedules-empty">
+                                <p class="empty-state__text">Set up a recurring task</p>
+                                <p class="empty-state__hint">Agents can run tasks on a schedule -- daily code reviews, weekly reports, and more</p>
+                                <p class="empty-state__example">e.g., "Check code quality every morning at 9am"</p>
+                                <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Schedule Task</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-completed" style="display: none;">
+                        <div class="task-list" id="completed-task-list">
+                            <div class="empty-state" id="completed-empty">
+                                <p class="empty-state__text">No completed tasks yet</p>
+                                <p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="task-view" id="task-view-scheduled" style="display: none;">
-                    <div class="schedule-list" id="schedule-list">
-                        <div class="empty-state" id="schedules-empty">
-                            <p class="empty-state__text">Set up a recurring task</p>
-                            <p class="empty-state__hint">Agents can run tasks on a schedule -- daily code reviews, weekly reports, and more</p>
-                            <p class="empty-state__example">e.g., "Check code quality every morning at 9am"</p>
-                            <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Schedule Task</button>
-                        </div>
+                <div class="task-help-chat" id="task-help-chat">
+                    <div class="task-help-chat__toggle" id="task-help-toggle">
+                        <span>[?] Need help with tasks?</span>
+                        <span class="task-help-chat__arrow" id="task-help-arrow">[^]</span>
                     </div>
-                </div>
-                <div class="task-view" id="task-view-completed" style="display: none;">
-                    <div class="task-list" id="completed-task-list">
-                        <div class="empty-state" id="completed-empty">
-                            <p class="empty-state__text">No completed tasks yet</p>
-                            <p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>
+                    <div class="task-help-chat__body" id="task-help-body" style="display:none">
+                        <div class="task-help-chat__messages" id="task-help-messages">
+                            <p class="task-help-chat__empty">Ask Cohort about assigning tasks, scheduling, or agent capabilities.</p>
+                        </div>
+                        <div class="task-help-chat__input-area">
+                            <input type="text" class="task-help-chat__input" id="task-help-input"
+                                   placeholder="Ask about tasks, scheduling, agents..." />
+                            <button class="btn btn--primary btn--sm" onclick="sendTaskHelpMessage()">Send</button>
                         </div>
                     </div>
                 </div>
@@ -333,6 +366,21 @@
                             <option value="high">High</option>
                         </select>
                     </div>
+                    <details class="triad-details">
+                        <summary class="triad-summary">Action &amp; Outcome <span class="triad-summary__hint">(optional)</span></summary>
+                        <div class="triad-fields">
+                            <div class="form-group">
+                                <label for="task-tool-input">Tool / Action</label>
+                                <input type="text" class="form-input" id="task-tool-input" placeholder="e.g. fetch_rss, generate_report, scan_code">
+                                <span class="form-hint">The script, tool, or action the agent should execute</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-outcome-input">Expected Outcome</label>
+                                <input type="text" class="form-input" id="task-outcome-input" placeholder="e.g. HTML report saved to data/reports/">
+                                <span class="form-hint">What artifact or result should this task produce?</span>
+                            </div>
+                        </div>
+                    </details>
                     <div class="form-actions">
                         <button type="button" class="btn btn--secondary" id="assign-task-cancel">Cancel</button>
                         <button type="submit" class="btn btn--primary">Assign</button>
@@ -358,6 +406,21 @@
                             <option value="high">High</option>
                         </select>
                     </div>
+                    <details class="triad-details">
+                        <summary class="triad-summary">Action &amp; Outcome Templates <span class="triad-summary__hint">(optional)</span></summary>
+                        <div class="triad-fields">
+                            <div class="form-group">
+                                <label for="schedule-tool-input">Tool / Action</label>
+                                <input type="text" class="form-input" id="schedule-tool-input" placeholder="e.g. fetch_rss, generate_report">
+                                <span class="form-hint">Tool the agent should run each time this fires</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="schedule-outcome-input">Expected Outcome</label>
+                                <input type="text" class="form-input" id="schedule-outcome-input" placeholder="e.g. Feed data stored in data/feeds/">
+                                <span class="form-hint">Success criteria for each run</span>
+                            </div>
+                        </div>
+                    </details>
                     <fieldset class="form-group schedule-when">
                         <legend>When should this run?</legend>
                         <div class="schedule-presets" role="radiogroup">

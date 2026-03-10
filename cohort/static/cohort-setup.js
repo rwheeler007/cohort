@@ -375,6 +375,7 @@ const setupWizard = {
             const resp = await fetch('/api/setup/topics');
             const data = await resp.json();
             this.topicsData = data.topics;
+            this.categoriesData = data.categories || null;
             this.renderTopicGrid(gridEl);
         } catch (e) {
             gridEl.innerHTML = '<div class="text-muted">Could not load topics. You can set this up later.</div>';
@@ -383,14 +384,36 @@ const setupWizard = {
 
     renderTopicGrid(gridEl) {
         gridEl.innerHTML = '';
-        const topics = Object.keys(this.topicsData).sort();
-        topics.forEach(topic => {
-            const btn = document.createElement('button');
-            btn.className = 'setup-wizard__topic-btn';
-            btn.textContent = topic;
-            btn.onclick = () => this.selectTopic(topic);
-            gridEl.appendChild(btn);
-        });
+        // If we have categories, render grouped; otherwise flat fallback
+        if (this.categoriesData) {
+            Object.entries(this.categoriesData).forEach(([category, topicKeys]) => {
+                const heading = document.createElement('div');
+                heading.className = 'setup-wizard__topic-category';
+                heading.textContent = category;
+                gridEl.appendChild(heading);
+
+                const group = document.createElement('div');
+                group.className = 'setup-wizard__topic-group';
+                topicKeys.forEach(topic => {
+                    if (!this.topicsData[topic]) return;
+                    const btn = document.createElement('button');
+                    btn.className = 'setup-wizard__topic-btn';
+                    btn.textContent = topic;
+                    btn.onclick = () => this.selectTopic(topic);
+                    group.appendChild(btn);
+                });
+                gridEl.appendChild(group);
+            });
+        } else {
+            const topics = Object.keys(this.topicsData).sort();
+            topics.forEach(topic => {
+                const btn = document.createElement('button');
+                btn.className = 'setup-wizard__topic-btn';
+                btn.textContent = topic;
+                btn.onclick = () => this.selectTopic(topic);
+                gridEl.appendChild(btn);
+            });
+        }
     },
 
     selectTopic(topic) {
@@ -704,7 +727,21 @@ const setupWizard = {
         }
 
         this.hide();
-        switchPanel('team');
-        showToast('Setup complete! Your agents are ready.', 'success');
+
+        // Open a starter agent DM so the user lands in a conversation,
+        // not an empty Team panel.  Pick the first available agent from
+        // the registry (prefer python_developer as a safe default).
+        const starterAgents = ['python_developer', 'web_developer', 'cohort_orchestrator'];
+        const picked = starterAgents.find(id => state.agentProfiles[id]) || Object.keys(state.agentProfiles).find(id => id !== 'user');
+        if (picked) {
+            openNewChatForAgent(picked);
+            const profile = state.agentProfiles[picked];
+            const name = (profile && (profile.nickname || profile.name)) || picked.replace(/_/g, ' ');
+            showToast(`Setup complete! Say hello to ${name}.`, 'success');
+        } else {
+            // Fallback: no agents in registry (unlikely but safe)
+            switchPanel('team');
+            showToast('Setup complete!', 'success');
+        }
     },
 };

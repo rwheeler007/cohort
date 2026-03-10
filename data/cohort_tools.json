@@ -35,7 +35,7 @@
     "comms_service": "http://127.0.0.1:8001/health",
     "web_search": "http://127.0.0.1:8005/health",
     "youtube_service": "http://127.0.0.1:8002/health",
-    "health_monitor": "http://127.0.0.1:8400/health",
+    "health_monitor": "http://127.0.0.1:5100/health",
     "llm_manager": "http://127.0.0.1:11434/api/tags",
     "document_processor": "http://127.0.0.1:11434/api/tags",
     "intel_scheduler": "http://127.0.0.1:5000/health",
@@ -108,7 +108,7 @@
       ]
     },
     "content_monitor_scheduler": {
-      "what_it_does": "Content marketing automation pipeline. Discovers relevant content from Reddit, forums, and RSS feeds, then drafts social media posts for your brand. The pipeline flows: Fetch (discover content) -> Analyze (score relevance) -> Draft (AI writes posts) -> Pending (you review) -> Approved (ready to publish). All posts require human approval.",
+      "what_it_does": "Content marketing automation pipeline with multi-project support. Create multiple projects (brands/products), each with its own content strategy -- target audiences, content pillars, relevance keywords, and brand voice. The pipeline flows: Fetch (discover content) -> Analyze (score relevance per project) -> Draft (AI writes posts) -> Pending (you review) -> Approved (ready to publish). All posts require human approval.",
       "settings": {
         "fetch_interval_hrs": {"type": "number", "default": 2, "min": 1, "max": 24, "description": "How often to fetch new content from monitored sources."},
         "fetch_window_start": {"type": "number", "default": 9, "min": 0, "max": 23, "description": "Earliest hour for content fetching."},

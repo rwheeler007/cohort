@@ -5,8 +5,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 413.5,
-      "last_checked": "2026-03-09T23:22:45.545673",
+      "response_ms": 488.8,
+      "last_checked": "2026-03-10T10:11:38.358157",
       "url": "http://127.0.0.1:5100/health",
       "description": "Cohort multi-agent team server (Starlette)",
       "port": 5100,
@@ -19,8 +19,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 386.2,
-      "last_checked": "2026-03-09T23:22:45.545673",
+      "response_ms": 417.3,
+      "last_checked": "2026-03-10T10:11:38.358157",
       "url": "http://127.0.0.1:11434/api/tags",
       "description": "Ollama LLM inference server",
       "port": 11434,
@@ -33,8 +33,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 403.5,
-      "last_checked": "2026-03-09T23:22:45.545673",
+      "response_ms": 412.9,
+      "last_checked": "2026-03-10T10:11:38.358157",
       "url": "http://127.0.0.1:8001/health",
       "description": "Email, calendar, and social media communications",
       "port": 8001,
@@ -47,8 +47,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 402.9,
-      "last_checked": "2026-03-09T23:22:45.545673",
+      "response_ms": 392.5,
+      "last_checked": "2026-03-10T10:11:38.358157",
       "url": "http://127.0.0.1:8005/health",
       "description": "Web search API (SerpAPI, Serper, DuckDuckGo)",
       "port": 8005,
@@ -61,8 +61,8 @@
       "status": "down",
       "ok": false,
       "status_code": 0,
-      "response_ms": 2472.3,
-      "last_checked": "2026-03-09T23:22:45.545673",
+      "response_ms": 2409.9,
+      "last_checked": "2026-03-10T10:11:38.358157",
       "url": "http://127.0.0.1:8002/health",
       "description": "YouTube search, metadata, and chapters",
       "port": 8002,
@@ -80,7 +80,7 @@
     }
   },
   "last_checks": {
-    "services": "2026-03-09T23:22:45.545673"
+    "services": "2026-03-10T10:11:38.358157"
   },
-  "last_updated": "2026-03-09T23:22:53.041076"
+  "last_updated": "2026-03-10T10:11:45.900361"
 }

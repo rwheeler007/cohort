@@ -18,22 +18,22 @@ from typing import Any
 # =====================================================================
 
 BRIEFING_DIRECTIVE = """\
-You are beginning a new task assignment. Review the task brief and have a
-natural conversation with the user to understand what's needed.  You are
-a skilled professional clarifying a work assignment -- not a bot filling
-out a form.
+You are beginning a new task assignment.  Your job during this briefing is
+to establish the TRIGGER-ACTION-OUTCOME triad -- the three things every
+task must have before execution can begin:
 
-Before you can begin work, make sure you understand:
-- The specific goal and expected outcome
-- Any constraints or preferences on approach
-- Which files or systems are involved (if applicable)
-- How we'll know the task is done (acceptance criteria)
-- What tool, script, or action you will use to accomplish the task
-- What concrete output (report, file, state change, etc.) you will produce
+1. TRIGGER -- already set (manual, scheduled, etc.).  No action needed.
+2. ACTION -- What specific tool, script, or action will you execute?
+   Every task must DO something concrete.  "Think about it" is not an action.
+   Examples: run a script, call an API, generate a report, scan files.
+3. OUTCOME -- What artifact or state change will this task produce, and
+   how will we know it succeeded?  Examples: "HTML report at data/reports/",
+   "database updated with new records", "security scan with 0 critical issues".
 
-Ask about these naturally based on what's missing from the brief.  If the
-brief is already clear and complete, say so and move straight to your
-confirmation.
+Have a natural conversation to fill in any gaps.  You are a skilled
+professional clarifying a work assignment -- not a bot filling out a form.
+If the brief already specifies the action and outcome, say so and move
+straight to your confirmation.
 
 When you have enough context, post a confirmation block using this exact
 format (the delimiters must appear on their own lines):
@@ -46,6 +46,10 @@ Acceptance: <how we'll know it's done>
 Tool: <the specific tool, script, or action to execute>
 Outcome: <what concrete artifact or result will be produced>
 ---END_CONFIRMED---
+
+IMPORTANT: The Tool and Outcome fields are NOT optional.  If you cannot
+determine a concrete action and verifiable outcome from the conversation,
+ask the user directly before posting your confirmation.
 
 Then wait for the user to approve before proceeding.
 """
@@ -75,15 +79,32 @@ def build_briefing_prompt(
     description = task.get("description", "")
     priority = task.get("priority", "medium")
 
+    # Surface any pre-filled triad fields from the task
+    action = task.get("action") or {}
+    outcome = task.get("outcome") or {}
+    triad_lines = []
+    if action.get("tool"):
+        ref = action.get("tool_ref")
+        ref_note = f" ({ref})" if ref else ""
+        triad_lines.append(f"Action: {action['tool']}{ref_note}")
+    if outcome.get("success_criteria"):
+        triad_lines.append(f"Expected Outcome: {outcome['success_criteria']}")
+
+    brief_block = (
+        f"\n=== TASK BRIEF ===\n"
+        f"Priority: {priority}\n"
+        f"Description: {description}\n"
+    )
+    if triad_lines:
+        brief_block += "\n".join(triad_lines) + "\n"
+    brief_block += "=== END TASK BRIEF ===\n"
+
     parts = [
         f"You are responding as the {agent_id} agent.\n",
         "Follow this agent prompt exactly:\n",
         f"---\n{agent_prompt}\n---\n",
         BRIEFING_DIRECTIVE,
-        f"\n=== TASK BRIEF ===\n"
-        f"Priority: {priority}\n"
-        f"Description: {description}\n"
-        f"=== END TASK BRIEF ===\n",
+        brief_block,
     ]
 
     if channel_context:

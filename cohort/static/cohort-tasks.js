@@ -50,6 +50,9 @@ const CohortTasks = (() => {
             cronGroup: document.getElementById('schedule-cron-group'),
             intervalInput: document.getElementById('schedule-interval-input'),
             cronInput: document.getElementById('schedule-cron-input'),
+            // Triad template fields
+            scheduleToolInput: document.getElementById('schedule-tool-input'),
+            scheduleOutcomeInput: document.getElementById('schedule-outcome-input'),
         };
     }
 
@@ -114,7 +117,11 @@ const CohortTasks = (() => {
 
     function closeModal() {
         const modal = document.getElementById('assign-task-modal');
-        if (modal) modal.hidden = true;
+        if (modal) {
+            modal.hidden = true;
+            // Collapse triad details sections
+            modal.querySelectorAll('.triad-details[open]').forEach(d => d.removeAttribute('open'));
+        }
         if (_dom.scheduleForm) _dom.scheduleForm.reset();
         if (_dom.assignForm) _dom.assignForm.reset();
         _editingScheduleId = null;
@@ -437,6 +444,15 @@ const CohortTasks = (() => {
         }
     }
 
+    function _getScheduleTriadFields() {
+        const fields = {};
+        const tool = _dom.scheduleToolInput ? _dom.scheduleToolInput.value.trim() : '';
+        const outcome = _dom.scheduleOutcomeInput ? _dom.scheduleOutcomeInput.value.trim() : '';
+        if (tool) fields.action_tool = tool;
+        if (outcome) fields.outcome_criteria = outcome;
+        return fields;
+    }
+
     function submitSchedule() {
         if (!state.socket || !state.connected) {
             showToast('Not connected', 'error');
@@ -446,6 +462,7 @@ const CohortTasks = (() => {
         const agentId = _dom.scheduleAgentSelect ? _dom.scheduleAgentSelect.value : '';
         const description = _dom.scheduleDescInput ? _dom.scheduleDescInput.value.trim() : '';
         const priority = _dom.schedulePrioritySelect ? _dom.schedulePrioritySelect.value : 'medium';
+        const triadFields = _getScheduleTriadFields();
 
         if (!agentId || !description) {
             showToast('Agent and description are required', 'error');
@@ -487,6 +504,7 @@ const CohortTasks = (() => {
                 priority: priority,
                 schedule_type: type,
                 schedule_expr: expr,
+                ...triadFields,
             }, (response) => {
                 _editingScheduleId = null;
                 if (response && response.error) {
@@ -522,6 +540,7 @@ const CohortTasks = (() => {
                 priority: priority,
                 schedule_type: type,
                 schedule_expr: expr,
+                ...triadFields,
             }, _handleScheduleResponse);
         } else {
             // Preset schedule
@@ -530,6 +549,7 @@ const CohortTasks = (() => {
                 description: description,
                 priority: priority,
                 preset: presetValue,
+                ...triadFields,
             }, _handleScheduleResponse);
         }
     }

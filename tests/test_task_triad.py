@@ -429,3 +429,64 @@ class TestOutcomeVerification:
         )
         completed = store.complete_task(task["task_id"])
         assert completed["outcome"]["verified"] is False
+
+
+# =====================================================================
+# Briefing prompt: triad-focused directive and pre-filled data
+# =====================================================================
+
+class TestBriefingPromptTriad:
+    """build_briefing_prompt() surfaces pre-filled triad data."""
+
+    def test_directive_mentions_triad(self):
+        from cohort.briefing import BRIEFING_DIRECTIVE
+        assert "TRIGGER-ACTION-OUTCOME" in BRIEFING_DIRECTIVE
+        assert "Tool and Outcome fields are NOT optional" in BRIEFING_DIRECTIVE
+
+    def test_prompt_includes_prefilled_action(self):
+        from cohort.briefing import build_briefing_prompt
+        task = {
+            "agent_id": "test_agent",
+            "description": "Run security scan",
+            "priority": "high",
+            "action": {"tool": "bandit_scan", "tool_ref": "tools/bandit.py"},
+            "outcome": {},
+        }
+        prompt = build_briefing_prompt("You are a test agent.", task)
+        assert "Action: bandit_scan (tools/bandit.py)" in prompt
+
+    def test_prompt_includes_prefilled_outcome(self):
+        from cohort.briefing import build_briefing_prompt
+        task = {
+            "agent_id": "test_agent",
+            "description": "Generate report",
+            "priority": "medium",
+            "action": {},
+            "outcome": {"success_criteria": "HTML report at data/reports/"},
+        }
+        prompt = build_briefing_prompt("You are a test agent.", task)
+        assert "Expected Outcome: HTML report at data/reports/" in prompt
+
+    def test_prompt_includes_both(self):
+        from cohort.briefing import build_briefing_prompt
+        task = {
+            "agent_id": "test_agent",
+            "description": "Fetch RSS",
+            "priority": "medium",
+            "action": {"tool": "fetch_rss"},
+            "outcome": {"success_criteria": "Feed data stored"},
+        }
+        prompt = build_briefing_prompt("You are a test agent.", task)
+        assert "Action: fetch_rss" in prompt
+        assert "Expected Outcome: Feed data stored" in prompt
+
+    def test_prompt_omits_empty_triad(self):
+        from cohort.briefing import build_briefing_prompt
+        task = {
+            "agent_id": "test_agent",
+            "description": "Do something",
+            "priority": "medium",
+        }
+        prompt = build_briefing_prompt("You are a test agent.", task)
+        assert "Action:" not in prompt
+        assert "Expected Outcome:" not in prompt

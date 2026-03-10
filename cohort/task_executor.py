@@ -130,6 +130,14 @@ class TaskExecutor:
             self._task_store.update_task(task["task_id"], channel_id=channel_id)
         task["updated_at"] = datetime.now().isoformat()
 
+        # Show typing indicator immediately so the user sees activity
+        # as soon as the frontend switches to the task channel.
+        await self._emit("user_typing", {
+            "sender": agent_id,
+            "typing": True,
+            "channel_id": channel_id,
+        })
+
         # Invoke the agent in briefing mode (in background thread)
         thread = threading.Thread(
             target=self._invoke_briefing_sync,
@@ -170,7 +178,11 @@ class TaskExecutor:
 
         logger.info("[>>] Briefing invocation for %s (task %s)", agent_id, task["task_id"])
 
-        response_content = self._call_cli(full_prompt)
+        # Try local LLM first (qwen3.5:9b), fall back to Claude CLI
+        response_content = self._call_local(full_prompt, agent_id)
+        if not response_content:
+            logger.info("[>>] Local LLM unavailable for briefing, falling back to CLI")
+            response_content = self._call_cli(full_prompt)
 
         # Stop typing
         self._emit_sync("user_typing", {
@@ -586,6 +598,43 @@ class TaskExecutor:
             logger.exception("[X] Failed to read prompt for %s", agent_id)
             return None
 
+    def _call_local(self, full_prompt: str, agent_id: str = "") -> str | None:
+        """Try local LLM (via LocalRouter) for briefing. Returns None on failure."""
+        try:
+            from cohort.local import LocalRouter
+
+            router = LocalRouter()
+
+            # Load agent temperature if available
+            temperature: float | None = None
+            try:
+                from cohort.agent_store import get_store
+                store = get_store()
+                if store is not None:
+                    agent_cfg = store.get(agent_id)
+                    if agent_cfg and agent_cfg.model_params:
+                        temperature = agent_cfg.model_params.get("temperature")
+            except Exception:
+                pass  # No agent store -- use default temperature
+
+            result = router.route(
+                full_prompt,
+                task_type="general",
+                temperature=temperature,
+                response_mode="smarter",
+            )
+            if result is not None and result.text:
+                logger.info(
+                    "[OK] Local briefing for %s (%s, %d/%d tok, %.1fs)",
+                    agent_id, result.model,
+                    result.tokens_in, result.tokens_out,
+                    result.elapsed_seconds or 0,
+                )
+                return result.text
+        except Exception:
+            logger.debug("[*] Local router unavailable for briefing, will use CLI")
+        return None
+
     def _call_cli(self, full_prompt: str) -> str:
         """Invoke Claude CLI with the given prompt and return response text."""
         try:
@@ -625,11 +674,23 @@ class TaskExecutor:
         sender: str,
         content: str,
     ) -> None:
-        """Post a message to chat and broadcast via Socket.IO."""
+        """Post a message to chat and broadcast via Socket.IO.
+
+        If the content contains a ---TASK_CONFIRMED--- block, the parsed
+        fields are attached as metadata["confirmed_brief"] so the frontend
+        can render the confirmation card without client-side regex.
+        """
+        metadata = None
+        from cohort.briefing import parse_confirmation
+        brief = parse_confirmation(content)
+        if brief:
+            metadata = {"confirmed_brief": brief}
+
         msg = self.chat.post_message(
             channel_id=channel_id,
             sender=sender,
             content=content,
+            metadata=metadata,
         )
         self._emit_sync("new_message", msg.to_dict())
 

@@ -205,8 +205,20 @@ async def assign_task(sid: str, data: dict) -> dict:
         "source": data.get("trigger_source", "user"),
     }
 
+    # Build action/outcome from optional triad fields
+    action = None
+    tool_name = data.get("tool")
+    if tool_name:
+        action = {"tool": tool_name}
+
+    outcome = None
+    success_criteria = data.get("success_criteria")
+    if success_criteria:
+        outcome = {"success_criteria": success_criteria}
+
     task = _task_store.create_task(
-        agent_id, description, priority, trigger=trigger,
+        agent_id, description, priority,
+        trigger=trigger, action=action, outcome=outcome,
     )
     await sio.emit("cohort:task_assigned", task)
 
@@ -293,6 +305,17 @@ async def create_schedule(sid: str, data: dict) -> dict:
         from datetime import datetime, timezone
         next_run = compute_next_run(schedule_type, schedule_expr, datetime.now(timezone.utc))
 
+        # Build triad templates from optional fields
+        action_template = {}
+        action_tool = data.get("action_tool")
+        if action_tool:
+            action_template = {"tool": action_tool}
+
+        outcome_template = {}
+        outcome_criteria = data.get("outcome_criteria")
+        if outcome_criteria:
+            outcome_template = {"success_criteria": outcome_criteria}
+
         schedule = _task_store.create_schedule(
             agent_id=agent_id,
             description=description,
@@ -302,6 +325,8 @@ async def create_schedule(sid: str, data: dict) -> dict:
             next_run_at=next_run,
             created_by="user",
             metadata=data.get("metadata", {}),
+            action_template=action_template,
+            outcome_template=outcome_template,
         )
     except ValueError as exc:
         return {"error": str(exc)}
@@ -322,6 +347,15 @@ async def update_schedule(sid: str, data: dict) -> dict:
         return {"error": "Missing schedule_id"}
 
     updates = {k: v for k, v in data.items() if k != "schedule_id"}
+
+    # Translate frontend triad field names to schedule template fields
+    action_tool = updates.pop("action_tool", None)
+    outcome_criteria = updates.pop("outcome_criteria", None)
+    if action_tool is not None:
+        updates["action_template"] = {"tool": action_tool} if action_tool else {}
+    if outcome_criteria is not None:
+        updates["outcome_template"] = {"success_criteria": outcome_criteria} if outcome_criteria else {}
+
     schedule = _task_store.update_schedule(schedule_id, **updates)
     if schedule is None:
         return {"error": "Schedule not found"}
@@ -563,6 +597,18 @@ async def send_message(sid: str, data: dict) -> dict:
         dm_agent = re.sub(r"-\d+$", "", stripped)  # remove trailing -N
         if dm_agent and dm_agent != sender and dm_agent not in mentions:
             mentions = list(mentions) + [dm_agent]
+
+    # Auto-route in task channels: if this is a task-<task_id> channel,
+    # look up the assigned agent and inject as a mention so the user
+    # can have a natural conversation without explicit @mentions.
+    if channel_id.startswith("task-") and sender != "system":
+        task_id = channel_id[5:]  # strip "task-" prefix
+        if _task_store:
+            task = _task_store.get_task(task_id)
+            if task:
+                task_agent = task.get("agent_id")
+                if task_agent and task_agent != sender and task_agent not in mentions:
+                    mentions = list(mentions) + [task_agent]
 
     if mentions:
         from cohort.agent_router import route_mentions

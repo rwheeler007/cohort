@@ -1,0 +1,108 @@
+{
+  "id": "briefing_3a724a0c",
+  "generated_at": "2026-03-10T15:51:26.111900+00:00",
+  "period_start": "2026-03-09T09:51:26.111838",
+  "period_end": "2026-03-10T09:51:26.111838",
+  "sections": [
+    {
+      "title": "Work Queue",
+      "content": "Work queue not available.",
+      "data": {}
+    },
+    {
+      "title": "Channel Activity",
+      "content": "Total messages: 42 across 9 active channels\n\nMost active channels:\n  #tool-help-comms_service: 12 messages (2 participants)\n  #tool-help-youtube_service: 11 messages (2 participants)\n  #task-task_e00532cd: 5 messages (1 participants)\n  #dm-supervisor_agent-3: 4 messages (2 participants)\n  #task-task_ee69d776: 3 messages (1 participants)\n\nMost active participants:\n  @setup_guide: 10 messages\n  @user: 9 messages\n  @python_developer: 4 messages\n  @supervisor_agent: 2 messages\n  @cohort_orchestrator: 1 messages\n\nMost mentioned:\n  @setup_guide: 8 mentions",
+      "data": {
+        "total_messages": 42,
+        "active_channels": 9,
+        "channel_stats": [
+          {
+            "channel": "tool-help-comms_service",
+            "message_count": 12,
+            "unique_senders": 2,
+            "top_sender": "setup_guide"
+          },
+          {
+            "channel": "tool-help-youtube_service",
+            "message_count": 11,
+            "unique_senders": 2,
+            "top_sender": "user"
+          },
+          {
+            "channel": "task-task_e00532cd",
+            "message_count": 5,
+            "unique_senders": 1,
+            "top_sender": "python_developer"
+          },
+          {
+            "channel": "dm-supervisor_agent-3",
+            "message_count": 4,
+            "unique_senders": 2,
+            "top_sender": "supervisor_agent"
+          },
+          {
+            "channel": "task-task_ee69d776",
+            "message_count": 3,
+            "unique_senders": 1,
+            "top_sender": "python_developer"
+          },
+          {
+            "channel": "task-task_17ec5155",
+            "message_count": 3,
+            "unique_senders": 1,
+            "top_sender": "python_developer"
+          },
+          {
+            "channel": "dm-cohort_orchestrator-6",
+            "message_count": 2,
+            "unique_senders": 1,
+            "top_sender": "cohort_orchestrator"
+          },
+          {
+            "channel": "tool-help-web_search-mmjnkllo",
+            "message_count": 1,
+            "unique_senders": 0,
+            "top_sender": null
+          },
+          {
+            "channel": "task-help",
+            "message_count": 1,
+            "unique_senders": 0,
+            "top_sender": null
+          }
+        ],
+        "top_senders": {
+          "setup_guide": 10,
+          "user": 9,
+          "python_developer": 4,
+          "supervisor_agent": 2,
+          "cohort_orchestrator": 1
+        },
+        "top_mentioned": {
+          "setup_guide": 8
+        }
+      }
+    },
+    {
+      "title": "Team Status",
+      "content": "Team data not available.",
+      "data": {}
+    },
+    {
+      "title": "Discussion Sessions",
+      "content": "Session tracking not available.",
+      "data": {}
+    },
+    {
+      "title": "Intel Feed",
+      "content": "No intel articles available.",
+      "data": {
+        "total": 0,
+        "articles": []
+      }
+    }
+  ],
+  "metadata": {
+    "hours": 24
+  }
+}

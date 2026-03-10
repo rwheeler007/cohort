@@ -498,6 +498,8 @@ class TaskStore:
         next_run_at: Optional[str] = None,
         created_by: str = "user",
         metadata: Optional[Dict[str, Any]] = None,
+        action_template: Optional[Dict[str, Any]] = None,
+        outcome_template: Optional[Dict[str, Any]] = None,
     ) -> TaskSchedule:
         """Create a new schedule definition.
 
@@ -543,6 +545,8 @@ class TaskStore:
             updated_at=now,
             created_by=created_by,
             metadata=metadata or {},
+            action_template=action_template or {},
+            outcome_template=outcome_template or {},
         )
 
         with self._lock:

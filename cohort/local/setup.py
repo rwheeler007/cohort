@@ -51,7 +51,35 @@ MCP_SERVER_CONFIG: dict[str, Any] = {
 }
 
 # Curated RSS feeds by topic for Step 6
+# Organized into categories for better browsability.
+# TOPIC_CATEGORIES maps category -> list of topic keys.
+# TOPIC_FEEDS maps topic key -> list of {name, url} dicts.
+
+TOPIC_CATEGORIES: dict[str, list[str]] = {
+    "Software Development": [
+        "web development", "python", "javascript", "rust", "golang",
+        "devops", "databases", "open source",
+    ],
+    "AI & Data": [
+        "ai", "machine learning", "data science", "data engineering",
+    ],
+    "Infrastructure & Security": [
+        "cloud", "cybersecurity", "networking", "hardware",
+    ],
+    "Product & Design": [
+        "design", "mobile", "gaming", "product management",
+    ],
+    "News & World": [
+        "world news", "us news", "science", "space",
+    ],
+    "Business & Industry": [
+        "startup", "saas", "ecommerce", "marketing", "finance",
+        "stocks & markets", "health", "energy & climate", "legal tech",
+    ],
+}
+
 TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
+    # -- Software Development --
     "web development": [
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
         {"name": "Dev.to", "url": "https://dev.to/feed"},
@@ -67,6 +95,33 @@ TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
         {"name": "Node Weekly", "url": "https://nodeweekly.com/rss"},
         {"name": "Dev.to #javascript", "url": "https://dev.to/feed/tag/javascript"},
     ],
+    "rust": [
+        {"name": "This Week in Rust", "url": "https://this-week-in-rust.org/atom.xml"},
+        {"name": "Rust Blog", "url": "https://blog.rust-lang.org/feed.xml"},
+        {"name": "Dev.to #rust", "url": "https://dev.to/feed/tag/rust"},
+    ],
+    "golang": [
+        {"name": "Go Blog", "url": "https://go.dev/blog/feed.atom"},
+        {"name": "Golang Weekly", "url": "https://golangweekly.com/rss"},
+        {"name": "Dev.to #go", "url": "https://dev.to/feed/tag/go"},
+    ],
+    "devops": [
+        {"name": "DevOps.com", "url": "https://devops.com/feed/"},
+        {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "databases": [
+        {"name": "Planet PostgreSQL", "url": "https://planet.postgresql.org/rss20.xml"},
+        {"name": "Redis Blog", "url": "https://redis.io/blog/feed/"},
+        {"name": "Dev.to #database", "url": "https://dev.to/feed/tag/database"},
+    ],
+    "open source": [
+        {"name": "Open Source (Dev.to)", "url": "https://dev.to/feed/tag/opensource"},
+        {"name": "GitHub Blog", "url": "https://github.blog/feed/"},
+        {"name": "It's FOSS News", "url": "https://news.itsfoss.com/rss/"},
+    ],
+
+    # -- AI & Data --
     "ai": [
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
         {"name": "The Batch (deeplearning.ai)", "url": "https://www.deeplearning.ai/the-batch/feed/"},
@@ -77,30 +132,44 @@ TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
         {"name": "ML Mastery", "url": "https://machinelearningmastery.com/feed/"},
         {"name": "Papers With Code", "url": "https://paperswithcode.com/latest/feed"},
     ],
-    "devops": [
-        {"name": "DevOps.com", "url": "https://devops.com/feed/"},
+    "data science": [
+        {"name": "Towards Data Science", "url": "https://towardsdatascience.com/feed"},
+        {"name": "KDnuggets", "url": "https://www.kdnuggets.com/feed"},
+        {"name": "Data Science Central", "url": "https://www.datasciencecentral.com/feed/"},
+    ],
+    "data engineering": [
+        {"name": "Data Engineering Weekly", "url": "https://www.dataengineeringweekly.com/feed"},
         {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
-        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "Dev.to #dataengineering", "url": "https://dev.to/feed/tag/dataengineering"},
+    ],
+
+    # -- Infrastructure & Security --
+    "cloud": [
+        {"name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/"},
+        {"name": "Google Cloud Blog", "url": "https://cloud.google.com/blog/rss"},
+        {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
     ],
     "cybersecurity": [
         {"name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/"},
         {"name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews"},
         {"name": "Schneier on Security", "url": "https://www.schneier.com/feed/"},
     ],
-    "startup": [
-        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
+    "networking": [
+        {"name": "Packet Pushers", "url": "https://packetpushers.net/feed/"},
+        {"name": "The Register Networking", "url": "https://www.theregister.com/data_centre/networks/headlines.atom"},
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
-        {"name": "First Round Review", "url": "https://review.firstround.com/feed.xml"},
     ],
-    "data science": [
-        {"name": "Towards Data Science", "url": "https://towardsdatascience.com/feed"},
-        {"name": "KDnuggets", "url": "https://www.kdnuggets.com/feed"},
-        {"name": "Data Science Central", "url": "https://www.datasciencecentral.com/feed/"},
+    "hardware": [
+        {"name": "AnandTech", "url": "https://www.anandtech.com/rss/"},
+        {"name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
     ],
-    "cloud": [
-        {"name": "AWS News Blog", "url": "https://aws.amazon.com/blogs/aws/feed/"},
-        {"name": "Google Cloud Blog", "url": "https://cloud.google.com/blog/rss"},
-        {"name": "The New Stack", "url": "https://thenewstack.io/feed/"},
+
+    # -- Product & Design --
+    "design": [
+        {"name": "Smashing Magazine", "url": "https://www.smashingmagazine.com/feed/"},
+        {"name": "A List Apart", "url": "https://alistapart.com/main/feed/"},
+        {"name": "UX Collective", "url": "https://uxdesign.cc/feed"},
     ],
     "mobile": [
         {"name": "Android Developers Blog", "url": "https://android-developers.googleblog.com/atom.xml"},
@@ -108,29 +177,43 @@ TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
         {"name": "React Native Blog", "url": "https://reactnative.dev/blog/rss.xml"},
     ],
     "gaming": [
-        {"name": "Gamasutra", "url": "https://www.gamedeveloper.com/rss.xml"},
         {"name": "Game Developer", "url": "https://www.gamedeveloper.com/rss.xml"},
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "Dev.to #gamedev", "url": "https://dev.to/feed/tag/gamedev"},
     ],
-    "marketing": [
-        {"name": "HubSpot Blog", "url": "https://blog.hubspot.com/rss.xml"},
-        {"name": "Content Marketing Institute", "url": "https://contentmarketinginstitute.com/feed/"},
-        {"name": "Moz Blog", "url": "https://moz.com/blog/feed"},
+    "product management": [
+        {"name": "Mind the Product", "url": "https://www.mindtheproduct.com/feed/"},
+        {"name": "Lenny's Newsletter", "url": "https://www.lennysnewsletter.com/feed"},
+        {"name": "First Round Review", "url": "https://review.firstround.com/feed.xml"},
     ],
-    "design": [
-        {"name": "Smashing Magazine", "url": "https://www.smashingmagazine.com/feed/"},
-        {"name": "A List Apart", "url": "https://alistapart.com/main/feed/"},
-        {"name": "UX Collective", "url": "https://uxdesign.cc/feed"},
+
+    # -- News & World --
+    "world news": [
+        {"name": "Reuters Top News", "url": "https://feeds.reuters.com/reuters/topNews"},
+        {"name": "BBC News", "url": "https://feeds.bbci.co.uk/news/rss.xml"},
+        {"name": "Al Jazeera", "url": "https://www.aljazeera.com/xml/rss/all.xml"},
     ],
-    "hardware": [
-        {"name": "AnandTech", "url": "https://www.anandtech.com/rss/"},
-        {"name": "Tom's Hardware", "url": "https://www.tomshardware.com/feeds/all"},
+    "us news": [
+        {"name": "NPR News", "url": "https://feeds.npr.org/1001/rss.xml"},
+        {"name": "Associated Press", "url": "https://rsshub.app/apnews/topics/apf-topnews"},
+        {"name": "Reuters US", "url": "https://feeds.reuters.com/reuters/domesticNews"},
+    ],
+    "science": [
+        {"name": "Nature News", "url": "https://www.nature.com/nature.rss"},
+        {"name": "Ars Technica Science", "url": "https://feeds.arstechnica.com/arstechnica/science"},
+        {"name": "Phys.org", "url": "https://phys.org/rss-feed/"},
+    ],
+    "space": [
+        {"name": "NASA Breaking News", "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss"},
+        {"name": "SpaceNews", "url": "https://spacenews.com/feed/"},
+        {"name": "Ars Technica Space", "url": "https://feeds.arstechnica.com/arstechnica/space"},
+    ],
+
+    # -- Business & Industry --
+    "startup": [
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
-    ],
-    "finance": [
-        {"name": "Finextra", "url": "https://www.finextra.com/rss/headlines.aspx"},
-        {"name": "TechCrunch Fintech", "url": "https://techcrunch.com/category/fintech/feed/"},
-        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+        {"name": "First Round Review", "url": "https://review.firstround.com/feed.xml"},
     ],
     "saas": [
         {"name": "SaaStr", "url": "https://www.saastr.com/feed/"},
@@ -142,11 +225,80 @@ TOPIC_FEEDS: dict[str, list[dict[str, str]]] = {
         {"name": "Practical Ecommerce", "url": "https://www.practicalecommerce.com/feed"},
         {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
     ],
+    "marketing": [
+        {"name": "HubSpot Blog", "url": "https://blog.hubspot.com/rss.xml"},
+        {"name": "Content Marketing Institute", "url": "https://contentmarketinginstitute.com/feed/"},
+        {"name": "Moz Blog", "url": "https://moz.com/blog/feed"},
+    ],
+    "finance": [
+        {"name": "Finextra", "url": "https://www.finextra.com/rss/headlines.aspx"},
+        {"name": "TechCrunch Fintech", "url": "https://techcrunch.com/category/fintech/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "stocks & markets": [
+        {"name": "MarketWatch Top Stories", "url": "https://feeds.marketwatch.com/marketwatch/topstories/"},
+        {"name": "Seeking Alpha Market News", "url": "https://seekingalpha.com/market_currents.xml"},
+        {"name": "Yahoo Finance", "url": "https://finance.yahoo.com/news/rssindex"},
+    ],
     "health": [
         {"name": "Health IT News", "url": "https://www.healthcareitnews.com/feed"},
         {"name": "STAT News", "url": "https://www.statnews.com/feed/"},
         {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
     ],
+    "energy & climate": [
+        {"name": "Canary Media", "url": "https://www.canarymedia.com/feed"},
+        {"name": "CleanTechnica", "url": "https://cleantechnica.com/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+    "legal tech": [
+        {"name": "Artificial Lawyer", "url": "https://www.artificiallawyer.com/feed/"},
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
+        {"name": "Hacker News (best)", "url": "https://hnrss.org/best"},
+    ],
+}
+
+# Suggested keywords per topic.  Auto-offered when a user selects a topic.
+# These are starting points -- users can add/remove freely.
+TOPIC_KEYWORDS: dict[str, list[str]] = {
+    # Software Development
+    "web development": ["html", "css", "frontend", "backend", "api", "web app"],
+    "python": ["python", "pip", "django", "flask", "fastapi", "pytest"],
+    "javascript": ["javascript", "typescript", "node", "react", "vue", "npm"],
+    "rust": ["rust", "cargo", "memory safety", "wasm", "systems programming"],
+    "golang": ["golang", "go", "goroutine", "concurrency", "microservice"],
+    "devops": ["docker", "kubernetes", "ci/cd", "terraform", "deployment", "infrastructure"],
+    "databases": ["sql", "postgres", "redis", "database", "query", "schema"],
+    "open source": ["open source", "github", "oss", "license", "contributor"],
+    # AI & Data
+    "ai": ["ai", "llm", "gpt", "claude", "transformer", "neural network", "agent"],
+    "machine learning": ["machine learning", "model", "training", "deep learning", "pytorch", "tensorflow"],
+    "data science": ["data science", "analytics", "statistics", "visualization", "pandas", "jupyter"],
+    "data engineering": ["data pipeline", "etl", "spark", "airflow", "data warehouse", "streaming"],
+    # Infrastructure & Security
+    "cloud": ["aws", "azure", "gcp", "cloud", "serverless", "lambda"],
+    "cybersecurity": ["security", "vulnerability", "exploit", "ransomware", "encryption", "zero-day"],
+    "networking": ["networking", "tcp", "dns", "routing", "firewall", "bandwidth"],
+    "hardware": ["gpu", "cpu", "chip", "semiconductor", "motherboard", "benchmark"],
+    # Product & Design
+    "design": ["ux", "ui", "design system", "accessibility", "figma", "typography"],
+    "mobile": ["ios", "android", "mobile app", "swift", "kotlin", "react native"],
+    "gaming": ["game dev", "unity", "unreal", "indie game", "shader", "multiplayer"],
+    "product management": ["product", "roadmap", "user research", "sprint", "backlog", "okr"],
+    # News & World
+    "world news": ["breaking", "geopolitics", "diplomacy", "conflict", "election", "policy"],
+    "us news": ["congress", "policy", "election", "regulation", "supreme court"],
+    "science": ["research", "study", "discovery", "physics", "biology", "climate"],
+    "space": ["nasa", "spacex", "orbit", "satellite", "rocket", "mars", "telescope"],
+    # Business & Industry
+    "startup": ["startup", "funding", "venture capital", "seed round", "founder", "ipo"],
+    "saas": ["saas", "subscription", "churn", "recurring revenue", "b2b", "onboarding"],
+    "ecommerce": ["ecommerce", "shopify", "marketplace", "checkout", "conversion", "fulfillment"],
+    "marketing": ["seo", "content marketing", "growth", "social media", "brand", "campaign"],
+    "finance": ["fintech", "banking", "payments", "blockchain", "lending", "regulation"],
+    "stocks & markets": ["stocks", "market", "earnings", "s&p 500", "trading", "fed", "nasdaq", "dividend"],
+    "health": ["health tech", "telehealth", "clinical", "ehr", "biotech", "fda"],
+    "energy & climate": ["solar", "wind", "battery", "ev", "carbon", "renewable", "grid"],
+    "legal tech": ["legal tech", "contract", "compliance", "regulation", "court", "patent"],
 }
 
 

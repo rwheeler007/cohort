@@ -503,15 +503,21 @@ function renderMessages() {
             }
         }
 
-        // Detect task confirmation blocks
+        // Detect task confirmation blocks -- prefer structured metadata from backend,
+        // fall back to client-side regex for messages loaded from history
         let confirmationCard = '';
-        const confirmMatch = message.content.match(/---TASK_CONFIRMED---\s*\n([\s\S]*?)\n\s*---END_CONFIRMED---/);
-        if (confirmMatch) {
-            const fields = {};
-            confirmMatch[1].replace(/^(Goal|Approach|Scope|Acceptance)\s*:\s*(.+)/gm, (_, k, v) => {
-                fields[k.toLowerCase()] = v.trim();
-            });
-
+        const fields = (message.metadata && message.metadata.confirmed_brief)
+            ? message.metadata.confirmed_brief
+            : (() => {
+                const m = message.content.match(/---TASK_CONFIRMED---\s*\n([\s\S]*?)\n\s*---END_CONFIRMED---/);
+                if (!m) return null;
+                const f = {};
+                m[1].replace(/^(Goal|Approach|Scope|Acceptance|Tool|Outcome)\s*:\s*(.+)/gm, (_, k, v) => {
+                    f[k.toLowerCase()] = v.trim();
+                });
+                return f.goal ? f : null;
+            })();
+        if (fields) {
             // Extract task_id from current channel name (task-XXXX)
             const taskId = state.currentChannel ? state.currentChannel.replace(/^task-/, '') : '';
 
@@ -520,14 +526,23 @@ function renderMessages() {
             window._pendingBriefs = window._pendingBriefs || {};
             window._pendingBriefs[briefDataId] = fields;
 
+            // Build field rows dynamically -- render all keys the backend sends
+            const fieldOrder = ['goal', 'approach', 'scope', 'acceptance', 'tool', 'outcome'];
+            const triadKeys = new Set(['tool', 'outcome']);
+            const labels = { goal: 'Goal', approach: 'Approach', scope: 'Scope', acceptance: 'Acceptance', tool: 'Action', outcome: 'Outcome' };
+            const fieldRows = fieldOrder
+                .filter(k => fields[k])
+                .map(k => {
+                    const cls = triadKeys.has(k) ? ' task-confirmation-card__field--triad' : '';
+                    return `<div class="task-confirmation-card__field${cls}"><strong>${labels[k] || k}:</strong> ${escapeHtml(fields[k])}</div>`;
+                })
+                .join('\n');
+
             confirmationCard = `
                 <div class="task-confirmation-card">
                     <div class="task-confirmation-card__header">Task Plan Ready</div>
                     <div class="task-confirmation-card__fields">
-                        ${fields.goal ? `<div class="task-confirmation-card__field"><strong>Goal:</strong> ${escapeHtml(fields.goal)}</div>` : ''}
-                        ${fields.approach ? `<div class="task-confirmation-card__field"><strong>Approach:</strong> ${escapeHtml(fields.approach)}</div>` : ''}
-                        ${fields.scope ? `<div class="task-confirmation-card__field"><strong>Scope:</strong> ${escapeHtml(fields.scope)}</div>` : ''}
-                        ${fields.acceptance ? `<div class="task-confirmation-card__field"><strong>Acceptance:</strong> ${escapeHtml(fields.acceptance)}</div>` : ''}
+                        ${fieldRows}
                     </div>
                     <div class="task-confirmation-card__actions">
                         <button class="btn btn--primary btn--small" onclick="confirmTaskExecution('${escapeHtml(taskId)}', '${briefDataId}')">Execute</button>
@@ -626,7 +641,7 @@ function renderMessages() {
                         <span class="message__time">${time}</span>
                     </div>
                     ${threadIndicator}
-                    <div class="message__body">${formatMessageContent(message.content)}</div>
+                    <div class="message__body">${formatMessageContent(confirmationCard ? message.content.replace(/---TASK_CONFIRMED---\s*\n[\s\S]*?\n\s*---END_CONFIRMED---/, '').trim() : message.content)}</div>
                     ${confirmationCard}
                     ${roundtableCard}
                     ${actionsHtml}
@@ -1788,6 +1803,150 @@ function _buildToolConfigSummary(tool) {
     return `Current settings: ${parts.join(', ')}. `;
 }
 
+// =============================================================================
+// Task Help Chat — mirrors tool-help-chat pattern for the Tasks panel
+// =============================================================================
+
+let _taskHelpChannel = 'task-help';
+let _taskHelpJoined = false;
+let _taskHelpContextSent = false;
+const _TASK_HELP_ARCHIVE_MS = 3600000; // 1 hour
+
+function toggleTaskHelpChat() {
+    const body = document.getElementById('task-help-body');
+    const arrow = document.getElementById('task-help-arrow');
+    if (!body) return;
+    const opening = body.style.display === 'none';
+    body.style.display = opening ? '' : 'none';
+    if (arrow) arrow.textContent = opening ? '[v]' : '[^]';
+
+    if (opening) {
+        _joinTaskHelpChannel();
+    }
+}
+
+function _joinTaskHelpChannel() {
+    if (_taskHelpJoined || !_taskHelpChannel) return;
+    _taskHelpJoined = true;
+    if (state.socket && state.connected) {
+        state.socket.emit('join_channel', { channel_id: _taskHelpChannel });
+    }
+    const helpInput = document.getElementById('task-help-input');
+    if (helpInput && !helpInput._taskHelpBound) {
+        helpInput._taskHelpBound = true;
+        helpInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendTaskHelpMessage();
+            }
+        });
+    }
+    // Archive stale channel if needed
+    setTimeout(() => {
+        const msgs = state.messages[_taskHelpChannel] || [];
+        if (msgs.length > 0) {
+            const lastMsg = msgs[msgs.length - 1];
+            const lastTime = lastMsg.timestamp ? new Date(lastMsg.timestamp).getTime() : 0;
+            if (Date.now() - lastTime > _TASK_HELP_ARCHIVE_MS) {
+                if (state.socket && state.connected) {
+                    state.socket.emit('archive_channel', { channel_id: _taskHelpChannel });
+                }
+                delete state.messages[_taskHelpChannel];
+                const ts = Date.now().toString(36);
+                _taskHelpChannel = `task-help-${ts}`;
+                _taskHelpJoined = false;
+                _taskHelpContextSent = false;
+                _joinTaskHelpChannel();
+                return;
+            }
+        }
+        renderTaskHelpMessages();
+    }, 500);
+}
+
+async function sendTaskHelpMessage() {
+    const input = document.getElementById('task-help-input');
+    if (!input) return;
+    const content = input.value.trim();
+    if (!content || !_taskHelpChannel) return;
+    if (!state.socket || !state.connected) {
+        showToast('Not connected to server', 'warning');
+        return;
+    }
+
+    _joinTaskHelpChannel();
+
+    // On first message, inject task context so the agent has relevant info
+    if (!_taskHelpContextSent) {
+        _taskHelpContextSent = true;
+        const agents = (state.agents || []).map(a => a.name || a.id).join(', ');
+        const activeTasks = document.querySelectorAll('#task-list .task-card').length;
+        const ctx = `@setup_guide You are helping the user with the Cohort task system. ` +
+            `Available agents: ${agents || 'unknown'}. ` +
+            `Active tasks: ${activeTasks}. ` +
+            `Help them assign tasks, set up schedules, understand agent capabilities, ` +
+            `or troubleshoot task issues.`;
+        state.socket.emit('send_message', {
+            channel_id: _taskHelpChannel,
+            sender: 'system',
+            content: ctx,
+        });
+    }
+
+    const fullContent = content.includes('@setup_guide') ? content : `@setup_guide ${content}`;
+
+    state.socket.emit('send_message', {
+        channel_id: _taskHelpChannel,
+        sender: 'user',
+        content: fullContent,
+    });
+
+    input.value = '';
+}
+
+function renderTaskHelpMessages() {
+    const container = document.getElementById('task-help-messages');
+    if (!container || !_taskHelpChannel) return;
+
+    const allMsgs = state.messages[_taskHelpChannel] || [];
+    const msgs = allMsgs.filter(m => m.sender !== 'system');
+    if (msgs.length === 0) {
+        container.innerHTML = '<p class="task-help-chat__empty">Ask Cohort about assigning tasks, scheduling, or agent capabilities.</p>';
+        return;
+    }
+
+    container.innerHTML = msgs.map(m => {
+        const profile = typeof getAgentProfile === 'function' ? getAgentProfile(m.sender) : { avatar: '?', name: m.sender, color: '#95A5A6' };
+        const cleanContent = (m.content || '').replace(/^@setup_guide\s*/i, '');
+        const body = typeof formatMessageContent === 'function' ? formatMessageContent(cleanContent) : escapeHtml(cleanContent);
+        const displayName = m.sender === 'setup_guide' ? 'Cohort' : m.sender === 'user' ? 'You' : profile.name;
+        return `<div class="tool-help-msg">
+            <div class="tool-help-msg__avatar" style="background-color: ${profile.color}">${profile.avatar}</div>
+            <div class="tool-help-msg__body">
+                <div class="tool-help-msg__sender" style="color: ${profile.color}">${escapeHtml(displayName)}</div>
+                <div class="tool-help-msg__text">${body}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    container.scrollTop = container.scrollHeight;
+}
+
+// Bind task-help toggle (click-to-toggle, same as tool-help)
+(function initTaskHelpToggle() {
+    function bind() {
+        const toggle = document.getElementById('task-help-toggle');
+        if (!toggle) return;
+        toggle.addEventListener('click', toggleTaskHelpChat);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind);
+    } else {
+        bind();
+    }
+})();
+
+
 async function fetchServiceStatus(serviceId) {
     try {
         const resp = await fetch('/api/service-status/' + encodeURIComponent(serviceId));
@@ -2297,18 +2456,27 @@ async function renderRSSPanel(tool) {
     // Fetch live data in parallel
     let runsData = { runs: [] };
     let articlesData = { articles: [] };
+    let feedsData = { feeds: [], keywords: [], topics: {} };
     try {
-        const [runsResp, articlesResp] = await Promise.all([
+        const [runsResp, articlesResp, feedsResp] = await Promise.all([
             fetch('/api/scheduler/recent-runs?task=rss_fetch&limit=7&source=scheduler'),
             fetch('/api/intel/recent-articles?limit=5'),
+            fetch('/api/intel/feeds'),
         ]);
         runsData = await runsResp.json();
         articlesData = await articlesResp.json();
+        feedsData = await feedsResp.json();
     } catch {}
 
     const runs = runsData.runs || [];
     const lastRun = runs.length > 0 ? runs[runs.length - 1] : null;
     const articles = articlesData.articles || [];
+    const feeds = feedsData.feeds || [];
+    const topics = feedsData.topics || {};
+    const categories = feedsData.categories || null;
+    const keywords = feedsData.keywords || [];
+    const topicKeywords = feedsData.topic_keywords || {};
+    const relevanceMode = feedsData.relevance_mode || 'hybrid';
 
     // Stats from last run
     const lastRunResult = lastRun ? (lastRun.result || {}) : {};
@@ -2317,7 +2485,7 @@ async function renderRSSPanel(tool) {
         statCard('Last Run', lastRun ? timeAgo(lastRun.timestamp) : '--', { subtitle: lastRun ? (lastRunResult.status || '') : 'No runs found' }) +
         statCard('Last Fetch', lastRunResult.new_articles != null ? lastRunResult.new_articles : '--', { subtitle: 'articles' }) +
         statCard('Recent Total', totalRecentArticles, { subtitle: `across ${runs.length} runs` }) +
-        statCard('Feeds', lastRunResult.feeds_processed != null ? lastRunResult.feeds_processed : '--', { subtitle: 'sources' })
+        statCard('Feeds', feeds.length, { subtitle: 'sources' })
     );
 
     // Run history as activity log
@@ -2344,11 +2512,92 @@ async function renderRSSPanel(tool) {
         ].filter(Boolean).join('\n'),
     }));
 
+    // Feed sources list
+    const feedListHtml = feeds.length === 0
+        ? '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm);font-style:italic">No feeds configured</p>'
+        : feeds.map(f => `
+            <div class="rss-feed-item">
+                <div class="rss-feed-item__info">
+                    <span class="rss-feed-item__name">${escapeHtml(f.name || '')}</span>
+                    <span class="rss-feed-item__url">${escapeHtml(f.url || '')}</span>
+                </div>
+                <button class="btn btn--icon btn--sm rss-feed-item__remove" title="Remove feed" data-feed-url="${escapeHtml(f.url || '')}">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 01.708 0L8 7.293l2.646-2.647a.5.5 0 01.708.708L8.707 8l2.647 2.646a.5.5 0 01-.708.708L8 8.707l-2.646 2.647a.5.5 0 01-.708-.708L7.293 8 4.646 5.354a.5.5 0 010-.708z"/></svg>
+                </button>
+            </div>`).join('');
+
+    // Topic picker options -- grouped by category if available
+    let topicOptions = '';
+    if (categories) {
+        topicOptions = Object.entries(categories).map(([cat, topicKeys]) => {
+            const opts = topicKeys
+                .filter(t => topics[t])
+                .map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`)
+                .join('');
+            return `<optgroup label="${escapeHtml(cat)}">${opts}</optgroup>`;
+        }).join('');
+    } else {
+        topicOptions = Object.keys(topics).sort().map(t =>
+            `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`
+        ).join('');
+    }
+
+    // Keywords / interests editor
+    const keywordTagsHtml = keywords.length === 0
+        ? '<span style="color:var(--color-text-muted);font-size:var(--font-size-sm);font-style:italic">No keywords set -- articles won\'t be scored for relevance</span>'
+        : keywords.map(kw => `<span class="rss-keyword-tag">${escapeHtml(kw)}<button class="rss-keyword-tag__remove" data-keyword="${escapeHtml(kw)}" title="Remove">&times;</button></span>`).join('');
+
+    // Relevance mode descriptions
+    const modeLabels = {
+        off: 'Off -- no scoring, all articles shown equally',
+        keywords: 'Keywords only -- fast, no LLM',
+        llm: 'LLM -- semantic scoring via local model',
+        hybrid: 'Hybrid -- LLM + keyword boost (recommended)',
+    };
+    const modeOptions = ['hybrid', 'llm', 'keywords', 'off'].map(m =>
+        `<option value="${m}"${m === relevanceMode ? ' selected' : ''}>${modeLabels[m]}</option>`
+    ).join('');
+
+    const keywordsHtml = `
+        <div class="rss-keywords-editor">
+            <div class="rss-keywords-editor__mode">
+                <label class="rss-keywords-editor__mode-label">Scoring</label>
+                <select id="rssRelevanceMode" class="rss-feeds-add__select">${modeOptions}</select>
+            </div>
+            <div class="rss-keywords-editor__tags" id="rssKeywordTags">${keywordTagsHtml}</div>
+            <div class="rss-keywords-editor__add">
+                <input type="text" id="rssNewKeyword" class="rss-feeds-add__input rss-feeds-add__input--wide" placeholder="Add keyword or phrase (e.g. python, local llm, react native)" />
+                <button class="btn btn--sm btn--primary" id="rssAddKeywordBtn">Add</button>
+            </div>
+            <div id="rssKeywordSuggestions" class="rss-keyword-suggestions" style="display:none"></div>
+        </div>`;
+
+    const feedSourcesHtml = `
+        <div class="rss-feeds-manager">
+            <div class="rss-feeds-list" id="rssFeedsList">${feedListHtml}</div>
+            <div class="rss-feeds-add">
+                <div class="rss-feeds-add__row">
+                    <input type="text" id="rssNewFeedName" class="rss-feeds-add__input" placeholder="Feed name (optional)" />
+                    <input type="text" id="rssNewFeedUrl" class="rss-feeds-add__input rss-feeds-add__input--wide" placeholder="RSS feed URL" />
+                    <button class="btn btn--sm btn--primary" id="rssAddFeedBtn">Add</button>
+                </div>
+                <div class="rss-feeds-add__row rss-feeds-add__row--topics">
+                    <select id="rssTopicPicker" class="rss-feeds-add__select">
+                        <option value="">Add from curated topics...</option>
+                        ${topicOptions}
+                    </select>
+                    <div id="rssTopicFeeds" class="rss-topic-feeds" style="display:none"></div>
+                </div>
+            </div>
+        </div>`;
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml('up'))}
         ${statsHtml}
         ${configSectionFull('Run History', activityLog(runItems, { emptyMsg: 'No recent runs' }))}
         ${configSectionFull('Recent Articles', activityLog(articleItems, { emptyMsg: 'No recent articles' }))}
+        ${configSectionFull('Your Interests', keywordsHtml)}
+        ${configSectionFull('Feed Sources', feedSourcesHtml)}
         ${configSection('RSS Fetch',
             configNumber('Interval', 4, 1, 24, tid, 'fetch_interval_hrs', 'hours') +
             configNumber('Window Start', 8, 0, 23, tid, 'fetch_window_start', ':00') +
@@ -2367,32 +2616,284 @@ async function renderRSSPanel(tool) {
             configNumber('Max Articles/Day', 200, 1, 1000, tid, 'max_articles_day')
         )}
         ${state.adminMode ? configSection('Advanced',
-            configAdminNumber('Min Relevance', 5, 0, 10, tid, 'min_relevance') +
-            configAdminText('Feed Sources', 'Default feeds', tid, 'feed_sources')
+            configAdminNumber('Min Relevance', 5, 0, 10, tid, 'min_relevance')
         ) : ''}
     </div>`;
     applySavedConfigValues(tid);
     showToolHelpChat(tid);
+
+    // Wire up feed + keyword management interactions
+    _wireRSSFeedManager(topics, keywords, topicKeywords);
+}
+
+function _wireRSSFeedManager(topics, keywords, topicKeywords) {
+    // -- Keyword management --
+    const addKwBtn = document.getElementById('rssAddKeywordBtn');
+    const kwInput = document.getElementById('rssNewKeyword');
+    if (addKwBtn && kwInput) {
+        const addKeyword = async () => {
+            const raw = kwInput.value.trim().toLowerCase();
+            if (!raw) return;
+            // Support comma-separated input
+            const newKws = raw.split(',').map(k => k.trim()).filter(Boolean);
+            const merged = [...new Set([...keywords, ...newKws])];
+            addKwBtn.disabled = true;
+            try {
+                const resp = await fetch('/api/intel/keywords', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keywords: merged }),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast(`Added: ${newKws.join(', ')}`, 'success');
+                    const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                    if (tool) renderRSSPanel(tool);
+                } else {
+                    showToast(data.error || 'Failed to update keywords', 'error');
+                }
+            } catch { showToast('Failed to update keywords', 'error'); }
+            addKwBtn.disabled = false;
+        };
+        addKwBtn.addEventListener('click', addKeyword);
+        kwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addKeyword(); });
+    }
+
+    document.querySelectorAll('.rss-keyword-tag__remove').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const kw = btn.dataset.keyword;
+            if (!kw) return;
+            btn.disabled = true;
+            const updated = keywords.filter(k => k !== kw);
+            try {
+                const resp = await fetch('/api/intel/keywords', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keywords: updated }),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast(`Removed: ${kw}`, 'success');
+                    const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                    if (tool) renderRSSPanel(tool);
+                }
+            } catch { showToast('Failed to update keywords', 'error'); }
+        });
+    });
+
+    // -- Relevance mode selector --
+    const modeSelect = document.getElementById('rssRelevanceMode');
+    if (modeSelect) {
+        modeSelect.addEventListener('change', async () => {
+            try {
+                const resp = await fetch('/api/intel/relevance-mode', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: modeSelect.value }),
+                });
+                const data = await resp.json();
+                if (data.success) showToast(`Relevance scoring: ${modeSelect.value}`, 'success');
+            } catch { showToast('Failed to update scoring mode', 'error'); }
+        });
+    }
+
+    // -- Keyword suggestions when user selects a curated topic --
+    const topicPicker = document.getElementById('rssTopicPicker');
+    const suggestionsEl = document.getElementById('rssKeywordSuggestions');
+    if (topicPicker && suggestionsEl) {
+        topicPicker.addEventListener('change', () => {
+            const topic = topicPicker.value;
+            const suggested = (topicKeywords || {})[topic];
+            if (!suggested || suggested.length === 0) {
+                suggestionsEl.style.display = 'none';
+                return;
+            }
+            // Filter out keywords already added
+            const newSuggestions = suggested.filter(s => !keywords.includes(s.toLowerCase()));
+            if (newSuggestions.length === 0) {
+                suggestionsEl.style.display = 'none';
+                return;
+            }
+            suggestionsEl.style.display = '';
+            suggestionsEl.innerHTML =
+                '<span class="rss-keyword-suggestions__label">Suggested keywords:</span>' +
+                newSuggestions.map(s =>
+                    `<button class="rss-keyword-suggestion-btn" data-kw="${escapeHtml(s)}">${escapeHtml(s)}</button>`
+                ).join('') +
+                '<button class="btn btn--sm rss-keyword-suggestion-all">Add all</button>';
+
+            // Wire individual suggestion buttons
+            suggestionsEl.querySelectorAll('.rss-keyword-suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const kw = btn.dataset.kw;
+                    const merged = [...new Set([...keywords, kw])];
+                    btn.disabled = true;
+                    try {
+                        const resp = await fetch('/api/intel/keywords', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ keywords: merged }),
+                        });
+                        const data = await resp.json();
+                        if (data.success) {
+                            showToast(`Added: ${kw}`, 'success');
+                            const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                            if (tool) renderRSSPanel(tool);
+                        }
+                    } catch { showToast('Failed to add keyword', 'error'); }
+                });
+            });
+
+            // Wire "Add all" button
+            const addAllBtn = suggestionsEl.querySelector('.rss-keyword-suggestion-all');
+            if (addAllBtn) {
+                addAllBtn.addEventListener('click', async () => {
+                    const merged = [...new Set([...keywords, ...newSuggestions])];
+                    addAllBtn.disabled = true;
+                    try {
+                        const resp = await fetch('/api/intel/keywords', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ keywords: merged }),
+                        });
+                        const data = await resp.json();
+                        if (data.success) {
+                            showToast(`Added ${newSuggestions.length} keywords`, 'success');
+                            const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                            if (tool) renderRSSPanel(tool);
+                        }
+                    } catch { showToast('Failed to add keywords', 'error'); }
+                });
+            }
+        });
+    }
+
+    // Remove feed buttons
+    document.querySelectorAll('.rss-feed-item__remove').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const url = btn.dataset.feedUrl;
+            if (!url) return;
+            btn.disabled = true;
+            try {
+                const resp = await fetch('/api/intel/feeds', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url }),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast('Feed removed', 'success');
+                    // Re-render the panel
+                    const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                    if (tool) renderRSSPanel(tool);
+                } else {
+                    showToast(data.error || 'Failed to remove feed', 'error');
+                }
+            } catch { showToast('Failed to remove feed', 'error'); }
+        });
+    });
+
+    // Add custom feed
+    const addBtn = document.getElementById('rssAddFeedBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', async () => {
+            const nameEl = document.getElementById('rssNewFeedName');
+            const urlEl = document.getElementById('rssNewFeedUrl');
+            const url = (urlEl?.value || '').trim();
+            const name = (nameEl?.value || '').trim();
+            if (!url) { showToast('Enter a feed URL', 'warning'); return; }
+            addBtn.disabled = true;
+            try {
+                const resp = await fetch('/api/intel/feeds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, url }),
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast(`Feed added (${data.total} total)`, 'success');
+                    const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                    if (tool) renderRSSPanel(tool);
+                } else {
+                    showToast(data.error || 'Failed to add feed', 'error');
+                }
+            } catch { showToast('Failed to add feed', 'error'); }
+        });
+    }
+
+    // Topic picker
+    const topicSelect = document.getElementById('rssTopicPicker');
+    const topicFeedsDiv = document.getElementById('rssTopicFeeds');
+    if (topicSelect && topicFeedsDiv) {
+        topicSelect.addEventListener('change', () => {
+            const topic = topicSelect.value;
+            if (!topic || !topics[topic]) {
+                topicFeedsDiv.style.display = 'none';
+                topicFeedsDiv.innerHTML = '';
+                return;
+            }
+            const topicFeeds = topics[topic];
+            topicFeedsDiv.style.display = 'block';
+            topicFeedsDiv.innerHTML = topicFeeds.map(f => `
+                <label class="rss-topic-feed-option">
+                    <input type="checkbox" value="${escapeHtml(f.url)}" data-feed-name="${escapeHtml(f.name)}" checked />
+                    <span>${escapeHtml(f.name)}</span>
+                    <span class="rss-topic-feed-option__url">${escapeHtml(f.url)}</span>
+                </label>`).join('') +
+                `<button class="btn btn--sm btn--primary" id="rssAddTopicFeedsBtn" style="margin-top:8px">Add Selected</button>`;
+
+            document.getElementById('rssAddTopicFeedsBtn')?.addEventListener('click', async () => {
+                const checked = topicFeedsDiv.querySelectorAll('input[type=checkbox]:checked');
+                const feeds = Array.from(checked).map(cb => ({ name: cb.dataset.feedName, url: cb.value }));
+                if (feeds.length === 0) { showToast('Select at least one feed', 'warning'); return; }
+                try {
+                    const resp = await fetch('/api/intel/feeds', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ feeds }),
+                    });
+                    const data = await resp.json();
+                    if (data.success) {
+                        showToast(`Added ${data.added} feed(s) (${data.total} total)`, 'success');
+                        const tool = state.tools?.find(t => t.id === 'intel_scheduler');
+                        if (tool) renderRSSPanel(tool);
+                    } else {
+                        showToast(data.error || 'Failed to add feeds', 'error');
+                    }
+                } catch { showToast('Failed to add feeds', 'error'); }
+            });
+        });
+    }
 }
 
 /* ── Social Media & Marketing ── */
+
+// Module-level state for content projects
+let _contentProjects = [];
+let _selectedProjectId = null;
+let _editingProject = null; // null = not editing, 'new' = creating, project_id = editing
 
 async function renderContentMonitorPanel(tool) {
     const tid = 'content_monitor_scheduler';
 
     // Fetch all data in parallel
-    const [pipelineResp, postsResp, configResp] = await Promise.all([
+    const [pipelineResp, postsResp, configResp, projectsResp] = await Promise.all([
         fetch('/api/content-monitor/pipeline-status').catch(() => null),
         fetch('/api/content-monitor/posts?limit=20').catch(() => null),
         fetch('/api/content-monitor/config').catch(() => null),
+        fetch('/api/content-projects').catch(() => null),
     ]);
 
     let pipelineData = { stages: {} };
     let postsData = { posts: [] };
     let configData = {};
+    let projectsData = { projects: [] };
     try { pipelineData = pipelineResp ? await pipelineResp.json() : { stages: {} }; } catch {}
     try { postsData = postsResp ? await postsResp.json() : { posts: [] }; } catch {}
     try { configData = configResp ? await configResp.json() : {}; } catch {}
+    try { projectsData = projectsResp ? await projectsResp.json() : { projects: [] }; } catch {}
+
+    _contentProjects = projectsData.projects || [];
 
     const stages = pipelineData.stages || {};
     const posts = postsData.posts || [];
@@ -2403,7 +2904,6 @@ async function renderContentMonitorPanel(tool) {
     const fetchStage = stages.rss_fetch || {};
     const analysisStage = stages.analysis || {};
     const draftStage = stages.post_drafting || {};
-    const digestStage = stages.weekly_digest || {};
 
     const pendingPosts = posts.filter(p => p.status === 'pending');
     const approvedPosts = posts.filter(p => p.status === 'approved');
@@ -2455,6 +2955,9 @@ async function renderContentMonitorPanel(tool) {
         <div style="flex:1;min-width:150px">${progressBar(totalDrafted, maxDrafts, { label: 'Drafts', suffix: 'today' })}</div>
     </div>`;
 
+    // ── Projects section ──
+    const projectsHtml = _renderProjectsSection();
+
     // ── Post cards with tab filtering ──
     const postsHtml = _renderSocialPostsSection(posts, pendingPosts, approvedPosts, rejectedPosts);
 
@@ -2481,6 +2984,7 @@ async function renderContentMonitorPanel(tool) {
         ${toolHeader(tool, statusDotHtml('up'))}
         ${configSectionFull('Content Pipeline', pipelineFlowHtml)}
         ${configSectionFull('Daily Limits', limitsHtml)}
+        ${projectsHtml}
         ${postsHtml}
         ${configSectionFull('Monitored Feeds (' + feedNames.length + ')', feedsHtml)}
         ${stageDetails ? configSectionFull('Pipeline Stages', stageDetails) : ''}
@@ -2507,6 +3011,302 @@ async function renderContentMonitorPanel(tool) {
     </div>`;
     applySavedConfigValues(tid);
     showToolHelpChat(tid);
+}
+
+/* ── Content Projects UI ── */
+
+function _renderProjectsSection() {
+    let inner = '';
+
+    if (_editingProject) {
+        inner = _renderProjectEditor();
+    } else if (_contentProjects.length === 0) {
+        inner = `<div style="text-align:center;padding:var(--space-4)">
+            <p style="color:var(--color-text-muted);font-size:var(--font-size-sm);margin-bottom:var(--space-3)">
+                No projects yet. Create a project to define your brand, target audiences, and content strategy.
+            </p>
+            <button class="btn--create-project" onclick="_startCreateProject()">+ New Project</button>
+        </div>`;
+    } else {
+        const cards = _contentProjects.map(p => _renderProjectCard(p)).join('');
+        inner = `<div class="content-projects">
+            <div class="content-projects__header">
+                <h4>${_contentProjects.length} Project${_contentProjects.length !== 1 ? 's' : ''}</h4>
+                <button class="btn--create-project" onclick="_startCreateProject()">+ New Project</button>
+            </div>
+            ${cards}
+        </div>`;
+    }
+
+    return configSectionFull('Content Strategy Projects', inner);
+}
+
+function _renderProjectCard(project) {
+    const isActive = project.active !== false;
+    const pillars = (project.content_pillars || []).slice(0, 4);
+    const audienceCount = (project.audiences || []).length;
+    const kwCount = Object.values(project.keywords || {}).reduce((s, arr) => s + (Array.isArray(arr) ? arr.length : 0), 0);
+
+    return `<div class="project-card ${isActive ? 'project-card--active' : 'project-card--inactive'}" onclick="_startEditProject('${escapeHtml(project.id)}')">
+        <div class="project-card__header">
+            <span class="project-card__name">${escapeHtml(project.name)}</span>
+            <span class="project-card__badge ${isActive ? 'project-card__badge--active' : 'project-card__badge--inactive'}">${isActive ? 'Active' : 'Inactive'}</span>
+        </div>
+        ${project.description ? `<div class="project-card__desc">${escapeHtml(project.description)}</div>` : ''}
+        <div class="project-card__meta">
+            ${pillars.map(p => `<span class="project-card__tag">${escapeHtml(p)}</span>`).join('')}
+            ${audienceCount > 0 ? `<span class="project-card__tag">${audienceCount} audience${audienceCount !== 1 ? 's' : ''}</span>` : ''}
+            ${kwCount > 0 ? `<span class="project-card__tag">${kwCount} keywords</span>` : ''}
+        </div>
+    </div>`;
+}
+
+function _renderProjectEditor() {
+    const isNew = _editingProject === 'new';
+    const project = isNew ? {} : _contentProjects.find(p => p.id === _editingProject) || {};
+
+    const name = project.name || '';
+    const desc = project.description || '';
+    const voice = (project.brand_voice || []).join(', ');
+    const pillars = (project.content_pillars || []).join(', ');
+    const criticalKw = (project.keywords?.critical || []).join(', ');
+    const standardKw = (project.keywords?.standard || []).join(', ');
+    const negativeKw = (project.keywords?.negative || []).join(', ');
+    const minRel = project.min_relevance ?? 5;
+    const isActive = project.active !== false;
+
+    // Audiences
+    const audiences = project.audiences || [];
+    let audiencesHtml = audiences.map((aud, i) => `
+        <div class="project-editor__audience">
+            <div class="project-editor__audience-header">
+                <strong style="font-size:var(--font-size-xs)">${escapeHtml(aud.name || 'Audience ' + (i + 1))}</strong>
+                <button class="btn--delete-project" style="padding:0 6px;font-size:10px" onclick="_removeAudience(${i})">X</button>
+            </div>
+            <div class="project-editor__field" style="margin-bottom:var(--space-1)">
+                <label>Name</label>
+                <input type="text" class="proj-audience-name" data-idx="${i}" value="${escapeHtml(aud.name || '')}" placeholder="e.g. Pool service professionals">
+            </div>
+            <div class="project-editor__field" style="margin-bottom:0">
+                <label>Pain Points (comma-separated)</label>
+                <input type="text" class="proj-audience-pains" data-idx="${i}" value="${escapeHtml((aud.pain_points || []).join(', '))}" placeholder="e.g. freeze damage, equipment failure">
+            </div>
+        </div>
+    `).join('');
+
+    return `<div class="project-editor" id="project-editor">
+        <div class="project-editor__title">${isNew ? 'New Project' : 'Edit: ' + escapeHtml(name)}</div>
+
+        <div class="project-editor__field">
+            <label>Project Name *</label>
+            <input type="text" id="proj-name" value="${escapeHtml(name)}" placeholder="e.g. ChillGuard Pool Protection">
+        </div>
+
+        <div class="project-editor__field">
+            <label>Description</label>
+            <textarea id="proj-desc" placeholder="What does this product/brand do? One or two sentences.">${escapeHtml(desc)}</textarea>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Brand Voice (comma-separated adjectives)</label>
+            <input type="text" id="proj-voice" value="${escapeHtml(voice)}" placeholder="e.g. technical, reassuring, data-driven">
+            <div class="project-editor__hint">How should posts sound? 2-4 tone descriptors.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Content Pillars (comma-separated topics)</label>
+            <input type="text" id="proj-pillars" value="${escapeHtml(pillars)}" placeholder="e.g. freeze prevention, smart monitoring, cost savings">
+            <div class="project-editor__hint">3-5 themes your content should focus on.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Critical Keywords (+2 relevance each)</label>
+            <input type="text" id="proj-kw-critical" value="${escapeHtml(criticalKw)}" placeholder="e.g. freeze damage, pipe burst, equipment failure">
+            <div class="project-editor__hint">High-signal terms that indicate strong relevance to your product.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Standard Keywords (+1 relevance each)</label>
+            <input type="text" id="proj-kw-standard" value="${escapeHtml(standardKw)}" placeholder="e.g. pool maintenance, winterize, automation">
+            <div class="project-editor__hint">Broader topic terms. Good signals but not as strong as critical.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Negative Keywords (exclude articles matching these)</label>
+            <input type="text" id="proj-kw-negative" value="${escapeHtml(negativeKw)}" placeholder="e.g. hot tub only, above ground inflatable">
+            <div class="project-editor__hint">Articles containing any of these are automatically excluded.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Minimum Relevance Score (0-10)</label>
+            <input type="number" id="proj-min-rel" value="${minRel}" min="0" max="10" style="width:80px">
+            <div class="project-editor__hint">Articles below this score won't trigger post drafting for this project.</div>
+        </div>
+
+        <div class="project-editor__field">
+            <label>Target Audiences</label>
+            <div id="proj-audiences">${audiencesHtml}</div>
+            <button class="btn--create-project" style="margin-top:var(--space-2);font-size:11px" onclick="_addAudience()">+ Add Audience</button>
+        </div>
+
+        ${!isNew ? `<div class="project-editor__field">
+            <label>Status</label>
+            <select id="proj-active">
+                <option value="true" ${isActive ? 'selected' : ''}>Active</option>
+                <option value="false" ${!isActive ? 'selected' : ''}>Inactive</option>
+            </select>
+        </div>` : ''}
+
+        <div class="project-editor__actions">
+            ${!isNew ? `<button class="btn--delete-project" onclick="_deleteProject('${escapeHtml(project.id)}')">Delete Project</button>` : ''}
+            <div style="flex:1"></div>
+            <button class="btn--cancel-project" onclick="_cancelProjectEdit()">Cancel</button>
+            <button class="btn--save-project" onclick="_saveProject()">${isNew ? 'Create Project' : 'Save Changes'}</button>
+        </div>
+    </div>`;
+}
+
+function _startCreateProject() {
+    _editingProject = 'new';
+    _rerenderProjectsSection();
+}
+
+function _startEditProject(projectId) {
+    _editingProject = projectId;
+    _rerenderProjectsSection();
+}
+
+function _cancelProjectEdit() {
+    _editingProject = null;
+    _rerenderProjectsSection();
+}
+
+function _rerenderProjectsSection() {
+    // Find and replace just the projects section in the DOM
+    const container = document.querySelector('.tool-dashboard');
+    if (!container) return;
+    // Re-render the full panel to keep it simple
+    const tool = (state.tools || []).find(t => t.id === 'content_monitor_scheduler');
+    if (tool) renderContentMonitorPanel(tool);
+}
+
+function _splitCommas(str) {
+    return str.split(',').map(s => s.trim()).filter(s => s.length > 0);
+}
+
+function _collectProjectForm() {
+    const name = (document.getElementById('proj-name')?.value || '').trim();
+    if (!name) {
+        showToast('Project name is required', 'error');
+        return null;
+    }
+
+    // Collect audiences from dynamic form
+    const audienceNames = document.querySelectorAll('.proj-audience-name');
+    const audiencePains = document.querySelectorAll('.proj-audience-pains');
+    const audiences = [];
+    audienceNames.forEach((el, i) => {
+        const audName = el.value.trim();
+        if (audName) {
+            const painsEl = audiencePains[i];
+            audiences.push({
+                name: audName,
+                pain_points: _splitCommas(painsEl?.value || ''),
+                platforms: [],
+            });
+        }
+    });
+
+    const activeEl = document.getElementById('proj-active');
+
+    return {
+        name,
+        description: (document.getElementById('proj-desc')?.value || '').trim(),
+        brand_voice: _splitCommas(document.getElementById('proj-voice')?.value || ''),
+        content_pillars: _splitCommas(document.getElementById('proj-pillars')?.value || ''),
+        keywords: {
+            critical: _splitCommas(document.getElementById('proj-kw-critical')?.value || ''),
+            standard: _splitCommas(document.getElementById('proj-kw-standard')?.value || ''),
+            negative: _splitCommas(document.getElementById('proj-kw-negative')?.value || ''),
+        },
+        min_relevance: parseInt(document.getElementById('proj-min-rel')?.value || '5', 10),
+        audiences,
+        active: activeEl ? activeEl.value === 'true' : true,
+    };
+}
+
+async function _saveProject() {
+    const data = _collectProjectForm();
+    if (!data) return;
+
+    const isNew = _editingProject === 'new';
+    const url = isNew ? '/api/content-projects' : `/api/content-projects/${encodeURIComponent(_editingProject)}`;
+    const method = isNew ? 'POST' : 'PUT';
+
+    try {
+        const resp = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await resp.json();
+        if (result.error) {
+            showToast('Error: ' + result.error, 'error');
+            return;
+        }
+        showToast(isNew ? 'Project created' : 'Project saved', 'success');
+        _editingProject = null;
+        _rerenderProjectsSection();
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function _deleteProject(projectId) {
+    if (!confirm('Delete this project? This cannot be undone.')) return;
+
+    try {
+        const resp = await fetch(`/api/content-projects/${encodeURIComponent(projectId)}`, {
+            method: 'DELETE',
+        });
+        const result = await resp.json();
+        if (result.error) {
+            showToast('Error: ' + result.error, 'error');
+            return;
+        }
+        showToast('Project deleted', 'success');
+        _editingProject = null;
+        _rerenderProjectsSection();
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+function _addAudience() {
+    const container = document.getElementById('proj-audiences');
+    if (!container) return;
+    const idx = container.querySelectorAll('.project-editor__audience').length;
+    const html = `
+        <div class="project-editor__audience">
+            <div class="project-editor__audience-header">
+                <strong style="font-size:var(--font-size-xs)">New Audience</strong>
+                <button class="btn--delete-project" style="padding:0 6px;font-size:10px" onclick="this.closest('.project-editor__audience').remove()">X</button>
+            </div>
+            <div class="project-editor__field" style="margin-bottom:var(--space-1)">
+                <label>Name</label>
+                <input type="text" class="proj-audience-name" data-idx="${idx}" value="" placeholder="e.g. DIY homeowners">
+            </div>
+            <div class="project-editor__field" style="margin-bottom:0">
+                <label>Pain Points (comma-separated)</label>
+                <input type="text" class="proj-audience-pains" data-idx="${idx}" value="" placeholder="e.g. high repair costs, confusing instructions">
+            </div>
+        </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+function _removeAudience(idx) {
+    const audiences = document.querySelectorAll('#proj-audiences .project-editor__audience');
+    if (audiences[idx]) audiences[idx].remove();
 }
 
 function _renderSocialPostsSection(allPosts, pending, approved, rejected) {
@@ -3668,7 +4468,8 @@ async function renderHealthMonitorPanel(tool) {
 
     const lastChecked = healthData.last_checks?.services ? `Last check: ${timeAgo(healthData.last_checks.services)}` : 'Never checked';
 
-    const status = upCount > 0 && downCount === 0 ? 'up' : downCount > 0 ? 'down' : 'unknown';
+    // Status reflects whether the monitor itself is working (has data), not aggregate service health
+    const status = services.length > 0 ? 'up' : 'unknown';
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status))}
@@ -4696,6 +5497,8 @@ function switchChannel(channelId) {
     _updateCreateChannelBtn();
     // Close add-member dropdown when switching channels
     if (dom.addMemberDropdown) dom.addMemberDropdown.style.display = 'none';
+    // Update message input placeholder for DM channels
+    _updateInputPlaceholder();
 }
 
 function updateParticipants() {
@@ -5116,7 +5919,7 @@ function renderTeam() {
     const empty = $('#team-empty');
     if (state.agents.length === 0) {
         dom.agentGrid.innerHTML = '';
-        dom.agentGrid.appendChild(empty || createEmpty('team-empty', 'No agents connected', 'Agents will appear here when they join a session'));
+        dom.agentGrid.appendChild(empty || createEmpty('team-empty', 'No active sessions', 'Click any agent in the Agent Chats sidebar to start a conversation'));
         return;
     }
 
@@ -5445,6 +6248,10 @@ function connectSocket() {
         if (_toolHelpChannel && data.channel_id === _toolHelpChannel) {
             renderToolHelpMessages();
         }
+        // Render task-help mini-chat if matching
+        if (_taskHelpChannel && data.channel_id === _taskHelpChannel) {
+            renderTaskHelpMessages();
+        }
         // Update chat badge with total message count
         let total = 0;
         for (const ch in state.messages) {
@@ -5478,6 +6285,12 @@ function connectSocket() {
             // Hide typing indicator when response arrives
             const ti = document.getElementById('tool-help-typing');
             if (ti) { ti.style.display = 'none'; ti.innerHTML = ''; }
+        }
+        // Also render in task-help mini-chat if matching
+        if (_taskHelpChannel && message.channel_id === _taskHelpChannel) {
+            renderTaskHelpMessages();
+            const mc = document.getElementById('task-help-messages');
+            if (mc) mc.scrollTop = mc.scrollHeight;
         }
     });
 
@@ -5648,6 +6461,19 @@ function _updateCreateChannelBtn() {
     btn.style.display = (isDm && !isArchived) ? '' : 'none';
 }
 
+function _updateInputPlaceholder() {
+    if (!dom.messageInput) return;
+    const defaultPlaceholder = 'Type a message... (use @agent to mention)';
+    if (state.currentChannel && state.currentChannel.startsWith('dm-')) {
+        const agentId = _extractAgentIdFromDm(state.currentChannel);
+        const profile = state.agentProfiles[agentId];
+        const name = (profile && (profile.nickname || profile.name)) || agentId.replace(/_/g, ' ');
+        dom.messageInput.setAttribute('data-placeholder', `Message ${name}...`);
+    } else {
+        dom.messageInput.setAttribute('data-placeholder', defaultPlaceholder);
+    }
+}
+
 function createChannelFromChat() {
     if (!state.currentChannel || !state.currentChannel.startsWith('dm-')) return;
 
@@ -5712,6 +6538,8 @@ function openAssignForAgent(agentId) {
 function closeAssignModal() {
     dom.assignTaskModal.hidden = true;
     dom.assignTaskForm.reset();
+    // Collapse triad details sections
+    dom.assignTaskModal.querySelectorAll('.triad-details[open]').forEach(d => d.removeAttribute('open'));
 }
 
 window.confirmTaskExecution = function(taskId, briefDataId) {
@@ -5874,11 +6702,21 @@ function init() {
             e.preventDefault();
             if (!state.socket || !state.connected) return;
 
-            state.socket.emit('assign_task', {
+            const payload = {
                 agent_id: dom.taskAgentSelect.value,
                 description: dom.taskDescriptionInput.value,
                 priority: dom.taskPrioritySelect.value,
-            }, (response) => {
+            };
+            // Include triad fields if provided
+            const toolInput = document.getElementById('task-tool-input');
+            const outcomeInput = document.getElementById('task-outcome-input');
+            if (toolInput && toolInput.value.trim()) {
+                payload.tool = toolInput.value.trim();
+            }
+            if (outcomeInput && outcomeInput.value.trim()) {
+                payload.success_criteria = outcomeInput.value.trim();
+            }
+            state.socket.emit('assign_task', payload, (response) => {
                 closeAssignModal();
                 // Switch to chat panel and open the task channel
                 if (response && response.task_id) {
@@ -6153,6 +6991,75 @@ function init() {
 }
 
 // Setup Wizard -- moved to cohort-setup.js
+
+// =====================================================================
+// Executive Briefing
+// =====================================================================
+
+function _briefingStatus(msg, isError) {
+    const el = document.getElementById('briefing-status');
+    if (!el) return;
+    el.style.display = 'block';
+    el.style.color = isError ? 'var(--color-error, #f85149)' : 'var(--color-text-muted)';
+    el.textContent = msg;
+    if (!isError) {
+        setTimeout(() => { el.style.display = 'none'; }, 8000);
+    }
+}
+
+function generateBriefing() {
+    const btn = document.getElementById('generate-briefing-btn');
+    if (btn) btn.disabled = true;
+    _briefingStatus('Generating briefing...');
+
+    fetch('/api/briefing/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hours: 24, format: 'html' })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) btn.disabled = false;
+        if (data.success) {
+            _briefingStatus('[OK] Briefing generated');
+        } else {
+            _briefingStatus('[!] ' + (data.error || 'Generation failed'), true);
+        }
+    })
+    .catch(err => {
+        if (btn) btn.disabled = false;
+        _briefingStatus('[!] ' + err.message, true);
+    });
+}
+
+function viewBriefing() {
+    window.open('/api/briefing/latest/html', '_blank');
+}
+
+function fetchIntel() {
+    const btn = document.getElementById('fetch-intel-btn');
+    if (btn) btn.disabled = true;
+    _briefingStatus('Fetching RSS feeds...');
+
+    fetch('/api/intel/fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) btn.disabled = false;
+        if (data.success) {
+            _briefingStatus('[OK] ' + data.new_articles + ' new articles');
+        } else {
+            _briefingStatus('[!] ' + (data.error || 'Fetch failed'), true);
+        }
+    })
+    .catch(err => {
+        if (btn) btn.disabled = false;
+        _briefingStatus('[!] ' + err.message, true);
+    });
+}
 
 // Boot
 document.addEventListener('DOMContentLoaded', init);

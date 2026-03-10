@@ -129,7 +129,7 @@ class TestGenerateEmpty:
     def test_generate_with_empty_data(self, briefing: ExecutiveBriefing):
         report = briefing.generate(post_to_channel=False)
         assert report.id.startswith("briefing_")
-        assert len(report.sections) == 4
+        assert len(report.sections) == 5
         # All sections should have content (even if "not available")
         for section in report.sections:
             assert section.content
@@ -146,7 +146,7 @@ class TestGenerateEmpty:
             orchestrator_getter=None,
         )
         report = b.generate(post_to_channel=False)
-        assert len(report.sections) == 4
+        assert len(report.sections) == 5
         assert "not available" in report.sections[0].content.lower()
         assert "not available" in report.sections[2].content.lower()
         assert "not available" in report.sections[3].content.lower()
@@ -164,6 +164,10 @@ class TestWorkQueueSection:
             item.status = status
             item.priority = "medium" if i < 3 else "high"
             item.agent_id = f"agent_{i % 2}"
+            item.item_id = f"item_{i}"
+            item.id = f"item_{i}"
+            item.description = f"Test task {i}"
+            item.created_at = (now - timedelta(hours=3)).isoformat()
             item.completed_at = (
                 (now - timedelta(hours=1)).isoformat() if status == "completed" else None
             )
@@ -375,7 +379,7 @@ class TestHTTPEndpoints:
         assert data["success"] is True
         assert "report" in data
         assert data["report"]["id"].startswith("briefing_")
-        assert len(data["report"]["sections"]) == 4
+        assert len(data["report"]["sections"]) == 5
 
     async def test_generate_custom_hours(self, server_client: httpx.AsyncClient):
         resp = await server_client.post(

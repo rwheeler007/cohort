@@ -751,7 +751,10 @@ async def get_schedule_presets(request: Request) -> JSONResponse:
 async def generate_briefing(request: Request) -> JSONResponse:
     """POST /api/briefing/generate -- generate an executive briefing.
 
-    Optional JSON body: {"hours": 24, "post_to_channel": true, "channel": "daily-digest"}
+    Optional JSON body:
+        {"hours": 24, "post_to_channel": true, "channel": "daily-digest", "format": "json"}
+
+    If ``format`` is ``"html"``, also generates the HTML report.
     """
     if _briefing is None:
         return JSONResponse(
@@ -766,14 +769,30 @@ async def generate_briefing(request: Request) -> JSONResponse:
     hours = body.get("hours", 24)
     post_to_channel = body.get("post_to_channel", True)
     channel = body.get("channel", "daily-digest")
+    fmt = body.get("format", "json")
 
     try:
-        report = _briefing.generate(
-            hours=hours,
-            post_to_channel=post_to_channel,
-            channel_id=channel,
-        )
-        return JSONResponse({"success": True, "report": report.to_dict()})
+        if fmt == "html":
+            html_path = _briefing.generate_html(
+                hours=hours,
+                post_to_channel=post_to_channel,
+                channel_id=channel,
+            )
+            report = _briefing.get_latest()
+            result: dict[str, Any] = {
+                "success": True,
+                "report": report.to_dict() if report else {},
+            }
+            if html_path:
+                result["html_path"] = str(html_path)
+            return JSONResponse(result)
+        else:
+            report = _briefing.generate(
+                hours=hours,
+                post_to_channel=post_to_channel,
+                channel_id=channel,
+            )
+            return JSONResponse({"success": True, "report": report.to_dict()})
     except Exception as exc:
         logger.exception("Error generating briefing")
         return JSONResponse({"error": str(exc)}, status_code=500)
@@ -793,6 +812,53 @@ async def get_latest_briefing(request: Request) -> JSONResponse:
         )
 
     return JSONResponse({"success": True, "report": report.to_dict()})
+
+
+async def get_latest_briefing_html(request: Request) -> HTMLResponse:
+    """GET /api/briefing/latest/html -- serve the latest HTML briefing report."""
+    if _briefing is None:
+        return HTMLResponse(
+            "<h1>Briefing system not initialised</h1>", status_code=500
+        )
+
+    html_path = _briefing.get_latest_html()
+    if html_path is None or not html_path.exists():
+        return HTMLResponse(
+            "<h1>No HTML briefing available</h1>"
+            "<p>Generate one via POST /api/briefing/generate with "
+            '{"format": "html"}</p>',
+            status_code=404,
+        )
+
+    try:
+        content = html_path.read_text(encoding="utf-8")
+        return HTMLResponse(content)
+    except OSError as exc:
+        return HTMLResponse(f"<h1>Error reading briefing</h1><p>{exc}</p>", status_code=500)
+
+
+async def fetch_intel(request: Request) -> JSONResponse:
+    """POST /api/intel/fetch -- trigger an RSS feed fetch.
+
+    Optional JSON body: {"keywords": ["python", "ai"]}
+    """
+    try:
+        body: dict[str, Any] = await request.json()
+    except Exception:
+        body = {}
+
+    keywords = body.get("keywords")
+
+    try:
+        from cohort.intel_fetcher import IntelFetcher
+
+        data_dir = Path(_resolved_data_dir)
+        fetcher = IntelFetcher(data_dir)
+        new_count = fetcher.fetch(keywords=keywords)
+        return JSONResponse({"success": True, "new_articles": new_count})
+    except Exception as exc:
+        logger.exception("Error fetching intel feeds")
+        return JSONResponse({"error": str(exc)}, status_code=500)
 
 
 async def get_agent_registry(request: Request) -> JSONResponse:
@@ -2175,12 +2241,16 @@ async def setup_verify_model(request: Request) -> JSONResponse:
 
 async def setup_get_topics(request: Request) -> JSONResponse:
     """GET /api/setup/topics -- return available content pipeline topics."""
-    from cohort.local.setup import TOPIC_FEEDS
+    from cohort.local.setup import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
 
     topics = {}
     for topic, feeds in TOPIC_FEEDS.items():
         topics[topic] = [{"name": f["name"], "url": f["url"]} for f in feeds]
-    return JSONResponse({"topics": topics})
+    return JSONResponse({
+        "topics": topics,
+        "categories": TOPIC_CATEGORIES,
+        "topic_keywords": TOPIC_KEYWORDS,
+    })
 
 
 async def setup_save_config(request: Request) -> JSONResponse:
@@ -2421,6 +2491,14 @@ async def get_service_status(request: Request) -> JSONResponse:
 
     if not url:
         return JSONResponse({"status": "unknown", "detail": "No health endpoint configured"})
+
+    # Health monitor is a built-in Cohort feature -- if it has service data
+    # it's working.  A self-request would deadlock the event loop.
+    if service_id == "health_monitor":
+        from cohort.health_monitor import list_services
+        svcs = list_services()
+        status = "up" if svcs else "unknown"
+        return JSONResponse({"status": status, "detail": {"services": len(svcs)}})
 
     # Only allow localhost URLs
     if "127.0.0.1" not in url and "localhost" not in url:
@@ -2818,6 +2896,148 @@ async def get_intel_recent_articles(request: Request) -> JSONResponse:
     return JSONResponse({"articles": data[:limit]})
 
 
+async def get_intel_feeds(request: Request) -> JSONResponse:
+    """GET /api/intel/feeds -- return configured RSS feeds and available topics."""
+    from cohort.local.setup import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
+
+    config_path = Path(_resolved_data_dir) / "content_config.json"
+    config = _read_json_safe(config_path) or {}
+    feeds = config.get("feeds", [])
+    keywords = config.get("interest_keywords", [])
+    relevance_mode = config.get("relevance_mode", "hybrid")
+
+    # Build curated topics list
+    topics = {}
+    for topic, topic_feeds in TOPIC_FEEDS.items():
+        topics[topic] = [{"name": f["name"], "url": f["url"]} for f in topic_feeds]
+
+    return JSONResponse({
+        "feeds": feeds,
+        "keywords": keywords,
+        "relevance_mode": relevance_mode,
+        "topics": topics,
+        "categories": TOPIC_CATEGORIES,
+        "topic_keywords": TOPIC_KEYWORDS,
+    })
+
+
+async def add_intel_feed(request: Request) -> JSONResponse:
+    """POST /api/intel/feeds -- add one or more RSS feeds."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    new_feeds = body.get("feeds", [])
+    if not new_feeds:
+        # Single feed shorthand
+        name = body.get("name", "").strip()
+        url = body.get("url", "").strip()
+        if not url:
+            return JSONResponse({"error": "Feed URL is required"}, status_code=400)
+        if not name:
+            name = url.split("//")[-1].split("/")[0]
+        new_feeds = [{"name": name, "url": url}]
+
+    config_path = Path(_resolved_data_dir) / "content_config.json"
+    config = _read_json_safe(config_path) or {}
+    if not isinstance(config, dict):
+        config = {}
+    existing = config.get("feeds", [])
+
+    # Deduplicate by URL
+    existing_urls = {f.get("url") for f in existing}
+    added = []
+    for f in new_feeds:
+        if f.get("url") and f["url"] not in existing_urls:
+            existing.append({"name": f.get("name", f["url"]), "url": f["url"]})
+            existing_urls.add(f["url"])
+            added.append(f["url"])
+
+    config["feeds"] = existing
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    return JSONResponse({"success": True, "added": len(added), "total": len(existing)})
+
+
+async def delete_intel_feed(request: Request) -> JSONResponse:
+    """DELETE /api/intel/feeds -- remove a feed by URL."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    url = body.get("url", "").strip()
+    if not url:
+        return JSONResponse({"error": "Feed URL is required"}, status_code=400)
+
+    config_path = Path(_resolved_data_dir) / "content_config.json"
+    config = _read_json_safe(config_path) or {}
+    if not isinstance(config, dict):
+        config = {}
+    existing = config.get("feeds", [])
+
+    before = len(existing)
+    config["feeds"] = [f for f in existing if f.get("url") != url]
+    after = len(config["feeds"])
+
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    return JSONResponse({"success": True, "removed": before - after, "total": after})
+
+
+async def update_intel_keywords(request: Request) -> JSONResponse:
+    """PUT /api/intel/keywords -- update interest keywords list."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    keywords = body.get("keywords")
+    if not isinstance(keywords, list):
+        return JSONResponse({"error": "keywords must be a list of strings"}, status_code=400)
+
+    # Sanitize: lowercase, strip, deduplicate, remove empties
+    clean = list(dict.fromkeys(kw.strip().lower() for kw in keywords if isinstance(kw, str) and kw.strip()))
+
+    config_path = Path(_resolved_data_dir) / "content_config.json"
+    config = _read_json_safe(config_path) or {}
+    if not isinstance(config, dict):
+        config = {}
+    config["interest_keywords"] = clean
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    return JSONResponse({"success": True, "keywords": clean})
+
+
+_VALID_RELEVANCE_MODES = {"off", "keywords", "llm", "hybrid"}
+
+
+async def update_intel_relevance_mode(request: Request) -> JSONResponse:
+    """PUT /api/intel/relevance-mode -- update relevance scoring mode."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    mode = body.get("mode", "").strip().lower()
+    if mode not in _VALID_RELEVANCE_MODES:
+        return JSONResponse(
+            {"error": f"Invalid mode. Must be one of: {', '.join(sorted(_VALID_RELEVANCE_MODES))}"},
+            status_code=400,
+        )
+
+    config_path = Path(_resolved_data_dir) / "content_config.json"
+    config = _read_json_safe(config_path) or {}
+    if not isinstance(config, dict):
+        config = {}
+    config["relevance_mode"] = mode
+    config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    return JSONResponse({"success": True, "relevance_mode": mode})
+
+
 async def get_llm_running(request: Request) -> JSONResponse:
     """GET /api/llm/running -- return currently loaded Ollama models (via /api/ps)."""
     import urllib.request
@@ -3047,6 +3267,197 @@ async def get_content_config(request: Request) -> JSONResponse:
         "post_settings": data.get("post_settings", {}),
         "notifications": data.get("notifications", {}),
     })
+
+
+# ── Content Projects (multi-project content strategy) ──────────────────
+
+
+def _projects_path() -> Path:
+    """Path to the content projects JSON store."""
+    return Path(_resolved_data_dir) / "content_projects.json"
+
+
+def _load_projects() -> dict:
+    """Load all projects from content_projects.json."""
+    data = _read_json_safe(_projects_path())
+    if not isinstance(data, dict) or "projects" not in data:
+        return {"projects": {}, "version": 1}
+    return data
+
+
+def _save_projects(data: dict) -> None:
+    """Write projects back to content_projects.json."""
+    path = _projects_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+async def list_content_projects(request: Request) -> JSONResponse:
+    """GET /api/content-projects -- list all projects."""
+    data = _load_projects()
+    projects = list(data.get("projects", {}).values())
+    # Sort by created_at descending
+    projects.sort(key=lambda p: p.get("created_at", ""), reverse=True)
+    return JSONResponse({"projects": projects})
+
+
+async def get_content_project(request: Request) -> JSONResponse:
+    """GET /api/content-projects/{project_id} -- get a single project."""
+    project_id = request.path_params["project_id"]
+    data = _load_projects()
+    project = data.get("projects", {}).get(project_id)
+    if not project:
+        return JSONResponse({"error": "Project not found"}, status_code=404)
+    return JSONResponse({"project": project})
+
+
+async def create_content_project(request: Request) -> JSONResponse:
+    """POST /api/content-projects -- create a new project."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    name = body.get("name", "").strip()
+    if not name:
+        return JSONResponse({"error": "Project name is required"}, status_code=400)
+
+    import uuid
+    from datetime import datetime
+
+    project_id = "proj_" + uuid.uuid4().hex[:12]
+    now = datetime.now().isoformat()
+
+    project = {
+        "id": project_id,
+        "name": name,
+        "description": body.get("description", "").strip(),
+        "created_at": now,
+        "updated_at": now,
+        "active": True,
+        "brand_voice": body.get("brand_voice", []),
+        "audiences": body.get("audiences", []),
+        "content_pillars": body.get("content_pillars", []),
+        "keywords": {
+            "critical": body.get("keywords", {}).get("critical", []),
+            "standard": body.get("keywords", {}).get("standard", []),
+            "negative": body.get("keywords", {}).get("negative", []),
+        },
+        "platform_config": body.get("platform_config", {
+            "twitter": {"tone": "punchy", "max_length": 280},
+            "linkedin": {"tone": "professional", "max_length": 1500},
+            "reddit": {"tone": "helpful", "max_length": 2000},
+        }),
+        "feed_ids": body.get("feed_ids", []),
+        "min_relevance": body.get("min_relevance", 5),
+    }
+
+    data = _load_projects()
+    data["projects"][project_id] = project
+    _save_projects(data)
+
+    return JSONResponse({"project": project}, status_code=201)
+
+
+async def update_content_project(request: Request) -> JSONResponse:
+    """PUT /api/content-projects/{project_id} -- update a project."""
+    project_id = request.path_params["project_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    data = _load_projects()
+    project = data.get("projects", {}).get(project_id)
+    if not project:
+        return JSONResponse({"error": "Project not found"}, status_code=404)
+
+    from datetime import datetime
+
+    # Update allowed fields
+    updatable = [
+        "name", "description", "active", "brand_voice", "audiences",
+        "content_pillars", "keywords", "platform_config", "feed_ids",
+        "min_relevance",
+    ]
+    for field in updatable:
+        if field in body:
+            project[field] = body[field]
+
+    project["updated_at"] = datetime.now().isoformat()
+    data["projects"][project_id] = project
+    _save_projects(data)
+
+    return JSONResponse({"project": project})
+
+
+async def delete_content_project(request: Request) -> JSONResponse:
+    """DELETE /api/content-projects/{project_id} -- delete a project."""
+    project_id = request.path_params["project_id"]
+    data = _load_projects()
+    projects = data.get("projects", {})
+
+    if project_id not in projects:
+        return JSONResponse({"error": "Project not found"}, status_code=404)
+
+    del projects[project_id]
+    _save_projects(data)
+
+    return JSONResponse({"success": True})
+
+
+async def score_article_endpoint(request: Request) -> JSONResponse:
+    """POST /api/content-projects/{project_id}/score -- score an article against a project.
+
+    Body: {"title": "...", "summary": "...", ...}
+    Returns: {"score": 0-10, "matched_keywords": [...], ...}
+    """
+    project_id = request.path_params["project_id"]
+    data = _load_projects()
+    project = data.get("projects", {}).get(project_id)
+    if not project:
+        return JSONResponse({"error": "Project not found"}, status_code=404)
+
+    try:
+        article = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    from cohort.content_analyzer import score_article
+    result = score_article(article, project)
+    return JSONResponse(result)
+
+
+async def score_all_articles_for_projects(request: Request) -> JSONResponse:
+    """POST /api/content-projects/score-all -- score existing articles against all active projects."""
+    from cohort.intel_fetcher import IntelFetcher
+
+    data = _load_projects()
+    projects = [p for p in data.get("projects", {}).values() if p.get("active", True)]
+    if not projects:
+        return JSONResponse({"updated": 0, "message": "No active projects"})
+
+    fetcher = IntelFetcher(data_dir=Path(_resolved_data_dir))
+    updated = fetcher.score_for_projects(projects)
+    return JSONResponse({"updated": updated, "project_count": len(projects)})
+
+
+async def get_project_articles(request: Request) -> JSONResponse:
+    """GET /api/content-projects/{project_id}/articles -- get top articles for a project."""
+    from cohort.intel_fetcher import IntelFetcher
+
+    project_id = request.path_params["project_id"]
+    data = _load_projects()
+    project = data.get("projects", {}).get(project_id)
+    if not project:
+        return JSONResponse({"error": "Project not found"}, status_code=404)
+
+    limit = int(request.query_params.get("limit", "20"))
+    min_score = int(request.query_params.get("min_score", str(project.get("min_relevance", 5))))
+
+    fetcher = IntelFetcher(data_dir=Path(_resolved_data_dir))
+    articles = fetcher.get_top_for_project(project_id, limit=limit, min_score=min_score)
+    return JSONResponse({"articles": articles, "total": len(articles)})
 
 
 async def web_search_test(request: Request) -> JSONResponse:
@@ -4330,6 +4741,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         # Executive briefing
         Route("/api/briefing/generate", generate_briefing, methods=["POST"]),
         Route("/api/briefing/latest", get_latest_briefing, methods=["GET"]),
+        Route("/api/briefing/latest/html", get_latest_briefing_html, methods=["GET"]),
+        # Intel feed
+        Route("/api/intel/fetch", fetch_intel, methods=["POST"]),
         # Setup wizard endpoints
         Route("/api/setup/status", setup_status, methods=["GET"]),
         Route("/api/setup/detect", setup_detect_hardware, methods=["POST"]),
@@ -4385,11 +4799,25 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/scheduler/recent-runs", get_scheduler_recent_runs, methods=["GET"]),
         Route("/api/comms/recent-activity", get_comms_recent_activity, methods=["GET"]),
         Route("/api/intel/recent-articles", get_intel_recent_articles, methods=["GET"]),
+        Route("/api/intel/feeds", get_intel_feeds, methods=["GET"]),
+        Route("/api/intel/feeds", add_intel_feed, methods=["POST"]),
+        Route("/api/intel/feeds", delete_intel_feed, methods=["DELETE"]),
+        Route("/api/intel/keywords", update_intel_keywords, methods=["PUT"]),
+        Route("/api/intel/relevance-mode", update_intel_relevance_mode, methods=["PUT"]),
         Route("/api/content-monitor/pipeline-status", get_content_monitor_pipeline, methods=["GET"]),
         Route("/api/content-monitor/posts", get_social_posts, methods=["GET"]),
         Route("/api/content-monitor/posts/{post_id}", update_social_post, methods=["PATCH"]),
         Route("/api/content-monitor/articles", get_content_articles, methods=["GET"]),
         Route("/api/content-monitor/config", get_content_config, methods=["GET"]),
+        # Content projects (multi-project content strategy)
+        Route("/api/content-projects", list_content_projects, methods=["GET"]),
+        Route("/api/content-projects", create_content_project, methods=["POST"]),
+        Route("/api/content-projects/score-all", score_all_articles_for_projects, methods=["POST"]),
+        Route("/api/content-projects/{project_id}", get_content_project, methods=["GET"]),
+        Route("/api/content-projects/{project_id}", update_content_project, methods=["PUT"]),
+        Route("/api/content-projects/{project_id}", delete_content_project, methods=["DELETE"]),
+        Route("/api/content-projects/{project_id}/score", score_article_endpoint, methods=["POST"]),
+        Route("/api/content-projects/{project_id}/articles", get_project_articles, methods=["GET"]),
         Route("/api/web-search/test", web_search_test, methods=["POST"]),
         Route("/api/web-search/test-local", web_search_local_test, methods=["POST"]),
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
