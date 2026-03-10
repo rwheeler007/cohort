@@ -3593,6 +3593,39 @@ textarea.form-input {
     white-space: nowrap;
 }
 
+/* Keyword chips */
+.setup-wizard__keyword-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+.setup-wizard__keyword-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--color-border);
+}
+
+.setup-wizard__keyword-remove {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.setup-wizard__keyword-remove:hover {
+    color: var(--color-danger);
+}
+
 /* Footer */
 .setup-wizard__footer {
     display: flex;

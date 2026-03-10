@@ -2262,14 +2262,17 @@ async def setup_save_config(request: Request) -> JSONResponse:
 
     feeds = body.get("feeds", [])
     topic = body.get("topic", "")
+    keywords = body.get("interest_keywords", [])
 
-    if feeds:
-        config = {
+    if feeds or keywords:
+        config: dict[str, Any] = {
             "feeds": feeds,
             "topic": topic,
             "check_interval_minutes": 60,
             "max_articles_per_feed": 10,
         }
+        if keywords:
+            config["interest_keywords"] = keywords
         config_path = Path(_resolved_data_dir) / "content_config.json"
         config_path.parent.mkdir(parents=True, exist_ok=True)
         config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")

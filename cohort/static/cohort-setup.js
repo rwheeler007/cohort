@@ -19,8 +19,11 @@ const setupWizard = {
     hwData: null,
     ollamaData: null,
     topicsData: null,
+    categoriesData: null,
+    keywordsData: null,
     selectedTopic: null,
     selectedFeeds: [],
+    selectedKeywords: [],
     mcpData: null,
     claudeData: null,
 
@@ -67,6 +70,13 @@ const setupWizard = {
 
         const saveFeedsBtn = $('#setup-save-feeds');
         if (saveFeedsBtn) saveFeedsBtn.onclick = () => this.saveFeeds();
+
+        const kwAddBtn = $('#setup-keyword-add-btn');
+        const kwInput = $('#setup-keyword-input');
+        if (kwAddBtn && kwInput) {
+            kwAddBtn.onclick = () => this.addCustomKeyword();
+            kwInput.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); this.addCustomKeyword(); } };
+        }
 
         // Step 6: MCP Server buttons
         const mcpWriteBtn = $('#setup-mcp-write-btn');
@@ -376,6 +386,7 @@ const setupWizard = {
             const data = await resp.json();
             this.topicsData = data.topics;
             this.categoriesData = data.categories || null;
+            this.keywordsData = data.topic_keywords || null;
             this.renderTopicGrid(gridEl);
         } catch (e) {
             gridEl.innerHTML = '<div class="text-muted">Could not load topics. You can set this up later.</div>';
@@ -437,6 +448,45 @@ const setupWizard = {
             };
             listEl.appendChild(row);
         });
+
+        // Render suggested keywords for this topic
+        const suggested = (this.keywordsData && this.keywordsData[topic]) || [];
+        this.selectedKeywords = [...suggested];  // all on by default
+        this.renderKeywordChips();
+    },
+
+    renderKeywordChips() {
+        const chipsEl = $('#setup-keyword-chips');
+        if (!chipsEl) return;
+        chipsEl.innerHTML = '';
+
+        this.selectedKeywords.forEach((kw, i) => {
+            const chip = document.createElement('span');
+            chip.className = 'setup-wizard__keyword-chip';
+            chip.innerHTML = escapeHtml(kw)
+                + ' <button class="setup-wizard__keyword-remove" title="Remove">&times;</button>';
+            chip.querySelector('button').onclick = () => {
+                this.selectedKeywords.splice(i, 1);
+                this.renderKeywordChips();
+            };
+            chipsEl.appendChild(chip);
+        });
+
+        if (this.selectedKeywords.length === 0) {
+            chipsEl.innerHTML = '<span class="text-muted" style="font-size:var(--font-size-xs)">No keywords selected</span>';
+        }
+    },
+
+    addCustomKeyword() {
+        const input = $('#setup-keyword-input');
+        if (!input) return;
+        const kw = input.value.trim().toLowerCase();
+        if (kw && !this.selectedKeywords.includes(kw)) {
+            this.selectedKeywords.push(kw);
+            this.renderKeywordChips();
+        }
+        input.value = '';
+        input.focus();
     },
 
     async saveFeeds() {
@@ -447,7 +497,11 @@ const setupWizard = {
             await fetch('/api/setup/save-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ topic: this.selectedTopic, feeds }),
+                body: JSON.stringify({
+                    topic: this.selectedTopic,
+                    feeds,
+                    interest_keywords: this.selectedKeywords,
+                }),
             });
             this.markDone(5);
             showToast('Content pipeline configured!', 'success');

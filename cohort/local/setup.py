@@ -963,22 +963,30 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
         _print_info("Skipped. You can configure feeds later in data/content_config.json")
         return True
 
+    # --- Topic Selection (grouped by category) ---
     print()
     print("  What topic or industry are you in?")
     print()
-    topics = sorted(TOPIC_FEEDS.keys())
-    for i, topic in enumerate(topics, 1):
-        print(f"    {i:2d}. {topic}")
-    print()
+
+    # Build a flat numbered list, grouped by category
+    numbered_topics: list[str] = []
+    for category, topic_keys in TOPIC_CATEGORIES.items():
+        print(f"  {category}:")
+        for tk in topic_keys:
+            if tk in TOPIC_FEEDS:
+                numbered_topics.append(tk)
+                print(f"    {len(numbered_topics):2d}. {tk}")
+        print()
 
     choice = _ask_input("Pick a number, or type your own topic", "1")
 
     # Resolve topic
+    topic_key = ""
     selected_feeds: list[dict[str, str]] = []
     try:
         idx = int(choice) - 1
-        if 0 <= idx < len(topics):
-            topic_key = topics[idx]
+        if 0 <= idx < len(numbered_topics):
+            topic_key = numbered_topics[idx]
             selected_feeds = TOPIC_FEEDS[topic_key]
             _print_ok(f"Great choice: {topic_key}")
         else:
@@ -993,7 +1001,6 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
                 _print_ok(f"Matched: {topic_key}")
                 break
         if not selected_feeds:
-            # Default to general tech
             selected_feeds = TOPIC_FEEDS.get("web development", [])
             topic_key = "web development"
             _print_info(f"No exact match -- using {topic_key} as a starting point.")
@@ -1002,6 +1009,7 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
         _print_info("No feeds available for that topic. You can add them manually later.")
         return True
 
+    # --- Feed Selection ---
     print()
     print("  Here are some feeds I'd suggest:")
     print()
@@ -1027,13 +1035,46 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
             chosen = selected_feeds
             _print_info("Couldn't parse selection -- using all feeds.")
 
+    # --- Interest Keywords ---
+    suggested_kw = TOPIC_KEYWORDS.get(topic_key, [])
+    keywords: list[str] = []
+    if suggested_kw:
+        print()
+        print("  Suggested interest keywords for filtering articles:")
+        print(f"    {', '.join(suggested_kw)}")
+        print()
+        kw_choice = _ask_input(
+            "Keep these? (all / none / edit to add your own)", "all",
+        )
+        if kw_choice.lower() == "all":
+            keywords = list(suggested_kw)
+        elif kw_choice.lower() == "none":
+            keywords = []
+        else:
+            # User typed custom keywords (comma-separated), merged with suggested
+            keywords = list(suggested_kw)
+            for kw in kw_choice.split(","):
+                kw = kw.strip().lower()
+                if kw and kw not in keywords:
+                    keywords.append(kw)
+            _print_ok(f"Keywords: {', '.join(keywords)}")
+    else:
+        print()
+        kw_input = _ask_input(
+            "Any interest keywords? (comma-separated, or leave blank)",
+        )
+        if kw_input:
+            keywords = [k.strip().lower() for k in kw_input.split(",") if k.strip()]
+
     # Write config
-    config = {
+    config: dict[str, object] = {
         "feeds": [{"name": f["name"], "url": f["url"]} for f in chosen],
         "topic": topic_key,
         "check_interval_minutes": 60,
         "max_articles_per_feed": 10,
     }
+    if keywords:
+        config["interest_keywords"] = keywords
 
     config_dir = Path(data_dir)
     config_dir.mkdir(parents=True, exist_ok=True)

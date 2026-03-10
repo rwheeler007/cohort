@@ -18,7 +18,9 @@ from cohort.local.detect import HardwareInfo
 from cohort.local.setup import (
     MCP_SERVER_CONFIG,
     OLLAMA_BASE_URL,
+    TOPIC_CATEGORIES,
     TOPIC_FEEDS,
+    TOPIC_KEYWORDS,
     _ask_yes_no,
     _check_mcp_deps,
     _format_vram,
@@ -566,8 +568,8 @@ class TestStepContentPipeline:
 
     def test_selects_topic_by_number(self, tmp_path, capsys):
         data_dir = str(tmp_path / "data")
-        # Input sequence: "y" (want to set up), "1" (first topic), "all" (all feeds)
-        inputs = iter(["y", "1", "all"])
+        # Input: "y" (set up), "1" (first topic), "all" (feeds), "all" (keywords)
+        inputs = iter(["y", "1", "all", "all"])
         with patch("builtins.input", side_effect=lambda _: next(inputs)):
             result = _step_content_pipeline(data_dir=data_dir)
 
@@ -582,7 +584,8 @@ class TestStepContentPipeline:
 
     def test_selects_specific_feeds(self, tmp_path, capsys):
         data_dir = str(tmp_path / "data")
-        inputs = iter(["y", "1", "1,3"])
+        # Input: "y", "1" (topic), "1,3" (feeds), "all" (keywords)
+        inputs = iter(["y", "1", "1,3", "all"])
         with patch("builtins.input", side_effect=lambda _: next(inputs)):
             result = _step_content_pipeline(data_dir=data_dir)
 
@@ -592,13 +595,47 @@ class TestStepContentPipeline:
 
     def test_fuzzy_topic_match(self, tmp_path, capsys):
         data_dir = str(tmp_path / "data")
-        inputs = iter(["y", "python programming", "all"])
+        # Input: "y", "python programming" (fuzzy), "all" (feeds), "all" (keywords)
+        inputs = iter(["y", "python programming", "all", "all"])
         with patch("builtins.input", side_effect=lambda _: next(inputs)):
             result = _step_content_pipeline(data_dir=data_dir)
 
         assert result is True
         config = json.loads((tmp_path / "data" / "content_config.json").read_text())
         assert config["topic"] == "python"
+
+    def test_keywords_saved_with_all(self, tmp_path, capsys):
+        data_dir = str(tmp_path / "data")
+        inputs = iter(["y", "1", "all", "all"])
+        with patch("builtins.input", side_effect=lambda _: next(inputs)):
+            result = _step_content_pipeline(data_dir=data_dir)
+
+        assert result is True
+        config = json.loads((tmp_path / "data" / "content_config.json").read_text())
+        assert "interest_keywords" in config
+        assert len(config["interest_keywords"]) > 0
+
+    def test_keywords_none_skips(self, tmp_path, capsys):
+        data_dir = str(tmp_path / "data")
+        inputs = iter(["y", "1", "all", "none"])
+        with patch("builtins.input", side_effect=lambda _: next(inputs)):
+            result = _step_content_pipeline(data_dir=data_dir)
+
+        assert result is True
+        config = json.loads((tmp_path / "data" / "content_config.json").read_text())
+        assert "interest_keywords" not in config
+
+    def test_keywords_custom_merged(self, tmp_path, capsys):
+        data_dir = str(tmp_path / "data")
+        inputs = iter(["y", "1", "all", "custom1, custom2"])
+        with patch("builtins.input", side_effect=lambda _: next(inputs)):
+            result = _step_content_pipeline(data_dir=data_dir)
+
+        assert result is True
+        config = json.loads((tmp_path / "data" / "content_config.json").read_text())
+        kw = config["interest_keywords"]
+        assert "custom1" in kw
+        assert "custom2" in kw
 
 
 # =====================================================================
@@ -622,6 +659,47 @@ class TestTopicFeeds:
 
     def test_at_least_10_topics(self):
         assert len(TOPIC_FEEDS) >= 10
+
+
+class TestTopicCategories:
+    def test_all_category_topics_exist_in_feeds(self):
+        for category, topic_keys in TOPIC_CATEGORIES.items():
+            for tk in topic_keys:
+                assert tk in TOPIC_FEEDS, (
+                    f"Category '{category}' references topic '{tk}' "
+                    f"which is not in TOPIC_FEEDS"
+                )
+
+    def test_all_topics_in_at_least_one_category(self):
+        categorized = set()
+        for topic_keys in TOPIC_CATEGORIES.values():
+            categorized.update(topic_keys)
+        for topic in TOPIC_FEEDS:
+            assert topic in categorized, (
+                f"Topic '{topic}' not in any TOPIC_CATEGORIES category"
+            )
+
+    def test_at_least_3_categories(self):
+        assert len(TOPIC_CATEGORIES) >= 3
+
+
+class TestTopicKeywords:
+    def test_all_keyword_topics_exist_in_feeds(self):
+        for topic in TOPIC_KEYWORDS:
+            assert topic in TOPIC_FEEDS, (
+                f"TOPIC_KEYWORDS has topic '{topic}' not in TOPIC_FEEDS"
+            )
+
+    def test_keywords_are_nonempty_lists(self):
+        for topic, kw_list in TOPIC_KEYWORDS.items():
+            assert isinstance(kw_list, list), f"Keywords for '{topic}' must be a list"
+            assert len(kw_list) >= 3, f"Topic '{topic}' should have >= 3 keywords"
+
+    def test_all_topics_have_keywords(self):
+        for topic in TOPIC_FEEDS:
+            assert topic in TOPIC_KEYWORDS, (
+                f"Topic '{topic}' missing from TOPIC_KEYWORDS"
+            )
 
 
 # =====================================================================

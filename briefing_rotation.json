@@ -1,0 +1,16 @@
+{
+  "last_shown": {
+    "python_developer": "2026-03-10T18:34:55.917052+00:00",
+    "setup_guide": "2026-03-10T18:34:55.917052+00:00",
+    "cohort_orchestrator": "2026-03-10T18:34:55.917052+00:00",
+    "supervisor_agent": "2026-03-10T18:34:55.917052+00:00",
+    "web_developer": "2026-03-10T18:34:55.917052+00:00"
+  },
+  "show_counts": {
+    "python_developer": 1,
+    "setup_guide": 1,
+    "cohort_orchestrator": 1,
+    "supervisor_agent": 1,
+    "web_developer": 1
+  }
+}

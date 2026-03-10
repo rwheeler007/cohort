@@ -224,11 +224,25 @@ def _generate_exec_summary(
 def _generate_agent_narrative(agent: dict[str, Any]) -> str:
     """Generate first-person agent narrative.  Falls back to stats summary."""
     name = agent.get("name", agent.get("agent_id", "Agent"))
+    agent_id = agent.get("agent_id", "")
     status = agent.get("status", "idle")
     group = agent.get("group", "")
     completed = agent.get("tasks_completed", 0)
     skills = agent.get("skills", [])
     current_task = agent.get("current_task")
+
+    # Load full agent profile (prompt, config, memory) for richer context
+    profile = _load_agent_profile(agent_id) if agent_id else None
+
+    profile_block = ""
+    if profile:
+        # Cap profile to ~1500 chars to keep prompt reasonable
+        profile_block = (
+            "\n\n--- YOUR FULL PROFILE ---\n"
+            + profile[:1500]
+            + ("\n[...truncated]" if len(profile) > 1500 else "")
+            + "\n--- END PROFILE ---\n\n"
+        )
 
     prompt = (
         f"You are {name}, an AI agent on the Cohort platform. "
@@ -236,10 +250,14 @@ def _generate_agent_narrative(agent: dict[str, Any]) -> str:
         f"Skills: {', '.join(skills[:5]) if skills else 'general'}.\n\n"
         f"Status: {'busy' if status == 'busy' else 'idle'}\n"
         f"Tasks completed: {completed}\n"
-        f"Current task: {current_task or 'none'}\n\n"
-        "Write 2-3 sentences in first person summarizing your status "
-        "for the daily briefing. Be concise, use personality, mention "
-        "what you could be doing if idle. Keep it under 50 words. "
+        f"Current task: {current_task or 'none'}\n"
+        f"{profile_block}"
+        "Write 2-4 sentences in first person for the daily executive briefing. "
+        "Draw on your profile, expertise, and memory to give a substantive "
+        "status update. If busy, explain what you're doing and why it matters. "
+        "If idle, describe what you'd prioritize and how your specific skills "
+        "could help the team right now. Show domain knowledge. "
+        "Keep it under 100 words. "
         "Do not use hashtags or emojis."
     )
 
@@ -423,139 +441,445 @@ def _generate_agent_recommendation(agent: dict[str, Any]) -> str:
     return "Available for assignment."
 
 
+@dataclass
+class ArticleAnalysis:
+    """Quick bullets + expanded deep-dive + Cohort commentary."""
+
+    bullets: list[str]  # 3 short lines (visible by default)
+    deep_dive: str  # 2-3 paragraph analysis (behind expand toggle)
+    cohort_comment: str  # Cohort agent's personal take
+    keywords: list[str]  # Keywords to highlight in deep dive
+    stakeholder_agent: str = ""  # Agent ID nominated by Cohort (empty = none)
+    stakeholder_comment: str = ""  # That agent's targeted comment
+
+
+def _get_agents_dir() -> Path | None:
+    """Resolve Cohort's agents directory (sibling to this package)."""
+    # G:/cohort/cohort/executive_briefing.py -> G:/cohort/agents/
+    agents_dir = Path(__file__).resolve().parent.parent / "agents"
+    return agents_dir if agents_dir.is_dir() else None
+
+
+def _load_agent_profile(agent_id: str) -> str | None:
+    """Load an agent's full profile: prompt + config + memory.
+
+    Combines agent_prompt.md, agent_config.json (domain expertise,
+    personality, capabilities), and memory.json (learned facts,
+    working memory) into a single context block for the LLM.
+    """
+    agents_dir = _get_agents_dir()
+    if not agents_dir:
+        return None
+    agent_dir = agents_dir / agent_id
+    if not agent_dir.is_dir():
+        return None
+
+    parts: list[str] = []
+
+    # 1. Agent prompt (full persona/role definition)
+    prompt_path = agent_dir / "agent_prompt.md"
+    if prompt_path.exists():
+        try:
+            parts.append(prompt_path.read_text(encoding="utf-8").strip())
+        except Exception:
+            pass
+
+    # 2. Agent config (domain expertise, personality, capabilities)
+    config_path = agent_dir / "agent_config.json"
+    if config_path.exists():
+        try:
+            import json as _json
+            cfg = _json.loads(config_path.read_text(encoding="utf-8"))
+            config_bits: list[str] = []
+            if cfg.get("domain_expertise"):
+                config_bits.append(
+                    "Domain expertise: "
+                    + ", ".join(cfg["domain_expertise"][:8])
+                )
+            if cfg.get("personality"):
+                config_bits.append(f"Personality: {cfg['personality']}")
+            if cfg.get("capabilities"):
+                caps = cfg["capabilities"]
+                if isinstance(caps, list):
+                    config_bits.append(
+                        "Capabilities: " + ", ".join(caps[:6])
+                    )
+            if config_bits:
+                parts.append(
+                    "## Agent Profile\n" + "\n".join(config_bits)
+                )
+        except Exception:
+            pass
+
+    # 3. Memory (learned facts + working memory)
+    memory_path = agent_dir / "memory.json"
+    if memory_path.exists():
+        try:
+            import json as _json
+            mem = _json.loads(memory_path.read_text(encoding="utf-8"))
+            mem_bits: list[str] = []
+            facts = mem.get("learned_facts", [])
+            if facts:
+                recent = facts[-5:] if len(facts) > 5 else facts
+                for fact in recent:
+                    if isinstance(fact, dict):
+                        mem_bits.append(
+                            f"- {fact.get('fact', str(fact))}"
+                        )
+                    elif isinstance(fact, str):
+                        mem_bits.append(f"- {fact}")
+            wm = mem.get("working_memory", [])
+            if wm:
+                for entry in wm[-2:]:
+                    if isinstance(entry, dict) and entry.get("input"):
+                        mem_bits.append(
+                            f"- Recent context: {entry['input'][:100]}"
+                        )
+            if mem_bits:
+                parts.append(
+                    "## Agent Memory\n" + "\n".join(mem_bits)
+                )
+        except Exception:
+            pass
+
+    return "\n\n".join(parts) if parts else None
+
+
+def _build_agent_roster() -> str:
+    """Build a compact roster of available agents for stakeholder nomination."""
+    agents_dir = _get_agents_dir()
+    if not agents_dir:
+        return ""
+    try:
+        import json as _json
+        roster: list[str] = []
+        for d in sorted(agents_dir.iterdir()):
+            if not d.is_dir():
+                continue
+            config_path = d / "agent_config.json"
+            if not config_path.exists():
+                continue
+            try:
+                cfg = _json.loads(
+                    config_path.read_text(encoding="utf-8"),
+                )
+                role = cfg.get("role", "")
+                roster.append(
+                    f"- {d.name}: {role}" if role else f"- {d.name}"
+                )
+            except Exception:
+                roster.append(f"- {d.name}")
+        return "\n".join(roster)
+    except Exception:
+        return ""
+
+
 def _generate_intel_summaries(
     articles: list[dict[str, Any]],
-) -> dict[str, list[str]]:
-    """Generate 'why it matters' bullets for ALL intel articles.
+) -> dict[str, ArticleAnalysis]:
+    """Generate quick bullets + deep analysis + Cohort + stakeholder per article.
 
-    High-relevance articles (score >= 5) get full 3-bullet analysis
-    (WHAT/WHY/ACTION).  Low-relevance articles get a single-line
-    opportunity note -- these are cheap to generate but can surface
-    cross-domain gems that would otherwise be missed.
+    Up to 4 LLM calls per article (~12s total):
+    1. Quick take: 3 short bullet points (always visible)
+    2. Deep dive + keywords: 2-3 paragraphs with extracted keywords
+    3. Cohort comment + stakeholder nomination
+    4. Stakeholder agent comment (only if Cohort nominated one)
 
-    Returns dict mapping article ID -> list of bullet strings.
+    Returns dict mapping article ID -> ArticleAnalysis.
     Falls back to empty dict if LLM unavailable.
     """
     if not articles:
         return {}
 
-    # Split into tiers
-    high = [a for a in articles if a.get("relevance_score", 0) >= 5]
-    low = [a for a in articles if a.get("relevance_score", 0) < 5]
+    # Build agent roster once for stakeholder nomination
+    agent_roster = _build_agent_roster()
 
-    summaries: dict[str, list[str]] = {}
+    summaries: dict[str, ArticleAnalysis] = {}
 
-    # --- High relevance: full 3-bullet analysis ---
-    if high:
-        lines = []
-        for i, a in enumerate(high, 1):
-            title = _trunc(a.get("title", "Untitled"), 80)
-            tags = a.get("tags", [])
-            tag_str = ", ".join(tags[:3]) if tags else "general"
-            lines.append(f'{i}. "{title}" [{tag_str}]')
+    for a in articles:
+        aid = a.get("id", "")
+        if not aid:
+            continue
 
-        prompt = (
-            "You are an intelligence analyst writing for a tech team's daily briefing. "
-            "For each article below, write exactly 3 bullet points:\n"
-            "- WHAT: One sentence summary\n"
-            "- WHY: Why it matters to a software development team\n"
-            "- ACTION: What to consider doing about it\n\n"
-            "Format: Number, then 3 lines starting with '- WHAT:', '- WHY:', '- ACTION:'.\n"
-            "Keep each bullet under 20 words. No preamble.\n\n"
-            + "\n".join(lines)
+        title = a.get("title", "Untitled")
+        summary = _trunc(a.get("summary", ""), 200)
+        tags = a.get("tags", [])
+        tag_str = ", ".join(tags[:3]) if tags else "general"
+        source = a.get("source", "")
+
+        article_ctx = (
+            f"Title: {title}\n"
+            f"Source: {source}\n"
+            f"Tags: {tag_str}\n"
+            f"Summary: {summary}"
         )
 
-        result = _llm_generate(prompt, max_tokens=4000)
-        if result:
-            _parse_numbered_bullets(result, high, summaries)
-
-    # --- Low relevance: single-line opportunity note ---
-    if low:
-        lines = []
-        for i, a in enumerate(low, 1):
-            title = _trunc(a.get("title", "Untitled"), 80)
-            tags = a.get("tags", [])
-            tag_str = ", ".join(tags[:3]) if tags else "general"
-            lines.append(f'{i}. "{title}" [{tag_str}]')
-
-        prompt = (
-            "You are an intelligence analyst scanning peripheral articles for "
-            "hidden opportunities. For each article below, write ONE line:\n"
-            "- If there's any angle relevant to software teams, AI, or "
-            "automation, note the opportunity in under 15 words.\n"
-            "- If truly irrelevant, write 'skip'.\n\n"
-            "Format: Number. Your one-line note (or 'skip').\n"
-            "No preamble.\n\n"
-            + "\n".join(lines)
+        # --- Pass 1: Quick bullets ---
+        bullet_prompt = (
+            "You are an intelligence analyst writing for a tech team's "
+            "daily briefing. For this article, write exactly 3 bullet "
+            "points:\n"
+            "WHAT: One sentence on what happened\n"
+            "WHY: Why it matters to a software development team\n"
+            "ACTION: What to consider doing about it\n\n"
+            f"{article_ctx}\n\n"
+            "Write 3 lines, one per bullet. Under 20 words each. "
+            "No labels, no numbering, no preamble -- just the 3 lines."
         )
 
-        result = _llm_generate(prompt, max_tokens=2000)
-        if result:
-            for ln in result.strip().split("\n"):
-                ln = ln.strip()
-                if not ln:
-                    continue
-                num_match = re.match(r"^(\d+)[.):\-\s]+", ln)
-                if num_match:
-                    idx = int(num_match.group(1)) - 1
-                    text = ln[num_match.end():].strip()
-                    if (
-                        0 <= idx < len(low)
-                        and text.lower() != "skip"
-                        and len(text) > 3
-                    ):
-                        aid = low[idx].get("id", "")
-                        if aid:
-                            summaries[aid] = [text]
+        bullet_result = _llm_generate(bullet_prompt, max_tokens=300)
+        bullets = _parse_three_bullets(bullet_result) if bullet_result else []
 
+        # --- Pass 2: Deep dive + keywords ---
+        deep_prompt = (
+            "You are a senior technology analyst writing an intelligence "
+            "brief for a software team that builds multi-agent AI systems, "
+            "automation tools, and developer infrastructure.\n\n"
+            f"{article_ctx}\n\n"
+            "Write a 2-3 paragraph analysis covering:\n"
+            "1. What happened and why it matters in the broader landscape\n"
+            "2. Specific implications for teams building with AI agents, "
+            "LLMs, Python, and web technologies\n"
+            "3. Concrete opportunities or risks -- what could we build, "
+            "adopt, or watch out for?\n\n"
+            "Be specific and opinionated. Name technologies, patterns, "
+            "and trade-offs. Under 200 words total. No headings or "
+            "bullet points -- flowing paragraphs only.\n\n"
+            "After the analysis, on a new line write:\n"
+            "KEYWORDS: comma-separated list of 3-6 key technical terms "
+            "from your analysis (e.g. agent orchestration, VRAM, Python 3.14)"
+        )
+
+        deep_result = _llm_generate(deep_prompt, max_tokens=900)
+        deep_text = ""
+        keywords: list[str] = []
+        if deep_result:
+            deep_text, keywords = _split_keywords(deep_result.strip())
+
+        # --- Pass 3: Cohort agent commentary + stakeholder nomination ---
+        stakeholder_block = ""
+        if agent_roster:
+            stakeholder_block = (
+                "\n\nAfter your comment, on a NEW line, decide if a "
+                "specialist agent should weigh in on this article. If yes, "
+                "write: STAKEHOLDER: agent_id\n"
+                "If no specialist is needed, write: STAKEHOLDER: NONE\n\n"
+                "Available agents:\n" + agent_roster
+            )
+
+        cohort_prompt = (
+            "You are Cohort, an AI orchestration platform that coordinates "
+            "a team of specialist agents. You're commenting on an article "
+            "in your team's daily intelligence briefing.\n\n"
+            f"{article_ctx}\n\n"
+            "Write a 1-2 sentence personal take. Be opinionated and "
+            "specific about how this relates to YOUR capabilities -- "
+            "agent coordination, task routing, LLM inference, automated "
+            "workflows. Sound like a knowledgeable colleague, not a bot. "
+            "Under 40 words. No preamble."
+            f"{stakeholder_block}"
+        )
+
+        cohort_result = _llm_generate(cohort_prompt, max_tokens=200)
+        cohort_text = ""
+        stakeholder_id = ""
+        if cohort_result:
+            cohort_text, stakeholder_id = _parse_stakeholder_nomination(
+                cohort_result.strip(),
+            )
+
+        # --- Pass 4: Stakeholder agent comment (if nominated) ---
+        stakeholder_comment = ""
+        if stakeholder_id:
+            agent_profile = _load_agent_profile(stakeholder_id)
+            if agent_profile:
+                stake_prompt = (
+                    f"{agent_profile}\n\n"
+                    "You are commenting on an article in your team's daily "
+                    "intelligence briefing. Give your specialist perspective "
+                    "drawing on your domain expertise and memory.\n\n"
+                    f"{article_ctx}\n\n"
+                    "Write a 1-2 sentence take from YOUR domain expertise. "
+                    "Be specific about implications for your area of work. "
+                    "Under 40 words. No preamble."
+                )
+                stake_result = _llm_generate(stake_prompt, max_tokens=150)
+                if stake_result:
+                    stakeholder_comment = stake_result.strip()
+                    logger.debug(
+                        "[OK] Stakeholder %s comment for %s: %d chars",
+                        stakeholder_id, aid, len(stakeholder_comment),
+                    )
+            else:
+                logger.debug(
+                    "[!] No profile found for nominated agent %s",
+                    stakeholder_id,
+                )
+                stakeholder_id = ""  # Clear if persona not found
+
+        if bullets or deep_text or cohort_text:
+            summaries[aid] = ArticleAnalysis(
+                bullets=bullets,
+                deep_dive=deep_text,
+                cohort_comment=cohort_text,
+                keywords=keywords,
+                stakeholder_agent=stakeholder_id,
+                stakeholder_comment=stakeholder_comment,
+            )
+            logger.debug(
+                "[OK] Intel analysis for %s: %d bullets, %d chars deep, "
+                "%d chars cohort, stakeholder=%s, %d keywords",
+                aid, len(bullets), len(deep_text),
+                len(cohort_text), stakeholder_id or "none",
+                len(keywords),
+            )
+        else:
+            logger.debug("[!] No analysis generated for %s", aid)
+
+    logger.info(
+        "[OK] Generated intel analyses for %d/%d articles",
+        len(summaries), len(articles),
+    )
     return summaries
 
 
-def _parse_numbered_bullets(
-    result: str,
-    articles: list[dict[str, Any]],
-    summaries: dict[str, list[str]],
-) -> None:
-    """Parse numbered bullet responses into the summaries dict."""
-    current_idx = -1
-    current_bullets: list[str] = []
+def _parse_stakeholder_nomination(text: str) -> tuple[str, str]:
+    """Parse Cohort comment and STAKEHOLDER: line.
 
+    Returns (cohort_comment, stakeholder_agent_id).
+    stakeholder_agent_id is empty string if NONE or not found.
+    """
+    lines = text.strip().split("\n")
+    comment_lines: list[str] = []
+    agent_id = ""
+    for ln in lines:
+        stripped = ln.strip()
+        if stripped.upper().startswith("STAKEHOLDER:"):
+            val = stripped.split(":", 1)[1].strip().lower()
+            if val and val != "none":
+                # Clean up: remove quotes, periods, extra words
+                val = val.split()[0].strip("\"'.,")
+                agent_id = val
+        else:
+            if stripped:
+                comment_lines.append(stripped)
+    return " ".join(comment_lines), agent_id
+
+
+def _split_keywords(text: str) -> tuple[str, list[str]]:
+    """Split deep dive text from KEYWORDS: line at the end."""
+    lines = text.strip().split("\n")
+    keywords: list[str] = []
+    body_lines: list[str] = []
+    for ln in lines:
+        if ln.strip().upper().startswith("KEYWORDS:"):
+            kw_text = ln.split(":", 1)[1].strip()
+            keywords = [k.strip() for k in kw_text.split(",") if k.strip()]
+        else:
+            body_lines.append(ln)
+    return "\n".join(body_lines).strip(), keywords[:6]
+
+
+def _parse_three_bullets(result: str) -> list[str]:
+    """Parse 3 bullet lines from LLM output.  Tolerates various formats."""
+    bullets: list[str] = []
     for ln in result.strip().split("\n"):
         ln = ln.strip()
         if not ln:
             continue
-        num_match = re.match(r"^(\d+)[.):\-\s]", ln)
-        if num_match and not ln.startswith("- "):
-            if current_idx >= 0 and current_bullets:
-                aid = (
-                    articles[current_idx].get("id", "")
-                    if current_idx < len(articles)
-                    else ""
-                )
-                if aid:
-                    summaries[aid] = current_bullets[:]
-            current_idx = int(num_match.group(1)) - 1
-            current_bullets = []
-            rest = ln[num_match.end():].strip()
-            if rest.startswith("- "):
-                current_bullets.append(rest[2:].strip())
-        elif ln.startswith("- "):
-            bullet_text = ln[2:].strip()
-            bullet_text = re.sub(
-                r"^(WHAT|WHY|ACTION|What|Why|Action):\s*", "", bullet_text
-            )
-            if bullet_text:
-                current_bullets.append(bullet_text)
-
-    # Save last article
-    if current_idx >= 0 and current_bullets:
-        aid = (
-            articles[current_idx].get("id", "")
-            if current_idx < len(articles)
-            else ""
+        # Strip common prefixes: "- ", "* ", "1. ", "WHAT: ", etc.
+        ln = re.sub(r"^[-*]\s+", "", ln)
+        ln = re.sub(r"^\d+[.)]\s*", "", ln)
+        ln = re.sub(
+            r"^(WHAT|WHY|ACTION|What|Why|Action)[:\s]+", "", ln
         )
-        if aid:
-            summaries[aid] = current_bullets[:]
+        ln = ln.strip()
+        if ln and len(ln) > 3:
+            bullets.append(ln)
+        if len(bullets) >= 3:
+            break
+    return bullets
+
+
+def _highlight_keywords(text: str, keywords: list[str]) -> str:
+    """Wrap keyword occurrences in <mark> tags for visual scanning.
+
+    Case-insensitive, whole-word matching.  Returns HTML-escaped text
+    with <mark> highlights (so caller must NOT re-escape).
+    """
+    if not keywords or not text:
+        return _esc(text)
+    escaped = _esc(text)
+    for kw in keywords:
+        if not kw:
+            continue
+        # Word-boundary match, case-insensitive
+        pattern = re.compile(
+            rf"(\b{re.escape(_esc(kw))}(?:\w*)\b)", re.IGNORECASE,
+        )
+        escaped = pattern.sub(
+            r'<mark style="background:rgba(88,166,255,.18);color:var(--accent);'
+            r'padding:1px 3px;border-radius:3px;font-style:normal">\1</mark>',
+            escaped,
+        )
+    return escaped
+
+
+def _group_articles_by_topic(
+    articles: list[dict[str, Any]],
+    similarity_threshold: int = 3,
+) -> list[list[dict[str, Any]]]:
+    """Group articles covering the same story into clusters.
+
+    Uses significant-word overlap in titles.  Returns list of groups,
+    each group being a list of articles (single-article groups included).
+    Groups are sorted by best relevance score descending.
+    """
+    stop_words = {
+        "a", "an", "the", "is", "are", "was", "were", "in", "on", "at",
+        "to", "for", "of", "and", "or", "but", "with", "by", "from",
+        "has", "had", "have", "it", "its", "this", "that", "not", "no",
+        "be", "been", "will", "can", "do", "does", "did", "as", "if",
+        "so", "up", "out", "about", "how", "what", "when", "where",
+        "who", "which", "why", "all", "just", "than", "more", "most",
+        "new", "now", "may", "into", "over", "also", "after", "before",
+        "show", "video",
+    }
+
+    def _title_words(title: str) -> set[str]:
+        words = set(re.findall(r"[a-z]{3,}", title.lower()))
+        return words - stop_words
+
+    used: set[int] = set()
+    groups: list[list[dict[str, Any]]] = []
+
+    for i, a in enumerate(articles):
+        if i in used:
+            continue
+        group = [a]
+        used.add(i)
+        words_a = _title_words(a.get("title", ""))
+        if not words_a:
+            groups.append(group)
+            continue
+
+        for j in range(i + 1, len(articles)):
+            if j in used:
+                continue
+            words_b = _title_words(articles[j].get("title", ""))
+            overlap = len(words_a & words_b)
+            if overlap >= similarity_threshold:
+                group.append(articles[j])
+                used.add(j)
+
+        groups.append(group)
+
+    # Sort groups by best score in group
+    groups.sort(
+        key=lambda g: max(a.get("relevance_score", 0) for a in g),
+        reverse=True,
+    )
+    return groups
 
 
 # =====================================================================
@@ -1256,12 +1580,17 @@ font-size:12px;letter-spacing:3px;text-transform:uppercase}
 .section-divider::before,.section-divider::after{content:'';display:inline-block;\
 width:40px;height:1px;background:var(--border);vertical-align:middle;margin:0 12px}
 .article-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));\
-gap:12px;margin-bottom:24px}
+gap:12px;margin-bottom:24px;align-items:stretch}
 .article-card{background:var(--card);border:1px solid var(--border);\
-border-radius:8px;padding:14px}
-.article-card .article-title{font-weight:600;font-size:14px;margin-bottom:4px;line-height:1.4}
+border-radius:8px;padding:14px;display:flex;flex-direction:column}
+.article-header{flex:0 0 auto;margin-bottom:0}
+.article-card .article-title{font-weight:600;font-size:14px;line-height:1.4;\
+height:2.8em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;\
+-webkit-box-orient:vertical;margin-bottom:4px}
 .article-card .article-title a{color:var(--accent);text-decoration:none}
 .article-card .article-title a:hover{text-decoration:underline;color:var(--text)}
+.article-header .article-meta-row{margin:4px 0 8px}
+.article-header-sep{border:none;border-top:1px solid var(--border);margin:0}
 .article-card .article-meta{font-size:11px;color:var(--muted);margin-bottom:6px}
 .article-card .article-summary{font-size:12px;line-height:1.5;color:var(--text)}
 .article-tag{display:inline-block;padding:2px 8px;border-radius:10px;\
@@ -1273,9 +1602,10 @@ font-size:10px;font-weight:600}
 .score-med{background:rgba(210,153,34,.15);color:var(--yellow)}
 .score-low{background:rgba(139,148,158,.15);color:var(--muted)}
 .intel-hero-grid{display:grid;grid-template-columns:repeat(auto-fit,\
-minmax(380px,1fr));gap:16px;margin-bottom:20px}
+minmax(380px,1fr));gap:16px;margin-bottom:20px;align-items:stretch}
 .article-card-hero{border-left:3px solid var(--accent);padding:20px}
-.article-card-hero .article-title{font-size:17px;margin-bottom:6px}
+.article-card-hero .article-title{font-size:17px;margin-bottom:6px;\
+height:calc(2 * 1.4 * 17px);-webkit-line-clamp:2}
 .article-card-hero .article-summary{font-size:13px;line-height:1.6}
 .video-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
 .video-card{flex:0 0 260px;background:var(--card);border:1px solid var(--border);\
@@ -1288,7 +1618,7 @@ font-size:11px;color:var(--accent);font-weight:700}
 border-radius:16px;padding:6px 14px;font-size:12px;white-space:nowrap;\
 text-decoration:none;color:var(--text)}
 .scan-chip:hover{border-color:var(--accent)}
-.article-footer{display:flex;gap:6px;margin-top:8px;padding-top:8px;\
+.article-footer{display:flex;gap:6px;margin-top:auto;padding-top:8px;\
 border-top:1px solid var(--border);align-items:center}
 .article-link-btn{padding:3px 10px;font-size:10px;font-weight:600;\
 color:var(--accent);background:transparent;border:1px solid var(--accent);\
@@ -1299,9 +1629,57 @@ color:var(--green);background:transparent;border:1px solid var(--green);\
 border-radius:10px;cursor:pointer;white-space:nowrap;transition:all 0.2s;\
 font-family:inherit}
 .article-chat-btn:hover{background:var(--green);color:var(--bg)}
+.article-deep-dive{margin:8px 0 4px}
+.deep-dive-toggle{background:none;border:none;color:var(--accent);\
+font-size:11px;font-weight:600;cursor:pointer;padding:2px 0;\
+font-family:inherit;opacity:.8;transition:opacity .2s}
+.deep-dive-toggle:hover{opacity:1}
+.deep-dive-content{margin-top:8px;padding:12px 14px;\
+background:rgba(88,166,255,.04);border:1px solid rgba(88,166,255,.12);\
+border-radius:6px;font-size:12.5px;line-height:1.7;color:var(--text)}
+.deep-dive-content p{margin:0 0 10px}
+.deep-dive-content p:last-child{margin-bottom:0}
+.cohort-comment{margin:6px 0 4px;padding:6px 10px;\
+background:rgba(63,185,80,.06);border-left:3px solid var(--green);\
+border-radius:0 4px 4px 0;font-size:11.5px;line-height:1.5;\
+color:var(--text);font-style:italic}
+.cohort-avatar{display:inline-block;width:16px;height:16px;\
+border-radius:50%;background:var(--green);color:var(--bg);\
+font-size:10px;font-weight:700;text-align:center;line-height:16px;\
+margin-right:4px;font-style:normal;vertical-align:middle}
+.stakeholder-comment{margin:4px 0 4px;padding:6px 10px;\
+background:rgba(188,140,255,.06);border-left:3px solid var(--purple);\
+border-radius:0 4px 4px 0;font-size:11.5px;line-height:1.5;\
+color:var(--text);font-style:italic}
+.stakeholder-avatar{display:inline-block;width:16px;height:16px;\
+border-radius:50%;background:var(--purple);color:var(--bg);\
+font-size:9px;font-weight:700;text-align:center;line-height:16px;\
+margin-right:4px;font-style:normal;vertical-align:middle}
+.stakeholder-label{font-weight:600;color:var(--purple);\
+font-style:normal;font-size:10px}
+.carousel-group{position:relative;margin-bottom:16px}
+.carousel-group .carousel-label{font-size:11px;color:var(--muted);\
+margin-bottom:6px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.carousel-track{display:flex;gap:12px;overflow-x:auto;\
+scroll-snap-type:x mandatory;padding-bottom:8px;\
+scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.carousel-track::-webkit-scrollbar{height:6px}
+.carousel-track::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.carousel-track .article-card{flex:0 0 340px;scroll-snap-align:start}
+.carousel-dots{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.carousel-dot{width:6px;height:6px;border-radius:50%;\
+background:var(--border);transition:background .2s}
+.carousel-dot.active{background:var(--accent)}
 """
 
 _JS = """\
+function toggleDeepDive(btn){
+  var content=btn.parentElement.querySelector('.deep-dive-content');
+  if(!content)return;
+  var showing=content.style.display!=='none';
+  content.style.display=showing?'none':'block';
+  btn.textContent=showing?'[+] Full Analysis':'[-] Hide Analysis';
+}
 function switchTab(group,idx){
   var tabs=document.querySelector('[data-tgroup="'+group+'"]');
   if(!tabs)return;
@@ -1358,7 +1736,7 @@ document.addEventListener('click',function(e2){
   var agents=(cb.dataset.agents||'').split(',').filter(Boolean);
   var slug='article-'+title.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40);
   var mentions=agents.map(function(a){return '@'+a;}).join(' ');
-  var seed='[Article: '+title+']('+url+')\n\n'+summary+'\n\n'
+  var seed='[Article: '+title+']('+url+')\\n\\n'+summary+'\\n\\n'
     +'Thoughts on this? '+mentions;
   cb.disabled=true;cb.textContent='Opening...';
   fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -1544,7 +1922,7 @@ data-suggestion="{_esc(narrative)}">Assign Task</button></div>
 
     # Generate "why it matters" summaries for ALL articles via LLM
     # High-relevance get full WHAT/WHY/ACTION; low get opportunity notes
-    why_map: dict[str, list[str]] = {}
+    why_map: dict[str, ArticleAnalysis] = {}
     if articles:
         why_map = _generate_intel_summaries(articles)
 
@@ -1809,21 +2187,23 @@ rel="noopener">{_esc(_trunc(v.get('title', ''), 60))}</a> \
 </div>""")
             parts.append("</div>")
 
-        # Articles by source
-        for source_name in sorted(by_source.keys()):
-            source_articles = by_source[source_name]
-            source_articles.sort(
-                key=lambda a: a.get("relevance_score", 0), reverse=True
-            )
+        # Articles grouped by topic (related stories become carousels)
+        groups = _group_articles_by_topic(articles)
+        multi_groups = sum(1 for g in groups if len(g) > 1)
+        if multi_groups:
             parts.append(
-                f'<h2>{_esc(source_name)} ({len(source_articles)})</h2>'
+                f'<div style="color:var(--muted);font-size:11px;'
+                f'margin:8px 0">{multi_groups} topic cluster'
+                f'{"s" if multi_groups != 1 else ""} detected '
+                f"-- scroll horizontally for related coverage</div>"
             )
-            parts.append('<div class="article-grid">')
-            for a in source_articles:
-                parts.append(_article_card_html(
-                    a, why_map=why_map, agents_list=agents_list,
-                ))
-            parts.append("</div>")
+
+        parts.append('<div class="article-grid">')
+        for group in groups:
+            parts.append(_render_article_group(
+                group, why_map=why_map, agents_list=agents_list,
+            ))
+        parts.append("</div>")
 
     parts.append("</div>")  # end tab 4
 
@@ -1853,81 +2233,225 @@ rel="noopener">{_esc(_trunc(v.get('title', ''), 60))}</a> \
     return "\n".join(parts)
 
 
+def _parse_hn_meta(summary: str) -> dict[str, Any]:
+    """Extract structured metadata from HN-style summary strings.
+
+    HN feeds put everything in the summary field like:
+    'Article URL: ... Comments URL: ... Points: 534 # Comments: 270'
+    """
+    meta: dict[str, Any] = {}
+    points_m = re.search(r"Points:\s*(\d+)", summary)
+    if points_m:
+        meta["points"] = int(points_m.group(1))
+    comments_m = re.search(r"#\s*Comments:\s*(\d+)", summary)
+    if comments_m:
+        meta["comments"] = int(comments_m.group(1))
+    comments_url_m = re.search(r"Comments URL:\s*(https?://\S+)", summary)
+    if comments_url_m:
+        meta["comments_url"] = comments_url_m.group(1)
+    # Check if summary is ONLY metadata (no real content)
+    cleaned = re.sub(
+        r"(Article|Comments)\s+URL:\s*https?://\S+|Points:\s*\d+|#\s*Comments:\s*\d+",
+        "", summary,
+    ).strip()
+    meta["has_content"] = len(cleaned) > 20
+    meta["clean_summary"] = cleaned if meta["has_content"] else ""
+    return meta
+
+
 def _article_card_html(
     article: dict[str, Any],
     hero: bool = False,
-    why_map: dict[str, list[str]] | None = None,
+    why_map: dict[str, ArticleAnalysis] | None = None,
     agents_list: list[dict[str, Any]] | None = None,
 ) -> str:
-    """Render a single article card with 'why it matters' bullets and actions."""
+    """Render a single article card with quick take + expandable deep dive."""
     title = _esc(article.get("title", ""))
     url = _esc(article.get("url", ""))
     source = _esc(article.get("source", ""))
-    summary = _esc(_trunc(article.get("summary", ""), 200))
+    raw_summary = article.get("summary", "")
     score = article.get("relevance_score", 0)
     tags = article.get("tags", [])
     aid = article.get("id", "")
 
-    card_class = "article-card article-card-hero" if hero else "article-card"
-    tags_html = ""
-    if tags:
-        tags_html = (
-            '<div style="margin-bottom:6px">'
-            + " ".join(
-                f'<span class="article-tag">{_esc(t)}</span>'
-                for t in tags[:3]
-            )
-            + "</div>"
-        )
+    # Parse HN-style metadata from summary
+    hn = _parse_hn_meta(raw_summary)
+    clean_summary = _esc(_trunc(hn.get("clean_summary", raw_summary), 200))
 
-    # "Why it matters" bullets from LLM
-    why_html = ""
-    if why_map and aid in why_map:
-        bullets = why_map[aid]
-        if bullets:
-            why_html = (
+    card_class = "article-card article-card-hero" if hero else "article-card"
+
+    # Build meta tags row: source, topic tags, points, comments
+    meta_parts: list[str] = []
+    meta_parts.append(f'<span class="article-tag">{source}</span>')
+    for t in tags[:3]:
+        meta_parts.append(f'<span class="article-tag">{_esc(t)}</span>')
+    if hn.get("points"):
+        meta_parts.append(
+            f'<span class="article-tag" style="background:rgba(63,185,80,.12);'
+            f'color:var(--green)">{hn["points"]} pts</span>'
+        )
+    if hn.get("comments"):
+        color = "var(--yellow)" if hn["comments"] >= 100 else "var(--muted)"
+        meta_parts.append(
+            f'<span class="article-tag" style="background:rgba(210,153,34,.12);'
+            f'color:{color}">{hn["comments"]} comments</span>'
+        )
+    # Add score badge to meta row
+    meta_parts.append(_score_badge(score))
+    meta_html = '<div class="article-meta-row" style="margin:4px 0 6px">' + " ".join(meta_parts) + "</div>"
+
+    # Summary text (only if real content exists beyond HN metadata)
+    summary_html = ""
+    if clean_summary:
+        summary_html = f'<div class="article-summary">{clean_summary}</div>'
+
+    # Quick take bullets + Cohort comment + expandable deep dive
+    analysis_html = ""
+    analysis = why_map.get(aid) if why_map else None
+    if analysis:
+        # Quick take bullets (always visible)
+        if analysis.bullets:
+            analysis_html += (
                 '<ul class="article-why-matters" style="margin:6px 0 4px 0;'
                 "padding-left:16px;font-size:12px;line-height:1.6;"
                 'color:#8cb4ff;font-style:italic;list-style:none">'
             )
-            for bullet in bullets[:3]:
-                why_html += (
+            for bullet in analysis.bullets[:3]:
+                analysis_html += (
                     f'<li style="padding:2px 0">'
                     f'<span style="color:var(--accent);font-style:normal;'
                     f'font-weight:700;margin-right:6px">&gt;</span>'
                     f"{_esc(bullet)}</li>"
                 )
-            why_html += "</ul>"
+            analysis_html += "</ul>"
+
+        # Cohort agent commentary (always visible, below bullets)
+        if analysis.cohort_comment:
+            analysis_html += (
+                '<div class="cohort-comment">'
+                '<span class="cohort-avatar">C</span> '
+                f"{_esc(analysis.cohort_comment)}"
+                "</div>"
+            )
+
+        # Stakeholder agent commentary (if Cohort nominated one)
+        if analysis.stakeholder_agent and analysis.stakeholder_comment:
+            agent_label = analysis.stakeholder_agent.replace("_", " ").title()
+            # First letter of agent name for avatar
+            initials = "".join(
+                w[0].upper() for w in analysis.stakeholder_agent.split("_")
+                if w
+            )[:2]
+            analysis_html += (
+                '<div class="stakeholder-comment">'
+                f'<span class="stakeholder-avatar">{initials}</span> '
+                f'<span class="stakeholder-label">{_esc(agent_label)}:</span> '
+                f"{_esc(analysis.stakeholder_comment)}"
+                "</div>"
+            )
+
+        # Deep dive (behind expand toggle) with keyword highlighting
+        if analysis.deep_dive:
+            # Convert paragraph breaks to <p> tags
+            paras = [
+                p.strip() for p in analysis.deep_dive.split("\n\n")
+                if p.strip()
+            ]
+            # If no double-newlines, try single newlines for paragraph breaks
+            if len(paras) <= 1:
+                paras = [
+                    p.strip() for p in analysis.deep_dive.split("\n")
+                    if p.strip()
+                ]
+            # Apply keyword highlighting (returns pre-escaped HTML)
+            kws = analysis.keywords
+            deep_html = "".join(
+                f"<p>{_highlight_keywords(p, kws)}</p>" for p in paras
+            )
+            analysis_html += (
+                f'<div class="article-deep-dive" data-article="{_esc(aid)}">'
+                f'<button class="deep-dive-toggle" '
+                f'onclick="toggleDeepDive(this)">'
+                f"[+] Full Analysis</button>"
+                f'<div class="deep-dive-content" style="display:none">'
+                f"{deep_html}"
+                f"</div></div>"
+            )
 
     # Stakeholder agents for "Start Chat"
     stakeholders = _infer_stakeholder_agents(article, agents_list or [])
-    raw_title = article.get("title", "")
-    raw_url = article.get("url", "")
-    raw_summary = article.get("summary", "")[:200]
 
     # Use data attributes to avoid quoting hell in inline handlers
     footer_html = (
         '<div class="article-footer">'
         f'<a href="{url}" target="_blank" rel="noopener" '
         f'class="article-link-btn">Read Article</a>'
+    )
+    if hn.get("comments_url"):
+        footer_html += (
+            f'<a href="{_esc(hn["comments_url"])}" target="_blank" '
+            f'rel="noopener" class="article-link-btn" '
+            f'style="color:var(--yellow);border-color:var(--yellow)">'
+            f"Discussion</a>"
+        )
+    footer_html += (
         f'<button class="article-chat-btn" '
-        f'data-title="{_esc(raw_title)}" '
-        f'data-url="{_esc(raw_url)}" '
-        f'data-summary="{_esc(raw_summary)}" '
+        f'data-title="{_esc(article.get("title", ""))}" '
+        f'data-url="{_esc(article.get("url", ""))}" '
+        f'data-summary="{_esc(raw_summary[:200])}" '
         f'data-agents="{_esc(",".join(stakeholders))}"'
         f">Start Chat</button>"
         "</div>"
     )
 
     return f"""<div class="{card_class}">
+<div class="article-header">
 <div class="article-title"><a href="{url}" target="_blank" \
-rel="noopener">{title}</a> {_score_badge(score)}</div>
-<div class="article-meta">{source}</div>
-{tags_html}
-<div class="article-summary">{summary}</div>
-{why_html}
+rel="noopener">{title}</a></div>
+{meta_html}
+<hr class="article-header-sep">
+</div>
+{summary_html}
+{analysis_html}
 {footer_html}
 </div>"""
+
+
+def _render_article_group(
+    group: list[dict[str, Any]],
+    why_map: dict[str, ArticleAnalysis] | None = None,
+    agents_list: list[dict[str, Any]] | None = None,
+    hero: bool = False,
+) -> str:
+    """Render a group of articles -- single card or horizontal carousel."""
+    if len(group) == 1:
+        return _article_card_html(
+            group[0], hero=hero, why_map=why_map, agents_list=agents_list,
+        )
+
+    # Multi-article carousel
+    best_title = group[0].get("title", "Related Articles")
+    # Truncate to key topic words for the label
+    label = _trunc(best_title, 50)
+    total = len(group)
+
+    cards = "".join(
+        _article_card_html(a, why_map=why_map, agents_list=agents_list)
+        for a in group
+    )
+    dots = "".join(
+        f'<span class="carousel-dot{" active" if i == 0 else ""}"></span>'
+        for i in range(total)
+    )
+    return (
+        f'<div class="carousel-group">'
+        f'<div class="carousel-label">{_esc(label)} '
+        f'<span style="color:var(--accent)">'
+        f"({total} articles)</span></div>"
+        f'<div class="carousel-track">{cards}</div>'
+        f'<div class="carousel-dots">{dots}</div>'
+        f"</div>"
+    )
 
 
 def _score_badge(score: int) -> str:
