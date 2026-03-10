@@ -1,7 +1,86 @@
 {
-  "services": {
-    "cohort_server": {"status": "unknown", "last_check": null},
-    "ollama": {"status": "unknown", "last_check": null}
+  "paused": false,
+  "target_status": {
+    "service:cohort_server": {
+      "status": "healthy",
+      "ok": true,
+      "status_code": 200,
+      "response_ms": 413.5,
+      "last_checked": "2026-03-09T23:22:45.545673",
+      "url": "http://127.0.0.1:5100/health",
+      "description": "Cohort multi-agent team server (Starlette)",
+      "port": 5100,
+      "start_command": "python -m cohort serve",
+      "startup_mode": "persistent",
+      "self_hosted": true,
+      "snoozed": false
+    },
+    "service:ollama": {
+      "status": "healthy",
+      "ok": true,
+      "status_code": 200,
+      "response_ms": 386.2,
+      "last_checked": "2026-03-09T23:22:45.545673",
+      "url": "http://127.0.0.1:11434/api/tags",
+      "description": "Ollama LLM inference server",
+      "port": 11434,
+      "start_command": "ollama serve",
+      "startup_mode": "persistent",
+      "self_hosted": false,
+      "snoozed": false
+    },
+    "service:comms_service": {
+      "status": "healthy",
+      "ok": true,
+      "status_code": 200,
+      "response_ms": 403.5,
+      "last_checked": "2026-03-09T23:22:45.545673",
+      "url": "http://127.0.0.1:8001/health",
+      "description": "Email, calendar, and social media communications",
+      "port": 8001,
+      "start_command": "python service.py",
+      "startup_mode": "on_demand",
+      "self_hosted": false,
+      "snoozed": false
+    },
+    "service:web_search": {
+      "status": "healthy",
+      "ok": true,
+      "status_code": 200,
+      "response_ms": 402.9,
+      "last_checked": "2026-03-09T23:22:45.545673",
+      "url": "http://127.0.0.1:8005/health",
+      "description": "Web search API (SerpAPI, Serper, DuckDuckGo)",
+      "port": 8005,
+      "start_command": "python service.py",
+      "startup_mode": "on_demand",
+      "self_hosted": false,
+      "snoozed": false
+    },
+    "service:youtube_service": {
+      "status": "down",
+      "ok": false,
+      "status_code": 0,
+      "response_ms": 2472.3,
+      "last_checked": "2026-03-09T23:22:45.545673",
+      "url": "http://127.0.0.1:8002/health",
+      "description": "YouTube search, metadata, and chapters",
+      "port": 8002,
+      "start_command": "python service.py",
+      "startup_mode": "on_demand",
+      "self_hosted": false,
+      "snoozed": false
+    }
   },
-  "last_updated": null
+  "last_alerts": {
+    "service:youtube_service": {
+      "timestamp": "2026-03-09T15:22:37.264371",
+      "severity": "error",
+      "message": "Service DOWN: youtube_service at http://127.0.0.1:8002/health"
+    }
+  },
+  "last_checks": {
+    "services": "2026-03-09T23:22:45.545673"
+  },
+  "last_updated": "2026-03-09T23:22:53.041076"
 }

@@ -1,0 +1,3515 @@
+{
+  "agent_id": "system_coder",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 206,
+  "difficulty_distribution": {
+    "intermediate": 141,
+    "advanced": 65,
+    "expert": 0
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_SYS001",
+      "question": "To mount a drive by its ID, what command would you use first to retrieve it?",
+      "choices": {
+        "A": "df -h",
+        "B": "listid",
+        "C": "ls -l",
+        "D": "blkid"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS002",
+      "question": "Linux file access control lists (ACLs) are \\_.",
+      "choices": {
+        "A": "discretionary access control system permissions layered over standard Linux permissions",
+        "B": "mandatory access control system permissions layered over standard Linux permissions",
+        "C": "a type of firewall for Linux",
+        "D": "the same as standard Linux permissions"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS003",
+      "question": "When using iproute2, how do you show routing information for an IPv6 network?",
+      "choices": {
+        "A": "route -ipv6",
+        "B": "route",
+        "C": "ip -6 route show",
+        "D": "ip route show"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS004",
+      "question": "What does this command string do?\n```bash\nfind / -size +10M -exec ls -l {} ;\n```",
+      "choices": {
+        "A": "It finds all files using ls -l and hands them off to the find command to display.",
+        "B": "It finds all files older than 10 minutes and long lists them using the ls command.",
+        "C": "It finds all files larger than 10 MB and long lists them using the ls command.",
+        "D": "It uses the ls command to find all files in the filesystem matching the {} wildcard."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS005",
+      "question": "What would this locate command show?\n```bash\nlocate --regexp '^/usr.*pixmaps.*jpg$'\n```",
+      "choices": {
+        "A": "all files in a directory named pixmaps",
+        "B": "all files ending in \".jpg\"",
+        "C": "all file paths that start with \"/usr\", include the word \"pixmaps\", and end with \".jpg\"",
+        "D": "all file paths that include \"/usr/pixmaps\" and end with \".jpg\""
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "regular_expressions",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS006",
+      "question": "Which command allows you to do packet analysis from the command line?",
+      "choices": {
+        "A": "wireshark",
+        "B": "ethtool",
+        "C": "netstat",
+        "D": "tcpdump"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS007",
+      "question": "Which command will tell you how long a system has been running?",
+      "choices": {
+        "A": "log",
+        "B": "uptime",
+        "C": "runtime",
+        "D": "access"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS008",
+      "question": "How would you describe PCP (Performance Co-Pilot)?",
+      "choices": {
+        "A": "It is an application testing suite used to profile programming code.",
+        "B": "It is a local command used for monitoring local system resources in real time.",
+        "C": "It is a set of tools, services, and libraries for gathering and analyzing performance measures.",
+        "D": "It is a tool designed to change system configuration for purposes of optimization."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS009",
+      "question": "You want to resolve a long list of DNS names using dig. What should you do?",
+      "choices": {
+        "A": "Create a text file including all names and use the -f option of dig.",
+        "B": "Type in each query manually.",
+        "C": "Write a shell script to send multiple dig queries to the DNS server.",
+        "D": "Save the DNS names in an SQL database and process it with dig."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS010",
+      "question": "What would this command output?\n```bash\nps -e --format uid,pid,ppid,%cpu,cmd\n```",
+      "choices": {
+        "A": "the user ID, process ID, parent process ID, CPU usage, and command name of a process",
+        "B": "the user ID, group ID, parent process ID, CPU usage, and command name of a process",
+        "C": "the UUID, process ID, parent process ID, CPU usage, and command name of a process",
+        "D": "all of these answers"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS011",
+      "question": "Which command in Bash executes the last line in the shell history that starts with ls?",
+      "choices": {
+        "A": "!",
+        "B": "!!",
+        "C": "!\\*",
+        "D": "!ls"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS012",
+      "question": "The ssh-copy-id command copies \\_ to the remote host.",
+      "choices": {
+        "A": "both private and public keys",
+        "B": "the ssh public key",
+        "C": "the ssh private key",
+        "D": "a fingerprint file"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "remote_access",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS013",
+      "question": "What command is used to determine the amount of disk usage for a directory?",
+      "choices": {
+        "A": "find",
+        "B": "fdisk",
+        "C": "du",
+        "D": "df"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS014",
+      "question": "A backup drive was created using dd to make a bit-for-bit copy. When the drive is inserted into an iSCSI target before it is booted up, the data appears to be missing. What could have happened?",
+      "choices": {
+        "A": "The backup drive is corrupted and needs to be re-created.",
+        "B": "When the backup drive was duplicates, the label was as well. When booted, the system mounted the old duplicates drive by its identical label.",
+        "C": "There is a conflict between the physical location of the backup drive and the original drive.",
+        "D": "The backup process went wrong, and the old drive was duplicates over the original drive."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS015",
+      "question": "What is the key difference between a redirect (>) and piping to the tee command?",
+      "choices": {
+        "A": "The tee command sends output only to STDOUT and STDERR.",
+        "B": "A redirect sends output to STDOUT and a file, whereas a tee sends output only to STDOUT.",
+        "C": "Nothing, they are the same.",
+        "D": "The tee command sends output to STDOUT and a file, whereas a redirect sends output only to a file."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "package_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS016",
+      "question": "What does the /etc/nsswitch.conf file manage?",
+      "choices": {
+        "A": "priority of one DNS server over another",
+        "B": "per network interface DNS server configuration",
+        "C": "alternative DNS services",
+        "D": "sources for name service information"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS017",
+      "question": "Assume the variable myNumber holds a string consisting of 10 digits. What will this command output?\n```bash\necho $myNumber | sed -e 's/^[[:digit:]][[:digit:]][[:digit:]]/(&)/g'\n```",
+      "choices": {
+        "A": "It will only match digits—and since the string has only digits, the command will output the same number without changes.",
+        "B": "It will output the same 10-digit number, but every digit will be inside parentheses.",
+        "C": "It will output the entire 10-digit number inside parentheses.",
+        "D": "It will output the same 10-digit number, but the first 3 digits will be inside parentheses.\n**Note:** check the question below for a variant of this sed expression."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS018",
+      "question": "What would this sed command do?\n```bash\nsed -E 's/[a-Z]{4}/(&)/'  textfile.txt\n```",
+      "choices": {
+        "A": "It would substitute the letter with an ampersand (&).",
+        "B": "It would replace all letters in the textfile.txt file with ampersand (&).",
+        "C": "It would replace the first four letters with an ampersand (&).",
+        "D": "It would place parentheses around the first four letters of each line of textfile.txt.\n**Note:** check the question above for a variant of this sed expression.\n\nSide note: this sed expression may fail with \"sed: -e expression #1, char 15: Invalid range end\" (for example on MINGW64 / Git Bash); if this is the case, you can try the alternative range `[A-z]`."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS019",
+      "question": "Packages can be downloaded but not installed with yum or dnf by specifying which option?",
+      "choices": {
+        "A": "None of these answers. yum does not support downloading packages without installing them.",
+        "B": "--downloaddir",
+        "C": "-d",
+        "D": "--downloadonly"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS020",
+      "question": "What character class is equal to this set?\n`[0-9]`",
+      "choices": {
+        "A": "`[[:alnum:]]`",
+        "B": "`[[:digit:]]`",
+        "C": "`[[:alpha:]]`",
+        "D": "`[[:num:]]`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS021",
+      "question": "When archiving files, which command will preserve all file attributes including ACLs and SELinux security context?",
+      "choices": {
+        "A": "zip",
+        "B": "tar",
+        "C": "archive",
+        "D": "gzip"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS022",
+      "question": "In a systemd-based OS, you can change the system hostname by editing /etc/hostname manually and then doing what?",
+      "choices": {
+        "A": "Restart dhcpd.",
+        "B": "Run /etc/hostname.",
+        "C": "Nothing, the system notices automatically.",
+        "D": "Notify systemd to update it by restarting the systemd-hostnamed service."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS023",
+      "question": "What command would you use to resize an LVM volume group to include an additional physical volume?",
+      "choices": {
+        "A": "vgadd",
+        "B": "vgresize",
+        "C": "vgappend",
+        "D": "vgextend"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS024",
+      "question": "When would this system cron job run its task?\n`0 1 \\* \\* \\*`",
+      "choices": {
+        "A": "every minute of the hour",
+        "B": "every hour of every day",
+        "C": "every day at 1:00 AM",
+        "D": "only on Mondays"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS025",
+      "question": "ifconfig has been deprecated. What command is now recommended for changing IP addresses in the live config?",
+      "choices": {
+        "A": "netconf",
+        "B": "ipconfig",
+        "C": "ipman",
+        "D": "ip"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS026",
+      "question": "You are managing an Apache web server on a system using SELinux. By default it cannot read personal webpages in users' home directories. What SELinux boolean would you set to allow this?",
+      "choices": {
+        "A": "apache_enable_homedirs",
+        "B": "httpd_enable_userdirs",
+        "C": "httpd_enable_homedirs",
+        "D": "httpd_enable_userhome_dirs"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS027",
+      "question": "Why doesn't passwd -l keep a user from logging in via other methods?",
+      "choices": {
+        "A": "The passwd command is not used for locking passwords.",
+        "B": "There is no password -l option.",
+        "C": "It locks only the password, not the account, so users can still authenticate with keys or other methods.",
+        "D": "It does lock the account, keeping users from logging in even if they are using other authentication methods."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS028",
+      "question": "In the Bash shell, what is the difference between piping into | and piping into |&?",
+      "choices": {
+        "A": "Piping into | pipes both stdout and stderr. Piping into |& pipes only stderr.",
+        "B": "Piping into | pipes stdout. Piping into |& pipes stdout and stderr.",
+        "C": "Piping into | pipes both stdout and stderr. Piping into |& pipes only stdout.",
+        "D": "Piping into | pipes stdout. Piping into |& pipes all open file descriptors."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "package_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS029",
+      "question": "Why is the passwd command able to modify the /etc/passwd file?",
+      "choices": {
+        "A": "The kernel identifies it as one of the names of extended commands.",
+        "B": "It has the same name as the file it modifies.",
+        "C": "It has the SUID permission mode and is owned by root.",
+        "D": "It is a system administration command."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS030",
+      "question": "When a user deletes a file using the rm command, Linux will \\_.",
+      "choices": {
+        "A": "always ask for confirmation",
+        "B": "back up the file before it deletes the file",
+        "C": "ask for confirmation if configured to do so",
+        "D": "never ask for confirmation"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS031",
+      "question": "What is a major advantage of using Logical Volume Management (LVM)?",
+      "choices": {
+        "A": "Access to a drive is faster than with standard partitions.",
+        "B": "Volumes can be resized smaller without unmounting them.",
+        "C": "Repairing filesystem errors is easier than with standard partitions.",
+        "D": "Volumes can be resized even if the free space is not contiguous."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS032",
+      "question": "What is one major difference between brace expansion and globs?",
+      "choices": {
+        "A": "Globs create a list; brace expansion matches pattern.",
+        "B": "Brace expansion requires files to exist; globs do not.",
+        "C": "Brace expansion creates a list; globs match the list of pathnames.",
+        "D": "Globs get processes first and brace expansion later."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS033",
+      "question": "To remove all ACLs from a directory, use setfacl with which options?",
+      "choices": {
+        "A": "-d",
+        "B": "-k",
+        "C": "-b",
+        "D": "-x"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS034",
+      "question": "Which choice will _not_ print \"Hello World\" in the terminal?",
+      "choices": {
+        "A": "A\n```bash\nmyVar = 5\n[[ $myVar -lt 10 ]] && echo \" Hello World\"\n```",
+        "B": "B\n```bash\nmyVar = 5\n[[ $myVar -lt 10 ]] || echo \" Hello World\"\n```",
+        "C": "C\n```bash\nmyVar = 5\n[[ ! $myVar -gt 10 ]] && echo \" Hello World\"\n```",
+        "D": "D\n```bash\nmyVar = 5\n[[ $myVar -gt 10 ]] || echo \" Hello World\"\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS035",
+      "question": "What is not inherited by child process?",
+      "choices": {
+        "A": "shell aliases",
+        "B": "userid",
+        "C": "environmental variables",
+        "D": "scheduling priority"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "inheritance",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS036",
+      "question": "What NFS option allows the root user to access NFS shares as the root user?",
+      "choices": {
+        "A": "no_admin_squash",
+        "B": "no_root_squash",
+        "C": "allow_root_access",
+        "D": "all_squash"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS037",
+      "question": "You send an email to a remote client using the following syntax. What will be in the body of the email?\n```bash\ndate | mail -s \"This is a remote test\" user1@rhhost1.localnet.com\n```",
+      "choices": {
+        "A": "\"This is a remote test\"",
+        "B": "the date, the time, and the words \"This is a remote test\"",
+        "C": "The email subject shows \"This is a remote test\" but the body of the email will be empty.",
+        "D": "the current date and time"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS038",
+      "question": "What is the /etc/hosts file used for?",
+      "choices": {
+        "A": "resolving the local name",
+        "B": "blocking sites using iptables",
+        "C": "setting the hostname",
+        "D": "configuring DNS name servers"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS039",
+      "question": "In an extended regular expression, you would use (pattern){3} to match three instances of the pattern. How would you match the same thing with an extended glob?",
+      "choices": {
+        "A": "3(pattern)",
+        "B": "{0,3}(pattern}",
+        "C": "Occurrence quantifiers are not supported in Bash's version of extended globs, so this is not possible.",
+        "D": "{3}(pattern})"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS040",
+      "question": "When configuring a Samba share, how would the engineering group be specified in the smb.conf?",
+      "choices": {
+        "A": "Samba uses Linux operating system groups from the /etc/group file; just specify the group name.",
+        "B": "It would be preceded by a percent sign (%), such as %engineers.",
+        "C": "Use the group name by itself; Samba checks for its existence.",
+        "D": "It would be preceded by an @ symbol, such as @engineering."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS041",
+      "question": "To configure the Kerberos client, which command should you use to import the keytab file?",
+      "choices": {
+        "A": "krb5-workstation",
+        "B": "ktutil",
+        "C": "pam_krb5",
+        "D": "kdb5_util"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS042",
+      "question": "To search from the current cursor position up to the beginning of the file using VIM, type \\_ and then the search criteria.",
+      "choices": {
+        "A": "`?`",
+        "B": "`\\`",
+        "C": "`/`",
+        "D": "`/search`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS043",
+      "question": "What is the job of the NetworkManager daemon?",
+      "choices": {
+        "A": "It is a graphical tool that manages network connections, including bonding and wireless networks.",
+        "B": "It is a security service that manages user access control of local network-aware services.",
+        "C": "It attempts to keep an active network connection available at all times.",
+        "D": "It is a command-line tool that manages network connections."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS044",
+      "question": "Why might would you use the usermod command?",
+      "choices": {
+        "A": "to log out a user",
+        "B": "to lock a user's account",
+        "C": "to change global user account settings",
+        "D": "to set a user's password"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS045",
+      "question": "Extending an LVM volume group does what to the formatted filesystem?",
+      "choices": {
+        "A": "It prepares the filesystem for use by defragmenting it.",
+        "B": "It resizes the filesystem to match the volume group size.",
+        "C": "It does nothing.",
+        "D": "It remounts the filesystem with the new size."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS046",
+      "question": "Which kernel module do you need to load to use interface bonding?",
+      "choices": {
+        "A": "bonding.",
+        "B": "team.",
+        "C": "netbond.",
+        "D": "bond."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS047",
+      "question": "What does this command string do?\n```bash\nfind / -size -10K -exec ls -l {} \\;\n```",
+      "choices": {
+        "A": "It finds all files larger than 10k and long lists them using the ls command.",
+        "B": "It finds all files of size 10k using ls -l and hands them off to the find command to display.",
+        "C": "It finds all files in the / directory of size 10k and long lists them.",
+        "D": "It finds all files in the file system smaller than 10k and long lists them using the ls command."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS048",
+      "question": "To change the priority of multiple swap partitions, which file would you edit?",
+      "choices": {
+        "A": "/proc/swapiness",
+        "B": "/etc/fstab",
+        "C": "/etc/mounts",
+        "D": "/etc/swaps"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS049",
+      "question": "What would you type to list all systemd service unit files, whether they are enabled or not?",
+      "choices": {
+        "A": "systemctl list-services.",
+        "B": "chkconfig --list-all",
+        "C": "systemctl list-unit-files -at service",
+        "D": "systemctl list-unit-files -t service"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS050",
+      "question": "You can set Linux group passwords using which command?",
+      "choices": {
+        "A": "gpasswd",
+        "B": "passwd",
+        "C": "editsam",
+        "D": "grouppass"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS051",
+      "question": "With most GNU commands, if an option is a word, what will it be preceded by?",
+      "choices": {
+        "A": "two dashes",
+        "B": "a backslash",
+        "C": "one dash",
+        "D": "nothing"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS052",
+      "question": "What would happen if you have a script file named script that takes a long time to complete, and you type `nohup ./script &` in the command line?",
+      "choices": {
+        "A": "The script will remain running in the background even if you reboot the system.",
+        "B": "The script will run in your terminal and you will not be able to do anything until it completes.",
+        "C": "The script will run in the background until you end the session.",
+        "D": "The script will run in the background and will continue running even if you end the session.\n[Reference](https://en.wikipedia.org/wiki/Nohup)\n\n> nohup is a POSIX command which means \"no hang up\". Its purpose is to execute a command such that it ignores the HUP (hangup) signal and therefore does not stop when the user logs out."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS053",
+      "question": "To elevate privileges using the `sudo` command, a user must **\\_**.",
+      "choices": {
+        "A": "enter the root user's password",
+        "B": "enter their own password",
+        "C": "enter the sudo user's password",
+        "D": "change to the root group\n[Reference](https://acloudguru.com/blog/engineering/linux-commands-for-beginners-sudo#:~:text=Sudo%20asks%20for%20your%20user%20password.%C2%A0%20Note%20that%20it%20is%20asking%20for%20your%20password%2C%20not%20the%20root%20password.)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS054",
+      "question": "When would this system cron job run its task?\n`0 22 * * 1-5`",
+      "choices": {
+        "A": "on the 22nd of every month from June to May",
+        "B": "at 10:00 PM Monday to Friday",
+        "C": "every 22 minutes every day except weekends",
+        "D": "from 1:00 AM to 5:00 AM on the 22nd of every month"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS055",
+      "question": "How does TCP Wrappers differ from a firewall?",
+      "choices": {
+        "A": "Firewalls are only service specific, whereas TCP Wrappers can block all traffic.",
+        "B": "TCP Wrappers works at the network layer, so it blocks traffic before the firewall even sees it.",
+        "C": "Firewalls easily spawn commands to operate on connection data, whereas TCP Wrappers cannot.",
+        "D": "TCP Wrappers works at the application layer, so it can make access decisions on encrypted data.\n**Note:** TCP Wrapper works on Application Layer but answer is not too much confirmed."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "network_security",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS056",
+      "question": "As root, you set execute permissions for user, group, and other on a directory. Now users can do what?",
+      "choices": {
+        "A": "They can execute files in it.",
+        "B": "They can traverse it.",
+        "C": "They can read files in it.",
+        "D": "They can delete files in it.\n**Note:** This is correct because of the keyword \"directory\". More info [here](https://www.tutorialspoint.com/unix/unix-file-permission.htm)."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS057",
+      "question": "What will this command print?\n`echo \"Thu Jun 4 15:45:45 PDT 2020\" | cut -f3 -d\" \"`",
+      "choices": {
+        "A": "It will print nothing.",
+        "B": "Thu Jun 4 15:45:45 PDT 2020",
+        "C": "0.6567708333333333",
+        "D": "4"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS058",
+      "question": "How can you improve this code snippet?\n```bash\nif ls /etc/passwd &> /dev/null\nthen\n    echo \"exists\"\nfi\n```",
+      "choices": {
+        "A": "The code snippet cannot be improved, this is a valid way of checking for the existence of a file.",
+        "B": "Use Bash's built-in `[[ ]]` test conditions instead of the ls command.",
+        "C": "The redirect to `/dev/null` will silence the return code invalidating the conditional. Removing the redirect will solve this.",
+        "D": "The ls command will output the name of the file to the screen. Running ls in quiet mode will improve the code snippet."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS059",
+      "question": "Using a systemd-based distribution, you want to restrict the cron service from running either automatically or manually. Which command would you run?",
+      "choices": {
+        "A": "systemctl disable crond",
+        "B": "systemctl disallow crond",
+        "C": "systemctl mask crond",
+        "D": "systemctl stop crond\n**Note:** This is the correct answer because \"mask\" prohibits all kinds of activation of the unit, including manual activation.\\\n[Reference](https://www.commandlinux.com/man-page/man1/systemctl.1.html): search \"mask\"."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS060",
+      "question": "What issue might a user have when they mount a filesystem by partition path such as /dev/sdal in the /etc/fstab file?",
+      "choices": {
+        "A": "The device order may change on boot, resulting in a system that will not boot properly.",
+        "B": "The user may run out of device letters.",
+        "C": "There are no issues with referring to partitions by their partition path.",
+        "D": "It is more difficult identifying mounted devices by partition path.\n[Reference](https://access.redhat.com/discussions/6004221)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS061",
+      "question": "Which option would you choose to force grep to use a basic regular expression (BRE)?",
+      "choices": {
+        "A": "grep -E",
+        "B": "grep -B",
+        "C": "grep -e",
+        "D": "grep -G\n**Explanation**: Man page of grep command."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS062",
+      "question": "An rsyslogd filter determines which items in a log file to act on. What is it made up of?",
+      "choices": {
+        "A": "a facility and an action",
+        "B": "a filter and an action",
+        "C": "a facility and a priority",
+        "D": "a filter and a priority\n[Reference](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/ch-viewing_and_managing_log_files)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS063",
+      "question": "Which choice is a Network Manager tool used to configure network connections from the GUI?",
+      "choices": {
+        "A": "nmcli",
+        "B": "ip",
+        "C": "Onmtui",
+        "D": "nm-connection-editor"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS064",
+      "question": "What will not happen if you run the make command without parameters?",
+      "choices": {
+        "A": "It will clean up all previously generated binaries and perform a new build.",
+        "B": "It will run rules of compilation and building.",
+        "C": "It will look for a file called makefile in your current directory.",
+        "D": "It will build only programs that need to be rebuilt."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS065",
+      "question": "Most commands that support SELinux use which option to display SELinux security context?",
+      "choices": {
+        "A": "-S",
+        "B": "--selinux",
+        "C": "--MAC",
+        "D": "-Z"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS066",
+      "question": "What is the difference between the whoami and logname commands?",
+      "choices": {
+        "A": "whoami and logname provide the same information.",
+        "B": "whoami tells who are you currently, and logname tells who you were when you logged in initially.",
+        "C": "logname specifies the name of the login log file, and whoami prints the logged in username.",
+        "D": "whoami shows you who logged in as initially, and logname shows who are you currently."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS067",
+      "question": "What is the command to create an associative array in Bash?",
+      "choices": {
+        "A": "declare -a",
+        "B": "aarray",
+        "C": "array -a",
+        "D": "declare -A"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS068",
+      "question": "What tool should you use to replace a physical volum in LVM?",
+      "choices": {
+        "A": "lvcopy",
+        "B": "tar",
+        "C": "pvmove",
+        "D": "cp"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS069",
+      "question": "What is the difference the `==` and `=~` comparison operators when used in BASH double square bracket `if` conditionals?",
+      "choices": {
+        "A": "The `==` operator performs a string comparison; `=~` performs a regex comparison.",
+        "B": "The `==` operator performs a string comparison; `=~` performs a glob pattern comparison.",
+        "C": "The `=~` operator performs a string comparison; `==` performs a regex comparison.",
+        "D": "There is no `=~` operator in BASH `if` conditionals."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS070",
+      "question": "What is the difference between these two lines of code?\n```shell\necho \"data\" | tee -a file.txt\necho \"data\" >> file.txt\n```",
+      "choices": {
+        "A": "The first line will append the word `data` to file.txt and output it on the screen. The second line will append the word `data` only to file.txt.",
+        "B": "They are the same.",
+        "C": "The first line will append the word `data` to file.txt and there will be no output on the screen. The second line will output the word `data` on the screen and append it to `file.txt`",
+        "D": "Both lines will overwrite file.txt with the word data."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS071",
+      "question": "Using backreferences in a POSIX regular expression, which word would this pattern match?\n```shell\n(ss).*\\1\n```",
+      "choices": {
+        "A": "addressee",
+        "B": "possess",
+        "C": "barrenness",
+        "D": "successfully"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS072",
+      "question": "To run CGI scripts with Apache, you need to **\\_**.",
+      "choices": {
+        "A": "compile the script with a CGI compiler",
+        "B": "make the script executable",
+        "C": "make the script executable and set the `httpd_enable_cgi` SELinux boolean",
+        "D": "change the ownership of the script to Apache\n[Reference](https://selinuxproject.org/page/ApacheRecipes#Allow_the_Apache_HTTP_Server_to_run_CGI_scripts)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS073",
+      "question": "To permanently add NAT to the default zone using firewalld, you would use which command string?",
+      "choices": {
+        "A": "`firewall-cmd --permanent --add-nat`",
+        "B": "`firewall-cmd --permanent --add-masquerade`",
+        "C": "`firewall-cmd --zone=default --add-nat`",
+        "D": "`firewall-cmd --zone=default --add-masquerade`\n[Reference](https://www.rootusers.com/how-to-use-firewalld-rich-rules-and-zones-for-filtering-and-nat)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "network_security",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS074",
+      "question": "What is the difference between using `=` and `==` in a BASH double square bracket `if` conditional?\n```bash\nif [[ $FILE == $GLOB ]] ;then\n\n```",
+      "choices": {
+        "A": "The single equal sign (`=`) is an assignment operator; the double equal sign (`==`) checks equality.",
+        "B": "There is no difference.",
+        "C": "The single equal sign (`=`) checks equality; the double equal sign (`==`) checks string equality.",
+        "D": "The double equal sign (`==`) is an assignment operator; the single equal sign (`=`) checks equality.\n[Reference](https://stackoverflow.com/a/12948608)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS075",
+      "question": "`journald` differs from traditional logging services such as `rsyslogd` and `syslogd` because its logs are **\\_** by default.",
+      "choices": {
+        "A": "stored remotely",
+        "B": "text",
+        "C": "persistent",
+        "D": "not persistent\n[Reference](https://sematext.com/blog/journald-logging-tutorial/#toc-journald-storage-4)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS076",
+      "question": "What is the purpose of a Mail Transport Agent (MTA)?",
+      "choices": {
+        "A": "It transports the mail from user's computer to the mail server.",
+        "B": "It accepts mail and adds it to the mail queue for further processing.",
+        "C": "It stores the mail in a mail queue waiting for the MUA to download it.",
+        "D": "It transports mail from one mail server to another."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS077",
+      "question": "What do you need to do before you can perform SSH passwordless logins?",
+      "choices": {
+        "A": "Generate RSA or DSA key pairs using ssh-keygen.",
+        "B": "Change the remote user's password.",
+        "C": "Create a local SSL certificate.",
+        "D": "Change the remote SSH configure to allow it.\n[Reference](https://phoenixnap.com/kb/setup-passwordless-ssh)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "remote_access",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS078",
+      "question": "When installing a downloaded package on the RedHat-based distribution manual using RPM, what may you have to do first?",
+      "choices": {
+        "A": "Compile the package source code.",
+        "B": "Download all dependencies and install them before installing the desired package.",
+        "C": "Agree to an end-user license agreement.",
+        "D": "provide the --resolve option so RPM resolves all packages dependency.\n**[Explanation:](https://access.redhat.com/discussions/2026743)** Rpm is not meant to resolve dependencies. It checks whether required software (versions) are installed and fails when software is missing and when the wrong version of software is installed."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS079",
+      "question": "With GNU tools such as a GNU grep, awk, and sed, what is the difference between basic regular expressions (BREs) and extended regular expressions (EREs)?",
+      "choices": {
+        "A": "EREs can match the groups.",
+        "B": "EREs support occurrence operators.",
+        "C": "ERE's support alternation.",
+        "D": "only the syntax differs.\n[Reference](https://www.gnu.org/software/sed/manual/html_node/BRE-vs-ERE.html)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS080",
+      "question": "What is the difference between reading the list of disk partitions from `/proc/partitions` and getting it using `fdisk -l`?",
+      "choices": {
+        "A": "`/proc/partitions` represents the disk partition table more accurately than `fdisk -l`",
+        "B": "`/proc/partitions` shows only mounted drives. `fdisk -l` shows all drivers.",
+        "C": "There is no difference between the two, and both lists contain the same data.",
+        "D": "`/proc/partitions` is the kernel's list of partitions held in ram. `fdisk -l` reads the partition table from the drive itself."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS081",
+      "question": "What would be in out.txt?\n```shell\ncat < in.txt > out.txt\n```",
+      "choices": {
+        "A": "the content of in.txt.",
+        "B": "the output from the command line.",
+        "C": "Nothing, because you cannot redirect from a file (in.txt) to another file (out.txt). You can redirect only from a command to a file.",
+        "D": "Nothing, The redirect will create a new empty file, but there will not be any output from the cat command to redirect."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS082",
+      "question": "Using alternation in a POSIX-extended regular expression, which numbers would this pattern match?\n```bash\n^(([0-9][0-9]?)|(2[0-9][0-9]))$\n```",
+      "choices": {
+        "A": "0-99 and 200-299",
+        "B": "0-99",
+        "C": "200-299",
+        "D": "0-299"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS083",
+      "question": "Typing `systemctl enable crond` does what to the crond service?",
+      "choices": {
+        "A": "Starts the crond service now.",
+        "B": "Allows user to start the crond service.",
+        "C": "Unmasks the crond service.",
+        "D": "Ensures that the crond service starts automatically on bootup."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS084",
+      "question": "Which of these features is missing from the Bash Language?",
+      "choices": {
+        "A": "associative arrays.",
+        "B": "extended regular expressions.",
+        "C": "debug traps.",
+        "D": "object orientation."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS085",
+      "question": "What is the first step to integrate extended globs into your command-line workflow?",
+      "choices": {
+        "A": "Nothing, extended globs are already integrated into the shell and turned on automatically.",
+        "B": "Make extended globs persistent by adding `shopt -s extglob` to a shell startup file.",
+        "C": "Type `shopt -s extglob` into a shell one time to set the option on permanently.",
+        "D": "Make extended globs persistent by adding `shopt +s extglob` to a shell startup file."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS086",
+      "question": "Which statement about default ACLs is true?",
+      "choices": {
+        "A": "They provide inheritance for user and group permissions.",
+        "B": "They work only on files.",
+        "C": "They provide inheritance for group ownership.",
+        "D": "They grant access to the directory on which they are set.\n[Reference](https://www.redhat.com/sysadmin/linux-access-control-lists#setting-an-acl)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS087",
+      "question": "The object that `systemd` uses to manage services is called a \\_ file.",
+      "choices": {
+        "A": "unit",
+        "B": "service",
+        "C": "single",
+        "D": "process\n[Reference](http://www.microhowto.info/howto/replace_one_of_the_physical_volumes_in_an_lvm_volume_group.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS088",
+      "question": "Which command is used to increase the size of a logical volume in LVM?",
+      "choices": {
+        "A": "lvcreate",
+        "B": "lvremove",
+        "C": "lvextend",
+        "D": "lvdisplay\n[Reference](https://www.redhat.com/sysadmin/resize-lvm-simple)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS089",
+      "question": "What is the difference between the apt remove and apt autoremove commands?",
+      "choices": {
+        "A": "The apt remove command is a link to apt autoremove, so there are no differences.",
+        "B": "Both uninstall software. The apt autoremove command also uninstalls the dependencies.",
+        "C": "Both uninstall software. The apt remove command also uninstalls the dependencies.",
+        "D": "The apt autoremove command is a system service that routinely removes unused software packages.\n[Reference](https://dannyda.com/2021/08/19/whats-the-difference-between-apt-remove-and-apt-autoremove-what-is-apt-purge-when-to-use-debian-ubuntu-kali-linux-etc/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS090",
+      "question": "You want to extract the contents from an rpm package. Which command do you use?",
+      "choices": {
+        "A": "rpm --update",
+        "B": "rpm -ivh --force",
+        "C": "rpm --reinstall",
+        "D": "rpm2cpio\n1. [Reference](https://stackoverflow.com/questions/18787375/how-do-i-extract-the-contents-of-an-rpm)\n2. [Reference](https://man7.org/linux/man-pages/man8/rpm2cpio.8.html)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS091",
+      "question": "Which variable contains last background job process id?",
+      "choices": {
+        "A": "`$!`",
+        "B": "`$$`",
+        "C": "`$?`",
+        "D": "`$*`\n[Reference](https://www.globalguideline.com/interview_questions/Answer.php?a=Which_variable_contains_last_background_job_process_ida_b_c_d_)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS092",
+      "question": "Which feature does LVM2 included in most distributions not support?",
+      "choices": {
+        "A": "volume mirroring",
+        "B": "volume striping",
+        "C": "increasing LV size while mounted",
+        "D": "reducing LV size while mounted"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS093",
+      "question": "Which improvements do access control lists (ACLs) have over standard Linux permissions?",
+      "choices": {
+        "A": "ACLs allow permissions to be set for more than one user or group on a file or directory.",
+        "B": "ACLs provide mandatory access control (MAC) functionality through SELinux for files and directories.",
+        "C": "ACLs allow a file to be owned by more than one user and group.",
+        "D": "ACLs provide additional flags such as append-only and immutable."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS094",
+      "question": "What is a maximum length for a filename under Linux?",
+      "choices": {
+        "A": "256 bytes",
+        "B": "1084 bytes",
+        "C": "255 bytes",
+        "D": "1023 bytes"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS095",
+      "question": "Which command do you use to rename a file in Linux?",
+      "choices": {
+        "A": "mv",
+        "B": "rn",
+        "C": "rename",
+        "D": "ren"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS096",
+      "question": "Which file is backup file of /etc/passwd ?",
+      "choices": {
+        "A": "/etc/passwd-",
+        "B": "/etc/passwd",
+        "C": "/etc/paaswd.",
+        "D": "We can not recover"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS097",
+      "question": "Which Vim command writes your changes to the currently open file and quits the Vim editor?",
+      "choices": {
+        "A": ":q!",
+        "B": ":wq",
+        "C": ":sq",
+        "D": ":w"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS098",
+      "question": "Just like IP addresses identify hosts on a network, **\\_** identify the services on a host.",
+      "choices": {
+        "A": "DHCPs",
+        "B": "subnet masks",
+        "C": "ports",
+        "D": "broadcast addresses"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS099",
+      "question": "Which command shows the free disk space on one or more Linux filesystems?",
+      "choices": {
+        "A": "ls",
+        "B": "cd",
+        "C": "du",
+        "D": "df"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS100",
+      "question": "In Linux, the Epoch is the number of seconds that have elapsed since January 1st, **\\_**.",
+      "choices": {
+        "A": "1950",
+        "B": "1965",
+        "C": "1960",
+        "D": "1970"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS101",
+      "question": "In which Linux shell script positional parameter is the script itself stored?",
+      "choices": {
+        "A": "$2",
+        "B": "$1",
+        "C": "$0",
+        "D": "$9"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS102",
+      "question": "VirtualBox provides **\\_**, which are installed on guests and allow the guest operating system to access shared folders on the host system, share the clipboard, and some other similar actions.",
+      "choices": {
+        "A": "projects",
+        "B": "guest configurations",
+        "C": "SSHs",
+        "D": "guest additions"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS103",
+      "question": "Given an IP address of 199.83.131.0 and a subnet mask of 255.255.255.0, what is the broadcast address?",
+      "choices": {
+        "A": "199.83.131.1",
+        "B": "10 Downing Street",
+        "C": "199.83.131.0",
+        "D": "199.83.131.255"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS104",
+      "question": "Which Linux command shows a list of processes associated with the current user and the current terminal?",
+      "choices": {
+        "A": "ps",
+        "B": "ls",
+        "C": "pidof",
+        "D": "ps -e"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS105",
+      "question": "In a shell script, to create an infinite while loop, make the condition always return true by using the **\\_** command for the while loop condition.",
+      "choices": {
+        "A": "return",
+        "B": "continue",
+        "C": "true",
+        "D": "always"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS106",
+      "question": "In Linux, which option is used with the uname command to print the processor architecture name?",
+      "choices": {
+        "A": "-p",
+        "B": "-arch",
+        "C": "-ps",
+        "D": "-pname"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS107",
+      "question": "Which of these do NOT constitute as a default part of the email system of Red Hat Linux?",
+      "choices": {
+        "A": "The MTA",
+        "B": "Pine",
+        "C": "Procmail",
+        "D": "The MUA"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS108",
+      "question": "In BASH parsing, which expansion happens first?",
+      "choices": {
+        "A": "brace expansion",
+        "B": "variable expansion",
+        "C": "filename expansion (globbing)",
+        "D": "word splitting\n[Reference](https://stackoverflow.com/questions/54160869/in-what-order-does-bash-parser-escape-characters-and-split-words-tokens-within-c#:~:text=Expansions%20are%20performed%2C%20in%20order,Tilde%20expansion%2C%20e.g.%20~root%20.)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS109",
+      "question": "When pattern matching using a glob or regular expression, how many characters does a character set match?",
+      "choices": {
+        "A": "one",
+        "B": "any number of characters",
+        "C": "zero or one",
+        "D": "one or more\n[Reference](https://javascript.info/regexp-character-sets-and-ranges)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS110",
+      "question": "Why would you not use the `mdadm --assemble` subcommand when creating a new RAID5 array?",
+      "choices": {
+        "A": "`assemble` builds only arrays of drives that do not have RAID metadata on them.",
+        "B": "`assemble` is used to build existing RAID arrays.",
+        "C": "`assemble` is a synonym for `create`.",
+        "D": "`assemble` is used to build new RAID arrays."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS111",
+      "question": "Which of the following types is not a default type of input/output in Linux?",
+      "choices": {
+        "A": "standard error",
+        "B": "standard input",
+        "C": "standard output",
+        "D": "standard file\n[Reference](https://linuxhandbook.com/redirection-linux/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS112",
+      "question": "In a shell script, **\\_** means OR.",
+      "choices": {
+        "A": "||",
+        "B": "&",
+        "C": "|",
+        "D": "&&\n[Reference](https://www.geeksforgeeks.org/basic-operators-in-shell-scripting/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS113",
+      "question": "On a Linux or Unix system using X Window, the GVim \\* register **\\_**.",
+      "choices": {
+        "A": "contains text that is highlighted or selected with the mouse",
+        "B": "is the same thing as the + register",
+        "C": "is unused",
+        "D": "contains all yank, delete, change, and put operations\n[Reference](https://github.com/hieuvp/learning-linux/blob/master/vim-masterclass/vim-graphical-user-interfaces-gvim-and-macvim/README.md)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS114",
+      "question": "What system mode does Linux runlevel 0 indicate?",
+      "choices": {
+        "A": "system halt",
+        "B": "multi user",
+        "C": "single user mode",
+        "D": "system reboot\n[Reference](http://www.tldp.org/LDP/sag/html/major-services.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS115",
+      "question": "Which of the following choices is not a mode in Vi?",
+      "choices": {
+        "A": "insert",
+        "B": "line",
+        "C": "edit",
+        "D": "command\n[Reference](https://github.com/hieuvp/learning-linux/blob/master/vim-masterclass/vim-graphical-user-interfaces-gvim-and-macvim/README.md)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS116",
+      "question": "which command used for delete a user?",
+      "choices": {
+        "A": "userdel",
+        "B": "rm -rf username",
+        "C": "mv",
+        "D": "delete"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS117",
+      "question": "What is the kernel of a Linux operating system?",
+      "choices": {
+        "A": "The core of the operating system that manages the hardware and software resources.",
+        "B": "A graphical user interface (GUI) that allows users to interact with the operating system.",
+        "C": "A collection of software applications that can be used to perform various tasks, such as web browsing, word processing, and programming.",
+        "D": "All of the above\n[reference](https://www.suse.com/suse-defines/definition/linux-kernel/#:~:text=The%20Linux%20kernel%20is%20the,interface%20with%20the%20Linux%20kernel.)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "linux",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS118",
+      "question": "Which of the three methods will copy the directory named \"photo dir\" recursively from the user's home directory to /backups?\n```bash\ncp -R \"~/photo dir\" /backups #method1\ncp -R ~\"/photo dir\" /backups #method2\ncp -R ~/\"photo dir\" /backups #method3\n```",
+      "choices": {
+        "A": "Only method 1 will expand `\"~/\"` to the user's home directory and then append the quoted directory name that includes a space.",
+        "B": "Only method 2 will expand `\"~/\"` to the user's home directory and then append the quoted directory name that includes a space.",
+        "C": "Only method 3 will expand `\"~/\"` to the user's home directory and then append the quoted directory name that includes a space.",
+        "D": "None of the three methods will expand to the user's home directory. Only using `\"$HOME/photo dir\"`will be successful."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS119",
+      "question": "To run a copy command in a subshell, which syntax would you use?",
+      "choices": {
+        "A": "`( command )`",
+        "B": "`sh command`",
+        "C": "`{ command; }`",
+        "D": "`(( command ))`\n[reference](https://en.wikiversity.org/wiki/Bash_programming/Subshells). Subshells are one way for a programmer to capture (usually with the intent of processing) the output from a program or script. Commands to be run inside a subshell are enclosed inside single parentheses and preceeded by a dollar sign: DIRCONTENTS=$(ls -l) echo ${DIRCONTENTS}"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS120",
+      "question": "Using \"awk\", what would the output of this command string be?\n```bash\necho \"1 2 3\" | awk '{for (i=1; i<=NF; i++) s=s+$i};END {print s}'\n```",
+      "choices": {
+        "A": "6",
+        "B": "123",
+        "C": "3",
+        "D": "600\n[reference](https://www.cyberciti.biz/faq/bash-scripting-using-awk/). AWK is a programming language that is designed for processing text-based data, either in files or data streams, or using shell pipes. In other words you can combine awk with shell scripts or directly use at a shell prompt."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS121",
+      "question": "The command below will search the root filesystem for files named \"finance.db\". In this context, what information is being sent to /dev/null?\n```bash\nfind / -name \"finance.db\" 1>results.txt 2>/dev/null\n```",
+      "choices": {
+        "A": "the names of files that do not match finance.db",
+        "B": "information sent to the standard error-for example, errors that the find command displays as it runs",
+        "C": "the names of files that match finance.db",
+        "D": "information sent to the standard output-that is, the path to files the find command has located\n[reference](https://www.cyberciti.biz/faq/how-to-redirect-standard-error-in-bash/). Syntax to redirect stderr (standard error) to a file: `command 2> errors.txt`."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS122",
+      "question": "To permanently remove empty lines from a file called textfile, which command could you use?",
+      "choices": {
+        "A": "`sed -i '/^$/d' textfile`",
+        "B": "`sed '/^$/d' textfile`",
+        "C": "`cat textfile | sed '/^$/d`",
+        "D": "`sed -i 's/^$//' textfile`\n[reference](https://www.gnu.org/software/sed/manual/sed.html#sed-regular-expressions)  \nsed : sed is a stream editor. A stream editor is used to perform basic text transformations on an input stream.  \n-i[SUFFIX] : This option specifies that files are to be edited in-place.  \n'/^$/d' : regex is between the //. ^ is the beginning of the line, $ is the end of the line. ^$ means the start and end have nothing in between.  \nd : Delete the pattern space; immediately start next cycle.  \nWarning, this example above will not work on a mac terminal due to different UNIX flavours. There is a way to make it work on a mac adding an extra flag `-e`, or even just `--` (found on [StackOverflow](https://stackoverflow.com/questions/4247068/sed-command-with-i-option-failing-on-mac-but-works-on-linux)): `sed -i -e '/^$/d' textfile.txt`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS123",
+      "question": "Assuming that user1 existed, what would be the result of this command string?\n```bash\nawk -F: '/user1/{print $1 \"-\" $3 \"-\" $6}' /etc/passwd\n```",
+      "choices": {
+        "A": "It would show the username, UID, and home directory of user1 separated by colons.",
+        "B": "It would print the UID, GID, and home directory of user1 separated by hyphens.",
+        "C": "It would print the UID, comment, and home directory of user1 separated by hyphens.",
+        "D": "It would show the username, UID, and home directory of user1 separated by hyphens.\n[reference](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/). Traditionally, the /etc/passwd file is used to keep track of every registered user that has access to a system. The /etc/passwd file is a colon-separated file that contains the following information: 1-`Username`, 2-`Password`, 3-`User ID (UID)`, 4-`Group ID (GID)`, 5-`User ID Info (GECOS)`, 6-`Home directory`, 7-`Command/shell`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS124",
+      "question": "What happens if you use the `\"set -e\"` in a Bash script?",
+      "choices": {
+        "A": "It will cause Bash to exit if a function or subshell returns a nonzero status code.",
+        "B": "It will cause Bash to exit if a conditional returns a non-zero status code.",
+        "C": "It will cause Bash to exit if local, declare, or typeset assignments return a nonzero status code.",
+        "D": "It will cause Bash to exit if a command, list of commands, compound command, or potentially a pipeline returns a nonzero status code.\n[reference](http://redsymbol.net/articles/unofficial-bash-strict-mode/). The set -e option instructs bash to immediately exit if any command [1] has a non-zero exit status. You wouldn't want to set this for your command-line shell, but in a script it's massively helpful. In all widely used general-purpose programming languages, an unhandled runtime error - whether that's a thrown exception in Java, or a segmentation fault in C, or a syntax error in Python - immediately halts execution of the program; subsequent lines are not executed."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS125",
+      "question": "The **\\_** keyword pauses the script to get input from standard input.",
+      "choices": {
+        "A": "get",
+        "B": "argument",
+        "C": "read",
+        "D": "input"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS126",
+      "question": "If file.sql holds SQL statements to be executed, what will be in file.txt?\n```bash\nmysql < file.sql > file.txt\n```",
+      "choices": {
+        "A": "a copy of the contents of file.sql",
+        "B": "an error indicating that this is invalid syntax",
+        "C": "the error output of the MySQL command",
+        "D": "the non-error output of the MySQL command\n**Note**: `check the question below for a variant.`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS127",
+      "question": "What will be the difference between the output on the screen and the contents of out.txt\n```bash\nmysql < file.sql > out.txt\n```",
+      "choices": {
+        "A": "The output on the screen will be identical to out.txt",
+        "B": "There will be no output on the screen as it's being redirected to out.txt.",
+        "C": "The output on the screen will be identical to out.txt plus line numbers.",
+        "D": "The out.txt file will hold STDERR and STDOUT will go to the screen.\n**Note**: `check the question above for a variant.`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS128",
+      "question": "How does the SUID or setuid affect executable commands?",
+      "choices": {
+        "A": "When the command creates files, they will be owned by the group owner of the command.",
+        "B": "The SUID bit allows anyone to execute the command no matter what other permissions are set.",
+        "C": "When the command is executed, its running privileges elevate to the user owner of the command.",
+        "D": "When the command is executed, its running privileges elevate to the group owner of the command.\n[reference](https://en.wikipedia.org/wiki/Setuid#:~:text=The%20Linux%20and%20Unix%20access,to%20change%20behaviour%20in%20directories.). The Linux and Unix access rights flags setuid and setgid (short for set user identity and set group identity)[1] allow users to run an executable with the file system permissions of the executable's owner or group respectively and to change behaviour in directories."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS129",
+      "question": "In order to extract text from the first column of file called textfile, which command would you use?",
+      "choices": {
+        "A": "`cat {$1,textfile}`",
+        "B": "`cat textfile | awk [print $1]`",
+        "C": "`cat textfile | awk '{print $1}'`",
+        "D": "`awk textfile {print $1}`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS130",
+      "question": "What is the keyboard shortcut to call up the Bash history search as shown below?\n```bash\n(reverse-i-search)`':\n```",
+      "choices": {
+        "A": "Esc + R",
+        "B": "Ctrl + H",
+        "C": "Ctrl + R",
+        "D": "Alt + R\nNote: On the Mac it will show `bck-i-search:` instead of `(reverse-i-search)`."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS131",
+      "question": "Which arithmetic expression will give the most precise answer?",
+      "choices": {
+        "A": "`var=$( expr 10 / 8 )`",
+        "B": "`(( var= 10 /8 ))`",
+        "C": "`var=$(( 10 / 8 ))`",
+        "D": "`var=$(echo 'scale=2; 10 / 8' | bc)`\n[reference](https://www.geeksforgeeks.org/bc-command-linux-examples/). The bc command is used for command line calculator. It is similar to basic calculator by using which we can do basic mathematical calculations. The division with 2 digit precision will be passed to `bc`, evaluated, and assigned to the variable."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS132",
+      "question": "What is the result of this script?\n```bash\ntxt=Penguins\n[[ $txt =~ [a-z]{8} ]]; echo $?\n```",
+      "choices": {
+        "A": "0, representing 'true', because the variable \"txt\" contains eight letters",
+        "B": "0, representing 'true', because everybody loves penguins!",
+        "C": "1, representing 'false', because the variable \"txt\" is longer than eight characters",
+        "D": "1, representing 'false', because the variable \"txt\" does not contain eight lowercase letters between a and z"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS133",
+      "question": "How would you change your Bash shell prompt to the following?\n```bash\nHAL>\n```",
+      "choices": {
+        "A": "`SHELL=\"HAL\\>\"`",
+        "B": "`SHELL=\"HAL>\"`",
+        "C": "`export PS1=\"HAL>\"`",
+        "D": "`PS1=\"HAL\\>\"`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS134",
+      "question": "What is the output of this code?\n```bash\nVAR=\"/var/www/html/website.com/html/\"\necho \"${VAR#*/html}\"\n```",
+      "choices": {
+        "A": "`/website.com/html/`",
+        "B": "`/html/website.com/html/`",
+        "C": "`/var/www/html/website.com/`",
+        "D": "Nothing will be echoed on the screen.\n[reference]()\nWhat is happening here quoting the POSIX shell specification: `${parameter#[word]}`. Remove Smallest Prefix Pattern. The word shall be expanded to produce a pattern. The parameter expansion shall then result in parameter, with the smallest portion of the prefix matched by the pattern deleted.  \nFor instance `${VAR#?}` expands to the value of $VAR with the first character deleted. And `${VAR#\\*/html}`expands to include all characters to and including the`/html`text which will be deleted from the variable producing the output of`/website.com/html/`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "html",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS135",
+      "question": "If prompted for text at the standard input, you can tell the command you're done entering text with what key combination?",
+      "choices": {
+        "A": "Ctrl + A (Windows) or Command + A (Mac)",
+        "B": "Ctrl + E (Windows) or Command + E (Mac)",
+        "C": "Ctrl + D (Windows) or Command + D (Mac)",
+        "D": "Ctrl + Z (Windows) or Command + Z (Mac)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS136",
+      "question": "In order for a Bash script to be executed like an OS command, it should start with a shebang line. What does this look like?",
+      "choices": {
+        "A": "`#!/usr/bin/env bash`",
+        "B": "`~/usr/bin/env bash`",
+        "C": "`'$!/usr/bin/env bash`",
+        "D": "`#/usr/bin/env bash`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS137",
+      "question": "What line of Bash script probably produced the output shown below?\n```bash\nThe date is: Sun Mar 24 12:30:06 CST 2019!\n```",
+      "choices": {
+        "A": "`echo \"The date is: !\"`",
+        "B": "`echo \"The date is: date!\"`",
+        "C": "`echo \"The date is: (date)!\"`",
+        "D": "`echo \"The date is: $(date)!\"`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS138",
+      "question": "Suppose your current working directory is your home directory. How could you run the script demo.sh that is located in your home directory? Find three correct answers.\n```bash\nA. /home/demo.sh\nB. ./demo.sh\nC. ~/demo.sh\nD. bash /home/demo.sh\nE. bash demo.sh\n```",
+      "choices": {
+        "A": "B, C, E",
+        "B": "A, B, C",
+        "C": "C, D, E",
+        "D": "B, D, E"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS139",
+      "question": "How could you get a list of all .html files in your tree?",
+      "choices": {
+        "A": "`find . -type html`",
+        "B": "`find . -name *.html`",
+        "C": "`find *.html`",
+        "D": "`find . -name \\*.html -print`\n`The second seems well, but will expand the \\* if there is any .html file on your working directory.`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "html",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS140",
+      "question": "What would be in out.txt?\n```bash\ncat < in.txt > out.txt\n```",
+      "choices": {
+        "A": "The output from the command line. By default STDIN comes from the keyboard.",
+        "B": "Nothing because you can't redirect from file (in.txt) to another file (out.txt). You can only redirect from a command to a file.",
+        "C": "It would be the contents of in.txt.",
+        "D": "Nothing. The redirect will create a new empty file but there will not be any output from the cat command to redirect."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS141",
+      "question": "What does this bash statement do?\n```bash\n(( $a == $b ))\necho $?\n```",
+      "choices": {
+        "A": "It loops between the values of `$a` and `$b`.",
+        "B": "It tests whether the values of variables `$a` and `$b` are equal.",
+        "C": "It returns `$b` if it is larger than `$a`.",
+        "D": "It returns `$a` if it is larger than `$b`."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS142",
+      "question": "What do you use in a case statement to tell Bash that you're done with a specific test?",
+      "choices": {
+        "A": "`; ;`",
+        "B": "`: :`",
+        "C": "`done`",
+        "D": "`$$`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS143",
+      "question": "What does the asterisk represent in this statement?\n```bash\n#!/usr/bin/env bash\ncase $num in\n\t1)\n\techo \"one\"\n\t;;\n\t2)\n\techo \"two\"\n\t;;\n\t*)\n\techo \"a mystery\"\n\t;;\nesac\n```",
+      "choices": {
+        "A": "a case that matches any value, providing a default option if nothing else catches that value",
+        "B": "a case only for what happens when the asterisk character is passed into the script",
+        "C": "the action of all of the other cases combined together",
+        "D": "an action that is taken for any input, even if it matches a specified condition"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS144",
+      "question": "What Bash script will correctly create these files?",
+      "choices": {
+        "A": "`touch file{1+10}.txt`",
+        "B": "`touch file{1-10}.txt`",
+        "C": "`touch file{1..10}.txt`",
+        "D": "`touch file(1..10).txt`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS145",
+      "question": "Which variable would you check to verify that the last command executed successfully?",
+      "choices": {
+        "A": "`$$`",
+        "B": "`$?`",
+        "C": "`$!`",
+        "D": "`$@`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS146",
+      "question": "What is the output of this script?\n```bash\n#!/bin/bash\nfname=john\njohn=thomas\necho ${!fname}\n```",
+      "choices": {
+        "A": "john",
+        "B": "thomas",
+        "C": "Syntax error",
+        "D": "blank\n[reference](https://unix.stackexchange.com/questions/41292/variable-substitution-with-an-exclamation-mark-in-bash)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS147",
+      "question": "What is wrong with this script?\n```bash\n#!/bin/bash\nread -p \"Enter your pet type.\" PET\nif [ $PET = dog ] ;then\n    echo \"You have a dog\"\nfi\n```",
+      "choices": {
+        "A": "If the value of PET doesn't match dog, the script will return a nonzero status code.",
+        "B": "There is nothing wrong with it. The condition checks the value of PET perfectly.",
+        "C": "It will fail if the user hits the Enter (Return) key without entering a pet name when prompted.",
+        "D": "The then statement needs to be on a separate line."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS148",
+      "question": "How can you gather history together for multiple terminals?",
+      "choices": {
+        "A": "It just works by default.",
+        "B": "`history --shared`",
+        "C": "`history --combined`",
+        "D": "`shopt -s histappend`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS149",
+      "question": "What is the difference between the $@ and $\\* variables?",
+      "choices": {
+        "A": "`$@` treats each quoted argument as a separate entity. `$*` treats the entire argument string as one entity.",
+        "B": "`$*` treats each quoted argument as a separate entity. `$@` treats the entire argument string as one entity.",
+        "C": "`$*` is used to count the arguments passed to a script, `$@` provides all arguments in one string.",
+        "D": "`$*` is the wildcard that includes all arguments with word splitting, `$@` holds the same data but in an array."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS150",
+      "question": "Which command is being run in this script to check if file.txt exists?\n```bash\nif [ -f file.txt ]; then\n    echo \"file.txt exists\"\nfi\n```",
+      "choices": {
+        "A": "`/usr/bin/test`",
+        "B": "`/usr/bin/[`",
+        "C": "`the built-in [ command`",
+        "D": "`/usr/bin/[[`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS151",
+      "question": "What will be the output of this script?\n```bash\n#!/bin/bash\nLinux=('Debian' 'Redhat' 'Ubuntu' 'Android' 'Fedora' 'Suse')\nx=3\n\nLinux=(${Linux[@]:0:$x} ${Linux[@]:$(($x + 1))})\necho \"${Linux[@]}\"\n```",
+      "choices": {
+        "A": "Debian Redhat Ubuntu Android Fedora Suse",
+        "B": "Android",
+        "C": "Fedora Suse",
+        "D": "Debian Redhat Ubuntu Fedora Suse"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS152",
+      "question": "Which file allows you to save modifications to the shell environment across sessions?",
+      "choices": {
+        "A": "`/etc/bash.conf`",
+        "B": "`~/.profile`",
+        "C": "`/etc/bashprofile`",
+        "D": "`~/profile`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS153",
+      "question": "Given the listed permissions on data.txt is it possible that user2 could have read, write, and execute permissions on data.txt?\n```bash\n$ ls -l\ntotal 0\n-rwx------+ 1 user1 user1 0 Oct 27 10:54 data.txt\n```",
+      "choices": {
+        "A": "No, it's clear that user2 does not have read, write, and execute permissions.",
+        "B": "Yes, the `+` at the end of the 10-digit permission string signifies there's an access control list. This could possibly give user2 permissions not visible by `ls -l`.",
+        "C": "It's possible that SELinux provides read, write, and execute permissions for user2 which are not visible with `ls -l`.",
+        "D": "Yes, the `+` at the end of the 10-digit permission string signifies there's an extended attribute set. This could give user2 permissions to read, write, and execute data.txt."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS154",
+      "question": "What does this script accomplish?\n```bash\n#!/bin/bash\ndeclare -A ARRAY=([user1]=bob [user2]=ted [user3]=sally)\nKEYS=(${!ARRAY[@]})\n\nfor (( i=0; $i < ${#ARRAY[@]}; i+=1 ));do\n        echo ${KEYS[$i]} - ${ARRAY[${KEYS[$i]}]}\ndone\n```",
+      "choices": {
+        "A": "It sorts the associative array named ARRAY and stores the results in an indexed array named KEYS. It then uses this sorted array to loop through the associative array ARRAY.",
+        "B": "Using a C-style for loop, it loops through the associative array named ARRAY using the associative array's keys and outputs both the key and values for each item.",
+        "C": "It creates an indexed array of the associative array named ARRAY. It then uses a C-style for loop and the indexed array to loop through all items in the associative array, outputting the key and value of each array item using the index number.",
+        "D": "It creates an associative array named ARRAY, which it loops through using a C-style for loop and the index numbers of each item in the associative array's keys, outputting the value of each item."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS155",
+      "question": "What file would match the code below?\n```bash\nls Hello[[.vertical-line.]]World\n```",
+      "choices": {
+        "A": "Nothing, this is an invalid file glob.",
+        "B": "`Hello.vertical-line.World`",
+        "C": "`Hello[[.vertical-line.]]World`",
+        "D": "`Hello|World`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS156",
+      "question": "What will be in out.txt?\n```bash\nls nonexistentfile | grep \"No such file\" > out.txt\n```",
+      "choices": {
+        "A": "No such file",
+        "B": "ls: cannot access nonexistentfile: No such file or directory",
+        "C": "Nothing, out.txt will be empty.",
+        "D": "It will be the contents of nonexistentfile."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS157",
+      "question": "For the script to print \"Is numeric\" on screen, what would the user have to enter when prompted?\n```bash\n#!/bin/bash\nread -p \"Enter text \" var\nif [[ \"$var\" =~ \"^[0-9]+$\" ]];then\n    echo \"Is numeric\"\nelse\n    echo \"Is not numeric\"\nfi\n```",
+      "choices": {
+        "A": "Any sequence of characters that includes an integer",
+        "B": "The user would have to enter the character sequence of `^[0-9]]+$` Only this will prove to be true and \"Is numeric\" would be printed on the screen due to incorrect syntax. By encapsulating the regular expression in double quotes every match will fail except the text string `^[0-9]+$`",
+        "C": "One or more characters that only includes integers",
+        "D": "Due to a syntax error it is impossible to get the script to print \"Is numeric\"\nThe regex must not be quoted to work properly."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS158",
+      "question": "How would you find the last copy command run in your history?",
+      "choices": {
+        "A": "`history | find cp`",
+        "B": "`history | grep cp`",
+        "C": "`grep cp history`",
+        "D": "`cp history`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS159",
+      "question": "In order to write a script that iterates through the files in a directory, which of the following could you use?",
+      "choices": {
+        "A": "`for i in $(ls); do ... done`",
+        "B": "`for $(ls); do ... done`",
+        "C": "`for i in $ls; do ... done`",
+        "D": "`for $ls; do ... done`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS160",
+      "question": "When executing a command and passing the output of that command to another command, which character allows you to chain these commands together?",
+      "choices": {
+        "A": "`|`",
+        "B": "`->`",
+        "C": "`\\#`",
+        "D": "`@`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS161",
+      "question": "In the script shown below, what is **greeting**?\n```bash\n#!/usr/bin/env bash\ngreeting=\"Hello\"\necho $greeting, everybody!\n```",
+      "choices": {
+        "A": "a command",
+        "B": "a loop",
+        "C": "a parameter",
+        "D": "a variable"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS162",
+      "question": "Which statement checks whether the variable num is greater than five?",
+      "choices": {
+        "A": "`(( num -gt 5 ))`",
+        "B": "`[[$num -lt 5]]`",
+        "C": "`(( num > 5 ))`",
+        "D": "`num > 5`\n[reference](https://tldp.org/LDP/abs/html/dblparens.html)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS163",
+      "question": "Using Bash extended globbing, what will be the output of this command?\n```bash\n$ ls -l\napple\nbanana\nbananapple\nbanapple\npineapple\nstrawberry\n$ shopt -s extglob\n$ ls -l @(ba*(na)|a+(p)le)\n```",
+      "choices": {
+        "A": "a\n```bash\napple\nbanana\n```",
+        "B": "b\n```bash\napple\nbanana\nbananapple\nbanapple\npineapple\nstrawberry\n```",
+        "C": "c\n```bash\napple\nbanana\nbananappple\nbanapple\npineapple\n```",
+        "D": "d\n```bash\napple\nbanana\nbananapple\nbanapple\npineapple\n```\n\n[reference](https://www.linuxjournal.com/content/bash-extended-globbing)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS164",
+      "question": "When used from within a script, which variable contains the name of the script?",
+      "choices": {
+        "A": "\\$0",
+        "B": "\\$# // number of positional parameters",
+        "C": "\\$\\$ // pid of the current shell",
+        "D": "\\$@ // array-like construct of all positional parameters"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS165",
+      "question": "What does the + signify at the end of the 10-digit file permissions on data.txt?\n```bash\nls -l\n-rwx------+ 1 user1 u1 0 Oct 1 10:00 data.txt\n```",
+      "choices": {
+        "A": "There is an SELinux security context",
+        "B": "The sticky bit is set and the file will stay in RAM for speed",
+        "C": "There is an access control list",
+        "D": "There is an extended attribute such as immutable set"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS166",
+      "question": "In Bash, what does the command below do?\n```bash\ncd -\n```",
+      "choices": {
+        "A": "It moves you to the directory you were previously in.",
+        "B": "It moves you to your home folder (whatever your current working directory happens to be).",
+        "C": "It deletes the current directory.",
+        "D": "It moves you one directory above your current working directory."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS167",
+      "question": "What does this command do?\n```bash\ncat > notes -\n```",
+      "choices": {
+        "A": "Accepts text from standard input and places it in \"notes\"",
+        "B": "Creates \"notes\" and exits",
+        "C": "Outputs the content of notes and deletes it",
+        "D": "Appends text to the existing \"notes\""
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS168",
+      "question": "What is the output of:\n```bash\nVAR=\"This old man came rolling\"\necho \"\\${VAR//man/rolling}\"\n```",
+      "choices": {
+        "A": "This old rolling came rolling",
+        "B": "This old man came man",
+        "C": "This old man came rolling",
+        "D": "This old came"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS169",
+      "question": "The shell looks at the contents of a particular variable to identify which programs it can run. What is the name of this variable?",
+      "choices": {
+        "A": "$INCLUDE",
+        "B": "$PATH",
+        "C": "$PROGRAM",
+        "D": "$PATHS"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS170",
+      "question": "What statement would you use to print this in the console?\n`Shall we play a game? yes\\no`",
+      "choices": {
+        "A": "`echo \"Shall we play a game? yes/\\no\"`",
+        "B": "`echo \"Shall we play a game\\? yes\\\\no\"`",
+        "C": "`echo \"Shall we play a game? yes\\\\no\"`",
+        "D": "`echo \"Shall we play a game? yes\\no\"`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS171",
+      "question": "The code below seems to work and outputs \"8 is greater than 5\". However, what unexpected result will tell you it is not functioning properly?\n```bash\n#!/bin/bash\nvar=\"8\"\nif [ $var > 5 ]; then\n    echo \"$var is greater than 5\"\nfi\n```",
+      "choices": {
+        "A": "There will be no unexpected results. This script works as is and the output will be \"8 is greater than 5\".",
+        "B": "The comparison will not be able to handle floating-point numbers, as Bash only handles integers. So this example will output an error message if the value of $var is changed to \"8.8\".",
+        "C": "There will be a file in the current directory named 5.",
+        "D": "The variable $var is not quoted, which will lead to word splitting. This script will fail with a \"unary operator expected\" message if you change the value of"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS172",
+      "question": "Which one is true?",
+      "choices": {
+        "A": "SELinux policy rules are checked after DAC rules.",
+        "B": "SELinux policy rules are checked before DAC rules",
+        "C": "SELinux policy rules are never checked after DAC rules.",
+        "D": "None of these\n[reference](https://unix.stackexchange.com/questions/16828/what-roles-do-dac-file-permissions-acl-and-mac-selinux-play-in-linux-file-s)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS173",
+      "question": "Which does the below command do?\n```bash\nw\n```",
+      "choices": {
+        "A": "It doesn't display information about the users currently on the machine.",
+        "B": "It displays information about the users currently on the machine.",
+        "C": "It displays information about the users currently on the another machine.",
+        "D": "None of the above"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS174",
+      "question": "Which sed options should you use to change the second-to-last instance of variable to rock so it would read:\nA constant is a variable that is a rock that isn't variable\n\n```bash\nvar=\"A constant is a variable that is a variable that isn't variable\"\necho \"$var\" | sed _____\n```",
+      "choices": {
+        "A": "`s/\\(.*\\)variable\\(.*variable\\)/\\1rock\\2/'`",
+        "B": "`s/variable/rock/'`",
+        "C": "`s/variable/rock/g'`",
+        "D": "`s/(.*\\)variable\\(.*variable\\)/\\1rock\\2/'`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS175",
+      "question": "To make a Bash script named script.sh executable, what should you run?",
+      "choices": {
+        "A": "exec script.sh",
+        "B": "chmod +x script.sh",
+        "C": "bash script.sh",
+        "D": "source script.sh"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS176",
+      "question": "How can you create a shared terminal in a Bash shell?",
+      "choices": {
+        "A": "screen",
+        "B": "screen -X",
+        "C": "screen --shared",
+        "D": "terminal -shared"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS177",
+      "question": "Wich operator sends the output of ls to a file for later use?",
+      "choices": {
+        "A": "ls < filelist.txt",
+        "B": "ls ¦ filelist.txt",
+        "C": "ls > filelist.txt",
+        "D": "ls - filelist.txt"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS178",
+      "question": "When comparing items with case, what statement indicates an end to the evaluation block?",
+      "choices": {
+        "A": "stop",
+        "B": "esac",
+        "C": "done",
+        "D": "exit"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS179",
+      "question": "To run a group of commands without spawning a subshell, which syntax would you use?",
+      "choices": {
+        "A": "(command1; command2)",
+        "B": "{ command1; command2; }",
+        "C": "(( command1; command2 ))",
+        "D": "command1; command2"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS180",
+      "question": "What are the results of the command with a user named jon?\n```bash\necho 'Hello, $(whoami)!'\n```",
+      "choices": {
+        "A": "Hello, $(jon)!",
+        "B": "Hello, jon!",
+        "C": "Hello, $(whoami)!",
+        "D": "Hello, whoami!"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS181",
+      "question": "How can you copy a directory to another system with compression?",
+      "choices": {
+        "A": "`tar -ssh user@192.158.1.1 /bin/newfile`",
+        "B": "`tar cvzf - /wwwdata | ssh root@192.168.1.201 \"dd of=/backup/wwwdata.tar.gz\"`",
+        "C": "You can't compress the stream",
+        "D": "`scp -r directory user@192.168.1.1:/tmp`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS182",
+      "question": "To assign the command `ls -lah` to the shortcut command `lh`, what command should you use?",
+      "choices": {
+        "A": "`alias lh='ls -lah'`",
+        "B": "`link lh='ls -lah'`",
+        "C": "`alias 'ls -lah'=lh`",
+        "D": "`lh | ls -lah`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS183",
+      "question": "Which statement will print all of the fully qualified .csv files in the home directory or subdirectories while not displaying any errors?",
+      "choices": {
+        "A": "find $USER_DIR -name \"\\*.csv\" 2>/dev/null",
+        "B": "find $HOME -name \"\\*.csv\" 1>/dev/null",
+        "C": "find $HOME -name \"\\*.csv\" 2>/dev/null",
+        "D": "find HOME -name \"\\*.csv\" 1>/dev/null"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS184",
+      "question": "In Bash, what does a # at the end of the default prompt string indicate?",
+      "choices": {
+        "A": "that the user is acting as root",
+        "B": "that the current working directory is the root of the file system",
+        "C": "that there are updates for the system available",
+        "D": "that the user is unprivileged"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS185",
+      "question": "What will be the output of this command?\n```bash\n$ ls -l\nfile10.txt\nfile1.txt\nfileabc.txt\nfilea.txt\nfileb.txt\nfilec.txt\n$ ls -l file[^abc]*.txt\n```",
+      "choices": {
+        "A": "A\n```bash\nfile1.txt\nfile10.txt\n```",
+        "B": "B\n```bash\nfile10.txt\nfile1.txt\nfileabc.txt\nfilea.txt\nfileb.txt\nfilec.txt\n```",
+        "C": "C\n```bash\nfileabc.txt filea.txt fileb.txt filec.txt\n```",
+        "D": "D\n```bash\nfilea.txt\nfileb.txt\nfilec.txt\n```\n\n[Reference](https://tldp.org/LDP/abs/html/globbingref.html)\n`The caret (`^`) symbol here negates matches inside the bracket.`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS186",
+      "question": "What is the output of this command sequence?\n```bash\ncat <<EOF\n------------------------\n   This is line 1.\n   This is line 2.\n   This is line 3.\n------------------------\nEOF\n```",
+      "choices": {
+        "A": "A\n```bash\nThis is line 1.\nThis is line 2.\nThis is line 3.\n```",
+        "B": "B\n```bash\n------------------------This is line 1.This is line 2.This is line 3.------------------------\n```",
+        "C": "C\n```bash\n------------------------\n   This is line 1.\n   This is line 2.\n   This is line 3.\n------------------------\n```",
+        "D": "D\n```bash\n------------------------\nThis is line 1.\nThis is line 2.\nThis is line 3.\n------------------------\n```"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS187",
+      "question": "What would be in out.txt?\n```bash\n#!/bin/bash\n\necho 123446789 > out.txt\nexec 3<> out.txt\nread -n 4 <&3\necho -n 5 >&3\nexec 3>&-\n```",
+      "choices": {
+        "A": "123446789",
+        "B": "the hyphen symbol (-)",
+        "C": "123456789",
+        "D": "the number 5, which is written to the file using echo\n1. [I/O Redirection](https://tldp.org/LDP/abs/html/io-redirection.html)\n2. [What is the difference between \"echo\" and \"echo -n\"?](https://stackoverflow.com/questions/30761986/what-is-the-difference-between-echo-and-echo-n)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS188",
+      "question": "Which variable contains the process ID (PID) of the script while it's running?",
+      "choices": {
+        "A": "$ID",
+        "B": "$#",
+        "C": "$@",
+        "D": "$$"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS189",
+      "question": "By combining extended globbing and parameter expansion, what would be the value of VAR?\n```\n#!/bin/bash\nshopt -s extglob\nVAR='     This is...     a string of characters     '\nVAR=${VAR##+([[:space:]])}; VAR=${VAR%%+([[:space:]])};\necho \"$VAR\"\n```",
+      "choices": {
+        "A": "`<pre> This is... a string of characters</pre>`",
+        "B": "`<pre> This is...a string of characters</pre>`",
+        "C": "`<pre>This is... a string of characters</pre>`",
+        "D": "`<pre>This is...a string of characters</pre>`\nReferences:\n\n1. [What is the meaning of the ${0##...} syntax with variable, braces and hash character in bash?](https://stackoverflow.com/questions/2059794/what-is-the-meaning-of-the-0-syntax-with-variable-braces-and-hash-chara)\n2. [What does expanding a variable as \"${var%%r\\*}\" mean in bash?](https://stackoverflow.com/questions/41859601/what-does-expanding-a-variable-as-varr-mean-in-bash)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS190",
+      "question": "Which operator tells the shell to run a given command in the background?",
+      "choices": {
+        "A": "!",
+        "B": "&&",
+        "C": "&",
+        "D": "$"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS191",
+      "question": "The range of nice number in LINUX system is?",
+      "choices": {
+        "A": "-20 to 0",
+        "B": "-20 to 19",
+        "C": "0 to 19",
+        "D": "10 to 10\n[Reference](https://man7.org/linux/man-pages/man2/nice.2.html)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS192",
+      "question": "In Bash, what does this expression evaluate to?\n```\necho $((4/3))\n```",
+      "choices": {
+        "A": "1.3",
+        "B": "1.3333333333",
+        "C": "1",
+        "D": "2\n[Reference](https://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-10.html)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS193",
+      "question": "To keep a loop going until a certain condition becomes true, what would you likely use?",
+      "choices": {
+        "A": "if",
+        "B": "case",
+        "C": "while",
+        "D": "for\n[Reference](https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS194",
+      "question": "What does this command sequence do?\n```bash\ncat > notes -\n```",
+      "choices": {
+        "A": "It creates an empty file called \"notes\" and then exits.",
+        "B": "It outputs the contents of the \"notes\" file to the screen, and then deletes it.",
+        "C": "It accepts text from the standard input and places it in the \"notes\" file.",
+        "D": "It appends text to an existing file called \"notes.\""
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS195",
+      "question": "You want to match five-letter palindromes such as radar, rotor, and tenet. Which sed option should you use?",
+      "choices": {
+        "A": "`sed -E -n '/^(.)(.)\\3\\2\\1$/p'`",
+        "B": "`sed -E -n '/^(.)(.)(.).\\2\\1$/p'`",
+        "C": "`sed -E -n '/^(.)(.)(.)\\2\\1$/p'`",
+        "D": "`sed -E -n '/^(.)(.)(.)(.)\\3\\2\\1$/p'`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS196",
+      "question": "To add a value to the current environment, what command should you use ?",
+      "choices": {
+        "A": "shell_add",
+        "B": "save",
+        "C": "echo",
+        "D": "export"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS197",
+      "question": "What is the difference between these two conditional expressions?\n```bash\n[[$A==$B]]\n[[$A -eq $B]]\n```",
+      "choices": {
+        "A": "[[$A == $B]] is used for numeric comparisons whereas [[$a-eq $B]] is used for text comparisons.",
+        "B": "[[$A==$B]]is the new way of doing comparison where [[$a-eq $B]]is the legacy syntax.",
+        "C": "they are the same.",
+        "D": "[[$A==$B]]is used for text comparisons whereas [[$a-eq $B]]is used for numeric comparisons."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS198",
+      "question": "What is the output of this code?\n```bash\nVAR=\"united states\"\necho \"${VAR^}\"\n```",
+      "choices": {
+        "A": "unitedstates",
+        "B": "United States",
+        "C": "United states",
+        "D": "UNITED STATES"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS199",
+      "question": "What would happen if you ran the script below as it is written?\n```bash\n#!/bin/bash\n#condition 1\nif [ $foo = \"bar\" ]; then echo \"foo is bar\"\nfi\n#condition 2\nif [[ $foo = \"bar\" ]]; then echo \"foo is bar\"\nfi\n```",
+      "choices": {
+        "A": "Both conditions will fail.",
+        "B": "Both conditions will succeed.",
+        "C": "Condition 1 would succeed and Condition 2 would fail.",
+        "D": "Condition 1 would fail and Condition 2 would succeed.\n**Explanation:** The script as written outputs `line 3: [: =: unary operator expected`. Define variable and assign value `foo=\"bar\"`, and both conditions will succeed."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS200",
+      "question": "Which variable contains the number of arguments passed to a script from the command line?",
+      "choices": {
+        "A": "`$#`",
+        "B": "`$@`",
+        "C": "`0`",
+        "D": "`$!`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS201",
+      "question": "In Bash scripting, what does the \"shebang\" (#!) at the beginning of a script indicate, and why is it important?",
+      "choices": {
+        "A": "It indicates the location of the Bash interpreter that should be used to execute the script.",
+        "B": "It specifies the version of Bash required to run the script.",
+        "C": "It marks the script as executable.",
+        "D": "It helps the system identify the script's interpreter, ensuring the correct interpreter is used."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS202",
+      "question": "Which variable contains the process ID (PID) of the script while it’s running?",
+      "choices": {
+        "A": "`$ID`",
+        "B": "`$@`",
+        "C": "`$#`",
+        "D": "`$$`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS203",
+      "question": "If a user wants to execute script sh without a shebang fine or execute permissions, what should the user type?",
+      "choices": {
+        "A": "A shebang line is required to execute a shell script.",
+        "B": "'bash script.sh'.",
+        "C": "'exec script.sh'.",
+        "D": "ExecuteExecute permissions are required to execute a shell script."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS204",
+      "question": "Which choice is the most likely output of the compound command shown below?\n```bash\ncat -n animals | sort -r | head -n 5\n```",
+      "choices": {
+        "A": "a.\n```bash\n\t1\tAnt\n\t2\tBear\n\t3\tCat\n\t4\tDog\n\t5\tElephant\n```",
+        "B": "b.\n```bash\n\t9\tIbex\n\tB\tHippo\n\t7\tGiraffe\n\t6\tFox\n\t5\tElephant\n\t4\tDog\n\t3\tCat\n\t2\tBear\n\t1\tAnt10\tJaguar\n```",
+        "C": "c.\n```bash\n\tJaguar\n\tIbex\n\tHippo\n\tGiraffe\n\tFox\n```",
+        "D": "d.\n```bash\n\t9\tIbex\n\t8\tHippo\n\t7\tGiraffe\n\t6\tFox\n\t5\tElephant\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS205",
+      "question": "Which of the following is not a valid Bash variable name?",
+      "choices": {
+        "A": "`$HOME`",
+        "B": "`my_var`",
+        "C": "`1var`",
+        "D": "`!`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SYS206",
+      "question": "What is the difference between the > and >> redirection operators?",
+      "choices": {
+        "A": "`> overwrites the contents of the target file, while >> appends to the end of the target file.`",
+        "B": "`> redirects input, while >> redirects output.`",
+        "C": "`> is used for standard output, while >> is used for standard error.`",
+        "D": "`> is a unary operator, while >> is a binary operator.`\n[reference](https://www.shells.com/l/en-US/tutorial/Difference-between-%E2%80%9C%3E%E2%80%9D-and-%E2%80%9C%3E%3E%E2%80%9D-in-Linux#:~:text=So%2C%20what%20we%20learned%20is,to%20modify%20files%20in%20Linux.)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "systems",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

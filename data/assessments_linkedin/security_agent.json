@@ -1,0 +1,2951 @@
+{
+  "agent_id": "security_agent",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 173,
+  "difficulty_distribution": {
+    "intermediate": 146,
+    "advanced": 27,
+    "expert": 0
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_SEC001",
+      "question": "According to the shared responsibility model, which cloud computing model places the most responsibility on the cloud service provider (CSP)?",
+      "choices": {
+        "A": "Hybrid Cloud",
+        "B": "Software as a Service (SaaS)",
+        "C": "Platform as a Service (PaaS)",
+        "D": "Infrastructure as a Service (IaaS)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC002",
+      "question": "Which option removes the risk of multitenancy in cloud computing?",
+      "choices": {
+        "A": "PaaS",
+        "B": "public cloud",
+        "C": "private cloud",
+        "D": "IaaS"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC003",
+      "question": "Your organization recently implemented a unified messaging solution and VoIP phones on every desktop. You are responsible for researching the vulnerabilities of the VoIP system. Which type of attack are VoIP phones most vulnerable to experiencing?",
+      "choices": {
+        "A": "denial-of-service",
+        "B": "brute force attacks",
+        "C": "malware",
+        "D": "buffer overflow"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC004",
+      "question": "Which security control cannot produce an active response to a security event?",
+      "choices": {
+        "A": "cloud access security broker (CASB)",
+        "B": "intrusion prevention system (IPS)",
+        "C": "intrusion detection system (IDS)",
+        "D": "next generation firewall\n**Explanation**: An intrusion detection system (`IDS`) is a device or software application that monitors a network or systems for malicious activity or policy violations.\n\n[Quizlet](https://quizlet.com/217188159/cissp-practice-testschapter-7-security-operations-domain7-flash-cards/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC005",
+      "question": "Packet sniffer is also called **\\_**.",
+      "choices": {
+        "A": "SIEM",
+        "B": "UTM",
+        "C": "protocol analyzer",
+        "D": "data sink"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC006",
+      "question": "Which option tests code while it is in operation?",
+      "choices": {
+        "A": "code review",
+        "B": "code analysis",
+        "C": "static analysis",
+        "D": "dynamic analysis"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC007",
+      "question": "Which option describes testing that individual software developers can conduct on their own code?",
+      "choices": {
+        "A": "gray box testing",
+        "B": "integration testing",
+        "C": "white box testing",
+        "D": "unit testing"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC008",
+      "question": "In black box penetration testing, what information is provided to the tester about the target environment?",
+      "choices": {
+        "A": "none",
+        "B": "limited details of server and network infrastructure",
+        "C": "all information",
+        "D": "limited details of server infrastructure"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC009",
+      "question": "Which security control can best protect against shadow IT by identifying and preventing use of unsanctioned cloud apps and services?",
+      "choices": {
+        "A": "intrusion prevention system (IPS)",
+        "B": "next generation firewall",
+        "C": "cloud access security broker (CASB)",
+        "D": "intrusion detection system (IDS)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC010",
+      "question": "Which option describes the best defense against collusion?",
+      "choices": {
+        "A": "monitoring of normal employee system and data access patterns",
+        "B": "applying system and application updates regularly",
+        "C": "fault tolerant infrastructure and data redundancy",
+        "D": "separation of duties and job rotation\n[Stack Exchange](https://security.stackexchange.com/a/114835/249930)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC011",
+      "question": "During a penetration test, you find a file containing hashed passwords for the system you are attempting to breach. Which type of attack is most likely to succeed in accessing the hashed passwords in a reasonable amount of time?",
+      "choices": {
+        "A": "rainbow table attack",
+        "B": "pass-the-hash attack",
+        "C": "password spray attack",
+        "D": "brute force attack\n**Explanation**: A rainbow table attack is a more efficient and effective way of cracking many hashed passwords, whereas brute-forcing would take much longer and may not complete in a reasonable amount of time.\n\n[Professor Messer](https://www.professormesser.com/free-a-plus-training/220-1002/brute-force-attacks-3)."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "hashing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC012",
+      "question": "You configure an encrypted USB drive for a user who needs to deliver a sensitive file at an in-person meeting. What type of encryption is typically used to encrypt the file?",
+      "choices": {
+        "A": "file hash",
+        "B": "asymmetric encryption",
+        "C": "digital signature",
+        "D": "symmetric encryption"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC013",
+      "question": "What is the difference between DRP and BCP?",
+      "choices": {
+        "A": "DRP works to keep a business up and running despite a disaster. BCP works to restore the original business capabilities.",
+        "B": "BCP works to keep a business up and running despite a disaster. DRP works to restore the original business capabilities.",
+        "C": "BCP is part of DRP.",
+        "D": "DRP is part of BCP."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC014",
+      "question": "Which aspect of cybersecurity do Distributed Denial of Service (DDoS) attacks affect the most?",
+      "choices": {
+        "A": "non-repudiation",
+        "B": "integrity",
+        "C": "availability",
+        "D": "confidentiality"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC015",
+      "question": "You need to recommend a solution to automatically assess your cloud-hosted VMs against CIS benchmarks to identify deviations from security best practices. What type of solution should you recommend?",
+      "choices": {
+        "A": "Cloud Security Posture Management (CSPM)",
+        "B": "Intrusion Detection and Prevention System (IDPS)",
+        "C": "Cloud Workload Protection Platforms (CWPP)",
+        "D": "Cloud Access Security Brokers (CASBs)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC016",
+      "question": "**\\_** validates the integrity of data files.",
+      "choices": {
+        "A": "Compression",
+        "B": "Hashing",
+        "C": "Symmetric encryption",
+        "D": "Stenography"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC017",
+      "question": "Which is an example of privacy regulation at the state government level in the U.S.?",
+      "choices": {
+        "A": "CCPA",
+        "B": "GDPR",
+        "C": "NIST Privacy Framework",
+        "D": "OSPF"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC018",
+      "question": "what is the term for the policies and technologies implemented to protect, limit, monitor, audit, and govern identities with access to sensitive data and resources?",
+      "choices": {
+        "A": "identity and access management (IAM)",
+        "B": "privileged account management (PAM)",
+        "C": "authentication and authorization",
+        "D": "least privilege"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC019",
+      "question": "You have configured audit settings in your organization's cloud services in the event of a security incident. What type of security control is an audit trail?",
+      "choices": {
+        "A": "preventive control",
+        "B": "detective control",
+        "C": "directive control",
+        "D": "corrective control\n**Explanation**: An audit trail is typically considered a detective security control in the context of the CISSP."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC020",
+      "question": "What is the name for a short-term interruption in electrical power supply?",
+      "choices": {
+        "A": "grayout",
+        "B": "blackout",
+        "C": "brownout",
+        "D": "whiteout"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC021",
+      "question": "Your security team recommends adding a layer of defense against emerging persistent threats and zero-day exploits for all endpoints on your network. The solution should offer protection from external threats for network-connected devices, regardless of operating system. Which solution is best suited to meet this requirement?",
+      "choices": {
+        "A": "Security Information Event Management (SIEM)",
+        "B": "Extended Detection and Response (XDR)",
+        "C": "next generation firewall (NGFW)",
+        "D": "Cloud App Security Broker (CASB)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC022",
+      "question": "Which is _not_ a threat modeling methodology?",
+      "choices": {
+        "A": "TRIKE",
+        "B": "TOGAF",
+        "C": "STRIDE",
+        "D": "MITRE ATT&CK"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC023",
+      "question": "You organization is conducting a pilot deployment of a new e-commerce application being considered for purchase. You need to recommend a strategy to evaluate the security of the new software. Your organization does not have access to the application's source code.\n#### Which strategy should you choose?",
+      "choices": {
+        "A": "dynamic application security testing",
+        "B": "unit testing",
+        "C": "white box testing",
+        "D": "static application security testing"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC024",
+      "question": "You need to disable the camera on corporate devices to prevent screen capture and recording of sensitive documents, meetings, and conversations. Which solution would be be suited to the task?",
+      "choices": {
+        "A": "Mobile Device Management (MDM)",
+        "B": "Data Loss Prevention (DLP)",
+        "C": "Intrusion Detection and Prevention System (IDPS)",
+        "D": "Cloud Access Security Broker (CASB)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC025",
+      "question": "How many keys would be necessary to accomodate 100 users in an asymmetric cryptography system?",
+      "choices": {
+        "A": "200",
+        "B": "400",
+        "C": "100",
+        "D": "300\n**Explanation**: The formula for asymmetric encryption is `2n`; where `n` is the number of communicating parties."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC026",
+      "question": "Two competing online retailers process credit card transactions for customers in countries on every continent. One organization is based in the United States. The other is based in the Netherlands. With which regulation must both countries comply while ensuring the security of these transactions?",
+      "choices": {
+        "A": "Federal Information Security Management Act (FISMA)",
+        "B": "Payment Card Industry Data Security Standard (PCI-DSS)",
+        "C": "General Data Protection Regulation (GDPR)",
+        "D": "International Organization for Standardization and International Electrotechnical Commission (ISO/IEC 27018)\n**Explanation**: The Payment Card Industry Data Security Standard (`PCI DSS`) is the global card industry security standard that is **required of all entities** that store, process, or transmit cardholder data, including financial institutions, online retailers and service providers.\n\n[PCI Security Overview](https://www.pcisecuritystandards.org/pci_security/standards_overview)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC027",
+      "question": "What provides a common language for describing security incidents in a structures and repeatable manner?",
+      "choices": {
+        "A": "Common event format",
+        "B": "common weakness enumeration",
+        "C": "common vulnerabilities and exposures",
+        "D": "common vulnerability scoring system\n**Explanation**: The Common Vulnerabilities and Exposures (`CVE`) system provides a reference-method for publicly known information-security vulnerabilities and exposures."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC028",
+      "question": "Which type of application can intercept sensitive information such as passwords on a network segment?",
+      "choices": {
+        "A": "log server",
+        "B": "network scanner",
+        "C": "firewall",
+        "D": "protocol analyzer\n**Explanation**: A `protocol analyzer` is a tool used to capture and analyze signals and data traffic over a communication channel.\n\n[WireShark](https://www.wireshark.org) is a protocol analyzer."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC029",
+      "question": "An attacker has discovered that they can deduce a sensitive piece of confidential information by analyzing multiple pieces of less sensitive public data. What type of security issue exists?",
+      "choices": {
+        "A": "aggregation",
+        "B": "inference",
+        "C": "SQL injection",
+        "D": "cross-origin resource sharing\n**Explanation**: An `Inference Attack` is a data mining technique performed by analyzing data in order to illegitimately gain knowledge about a subject or database. A subject's sensitive information can be considered as leaked if an adversary can infer its real value with a high confidence. **Source**: ([Wikipedia](https://en.wikipedia.org/wiki/Inference_attack))."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC030",
+      "question": "What act grants an authenticated party permission to perform an action or access a resource?",
+      "choices": {
+        "A": "Zero Trust Security",
+        "B": "Role-Based Access Control (RBAC)",
+        "C": "authorization",
+        "D": "Single Sign-On\n[Okata.com](https://www.okta.com/identity-101/authentication-vs-authorization/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "permissions",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC031",
+      "question": "According to GDPR, a data \\_ is the person about whom data is being collected.",
+      "choices": {
+        "A": "processor",
+        "B": "object",
+        "C": "subject",
+        "D": "controller\n[Intersoft Consulting](https://gdpr-info.eu/art-4-gdpr/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC032",
+      "question": "Which is not a principle of zero trust security?",
+      "choices": {
+        "A": "use least privilege access",
+        "B": "verify explicitly",
+        "C": "trust but verify",
+        "D": "assume breach\n**Explanation**: zero trust assumes that the system will be breached and designs security as if there is no perimeter. Hence, don’t trust anything by default.\n\n[NIST](https://www.nist.gov/blogs/taking-measure/zero-trust-cybersecurity-never-trust-always-verify)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC033",
+      "question": "Which attack exploits input validation vulnerabilities?",
+      "choices": {
+        "A": "ARP spoofing",
+        "B": "pharming attacks",
+        "C": "cross-site scripting (XSS)",
+        "D": "DNS poisoning\n[White Hat Sec](https://www.whitehatsec.com/glossary/content/input-validation)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC034",
+      "question": "You are a security analyst, and you receive a text message alerting you of a possible attack. Which security control is the _least_ likely to produce this type of alert?",
+      "choices": {
+        "A": "IDS",
+        "B": "SIEM",
+        "C": "packet sniffer",
+        "D": "IPS"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC035",
+      "question": "SQL injection inserts a code fragment that makes a database statement universally true, like **\\_**.",
+      "choices": {
+        "A": "`SELECT * FROM users WHERE username = \" AND 1=1--'`",
+        "B": "`SELECT * FROM users WHERE username = \" AND 1!=1--'`",
+        "C": "`SELECT * FROM users WHERE username = \" OR 1=1--'`",
+        "D": "`SELECT * FROM users WHERE username = \" OR 1!=1--'`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC036",
+      "question": "Which type of security assessment requires access to source code?",
+      "choices": {
+        "A": "static analysis",
+        "B": "black box testing",
+        "C": "dynamic analysis",
+        "D": "penetration testing"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC037",
+      "question": "Which option is an open-source solution to scanning a network for active hosts and open ports?",
+      "choices": {
+        "A": "Autopsy",
+        "B": "Snort",
+        "C": "Nmap",
+        "D": "Wireshark\n**Explanation**: nmap is a port scanner [https://en.wikipedia.org/wiki/Nmap](https://en.wikipedia.org/wiki/Nmap)\nwireshark is a traffic analyzer\nsnort is an IDS\nautopsy is for forensic analysis"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC038",
+      "question": "When implementing a data loss prevention (DLP) strategy, what is the first step in the process?",
+      "choices": {
+        "A": "Evaluate the features of available DLP products to determine which best meet your organizations's needs.",
+        "B": "Examine the flow of sensitive data in your organization to better understand usage patterns.",
+        "C": "Conduct an inventory of all the data in your organization to establish classifications based on sensitivity.",
+        "D": "Conduct a risk assessment to determine the best data labeling strategy for your organization."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC039",
+      "question": "Which malware changes an operating system and conceals its tracks?",
+      "choices": {
+        "A": "virus",
+        "B": "worm",
+        "C": "rootkit",
+        "D": "Trojan horse"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC040",
+      "question": "Virtual Private Networks (VPNs) use **\\_** to create a secure connection between two networks.",
+      "choices": {
+        "A": "encryption",
+        "B": "a metropolitan area network",
+        "C": "a virtual local area network",
+        "D": "a wide area network"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC041",
+      "question": "What is the process of challenging a user to prove their identity?",
+      "choices": {
+        "A": "authentication",
+        "B": "Single Sign-On",
+        "C": "authorization",
+        "D": "Role-Based Access Control (RBAC)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC042",
+      "question": "Which cyberattack aims to exhaust an application's resources, making the application unavailable to legitimate users?",
+      "choices": {
+        "A": "SQL injection",
+        "B": "dictionary attack",
+        "C": "Distributed Denial of Service (DDoS)",
+        "D": "rainbow table attack"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC043",
+      "question": "You are a recent cybersecurity hire, and your first assignment is to present on the possible threats to your organization. Which of the following best describes the task?",
+      "choices": {
+        "A": "risk mitigation",
+        "B": "threat assessment",
+        "C": "risk management",
+        "D": "enumeration"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC044",
+      "question": "You are at a coffee shop and connect to a public wireless access point (WAP). What a type of cybersecurity attack are you most likely to experience?",
+      "choices": {
+        "A": "man-in-the-middle attack",
+        "B": "back door",
+        "C": "logic bomb",
+        "D": "virus"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC045",
+      "question": "You have been tasked with recommending a solution to centrally manage mobile devices used throughout your organization. Which technology would best meet this need?",
+      "choices": {
+        "A": "Extended Detection and Responde (XDR)",
+        "B": "Security Information Event Management (SIEM)",
+        "C": "Intrusion Detection and Prevention System (IDPS)",
+        "D": "Mobile Device Management (MDM)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC046",
+      "question": "Which type of vulnerability cannot be discovered in the course of a typical vulnerability assessment?",
+      "choices": {
+        "A": "file permissions",
+        "B": "buffer overflow",
+        "C": "zero-day vulnerability",
+        "D": "cross-site scripting"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC047",
+      "question": "The DLP project team is about to classify your organization's data. Whats is the primary purpose of classifying data?",
+      "choices": {
+        "A": "It identifies regulatory compliance requirements.",
+        "B": "It prioritizes IT budget expenditures.",
+        "C": "It quantifies the potential cost of a data breach.",
+        "D": "It establishes the value of data to the organization.\n**Explanation**: The primary purpose of classifying data in the context of Data Loss Prevention (DLP) is to help organizations identify, label, and protect sensitive information from unauthorized disclosure or leakage. DLP is a set of technologies and processes designed to prevent the unauthorized access, use, and transmission of sensitive data."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC048",
+      "question": "You are responsible for managing security of your organization's public cloud infrastructure. You need to implement security to protect the data and applications running in a variety of IaaS and PaaS services, including a new Kubernetes cluster. What type of solution is best suited to this requirement?",
+      "choices": {
+        "A": "Cloud Workload Protection Platforms (CWPP)",
+        "B": "Cloud Security Posture Management (CSPM)",
+        "C": "Cloud Access Security Brokers (CASBs)",
+        "D": "Intrusion Detection and Prevention System (IDPS)\n[Explanation](https://www.gartner.com/reviews/market/cloud-workload-protection-platforms)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "orchestration",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC049",
+      "question": "Sharing account credentials violates the **\\_** aspect of access control.",
+      "choices": {
+        "A": "identification",
+        "B": "authorization",
+        "C": "accounting",
+        "D": "authentication\n**Explanation**: Sharing account credentials violates the authentication aspect of access control. Authentication is the process of verifying the identity of a user, system, or application, and sharing credentials undermines this process by allowing multiple individuals to use the same set of login credentials, potentially compromising the security of the system."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC050",
+      "question": "You have recovered a server that was compromised in a malware attack to its previous state. What is the final step in the incident response process?",
+      "choices": {
+        "A": "Eradication / Remediation",
+        "B": "Certification",
+        "C": "Reporting",
+        "D": "Lessons Learned"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC051",
+      "question": "Which encryption type uses a public and private key pair for encrypting and decrypting data?",
+      "choices": {
+        "A": "asymmetric",
+        "B": "symmetric",
+        "C": "hashing",
+        "D": "all of these answers"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC052",
+      "question": "You have just identified and mitigated an active malware attack on a user's computer, in which command and control was established. What is the next step in the process?",
+      "choices": {
+        "A": "Reporting",
+        "B": "Recovery",
+        "C": "Eradiction / Remediation",
+        "D": "Lessons Learned\n[Explanation: Pages 29 to 31 ->](https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-83r1.pdf)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC053",
+      "question": "Which programming language is most susceptible to buffer overflow attacks?",
+      "choices": {
+        "A": "C",
+        "B": "Java",
+        "C": "Ruby",
+        "D": "Python"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC054",
+      "question": "Which list correctly describes risk management techniques?",
+      "choices": {
+        "A": "risk acceptance, risk mitigation, risk containment, and risk qualification",
+        "B": "risk avoidance, risk transference, risk containment, and risk quantification",
+        "C": "risk avoidance, risk mitigation, risk containment, and risk acceptance",
+        "D": "risk avoidance, risk transference, risk mitigation, and risk acceptance"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC055",
+      "question": "To implement encryption in transit, such as with the HTTPS protocol for secure web browsing, which type(s) of encryption is/are used?",
+      "choices": {
+        "A": "asymmetric",
+        "B": "both symmetric and asymmetric",
+        "C": "neither symmetric or asymmetric",
+        "D": "symmetric"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC056",
+      "question": "Which type of program uses Windows Hooks to capture keystrokes typed by the user, hides in the process list, and can compromise their system as well as their online access codes and password?",
+      "choices": {
+        "A": "trojan",
+        "B": "keystroke collector",
+        "C": "typethief",
+        "D": "keylogger"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "hooks",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC057",
+      "question": "How does ransomware affect a victim's files?",
+      "choices": {
+        "A": "by destroying them",
+        "B": "by encrypting them",
+        "C": "by stealing them",
+        "D": "by selling them"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC058",
+      "question": "Your computer has been infected, and is sending out traffic to a targeted system upon receiving a command from a botmaster. What condition is your computer currently in?",
+      "choices": {
+        "A": "It has become a money mule.",
+        "B": "It has become a zombie.",
+        "C": "It has become a bastion host.",
+        "D": "It has become a botnet."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC059",
+      "question": "You choose a cybersecurity framework for your financial organization that implements an effective and auditable set of governance and management processes for IT. Which framework are you choosing?",
+      "choices": {
+        "A": "C2M2",
+        "B": "NIST SP 800-37",
+        "C": "ISO/IEC 27001",
+        "D": "COBIT"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC060",
+      "question": "NIST issued a revision to SP 800-37 in December 2018. It provides a disciplined, structured, and flexible process for managing security and privacy risk. Which type of document is SP 800-37?",
+      "choices": {
+        "A": "a risk management framework",
+        "B": "a guide to risk assessments",
+        "C": "a guideline for vulnerability testing",
+        "D": "a step-by-step guide for performing business impact analyses"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC061",
+      "question": "The most notorious military-grade advanced persistent threat was deployed in 2010, and targeted centrifuges in Iran. What was this APT call?",
+      "choices": {
+        "A": "duqu",
+        "B": "agent BTZ",
+        "C": "stuxnet",
+        "D": "flame"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC062",
+      "question": "Where would you record risks that have been identified and their details, such as their ID and name, classification of information, and the risk owner?",
+      "choices": {
+        "A": "in the risk assessment documentation",
+        "B": "in the risk register",
+        "C": "in the business impact ledger",
+        "D": "in the Orange Book"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC063",
+      "question": "To prevent an incident from overwhelming resources, \\_ is necessary.",
+      "choices": {
+        "A": "disconnection from the network",
+        "B": "early containment",
+        "C": "continuation of monitoring for other incidents",
+        "D": "eradication of the issues"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC064",
+      "question": "FUD is expensive and often causes high drama over low risk. Which computer chip exploits were reported by CNN as needing to be completely replaced, but were later fixed with firmware updates?",
+      "choices": {
+        "A": "fire and ice exploits",
+        "B": "meltdown and spectre exploits",
+        "C": "Intel and STMicro CPU exploits",
+        "D": "super microboard and Apple iPhone exploits"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC065",
+      "question": "The ASD Top Four are application whitelisting, patching of applications, patching of operating systems, and limiting administrative privileges. What percent of breaches do these account for?",
+      "choices": {
+        "A": "40 percent",
+        "B": "60 percent",
+        "C": "85 percent",
+        "D": "100 percent"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC066",
+      "question": "You are working in the security operations center analyzing traffic on your network. You detect what you believe to be a port scan. What does this mean?",
+      "choices": {
+        "A": "This could be a specific program being run by your accounting department.",
+        "B": "This is an in-progress attack and should be reported immediately",
+        "C": "This is normal operation for your business.",
+        "D": "This could be a precursor to an attack."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC067",
+      "question": "How often is the ISF Standard of Good Practice updated?",
+      "choices": {
+        "A": "annual",
+        "B": "biannually",
+        "C": "bimonthly",
+        "D": "monthly"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC068",
+      "question": "Your incident response team is unable to contain an incident because they lack authority to take action without management approval. Which critical step in the preparation phase did your team skip?",
+      "choices": {
+        "A": "From an incident response committee to oversee any incidents that may occur.",
+        "B": "Get preauthorized to take unilateral action and make or direct emergency changes.",
+        "C": "Bring management in as leadership on the incident response team.",
+        "D": "Assign a head of the emergency response team who has the correct authority"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC069",
+      "question": "NIST SP 800-53 is one of two important control frameworks used in cybersecurity. What is the other one?",
+      "choices": {
+        "A": "ISO 27001",
+        "B": "NIST SP 800-54",
+        "C": "ISO 27002",
+        "D": "NIST SP 751-51"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC070",
+      "question": "Which organization, established by NIST in 1990, runs workshops to foster coordination in incident prevention, stimulate rapid reaction to incidents, and allow experts to share information?",
+      "choices": {
+        "A": "Forum of Incident Response and Security Teams",
+        "B": "Crest UK Response Teams",
+        "C": "Community of Computer Incident Response Teams",
+        "D": "NIST Special Publication 800-61 Response Teams"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "react",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC071",
+      "question": "You have implemented controls to mitigate the threats, vulnerabilities, and impact to your business. Which type of risk is left over?",
+      "choices": {
+        "A": "inherent risk",
+        "B": "residual risk",
+        "C": "applied risk",
+        "D": "leftover risk\n[Explanation](https://www.sans.org/brochure/course/information-security-risk-management/226)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC072",
+      "question": "There are four possible treatments once an assessment has identified a risk. Which risk treatment implements controls to reduce risk?",
+      "choices": {
+        "A": "risk mitigation",
+        "B": "risk acceptance",
+        "C": "risk avoidance",
+        "D": "risk transfer"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC073",
+      "question": "Which security control scheme do vendors often submit their products to for evaluation, to provide an independent view of product assurance?",
+      "choices": {
+        "A": "Common Criteria",
+        "B": "risk management certification board",
+        "C": "OWASP security evaluation",
+        "D": "ISO 27000"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC074",
+      "question": "Which organization has published the most comprehensive set of controls in its security guideline for the Internet of Things?",
+      "choices": {
+        "A": "IoT ISACA",
+        "B": "IoT Security Foundation",
+        "C": "OWASP",
+        "D": "GSMA"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC075",
+      "question": "Which main reference coupled with the Cloud Security Alliance Guidance comprise the Security Guidance for Critical Areas of Focus in Cloud Computing?",
+      "choices": {
+        "A": "ISO 27001",
+        "B": "ISO 27017",
+        "C": "Cloud Security Guidelines",
+        "D": "Cloud Controls Matrix\n[Explanation](https://www.cybersaint.io/blog/six-steps-of-the-nist-risk-management-framework)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC076",
+      "question": "What are the essential characteristics of the reference monitor?",
+      "choices": {
+        "A": "It is versatile, accurate, and operates at a very high speed.",
+        "B": "It is tamper-proof, can always be invoked, and must be small enough to test.",
+        "C": "It is restricted, confidential, and top secret"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC077",
+      "question": "According to NIST, what is the first action required to take advantage of the cybersecurity framework?",
+      "choices": {
+        "A": "Identify the key business outcomes.",
+        "B": "Understand the threats and vulnerabilities.",
+        "C": "Conduct a risk assessment.",
+        "D": "Analyze and prioritize gaps to create the action plan.\n[Explanation](https://www.cybersaint.io/blog/six-steps-of-the-nist-risk-management-framework)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC078",
+      "question": "You are implementing a cybersecurity program in your organization and want to use the \"de facto standard\" cybersecurity framework. Which option would you choose?",
+      "choices": {
+        "A": "the ISACA Cybersecurity Framework",
+        "B": "the COBIT Cybersecurity Framework",
+        "C": "the ISC2 Cybersecurity Framework",
+        "D": "the NIST Cybersecurity Framework"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC079",
+      "question": "In 2014, 4,278 IP addresses of zombie computers were used to flood a business with over one million packets per minute for about one hour. What is this type of attack called?",
+      "choices": {
+        "A": "a salami attack",
+        "B": "a DoS (Denial of Service) attack",
+        "C": "a DDoS (Distributed Denial of Service) attack",
+        "D": "a botnet attack\n[Explanation](https://www.forbes.com/sites/parmyolson/2014/11/20/the-largest-cyber-attack-in-history-has-been-hitting-hong-kong-sites/?sh=56e071cd38f6)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC080",
+      "question": "The regulatory requirements for notifications of data breaches, particularly the European General Data Protection Regulations, have had what sort of effect on business?",
+      "choices": {
+        "A": "an increased business liability in the event of a data breach",
+        "B": "an increased consumer liability in the event of a data breach",
+        "C": "a decreased consumer liability in the event of a data breach",
+        "D": "a decreased business liability in the event of a data breach"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC081",
+      "question": "Which compliance framework governs requirements for the U.S. healthcare industry?",
+      "choices": {
+        "A": "FedRAMP",
+        "B": "GDPR",
+        "C": "PCI-DSS",
+        "D": "HIPAA\n[Explanation](https://online.maryville.edu/blog/5-important-regulations-in-united-states-healthcare/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC082",
+      "question": "What is the difference between DevOps and DevSecOps?",
+      "choices": {
+        "A": "DevSecOps requires the inclusion of cybersecurity engineers in the CI/CD process of DevOps.",
+        "B": "DevSecOps slows down the CI/CD process of DevOps.",
+        "C": "DevSecOps places security controls in the CI/CD process of DevOps.",
+        "D": "DevSecOps lets cybersecurity engineers dictate the CI/CD process of DevOps.\n[Explanation](https://www.linkedin.com/learning/devops-foundations-devsecops/introduction-to-devsecops)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC083",
+      "question": "When does static application security testing require access to source code?",
+      "choices": {
+        "A": "always",
+        "B": "only when assessing regulatory compliance",
+        "C": "only if following the Agile model",
+        "D": "never\n[Explanation:](https://www.synopsys.com/glossary/what-is-sast.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC084",
+      "question": "Your organization service customer orders with a custom ordering system developed in-hose. You are responsible for recommending a cloud model to meet the following requirements:\nControl of security required for regulatory compliance\n    Legacy application and database support\n    Scalability to meet seasonal increases in demand\n\nWhich cloud model is the best option for these requirements?",
+      "choices": {
+        "A": "government cloud",
+        "B": "public cloud",
+        "C": "hybrid cloud",
+        "D": "private cloud"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC085",
+      "question": "You have just conducted a port scan of a network. There is no well-known port active. How do you find a webserver running on a host, which uses a random port number?",
+      "choices": {
+        "A": "Give up on the current target network and move on to the next one.",
+        "B": "Switch to another network scanning tool. Resort to more resource-intensive probing, like launching random attacks to all open ports.",
+        "C": "Turn on the stealth mode in your network scanning tool. Check whether you missed any other active ports associated with web servers.",
+        "D": "Turn on additional options in your network scanning tool to further investigate the details (type and version) of applications running on the rest of the active ports."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC086",
+      "question": "Executives in your organization exchange emails with external business partners when negotiating valuable business contracts. To ensure that these communications are legally defensible, the security team has recommended that a digital signature be added to these message.\nWhat are the primary goals of the digital signature in this scenario? (Choose the best answer.)",
+      "choices": {
+        "A": "integrity and non-repudiation",
+        "B": "privacy and non-repudiation",
+        "C": "privacy and confidentiality",
+        "D": "integrity and privacy"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC087",
+      "question": "Which option is a mechanism to ensure non-repudiation?",
+      "choices": {
+        "A": "MD5",
+        "B": "Caesar cipher",
+        "C": "symmetric-key encryption",
+        "D": "asymmetric-key encryption\n[Explanation:](https://medium.com/geekoffee/ensuring-integrity-authenticity-and-non-repudiation-in-data-transmission-using-node-js-af73c2404153)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC088",
+      "question": "Which software development lifecycle approach is most compatible with DevSecOps?",
+      "choices": {
+        "A": "Agile",
+        "B": "Model-Driven Development",
+        "C": "Waterfall",
+        "D": "Model-Driven Architecture"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC089",
+      "question": "Which information security principle states that organizations should defend systems against any particular attack using several independent methods?",
+      "choices": {
+        "A": "separation of duties",
+        "B": "privileged account management (PAM)",
+        "C": "defense-in-depth",
+        "D": "least privilege\n[Explanation:](<https://en.wikipedia.org/wiki/Defense_in_depth_(computing)>)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC090",
+      "question": "Which option describes a core principle of DevSecOps?",
+      "choices": {
+        "A": "Testing and release should be 100% automated",
+        "B": "Role separation is the key to software security",
+        "C": "Final responsibility for security rests with the architect of the application",
+        "D": "Everyone in the process is responsible for security\n**Explanation**: DevSecOps emphasizes the integration of security practices throughout the entire software development lifecycle, and it promotes a cultural shift where everyone involved in the development and operations processes takes responsibility for security. This includes developers, operations teams, and other stakeholders working collaboratively to integrate security into every stage of the development process."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC091",
+      "question": "You need to implement a solution to protect internet-facing applications from common attacks like XSSm CSRF, and SQL injection. Which option is best suited to the task?",
+      "choices": {
+        "A": "Security Information Event Management (SIEM)",
+        "B": "an Instruction Detection and Prevention System (IDPS) appliance",
+        "C": "a web application firewall (WAF)",
+        "D": "a stateful packet inspection firewall"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC092",
+      "question": "Which phase of the incident response process happens immediately following identification?",
+      "choices": {
+        "A": "Eradication / Remediation",
+        "B": "Reporting",
+        "C": "Containment / Mitigation",
+        "D": "Recovery"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC093",
+      "question": "How can a data retention policy reduce your organization's legal liability?",
+      "choices": {
+        "A": "by reducing DLP licensing costs",
+        "B": "by ensuring that data is not retained beyond its necessary retention date",
+        "C": "by destroying data that may implicate company executives in dishonest behavior",
+        "D": "by reducing cost associated with data storage and protection"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC094",
+      "question": "You believe a recent service outage due to a denial-of-service attack from a disgruntled inside source. What is the name for the malicious act this employee has committed?",
+      "choices": {
+        "A": "espionage",
+        "B": "sabotage",
+        "C": "fraud",
+        "D": "confidentiality breach"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "commits",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC095",
+      "question": "Which option is a framework widely utilized by organizations in the development of security governance standards?",
+      "choices": {
+        "A": "Software Capability Maturity Model (SW-CMM)",
+        "B": "Control Objectives for Information and Related Technologies (COBIT)",
+        "C": "The Open Group Architecture Framework (TOGAF)",
+        "D": "Software Development Life Cycle (SDLC)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC096",
+      "question": "There are connection-oriented and connectionless protocols in networking. What do web browsers use to ensure the integrity of the data it sends and receives?",
+      "choices": {
+        "A": "UDP that is connection-oriented",
+        "B": "TCP that is connection-oriented",
+        "C": "UDP that is connectionless",
+        "D": "TCP that is connectionless"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC097",
+      "question": "Which type of attack targets vulnerabilities associated with translating MAC addresses into IP addresses in computer networking?",
+      "choices": {
+        "A": "DNS poisoning",
+        "B": "CRL trapping",
+        "C": "ARP spoofing",
+        "D": "DDoS"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC098",
+      "question": "You are part of an incident response team at your company. While sifting through log files collected by a SIEM, you discover some suspicious log entries that you want to investigate further. Which type of the following best refers to those recorded activities demanding additional scrutiny?",
+      "choices": {
+        "A": "attack",
+        "B": "information",
+        "C": "threat",
+        "D": "event"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC099",
+      "question": "You are responsible for forensic investigations in your organization.You have been tasked with investigating a compromised virtual application server. Becase a revenue generating application runs on the server, the server needs to be returned to service as quickly as possible.\nWhat is the next step you should take to best fulfill your responsibilities and meet the needs of the business?",
+      "choices": {
+        "A": "Restore the server from backup immediately.",
+        "B": "Take the server offline until your investigation is complete.",
+        "C": "Take a snapshot of the compromised virtual server for your investigation.",
+        "D": "Restart the server. Remediate the issue after business hours."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC100",
+      "question": "Site-to-site VPN provides access from one network address space (192.168.0.0/24) to another network address space \\_.",
+      "choices": {
+        "A": "192.168.0.1/24",
+        "B": "192.168.0.3/24",
+        "C": "10.10.0.0/24",
+        "D": "192.168.0.2/24"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC101",
+      "question": "You are researching probable threats to your company’s internet-facing web applications. Which organization should you reference as an authoritative source for information on web-based attack vectors?",
+      "choices": {
+        "A": "EC-Council",
+        "B": "ISACA",
+        "C": "NIST",
+        "D": "OWASP\n[Explanation:](https://www.imperva.com/learn/application-security/application-security/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC102",
+      "question": "Which action is most likely to simplify security staff training, improve integration between security components, and reduce risk to the business? (Choose the best answer.)",
+      "choices": {
+        "A": "adopting a \"best-in-suite\" approach to security",
+        "B": "adopting a \"trust but verify\" approach to security",
+        "C": "adopting a \"best-of-breed\" approach to security",
+        "D": "adopting a \"defense-in-depth\" approach to security\n**Explanation**: A \"best-in-suite\" approach involves selecting a comprehensive security solution from a single vendor that integrates various security components. This approach can simplify training because security staff only need to become familiar with one integrated suite rather than multiple standalone products. It can also improve integration between components since they are designed to work seamlessly together. Additionally, a unified suite can offer a more cohesive and consistent security strategy, potentially reducing the complexity of managing diverse security tools. An example could be using Okta to provide SSO for all of your organization's logins."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "components",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC103",
+      "question": "**\\_** attacks can execute the code injected by attackers as part of user inputs.",
+      "choices": {
+        "A": "Ping of death",
+        "B": "Buffer overflow",
+        "C": "Distributed Denial of Service",
+        "D": "Denial of Service"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC104",
+      "question": "Which activity is _not_ part of risk assessment?",
+      "choices": {
+        "A": "identifying and valuing assets",
+        "B": "analyzing risks by criticality and cost",
+        "C": "discontinuing activities that introduce risk",
+        "D": "identifying threats and analyzing vulnerabilities"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC105",
+      "question": "In response to an alert regarding a possible security incident, you are analyzing the logs for a web application. In the process, you see the following string: `./../../../var/secrets` What type of attack was most likely attempted against the application?",
+      "choices": {
+        "A": "brute force",
+        "B": "session hijacking",
+        "C": "cross-site scripting",
+        "D": "directory traversal"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC106",
+      "question": "Which option will not actively identify a security incident?",
+      "choices": {
+        "A": "Extended Detection and Response (XDR)",
+        "B": "Cloud Security Posture Management (CSPM)",
+        "C": "Security Information Event Management (SEIM)",
+        "D": "Endpoint Detection and Response (EDR)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC107",
+      "question": "A website is asking for a password and also sending an authentication code to your phone. What factors are used in this multi-factor authentication scenario?",
+      "choices": {
+        "A": "what you have and what you do",
+        "B": "what you know and what you are",
+        "C": "what you have and what you know",
+        "D": "what you do and what you know\n[Explanation:](https://www.investopedia.com/terms/t/twofactor-authentication-2fa.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC108",
+      "question": "Which option is a list of publicly disclosed information security defects?",
+      "choices": {
+        "A": "DBIR",
+        "B": "CVE",
+        "C": "CWE",
+        "D": "CERT\n**Explanation**: Common Weakness Enumeration (CWE) is a universal online dictionary of security defects that have been found in computer software."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC109",
+      "question": "What does a metamorphic virus do?",
+      "choices": {
+        "A": "Static analyser",
+        "B": "Antivirus",
+        "C": "Generates a whole variable code using a variable encryptor",
+        "D": "Mutation function\n[Explanation:](https://link.springer.com/content/pdf/10.1007/11560647.pdf)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC110",
+      "question": "What is the most common cause of cyber incidents in organisations?",
+      "choices": {
+        "A": "Vulnerabilities in softwares",
+        "B": "Social Engineering",
+        "C": "Ransomware",
+        "D": "Phishing\n**Explanation**: Social Engineering and human error are the most common cause of cyber incidents as it is easier for attackers to convince employees to give up passwords or accept MFA prompts than it is to breach & exploit the system. See Recent Uber and Cisco hack\n\n1. [Reference](https://www.protocol.com/bulletins/uber-breach-hacker-twilio-mfa)\n2. [Reference](https://www.swarmnetics.com/blog/cisco-network-breach-voice-phishing-mfa-fatigue-are-becoming-common-attacks/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC111",
+      "question": "Which of the following terms is used to describe a collection of unrelated patches?",
+      "choices": {
+        "A": "Hotfix",
+        "B": "Update",
+        "C": "Security Fix",
+        "D": "Service Pack"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC112",
+      "question": "What Term is used to descrbe the defualt set of privileges assigned to a user when a new account is created?",
+      "choices": {
+        "A": "Aggregation",
+        "B": "Transitivity",
+        "C": "Baseline",
+        "D": "Entitlement\n**Explanation**: Entitlement refers to the privileges granted to a user when their account is first provisioned"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC113",
+      "question": "Who is the father of computer security??",
+      "choices": {
+        "A": "August Kerckhoffs",
+        "B": "Bob Thomas",
+        "C": "Charles Thomas",
+        "D": "Robert Kerckhoffs\n**Explanation**: August Kerckhoffs, a linguist and German professor at HEC, wrote an essay in the Journal of Military Science in February 1883. Kerckhoff had unwittingly established the foundations for contemporary encryption, earning him the title of \"Father of Computer Security.\""
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC114",
+      "question": "Which type of attack uses formal emails to entice specific individuals into signing in and changing their passwords?",
+      "choices": {
+        "A": "vishing",
+        "B": "spear phishing",
+        "C": "brute force attack",
+        "D": "password spray attack"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC115",
+      "question": "A data asset register should contain which of the following?",
+      "choices": {
+        "A": "the location of the data.",
+        "B": "The value of the asset.",
+        "C": "The owner of the asset.",
+        "D": "All of these options."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC116",
+      "question": "Once you have confirmed that Burpsuite is intercepting website requests, where can you check to see if you have credentials in cleartext to access the target webpage?",
+      "choices": {
+        "A": "Select Go on the Repeater tab",
+        "B": "See the loopback address and port are on in the Options tab",
+        "C": "Check the Raw section in the Intercept tab",
+        "D": "Check for a login.php line in the Proxy tab"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC117",
+      "question": "Threat actors will attempt to find an attack vector on their target by mapping the attack **\\_**.",
+      "choices": {
+        "A": "surface",
+        "B": "infrastructure",
+        "C": "threat",
+        "D": "door"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC118",
+      "question": "How would an organisation ensure software product support in the event a supplier goes out of business or is sold to a competitor?",
+      "choices": {
+        "A": "They could employ the software developers once the supplier organisation has gone out of business.",
+        "B": "They could ensure support by acquiring the supplier organisation.",
+        "C": "They could ensure support through an escrow agreement.",
+        "D": "They could reverse engineer the product so that it could be supported in-house."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC119",
+      "question": "Which of the following is the security standard that applies to the certification of security controls within products?",
+      "choices": {
+        "A": "ISO/IEC 27001.",
+        "B": "ISO/IEC 9000.",
+        "C": "ISO/IEC 15408.",
+        "D": "ISO/IEC 13335."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC120",
+      "question": "What is the main role of the board member known as the information security manager?",
+      "choices": {
+        "A": "To ensure appropriate security controls are implemented across the organisation.",
+        "B": "To provide day-to-day management of the information assurance function.",
+        "C": "To have a detailed understanding of the organisation's vulnerabilities.",
+        "D": "To have a detailed understanding of threats faced by the organisation."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC121",
+      "question": "What are the two main approaches used to determine the likelihood of a threat occurring?",
+      "choices": {
+        "A": "Qualitative and statistical",
+        "B": "Statistical and quantitative",
+        "C": "Statistical and assumptive",
+        "D": "Qualitative and quantitative"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC122",
+      "question": "Which type of hackers are often organized and funded by a nation's military intelligence or security services, and attempt to gain access to a foreign adversary's state secrets or military intelligence?",
+      "choices": {
+        "A": "hacktivists",
+        "B": "competitors",
+        "C": "black hat hackers",
+        "D": "state-sponsored hackers"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC123",
+      "question": "Which of the following methods combines two binary streams to create one new stream that contains hidden information that cannot be retrieved without the other stream that was used to create it?",
+      "choices": {
+        "A": "substitution cipher",
+        "B": "weaponization",
+        "C": "transposition cipher",
+        "D": "XOR encryption"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC124",
+      "question": "What is Drupalgeddon?",
+      "choices": {
+        "A": "A web app proxy tool",
+        "B": "A DDoS bot",
+        "C": "A network packet capturing device",
+        "D": "a SQL injection flaw"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC125",
+      "question": "The algorithm used by an encryption technique to hide information is known as the **\\_**.",
+      "choices": {
+        "A": "cipher",
+        "B": "XOR",
+        "C": "encoding",
+        "D": "cyber kill chain"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC126",
+      "question": "Which of these is not an issue that could arise as a result of outsourcing software development?",
+      "choices": {
+        "A": "The accidental or deliberate introduction of malicious code.",
+        "B": "The loss of intellectual property or trade secrets.",
+        "C": "Legal disputes could develop between the customer and the supplier.",
+        "D": "The laws on the protection of data do not apply to information sent to a third party."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC127",
+      "question": "A **\\_** hat is a hacker who may not operate according to ethical testing standards, but does not have malicious intent.",
+      "choices": {
+        "A": "gray",
+        "B": "blue",
+        "C": "red",
+        "D": "purple"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC128",
+      "question": "Understanding that multifactor authentication (MFA) is a best practice, which option should be avoided as a secondary authentication factor in MFA whenever possible?.",
+      "choices": {
+        "A": "biometric authentication",
+        "B": "OAUTH Token",
+        "C": "authenticator apps",
+        "D": "SMS message\n**Explanation**: SMS messages for MFA are generally considered less secure compared to other methods. This is because SMS messages can be vulnerable to interception (e.g., SIM swapping attacks), and the underlying telecommunication infrastructure may not provide sufficient protection against various attack vectors. Other MFA methods such as biometric authentication, OAUTH tokens, and authenticator apps are often considered more secure alternatives.\n\n[Reference](https://www.zdnet.com/article/fbi-warns-about-attacks-that-bypass-multi-factor-authentication-mfa/) `\"(...)All in all, MFA is still very effective at preventing most mass and automated attacks; however, users should be aware that there are ways to bypass some MFA solutions, such as those relying on SMS-based verification.\"`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC129",
+      "question": "Which of the following is NOT a common authentication factor used in cybersecurity?",
+      "choices": {
+        "A": "Something you know",
+        "B": "Something you have",
+        "C": "Something you are",
+        "D": "Something you want"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC130",
+      "question": "Which of the following best describes a \"Honeytoken\" in cybersecurity?",
+      "choices": {
+        "A": "A deceptive network host that appears legitimate to attackers.",
+        "B": "A user-friendly interface for managing network traffic.",
+        "C": "An encryption key used in secure communication.",
+        "D": "A hardware device for two-factor authentication."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC131",
+      "question": "What is the primary purpose of a \"Bastion Host\" in a network security architecture?",
+      "choices": {
+        "A": "To host publicly accessible services while protecting the internal network.",
+        "B": "To intercept and analyze all network traffic for security purposes.",
+        "C": "To act as a backup server in case the main server fails.",
+        "D": "To facilitate secure communication between two remote networks."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC132",
+      "question": "In network analysis, what does the term \"Port Mirroring\" refer to?",
+      "choices": {
+        "A": "A process of copying network packets to a specific destination for analysis.",
+        "B": "A method of encrypting data during transmission to secure it.",
+        "C": "A mechanism for load balancing network traffic.",
+        "D": "A firewall rule that allows traffic through specific network ports."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC133",
+      "question": "Which of the following is NOT a common method of concealing malicious software on a network?",
+      "choices": {
+        "A": "Polymorphic malware",
+        "B": "Rootkit",
+        "C": "Packet Sniffing",
+        "D": "Stealthy tunneling protocols"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC134",
+      "question": "In the context of cybersecurity, what does the acronym \"IDS\" stand for?",
+      "choices": {
+        "A": "Internet Domain System",
+        "B": "Intrusion Detection System",
+        "C": "Internet Data Security",
+        "D": "Integrated Defense Strategy"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC135",
+      "question": "What does a \"Man-in-the-Middle (MitM)\" attack involve?",
+      "choices": {
+        "A": "Intercepting communication between two parties without their knowledge.",
+        "B": "Cracking encrypted passwords.",
+        "C": "Disrupting network services with a Distributed Denial of Service (DDoS) attack.",
+        "D": "Installing malicious software on a network server."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC136",
+      "question": "Which of the following is an essential element of a Public Key Infrastructure (PKI)?",
+      "choices": {
+        "A": "A firewall for network security.",
+        "B": "A trusted Certificate Authority (CA).",
+        "C": "A virtual private network (VPN).",
+        "D": "A network router."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC137",
+      "question": "What type of encryption is typically used to secure wireless network traffic in a WPA3 network?",
+      "choices": {
+        "A": "WEP (Wired Equivalent Privacy)",
+        "B": "AES (Advanced Encryption Standard)",
+        "C": "SSL (Secure Sockets Layer)",
+        "D": "DES (Data Encryption Standard)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC138",
+      "question": "Which network security protocol is used to provide secure, encrypted communication over the Internet, often used for securing websites?",
+      "choices": {
+        "A": "SSH (Secure Shell)",
+        "B": "SNMP (Simple Network Management Protocol)",
+        "C": "HTTPS (Hypertext Transfer Protocol Secure)",
+        "D": "ICMP (Internet Control Message Protocol)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC139",
+      "question": "What does the term \"Zero-Day Vulnerability\" refer to in cybersecurity?",
+      "choices": {
+        "A": "A vulnerability that has been known and patched for zero days.",
+        "B": "A vulnerability that is not yet known to the software vendor or the public.",
+        "C": "A vulnerability that affects zero network devices.",
+        "D": "A vulnerability that cannot be exploited."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC140",
+      "question": "What is the purpose of a Firewall in network security?",
+      "choices": {
+        "A": "To encrypt data transmission",
+        "B": "To identify and remove malware",
+        "C": "To control incoming and outgoing network traffic",
+        "D": "To provide secure access to a network"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "network_security",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC141",
+      "question": "Which type of cyber attack aims to deceive individuals into revealing sensitive information like passwords or credit card numbers?",
+      "choices": {
+        "A": "Ransomware",
+        "B": "DDoS Attack",
+        "C": "Phishing Attack",
+        "D": "SQL Injection"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC142",
+      "question": "What does the term \"Social Engineering\" refer to in cybersecurity?",
+      "choices": {
+        "A": "Advanced encryption techniques",
+        "B": "Hacking social media accounts",
+        "C": "Manipulating individuals to divulge confidential information",
+        "D": "Securing social media networks"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC143",
+      "question": "Which encryption algorithm is commonly used to secure data transmission on the internet?",
+      "choices": {
+        "A": "ROT13",
+        "B": "AES",
+        "C": "Caesar Cipher",
+        "D": "RSA"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC144",
+      "question": "In cybersecurity, what does the acronym \"VPN\" stand for?",
+      "choices": {
+        "A": "Virtual Private Network",
+        "B": "Very Private Network",
+        "C": "Virtual Personal Network",
+        "D": "Virtual Public Network"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC145",
+      "question": "Which of the following is an example of a strong password?",
+      "choices": {
+        "A": "Password123",
+        "B": "123456",
+        "C": "JohnSmith",
+        "D": "P@ssw0rd!"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC146",
+      "question": "What does the term \"Zero Trust\" mean in the context of cybersecurity?",
+      "choices": {
+        "A": "Trusting all network traffic",
+        "B": "Verifying all network traffic, regardless of location",
+        "C": "Trusting only internal network traffic",
+        "D": "Verifying network traffic only from trusted sources"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC147",
+      "question": "What is the purpose of a Security Information and Event Management (SIEM) system?",
+      "choices": {
+        "A": "To block all incoming network traffic",
+        "B": "To encrypt sensitive data",
+        "C": "To manage user passwords",
+        "D": "To collect, analyze, and respond to security events"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC148",
+      "question": "Which cybersecurity practice involves deliberately probing a network or system to find vulnerabilities?",
+      "choices": {
+        "A": "Firewall Configuration",
+        "B": "Encryption",
+        "C": "Penetration Testing",
+        "D": "Patch Management"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC149",
+      "question": "What is the primary goal of a Red Team in cybersecurity?",
+      "choices": {
+        "A": "To develop software applications",
+        "B": "To monitor network traffic",
+        "C": "To simulate cyber attacks to find vulnerabilities",
+        "D": "To implement security policies"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC150",
+      "question": "Which type of malware encrypts a victim's files and demands a ransom for decryption?",
+      "choices": {
+        "A": "Spyware",
+        "B": "Worm",
+        "C": "Trojan",
+        "D": "Ransomware"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC151",
+      "question": "What does the term \"Patch Management\" refer to in cybersecurity?",
+      "choices": {
+        "A": "Securing physical access to servers",
+        "B": "Managing software updates and fixes",
+        "C": "Encrypting sensitive data",
+        "D": "Implementing network firewalls"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC152",
+      "question": "What is the primary purpose of a Data Loss Prevention (DLP) solution?",
+      "choices": {
+        "A": "To prevent physical theft of devices",
+        "B": "To encrypt all network traffic",
+        "C": "To monitor user activities",
+        "D": "To prevent unauthorized disclosure of sensitive data"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC153",
+      "question": "Which cybersecurity framework provides a set of best practices for securing information systems?",
+      "choices": {
+        "A": "ISO 9001",
+        "B": "COBIT",
+        "C": "Six Sigma",
+        "D": "NIST Cybersecurity Framework"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC154",
+      "question": "What is the purpose of a Secure Sockets Layer (SSL) certificate?",
+      "choices": {
+        "A": "To block incoming network traffic",
+        "B": "To encrypt data transmitted between a web server and a browser",
+        "C": "To authenticate users on a network",
+        "D": "To monitor user activities"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC155",
+      "question": "Which type of attack involves overwhelming a system or network with a flood of traffic to make it unavailable?",
+      "choices": {
+        "A": "Phishing",
+        "B": "Ransomware",
+        "C": "Man-in-the-Middle",
+        "D": "Distributed Denial of Service (DDoS)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC156",
+      "question": "What does the term \"Two-Factor Authentication\" mean in cybersecurity?",
+      "choices": {
+        "A": "Using two different web browsers",
+        "B": "Using two different authentication methods for added security",
+        "C": "Logging in twice to a system",
+        "D": "Using two different antivirus programs"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC157",
+      "question": "What is the purpose of a Security Token in authentication?",
+      "choices": {
+        "A": "To generate one-time passwords",
+        "B": "To block incoming network traffic",
+        "C": "To provide an additional layer of authentication",
+        "D": "To encrypt sensitive data"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC158",
+      "question": "What is the role of a Security Operations Center (SOC) in cybersecurity?",
+      "choices": {
+        "A": "To develop software applications",
+        "B": "To manage user passwords",
+        "C": "To monitor and respond to security incidents",
+        "D": "To encrypt sensitive data"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC159",
+      "question": "Which type of attack involves tricking a user into executing a malicious code by disguising it as a legitimate file or application?",
+      "choices": {
+        "A": "DDoS Attack",
+        "B": "SQL Injection",
+        "C": "Ransomware",
+        "D": "Malware"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC160",
+      "question": "Which of the following is NOT a common authentication factor used in multi-factor authentication (MFA)?",
+      "choices": {
+        "A": "Something you are",
+        "B": "Something you do",
+        "C": "Something you have",
+        "D": "Something you say"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC161",
+      "question": "What type of cyberattack aims to make a service unavailable by overwhelming it with traffic?",
+      "choices": {
+        "A": "DDoS (Distributed Denial of Service)",
+        "B": "Phishing",
+        "C": "Ransomware",
+        "D": "Malware"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC162",
+      "question": "What is the purpose of a VPN (Virtual Private Network) in cybersecurity?",
+      "choices": {
+        "A": "To improve internet speed",
+        "B": "To anonymize internet activity and encrypt data transmission",
+        "C": "To monitor network traffic for malicious activity",
+        "D": "To block malware and viruses\n**Explanation**\n\n- A VPN (Virtual Private Network) creates a secure, encrypted connection over a less secure network, such as the internet. It hides the user's IP address, encrypts data being transmitted, and makes it harder for hackers or third parties to intercept communications. The primary purpose of a VPN is to protect user privacy and secure data from unauthorized access."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC163",
+      "question": "What is the primary function of a firewall in a network?",
+      "choices": {
+        "A": "Encrypt data before transmission",
+        "B": "Monitor and control incoming and outgoing network traffic",
+        "C": "Provide physical security for servers",
+        "D": "Manage user access to applications\n**Explanation**\n\n- A firewall is a network security device that monitors and filters incoming and outgoing network traffic based on security rules. Its main purpose is to establish a barrier between an internal trusted network and untrusted external networks, such as the internet. While it can sometimes be involved in managing access or enhancing security protocols, its core function is to filter traffic."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "network_security",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC164",
+      "question": "Which of the following is a common method attackers use to gain unauthorized access to systems?",
+      "choices": {
+        "A": "Phishing",
+        "B": "Encryption",
+        "C": "Data anonymization",
+        "D": "Two-factor authentication\n**Explanation**\n\n- Phishing is a type of cyber attack where attackers trick individuals into providing sensitive information such as usernames, passwords, or financial details by pretending to be legitimate entities. The attacker often uses fake emails, websites, or text messages. The other options (encryption, data anonymization, and two-factor authentication) are security measures that help protect systems."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC165",
+      "question": "Which of the following is a common technique used in social engineering attacks?",
+      "choices": {
+        "A": "Encryption",
+        "B": "Firewalling",
+        "C": "Pretexting",
+        "D": "Patching\n**Explanation:**\nPretexting is a social engineering technique where the attacker creates a plausible pretext or scenario to manipulate the victim into divulging sensitive information or performing an action that benefits the attacker. This could involve impersonating a trusted authority figure, creating a sense of urgency, or exploiting the victim's emotions. The other options (encryption, firewalling, and patching) are security measures, not social engineering techniques.\n\nSource: [SANS Institute - Social Engineering Attacks](https://www.sans.org/blog/the-big-four-social-engineering-attacks/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC166",
+      "question": "What is the primary purpose of a Security Information and Event Management (SIEM) system?",
+      "choices": {
+        "A": "To encrypt sensitive data",
+        "B": "To manage user passwords",
+        "C": "To collect, analyze, and respond to security events",
+        "D": "To block all incoming network traffic\n**Explanation:**\nA Security Information and Event Management (SIEM) system is a security solution that collects, analyzes, and correlates security-related data from various sources within an organization. The primary purpose of a SIEM is to provide a centralized view of an organization's security posture, detect and respond to security incidents, and generate reports for compliance and auditing purposes. It is not primarily used for encryption, password management, or blocking all network traffic.\n\nSource: [NIST Special Publication 800-94 - Guide to Intrusion Detection and Prevention Systems (IDPS)](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-94.pdf)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC167",
+      "question": "A company detects multiple failed SSH login attempts from the same IP, followed by a successful one with elevated privileges. Which attack pattern does this scenario most likely indicate?",
+      "choices": {
+        "A": "SQL Injection",
+        "B": "Brute Force Attack",
+        "C": "Cross-Site Request Forgery",
+        "D": "DNS Spoofing"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "remote_access",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC168",
+      "question": "You’re a SOC analyst and notice an outbound HTTPS connection from a workstation to an IP with no DNS record, persisting every 10 minutes. What might this behavior indicate?",
+      "choices": {
+        "A": "Command and Control (C2) beaconing activity",
+        "B": "Misconfigured VPN tunnel keepalive",
+        "C": "Normal system heartbeat to monitoring service",
+        "D": "Outdated TLS handshake attempts"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC169",
+      "question": "True or False:\nTLS 1.3 encrypts more of the handshake process than TLS 1.2, reducing the visibility of certificate exchange for network-based intrusion detection systems.",
+      "choices": {
+        "A": "True",
+        "B": "False"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "encryption",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC170",
+      "question": "During a red team exercise, the attacker injects malicious DLLs into a trusted process like `explorer.exe` to execute payloads without spawning new processes. What is this technique called?",
+      "choices": {
+        "A": "Process Injection",
+        "B": "API Hooking",
+        "C": "Kernel Exploitation",
+        "D": "Sandbox Evasion"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC171",
+      "question": "An organization detects that sensitive data has been exfiltrated through DNS queries. Upon investigation, it’s discovered that attackers encoded the data into base64 strings and sent them as part of subdomain requests to an external DNS server. Which type of attack does this represent?",
+      "choices": {
+        "A": "DNS Tunneling",
+        "B": "Domain Generation Algorithm (DGA)",
+        "C": "ARP Poisoning",
+        "D": "Reverse Shell Injection"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "cybersecurity",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC172",
+      "question": "You’re a security engineer analyzing an alert where an attacker exploited a deserialization vulnerability in a Java-based web service. The payload executed arbitrary commands by injecting malicious objects into serialized data streams.\nWhich control would most effectively mitigate this class of vulnerability?",
+      "choices": {
+        "A": "Validating and restricting classes allowed during deserialization using a whitelist",
+        "B": "Applying TLS encryption to serialized objects",
+        "C": "Blocking all HTTP POST requests",
+        "D": "Deploying a WAF with rate limiting only"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_SEC173",
+      "question": "In a Zero Trust Network (ZTN) model, a user with valid credentials attempts to access a resource they’ve never used before. The access request triggers behavioral analytics, location-based validation, and device posture checks before granting conditional access.\nWhat key Zero Trust principle is being applied here?",
+      "choices": {
+        "A": "Continuous verification based on context and trust score rather than static authentication",
+        "B": "Default allow principle to improve user experience",
+        "C": "Identity federation between cloud and on-prem systems",
+        "D": "Role-based access without session evaluation"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "cybersecurity",
+      "topic_category": "cybersecurity",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

@@ -143,8 +143,10 @@ const CohortTasks = (() => {
         if (schedules.length === 0) {
             _dom.scheduleList.innerHTML =
                 '<div class="empty-state" id="schedules-empty">' +
-                '<p class="empty-state__text">No scheduled tasks</p>' +
-                '<p class="empty-state__hint">Create recurring tasks that run on a schedule</p>' +
+                '<p class="empty-state__text">Set up a recurring task</p>' +
+                '<p class="empty-state__hint">Agents can run tasks on a schedule -- daily code reviews, weekly reports, and more</p>' +
+                '<p class="empty-state__example">e.g., "Check code quality every morning at 9am"</p>' +
+                '<button class="empty-state__cta" onclick="document.getElementById(\'assign-task-btn\').click()">+ Schedule Task</button>' +
                 '</div>';
             return;
         }
@@ -190,8 +192,8 @@ const CohortTasks = (() => {
                     <span class="schedule-card__priority" style="color: ${priorityColor}">${priority}</span>
                 </div>
                 <label class="schedule-toggle" title="${isEnabled ? 'Disable' : 'Enable'} schedule">
-                    <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="CohortTasks.toggleSchedule('${escapeHtml(schedule.id)}')">
-                    <span class="schedule-toggle__slider" role="switch" aria-checked="${isEnabled}"></span>
+                    <input type="checkbox" role="switch" aria-checked="${isEnabled}" ${isEnabled ? 'checked' : ''} data-schedule-id="${escapeHtml(schedule.id)}" onchange="CohortTasks.toggleSchedule(this.dataset.scheduleId)">
+                    <span class="schedule-toggle__slider"></span>
                 </label>
             </div>
             <p class="schedule-card__description">${escapeHtml(schedule.description)}</p>
@@ -206,9 +208,9 @@ const CohortTasks = (() => {
                 ${runHistoryHtml}
             </div>
             <div class="schedule-card__actions">
-                <button class="btn btn--small btn--secondary" onclick="CohortTasks.forceRun('${escapeHtml(schedule.id)}')" ${isEnabled ? '' : 'disabled'}>Run Now</button>
-                <button class="btn btn--small btn--secondary" onclick="CohortTasks.editSchedule('${escapeHtml(schedule.id)}')">Edit</button>
-                <button class="btn btn--small btn--danger" onclick="CohortTasks.deleteSchedule('${escapeHtml(schedule.id)}')">Delete</button>
+                <button class="btn btn--small btn--secondary" data-schedule-id="${escapeHtml(schedule.id)}" onclick="CohortTasks.forceRun(this.dataset.scheduleId)" ${isEnabled ? '' : 'disabled'}>Run Now</button>
+                <button class="btn btn--small btn--secondary" data-schedule-id="${escapeHtml(schedule.id)}" onclick="CohortTasks.editSchedule(this.dataset.scheduleId)">Edit</button>
+                <button class="btn btn--small btn--danger" data-schedule-id="${escapeHtml(schedule.id)}" onclick="CohortTasks.deleteSchedule(this.dataset.scheduleId)">Delete</button>
             </div>
         </div>`;
     }
@@ -248,8 +250,8 @@ const CohortTasks = (() => {
         if (completed.length === 0) {
             _dom.completedTaskList.innerHTML =
                 '<div class="empty-state">' +
-                '<p class="empty-state__text">No completed tasks</p>' +
-                '<p class="empty-state__hint">Completed task runs will appear here</p>' +
+                '<p class="empty-state__text">No completed tasks yet</p>' +
+                '<p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>' +
                 '</div>';
             return;
         }

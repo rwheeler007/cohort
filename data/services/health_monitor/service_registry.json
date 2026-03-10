@@ -1,0 +1,57 @@
+{
+  "_comment": "Cohort Service Registry -- services managed by the System Health Monitor. Each service entry defines: port, host, health_endpoint, start_command, start_cwd (relative to COHORT_ROOT), startup_mode (persistent/on_demand), description, self_hosted (true = can't kill self), snoozed (true = skip checks).",
+  "version": "1.0",
+  "services": {
+    "cohort_server": {
+      "port": 5100,
+      "host": "0.0.0.0",
+      "description": "Cohort multi-agent team server (Starlette)",
+      "health_endpoint": "/health",
+      "start_command": "python -m cohort serve",
+      "start_cwd": ".",
+      "startup_mode": "persistent",
+      "self_hosted": true,
+      "snoozed": false
+    },
+    "ollama": {
+      "port": 11434,
+      "host": "127.0.0.1",
+      "description": "Ollama LLM inference server",
+      "health_endpoint": "/api/tags",
+      "start_command": "ollama serve",
+      "start_cwd": ".",
+      "startup_mode": "persistent",
+      "snoozed": false
+    },
+    "comms_service": {
+      "port": 8001,
+      "host": "127.0.0.1",
+      "description": "Email, calendar, and social media communications",
+      "health_endpoint": "/health",
+      "start_command": "python service.py",
+      "start_cwd": "tools/comms_service",
+      "startup_mode": "on_demand",
+      "snoozed": false
+    },
+    "web_search": {
+      "port": 8005,
+      "host": "127.0.0.1",
+      "description": "Web search API (SerpAPI, Serper, DuckDuckGo)",
+      "health_endpoint": "/health",
+      "start_command": "python service.py",
+      "start_cwd": "tools/web_search",
+      "startup_mode": "on_demand",
+      "snoozed": false
+    },
+    "youtube_service": {
+      "port": 8002,
+      "host": "127.0.0.1",
+      "description": "YouTube search, metadata, and chapters",
+      "health_endpoint": "/health",
+      "start_command": "python service.py",
+      "start_cwd": "tools/youtube_service",
+      "startup_mode": "on_demand",
+      "snoozed": false
+    }
+  }
+}

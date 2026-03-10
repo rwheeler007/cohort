@@ -188,6 +188,34 @@ class TaskExecutor:
         self._post_and_broadcast(channel_id, agent_id, response_content)
 
     # =================================================================
+    # Triad validation
+    # =================================================================
+
+    def _validate_triad(self, task: dict[str, Any]) -> list[str]:
+        """Validate the trigger-action-outcome triad before execution.
+
+        Returns a list of warning strings (empty = valid).
+        Missing triad fields produce warnings but do NOT block execution --
+        this keeps backward compatibility while surfacing gaps.
+        """
+        warnings: list[str] = []
+
+        trigger = task.get("trigger") or {}
+        action = task.get("action") or {}
+        outcome = task.get("outcome") or {}
+
+        if not trigger.get("type"):
+            warnings.append("Missing trigger type")
+
+        if not action.get("tool"):
+            warnings.append("Missing action tool binding")
+
+        if not outcome.get("success_criteria"):
+            warnings.append("Missing outcome success criteria")
+
+        return warnings
+
+    # =================================================================
     # Execution phase
     # =================================================================
 
@@ -198,15 +226,29 @@ class TaskExecutor:
     ) -> None:
         """Run the task after the user confirms the briefing.
 
-        1. Check acceptance criteria (if agent_store is available)
-        2. Update status to in_progress
-        3. Invoke agent via configured backend
-        4. Post result to task channel
-        5. Mark complete with output
+        1. Validate trigger-action-outcome triad
+        2. Check acceptance criteria (if agent_store is available)
+        3. Update status to in_progress
+        4. Invoke agent via configured backend
+        5. Post result to task channel
+        6. Mark complete with output
         """
         task_id = task["task_id"]
         agent_id = task["agent_id"]
         channel_id = task.get("channel_id", f"task-{task_id}")
+
+        # Triad validation gate -- warn on missing elements
+        triad_warnings = self._validate_triad(task)
+        if triad_warnings:
+            warning_text = ", ".join(triad_warnings)
+            logger.warning(
+                "[!] Triad validation for task %s: %s", task_id, warning_text,
+            )
+            self._post_and_broadcast(
+                channel_id, "system",
+                f"**[Triad]** {warning_text}. "
+                f"Task will proceed but outcomes may not be verifiable.",
+            )
 
         # Acceptance criteria gate: check if partnerships require consultation
         consultations = self._check_consultations(task)

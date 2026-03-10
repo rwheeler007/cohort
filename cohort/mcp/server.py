@@ -1287,6 +1287,31 @@ class AssignTaskInput(BaseModel):
     priority: str = Field(
         "medium", description="Priority: 'high', 'medium', or 'low'.",
     )
+    trigger_type: str = Field(
+        "mcp",
+        description=(
+            "How the task was triggered: 'manual', 'scheduled', 'event', or 'mcp'. "
+            "Defaults to 'mcp' for MCP-originated tasks."
+        ),
+    )
+    trigger_source: str = Field(
+        "mcp_tool",
+        description="Source identifier for the trigger (e.g. 'user:rwhee', 'sched_abc').",
+    )
+    tool: Optional[str] = Field(
+        None,
+        description=(
+            "The tool or action the task should use (e.g. 'generate_report', "
+            "'fetch_rss', 'run_script'). Set during briefing if omitted."
+        ),
+    )
+    success_criteria: Optional[str] = Field(
+        None,
+        description=(
+            "How we know the task succeeded (e.g. 'RSS data fetched and stored'). "
+            "Set during briefing if omitted."
+        ),
+    )
 
 
 @mcp.tool(
@@ -1305,11 +1330,18 @@ async def cohort_assign_task(params: AssignTaskInput) -> str:
     Creates a task in 'briefing' status. The agent will receive the
     task and begin a conversational briefing to confirm scope before
     starting work. Task lifecycle: briefing -> assigned -> in_progress -> complete.
+
+    Supports the trigger-action-outcome triad: specify trigger_type,
+    trigger_source, tool, and success_criteria for full traceability.
     """
     result = await _client.create_task(
         agent_id=params.agent_id,
         description=params.description,
         priority=params.priority,
+        trigger_type=params.trigger_type,
+        trigger_source=params.trigger_source,
+        tool=params.tool,
+        success_criteria=params.success_criteria,
     )
     if result is None:
         return _error_msg(service_down=True)

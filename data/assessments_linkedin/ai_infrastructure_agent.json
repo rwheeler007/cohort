@@ -1,0 +1,2016 @@
+{
+  "agent_id": "ai_infrastructure_agent",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 118,
+  "difficulty_distribution": {
+    "intermediate": 94,
+    "advanced": 24,
+    "expert": 0
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_ML001",
+      "question": "You are part of a data science team that is working for a national fast-food chain. You create a simple report that shows trend: Customers who visit the store more often and buy smaller meals spend more than customers who visit less frequently and buy larger meals. What is the most likely diagram that your team created?",
+      "choices": {
+        "A": "multiclass classification diagram",
+        "B": "linear regression and scatter plots",
+        "C": "pivot table",
+        "D": "K-means cluster diagram"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML002",
+      "question": "You work for an organization that sells a spam filtering service to large companies. Your organization wants to transition its product to use machine learning. It currently a list Of 250,00 keywords. If a message contains more than few of these keywords, then it is identified as spam. What would be one advantage of transitioning to machine learning?",
+      "choices": {
+        "A": "The product would look for new patterns in spam messages.",
+        "B": "The product could go through the keyword list much more quickly.",
+        "C": "The product could have a much longer keyword list.",
+        "D": "The product could find spam messages using far fewer keywords."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML003",
+      "question": "You work for a music streaming service and want to use supervised machine learning to classify music into different genres. Your service has collected thousands of songs in each genre, and you used this as your training data. Now you pull out a small random subset of all the songs in your service. What is this subset called?",
+      "choices": {
+        "A": "data cluster",
+        "B": "Supervised set",
+        "C": "big data",
+        "D": "test data"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML004",
+      "question": "In traditional computer programming, you input commands. What do you input with machine learning?",
+      "choices": {
+        "A": "patterns",
+        "B": "programs",
+        "C": "rules",
+        "D": "data"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML005",
+      "question": "Your company wants to predict whether existing automotive insurance customers are more likely to buy homeowners insurance. It created a model to better predict the best customers contact about homeowners insurance, and the model had a low variance but high bias. What does that say about the data model?",
+      "choices": {
+        "A": "It was consistently wrong.",
+        "B": "It was inconsistently wrong.",
+        "C": "It was consistently right.",
+        "D": "It was equally right end wrong.\n[Reference](https://medium.com/datadriveninvestor/bias-and-variance-in-machine-learning-51fdd38d1f86)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML006",
+      "question": "You want to identify global weather patterns that may have been affected by climate change. To do so, you want to use machine learning algorithms to find patterns that would otherwise be imperceptible to a human meteorologist. What is the place to start?",
+      "choices": {
+        "A": "Find labeled data of sunny days so that the machine will learn to identify bad weather.",
+        "B": "Use unsupervised learning have the machine look for anomalies in a massive weather database.",
+        "C": "Create a training set of unusual patterns and ask the machine learning algorithms to classify them.",
+        "D": "Create a training set of normal weather and have the machine look for similar patterns."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML007",
+      "question": "You work in a data science team that wants to improve the accuracy of its K-nearest neighbor result by running on top of a naive Bayes result. What is this an example of?",
+      "choices": {
+        "A": "regression",
+        "B": "boosting",
+        "C": "bagging",
+        "D": "stacking"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML008",
+      "question": "`____` looks at the relationship between predictors and your outcome.",
+      "choices": {
+        "A": "Regression analysis",
+        "B": "K-means clustering",
+        "C": "Big data",
+        "D": "Unsupervised learning"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML009",
+      "question": "What is an example of a commercial application for a machine learning system?",
+      "choices": {
+        "A": "a data entry system",
+        "B": "a data warehouse system",
+        "C": "a massive data repository",
+        "D": "a product recommendation system"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML010",
+      "question": "You work for a power company that owns hundreds of thousands of electric meters. These meters are connected to the internet and transmit energy usage data in real-time. Your supervisor asks you to direct project to use machine learning to analyze this usage data. Why are machine learning algorithms ideal in this scenario?",
+      "choices": {
+        "A": "The algorithms would help the meters access the internet.",
+        "B": "The algorithms will improve the wireless connectivity.",
+        "C": "The algorithms would help your organization see patterns of the data.",
+        "D": "By using machine learning algorithms, you are creating an IoT device."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML011",
+      "question": "To predict a quantity value. use `___`.",
+      "choices": {
+        "A": "regression",
+        "B": "clustering",
+        "C": "classification",
+        "D": "dimensionality reduction"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML012",
+      "question": "Why is naive Bayes called naive?",
+      "choices": {
+        "A": "It naively assumes that you will have no data.",
+        "B": "It does not even try to create accurate predictions.",
+        "C": "It naively assumes that the predictors are independent from one another.",
+        "D": "It naively assumes that all the predictors depend on one another."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML013",
+      "question": "How is machine learning related to artificial intelligence?",
+      "choices": {
+        "A": "Artificial intelligence focuses on classification, while machine learning is about clustering data.",
+        "B": "Machine learning is a type of artificial intelligence that relies on learning through data.",
+        "C": "Artificial intelligence is form of unsupervised machine learning.",
+        "D": "Machine learning and artificial intelligence are the same thing."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML014",
+      "question": "How do machine learning algorithms make more precise predictions?",
+      "choices": {
+        "A": "The algorithms are typically run more powerful servers.",
+        "B": "The algorithms are better at seeing patterns in the data.",
+        "C": "Machine learning servers can host larger databases.",
+        "D": "The algorithms can run on unstructured data."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML015",
+      "question": "You work for an insurance company. Which machine learning project would add the most value for the company?",
+      "choices": {
+        "A": "Create an artificial neural network that would host the company directory.",
+        "B": "Use machine learning to better predict risk.",
+        "C": "Create an algorithm that consolidates all of your Excel spreadsheets into one data lake.",
+        "D": "Use machine learning and big data to research salary requirements."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML016",
+      "question": "What is one reason not to use the same data for both your training set and your testing set?",
+      "choices": {
+        "A": "You will almost certainly underfit the model.",
+        "B": "You will pick the wrong algorithm.",
+        "C": "You might not have enough data for both.",
+        "D": "You will almost certainly overfit the model."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML017",
+      "question": "Your university wants to use machine learning algorithms to help sort through incoming student applications. An administrator asks if the admissions decisions might be biased against any particular group, such as women. What would be the best answer?",
+      "choices": {
+        "A": "Machine learning algorithms are based on math and statistics, and so by definition will be unbiased.",
+        "B": "There is no way to identify bias in the data.",
+        "C": "Machine learning algorithms are powerful enough to eliminate bias from the data.",
+        "D": "All human-created data is biased, and data scientists need to account for that.\n**Explanation**: While machine learning algorithms don't have bias, the data can have them."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML018",
+      "question": "What is stacking?",
+      "choices": {
+        "A": "The predictions of one model become the inputs another.",
+        "B": "You use different versions of machine learning algorithms.",
+        "C": "You use several machine learning algorithms to boost your results.",
+        "D": "You stack your training set and testing set together."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML019",
+      "question": "You want to create a supervised machine learning system that identifies pictures of kittens on social media. To do this, you have collected more than 100,000 images of kittens. What is this collection of images called?",
+      "choices": {
+        "A": "training data",
+        "B": "linear regression",
+        "C": "big data",
+        "D": "test data"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML020",
+      "question": "You are working on a project that involves clustering together images of different dogs. You take image and identify it as your centroid image. What type machine learning algorithm are you using?",
+      "choices": {
+        "A": "centroid reinforcement",
+        "B": "K-nearest neighbor",
+        "C": "binary classification",
+        "D": "K-means clustering\n**Explanation**: The problem explicitly states \"clustering\"."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML021",
+      "question": "Your company wants you to build an internal email text prediction model to speed up the time that employees spend writing emails. What should you do?",
+      "choices": {
+        "A": "Include training email data from all employees.",
+        "B": "Include training email data from new employees.",
+        "C": "Include training email data from seasoned employees.",
+        "D": "Include training email data from employees who write the majority of internal emails."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML022",
+      "question": "Your organization allows people to create online professional profiles. A key feature is the ability to create clusters of people who are professionally connected to one another. What type of machine learning method is used to create these clusters?",
+      "choices": {
+        "A": "unsupervised machine learning",
+        "B": "binary classification",
+        "C": "supervised machine learning",
+        "D": "reinforcement learning"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML023",
+      "question": "Random forest is modified and improved version of which earlier technique?",
+      "choices": {
+        "A": "aggregated trees",
+        "B": "boosted trees",
+        "C": "bagged trees",
+        "D": "stacked trees"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML024",
+      "question": "Self-organizing maps are specialized neural network for which type of machine learning?",
+      "choices": {
+        "A": "semi-supervised learning",
+        "B": "supervised learning",
+        "C": "reinforcement learning",
+        "D": "unsupervised learning"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML025",
+      "question": "Which statement about K-means clustering is true?",
+      "choices": {
+        "A": "In K-means clustering, the initial centroids are sometimes randomly selected.",
+        "B": "K-means clustering is often used in supervised machine learning.",
+        "C": "The number of clusters are always randomly selected.",
+        "D": "To be accurate, you want your centroids outside of the cluster."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML026",
+      "question": "You created machine learning system that interacts with its environment and responds to errors and rewards. What type of machine learning system is it?",
+      "choices": {
+        "A": "supervised learning",
+        "B": "semi-supervised learning",
+        "C": "reinforcement learning",
+        "D": "unsupervised learning"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML027",
+      "question": "Your data science team must build a binary classifier, and the number one criterion is the fastest possible scoring at deployment. It may even be deployed in real time. Which technique will produce a model that will likely be fastest for the deployment team use to new cases?",
+      "choices": {
+        "A": "random forest",
+        "B": "logistic regression",
+        "C": "KNN",
+        "D": "deep neural network"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML028",
+      "question": "Your data science team wants to use the K-nearest neighbor classification algorithm. Someone on your team wants to use a K of 25. What are the challenges of this approach?",
+      "choices": {
+        "A": "Higher K values will produce noisy data.",
+        "B": "Higher K values lower the bias but increase the variance.",
+        "C": "Higher K values need a larger training set.",
+        "D": "Higher K values lower the variance but increase the bias."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML029",
+      "question": "Your machine learning system is attempting to describe a hidden structure from unlabeled data. How would you describe this machine learning method?",
+      "choices": {
+        "A": "supervised learning",
+        "B": "unsupervised learning",
+        "C": "reinforcement learning",
+        "D": "semi-unsupervised learning"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML030",
+      "question": "You work for a large credit card processing company that wants to create targeted promotions for its customers. The data science team created a machine learning system that groups together customers who made similar purchases, and divides those customers based on customer loyalty. How would you describe this machine learning approach?",
+      "choices": {
+        "A": "It uses unsupervised learning to cluster together transactions and unsupervised learning to classify the customers.",
+        "B": "It uses only unsupervised machine learning.",
+        "C": "It uses supervised learning to create clusters and unsupervised learning for classification.",
+        "D": "It uses reinforcement learning to classify the customers."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML031",
+      "question": "You are using K-nearest neighbor and you have a K of 1. What are you likely to see when you train the model?",
+      "choices": {
+        "A": "high variance and low bias",
+        "B": "low bias and low variance",
+        "C": "low variance and high bias",
+        "D": "high bias and high variance"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML032",
+      "question": "Are data model bias and variance a challenge with unsupervised learning?",
+      "choices": {
+        "A": "No, data model bias and variance are only a challenge with reinforcement learning.",
+        "B": "Yes, data model bias is a challenge when the machine creates clusters.",
+        "C": "Yes, data model variance trains the unsupervised machine learning algorithm.",
+        "D": "No, data model bias and variance involve supervised learning."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML033",
+      "question": "Which choice is best for binary classification?",
+      "choices": {
+        "A": "K-means",
+        "B": "Logistic regression",
+        "C": "Linear regression",
+        "D": "Principal Component Analysis (PCA)\n**Explanation:** Logistic regression is far better than linear regression at binary classification since it biases the result toward one extreme or the other. K-means clustering can be used for classification but is not as accurate in most scenarios.\n[Source:](https://www.kaggle.com/minc33/k-means-clustering-vs-logistic-regression)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML034",
+      "question": "With traditional programming, the programmer typically inputs commands. With machine learning, the programmer inputs",
+      "choices": {
+        "A": "supervised learning",
+        "B": "data",
+        "C": "unsupervised learning",
+        "D": "algorithms\n**Explanation**: This one is pretty straightforward and a fundamental concept.\n[Source:](https://towardsdatascience.com/machine-learning-for-beginners-d247a9420dab)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML035",
+      "question": "Why is it important for machine learning algorithms to have access to high-quality data?",
+      "choices": {
+        "A": "It will take too long for programmers to scrub poor data.",
+        "B": "If the data is high quality, the algorithms will be easier to develop.",
+        "C": "Low-quality data requires much more processing power than high-quality data.",
+        "D": "If the data is low quality, you will get inaccurate results."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML036",
+      "question": "In K-nearest neighbor, the closer you are to neighbor, the more likely you are to",
+      "choices": {
+        "A": "share common characteristics",
+        "B": "be part of the root node",
+        "C": "have a Euclidean connection",
+        "D": "be part of the same cluster"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML037",
+      "question": "In the HBO show Silicon Valley, one of the characters creates a mobile application called Not Hot Dog. It works by having the user take a photograph of food with their mobile device. Then the app says whether the food is a hot dog. To create the app, the software developer uploaded hundreds of thousands of pictures of hot dogs. How would you describe this type of machine learning?",
+      "choices": {
+        "A": "Reinforcement machine learning",
+        "B": "unsupervised machine learning",
+        "C": "supervised machine learning",
+        "D": "semi-supervised machine learning"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML038",
+      "question": "You work for a large pharmaceutical company whose data science team wants to use unsupervised learning machine algorithms to help discover new drugs. What is an advantage to this approach?",
+      "choices": {
+        "A": "You will be able to prioritize different classes of drugs, such as antibiotics.",
+        "B": "You can create a training set of drugs you would like to discover.",
+        "C": "The algorithms will cluster together drugs that have similar traits.",
+        "D": "Human experts can create classes of drugs to help guide discovery.\n**Explanation**: This one is similar to an example talked about in the Stanford Machine Learning course.\n[Source:](https://www.coursera.org/learn/machine-learning/home/welcome)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML039",
+      "question": "In 2015, Google created a machine learning system that could beat a human in the game of Go. This extremely complex game is thought to have more gameplay possibilities than there are atoms of the universe. The first version of the system won by observing hundreds of thousands of hours of human gameplay; the second version learned how to play by getting rewards while playing against itself. How would you describe this transition to different machine learning approaches?",
+      "choices": {
+        "A": "The system went from supervised learning to reinforcement learning.",
+        "B": "The system evolved from supervised learning to unsupervised learning.",
+        "C": "The system evolved from unsupervised learning to supervised learning.",
+        "D": "The system evolved from reinforcement learning to unsupervised learning."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML040",
+      "question": "The security company you work for is thinking about adding machine learning algorithms to their computer network threat detection appliance. What is one advantage of using machine learning?",
+      "choices": {
+        "A": "It could better protect against undiscovered threats.",
+        "B": "It would very likely lower the hardware requirements.",
+        "C": "It would substantially shorten your development time.",
+        "D": "It would increase the speed of the appliance."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML041",
+      "question": "You work for a hospital that is tracking the community spread of a virus. The hospital created a smartwatch application that uploads body temperature data from hundreds of thousands of participants. What is the best technique to analyze the data?",
+      "choices": {
+        "A": "Use reinforcement learning to reward the system when a new person participates.",
+        "B": "Use unsupervised machine learning to cluster together people based on patterns the machine discovers.",
+        "C": "Use Supervised machine learning to sort people by demographic data.",
+        "D": "Use Supervised machine learning to classify people by body temperature."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML042",
+      "question": "Many of the advances in machine learning have come from improved `___`.",
+      "choices": {
+        "A": "statistics",
+        "B": "structured data",
+        "C": "availability",
+        "D": "algorithms"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML043",
+      "question": "Naive Bayes looks at each **\\_** predictor and creates a probability that belongs in each class.",
+      "choices": {
+        "A": "conditional",
+        "B": "multiclass",
+        "C": "independent",
+        "D": "binary\n[Reference](https://towardsdatascience.com/all-about-naive-bayes-8e13cef044cf)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML044",
+      "question": "Someone on your data science team recommends that you use decision trees, naive Bayes and K-nearest neighbor, all at the same time, on the same training data, and then average the results. What is this an example of?",
+      "choices": {
+        "A": "regression analysis",
+        "B": "unsupervised learning",
+        "C": "high-variance modeling",
+        "D": "ensemble modeling"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML045",
+      "question": "Your data science team wants to use machine learning to better filter out spam messages. The team has gathered a database of 100,000 messages that have been identified as spam or not spam. If you are using supervised machine learning, what would you call this data set?",
+      "choices": {
+        "A": "machine learning algorithm",
+        "B": "training set",
+        "C": "big data test set",
+        "D": "data cluster"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML046",
+      "question": "You work for a website that enables customers see all images of themselves on the internet by uploading one self-photo. Your data model uses 5 characteristics to match people to their foto: color, eye, gender, eyeglasses and facial hair. Your customers have been complaining that get tens of thousands of photos without them. What is the problem?",
+      "choices": {
+        "A": "You are overfitting the model to the data",
+        "B": "You need a smaller training set",
+        "C": "You are underfitting the model to the data",
+        "D": "You need a larger training set"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML047",
+      "question": "Your supervisor asks you to create a machine learning system that will help your human resources department classify jobs applicants into well-defined groups. What type of system are you more likely to recommend?",
+      "choices": {
+        "A": "an unsupervised machine learning system that clusters together the best candidates.",
+        "B": "you would not recommend a machine learning system for this type of project.",
+        "C": "a deep learning artificial neural network that relies on petabytes of employment data.",
+        "D": "a supervised machine learning system that classifies applicants into existing groups."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML048",
+      "question": "You and your data science team have 1 TB of example data. What do you typically do with that data?",
+      "choices": {
+        "A": "you use it as your training set.",
+        "B": "You label it big data.",
+        "C": "You split it into a training set and test set.",
+        "D": "You use it as your test set."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML049",
+      "question": "Your data science team is working on a machine learning product that can act as an artificial opponent in video games. The team is using a machine learning algorithm that focuses on rewards: If the machine does some things well, then it improves the quality of the outcome. How would you describe this type of machine learning algorithm?",
+      "choices": {
+        "A": "semi-supervised machine learning",
+        "B": "supervised machine learning",
+        "C": "unsupervised machine learning",
+        "D": "reinforcement learning"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML050",
+      "question": "The model will be trained with data in one single batch is known as?",
+      "choices": {
+        "A": "Batch learning",
+        "B": "Offline learning",
+        "C": "Both A and B",
+        "D": "None of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML051",
+      "question": "Which of the following is NOT supervised learning?",
+      "choices": {
+        "A": "Decision Tree",
+        "B": "Linear Regression",
+        "C": "PCA",
+        "D": "Naive Bayesian"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML052",
+      "question": "Suppose we would like to perform clustering on spatial data such as the geometrical locations of houses. We wish to produce clusters of many different sizes and shapes. Which of the following methods is the most appropriate?",
+      "choices": {
+        "A": "Decision Trees",
+        "B": "K-means clustering",
+        "C": "Density-based clustering",
+        "D": "Model-based clustering"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "clustering",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML053",
+      "question": "The error function most suited for gradient descent using logistic regression is",
+      "choices": {
+        "A": "The entropy function.",
+        "B": "The squared error.",
+        "C": "The cross-entropy function.",
+        "D": "The number of mistakes."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "regression",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML054",
+      "question": "Compared to the variance of the Maximum Likelihood Estimate (MLE), the variance of the Maximum A Posteriori (MAP) estimate is `___`",
+      "choices": {
+        "A": "Higher",
+        "B": "same",
+        "C": "Lower",
+        "D": "it could be any of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML055",
+      "question": "`___` refers to a model that can neither model the training data nor generalize to new data.",
+      "choices": {
+        "A": "good fitting",
+        "B": "overfitting",
+        "C": "underfitting",
+        "D": "all of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML056",
+      "question": "What does it mean to underfit your data model?",
+      "choices": {
+        "A": "There is too little data in your training set.",
+        "B": "There is too much data in your training set.",
+        "C": "There is not a lot of variance but there is a high bias.",
+        "D": "Your model has low bias but high variance.\n**Explanation**: Underfitted data models usually have high bias and low variance. Overfitted data models have low bias and high variance."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML057",
+      "question": "Asian user complains that your company's facial recognition model does not properly identify their facial expressions. What should you do?",
+      "choices": {
+        "A": "Include Asian faces in your test data and retrain your model.",
+        "B": "Retrain your model with updated hyperparameter values.",
+        "C": "Retrain your model with smaller batch sizes.",
+        "D": "Include Asian faces in your training data and retrain your model.\n**Explanation**: The answer is self-explanatory: if Asian users are the only group of people making the complaint, then the training data should have more Asian faces."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML058",
+      "question": "You work for a website that helps match people up for lunch dates. The website boasts that it uses more than 500 predictors to find customers the perfect date, but many customers complain that they get very few matches. What is a likely problem with your model?",
+      "choices": {
+        "A": "Your training set is too large.",
+        "B": "You are underfitting the model to the data.",
+        "C": "You are overfitting the model to the data.",
+        "D": "Your machine is creating inaccurate clusters.\n**Explanation**: // This question is very similar to Q49 but involves a polar opposite scenario.\n\n`that answer somewhat vague and unsettled. Small number of matchings does not necessarily implies that the model overfits, especially given 500 (!) independent variables. To me, it sounds more reasonable that the threshold (matching) criterion might be too tight, thus allowing only a small number of matching to occur. So a solution can be either softening the threshold criterion or increasing the number of candidates.`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML059",
+      "question": "(Mostly) whenever we see kernel visualizations online (or some other reference) we are actually seeing:",
+      "choices": {
+        "A": "What kernels extract",
+        "B": "Feature Maps",
+        "C": "How kernels Look"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML060",
+      "question": "The activations for class A, B and C before softmax were 10,8 and 3. The different in softmax values for class A and class B would be :",
+      "choices": {
+        "A": "76%",
+        "B": "88%",
+        "C": "12%",
+        "D": "0.0008%\n![image](images/machine-learning_Q62.png?raw=png)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML061",
+      "question": "The new dataset you have just scraped seems to exhibit lots of missing values. What action will help you minimizing that problem?",
+      "choices": {
+        "A": "Wise fill-in of controlled random values",
+        "B": "Replace missing values with averaging across all samples",
+        "C": "Remove defective samples",
+        "D": "Imputation"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML062",
+      "question": "Which of the following methods can use either as an unsupervised learning or as a dimensionality reduction technique?",
+      "choices": {
+        "A": "SVM",
+        "B": "PCA",
+        "C": "LDA",
+        "D": "TSNE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML063",
+      "question": "What is the main motivation for using activation functions in ANN?",
+      "choices": {
+        "A": "Capturing complex non-linear patterns",
+        "B": "Transforming continuous values into \"ON\" (1) or \"OFF\" (0) values",
+        "C": "Help avoiding the vanishing/exploding gradient problem",
+        "D": "Their ability to activate each neurons individually."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML064",
+      "question": "Which loss function would fit best in a categorical (discrete) supervised learning?",
+      "choices": {
+        "A": "kullback-leibler (KL) loss",
+        "B": "Binary Crossentropy",
+        "C": "Mean Squared Error (MSE)",
+        "D": "Any L2 loss"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML065",
+      "question": "You create a decision tree to show whether someone decides to go to the beach. There are three factors in this decision: rainy, overcast, and sunny. What are these three factors called?",
+      "choices": {
+        "A": "tree nodes",
+        "B": "predictors",
+        "C": "root nodes",
+        "D": "deciders\n`// these nodes decide whether the someone decides to go to beach or not, for example if its rainy people will mostly refrain from going to beach`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML066",
+      "question": "You need to quickly label thousands of images to train a model. What should you do?",
+      "choices": {
+        "A": "Set up a cluster of machines to label the images",
+        "B": "Create a subset of the images and label them yourself",
+        "C": "Use naive Bayes to automatically generate labels.",
+        "D": "Hire people to manually label the images"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML067",
+      "question": "You need to select a machine learning process to run a distributed neural network on a mobile application. Which would you choose?",
+      "choices": {
+        "A": "Scikit-learn",
+        "B": "PyTorch",
+        "C": "Tensowflow Lite",
+        "D": "Tensorflow"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "queries",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML068",
+      "question": "Which choice is the best example of labeled data?",
+      "choices": {
+        "A": "a spreadsheet",
+        "B": "20,000 recorded voicemail messages",
+        "C": "100,000 images of automobiles",
+        "D": "hundreds of gigabytes of audio files"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML069",
+      "question": "In statistics, what is defined as the probability of a hypothesis test of finding an effect - if there is an effect to be found?",
+      "choices": {
+        "A": "confidence",
+        "B": "alpha",
+        "C": "power",
+        "D": "significance"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML070",
+      "question": "You want to create a machine learning algorithm to identify food recipes on the web. To do this, you create an algorithm that looks at different conditional probabilities. So if the post includes the word **flour**, it has a slightly stronger probability of being a recipe. If it contains both **flour** and _sugar_, it even more likely a recipe. What type of algorithm are you using?",
+      "choices": {
+        "A": "naive Bayes classifier",
+        "B": "K-nearest neighbor",
+        "C": "multiclass classification",
+        "D": "decision tree"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML071",
+      "question": "What is lazy learning?",
+      "choices": {
+        "A": "when the machine learning algorithms do most of the programming",
+        "B": "when you don't do any data scrubbing",
+        "C": "when the learning happens continuously",
+        "D": "when you run your computation in one big instance at the beginning"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML072",
+      "question": "What is Q-learning reinforcement learning?",
+      "choices": {
+        "A": "supervised machine learning with rewards",
+        "B": "a type of unsupervised learning that relies heavily on a well-established model",
+        "C": "a type of reinforcement learning where accuracy degrades over time",
+        "D": "a type of reinforcement learning that focuses on rewards\n[Reference](<https://towardsdatascience.com/a-beginners-guide-to-q-learning-c3e2a30a653c#:~:text=Q%2Dlearning%20is%20a%20model,equation(particularly%20Bellman%20equation).&text=Means%20it%20learns%20the%20value,independently%20of%20the%20agent's%20actions>) **Explanation**:Q-learning is a model-free reinforcement learning algorithm.Q-learning is a values-based learning algorithm. Value based algorithms updates the value function based on an equation(particularly Bellman equation)."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML073",
+      "question": "The data in your model has low bias and low variance. How would you expect the data points to be grouped together on the diagram?",
+      "choices": {
+        "A": "They would be grouped tightly together in the predicted outcome.",
+        "B": "They would be grouped tightly together but far from the predicted.",
+        "C": "They would be scattered around the predict outcome.",
+        "D": "They would be scattered far away from the predicted outcome.\n[Reference](https://medium.com/30-days-of-machine-learning/day-3-k-nearest-neighbors-and-bias-variance-tradeoff-75f84d515bdb)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML074",
+      "question": "Your machine learning system is using labeled examples to try to predict future data, compare that data to the predicted result, and then the model. What is the best description of this machine learning method?",
+      "choices": {
+        "A": "unsupervised learning",
+        "B": "semi-supervised learning",
+        "C": "supervised learning",
+        "D": "semi-reinforcement learning\n[Reference](https://www.expert.ai/blog/machine-learning-definition/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML075",
+      "question": "In the 1983 movie WarGames, the computer learns how to master the game of chess by playing against itself. What machine learning method was the computer using?",
+      "choices": {
+        "A": "binary learning",
+        "B": "supervised learning",
+        "C": "unsupervised learning",
+        "D": "reinforcement learning\n[Reference](https://venturebeat.com/2016/03/16/heres-what-alphagos-historic-win-means-for-the-enterprise/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML076",
+      "question": "You are working with your machine learning algorithm on something called class predictor probability. What algorithm are you most likely using?",
+      "choices": {
+        "A": "multiclass binary classification",
+        "B": "naive Bayes",
+        "C": "unsupervised classification",
+        "D": "decision tree analysis\n**Explanation**: You could use a naïve Bayes algorithm, to differentiate three classes of dog breeds — terrier, hound, and sport dogs. Each class has three predictors — hair length, height, and weight. The algorithm does something called class predictor probability.\n\n[Reference](https://www.linkedin.com/pulse/machine-learning-algorithms-doug-rose/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML077",
+      "question": "What is one of the most effective way to correct for underfitting your model to the data?",
+      "choices": {
+        "A": "Create training clusters",
+        "B": "Remove predictors",
+        "C": "Use reinforcement learning",
+        "D": "Add more predictors"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML078",
+      "question": "Your data science team is often criticized for creating reports that are boring or too obvious. What could you do to help improve the team?",
+      "choices": {
+        "A": "Suggest that the team is probably underfitting the model to the data.",
+        "B": "Suggest that unsupervised learning will lead to more interesting results.",
+        "C": "Make sure that they are picking the correct machine learning algorithms.",
+        "D": "Encourage the team to ask more interesting questions."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML079",
+      "question": "What is the difference between unstructured and structured data?",
+      "choices": {
+        "A": "Unstructured data is always text.",
+        "B": "Unstructured data is much easier to store.",
+        "C": "Structured data has clearly defined data types.",
+        "D": "Structured data is much more popular."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML080",
+      "question": "You work for a startup that is trying to develop a software tool that will scan the internet for pictures of people using specific tools. The chief executive is very interested in using machine learning algorithms. What would you recommend as the best place to start?",
+      "choices": {
+        "A": "Using an unsupervised machine learning algorithm to cluster together all the photographs.",
+        "B": "Crate a data lake with an unsupervised machine learning algorithm.",
+        "C": "Use a combination of unsupervised and supervised machine learning to create machine-defined data clusters.",
+        "D": "Use supervised machine learning to classify photographs based on a predetermined training set."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML081",
+      "question": "In supervised machine learning, data scientist often have the challenge of balancing between underfitting or overfitting their data model. They often have to adjust the training set to make better predictions. What is this balance called?",
+      "choices": {
+        "A": "the under/over challenge",
+        "B": "balance between clustering classification",
+        "C": "bias-variance trade-off",
+        "D": "the multiclass training set challenge"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML082",
+      "question": "What is conditional probability?",
+      "choices": {
+        "A": "the probability that doing one thing has an impact on another thing",
+        "B": "the probability that certain conditions are met",
+        "C": "the probability that, based on certain conditions, something will always be incorrect",
+        "D": "the probability of something being the correct answer"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML083",
+      "question": "K-means clustering is what type of machine learning algorithm?",
+      "choices": {
+        "A": "reinforcement",
+        "B": "supervised",
+        "C": "unsupervised",
+        "D": "classification"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML084",
+      "question": "What is ensemble modeling?",
+      "choices": {
+        "A": "when you create an ensemble of your training and test data set",
+        "B": "when you create an ensemble of different servers to run the algorithms",
+        "C": "when you find the one best algorithm for your ensemble",
+        "D": "when you use several ensembles of machine learning algorithms"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML085",
+      "question": "What is the best definition for bias in your data model?",
+      "choices": {
+        "A": "Bias is when your predicted values are scattered.",
+        "B": "Bias is the gap between your predicted value and the outcome.",
+        "C": "Bias is when your data is wrong for different reasons.",
+        "D": "Bias is when your values are always off by the same percentage."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML086",
+      "question": "Which project might be best suited for supervised machine learning?",
+      "choices": {
+        "A": "data scrubbing",
+        "B": "predicting a risk score",
+        "C": "tax filing software",
+        "D": "spreadsheet consolidation"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML087",
+      "question": "When is a decision tree most commonly used?",
+      "choices": {
+        "A": "with big data products",
+        "B": "for supervised machine learning binary classification challenges",
+        "C": "to find thd best data cluster",
+        "D": "to determine \"Q\" in Q-learning reinforcement learning"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML088",
+      "question": "An organisation that owns dozens of shopping malls wants to create a machine learning product that will use facial recognition to identify customers. What is the main challenge of developing such a model?",
+      "choices": {
+        "A": "most machine learning models are not designed for video",
+        "B": "it might be unethical for the business to identify people without their consent",
+        "C": "it will be difficult to decide between supervised and unsupervised learning",
+        "D": "the image in the video would not be high quality enough to identify individuals"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML089",
+      "question": "Which of the following machine learning algorithms is unsupervised?",
+      "choices": {
+        "A": "Random forest",
+        "B": "k-nearest neighbors",
+        "C": "Support-vector machines",
+        "D": "K- means\nExplanation:\nDuring training, k-means partitions observations into k clusters. During inference, it assigns a given data point to the nearest cluster by distance. k-means is unsupervised, because it doesn't require labeled data to be trained."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML090",
+      "question": "Averaging the output of multiple decision trees helps to::",
+      "choices": {
+        "A": "Increase variance",
+        "B": "Increase bias",
+        "C": "Decrease variance",
+        "D": "Decrease bias\n**Explanation**: Averaging models leads to higher stability and a lower variance than individual models. Mathematically, remember that $\\text{Var}(\\bar{X})=\\frac{\\text{Var}(X)}{N}$"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML091",
+      "question": "To optimize your objective function, you are performing full batch gradient descent using the entire training set (not stochastic gradient descent). Is it required to shuffle your training set?",
+      "choices": {
+        "A": "Yes. If you don't, the optimization will oscillate around the minimum at the end of training.",
+        "B": "Yes, in order to help the model generalize to the test dataset.",
+        "C": "No, it is not necessary because the dataset can already be considered shuffled from the data collection process.",
+        "D": "No, because each update passes through the entire dataset anyway and the order doesn't matter.\n**Explanation**: At every iteration, full batch gradient descent uses the entire training set to compute a gradient. The order in which data is processed doesn't impact the gradient value.\n\nAt every iteration, full batch gradient descent uses the entire training set to compute a gradient. The order in which data is processed doesn't impact the gradient value."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML092",
+      "question": "You've received 1,000,000 images and have split it in 96%/2%/2% between train, dev and test sets. You've trained your model, and analyzed the results. After working further on the problem, you’ve decided to correct the incorrectly labeled data on the dev set.\nWhich of these statements do you agree with?",
+      "choices": {
+        "A": "You should also correct the incorrectly labeled data in the test set, so that the dev and test sets still come from the same distribution.",
+        "B": "You should correct incorrectly labeled data in the training set as well so as to avoid your training set now being even more different from your dev set.",
+        "C": "You should not correct the incorrectly labeled data in the test set, because the test set should reflect the data distribution of the real world.",
+        "D": "If you want to correct incorrectly labeled data, you should do it on all three sets (train/dev/test) in order to maintain similar distributions.\n**Explanation**: It is important that your dev and test set have the closest possible distribution to \"real\" data."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML093",
+      "question": "You're working on a binary classification task, to classify if an image contains a cat (\"1\") or doesn't contain a cat (\"0\"). What loss would you choose to minimize in order to train a model?",
+      "choices": {
+        "A": "L = y log y^ + (1−y) log (1− y^)",
+        "B": "L = - y log y^ - (1−y) log (1− y^)",
+        "C": "L = || y - y^ ||22",
+        "D": "L = || y - y^ ||22 + constant\n**Explanation**: You are trying to minimize the binary cross entropy loss over the training set.."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML094",
+      "question": "You want to create a machine learning algorithm that finds the top 100 people who have shared photographs of themselves on social media. What is the best machine learning method to use?",
+      "choices": {
+        "A": "reinforcement learning",
+        "B": "binary classification",
+        "C": "K-nearest neighbor",
+        "D": "unsupervised learning"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML095",
+      "question": "The famous data scientist Andrew Ng has been quoted as saying, \"Applied machine learning is basically feature engineering.\" What is feature engineering?",
+      "choices": {
+        "A": "scraping new features from web data",
+        "B": "creating new variables by combining and modifying the original variables",
+        "C": "designing innovative new user features to add to software",
+        "D": "using deep learning to find features in the data"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML096",
+      "question": "In the context of calculus, what is df/dx?",
+      "choices": {
+        "A": "the prediction function",
+        "B": "the derivative of f of x",
+        "C": "the derivative of x",
+        "D": "equivalent to f divided by x"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML097",
+      "question": "What is a well-designed/well-fitted model?",
+      "choices": {
+        "A": "one that has been trained and tested with the same data",
+        "B": "one that has a high degree of accuracy and is able to accurately predict results",
+        "C": "one that has been trained with labeled training data",
+        "D": "one that has been trained with an exhaustive set of all conditions and permutations in the training data"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML098",
+      "question": "**\\_**-based collaborative filtering occurs when a person is recommended an item similar to an item they have purchased.",
+      "choices": {
+        "A": "History",
+        "B": "Item",
+        "C": "Similarity",
+        "D": "Purchase"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML099",
+      "question": "Fill in the blanks: Two multivariate imputer techniques are the **\\_** imputer and the **\\_** imputer.",
+      "choices": {
+        "A": "supervised, unsupervised",
+        "B": "iterative, KNN",
+        "C": "similarity, regressive",
+        "D": "normalized, scaled"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML100",
+      "question": "You are working on a regression model using the Keras library. What method on the Model class do you use to train the model?",
+      "choices": {
+        "A": "predict",
+        "B": "compile",
+        "C": "fit",
+        "D": "get_weights"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML101",
+      "question": "What is the goal of regularization in the K nearest neighbors algorithm?",
+      "choices": {
+        "A": "normalizing the data points so they can be compared with each other",
+        "B": "using a straight line model to make predictions based on training data",
+        "C": "finding the slope of the line that represents the model",
+        "D": "making the decision boundaries more regular"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML102",
+      "question": "If there is no trend between two variables x and y, we say that there is a **\\_** connection between x and y.",
+      "choices": {
+        "A": "linear",
+        "B": "exponential",
+        "C": "non-random",
+        "D": "random"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML103",
+      "question": "If you are thinking about using machine learning algorithms, the best thing you can do today is to ensure you have quality **\\_**.",
+      "choices": {
+        "A": "data",
+        "B": "processors",
+        "C": "networking",
+        "D": "statistical techniques\n**Explanation**: \"Ensuring you have good data quality prior to running machine learning algorithms is a crucial step within the overall data science and machine learning workflow.\" [Source](https://towardsdatascience.com/data-quality-considerations-for-machine-learning-models-dcbe9cab34cb)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML104",
+      "question": "Your organization's chief diversity officer is concerned that your engineering department lacks racial and gender diversity. You are asked to create a supervised machine learning system to help sort through hundreds of thousands of new employment applications. The human resources department insists on using internal hiring data. What are some of the dangers that you might run into?",
+      "choices": {
+        "A": "There will be too much data for your artificial neural network to process efficiently.",
+        "B": "Machine learning systems cannot define diversity, so there is no way to use one to improve hiring.",
+        "C": "Machine learning systems cannot be used with this type of data.",
+        "D": "If the system uses internal data, then it may amplify any existing bias in hiring.\n**Explanation**: \"If an AI is trained on a biased data set, it will naturally make biased decisions which can give calamitous results.\" [Source](https://www.linkedin.com/pulse/reducing-bias-ai-diversity-inclusion-shashwat-siddhant/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML105",
+      "question": "In 2013, Google´s DeepMind project created a machine learning algorithm that could play an old-style Atari video game, Pong. The algorithm taught the machine how to play by creating a series of rewards. Each time the machine successfully returned the ball, the machine got a reward; each time the opponent missed the ball, the machine got a reward. How would you describe this type of machine learning algorithm?",
+      "choices": {
+        "A": "big data machine learning.",
+        "B": "Good Old-Fashioned Artificial Intelligence (GOFAI).",
+        "C": "reinforcement learning.",
+        "D": "supervised learning.\n**Explanation**: Reinforcement learning is the branch of machine learning where the algorithm interacts with the environment and gets rewards or penalizations [Source](https://www.deepmind.com/publications/playing-atari-with-deep-reinforcement-learning)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML106",
+      "question": "An organization that owns dozens of shopping malls want to create a machine learning product that will use facial recognition to identify customers. What is one of the main challenges with developing such a product?",
+      "choices": {
+        "A": "The images in the video would not be high-quality enough to identify individuals.",
+        "B": "It would be difficult to decide between supervised and unsupervised learning.",
+        "C": "It might be unethical for the business to identify people without their consent.",
+        "D": "Most machine learning algorithms are not designed for video.\n**Explanation**: there are many ethical questions about consent and privacy in machine learning algorithms [Source](https://www.nature.com/articles/d41586-020-03187-3)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "ml_fundamentals",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML107",
+      "question": "What is the difference between unstructured and structured data ?",
+      "choices": {
+        "A": "Unstructured data is much easier to store.",
+        "B": "Structured data has clearly defined data types.",
+        "C": "Unstructured data is always text.",
+        "D": "Structured data is much more popular."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML108",
+      "question": "You work for a startup that is trying to develop a software tool that will scan the internet for pictures of people using specific products. The chief executive is very interested in using machine learning algorithms. what would you recommend as the best place to start ?",
+      "choices": {
+        "A": "Create a data lake with an unsupervised machine learning alogrithm.",
+        "B": "Using an unsupervised machine learning algorithm to cluster together all the photographs",
+        "C": "Use supervised machine learning to classify photographs based on a predetermined training set.",
+        "D": "Use a combination of unsupervised and supervised machine learning to create machine-defined data clusters."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML109",
+      "question": "What is the definition of reinforcement learning?",
+      "choices": {
+        "A": "The machine iterates through different models to continuously improve the outcome.",
+        "B": "The developer reinforces what they already know.",
+        "C": "The machine reinforces supervised learning.",
+        "D": "It is about reinforcing unknown data.\n**Explanation:** Reinforcement learning is fundamentally an iterative process. [Source](https://developer.ibm.com/learningpaths/get-started-automated-ai-for-decision-making-api/what-is-automated-ai-for-decision-making/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML110",
+      "question": "Least square regression solves a maximum likelihood estimation problem under a linear model",
+      "choices": {
+        "A": "True",
+        "B": "False\n**Explanation:** Least squares regression is a method used to find the best-fitting linear relationship between a dependent variable and one or more independent variables. It minimizes the sum of the squared differences between the observed and predicted values, which is equivalent to maximizing the likelihood of the observed data under a Gaussian noise assumption."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "regression",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML111",
+      "question": "You are part of data science team that is working for a national fast-food chain. You create a simple report that shows trend: Customers who visit the store more often and buy smaller meals spend more than customers who visit less frequently and buy larger meals. What is the most likely diagram that your team created?",
+      "choices": {
+        "A": "multiclass classification diagram",
+        "B": "linear regression and scatter plots",
+        "C": "pivot table",
+        "D": "K-means cluster diagram"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML112",
+      "question": "The total types of the layer in radial basis function in neural networks is **\\_\\_**",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "4\n**Explanation:** Radial Basis Functions are a special class of feed-forward neural networks consisting of three layers: an input layer, a hidden layer, and an output layer."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "neural_networks",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML113",
+      "question": "What is a top-down parser?",
+      "choices": {
+        "A": "Begins by hypothesizing a sentence (the symbol S) and successively predicting lower level constituents until individual preterminal symbols are written",
+        "B": "Begins by hypothesizing a sentence (the symbol S) and successively predicting upper level constituents until individual preterminal symbols are written",
+        "C": "Begins by hypothesizing lower level constituents and successively predicting a sentence (the symbol S)",
+        "D": "Begins by hypothesizing upper level constituents and successively predicting a sentence (the symbol S)\n**Explanation:** A top-down parser begins by hypothesizing a sentence (the symbol S) and successively predicting lower level constituents until individual preterminal symbols are written."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML114",
+      "question": "Which search method will expand the node that is closest to the goal?",
+      "choices": {
+        "A": "Best-first search",
+        "B": "Greedy best-first search",
+        "C": "A\\* search",
+        "D": "None of the mentioned\n**Explanation:** Greedy best-first search is an informed search algorithm where the evaluation function is strictly equal to the heuristic function, disregarding the edge weights in a weighted graph. [Source](https://www.codecademy.com/resources/docs/ai/search-algorithms/greedy-best-first-search)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML115",
+      "question": "Which is used to improve the performance of heuristic search?",
+      "choices": {
+        "A": "Quality of nodes",
+        "B": "Quality of heuristic function",
+        "C": "Simple form of nodes",
+        "D": "None of the mentioned\n**Explanation:** Good heuristic can be constructed by relaxing the problem, So the performance of heuristic search can be improved.``"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML116",
+      "question": "What is a sentence parser typically used for?",
+      "choices": {
+        "A": "It is used to parse sentences to check if they are utf-8 compliant.",
+        "B": "It is used to parse sentences to derive their most likely syntax tree structures.",
+        "C": "It is used to parse sentences to assign POS tags to all tokens.",
+        "D": "It is used to check if sentences can be parsed into meaningful tokens.\n**Explanation:** Sentence parsers analyze a sentence and automatically build a syntax tree."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML117",
+      "question": "Which of the following techniques can not be used for normalization in text mining?",
+      "choices": {
+        "A": "Stemming",
+        "B": "Lemmatization",
+        "C": "Stop Word Removal",
+        "D": "None of the above\n**Explanation:** Lemmatization and stemming are the techniques of keyword normalization."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_ML118",
+      "question": "How do you handle missing or corrupted data in a dataset?",
+      "choices": {
+        "A": "Drop missing rows or columns",
+        "B": "Replace missing values with mean/median/mode",
+        "C": "Assign a unique category to missing values",
+        "D": "All of the above\n**Explanation:** All of the above techniques are different ways of imputing the missing values."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "machine_learning",
+      "topic_category": "machine_learning",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

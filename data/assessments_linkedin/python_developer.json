@@ -1,0 +1,3785 @@
+{
+  "agent_id": "python_developer",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 222,
+  "difficulty_distribution": {
+    "intermediate": 119,
+    "advanced": 93,
+    "expert": 10
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_PY001",
+      "question": "What is an abstract class?",
+      "choices": {
+        "A": "An abstract class is the name for any class from which you can instantiate an object.",
+        "B": "Abstract classes must be redefined any time an object is instantiated from them.",
+        "C": "Abstract classes must inherit from concrete classes.",
+        "D": "An abstract class exists only so that other \"concrete\" classes can inherit from the abstract class.\n[reference](https://www.geeksforgeeks.org/abstract-classes-in-python/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY002",
+      "question": "What happens when you use the built-in function `any()` on a list?",
+      "choices": {
+        "A": "The `any()` function will randomly return any item from the list.",
+        "B": "The `any()` function returns True if any item in the list evaluates to True. Otherwise, it returns False.",
+        "C": "The `any()` function takes as arguments the list to check inside, and the item to check for. If \"any\" of the items in the list match the item to check for, the function returns True.",
+        "D": "The `any()` function returns a Boolean value that answers the question \"Are there any items in this list?\"\n**example**\n\n```python\nif any([True, False, False, False]) == True:\n    print('Yes, there is True')\n>>> 'Yes, there is True'\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY003",
+      "question": "What data structure does a binary tree degenerate to if it isn't balanced properly?",
+      "choices": {
+        "A": "linked list",
+        "B": "queue",
+        "C": "set",
+        "D": "OrderedDict\n[reference](https://www.scaler.com/topics/linked-list/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY004",
+      "question": "What statement about static methods is true?",
+      "choices": {
+        "A": "Static methods are called static because they always return `None`.",
+        "B": "Static methods can be bound to either a class or an instance of a class.",
+        "C": "Static methods serve mostly as utility methods or helper methods since they can't access or modify a class's state.",
+        "D": "Static methods can access and modify the state of a class or an instance of a class.\n[reference](https://www.geeksforgeeks.org/class-method-vs-static-method-python)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY005",
+      "question": "What are attributes?",
+      "choices": {
+        "A": "Attributes are long-form versions of an `if/else` statement, used when testing for equality between objects.",
+        "B": "Attributes are a way to hold data or describe a state for a class or an instance of a class.",
+        "C": "Attributes are strings that describe characteristics of a class.",
+        "D": "Function arguments are called \"attributes\" in the context of class methods and instance methods.\n**Explanation:** Attributes are defined under the class, and arguments go under the functions. arguments usually refer to parameters, whereas attributes are the constructors of the class or an instance of a class."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY006",
+      "question": "What is the term to describe this code?\n`count, fruit, price = (2, 'apple', 3.5)`",
+      "choices": {
+        "A": "Tuple assignment.",
+        "B": "Tuple unpacking.",
+        "C": "Tuple matching.",
+        "D": "Tuple duplication.\n[Reference](https://www.w3schools.com/python/python_tuples_unpack.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY007",
+      "question": "What built-in list method would you use to remove items from a list?",
+      "choices": {
+        "A": "`.delete()` method",
+        "B": "`pop(my_list)`",
+        "C": "`del(my_list)`",
+        "D": "`.pop()` method\n[Reference](https://www.w3schools.com/python/ref_list_pop.asp)\n\n**example**\n\n```python\nmy_list = [1,2,3]\nmy_list.pop(0)\nmy_list\n>>>[2,3]\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY008",
+      "question": "What is one of the most common uses of Python's `sys` library?",
+      "choices": {
+        "A": "To capture command-line arguments given at a file's runtime.",
+        "B": "To connect various systems, such as connecting a web front end, an API service, a database, and a mobile app.",
+        "C": "To take a snapshot of all the packages and libraries in your virtual environment.",
+        "D": "To scan the health of your Python ecosystem while inside a virtual environment.\n[reference](https://docs.python.org/3/library/sys.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY009",
+      "question": "What is the runtime of accessing a value in a dictionary by using its key?",
+      "choices": {
+        "A": "O(n), also called linear time.",
+        "B": "O(log n), also called logarithmic time.",
+        "C": "O(n^2), also called quadratic time.",
+        "D": "O(1), also called constant time."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY010",
+      "question": "What is the correct syntax for defining a class called Game, if it inherits from a parent class called LogicGame?",
+      "choices": {
+        "A": "`class Game(LogicGame): pass`",
+        "B": "`def Game(LogicGame): pass`",
+        "C": "`def Game.LogicGame(): pass`",
+        "D": "`class Game.LogicGame(): pass`\n**Explanation:** `The parent class which is inherited is passed as an argument to the child class. Therefore, here the first option is the right answer.`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY011",
+      "question": "What is the proper format for writing a doctest?",
+      "choices": {
+        "A": "A\n```python\ndef sum(a, b):\n    \"\"\"\n    sum(4, 3)\n    7\n\n    sum(-4, 5)\n    1\n    \"\"\"\n    return a + b\n```",
+        "B": "B\n```python\ndef sum(a, b):\n    \"\"\"\n    >>> sum(4, 3)\n    7\n\n    >>> sum(-4, 5)\n    1\n    \"\"\"\n    return a + b\n```",
+        "C": "C\n```python\ndef sum(a, b):\n    \"\"\"\n    # >>> sum(4, 3)\n    # 7\n\n    # >>> sum(-4, 5)\n    # 1\n    \"\"\"\n    return a + b\n```",
+        "D": "D\n```python\ndef sum(a, b):\n    ###\n    >>> sum(4, 3)\n    7\n\n    >>> sum(-4, 5)\n    1\n    ###\n    return a + b\n```\n\n**Explanation:** Use `'''` to start the doc and add the output of the cell after `>>>`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY012",
+      "question": "What built-in Python data type is commonly used to represent a stack?",
+      "choices": {
+        "A": "`set`",
+        "B": "`list`",
+        "C": "`None`",
+        "D": "`dictionary`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY013",
+      "question": "What would this expression return?\n```python\ncollege_years = ['Freshman', 'Sophomore', 'Junior', 'Senior']\nreturn list(enumerate(college_years, 2019))\n```",
+      "choices": {
+        "A": "`[('Freshman', 2019), ('Sophomore', 2020), ('Junior', 2021), ('Senior', 2022)]`",
+        "B": "`[(2019, 2020, 2021, 2022), ('Freshman', 'Sophomore', 'Junior', 'Senior')]`",
+        "C": "`[('Freshman', 'Sophomore', 'Junior', 'Senior'), (2019, 2020, 2021, 2022)]`",
+        "D": "`[(2019, 'Freshman'), (2020, 'Sophomore'), (2021, 'Junior'), (2022, 'Senior')]`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY014",
+      "question": "What is the purpose of the \"self\" keyword when defining or calling instance methods?",
+      "choices": {
+        "A": "`self` means that no other arguments are required to be passed into the method.",
+        "B": "There is no real purpose for the `self` method; it's just historic computer science jargon that Python keeps to stay consistent with other programming languages.",
+        "C": "`self` refers to the instance whose method was called.",
+        "D": "`self` refers to the class that was inherited from to create the object using `self`.\n[Reference](https://www.geeksforgeeks.org/self-in-python-class/)\n\n**Simple example**\n\n```python\nclass my_secrets:\n    def __init__(self, password):\n        self.password = password\n        pass\ninstance = my_secrets('1234')\ninstance.password\n>>>'1234'\n```"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY015",
+      "question": "Which of these is NOT a characteristic of namedtuples?",
+      "choices": {
+        "A": "You can assign a name to each of the `namedtuple` members and refer to them that way, similarly to how you would access keys in `dictionary`.",
+        "B": "Each member of a namedtuple object can be indexed directly, just like in a regular `tuple`.",
+        "C": "`namedtuples` are just as memory efficient as regular `tuples`.",
+        "D": "No import is needed to use `namedtuples` because they are available in the standard library.\n**We need to import it using**:`from collections import namedtuple`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY016",
+      "question": "What is an instance method?",
+      "choices": {
+        "A": "Instance methods can modify the state of an instance or the state of its parent class.",
+        "B": "Instance methods hold data related to the instance.",
+        "C": "An instance method is any class method that doesn't take any arguments.",
+        "D": "An instance method is a regular function that belongs to a class, but it must return `None`."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY017",
+      "question": "Which statement does NOT describe the object-oriented programming concept of encapsulation?",
+      "choices": {
+        "A": "It protects the data from outside interference.",
+        "B": "A parent class is encapsulated and no data from the parent class passes on to the child class.",
+        "C": "It keeps data and the methods that can manipulate that data in one place.",
+        "D": "It only allows the data to be changed by methods.\n[Reference](https://www.scaler.com/topics/python/encapsulation-in-python/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY018",
+      "question": "What is the use of an if/else statement?",
+      "choices": {
+        "A": "It tells the computer which chunk of code to run if the instructions you coded are incorrect.",
+        "B": "It runs one chunk of code if all the imports were successful, and another chunk of code if the imports were not successful.",
+        "C": "It executes one chunk of code if a condition is true, but a different chunk of code if the condition is false.",
+        "D": "It tells the computer which chunk of code to run if the is enough memory to handle it, and which chunk of code to run if there is not enough memory to handle it.\n[Reference](https://www.scaler.com/topics/python/python-if-else-statement/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY019",
+      "question": "What built-in Python data type is best suited for implementing a queue?",
+      "choices": {
+        "A": "dictionary",
+        "B": "set",
+        "C": "None. You can only build a queue from scratch.",
+        "D": "list"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY020",
+      "question": "What is the correct syntax for instantiating a new object of the type Game?",
+      "choices": {
+        "A": "`my_game = class.Game()`",
+        "B": "`my_game = class(Game)`",
+        "C": "`my_game = Game()`",
+        "D": "`my_game = Game.create()`\n[Reference](https://www.w3schools.com/python/python_classes.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY021",
+      "question": "What does the built-in `map()` function do?",
+      "choices": {
+        "A": "It creates a path from multiple values in an iterable to a single value.",
+        "B": "It applies a function to each item in an iterable and returns the value of that function.",
+        "C": "It converts a complex value type into simpler value types.",
+        "D": "It creates a mapping between two different elements of different iterables.\n[Reference](https://www.geeksforgeeks.org/python-map-function/)\n\n**Explanation:** - The syntax for `map()` function is `list(map(function,iterable))`. The simple area finder using a map would be like this\n\n```python\nimport math\nradius = [1,2,3]\narea = list(map(lambda x: round(math.pi*(x**2), 2), radius))\narea\n>>> [3.14, 12.57, 28.27]\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY022",
+      "question": "If you don't explicitly return a value from a function, what happens?",
+      "choices": {
+        "A": "The function will return a RuntimeError if you don't return a value.",
+        "B": "If the return keyword is absent, the function will return `None`.",
+        "C": "If the return keyword is absent, the function will return `True`.",
+        "D": "The function will enter an infinite loop because it won't know when to stop executing its code.\n[reference](https://www.askpython.com/python/python-return-statement#). When the return statement is `None` or has no value or there is no return statement the function returns `None`."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY023",
+      "question": "What is the purpose of the `pass` statement in Python?",
+      "choices": {
+        "A": "It is used to skip the `yield` statement of a generator and return a value of None.",
+        "B": "It is a null operation used mainly as a placeholder in functions, classes, etc.",
+        "C": "It is used to pass control from one statement block to another.",
+        "D": "It is used to skip the rest of a `while` or `for loop` and return to the start of the loop.\nThe pass statement is used as a placeholder for future code. When the pass statement is executed, nothing happens, but you avoid getting an error when empty code is not allowed.\n[reference](https://realpython.com/python-pass/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY024",
+      "question": "What is the term used to describe items that may be passed into a function?",
+      "choices": {
+        "A": "arguments",
+        "B": "paradigms",
+        "C": "attributes",
+        "D": "decorators"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY025",
+      "question": "Which collection type is used to associate values with unique keys?",
+      "choices": {
+        "A": "`slot`",
+        "B": "`dictionary`",
+        "C": "`queue`",
+        "D": "`sorted list`\n[Reference](https://www.w3schools.com/python/python_dictionaries.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY026",
+      "question": "When does a For loop stop iterating?",
+      "choices": {
+        "A": "when it encounters an infinite loop",
+        "B": "when it encounters an if/else statement that contains a break keyword",
+        "C": "when it has assessed each item in the iterable it is working on or a break keyword is encountered",
+        "D": "when the runtime for the loop exceeds O(n^2)\n[Reference](https://www.w3schools.com/python/python_for_loops.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY027",
+      "question": "Assuming the node is in a singly linked list, what is the runtime complexity of searching for a specific node within a singly linked list?",
+      "choices": {
+        "A": "The runtime is O(n) because in the worst case, the node you are searching for is the last node, and every node in the linked list must be visited.",
+        "B": "The runtime is O(nk), with n representing the number of nodes and k representing the amount of time it takes to access each node in memory.",
+        "C": "The runtime cannot be determined unless you know how many nodes are in the singly linked list.",
+        "D": "The runtime is O(1) because you can index directly to a node in a singly linked list."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY028",
+      "question": "Given the following three lists, how would you create a new list that matches the desired output printed below?\n```python\nfruits = ['Apples', 'Oranges', 'Bananas']\nquantities = [5, 3, 4]\nprices = [1.50, 2.25, 0.89]\n\n#Desired output\n[('Apples', 5, 1.50),\n('Oranges', 3, 2.25),\n('Bananas', 4, 0.89)]\n```",
+      "choices": {
+        "A": "A\n```python\noutput = []\n\nfruit_tuple_0 = (first[0], quantities[0], price[0])\noutput.append(fruit_tuple)\n\nfruit_tuple_1 = (first[1], quantities[1], price[1])\noutput.append(fruit_tuple)\n\nfruit_tuple_2 = (first[2], quantities[2], price[2])\noutput.append(fruit_tuple)\n\nreturn output\n```",
+        "B": "B\n```python\ni = 0\noutput = []\nfor fruit in fruits:\n    temp_qty = quantities[i]\n    temp_price = prices[i]\n    output.append((fruit, temp_qty, temp_price))\n    i += 1\nreturn output\n```",
+        "C": "C\n```python\ngroceries = zip(fruits, quantities, prices)\nreturn groceries\n\n>>> [\n('Apples', 5, 1.50),\n('Oranges', 3, 2.25),\n('Bananas', 4, 0.89)\n]\n```",
+        "D": "D\n```python\ni = 0\noutput = []\nfor fruit in fruits:\n    for qty in quantities:\n        for price in prices:\n            output.append((fruit, qty, price))\n    i += 1\nreturn output\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY029",
+      "question": "What happens when you use the built-in function all() on a list?",
+      "choices": {
+        "A": "The `all()` function returns a Boolean value that answers the question \"Are all the items in this list the same?",
+        "B": "The `all()` function returns True if all the items in the list can be converted to strings. Otherwise, it returns False.",
+        "C": "The `all()` function will return all the values in the list.",
+        "D": "The `all()` function returns True if all items in the list are evaluated to True. Otherwise, it returns False.\n[Reference](https://www.geeksforgeeks.org/python-all-function/)\n\n**Explanation:** `all()` returns `True` if all in the list are `True`. See example below:\n\n```python\ntest = [True, False, False, False]\nif all(test) is True:\n    print('Yeah, all of them are true.')\nelse:\n    print('There is an imposter.')\n\n>>> 'There is an imposter'\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY030",
+      "question": "What is the correct syntax for calling an instance method on a class named Game?\n_(Answer format may vary. Game and roll (or dice_roll) should each be called with no parameters.)_",
+      "choices": {
+        "A": "A\n```python\n>>> dice = Game()\n>>> dice.roll()\n```",
+        "B": "B\n```python\n>>> dice = Game(self)\n>>> dice.roll(self)\n```",
+        "C": "C\n```python\n>>> dice = Game()\n>>> dice.roll(self)\n```",
+        "D": "D\n```python\n>>> dice = Game(self)\n>>> dice.roll()\n```"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY031",
+      "question": "What is the algorithmic paradigm of quick sort?",
+      "choices": {
+        "A": "Backtracking",
+        "B": "Dynamic programming",
+        "C": "Decrease and conquer",
+        "D": "Divide and conquer\nBoth merge sort and quicksort employ a common algorithmic paradigm based on recursion. This paradigm, divide-and-conquer, breaks a problem into subproblems that are similar to the original problem, recursively solves the subproblems, and finally combines the solutions to the subproblems to solve the original problem.\n[reference](https://www.khanacademy.org/computing/computer-science/algorithms/merge-sort/a/divide-and-conquer-algorithms#:~:text=Both%20merge%20sort%20and%20quicksort,to%20solve%20the%20original%20problem.)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY032",
+      "question": "What is the runtime complexity of the list's built-in `.append()` method?",
+      "choices": {
+        "A": "O(1), also called constant time.",
+        "B": "O(log n), also called logarithmic time.",
+        "C": "O(n^2), also called quadratic time.",
+        "D": "O(n), also called linear time.\nThis function has constant time complexity i.e. O(1), because lists are randomly accessed so the last element can be reached in O(1) time that's why the time taken to add the new element at the end of the list is O(1)."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY033",
+      "question": "What is the key difference between a `set` and a `list`?",
+      "choices": {
+        "A": "A set is an ordered collection of unique items. A list is an unordered collection of non-unique items.",
+        "B": "Elements can be retrieved from a list but they cannot be retrieved from a set.",
+        "C": "A set is an ordered collection of non-unique items. A list is an unordered collection of unique items.",
+        "D": "A set is an unordered collection of unique items. A list is an ordered collection of non-unique items."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY034",
+      "question": "What is the definition of abstraction as applied to object-oriented Python?",
+      "choices": {
+        "A": "Abstraction means that a different style of code can be used since many details are already known to the program behind the scenes.",
+        "B": "Abstraction means the implementation is hidden from the user, and only the relevant data or information is shown.",
+        "C": "Abstraction means that the data and the functionality of a class are combined into one entity.",
+        "D": "Abstraction means that a class can inherit from more than one parent class.\nAbstraction in Python is defined as a process of handling complexity by hiding unnecessary information from the user.\n[reference](<https://www.mygreatlearning.com/blog/abstraction-in-python/#:~:text=What%20is%20Abstraction%20in%20Python,oriented%20programming%20(OOP)%20languages.>)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY035",
+      "question": "What does this function print?\n```python\ndef print_alpha_nums(abc_list, num_list):\n    for char in abc_list:\n        for num in num_list:\n            print(char, num)\n    return\n\nprint_alpha_nums(['a', 'b', 'c'], [1, 2, 3])\n```",
+      "choices": {
+        "A": "A\n```python\na 1\na 2\na 3\nb 1\nb 2\nb 3\nc 1\nc 2\nc 3\n```",
+        "B": "B\n```python\n['a', 'b', 'c'], [1, 2, 3]\n```",
+        "C": "C\n```python\naaa\nbbb\nccc\n111\n222\n333\n```",
+        "D": "D\n```python\na 1 2 3\nb 1 2 3\nc 1 2 3\n```"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY036",
+      "question": "Pick the correct representation of doctest for a function in Python.",
+      "choices": {
+        "A": "A\n```python\ndef sum(a, b):\n    # a = 1\n    # b = 2\n    # sum(a, b) = 3\n\n    return a + b\n```",
+        "B": "B\n```python\ndef sum(a, b):\n    \"\"\"\n    a = 1\n    b = 2\n    sum(a, b) = 3\n    \"\"\"\n\n    return a + b\n```",
+        "C": "C\n```python\ndef sum(a, b):\n    \"\"\"\n    >>> a = 1\n    >>> b = 2\n    >>> sum(a, b)\n    3\n    \"\"\"\n\n    return a + b\n```",
+        "D": "D\n```python\ndef sum(a, b):\n    '''\n    a = 1\n    b = 2\n    sum(a, b) = 3\n    '''\n    return a + b\n```\n\n**Explanation:** Use `\"\"\"` to start and end the docstring and use `>>>` to represent the input. If you write this correctly you can also run the doctest using the build-in doctest module"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY037",
+      "question": "Suppose a Game class inherits from two parent classes: BoardGame and LogicGame. Which statement is true about the methods of an object instantiated from the Game class?",
+      "choices": {
+        "A": "When instantiating an object, the object doesn't inherit any of the parent class's methods.",
+        "B": "When instantiating an object, the object will inherit the methods of whichever parent class has more methods.",
+        "C": "When instantiating an object, the programmer must specify which parent class to inherit methods from.",
+        "D": "An instance of the Game class will inherit whatever methods the BoardGame and LogicGame classes have."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY038",
+      "question": "What does calling namedtuple on a collection type return?",
+      "choices": {
+        "A": "a generic object class with iterable parameter fields",
+        "B": "a generic object class with non-iterable named fields",
+        "C": "a tuple subclass with non-iterable parameter fields",
+        "D": "a tuple subclass with iterable named fields\n**Example**\n\n```python\n# namedtuple function accepts the following arguments to generate a class\nfrom collections import namedtuple\n>>> Point = namedtuple('Point',['x','y'])\n>>> point = Point(100, 200)\n>>> point\n    Point(x=100, y=200)\n\n# Which lets you use both unpacking and iteration to access\n>>> x, y = point\n>>> print(f'({x}, {y})')\n    (100, 200)\n>>> for coordinate in point:\n        print(coordinate)\n    100\n    200\n```\n\n[Reference](https://www.geeksforgeeks.org/namedtuple-in-python/?ref=lbp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY039",
+      "question": "What symbol(s) do you use to assess equality between two elements?",
+      "choices": {
+        "A": "`&&`",
+        "B": "`=`",
+        "C": "`==`",
+        "D": "`||`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY040",
+      "question": "Review the code below. What is the correct syntax for changing the price to 1.5?\n```python\nfruit_info = {\n  'fruit': 'apple',\n  'count': 2,\n  'price': 3.5\n}\n```",
+      "choices": {
+        "A": "`fruit_info['price'] = 1.5`",
+        "B": "`my_list[3.5] = 1.5`",
+        "C": "`1.5 = fruit_info['price]`",
+        "D": "`my_list['price'] == 1.5`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY041",
+      "question": "What value would be returned by this check for equality?\n`5 != 6`",
+      "choices": {
+        "A": "`yes`",
+        "B": "`False`",
+        "C": "`True`",
+        "D": "`None`\n**Explanation:** In Python, `!=` is equivalent to _not equal to_."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY042",
+      "question": "What does a class's `__init__()` method do?",
+      "choices": {
+        "A": "It makes classes aware of each other if more than one class is defined in a single code file.",
+        "B": "It is included to preserve backward compatibility from Python 3 to Python 2, but it no longer needs to be used in Python 3.",
+        "C": "It is a method that acts as a constructor and is called automatically whenever a new object is created from a class. It sets the initial state of a new object.",
+        "D": "It initializes any imports you may have included at the top of your file.\n[Reference](https://www.geeksforgeeks.org/__init__-in-python/)\n\n**Example:**\n\n```python\nclass test:\n    def __init__(self):\n        print('I came here without your permission lol')\n        pass\nt1 = test()\n>>> 'I came here without your permission lol'\n```"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY043",
+      "question": "What is meant by the phrase \"space complexity\"?",
+      "choices": {
+        "A": "`How many microprocessors it would take to run your code in less than one second`",
+        "B": "`How many lines of code are in your code file`",
+        "C": "`The amount of space taken up in memory as a function of the input size`",
+        "D": "`How many copies of the code file could fit in 1 GB of memory`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY044",
+      "question": "What is the correct syntax for creating a variable that is bound to a dictionary?",
+      "choices": {
+        "A": "`fruit_info = {'fruit': 'apple', 'count': 2, 'price': 3.5}`",
+        "B": "`fruit_info =('fruit': 'apple', 'count': 2,'price': 3.5 ).dict()`",
+        "C": "`fruit_info = ['fruit': 'apple', 'count': 2,'price': 3.5 ].dict()`",
+        "D": "`fruit_info = to_dict('fruit': 'apple', 'count': 2, 'price': 3.5)`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY045",
+      "question": "What is the proper way to write a list comprehension that represents all the keys in this dictionary?\n`fruits = {'Apples': 5, 'Oranges': 3, 'Bananas': 4}`",
+      "choices": {
+        "A": "`fruit_names = [x in fruits.keys() for x]`",
+        "B": "`fruit_names = for x in fruits.keys() *`",
+        "C": "`fruit_names = [x for x in fruits.keys()]`",
+        "D": "`fruit_names = x for x in fruits.keys()`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "comprehensions",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY046",
+      "question": "What is the purpose of the `self` keyword when defining or calling methods on an instance of an object?",
+      "choices": {
+        "A": "`self` refers to the class that was inherited from to create the object using `self`.",
+        "B": "There is no real purpose for the `self` method. It's just legacy computer science jargon that Python keeps to stay consistent with other programming languages.",
+        "C": "`self` means that no other arguments are required to be passed into the method.",
+        "D": "`self` refers to the instance whose method was called.\n**Explanation:** - Try running the example of the Q42 without passing `self` argument inside the `__init__`, you'll understand the reason. You'll get the error like this `__init__() takes 0 positional arguments but 1 was given`, this means that something is going inside even if it hasn't been specified, which is the instance itself."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY047",
+      "question": "What statement about the class methods is true?",
+      "choices": {
+        "A": "A class method is a regular function that belongs to a class, but it must return None.",
+        "B": "A class method can modify the state of the class, but it can't directly modify the state of an instance that inherits from that class.",
+        "C": "A class method is similar to a regular function, but a class method doesn't take any arguments.",
+        "D": "A class method holds all of the data for a particular class.\n[Reference](https://pynative.com/python-class-method/)  \nClass methods are methods that are called on the class itself, not on a specific object instance. Therefore, it belongs to a class level, and all class instances share a class method."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY048",
+      "question": "What does it mean for a function to have linear runtime?",
+      "choices": {
+        "A": "You did not use very many advanced computer programming concepts in your code.",
+        "B": "The difficulty level your code is written at is not that high.",
+        "C": "It will take your program less than half a second to run.",
+        "D": "The amount of time it takes the function to complete grows linearly as the input size increases."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY049",
+      "question": "What is the proper way to define a function?",
+      "choices": {
+        "A": "`def getMaxNum(list_of_nums): # body of function goes here`",
+        "B": "`func get_max_num(list_of_nums): # body of function goes here`",
+        "C": "`func getMaxNum(list_of_nums): # body of function goes here`",
+        "D": "`def get_max_num(list_of_nums): # body of function goes here`\nThe use of underscores as word separators dates back to the late 1960s. It is particularly associated with C, is found in The C Programming Language (1978), and contrasted with the Pascal case (a type of camel case). However, the convention traditionally had no specific name: the Python programming language style guide refers to it simply as \"lower*case_with_underscores\".[2]\nWithin Usenet the term snake_case was first seen in the Rubycommunity in 2004,[3] used by Gavin Kistner, writing:\nBTW...what \\_do* you call that naming style? snake_case? That's what I'll call it until someone corrects me.\n\n[reference](https://en.wikipedia.org/wiki/Snake_case)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY050",
+      "question": "According to the PEP 8 coding style guidelines, how should constant values be named in Python?",
+      "choices": {
+        "A": "in camel case without using underscores to separate words -- e.g. `maxValue = 255`",
+        "B": "in lowercase with underscores to separate words -- e.g. `max_value = 255`",
+        "C": "in all caps with underscores separating words -- e.g. `MAX_VALUE = 255`",
+        "D": "in the mixed case without using underscores to separate words -- e.g. `MaxValue = 255`\nUse an uppercase single letter, word, or words. Separate words with underscores to improve readability.\n[Reference](https://realpython.com/python-pep8/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY051",
+      "question": "Describe the functionality of a deque.",
+      "choices": {
+        "A": "A deque adds items to one side and removes items from the other side.",
+        "B": "A deque adds items to either or both sides but only removes items from the top.",
+        "C": "A deque adds items at either or both ends and removes items at either or both ends.",
+        "D": "A deque adds items only to the top but removes them from either or both sides.\nDeque or Double Ended Queue is a generalized version of the Queue data structure that allows inserting and deletion at both ends.\n[reference](https://www.geeksforgeeks.org/deque-set-1-introduction-applications/?ref=gcse)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY052",
+      "question": "What is the correct syntax for creating a variable that is bound to a set?",
+      "choices": {
+        "A": "`my_set = {0, 'apple', 3.5}`",
+        "B": "`my_set = to_set(0, 'apple', 3.5)`",
+        "C": "`my_set = (0, 'apple', 3.5).to_set()`",
+        "D": "`my_set = (0, 'apple', 3.5).set()`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY053",
+      "question": "What is the correct syntax for defining an `__init__()` method that takes no parameters?",
+      "choices": {
+        "A": ":\n```python\nclass __init__(self):\n    pass\n```",
+        "B": ":\n```python\ndef __init__():\n    pass\n```",
+        "C": ":\n```python\nclass __init__():\n    pass\n```",
+        "D": ":\n```python\ndef __init__(self):\n    pass\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY054",
+      "question": "Which of the following is TRUE About how numeric data would be organized in a Binary Search Tree?",
+      "choices": {
+        "A": "For any given node in a binary search tree, the value of the node is greater than all the values in the node's left subtree and less than the ones in its right subtree.",
+        "B": "Binary Search Tree cannot be used to organize and search through numeric data, given the complications that arise with very deep trees.",
+        "C": "The top node of the binary search tree would be an arbitrary number. All the nodes to the left of the top node need to be less than the top node's number, but they don't need to be ordered in any particular way.",
+        "D": "The smallest numeric value would go in the topmost node. The next highest number would go in its left child node, the the next highest number after that would go in its right child node. This pattern would continue until all numeric values were in their node.\nIn computer science, a binary search tree (BST), also called an ordered or sorted binary tree, is a rooted binary tree data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree.\n[reference](https://en.wikipedia.org/wiki/Binary_search_tree#:~:text=In%20computer%20science%2C%20a%20binary,ones%20in%20its%20right%20subtree.)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY055",
+      "question": "Why would you use a decorator?",
+      "choices": {
+        "A": "A decorator is similar to a class and should be used if you are doing functional programming instead of object-oriented programming.",
+        "B": "A decorator is a visual indicator to someone reading your code that a portion of your code is critical and should not be changed.",
+        "C": "You use the decorator to alter the functionality of a function without having to modify the function code.",
+        "D": "An import statement is preceded by a decorator, python knows to import the most recent version of whatever package or library is being imported.\nDecorators allow us to wrap another function to extend the behavior of the wrapped function, without permanently modifying it.\n[reference](https://www.geeksforgeeks.org/decorators-in-python/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY056",
+      "question": "When would you use a for loop?",
+      "choices": {
+        "A": "Only in some situations, as loops are used only for certain types of programming.",
+        "B": "When you need to check every element in an iterable of known length.",
+        "C": "When you want to minimize the use of strings in your code.",
+        "D": "When you want to run code in one file for a function in another file.\n[Reference](https://www.interviewbit.com/python-cheat-sheet/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY057",
+      "question": "What is the most self-descriptive way to define a function that calculates sales tax on a purchase?",
+      "choices": {
+        "A": "A:\n```python\ndef tax(my_float):\n    ''' Calculates the sales tax of a purchase. Takes in a float representing the subtotal as an argument and returns a float representing the sales tax.'''\n    pass\n```",
+        "B": "B:\n```python\ndef tx(amt):\n    ''' Gets the tax on an amount.'''\n```",
+        "C": "C:\n```python\ndef sales_tax(amount):\n    ''' Calculates the sales tax of a purchase. Takes in a float representing the subtotal as an argument and returns a float representing the sales tax.'''\n```",
+        "D": "D:\n```python\ndef calculate_sales_tax(subtotal):\n    pass\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY058",
+      "question": "What would happen if you did not alter the state of the element that an algorithm is operating on recursively?",
+      "choices": {
+        "A": "You do not have to alter the state of the element the algorithm is recursing on.",
+        "B": "You would eventually get a KeyError when the recursive portion of the code ran out of items to recurse on.",
+        "C": "You would get a RuntimeError: maximum recursion depth exceeded.",
+        "D": "The function using recursion would return None.\n[explanation](https://www.python-course.eu/python3_recursive_functions.php#Definition-of-Recursion)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY059",
+      "question": "What is the runtime complexity of searching for an item in a binary search tree?",
+      "choices": {
+        "A": "The runtime for searching in a binary search tree is O(1) because each node acts as a key, similar to a dictionary.",
+        "B": "The runtime for searching in a binary search tree is O(n!) because every node must be compared to every other node.",
+        "C": "The runtime for searching in a binary search tree is generally O(h), where h is the height of the tree.",
+        "D": "The runtime for searching in a binary search tree is O(n) because every node in the tree must be visited.\n[explanation](https://www.geeksforgeeks.org/binary-search-tree-data-structure/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY060",
+      "question": "Why would you use `mixin`?",
+      "choices": {
+        "A": "You use a `mixin` to force a function to accept an argument at runtime even if the argument wasn't included in the function's definition.",
+        "B": "You use a `mixin` to allow a decorator to accept keyword arguments.",
+        "C": "You use a `mixin` to make sure that a class's attributes and methods don't interfere with global variables and functions.",
+        "D": "If you have many classes that all need to have the same functionality, you'd use a `mixin` to define that functionality.\nThere are two main situations where mixins are used:\nYou want to provide a lot of optional features for a class.\nYou want to use one particular feature in a lot of different classes.\n[reference](https://stackoverflow.com/questions/533631/what-is-a-mixin-and-why-is-it-useful)\n[explanation](https://www.youtube.com/watch?v=zVFLBfqV-q0)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY061",
+      "question": "What is the runtime complexity of adding an item to a stack and removing an item from a stack?",
+      "choices": {
+        "A": "Add items to a stack in O(1) time and remove items from a stack on O(n) time.",
+        "B": "Add items to a stack in O(1) time and remove items from a stack in O(1) time.",
+        "C": "Add items to a stack in O(n) time and remove items from a stack on O(1) time.",
+        "D": "Add items to a stack in O(n) time and remove items from a stack in O(n) time."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY062",
+      "question": "Which statement accurately describes how items are added to and removed from a stack?",
+      "choices": {
+        "A": "a stack adds items to one side and removes items from the other side.",
+        "B": "a stack adds items to the top and removes items from the top.",
+        "C": "a stack adds items to the top and removes items from anywhere in the stack.",
+        "D": "a stack adds items to either end and removes items from either end.\n**Explanation:** Stack uses the _last in first out_ approach."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY063",
+      "question": "What is a base case in a recursive function?",
+      "choices": {
+        "A": "A base case is the condition that allows the algorithm to stop recursing. It is usually a problem that is small enough to solve directly.",
+        "B": "The base case is a summary of the overall problem that needs to be solved.",
+        "C": "The base case is passed in as an argument to a function whose body makes use of recursion.",
+        "D": "The base case is similar to a base class, in that it can be inherited by another object."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY064",
+      "question": "Why is it considered good practice to open a file from within a Python script by using the `with` keyword?",
+      "choices": {
+        "A": "The `with` keyword lets you choose which application to open the file in.",
+        "B": "The `with` keyword acts like a `for` loop, and lets you access each line in the file one by one.",
+        "C": "There is no benefit to using the `with` keyword for opening a file in Python.",
+        "D": "When you open a file using the `with` keyword in Python, Python will make sure the file gets closed, even if an exception or error is thrown.\nIt is good practice to use the 'with' keyword when dealing with file objects. The advantage is that the file is properly closed after its suite finishes, even if an exception is raised at some point. Using with is also much shorter than writing equivalent try-finally blocks:\n\n**example**\n\n```python\n>>> f = open('workfile', 'w', encoding=\"utf-8\")\n>>> with open('workfile', encoding=\"utf-8\") as f:\n    read_data = f.read()\n# We can check that the file has been automatically closed.\n>>> f.closed\nTrue\n```\n\n[Reference](https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY065",
+      "question": "Why would you use a virtual environment?",
+      "choices": {
+        "A": "Virtual environments create a \"bubble\" around your project so that any libraries or packages you install within it don't affect your entire machine.",
+        "B": "Teams with remote employees use virtual environments so they can share code, do code reviews, and collaborate remotely.",
+        "C": "Virtual environments were common in Python 2 because they augmented missing features in the language. Virtual environments are not necessary in Python 3 due to advancements in the language.",
+        "D": "Virtual environments are tied to your GitHub or Bitbucket account, allowing you to access any of your repos virtually from any machine."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY066",
+      "question": "What is the correct way to run all the doctests in a given file from the command line?",
+      "choices": {
+        "A": "`python3 -m doctest <_filename_>`",
+        "B": "`python3 <_filename_>`",
+        "C": "`python3 <_filename_> rundoctests`",
+        "D": "`python3 doctest`\nThere is also a command line shortcut for running testmod(). You can instruct the Python interpreter to run the doctest module directly from the standard library and pass the module name(s) on the command line:\n`python -m doctest -v example.py`\nThis will import example.py as a standalone module and run testmod() on it. Note that this may not work correctly if the file is part of a package and imports other submodules from that package.  \n[reference](https://docs.python.org/3/library/doctest.html)  \n[tutorial video](https://www.youtube.com/watch?v=P8qm0VAbbww&t=180s)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY067",
+      "question": "What is a lambda function ?",
+      "choices": {
+        "A": "any function that makes use of scientific or mathematical constants, often represented by Greek letters in academic writing",
+        "B": "a function that gets executed when decorators are used",
+        "C": "any function whose definition is contained within five lines of code or fewer",
+        "D": "a small, anonymous function that can take any number of arguments but has only expression to evaluate\n[Reference](https://www.guru99.com/python-lambda-function.html)\n\n**Explanation:**\n\n> The lambda notation is an anonymous function that can take any number of arguments with only a single expression (i.e., cannot be overloaded). It has been introduced in other programming languages, such as C++ and Java. The lambda notation allows programmers to \"bypass\" function declaration."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "lambda_functions",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY068",
+      "question": "What is the primary difference between lists and tuples?",
+      "choices": {
+        "A": "You can access a specific element in a list by indexing to its position, but you cannot access a specific element in a tuple unless you iterate through the tuple",
+        "B": "Lists are mutable, meaning you can change the data that is inside them at any time. Tuples are immutable, meaning you cannot change the data that is inside them once you have created the tuple.",
+        "C": "Lists are immutable, meaning you cannot change the data that is inside them once you have created the list. Tuples are mutable, meaning you can change the data that is inside them at any time.",
+        "D": "Lists can hold several data types inside them at once, but tuples can only hold the same data type if multiple elements are present.\n[Reference](https://www.geeksforgeeks.org/python-difference-between-list-and-tuple/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY069",
+      "question": "What does a generator return?",
+      "choices": {
+        "A": "None",
+        "B": "An iterable object",
+        "C": "A linked list data structure from a non-empty list",
+        "D": "All the keys of the given dictionary"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "generators",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY070",
+      "question": "What is the difference between class attributes and instance attributes?",
+      "choices": {
+        "A": "Instance attributes can be changed, but class attributes cannot be changed",
+        "B": "Class attributes are shared by all instances of the class. Instance attributes may be unique to just that instance",
+        "C": "There is no difference between class attributes and instance attributes",
+        "D": "Class attributes belong just to the class, not to the instance of that class. Instance attributes are shared among all instances of a class"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY071",
+      "question": "What is the correct syntax for creating an instance method?",
+      "choices": {
+        "A": ":\n```python\ndef get_next_card():\n  # method body goes here\n```",
+        "B": ":\n```python\ndef get_next_card(self):\n  # method body goes here\n```",
+        "C": ":\n```python\ndef self.get_next_card():\n  # method body goes here\n```",
+        "D": ":\n```python\ndef self.get_next_card(self):\n  # method body goes here\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY072",
+      "question": "What is the correct way to call a function?",
+      "choices": {
+        "A": "`get_max_num([57, 99, 31, 18])`",
+        "B": "`call.(get_max_num)`",
+        "C": "`def get_max_num([57, 99, 31, 18])`",
+        "D": "`call.get_max_num([57, 99, 31, 18])`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY073",
+      "question": "How do you add a comment to an existing Python script?",
+      "choices": {
+        "A": "`-- This is a comment`",
+        "B": "`# This is a comment`",
+        "C": "`/* This is a comment */`",
+        "D": "`// This is a comment`\n[Reference](https://realpython.com/python-comments-guide/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY074",
+      "question": "What is the correct syntax for replacing the string `apple` in the list with the string `orange`?\n```python\nmy_list = ['kiwi', 'apple', 'banana']\n```",
+      "choices": {
+        "A": "`orange = my_list[1]`",
+        "B": "`my_list[1] = 'orange'`",
+        "C": "`my_list['orange'] = 1`",
+        "D": "`my_list[1] == orange`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY075",
+      "question": "What will happen if you use a while loop and forget to include logic that eventually causes the while loop to stop?",
+      "choices": {
+        "A": "Nothing will happen; your computer knows when to stop running the code in the while loop.",
+        "B": "You will get a KeyError.",
+        "C": "Your code will get stuck in an infinite loop.",
+        "D": "You will get a WhileLoopError."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY076",
+      "question": "Describe the functionality of a queue.",
+      "choices": {
+        "A": "A queue adds items to the back and removes items from the front.",
+        "B": "A queue adds items to the top and removes items from the top.",
+        "C": "A queue adds items to the top and removes items from anywhere in, a list.",
+        "D": "A queue adds items to the top and removes items from anywhere in the queue.\nTypical queue definition follows \"first-in, first out\" (FIFO) where items are enqueued on one-side and dequeued from the other.\n[Reference](https://www.geeksforgeeks.org/dsa/queue-data-structure/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY077",
+      "question": "Which choice is the most syntactically correct example of conditional branching?",
+      "choices": {
+        "A": "A:\n```python\nnum_people = 5\n\nif num_people > 10:\n    print(\"There is a lot of people in the pool.\")\nelif num_people > 4:\n    print(\"There are some people in the pool.\")\nelse:\n    print(\"There is no one in the pool.\")\n```",
+        "B": "B:\n```python\nnum_people = 5\n\nif num_people > 10:\n    print(\"There is a lot of people in the pool.\")\nif num_people > 4:\n    print(\"There are some people in the pool.\")\nelse:\n    print(\"There is no one in the pool.\")\n```",
+        "C": "C:\n```python\nnum_people = 5\n\nif num_people > 10;\n    print(\"There is a lot of people in the pool.\")\nelif num_people > 4;\n    print(\"There are some people in the pool.\")\nelse;\n    print(\"There is no one in the pool.\")\n```",
+        "D": "D:\n```python\nif num_people > 10;\n    print(\"There is a lot of people in the pool.\")\nif num_people > 4;\n    print(\"There are some people in the pool.\")\nelse;\n    print(\"There is no one in the pool.\")\n```"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "branching",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY078",
+      "question": "How does `defaultdict` work?",
+      "choices": {
+        "A": "`defaultdict` will automatically create a dictionary for you that has keys which are the integers 0-10.",
+        "B": "`defaultdict` forces a dictionary to only accept keys that are of the types specified when you created the `defaultdict` (such as strings or integers).",
+        "C": "If you try to read from a `defaultdict` with a nonexistent key, a new default key-value pair will be created for you instead of throwing a `KeyError`.",
+        "D": "`defaultdict` stores a copy of a dictionary in memory that you can default to if the original gets unintentionally modified.\n`defaultdict` is a container-like dictionary present in the module collections. The functionality of both dictionaries and `defaultdict` are almost the same except for the fact that `defaultdict` never raises a `KeyError`. It provides a default value for the key that does not exist.\n\n**example**\n\n```python\n# Function to return a default\n# values for keys that are not\n# present\ndef def_value():\n    return \"Not Present\"\n\n# Defining the dict\nd = defaultdict(def_value)\n```\n\n[reference](https://www.geeksforgeeks.org/defaultdict-in-python/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY079",
+      "question": "What is the correct syntax for adding a key called `variety` to the `fruit_info` dictionary that has a value of `Red Delicious`?",
+      "choices": {
+        "A": "`fruit_info['variety'] == 'Red Delicious'`",
+        "B": "`fruit_info['variety'] = 'Red Delicious'`",
+        "C": "`red_delicious = fruit_info['variety']`",
+        "D": "`red_delicious == fruit_info['variety']`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY080",
+      "question": "When would you use a `while` loop?",
+      "choices": {
+        "A": "When you want to minimize the use of strings in your code.",
+        "B": "When you want to run code in one file while code in another file is also running.",
+        "C": "When you want some code to continue running as long as some condition is true.",
+        "D": "When you need to run two or more chunks of code at once within the same file.\n**Simple Example**\n\n```python\ni = 1\nwhile i<6:\n    print(f\"Countdown: {i}\")\n    i = i + 1\n```"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY081",
+      "question": "What is the correct syntax for defining an `__init__()` method that sets instance-specific attributes upon creation of a new class instance?",
+      "choices": {
+        "A": ":\n```python\ndef __init__(self, attr1, attr2):\n    attr1 = attr1\n    attr2 = attr2\n```",
+        "B": ":\n```python\ndef __init__(attr1, attr2):\n    attr1 = attr1\n    attr2 = attr2\n```",
+        "C": ":\n```python\ndef __init__(self, attr1, attr2):\n    self.attr1 = attr1\n    self.attr2 = attr2\n```",
+        "D": ":\n```python\ndef __init__(attr1, attr2):\n    self.attr1 = attr1\n    self.attr2 = attr2\n```\n\n**Explanation:**: When instantiating a new object from a given class, the `__init__()` method will take both `attr1` and `attr2`, and set its values to their corresponding object attribute, that's why the need of using `self.attr1 = attr1` instead of `attr1 = attr1`."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY082",
+      "question": "What would this recursive function print if it is called with no parameters?\n```python\ndef count_recursive(n=1):\n    if n > 3:\n        return\n    print(n)\n\n    count_recursive(n + 1)\n```",
+      "choices": {
+        "A": ":\n```python\n1\n1\n2\n2\n3\n3\n```",
+        "B": ":\n```python\n3\n2\n1\n```",
+        "C": ":\n```python\n3\n3\n2\n2\n1\n1\n```",
+        "D": ":\n```python\n1\n2\n3\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY083",
+      "question": "In Python, when using sets, you use **\\_** to calculate the intersection between two sets and **\\_** to calculate the union.",
+      "choices": {
+        "A": "`Intersect`; `union`",
+        "B": "`|`; `&`",
+        "C": "`&`; `|`",
+        "D": "`&&`; `||`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY084",
+      "question": "What will this code fragment return?\n```python\nimport numpy as np\nnp.ones([1,2,3,4,5])\n```",
+      "choices": {
+        "A": "It returns a 5x5 matrix; each row will have the values 1,2,3,4,5.",
+        "B": "It returns an array with the values 1,2,3,4,5.",
+        "C": "It returns five different square matrices filled with ones. The first is 1x1, the second 2x2, and so on to 5x5.",
+        "D": "It returns a 5-dimensional array of size 1x2x3x4x5 filled with 1s.\n[Reference](https://www.geeksforgeeks.org/numpy-ones-python/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY085",
+      "question": "You encounter a FileNotFoundException while using just the filename in the `open` function. What might be the easiest solution?",
+      "choices": {
+        "A": "Make sure the file is on the system `PATH`.",
+        "B": "Create a symbolic link to allow better access to the file.",
+        "C": "Copy the file to the same directory as where the script is running from.",
+        "D": "Add the path to the file to the `PYTHONPATH` environment variable."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY086",
+      "question": "what will this command return?\n```python\n{x for x in range(100) if x%3 == 0}\n```",
+      "choices": {
+        "A": "A set of all the multiples of 3 less than 100.",
+        "B": "A set of all the numbers from 0 to 100 multiplied by 3.",
+        "C": "A list of all the multiples of 3 less than 100.",
+        "D": "A set of all the multiples of 3 less than 100 excluding 0.\n[reference](https://www.geeksforgeeks.org/comprehensions-in-python/) It is a `Set Comprehension` because in '{}', curly brackets, so it will return a 'Set`!"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY087",
+      "question": "What does the // operator in Python 3 allow you to do?",
+      "choices": {
+        "A": "Perform integer division.",
+        "B": "Perform operations on exponents.",
+        "C": "Find the remainder of a division operation.",
+        "D": "Perform floating point division."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY088",
+      "question": "What file is imported to use dates in Python?",
+      "choices": {
+        "A": "`datetime`",
+        "B": "`dateday`",
+        "C": "`daytime`",
+        "D": "`timedate`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY089",
+      "question": "What is the correct syntax for defining a class called Game?",
+      "choices": {
+        "A": "`def Game(): pass`",
+        "B": "`def Game: pass`",
+        "C": "`class Game: pass`",
+        "D": "`class Game(): pass`\n[reference here](https://docs.python.org/3/tutorial/classes.html)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY090",
+      "question": "What is the correct syntax for calling an instance method on a class named Game?",
+      "choices": {
+        "A": "`my_game = Game(self) self.my_game.roll_dice()`",
+        "B": "`my_game = Game() self.my_game.roll_dice()`",
+        "C": "`my_game = Game() my_game.roll_dice()`",
+        "D": "`my_game = Game(self) my_game.roll_dice(self)`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY091",
+      "question": "What is the output of this code? (NumPy has been imported as np.)?\n```python\na = np.array([1,2,3,4])\nprint(a[[False, True, False, False]])\n```",
+      "choices": {
+        "A": "`{0,2}`",
+        "B": "`[2]`",
+        "C": "`{2}`",
+        "D": "`[0,2,0,0]`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY092",
+      "question": "Suppose you have a string variable defined as y=\"stuff;thing;junk;\". What would be the output from this code?\n```python\nz = y.split(';')\nlen(z)\n```",
+      "choices": {
+        "A": "17",
+        "B": "4",
+        "C": "0",
+        "D": "3\n**Explanation:**:\n\n```python\ny=\"stuff;thing;junk\"\n\tlen(z) ==> 3\n\ny=\"stuff;thing;junk;\"\n\tlen(z) ==> 4\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY093",
+      "question": "What is the output of this code?\n```python\nnum_list = [1,2,3,4,5]\nnum_list.remove(2)\nprint(num_list)\n```",
+      "choices": {
+        "A": "`[1,2,4,5]`",
+        "B": "`[1,3,4,5]`",
+        "C": "`[3,4,5]`",
+        "D": "`[1,2,3]`\n**Explanation:**: `.remove()` is based on the value of the item, not the index; here, it is removing the item matching \"2\". If you wanted to remove an item based on its index, you would use `.pop()`.\n\n```python\nnum_list = [1,2,3,4,5]\n\nnum_list.pop(2)\n>>> [1,2,4,5]\n\nnum_list.remove(2)\n>>> [1,3,4,5]\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY094",
+      "question": "Which command will create a list from 10 down to 1? Example:\n`[10,9,8,7,6,5,4,3,2,1]`",
+      "choices": {
+        "A": "`reversed(list(range(1,11)))`",
+        "B": "`list(reversed(range(1,10)))`",
+        "C": "`list(range(10,1,-1))`",
+        "D": "`list(reversed(range(1,11)))`\n[Reference](https://www.w3schools.com/python/python_tuples.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY095",
+      "question": "Which fragment of code will print the same output as this fragment?\n```Python\nimport math\nprint(math.pow(2,10)) # prints 2 elevated to the 10th power\n```",
+      "choices": {
+        "A": ":\n```python\nprint(2^10)\n```",
+        "B": ":\n```python\nprint(2**10)\n```",
+        "C": ":\n```python\ny = [x*2 for x in range(1,10)]\nprint(y)\n```",
+        "D": ":\n```python\ny = 1\nfor i in range(1,10):\n    y = y * 2\nprint(y)\n```\n\n[Reference](https://www.digitalocean.com/community/tutorials/how-to-do-math-in-python-3-with-operators#:~:text=The%20**%20operator%20in%20Python,multiplied%20by%20itself%203%20times.)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY096",
+      "question": "Elements surrounded by `[]` are **\\_**, `{}` are **\\_**, and `()` are **\\_**.",
+      "choices": {
+        "A": "sets only; lists or dictionaries; tuples",
+        "B": "lists; sets only; tuples",
+        "C": "tuples; sets or lists; dictionaries",
+        "D": "lists; dictionaries or sets; tuples\n[Reference](https://www.geeksforgeeks.org/differences-and-applications-of-list-tuple-set-and-dictionary-in-python/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY097",
+      "question": "What is the output of this code? (NumPy has been imported as np.)\n```python\ntable = np.array([\n    [1,3],\n    [2,4]])\nprint(table.max(axis=1))\n```",
+      "choices": {
+        "A": "`[2, 4]`",
+        "B": "`[3, 4]`",
+        "C": "`[4]`",
+        "D": "`[1,2]`\n[Reference](https://colab.research.google.com/drive/1PRGf7Wgcr_gQk7snnxxuc5rL9O1ky9Xg?usp=sharing)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY098",
+      "question": "What will this code print?\n```python\nnumber = 3\nprint(f\"The number is {number}\")\n```",
+      "choices": {
+        "A": "`The number is 3`",
+        "B": "`the number is 3`",
+        "C": "`THE NUMBER IS 3`",
+        "D": "It throws a `TypeError` because the integer must be cast to a string.\n[Reference](https://colab.research.google.com/drive/1PRGf7Wgcr_gQk7snnxxuc5rL9O1ky9Xg?usp=sharing)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY099",
+      "question": "Which syntax correctly creates a variable that is bound to a tuple?",
+      "choices": {
+        "A": "`my_tuple tup(2, 'apple', 3.5) %D`",
+        "B": "`my_tuple [2, 'apple', 3.5].tuple() %D`",
+        "C": "`my_tuple = (2, 'apple', 3.5)`",
+        "D": "`my_tuple = [2, 'apple', 3.5]`\n[Reference](https://beginnersbook.com/2018/02/python-tuple/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY100",
+      "question": "Which mode is not a valid way to access a file from within a Python script?",
+      "choices": {
+        "A": "`write('w')`",
+        "B": "`scan('s')`",
+        "C": "`append('a')`",
+        "D": "`read('r')`\n1. [Reference](https://docs.python.org/3/library/functions.html#open)\n2. [Reference](https://www.w3schools.com/python/ref_list_append.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY101",
+      "question": "NumPy allows you to multiply two arrays without a for loop. This is an example of \\_.",
+      "choices": {
+        "A": "Vectorization.",
+        "B": "Attributions.",
+        "C": "Acceleration.",
+        "D": "Functional programming."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY102",
+      "question": "What built-in Python data type can be used as a hash table?",
+      "choices": {
+        "A": "`set`",
+        "B": "`list`",
+        "C": "`tuple`",
+        "D": "`dictionary`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "hashing",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY103",
+      "question": "Which Python function allows you to execute Linux shell commands in Python?",
+      "choices": {
+        "A": "`sys.exc_info()`",
+        "B": "`os.system()`",
+        "C": "`os.getcwd()`",
+        "D": "`sys.executable`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY104",
+      "question": "Suppose you have the following code snippet and want to extract a list with only the letters. Which fragment of code will \\_not\\_ achieve that goal?\n```python\nmy_dictionary = {\n    'A': 1,\n    'B': 2,\n    'C': 3,\n    'D': 4,\n    'E': 5\n}\n```",
+      "choices": {
+        "A": "<br>\n```python\nletters = []\n\nfor letter in my_dictionary.values():\n    letters.append(letter)\n```",
+        "B": "`letters = my_dictionary.keys()`",
+        "C": "`letters = [letter for (letter, number) in my_dictionary.items()]`",
+        "D": "`letters4 = list(my_dictionary)`\n**Explanation:** The first one (the correct option) returns the list of the values (the numbers). The rest of the options return a list of the keys."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY105",
+      "question": "When an array is large, NumPy will not print the entire array when given the built-in `print` function. What function can you use within NumPy to force it to print the entire array?",
+      "choices": {
+        "A": "`set_printparams`",
+        "B": "`set_printoptions`",
+        "C": "`set_fullprint`",
+        "D": "`setp_printwhole`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY106",
+      "question": "When would you use a try/except block in code?",
+      "choices": {
+        "A": "You use `try/except` blocks when you want to run some code, but need a way to execute different code if an exception is raised.",
+        "B": "You use `try/except` blocks inside of unit tests so that the unit tests will always pass.",
+        "C": "You use `try/except` blocks so that you can demonstrate to your code reviewers that you tried a new approach, but if the new approach is not what they were looking for, they can leave comments under the `except` keyword.",
+        "D": "You use `try/except` blocks so that none of your functions or methods return `None`.\n[Reference](https://runestone.academy/ns/books/published/fopp/Exceptions/using-exceptions.html#:~:text=The%20reason%20to%20use%20try,you're%20writing%20the%20code)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY107",
+      "question": "In Python, how can the compiler identify the inner block of a for loop?",
+      "choices": {
+        "A": "`because of the level of indentation after the for loop`",
+        "B": "`because of the end keyword at the end of the for loop`",
+        "C": "`because the block is surrounded by brackets ({})`",
+        "D": "`because of the blank space at the end of the body of the for loop`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY108",
+      "question": "What Python mechanism is best suited for telling a user they are using a deprecated function",
+      "choices": {
+        "A": "`sys.stdout`",
+        "B": "Traceback",
+        "C": "Warnings",
+        "D": "Exceptions"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY109",
+      "question": "What will be the value of `x` after running this code?\n```python\nx = {1,2,3,4,5}\nx.add(5)\nx.add(6)\n```",
+      "choices": {
+        "A": "`{1, 2, 3, 4, 5, 5, 6}`",
+        "B": "`{5, 6, 1, 2, 3, 4, 5, 6}`",
+        "C": "`{6, 1, 2, 3, 4, 5}`",
+        "D": "`{1, 2, 3, 4, 5, 6}`\n**Explanation:** The `.add()` method adds the element to the set only if it doesn't exist."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY110",
+      "question": "How would you access and store all of the keys in this dictionary at once?\n```python\nfruit_info = {\n    'fruit': 'apple',\n    'count': 2,\n    'price': 3.5\n}\n```",
+      "choices": {
+        "A": "`my_keys = fruit_info.to_keys()`",
+        "B": "`my_keys = fruit_info.all_keys()`",
+        "C": "`my_keys = fruit_info.keys`",
+        "D": "`my_keys = fruit_info.keys()`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY111",
+      "question": "What is wrong with this function definition?\n```python\ndef be_friendly(greet = \"How are you!\", name):\n    pass\n```",
+      "choices": {
+        "A": "`name` is a reserved word.",
+        "B": "Underscores are not allowed in function names.",
+        "C": "A non-default argument follows a default argument.",
+        "D": "There is nothing wrong with this function definition."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY112",
+      "question": "Given that NumPy is imported as `np`, which choice will return `True`?",
+      "choices": {
+        "A": ":\n```python\na = np.zeros([3,4])\nb = a.copy()\nnp.array_equal(a,b)\n```",
+        "B": ":\n```python\na = np.empty([3,4])\nb = np.empty([3,4])\nnp.array_equal(a,b)\n```",
+        "C": ":\n```python\na = np.zeros([3,4])\nb = np.zeros([4,3])\nnp.array_equal(a,b)\n```",
+        "D": ":\n```python\na = np.array([1, np.nan])\nnp.array_equal(a,a)\n```"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY113",
+      "question": "How do you add a comment to an existing Python script?",
+      "choices": {
+        "A": "`// This is a comment`",
+        "B": "`# This is a comment`",
+        "C": "`-- This is a comment`",
+        "D": "`/* This is a comment *\\`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY114",
+      "question": "In this code fragment, what will the values of c and d be equivalent to?\n```python\nimport numpy as np\na = np.array([1,2,3])\nb = np.array([4,5,6])\nc = a*b\nd = np.dot(a,b)\n```",
+      "choices": {
+        "A": "A\n```python\nc = [ a[1] * b[1], a[2] * b[2], a[3] * b[3] ]\nd = sum(c)\n```",
+        "B": "B\n```python\nc = a[0] * b[0], a[1] * b[1], a[2] * b[2]\n\nd = [ a[0] * b[0], a[1] * b[1], a[2] * b[2] ]\n```",
+        "C": "C\n```python\nc = [ a[0] * b[0], a[1] * b[1], a[2] * b[2] ]\n\nd = sum(a) + sum(b)\n```",
+        "D": "D\n```python\nc = [ a[0] * b[0], a[1] * b[1], a[2] * b[2] ]\n\nd = sum(c)\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY115",
+      "question": "What two functions within the NumPy library could you use to solve a system of linear equations?",
+      "choices": {
+        "A": "`linalg.eig() and .matmul()`",
+        "B": "`linalg.inv() and .dot()`",
+        "C": "`linalg.det() and .dot()`",
+        "D": "`linalg.inv() and .eye()`\n**Explanation:** Understanding this answer requires knowledge of linear algebra. Some systems of equations can be solved by the method of _diagonalization_, which involves finding the **eigenvectors and eigenvalues** of the system's matrix and multiplying related matrices."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY116",
+      "question": "What is the correct syntax for creating a variable that is bound to a list?",
+      "choices": {
+        "A": "`my_list = (2, 'apple', 3.5)`",
+        "B": "`my_list = [2, 'apple', 3.5]`",
+        "C": "`my_list = [2, 'apple', 3.5].to_list()`",
+        "D": "`my_list = to_list(2, 'apple', 3.5)`\n[Reference](https://www.tutorialspoint.com/python/python_lists.htm)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY117",
+      "question": "This code provides the **\\_** of the list of numbers.\n```python\nnum_list = [21, 13, 19, 3, 11, 5, 18]\nnum_list.sort()\nnum_list[len(num_list) // 2]\n```",
+      "choices": {
+        "A": "mode",
+        "B": "average",
+        "C": "mean",
+        "D": "median\n**Explanation:** `//` is the operator for floor division, which is a normal division operation that returns the largest possible integer, either less than or equal to the normal division result. Here it is used to find the median, which is the value separating the higher half from the lower half of a data sample, by finding the index of the list item in the middle of the list. (This is sufficient for a list with an odd number of items; if the list had an even number of items, you would average the values of the two middle items to find the median value.)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY118",
+      "question": "What are the two main data structures in the Pandas library?",
+      "choices": {
+        "A": "Arrays and DataFrames",
+        "B": "Series and Matrixes",
+        "C": "Matrixes and DataFrames",
+        "D": "Series and DataFrames\n[Reference](https://pandas.pydata.org/docs/user_guide/dsintro.html)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "pandas",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY119",
+      "question": "Suppose you have a variable named `vector` of type np.array with 10,000 elements. How can you turn `vector` into a variable named `matrix` with dimensions 100x100?",
+      "choices": {
+        "A": "`matrix = (vector.shape = (100,100))`",
+        "B": "`matrix = vector.to_matrix(100,100)`",
+        "C": "`matrix = matrix(vector,100,100)`",
+        "D": "`matrix = vector.reshape(100, 100)`\n[Reference](https://www.w3schools.com/python/numpy/numpy_array_reshape.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY120",
+      "question": "Which choice is an immutable data type?",
+      "choices": {
+        "A": "Dictionary",
+        "B": "List",
+        "C": "Set",
+        "D": "String\n[Reference](https://www.tutorialspoint.com/python_text_processing/python_string_immutability.htm)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY121",
+      "question": "What is the output of this code?\n```python\ndef myFunction(country = \"France\"):\n    print(f\"Hello, I am from {country}\")\n\nmyFunction(\"Spain\")\nmyFunction(\"\")\nmyFunction()\n```",
+      "choices": {
+        "A": ":\n```python\nHello, I am from Spain\nHello, I am from\nHello, I am from\n```",
+        "B": ":\n```python\nHello, I am from France\nHello, I am from France\nHello, I am from France\n```",
+        "C": ":\n```python\nHello, I am from Spain\nHello, I am from\nHello, I am from France\n```",
+        "D": ":\n```python\nHello, I am from Spain\nHello, I am from France\nHello, I am from France\n```"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY122",
+      "question": "Choose the option below for which instance of the class cannot be created.",
+      "choices": {
+        "A": "Anonymous Class",
+        "B": "Parent Class",
+        "C": "Nested Class",
+        "D": "Abstract Class\n[Reference](https://www.scaler.com/topics/python/data-abstraction-in-python/)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY123",
+      "question": "How would you create a list of tuples matching these lists of characters and actors?\n```python\ncharacters = [\"Iron Man\", \"Spider Man\", \"Captain America\"]\nactors = [\"Downey\", \"Holland\", \"Evans\"]\n\n# example output : [(\"IronMan\", \"Downey\"), (\"Spider Man\", \"Holland\"), (\"Captain America\", \"Evans\")]\n```",
+      "choices": {
+        "A": "`[(x,y)] for x in characters for y in actors]`",
+        "B": "`zip(characters, actors)`",
+        "C": "&shy;\n```python\n  d = {}\n\n  for x in range(1, len(characters)):\n      d[x] = actors[x]\n  ```",
+        "D": "`{x:y for x in characters for y in actors}`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY124",
+      "question": "What will this statement return?\n```python\n{x : x*x for x in range(1,100)}\n```",
+      "choices": {
+        "A": "A dictionary with `x` as a key, and `x` squared as its value; from 1 to 100.",
+        "B": "A dictionary with `x` as a key, and `x` squared as its value; from 1 to 99.",
+        "C": "A set of tuples, consisting of (`x`, `x` squared); from 1 to 99.",
+        "D": "A list with all numbers squared from 1 to 99."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY125",
+      "question": "Which choice is not a native numerical type in Python?",
+      "choices": {
+        "A": "Long",
+        "B": "Int",
+        "C": "Float",
+        "D": "Double"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY126",
+      "question": "What will be the output of this code?\n```python\n[1,2,3] * 3\n```",
+      "choices": {
+        "A": "`[3,2,3]`",
+        "B": "`[1, 2, 3, 1, 2, 3, 1, 2, 3]`",
+        "C": "You will get a type error.",
+        "D": "`[3,6,9]`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY127",
+      "question": "Given a list defined as numbers = `[1,2,3,4]`, what is the value of `numbers[-2]`?",
+      "choices": {
+        "A": "1",
+        "B": "3",
+        "C": "2",
+        "D": "An IndexError exception is thrown."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY128",
+      "question": "Which statement about strings in Python is true?",
+      "choices": {
+        "A": "Strings can be enclosed by double quotes (\") or single quotes (').",
+        "B": "Strings can only be enclosed in single quotes (').",
+        "C": "Single character strings must be enclosed in single quotes ('), and the rest must be enclosed in double quotes (\").",
+        "D": "Strings can only be enclosed in double quotes (\")."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY129",
+      "question": "What is the correct syntax for defining an `_init_()` method that takes no parameters?",
+      "choices": {
+        "A": "`def*init*(self): pass`",
+        "B": "`class*init*(self): pass`",
+        "C": "`class*init*(): pass`",
+        "D": "`def*init*(): pass`\n`()` - empty parameter.\n`self` - refers to all instances within a class.\n`_init_` - a reserved method, AKA a constructor.\n`_init_()` - always executed when the class is being initiated."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY130",
+      "question": "Suppose you need to use the `sin` function from the `math` library. What is the correct syntax for importing only that function?",
+      "choices": {
+        "A": "`using math.sin`",
+        "B": "`import math.sin`",
+        "C": "`from math import sin`",
+        "D": "`import sin from math`\n[Reference](https://www.datacamp.com/tutorial/modules-in-python#more-on-import-statements)\n\n**Explanation:** The `from..import` statement allows you to import specific functions/variables from a module instead of importing everything."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY131",
+      "question": "What do you get if you apply numpy.sum() to a list that contains only Boolean values?",
+      "choices": {
+        "A": "`0`",
+        "B": "`the count of all True values`",
+        "C": "`a type error`",
+        "D": "`None`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY132",
+      "question": "What will this code print?\n```python\nprint(\"foo\" if (256).bit_length() > 8 else \"bar\")\n```",
+      "choices": {
+        "A": "`True`",
+        "B": "`foo`",
+        "C": "You will get an error message because constant integer values are not classes.",
+        "D": "`bar`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY133",
+      "question": "If you do not explicitly return a value from a function, what happens?",
+      "choices": {
+        "A": "If the return keyword is absent, the function will return `True`.",
+        "B": "The function will enter an infinite loop because it will not know when to stop executing its code.",
+        "C": "The function will return a `RuntimeError` if you do not return a value.",
+        "D": "If the return keyword is absent the function will return `None`."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY134",
+      "question": "It is often the case that the pandas library is used for **_ data and NumPy for _** data.",
+      "choices": {
+        "A": "string; numerical",
+        "B": "unstructured; structured",
+        "C": "numerical; tabular",
+        "D": "tabular; numerical\n* Explanation: The Pandas library is commonly used for working with tabular data, such as data in the form of tables or spreadsheets. It provides data structures and functions for data manipulation and analysis. On the other hand, NumPy is a powerful library for numerical computing in Python, and it is often used for performing mathematical operations on numerical data, such as arrays and matrices."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY135",
+      "question": "What do you need to do to install additional packages into Python?",
+      "choices": {
+        "A": "Use a C compiler like `gcc` or `clang`.",
+        "B": "Use a package manager like `pip` or `conda`.",
+        "C": "Use an IDE like Notepad++ or Idle.",
+        "D": "Use a package manager like NPM or NuGet."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY136",
+      "question": "In this code fragment, what will be the values of `a` and `b`?\n```python\nimport numpy as np\n\na = np.arange(100)\nb = a[50:60:2]\n```",
+      "choices": {
+        "A": "`a`: all integers from 0 to 99 (inclusive); `b`: all even integers from 50 to 58 (inclusive).",
+        "B": "`a`: all integers from 0 to 100 (inclusive); `b`: all even integers from 50 to 60 (inclusive).",
+        "C": "`a`: all integers from 0 to 99 (inclusive); `b`: all even integers from 50 to 60 (inclusive).",
+        "D": "`a`: all integers from 0 to 99 (inclusive); `b`: all odd integers from 49 to 59 (inclusive)."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY137",
+      "question": "When using NumPy in Python, how do you check the dimensionality (number and length of dimensions) of an object called `my_object`?",
+      "choices": {
+        "A": "`my_object.get_shape()`",
+        "B": "`my_object.shape`",
+        "C": "`my_object.dim()`",
+        "D": "`len(my_object)`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "numpy",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY138",
+      "question": "Assume you have a non-empty list named `mylist` and you want to search for a specific value. The minimum number of comparisons will be \\_**_ and the maximum number of comparisons will be _**?",
+      "choices": {
+        "A": "`len(mylist); len(mylist)`",
+        "B": "`1; len(mylist)`",
+        "C": "`2; len(mylist)`",
+        "D": "`0; len(mylist)`\n**Explanation:** Can use a break statement and the value being searched can be the first element of the list, given that it is non-empty."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY139",
+      "question": "If a function does not have a return statement, what does it return?",
+      "choices": {
+        "A": "`0`",
+        "B": "`True`",
+        "C": "`None`",
+        "D": "`False`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY140",
+      "question": "Suppose you want to double-check if two matrices can be multiplied using NumPy for debugging purposes. How would you complete this code fragment by filling in the blanks with the appropriate variables?\n```python\nimport numpy as np\n\ndef can_matrices_be_multiplied (matrix1, matrix2):\n    rowsMat1, columnsMat1 = matrix1.shape\n    rowsMat2, columnsMat2 = matrix2.shape\n\n    if _____ == ______ :\n        print(\"The matrices can be multiplied!\")\n        return True\n    else:\n        return False\n```",
+      "choices": {
+        "A": "columnsMat1; rowsMat1;",
+        "B": "columnsMat1; rowsMat2;",
+        "C": "columnsMat1; columnsMat2;",
+        "D": "columnsMat2; rowsMat1;\n[reference](https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:matrices/x9e81a4f98389efdf:multiplying-matrices-by-matrices/a/multiplying-matrices#).\nA matrix can be multiplied by any other matrix that has the same number of rows as the first columns. I.E. A matrix with 2 columns can be multiplied by any matrix with 2 rows"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY141",
+      "question": "What is the output of this comprehension?\n`[(x, x+1) for x in range(1,5)] `",
+      "choices": {
+        "A": "[(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]",
+        "B": "[1,2,3,4,5]",
+        "C": "[(1, 2), (2, 3), (3, 4)]",
+        "D": "[(1, 2), (2, 3), (3, 4), (4, 5)]"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY142",
+      "question": "In Python, a class method must have \\_**\\_ as a function decorator, and the first parameter of the method will be a reference to \\_\\_**.",
+      "choices": {
+        "A": "@classmethod; the class",
+        "B": "inline; the class",
+        "C": "static; self",
+        "D": "@static; self\n[Reference](https://docs.python.org/3/library/functions.html#classmethod)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY143",
+      "question": "Which snippet of code will print _My name is Joffrey, son of Robert_?",
+      "choices": {
+        "A": ":\n```python\nclass Father():\n    name = 'Robert'\n\nclass Person(Father):\n    def __init__(self, name):\n        self.fathername = super.name\n        self.name = name\n\n    def introduce(self):\n        print(f\"My name is {self.name} son of {self.fathername}\")\n\nking = Person(\"Joffrey\")\nking.introduce()\n\n```",
+        "B": ":\n```python\nclass Father():\n    name = 'Robert'\n\n\nclass Person(Father):\n    def __init__(self, name):\n        self.fathername = self.name\n        self.name = name\n\n    def introduce(self):\n        print(f\"My name is {self.name} son of {self.fathername}\")\n\n\nking = Person(\"Joffrey\")\nking.introduce()\n\n```",
+        "C": ":\n```python\nclass Father():\n    name = 'Robert'\n\n\nclass Person(Father):\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"My name is {self.name} son of {super.name}\")\n\nking = Person(\"Joffrey\")\nking.introduce()\n```",
+        "D": ":\n```python\nclass Father():\n    name = 'Robert'\n\nclass Person(Father):\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"My name is {self.name} son of {base.name}\")\n\nking = Person(\"Joffrey\")\nking.introduce()\n\n```\n\n**Explanation:** In the first, super does not have `.name` (should be `self.name`). The third drops Robert, and `base` is not defined in the 4th."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY144",
+      "question": "What does this code output in the console, assuming defaultdict has already been imported?\n```python\nanimals = {\n    'a': ['ant', 'antelope', 'armadillo'],\n    'b': ['beetle', 'bear', 'bat'],\n    'c': ['cat', 'cougar', 'camel']\n}\n\nanimals = defaultdict(list, animals)\n\nprint(animals['b'])\nprint(animals['d'])\n```",
+      "choices": {
+        "A": "A\n```python\n      ['beetle', 'bear', 'bat']\n      []\n```",
+        "B": "B\n```python\n      ['beetle', 'bear', 'bat']\n      # an exception will be thrown\n```",
+        "C": "C\n```python\n      ['beetle', 'bear', 'bat']\n      None\n```",
+        "D": "D\n```python\n      ['bat', 'bear', 'beetle']\n      []\n```\n\n**Explanation:** Dictionaries usually result in an exception when using the square bracket syntax. Defaultdict here returns a default value dedicated by the first parameter so instead of throwing an exception, they return the default. Note that this needs to be imported as follows: `from collections import defaultdict`\n\n[Reference](https://www.geeksforgeeks.org/defaultdict-in-python/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY145",
+      "question": "What will this line of code return? (Assume `n` is already defined as any positive integer value.)\n```python\n[x*2 for x in range(1,n)]\n```",
+      "choices": {
+        "A": "A list with all the even numbers less than 2\\*n.",
+        "B": "A dictionary with all the even numbers less than 2\\*n.",
+        "C": "A list with all the odd numbers less than 2\\*n.",
+        "D": "A list with all the even numbers less than or equal to 2\\*n.\n[Reference](https://www.w3schools.com/python/ref_func_range.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY146",
+      "question": "What does this code print in the console?\n```python\nx = 18\n\nif x > 10:\n\tif x > 15:\n\t\tprint('A')\n\telse:\n\t\tprint('B')\nelse:\n\tprint('C')\n\n```",
+      "choices": {
+        "A": "C",
+        "B": "A B",
+        "C": "B",
+        "D": "A"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY147",
+      "question": "What is the maximum length of a Python identifier?",
+      "choices": {
+        "A": "32",
+        "B": "16",
+        "C": "128",
+        "D": "No fixed length is specified.\n[reference](https://peps.python.org/pep-0008/) No No fixed length is specified but Pep-8 specifies under \"Maximum Line Length\" to \"Limit all lines to a maximum of 79 characters\"."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY148",
+      "question": "What will the value of the `i` variable be when the following loop finishes its execution?\n```python\nfor i in range(5): pass\n```",
+      "choices": {
+        "A": "5",
+        "B": "The variable becomes unavailable.",
+        "C": "6",
+        "D": "4"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY149",
+      "question": "`f-strings` are also called:",
+      "choices": {
+        "A": "Formatted string expressions.",
+        "B": "Functional strings.",
+        "C": "Modulo formatted strings.",
+        "D": "Formatted string literals."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY150",
+      "question": "How many CPUs (or cores) will the Python threading library take advantage of simultaneously?",
+      "choices": {
+        "A": "One.",
+        "B": "All of the available CPUs.",
+        "C": "Two.",
+        "D": "Three.\n**Explanation:**: Python threading is restricted to a single CPU at one time. The multiprocessing library will allow you to run code on different processors."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY151",
+      "question": "What will be the value of `y` in this code?\n```python\nx = 5\ny = 1 + (20 if x < 5 else 30)\n```",
+      "choices": {
+        "A": "`False`",
+        "B": "`21`",
+        "C": "`2`",
+        "D": "`31`\n[Reference](https://www.w3schools.com/python/python_conditions.asp)\n\n**Explanation:** If you have only one statement to execute, one for `if` and one for `else`, you can put it all on the same line.\n\n```python\nx = 5\n# This is the same statement expanded to multiple lines\ny = 1\nif (x < 5):\n    y += 20\nelse:\n    y += 30\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY152",
+      "question": "The process of pickling in Python includes?",
+      "choices": {
+        "A": "Conversion of a Python object hierarchy into byte stream.",
+        "B": "Conversion of a data table into a list.",
+        "C": "Conversion of a byte stream into Python object hierarchy.",
+        "D": "Conversion of a list into a data table.\n[reference](https://docs.python.org/3/library/pickle.html#:~:text=“Pickling”%20is%20the%20process%20whereby,back%20into%20an%20object%20hierarchy.)  \n“Pickling” is the process whereby a Python object hierarchy is converted into a byte stream, and “unpickling” is the inverse operation, whereby a byte stream (from a binary file or bytes-like object) is converted back into an object hierarchy."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY153",
+      "question": "What is the output of the following program?\n```python\nprint(\"codescracker\".endswith(\"er\"))\n```",
+      "choices": {
+        "A": "`True`",
+        "B": "`1`",
+        "C": "`2`",
+        "D": "`False`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY154",
+      "question": "Is the list mutable in Python?",
+      "choices": {
+        "A": "True",
+        "B": "False"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY155",
+      "question": "What is the output of the following program?\n```python\nprint(\"programming\".center())\n```",
+      "choices": {
+        "A": "`cr`",
+        "B": "`programming`",
+        "C": "Error says `TypeError: center expected at least 1 argument, got 0`.",
+        "D": "None of the above.\n[reference](https://www.w3schools.com/python/ref_string_center.asp). The center() method will center align the string, using a specified character (space is the default) as the fill character.  \nSyntax: `string.center(length, character)` where `length` is required!"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY156",
+      "question": "Who created the Python programming language?",
+      "choices": {
+        "A": "Tim Berners-Lee",
+        "B": "Ada Lovelace",
+        "C": "Guido van Rossum",
+        "D": "Alan Turing"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY157",
+      "question": "Which collection is ordered, changeable, and allows duplicate members?",
+      "choices": {
+        "A": "Set",
+        "B": "Tuple",
+        "C": "Dictionary",
+        "D": "List"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY158",
+      "question": "What will be printed in the console if you run this code?\n```python\nx = 1j\nprint(x**2 == -1)\n```",
+      "choices": {
+        "A": "A runtime error telling you that the variable `j` has not been initialized.",
+        "B": "`True`",
+        "C": "`1j`",
+        "D": "`False`\n**Explanation:** The letter `j` acts as the imaginary unit in Python, therefore `x**2` means `j**2` which is equal to `-1`. The statement `x**2 == -1` is evaluated as `True`."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY159",
+      "question": "What will be printed in the console if you run this code?\n```python\nprint(0xA + 0xB + 0xC)\n```",
+      "choices": {
+        "A": "`33`",
+        "B": "`63`",
+        "C": "`0xA + 0xB + 0xC`",
+        "D": "`None`\n**Explanation:** `A`, `B` and `C` are hexadecimal integers with values `10`, `11` and `12` respectively, so the sum of `A`, `B` and `C` is `33`."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY160",
+      "question": "What will this code output to the screen?\n```python\nfor i in range(5):\n    print(i)\nelse:\n    print(\"Done!\")\n```",
+      "choices": {
+        "A": "A\n```python\n1\n2\n3\n4\n5\nDone!\n```",
+        "B": "B\n```python\n0\n1\n2\n3\n4\n5\nDone!\n```",
+        "C": "C\n```python\n0\n1\n2\n3\n4\nDone!\n```",
+        "D": "D:\nYou will get a syntax error."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY161",
+      "question": "Which comparison of lists and tuples in Python is correct?",
+      "choices": {
+        "A": "Use lists instead of tuples when you have a collection of related but dissimilar objects.",
+        "B": "Use tuples instead of lists when you have a common collection of similar objects.",
+        "C": "Use tuples instead of lists for functions that need to return multiple values.",
+        "D": "Use lists instead of tuples when the position of elements is important.\n[Reference](https://www.scaler.com/topics/python/tuples-in-python/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY162",
+      "question": "Consider the following code snippet that uses decorators to calculate the execution time of the `execution_fn` function:\n```python\nimport functools\nimport time\n\ndef timer(MISSING_ARG_1):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        start_time = time.perf_counter()\n        rval = func(*args, **kwargs)\n        end_time = time.perf_counter()\n        duration = end_time - start_time\n        print(f\"Executed in {duration:.4f} seconds\")\n        return MISSING_ARG_2\n    return MISSING_ARG_3\n\n@timer\ndef execution_fn():\n    for i in range(3):\n        time.sleep(1)\n\nexecution_fn()\n```\n\n**Which of the following choices are the missing arguments?**",
+      "choices": {
+        "A": ":\n```\nMISSING_ARG_1 = wrapper\n\nMISSING_ARG_2 = rval\n\nMISSING_ARG_3 = func\n```",
+        "B": ":\n```\nMISSING_ARG_1 = func\n\nMISSING_ARG_2 = rval\n\nMISSING_ARG_3 = wrapper\n```",
+        "C": ":\n```\nMISSING_ARG_1 is empty\n\nMISSING_ARG_2 = rval\n\nMISSING_ARG_3 = wrapper\n```",
+        "D": ":\n```\nMISSING_ARG_1 is empty\n\nMISSING_ARG_2 = rval\n\nMISSING_ARG_3 = func\n```"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY163",
+      "question": "Which of the following statements defines a new object type named `Dog` in Python?",
+      "choices": {
+        "A": "`class Dog:`",
+        "B": "`Dog class:`",
+        "C": "`Dog:`",
+        "D": "`class Dog`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY164",
+      "question": "To use pipelines in `scikit-learn`, import from the `scikit-learn._` submodule.",
+      "choices": {
+        "A": "`preprocessing`",
+        "B": "`pipeline`",
+        "C": "`filters`",
+        "D": "`pipe_filter`\n[reference](https://scikit-learn.org/stable/modules/compose.html) The correct syntax is actually: `from sklearn.pipeline import Pipeline`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY165",
+      "question": "You should pass in a value of **\\_** for the axis argument to the Pandas apply method to apply the function to each row.",
+      "choices": {
+        "A": "row",
+        "B": "col",
+        "C": "1",
+        "D": "0"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "pandas",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY166",
+      "question": "Data points in Pyplot are called...",
+      "choices": {
+        "A": "... pointers.",
+        "B": "... points.",
+        "C": "... markers.",
+        "D": "... none of these."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY167",
+      "question": "What does this code print?\n```python\na = np.array([[1, 2], [3, 4], [5, 6]])\nc = a[(a > 3) & (a < 11)]\nprint(c)\n```",
+      "choices": {
+        "A": "`[[3, 4], [5, 6]]`",
+        "B": "`[False, False, False, True, True, True]`",
+        "C": "`[[0,0], [3, 4], [5, 6]]`",
+        "D": "`[4 5 6]`"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY168",
+      "question": "Assume `m`, `n`, and `p` are positive integers. In the following comprehension, how many times will the function `randint` be called?\n```python\n[ [ [ randint(1,100) for i in range(m) ] for j in range(n) ] for k in range(p) ]\n```",
+      "choices": {
+        "A": "`m * n * p`",
+        "B": "The greater value of `(m,n,p)`.",
+        "C": "1 million.",
+        "D": "`m + n + p`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY169",
+      "question": "Suppose you have a class named `MyClass` which has multiple inheritance and methods with the same name in its ancestors. Which class method could you call to see which method will get priority when invoked?",
+      "choices": {
+        "A": "`MyClass.__mro__`",
+        "B": "`MyClass.hierarchy()`",
+        "C": "`callable(MyClass)`",
+        "D": "`dir(MyClass)`\n**Explanation:** MRO stands for Method Resolution Order. It returns a list of types the class is derived from, in the order they are searched for methods."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY170",
+      "question": "Suppose you have a list of employees described by the code below. You want to assign Alice the same salary as Charlie. Which choice will accomplish that?\n```python\nemployees = {\n    'alice':{\n        'position':'Lead Developer',\n        'salary':1000\n    },\n    'bob':{\n        'position': 'Lead Artist',\n        'salary':2000\n    },\n    'charlie':{\n        'position':'cfo',\n        'salary':3000\n    }\n}\n```",
+      "choices": {
+        "A": "`employess['alice']['salary'] = employees['charlie']['salary']`",
+        "B": "`employees.alice.salary = employees.charlie.salary`",
+        "C": "`employees['alice'][1] = employees['charlie'][1]`",
+        "D": "`employees['alice'].salary = employees['charlie'].salary`\n**Explanation:** This is accessing a key in a dictionary nested inside another dictionary. The command `employees['alice']['salary'] = employees['charlie']['salary']` assigns the value of the `salary` key in the dictionary of the employee `charlie` to the value of the `salary` key in the dictionary of the employee `alice`."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY171",
+      "question": "You are given this piece of code. Assume `m` and `n` are already defined as some positive integer value. When it completes, how many tuples will my list contain?\n```python\nmylist = []\n\nfor i in range(m):\n    for j in range(n):\n        mylist.append((i,j))\n```",
+      "choices": {
+        "A": "`m`",
+        "B": "`m + n`",
+        "C": "`n`",
+        "D": "`m \\* n`\n**Explanation:** This code will run for `m` x `n` times, if you run this code, it will create `m` x `n` tuples.\n\nThe first loop runs for `m` times and the inner loop will run for `n` times. The single iteration of the first loop will only be completed when all of the `n` iterations of an inner loop are completed. This is the same process for 2nd, and 3rd, ... `m`th iterations for outer loop. Overall, both loops will run `m` x `n` times."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY172",
+      "question": "What will this comprehension provide you?\n```python\n{x : [y for y in range (1, x) if x % y == 0] for x in range (2, 100)}\n```",
+      "choices": {
+        "A": "A dictionary whose keys are the numbers from 2 to 99 (inclusive), and their respective values are their factors.",
+        "B": "A dictionary whose keys are the numbers from 2 to 99 (inclusive), and their respective values are a list from 1 to the key value itself (inclusive).",
+        "C": "A dictionary whose keys are the numbers from 2 to 99 (inclusive), and their respective values are the even numbers from 1 to the key value itself (inclusive).",
+        "D": "A dictionary whose keys are the numbers from 2 to 99 (inclusive), and their respective values are the odd numbers from 1 to the key value itself (inclusive)."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY173",
+      "question": "What is a common use of Python's sys library?",
+      "choices": {
+        "A": "to take a snapshot of all the packages and libraries in your virtual environment",
+        "B": "to connect various systems, such as connecting a web front end, an API service, a database, and a mobile app",
+        "C": "to capture command-line arguments given at a file's runtime",
+        "D": "to scan the health of your Python ecosystem while inside a virtual environment"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY174",
+      "question": "What is the output of 17 % 15 ?",
+      "choices": {
+        "A": "17",
+        "B": "15",
+        "C": "2",
+        "D": "16"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY175",
+      "question": "Let the lists 'characters' and 'actors' be defined as given. Which of the following lines of code gives the desired output?\n```python\ncharacters = [\"Iron Man\", \"Spider Man\", \"Captain America\"]\nactors = [\"Downey\", \"Holland\", \"Evans\"]\n\n#Desired output : [(\"Iron Man\", \"Downey), (\"Spider Man\", \"Holland\"), (\"Captain America\", \"Evans\")]\n```",
+      "choices": {
+        "A": "print( zip( characters, actors ) )",
+        "B": "print( { x: y for x in characters for y in actors } )",
+        "C": "print( [ ( x, y ) for x in characters for y in actors ] )",
+        "D": "print( list( zip( characters, actors ) ) )\nExplanation: zip() is the correct function for this usecase. However, zip() makes a zip type object which is an iterator. Therefore, using list() is necessary to convert the zip object into a list of tuples that can be displayed or accessed directly. The other options have logical errors."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY176",
+      "question": "When is the `if __name__ == \"__main__\":` block executed in a Python script?",
+      "choices": {
+        "A": "Always, as it is required in every Python script.",
+        "B": "Only when the script is executed directly from the command line or as the main program.",
+        "C": "Only when the script contains syntax errors.",
+        "D": "Only when the script is imported as a module in another script.\nThe `if __name__ == \"__main__\":` block is executed when the script is run directly but not when it's imported as a module in another script.\n[reference](https://docs.python.org/3/tutorial/modules.html#executing-modules-as-scripts)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY177",
+      "question": "What will be the output of the following Python code?\n```python\ndef square(x):\n\treturn x * x\n\nnumbers = [1, 2, 3, 4, 5]\nsquared_numbers = map(square, numbers)\nresult = list(squared_numbers)\nprint(result)\n```",
+      "choices": {
+        "A": "`[1, 4, 9, 16, 25]`",
+        "B": "`[1, 2, 3, 4, 5]`",
+        "C": "`[1, 8, 27, 64, 125]`",
+        "D": "`[2, 4, 6, 8, 10]`\nThe code defines a `square` function to calculate the square of a number. It then uses the `map` function to apply this function to each element in the `numbers` list, resulting in a new iterable. Finally, the `list` constructor is used to convert this iterable into a list. The output will be a list of squared numbers.\n[reference](https://docs.python.org/3/library/functions.html#map)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY178",
+      "question": "Which of the following is not a valid built-in function in Python?",
+      "choices": {
+        "A": "int",
+        "B": "string",
+        "C": "boolean",
+        "D": "array\n[Source](https://docs.python.org/3/library/functions.html)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY179",
+      "question": "Which of the following is not a valid Python data type?",
+      "choices": {
+        "A": "int",
+        "B": "char",
+        "C": "float",
+        "D": "str"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY180",
+      "question": "In Python, which function is used to read a line from the console input?",
+      "choices": {
+        "A": "input()",
+        "B": "read_line()",
+        "C": "console_input()",
+        "D": "getline()\n[Reference](https://www.geeksforgeeks.org/taking-input-from-console-in-python/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY181",
+      "question": "What will be the output of the following Python code?\n`print(\"Hello {name1} and {name2}\".format(name1='foo', name2='bin'))`",
+      "choices": {
+        "A": "Hello foo and bin",
+        "B": "Hello {name1} and {name2}",
+        "C": "Error",
+        "D": "Hello and"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY182",
+      "question": "What will be the ouput of the following code snippet?\n```python\ndef outer_func(x):\n    y = x + 1\n    def inner_func():\n        return y + x\n    return inner_func\n\nx = 10\ny = 20\nclosure_func = outer_func(x)\nprint(closure_func())\n```",
+      "choices": {
+        "A": "30",
+        "B": "21",
+        "C": "11",
+        "D": "31\n**Explanation**: When `outer_func(10)` is called, `y` is set to 11 within `outer_func`. The `inner_func`, which has access to `outer_func`'s scope, returns `y` + `x`. When `closure_func()` is called, it uses `y` = `11` (from `outer_func`) and `x` = `10` from the global scope, not from the function’s argument. Therefore, `closure_func()` returns 11 + 10 = 21."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY183",
+      "question": "What is the output of the following Python code?\n```python\nx = 5\ndef func():\n    x = 10\n    print(x)\nfunc()\nprint(x)\n```",
+      "choices": {
+        "A": "10, 5",
+        "B": "10, 10",
+        "C": "5, 5",
+        "D": "5, 10\n**Explanation:**\nThe correct answer is 10, 5.\n\nIn the given code, the variable `x` is first defined in the global scope with a value of 5. Inside the `func()` function, a new local variable `x` is created and assigned the value of 10. When `func()` is called, it prints the value of the local `x`, which is 10.\n\nAfter the function call, the print statement outside the function refers to the global `x`, which still has the value of 5.\n\nTherefore, the output is 10, 5."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY184",
+      "question": "What is the output of the following Python code?\n```python\ndef func(a, b=2, c=3):\n    print(a, b, c)\n\nfunc(10)\nfunc(10, 20)\nfunc(10, 20, 30)\n```",
+      "choices": {
+        "A": "10 2 3, 10 20 3, 10 20 30",
+        "B": "10 2 3, 10 2 3, 10 2 3",
+        "C": "10 2 3, 10 20 2, 10 20 30",
+        "D": "10 2 3, 10 20 3, 10 20 30\n**Explanation:**\nThe correct answer is 10 2 3, 10 20 3, 10 20 30.\n\nIn the given code, the `func()` function has three parameters: `a`, `b`, and `c`. `b` and `c` have default values of 2 and 3, respectively.\n\nWhen `func(10)` is called, only the first parameter `a` is provided, so `b` and `c` take their default values of 2 and 3, respectively.\n\nWhen `func(10, 20)` is called, the first parameter `a` is 10, and the second parameter `b` is 20. The third parameter `c` takes its default value of 3.\n\nWhen `func(10, 20, 30)` is called, all three parameters are provided, so `a` is 10, `b` is 20, and `c` is 30.\n\nTherefore, the output is:\n10 2 3\n10 20 3\n10 20 30"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY185",
+      "question": "What is the output of the following Python code?\n```python\nx = [1, 2, 3]\ny = x\ny.append(4)\nprint(x)\n```",
+      "choices": {
+        "A": "[1, 2, 3]",
+        "B": "[1, 2, 3, 4]",
+        "C": "[4, 1, 2, 3]",
+        "D": "Error\n**Explanation:**\nThe correct answer is [1, 2, 3, 4].\n\nIn Python, assigning y = x does not create a new list; both x and y refer to the same object in memory.\nSo when we call y.append(4), it modifies the original list that both variables point to.\nThus, printing x will display the updated list [1, 2, 3, 4]."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY186",
+      "question": "What is the output of the following Python code?\n```python\ndef add_item(item, item_list=[]):\n    item_list.append(item)\n    return item_list\n\nprint(add_item(1))\nprint(add_item(2))\nprint(add_item(3, []))\n```",
+      "choices": {
+        "A": "[1] [2] [3]",
+        "B": "[1] [1,2] [3]",
+        "C": "[1,2,3] [1,2,3] [3]",
+        "D": "[1] [2] [3,1,2]\n**Explanation:**\nThe correct answer is [1] [1, 2] [3].\n\nIn Python, default mutable arguments (like lists) are evaluated only once when the function is defined — not each time it’s called.\nThat means the first two calls to add_item() share the same default list, so it accumulates values [1] and then [1, 2].\n\nHowever, in the third call add_item(3, []), we pass a new empty list, so it creates a separate list [3]."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY187",
+      "question": "Which method is used to implement the `len()` function for a custom class?",
+      "choices": {
+        "A": "`__length__()`",
+        "B": "`__len__()`",
+        "C": "`__size__()`",
+        "D": "`__count__()`\n[Reference Special Methods](https://docs.python.org/3/reference/datamodel.html#special-method-names)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY188",
+      "question": "What will this code output?\n```python\ndef decorator(func):\n    def wrapper(*args, **kwargs):\n        print(\"Before function call\")\n        result = func(*args, **kwargs)\n        print(\"After function call\")\n        return result\n    return wrapper\n\n@decorator\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")\n```",
+      "choices": {
+        "A": "`Before function call`, `Hello, Alice!`, `After function call`",
+        "B": "`Hello, Alice!`",
+        "C": "`Before function call`, `After function call`",
+        "D": "`decorator`\n[Reference Decorators](https://docs.python.org/3/glossary.html#term-decorator)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY189",
+      "question": "Which statement about Python generators is correct?",
+      "choices": {
+        "A": "Generators store all values in memory at once",
+        "B": "Generators produce values on-demand using the `yield` keyword",
+        "C": "Generators can only be created with list comprehensions",
+        "D": "Generators cannot be iterated multiple times\n[Reference Generators](https://docs.python.org/3/glossary.html#term-generator)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "generators",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY190",
+      "question": "What is the output of this code?\n```python\nclass Parent:\n    def method(self):\n        print(\"Parent method\")\n\nclass Child(Parent):\n    def method(self):\n        super().method()\n        print(\"Child method\")\n\nobj = Child()\nobj.method()\n```",
+      "choices": {
+        "A": "`Parent method`, `Child method`",
+        "B": "`Child method`, `Parent method`",
+        "C": "`Child method`",
+        "D": "`Parent method`\n[Reference super()](https://docs.python.org/3/library/functions.html#super)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY191",
+      "question": "Which method is used to implement string representation for debugging?",
+      "choices": {
+        "A": "`__str__()`",
+        "B": "`__repr__()`",
+        "C": "`__format__()`",
+        "D": "`__debug__()`\n[Reference String Representation](https://docs.python.org/3/reference/datamodel.html#object.__repr__)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY192",
+      "question": "What will this code output?\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nprint(fibonacci(10))\nprint(fibonacci.cache_info())\n```",
+      "choices": {
+        "A": "`55` and cache statistics",
+        "B": "`55` and `None`",
+        "C": "`RecursionError`",
+        "D": "`TypeError`\n[Reference lru_cache](https://docs.python.org/3/library/functools.html#functools.lru_cache)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY193",
+      "question": "Which statement about Python's `with` statement is correct?",
+      "choices": {
+        "A": "It can only be used with file objects",
+        "B": "It ensures proper resource cleanup by calling `__exit__` method",
+        "C": "It creates a new scope for variables",
+        "D": "It can only be used once per program\n[Reference with statement](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY194",
+      "question": "What is the output of this code?\n```python\nclass Counter:\n    def __init__(self):\n        self.count = 0\n\n    def __call__(self):\n        self.count += 1\n        return self.count\n\ncounter = Counter()\nprint(counter())\nprint(counter())\nprint(counter.count)\n```",
+      "choices": {
+        "A": "`1`, `2`, `2`",
+        "B": "`0`, `1`, `2`",
+        "C": "`1`, `1`, `1`",
+        "D": "`TypeError`\n[Reference Callable Objects](https://docs.python.org/3/reference/datamodel.html#emulating-callable-objects)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY195",
+      "question": "Which method is used to implement the `in` operator for a custom class?",
+      "choices": {
+        "A": "`__in__()`",
+        "B": "`__contains__()`",
+        "C": "`__has__()`",
+        "D": "`__includes__()`\n[Reference Membership Test](https://docs.python.org/3/reference/datamodel.html#object.__contains__)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY196",
+      "question": "What will this code output?\n```python\nfrom dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: int\n    y: int\n\n    def distance_from_origin(self):\n        return (self.x ** 2 + self.y ** 2) ** 0.5\n\np = Point(3, 4)\nprint(p)\nprint(p.distance_from_origin())\n```",
+      "choices": {
+        "A": "`Point(x=3, y=4)` and `5.0`",
+        "B": "`<Point object>` and `5.0`",
+        "C": "`Point(3, 4)` and `5`",
+        "D": "`SyntaxError`\n[Reference Dataclasses](https://docs.python.org/3/library/dataclasses.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY197",
+      "question": "Which statement about Python's Global Interpreter Lock (GIL) is correct?",
+      "choices": {
+        "A": "GIL allows true parallelism for CPU-bound tasks",
+        "B": "GIL prevents multiple native threads from executing Python bytecodes simultaneously",
+        "C": "GIL only affects I/O operations",
+        "D": "GIL can be disabled in Python\n[Reference GIL](https://docs.python.org/3/glossary.html#term-global-interpreter-lock)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY198",
+      "question": "What is the output of this code?\n```python\nclass Singleton:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\na = Singleton()\nb = Singleton()\nprint(a is b)\nprint(id(a) == id(b))\n```",
+      "choices": {
+        "A": "`True` and `True`",
+        "B": "`False` and `False`",
+        "C": "`True` and `False`",
+        "D": "`False` and `True`\n[Reference Singleton Pattern](https://docs.python.org/3/reference/datamodel.html#object.__new__)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY199",
+      "question": "Which method is used to implement iteration protocol?",
+      "choices": {
+        "A": "`__iterate__()`",
+        "B": "`__iter__()` and `__next__()`",
+        "C": "`__loop__()`",
+        "D": "`__foreach__()`\n[Reference Iterator Protocol](https://docs.python.org/3/library/stdtypes.html#iterator-types)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY200",
+      "question": "What will this code output?\n```python\nfrom enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nprint(Color.RED)\nprint(Color.RED.name)\nprint(Color.RED.value)\n```",
+      "choices": {
+        "A": "`Color.RED`, `RED`, `1`",
+        "B": "`1`, `RED`, `Color.RED`",
+        "C": "`RED`, `1`, `Color.RED`",
+        "D": "`<Color.RED: 1>`, `RED`, `1`\n[Reference Enum](https://docs.python.org/3/library/enum.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY201",
+      "question": "Which statement about Python's `*args` and `**kwargs` is correct?",
+      "choices": {
+        "A": "`*args` captures keyword arguments, `**kwargs` captures positional arguments",
+        "B": "`*args` captures positional arguments, `**kwargs` captures keyword arguments",
+        "C": "Both capture the same type of arguments",
+        "D": "They can only be used together\n[Reference Variable Arguments](https://docs.python.org/3/tutorial/more.html#more-on-defining-functions)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY202",
+      "question": "What is the output of this code?\n```python\nclass MyClass:\n    class_var = 0\n\n    def __init__(self):\n        MyClass.class_var += 1\n        self.instance_var = MyClass.class_var\n\na = MyClass()\nb = MyClass()\nprint(a.instance_var, b.instance_var)\nprint(MyClass.class_var)\n```",
+      "choices": {
+        "A": "`1 2` and `2`",
+        "B": "`0 1` and `2`",
+        "C": "`1 1` and `1`",
+        "D": "`2 2` and `2`\n[Reference Class vs Instance Variables](https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY203",
+      "question": "Which method is used to implement the `+` operator for a custom class?",
+      "choices": {
+        "A": "`__plus__()`",
+        "B": "`__add__()`",
+        "C": "`__sum__()`",
+        "D": "`__combine__()`\n[Reference Arithmetic Operations](https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY204",
+      "question": "What will this code output?\n```python\nfrom collections import namedtuple\n\nPerson = namedtuple('Person', ['name', 'age', 'city'])\np = Person('Alice', 30, 'New York')\nprint(p.name)\nprint(p[1])\nprint(p._fields)\n```",
+      "choices": {
+        "A": "`Alice`, `30`, `('name', 'age', 'city')`",
+        "B": "`Alice`, `Alice`, `['name', 'age', 'city']`",
+        "C": "`Person`, `30`, `('name', 'age', 'city')`",
+        "D": "`AttributeError`\n[Reference namedtuple](https://docs.python.org/3/library/collections.html#collections.namedtuple)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY205",
+      "question": "Which statement about Python's `lambda` functions is correct?",
+      "choices": {
+        "A": "Lambda functions can contain multiple statements",
+        "B": "Lambda functions can only contain a single expression",
+        "C": "Lambda functions cannot take arguments",
+        "D": "Lambda functions are faster than regular functions\n[Reference Lambda Expressions](https://docs.python.org/3/tutorial/controlflow.html#lambda-expressions)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "lambda_functions",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY206",
+      "question": "What is the output of this code?\n```python\nfrom functools import partial\n\ndef multiply(x, y, z):\n    return x * y * z\n\ndouble = partial(multiply, 2)\nresult = double(3, 4)\nprint(result)\n```",
+      "choices": {
+        "A": "`24`",
+        "B": "`12`",
+        "C": "`6`",
+        "D": "`TypeError`\n[Reference functools.partial](https://docs.python.org/3/library/functools.html#functools.partial)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY207",
+      "question": "Which method is used to implement comparison operations like `<`, `>`, `<=`, `>=`?",
+      "choices": {
+        "A": "`__compare__()`",
+        "B": "`__lt__()`, `__gt__()`, `__le__()`, `__ge__()`",
+        "C": "`__cmp__()`",
+        "D": "`__order__()`\n[Reference Rich Comparison Methods](https://docs.python.org/3/reference/datamodel.html#object.__lt__)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY208",
+      "question": "What will this code output?\n```python\nclass MyContext:\n    def __enter__(self):\n        print(\"Entering context\")\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print(\"Exiting context\")\n        return False\n\nwith MyContext() as ctx:\n    print(\"Inside context\")\n```",
+      "choices": {
+        "A": "`Entering context`, `Inside context`, `Exiting context`",
+        "B": "`Inside context`, `Entering context`, `Exiting context`",
+        "C": "`Entering context`, `Exiting context`, `Inside context`",
+        "D": "`Inside context`\n[Reference Context Manager Protocol](https://docs.python.org/3/reference/datamodel.html#context-managers)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY209",
+      "question": "Which statement about Python's `yield from` is correct?",
+      "choices": {
+        "A": "It's the same as regular `yield`",
+        "B": "It delegates to another generator or iterable",
+        "C": "It can only be used with lists",
+        "D": "It creates a new thread\n[Reference yield from](https://docs.python.org/3/whatsnew/3.3.html#pep-380-syntax-for-delegating-to-a-subgenerator)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY210",
+      "question": "What is the output of this code?\n```python\nclass Descriptor:\n    def __get__(self, obj, objtype=None):\n        return \"Descriptor value\"\n\n    def __set__(self, obj, value):\n        print(f\"Setting value: {value}\")\n\nclass MyClass:\n    attr = Descriptor()\n\nobj = MyClass()\nprint(obj.attr)\nobj.attr = \"new value\"\nprint(obj.attr)\n```",
+      "choices": {
+        "A": "`Descriptor value`, `Setting value: new value`, `Descriptor value`",
+        "B": "`Descriptor value`, `Setting value: new value`, `new value`",
+        "C": "`None`, `Setting value: new value`, `new value`",
+        "D": "`AttributeError`\n[Reference Descriptors](https://docs.python.org/3/reference/datamodel.html#implementing-descriptors)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY211",
+      "question": "Which method is used to implement the `hash()` function for a custom class?",
+      "choices": {
+        "A": "`__hashcode__()`",
+        "B": "`__hash__()`",
+        "C": "`__digest__()`",
+        "D": "`__checksum__()`\n[Reference Hash Method](https://docs.python.org/3/reference/datamodel.html#object.__hash__)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY212",
+      "question": "What will this code output?\n```python\nfrom typing import List, Dict\n\ndef process_data(items: List[int]) -> Dict[str, int]:\n    return {\"count\": len(items), \"sum\": sum(items)}\n\nresult = process_data([1, 2, 3, 4, 5])\nprint(result)\nprint(type(result))\n```",
+      "choices": {
+        "A": "`{'count': 5, 'sum': 15}` and `<class 'dict'>`",
+        "B": "`{'count': 5, 'sum': 15}` and `<class 'Dict'>`",
+        "C": "`TypeError`",
+        "D": "`SyntaxError`\n[Reference Type Hints](https://docs.python.org/3/library/typing.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY213",
+      "question": "Which statement about Python's `__slots__` is correct?",
+      "choices": {
+        "A": "`__slots__` increases memory usage",
+        "B": "`__slots__` restricts attribute creation and can reduce memory usage",
+        "C": "`__slots__` is only for methods",
+        "D": "`__slots__` enables multiple inheritance\n[Reference **slots**](https://docs.python.org/3/reference/datamodel.html#slots)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY214",
+      "question": "What is the output of this code?\n```python\nclass MRO_A:\n    def method(self):\n        print(\"A\")\n\nclass MRO_B(MRO_A):\n    def method(self):\n        print(\"B\")\n        super().method()\n\nclass MRO_C(MRO_A):\n    def method(self):\n        print(\"C\")\n        super().method()\n\nclass MRO_D(MRO_B, MRO_C):\n    def method(self):\n        print(\"D\")\n        super().method()\n\nobj = MRO_D()\nobj.method()\n```",
+      "choices": {
+        "A": "`D`, `B`, `C`, `A`",
+        "B": "`D`, `B`, `A`",
+        "C": "`D`, `C`, `A`",
+        "D": "`A`, `B`, `C`, `D`\n[Reference Method Resolution Order](https://docs.python.org/3/tutorial/classes.html#multiple-inheritance)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY215",
+      "question": "Which method is used to implement the `del` statement for a custom class?",
+      "choices": {
+        "A": "`__del__()`",
+        "B": "`__delete__()`",
+        "C": "`__remove__()`",
+        "D": "`__destroy__()`\n[Reference Object Finalization](https://docs.python.org/3/reference/datamodel.html#object.__del__)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY216",
+      "question": "What will this code output?\n```python\nfrom contextlib import contextmanager\n\n@contextmanager\ndef my_context():\n    print(\"Setup\")\n    try:\n        yield \"resource\"\n    finally:\n        print(\"Cleanup\")\n\nwith my_context() as resource:\n    print(f\"Using {resource}\")\n```",
+      "choices": {
+        "A": "`Setup`, `Using resource`, `Cleanup`",
+        "B": "`Using resource`, `Setup`, `Cleanup`",
+        "C": "`Setup`, `Cleanup`, `Using resource`",
+        "D": "`Setup`, `Using resource`\n[Reference contextlib.contextmanager](https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY217",
+      "question": "Which statement about Python's `property` decorator is correct?",
+      "choices": {
+        "A": "It can only be used for read-only attributes",
+        "B": "It allows methods to be accessed like attributes",
+        "C": "It creates class variables",
+        "D": "It can only be used with strings\n[Reference Property Decorator](https://docs.python.org/3/library/functions.html#property)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY218",
+      "question": "What is the output of the following code?\n```python\nclass Meta(type):\n    def __new__(cls, name, bases, attrs):\n        attrs['class_id'] = f\"{name}_123\"\n        return super().__new__(cls, name, bases, attrs)\n\nclass MyClass(metaclass=Meta):\n    pass\n\nprint(MyClass.class_id)\n```",
+      "choices": {
+        "A": "`MyClass_123`",
+        "B": "`Meta_123`",
+        "C": "`AttributeError`",
+        "D": "`class_id`\n[Reference Metaclasses](https://docs.python.org/3/reference/datamodel.html#metaclasses)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY219",
+      "question": "Which method is used to create a context manager in Python?",
+      "choices": {
+        "A": "`__init__` and `__del__`",
+        "B": "`__enter__` and `__exit__`",
+        "C": "`__start__` and `__stop__`",
+        "D": "`__open__` and `__close__`\n[Reference Context Managers](https://docs.python.org/3/reference/datamodel.html#context-managers)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "python",
+      "topic_category": "python",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY220",
+      "question": "What will this code output?\n```python\nimport asyncio\n\nasync def fetch_data(delay):\n    await asyncio.sleep(delay)\n    return f\"Data after {delay} seconds\"\n\nasync def main():\n    result = await fetch_data(1)\n    print(result)\n\nasyncio.run(main())\n```",
+      "choices": {
+        "A": "`Data after 1 seconds`",
+        "B": "`<coroutine object fetch_data>`",
+        "C": "`SyntaxError`",
+        "D": "`None`\n[Reference Asyncio](https://docs.python.org/3/library/asyncio.html)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY221",
+      "question": "Which decorator is used to create a property that can be set?\n```python\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @radius.setter\n    def radius(self, value):\n        if value < 0:\n            raise ValueError(\"Radius cannot be negative\")\n        self._radius = value\n```",
+      "choices": {
+        "A": "`@property.getter`",
+        "B": "`@radius.setter`",
+        "C": "`@property.setter`",
+        "D": "`@setter`\n[Reference Property Decorators](https://docs.python.org/3/library/functions.html#property)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "decorators",
+      "topic_category": "python",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_PY222",
+      "question": "What is the output of this code?\n```python\nfrom collections import defaultdict\n\ndd = defaultdict(list)\ndd['key1'].append('value1')\ndd['key2'].append('value2')\nprint(len(dd))\nprint(dd['key3'])\nprint(len(dd))\n```",
+      "choices": {
+        "A": "`2`, `[]`, `2`",
+        "B": "`2`, `[]`, `3`",
+        "C": "`2`, `KeyError`, `2`",
+        "D": "`3`, `[]`, `3`\n[Reference defaultdict](https://docs.python.org/3/library/collections.html#collections.defaultdict)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "python",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

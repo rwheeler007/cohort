@@ -1,0 +1,97 @@
+{
+  "started_at": "2026-03-10T00:36:53.088971",
+  "model": "qwen3.5:9b",
+  "banks": [
+    "benchmark",
+    "linkedin",
+    "original"
+  ],
+  "limit": 500,
+  "workers": [
+    {
+      "gpu": 0,
+      "bank": "benchmark",
+      "agents": [
+        "security_agent",
+        "python_developer",
+        "hardware_agent",
+        "web_developer",
+        "ai_infrastructure_agent"
+      ],
+      "questions": 1945,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_benchmark_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "benchmark",
+      "agents": [
+        "system_coder",
+        "javascript_developer",
+        "ceo_agent",
+        "database_developer",
+        "coding_orchestrator"
+      ],
+      "questions": 1966,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_benchmark_gpu1.log"
+    },
+    {
+      "gpu": 0,
+      "bank": "linkedin",
+      "agents": [
+        "coding_orchestrator",
+        "web_developer",
+        "python_developer",
+        "system_coder",
+        "ai_infrastructure_agent",
+        "hardware_agent"
+      ],
+      "questions": 1572,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_linkedin_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "linkedin",
+      "agents": [
+        "ceo_agent",
+        "qa_agent",
+        "database_developer",
+        "javascript_developer",
+        "security_agent",
+        "documentation_agent"
+      ],
+      "questions": 1592,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_linkedin_gpu1.log"
+    },
+    {
+      "gpu": 0,
+      "bank": "original",
+      "agents": [
+        "python_developer",
+        "coding_orchestrator",
+        "documentation_agent",
+        "javascript_developer",
+        "security_agent",
+        "web_developer",
+        "supervisor_agent"
+      ],
+      "questions": 700,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_original_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "original",
+      "agents": [
+        "ceo_agent",
+        "database_developer",
+        "hardware_agent",
+        "qa_agent",
+        "system_coder",
+        "code_archaeologist",
+        "setup_guide"
+      ],
+      "questions": 700,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_003653_original_gpu1.log"
+    }
+  ],
+  "completed_at": "2026-03-10T00:41:23.195585"
+}

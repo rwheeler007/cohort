@@ -1,0 +1,3667 @@
+{
+  "agent_id": "javascript_developer",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 215,
+  "difficulty_distribution": {
+    "intermediate": 93,
+    "advanced": 120,
+    "expert": 2
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_JS001",
+      "question": "Which operator returns true if the two compared values are not equal?",
+      "choices": {
+        "A": "`<>`",
+        "B": "`~`",
+        "C": "`==!`",
+        "D": "`!==`\n[Reference Javascript Comparison Operators](https://www.w3schools.com/js/js_operators.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS002",
+      "question": "How is a forEach statement different from a for statement?",
+      "choices": {
+        "A": "Only a for statement uses a callback function.",
+        "B": "A for statement is more generic and can be used with various iterable objects, while a forEach statement is mainly designed for arrays but can also be used with other iterable objects like Sets.",
+        "C": "Only a forEach statement lets you specify your own iterator.",
+        "D": "A forEach statement is generic, but a for statement can be used only with an array.\n[Reference Differences between forEach and for loop](https://www.geeksforgeeks.org/difference-between-foreach-and-for-loop-in-javascript/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS003",
+      "question": "Review the code below. Which statement calls the addTax function and passes 50 as an argument?\n```js\nfunction addTax(total) {\n  return total * 1.05;\n}\n```",
+      "choices": {
+        "A": "`addTax = 50;`",
+        "B": "`return addTax 50;`",
+        "C": "`addTax(50);`",
+        "D": "`addTax 50;`\n[Reference functions in javascript](https://www.w3schools.com/js/js_functions.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS004",
+      "question": "Which statement is the correct way to create a variable called rate and assign it the value 100?",
+      "choices": {
+        "A": "`let rate = 100;`",
+        "B": "`let 100 = rate;`",
+        "C": "`100 = let rate;`",
+        "D": "`rate = 100;`\n[Reference Javascript Assignment operators](https://www.w3schools.com/js/js_operators.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS005",
+      "question": "Which statement creates a new object using the Person constructor? Which statement creates a new Person object called \"student\"?",
+      "choices": {
+        "A": "`var student = new Person();`",
+        "B": "`var student = construct Person;`",
+        "C": "`var student = Person();`",
+        "D": "`var student = construct Person();`\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS006",
+      "question": "When would the final statement in the code shown be logged to the console? When would 'results shown' be logged to the console?\n```js\nlet modal = document.querySelector('#result');\nsetTimeout(function () {\n  modal.classList.remove('hidden');\n}, 10000);\nconsole.log('Results shown');\n```",
+      "choices": {
+        "A": "after 10 second",
+        "B": "after results are received from the HTTP request",
+        "C": "after 10000 seconds",
+        "D": "immediately\n[Reference Javascript is synchronous and single threaded](https://stackoverflow.com/a/2035662/15067394)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS007",
+      "question": "Which snippet could you add to this code to print \"food\" to the console?\n```js\nclass Animal {\n  static belly = [];\n  eat() {\n    Animal.belly.push('food');\n  }\n}\nlet a = new Animal();\na.eat();\nconsole.log(/* Snippet Here */); //Prints food\n```",
+      "choices": {
+        "A": "`a.prototype.belly[0]`",
+        "B": "`Object.getPrototype0f (a).belly[0]`",
+        "C": "`Animal.belly[0]`",
+        "D": "`a.belly[0]`\n[Reference Javascript Class static Keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS008",
+      "question": "You've written the code shown to log a set of consecutive values, but it instead results in the value 5, 5, 5, and 5 being logged to the console. Which revised version of the code would result in the value 1, 2, 3 and 4 being logged?",
+      "choices": {
+        "A": "`A`\n```js\nfor (var i = 1; i <= 4; i++) {\n  setTimeout(function () {\n    console.log(i);\n  }, i * 10000);\n}\n```",
+        "B": "`B`\n```js\nfor (var i = 1; i <= 4; i++) {\n  (function (i) {\n    setTimeout(function () {\n      console.log(j);\n    }, j * 1000);\n  })(j);\n}\n```",
+        "C": "`C`\n```js\nfor (var i = 1; i <= 4; i++) {\n  setTimeout(function () {\n    console.log(i);\n  }, i * 1000);\n}\n```",
+        "D": "`D`\n```js\nfor (var i = 1; i <= 4; i++) {\n  (function (j) {\n    setTimeout(function () {\n      console.log(j);\n    }, j * 1000);\n  })(i);\n}\n```"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS009",
+      "question": "How does a function create a closure?",
+      "choices": {
+        "A": "It reloads the document whenever the value changes.",
+        "B": "It returns a reference to a variable in its parent scope.",
+        "C": "It completes execution without returning.",
+        "D": "It copies a local variable to the global scope.\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS010",
+      "question": "What is the result in the console of running the code shown?\n```js\nvar Storm = function () {};\nStorm.prototype.precip = 'rain';\nvar WinterStorm = function () {};\nWinterStorm.prototype = new Storm();\nWinterStorm.prototype.precip = 'snow';\nvar bob = new WinterStorm();\nconsole.log(bob.precip);\n```",
+      "choices": {
+        "A": "Storm()",
+        "B": "undefined",
+        "C": "'rain'",
+        "D": "'snow'\n[Reference prototype chain](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS011",
+      "question": "You need to match a time value such as 12:00:32. Which of the following regular expressions would work for your code?",
+      "choices": {
+        "A": "`/[0-9]{2,}:[0-9]{2,}:[0-9]{2,}/`",
+        "B": "`/\\d\\d:\\d\\d:\\d\\d/`",
+        "C": "`/[0-9]+:[0-9]+:[0-9]+/`",
+        "D": "`/ : : /`\n**NOTE**: The first three are all partially correct and will match digits, but the **second option is the most correct** because it will **only** match **2 digit** time values (12:00:32). The first option would have worked if the repetitions range looked like `[0-9]{2}`, however because of the **comma** `[0-9]{2,}` it will select 2 **or more** digits (120:000:321). The third option will any range of time digits, single _and_ multiple (meaning `1:2:3` will also match).\n\n**More resources:**\n\n1. [Repeating characters](https://regexone.com/lesson/repeating_characters)\n2. [Kleene operators](https://regexone.com/lesson/kleene_operators)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS012",
+      "question": "What is the result in the console of running this code?\n```js\n'use strict';\nfunction logThis() {\n  this.desc = 'logger';\n  console.log(this);\n}\nnew logThis();\n```",
+      "choices": {
+        "A": "`undefined`",
+        "B": "`window`",
+        "C": "`{desc: \"logger\"}`",
+        "D": "`function`\n[Reference javascript classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS013",
+      "question": "How would you reference the text 'avenue' in the code shown?\n```js\nlet roadTypes = ['street', 'road', 'avenue', 'circle'];\n```",
+      "choices": {
+        "A": "roadTypes.2",
+        "B": "roadTypes\\[3\\]",
+        "C": "roadTypes.3",
+        "D": "roadTypes\\[2\\]\n[Reference accessing javascript arrays](https://www.w3schools.com/js/js_arrays.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS014",
+      "question": "What is the result of running this statement?\n```js\nconsole.log(typeof 42);\n```",
+      "choices": {
+        "A": "`'float'`",
+        "B": "`'value'`",
+        "C": "`'number'`",
+        "D": "`'integer'`\n[Reference javascript data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS015",
+      "question": "Which property references the DOM object that dispatched an event?",
+      "choices": {
+        "A": "`self`",
+        "B": "`object`",
+        "C": "`target`",
+        "D": "`source`\n[Reference DOM events](https://www.w3schools.com/jsref/dom_obj_event.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS016",
+      "question": "You're adding error handling to the code shown. Which code would you include within the if statement to specify an error message?\n```js\nfunction addNumbers(x, y) {\n  if (isNaN(x) || isNaN(y)) {\n  }\n}\n```",
+      "choices": {
+        "A": "`exception('One or both parameters are not numbers')`",
+        "B": "`catch('One or both parameters are not numbers')`",
+        "C": "`error('One or both parameters are not numbers')`",
+        "D": "`throw('One or both parameters are not numbers')`\n[Reference javascript throw](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/throw)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS017",
+      "question": "Which method converts JSON data to a JavaScript object?",
+      "choices": {
+        "A": "`JSON.fromString();`",
+        "B": "`JSON.parse()`",
+        "C": "`JSON.toObject()`",
+        "D": "`JSON.stringify()`\n[Reference convert json to javascript object](https://www.w3schools.com/js/js_json_parse.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "json",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS018",
+      "question": "When would you use a conditional statement?",
+      "choices": {
+        "A": "When you want to reuse a set of statements multiple times.",
+        "B": "When you want your code to choose between multiple options.",
+        "C": "When you want to group data together.",
+        "D": "When you want to loop through a group of statement.\n[Reference javascript conditionals](https://www.javascript.com/learn/conditionals)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS019",
+      "question": "What would be the result in the console of running this code?\n```js\nfor (var i = 0; i < 5; i++) {\n  console.log(i);\n}\n```",
+      "choices": {
+        "A": "1 2 3 4 5",
+        "B": "1 2 3 4",
+        "C": "0 1 2 3 4",
+        "D": "0 1 2 3 4 5\n[Reference javascript for loops](https://www.w3schools.com/js/js_loop_for.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS020",
+      "question": "Which Object method returns an iterable that can be used to iterate over the properties of an object?",
+      "choices": {
+        "A": "`Object.get()`",
+        "B": "`Object.loop()`",
+        "C": "`Object.each()`",
+        "D": "`Object.keys()`\n[Reference javascript object static methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object#static_methods)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS021",
+      "question": "What will be logged to the console?\n```js\nvar a = ['dog', 'cat', 'hen'];\na[100] = 'fox';\nconsole.log(a.length);\n```",
+      "choices": {
+        "A": "101",
+        "B": "3",
+        "C": "4",
+        "D": "100"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS022",
+      "question": "What is one difference between collections created with Map and collections created with Object?",
+      "choices": {
+        "A": "You can iterate over values in a Map in their insertion order.",
+        "B": "You can count the records in a Map with a single method call.",
+        "C": "Keys in Maps can be strings.",
+        "D": "You can access values in a Map without iterating over the whole collection.\n**Explanation:** `Map.prototype.size returns the number of elements in a Map, whereas Object does not have a built-in method to return its size.`\n[Reference map methods javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS023",
+      "question": "What is the value of dessert.type after executing this code?\n```js\nconst dessert = { type: 'pie' };\ndessert.type = 'pudding';\n```",
+      "choices": {
+        "A": "pie",
+        "B": "The code will throw an error.",
+        "C": "pudding",
+        "D": "undefined\n[Reference working with js objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS024",
+      "question": "0 && hi",
+      "choices": {
+        "A": "ReferenceError",
+        "B": "true",
+        "C": "0",
+        "D": "false\n[Reference boolean logic](https://ntgard.medium.com/https-medium-com-ntgard-boolean-logic-in-javascript-part-1-3371af974f19)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS025",
+      "question": "Which of the following operators can be used to do a short-circuit evaluation?",
+      "choices": {
+        "A": "`++`",
+        "B": "`--`",
+        "C": "`==`",
+        "D": "`||`\n[Reference short circuit javascript](https://codeburst.io/javascript-what-is-short-circuit-evaluation-ff22b2f5608c)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS026",
+      "question": "Which statement sets the Person constructor as the parent of the Student constructor in the prototype chain?",
+      "choices": {
+        "A": "`Student.parent = Person;`",
+        "B": "`Student.prototype = new Person();`",
+        "C": "`Student.prototype = Person;`",
+        "D": "`Student.prototype = Person();`\n[Reference prototype object js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS027",
+      "question": "Why would you include a \"use strict\" statement in a JavaScript file?",
+      "choices": {
+        "A": "to tell parsers to interpret your JavaScript syntax loosely",
+        "B": "to tell parsers to enforce all JavaScript syntax rules when processing your code",
+        "C": "to instruct the browser to automatically fix any errors it finds in the code",
+        "D": "to enable ES6 features in your code\n[Reference what is use strict in js](https://www.w3schools.com/js/js_strict.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS028",
+      "question": "Which Variable-defining keyword allows its variable to be accessed (as undefined) before the line that defines it?",
+      "choices": {
+        "A": "`const`",
+        "B": "`var`",
+        "C": "`let`",
+        "D": "All of the above\n[Reference var vs let vs const in js](https://www.freecodecamp.org/news/var-let-and-const-whats-the-difference/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS029",
+      "question": "Which of the following values is not a Boolean false?",
+      "choices": {
+        "A": "`Boolean(0)`",
+        "B": "`Boolean(\"\")`",
+        "C": "`Boolean(NaN)`",
+        "D": "`Boolean(\"false\")`\n[Reference boolean of a string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS030",
+      "question": "Which of the following is not a keyword in JavaScript?",
+      "choices": {
+        "A": "`this`",
+        "B": "`catch`",
+        "C": "`function`",
+        "D": "`array`\n[Reference js reserved words](https://www.w3schools.com/js/js_reserved.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS031",
+      "question": "Which variable is an implicit parameter for every function in JavaScript?",
+      "choices": {
+        "A": "arguments",
+        "B": "args",
+        "C": "argsArray",
+        "D": "argumentsList\n[Reference implicit js parameters for functions](https://www.codeproject.com/Tips/1221966/JavaScript-Functions-Implicit-Parameters)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS032",
+      "question": "For the following class, how do you get the value of 42 from an instance of X?\n```js\nclass X {\n  get Y() {\n    return 42;\n  }\n}\nvar x = new X();\n```",
+      "choices": {
+        "A": "`x.get('Y')`",
+        "B": "`x.Y`",
+        "C": "`x.Y()`",
+        "D": "`x.get().Y`\n[Reference getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS033",
+      "question": "What is the result of running this code?\n```js\nsum(10, 20);\ndiff(10, 20);\nfunction sum(x, y) {\n  return x + y;\n}\n\nlet diff = function (x, y) {\n  return x - y;\n};\n```",
+      "choices": {
+        "A": "30, ReferenceError, 30, -10",
+        "B": "30, ReferenceError",
+        "C": "30, -10",
+        "D": "ReferenceError, -10\n[Reference accessing before initialization](https://stackoverflow.com/questions/56318460/cannot-access-variable-name-before-initialization)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS034",
+      "question": "Why is it usually better to work with Objects instead of Arrays to store a collection of records?",
+      "choices": {
+        "A": "Objects are more efficient in terms of storage.",
+        "B": "Adding a record to an object is significantly faster than pushing a record into an array.",
+        "C": "Most operations involve looking up a record, and objects can do that better than arrays.",
+        "D": "Working with objects makes the code more readable.\n[Reference efficiency of lookups](https://stackoverflow.com/questions/17295056/array-vs-object-efficiency-in-javascript)\n**Explanation:** Records in an object can be retrieved using their key which can be any given value (e.g. an employee ID, a city name, etc), whereas to retrieve a record from an array we need to know its index."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS035",
+      "question": "Which statement is true about the \"async\" attribute for the HTML script tag?",
+      "choices": {
+        "A": "It can be used for both internal and external JavaScript code.",
+        "B": "It can be used only for internal JavaScript code.",
+        "C": "It can be used only for internal or external JavaScript code that exports a promise.",
+        "D": "It can be used only for external JavaScript code.\n[Reference async attribute for html](https://www.w3schools.com/tags/att_script_async.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS036",
+      "question": "How do you import the lodash library making it top-level Api available as the \"\\_\" variable?",
+      "choices": {
+        "A": "`import _ from 'lodash';`",
+        "B": "`import 'lodash' as _;`",
+        "C": "`import '_' from 'lodash;`",
+        "D": "`import lodash as _ from 'lodash';`\n[Reference how to import library in js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS037",
+      "question": "What does the following expression evaluate to?\n```js\n[] == [];\n```",
+      "choices": {
+        "A": "true",
+        "B": "undefined",
+        "C": "[]",
+        "D": "false\n[Reference arrays in js are objects](https://stackoverflow.com/questions/30820611/why-doesnt-equality-check-work-with-arrays)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS038",
+      "question": "What type of function can have its execution suspended and then resumed at a later point?",
+      "choices": {
+        "A": "Generator function",
+        "B": "Arrow function",
+        "C": "Async/ Await function",
+        "D": "Promise function\n[Reference what are generators in nodejs](https://www.guru99.com/node-js-generators-compare-callbacks.html#:~:text=Generators%20are%20function%20executions%20that,resumed%20at%20a%20later%20point.)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS039",
+      "question": "What will this code print?\n```js\nvar v = 1;\nvar f1 = function () {\n  console.log(v);\n};\n\nvar f2 = function () {\n  var v = 2;\n  f1();\n};\n\nf2();\n```",
+      "choices": {
+        "A": "2",
+        "B": "1",
+        "C": "Nothing - this code will throw an error.",
+        "D": "undefined\n[Reference closures in js \\/ nested functions](https://javascript.info/closure)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS040",
+      "question": "Which statement is true about Functional Programming?",
+      "choices": {
+        "A": "Every object in the program has to be a function.",
+        "B": "Code is grouped with the state it modifies.",
+        "C": "Date fields and methods are kept in units.",
+        "D": "Side effects are not allowed.\n[Reference functional programming](https://medium.com/javascript-scene/master-the-javascript-interview-what-is-functional-programming-7f218c68b3a0)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS041",
+      "question": "Your code is producing the error: TypeError: Cannot read property 'reduce' of undefined. What does that mean?",
+      "choices": {
+        "A": "You are calling a method named reduce on an object that's declared but has no value.",
+        "B": "You are calling a method named reduce on an object that does not exist.",
+        "C": "You are calling a method named reduce on an empty array.",
+        "D": "You are calling a method named reduce on an object that has a null value.\n**Explanation**: `You cannot invoke reduce on undefined object... It will throw (yourObject is not Defined...)`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS042",
+      "question": "How many prototype objects are in the chain for the following array?\n`let arr = [];`",
+      "choices": {
+        "A": "3",
+        "B": "2",
+        "C": "0",
+        "D": "1\n[Reference array prototype](https://www.w3schools.com/jsref/jsref_prototype_array.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS043",
+      "question": "Which choice is _not_ a unary operator?",
+      "choices": {
+        "A": "`typeof`",
+        "B": "`delete`",
+        "C": "`instanceof`",
+        "D": "`void`\n[Reference js unary operators](https://www.digitalocean.com/community/tutorials/javascript-unary-operators-simple-and-useful#:~:text=A%20unary%20operation%20is%20an,therefore%20their%20functionality%20is%20guaranteed.)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS044",
+      "question": "What type of scope does the end variable have in the code shown?\n```js\nvar start = 1;\nif (start === 1) {\n  let end = 2;\n}\n```",
+      "choices": {
+        "A": "conditional",
+        "B": "block",
+        "C": "global",
+        "D": "function\n[Reference block vs function scope](https://josephcardillo.medium.com/the-difference-between-function-and-block-scope-in-javascript-4296b2322abe)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS045",
+      "question": "What will the value of y be in this code:\n```js\nconst x = 6 % 2;\nconst y = x ? 'One' : 'Two';\n```",
+      "choices": {
+        "A": "One",
+        "B": "undefined",
+        "C": "TRUE",
+        "D": "Two\n[Reference ternary operator js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS046",
+      "question": "Which keyword is used to create an error?",
+      "choices": {
+        "A": "`throw`",
+        "B": "`exception`",
+        "C": "`catch`",
+        "D": "`error`\n[Reference throwing errors in js](<https://www.w3schools.com/jsref/jsref_throw.asp#:~:text=The%20throw%20statement%20throws%20(generates,to%20create%20a%20custom%20error.)>)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS047",
+      "question": "What's one difference between the async and defer attributes of the HTML script tag?",
+      "choices": {
+        "A": "The defer attribute can work synchronously.",
+        "B": "The defer attribute works only with generators.",
+        "C": "The defer attribute works only with promises.",
+        "D": "The defer attribute will asynchronously load the scripts in order.\n[Reference async vs defer](https://www.digitalocean.com/community/tutorials/html-defer-async#:~:text=%3E-,Async%20vs%20Defer,order%20as%20they%20are%20called.)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS048",
+      "question": "The following program has a problem. What is it?\n```js\nvar a;\nvar b = (a = 3) ? true : false;\n```",
+      "choices": {
+        "A": "The condition in the ternary is using the assignment operator.",
+        "B": "You can't define a variable without initializing it.",
+        "C": "You can't use a ternary in the right-hand side of an assignment operator.",
+        "D": "The code is using the deprecated var keyword.\n[Reference ternary operator js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS049",
+      "question": "Which statement references the DOM node created by the code shown?\n```html\n<p class=\"pull\">lorem ipsum</p>\n```",
+      "choices": {
+        "A": "`Document.querySelector('class.pull')`",
+        "B": "`document.querySelector('.pull');`",
+        "C": "`Document.querySelector('pull')`",
+        "D": "`Document.querySelector('#pull')`\n[Reference query selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS050",
+      "question": "What value does this code return?\n```js\nlet answer = true;\nif (answer === false) {\n  return 0;\n} else {\n  return 10;\n}\n```",
+      "choices": {
+        "A": "10",
+        "B": "true",
+        "C": "false",
+        "D": "0\n[Reference javascript conditionals](https://www.javascript.com/learn/conditionals)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS051",
+      "question": "What is the result in the console of running the code shown?\n```js\nvar start = 1;\nfunction setEnd() {\n  var end = 10;\n}\nsetEnd();\nconsole.log(end);\n```",
+      "choices": {
+        "A": "10",
+        "B": "0",
+        "C": "ReferenceError",
+        "D": "undefined\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS052",
+      "question": "What will this code log in the console?\n```js\nfunction sayHello() {\n  console.log('hello');\n}\n\nconsole.log(sayHello.prototype);\n```",
+      "choices": {
+        "A": "undefined",
+        "B": "\"hello\"",
+        "C": "an object with a constructor property",
+        "D": "an error message\n[Reference prototypes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS053",
+      "question": "Which collection object allows unique value to be inserted only once?",
+      "choices": {
+        "A": "Object",
+        "B": "Set",
+        "C": "Array",
+        "D": "Map\n[Reference javascript sets](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS054",
+      "question": "What two values will this code print?\n```js\nfunction printA() {\n  console.log(answer);\n  var answer = 1;\n}\nprintA();\nprintA();\n```",
+      "choices": {
+        "A": "`1` then `1`",
+        "B": "`1` then `undefined`",
+        "C": "`undefined` then `undefined`",
+        "D": "`undefined` then `1`\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS055",
+      "question": "How does the `forEach()` method differ from a `for` statement?",
+      "choices": {
+        "A": "forEach allows you to specify your own iterator, whereas for does not.",
+        "B": "forEach can be used only with strings, whereas for can be used with additional data types.",
+        "C": "forEach can be used only with an array, whereas for can be used with additional data types.",
+        "D": "for loops can be nested; whereas forEach loop cannot.\n[Reference Differences between forEach and for loop](https://www.geeksforgeeks.org/difference-between-foreach-and-for-loop-in-javascript/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS056",
+      "question": "Which choice is an incorrect way to define an arrow function that returns an empty object?",
+      "choices": {
+        "A": "=> `({})`",
+        "B": "=> `{}`",
+        "C": "=> `{ return {};}`",
+        "D": "=> `(({}))`\n[Reference arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS057",
+      "question": "Why might you choose to make your code asynchronous?",
+      "choices": {
+        "A": "to start tasks that might take some time without blocking subsequent tasks from executing immediately",
+        "B": "to ensure that tasks further down in your code are not initiated until earlier tasks have completed",
+        "C": "to make your code faster",
+        "D": "to ensure that the call stack maintains a LIFO (Last in, First Out) structure\n**EXPLANATION:** `\"to ensure that tasks further down in your code are not initiated until earlier tasks have completed\" you use the normal (synchronous) flow where each command is executed sequentially. Asynchronous code allows you to break this sequence: start a long running function (AJAX call to an external service) and continue running the rest of the code in parallel.`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS058",
+      "question": "Which expression evaluates to true?",
+      "choices": {
+        "A": "`[3] == [3]`",
+        "B": "`3 == '3'`",
+        "C": "`3 != '3'`",
+        "D": "`3 === '3'`\n1. [Reference booleans](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)\n2. [Reference 2 - booleans](https://www.scaler.com/topics/boolean-in-javascript/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS059",
+      "question": "Which of these is a valid variable name?",
+      "choices": {
+        "A": "5thItem",
+        "B": "firstName",
+        "C": "grand total",
+        "D": "function\n[Reference coding conventions](https://www.w3schools.com/js/js_conventions.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS060",
+      "question": "Which method cancels event default behavior?",
+      "choices": {
+        "A": "`cancel()`",
+        "B": "`stop()`",
+        "C": "`preventDefault()`",
+        "D": "`prevent()`\n[Reference javascript events](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS061",
+      "question": "Which method do you use to attach one DOM node to another?",
+      "choices": {
+        "A": "`attachNode()`",
+        "B": "`getNode()`",
+        "C": "`querySelector()`",
+        "D": "`appendChild()`\n[Reference Node interface](https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS062",
+      "question": "What statement can be used to skip an iteration in a loop?",
+      "choices": {
+        "A": "`break`",
+        "B": "`pass`",
+        "C": "`skip`",
+        "D": "`continue`\n[Reference break vs continue](https://www.w3schools.com/js/js_break.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS063",
+      "question": "Which choice is a valid example for an arrow function?",
+      "choices": {
+        "A": "`(a,b) => c`",
+        "B": "`a, b => {return c;}`",
+        "C": "`a, b => c`",
+        "D": "`{ a, b } => c`\n[Reference arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS064",
+      "question": "Which concept is defined as a template that can be used to generate different objects that share some shape and/or behavior?",
+      "choices": {
+        "A": "class",
+        "B": "generator function",
+        "C": "map",
+        "D": "proxy\n[Reference javascript classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS065",
+      "question": "How do you add a comment to JavaScript code?",
+      "choices": {
+        "A": "`! This is a comment`",
+        "B": "`# This is a comment`",
+        "C": "`\\\\ This is a comment`",
+        "D": "`// This is a comment`\n[Reference comments in javascript](https://www.w3schools.com/js/js_comments.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS066",
+      "question": "If you attempt to call a value as a function but the value is not a function, what kind of error would you get?",
+      "choices": {
+        "A": "TypeError",
+        "B": "SystemError",
+        "C": "SyntaxError",
+        "D": "LogicError\n[Reference javascript errors](https://developer.mozilla.org/en-US/docs/web/javascript/reference/global_objects/error)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS067",
+      "question": "Which method is called automatically when an object is initialized?",
+      "choices": {
+        "A": "create()",
+        "B": "new()",
+        "C": "constructor()",
+        "D": "init()\n[Reference javascript constructors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS068",
+      "question": "What is the result of running the statement shown?\n```js\nlet a = 5;\nconsole.log(++a);\n```",
+      "choices": {
+        "A": "4",
+        "B": "10",
+        "C": "6",
+        "D": "5\n[Reference ++x vs x++](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Increment)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS069",
+      "question": "You've written the event listener shown below for a form button, but each time you click the button, the page reloads. Which statement would stop this from happening?\n```js\nbutton.addEventListener(\n  'click',\n  function (e) {\n    button.className = 'clicked';\n  },\n  false,\n);\n```",
+      "choices": {
+        "A": "`e.blockReload();`",
+        "B": "`button.preventDefault();`",
+        "C": "`button.blockReload();`",
+        "D": "`e.preventDefault();`\n[Reference events in javascript](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS070",
+      "question": "Which statement represents the starting code converted to an IIFE?",
+      "choices": {
+        "A": "`function() { console.log('lorem ipsum'); }()();`",
+        "B": "`function() { console.log('lorem ipsum'); }();`",
+        "C": "`(function() { console.log('lorem ipsum'); })();`\n[Reference what is an Immediately Invoked Function Expression](https://javascript.plainenglish.io/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS071",
+      "question": "Which statement selects all img elements in the DOM tree?",
+      "choices": {
+        "A": "`Document.querySelector('img')`",
+        "B": "`Document.querySelectorAll('<img>')`",
+        "C": "`Document.querySelectorAll('img')`",
+        "D": "`Document.querySelector('<img>')`\n[Reference query selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "queries",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS072",
+      "question": "Why would you choose an asynchronous structure for your code?",
+      "choices": {
+        "A": "To use ES6 syntax",
+        "B": "To start tasks that might take some time without blocking subsequent tasks from executing immediately",
+        "C": "To ensure that parsers enforce all JavaScript syntax rules when processing your code",
+        "D": "To ensure that tasks further down in your code aren't initiated until earlier tasks have completed\n[Reference async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS073",
+      "question": "What is the HTTP verb to request the contents of an existing resource?",
+      "choices": {
+        "A": "DELETE",
+        "B": "GET",
+        "C": "PATCH",
+        "D": "POST\n[Reference http methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS074",
+      "question": "Which event is fired on a text field within a form when a user tabs to it, or clicks or touches it?",
+      "choices": {
+        "A": "focus",
+        "B": "blur",
+        "C": "hover",
+        "D": "enter\n[Reference javascript events](https://developer.mozilla.org/en-US/docs/Web/Events)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS075",
+      "question": "What is the result in the console of running this code?\n```js\nfunction logThis() {\n  console.log(this);\n}\nlogThis();\n```",
+      "choices": {
+        "A": "function",
+        "B": "undefined",
+        "C": "Function.prototype",
+        "D": "window\n[Reference what is the javascript window](https://www.w3schools.com/js/js_window.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS076",
+      "question": "Which class-based component is equivalent to this function component?\n```js\nconst Greeting = ({ name }) => <h1>Hello {name}!</h1>;\n```",
+      "choices": {
+        "A": "`class Greeting extends React.Component { render() { return <h1>Hello {this.props.name}!</h1>; } }`",
+        "B": "`class Greeting extends React.Component { constructor() { return <h1>Hello {this.props.name}!</h1>; } }`",
+        "C": "`class Greeting extends React.Component { <h>Hello {this.props.name}!</h>; } }`",
+        "D": "`class Greeting extends React.Component { render({ name }) { return <h1>Hello {name}!</h1>; } }`"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS077",
+      "question": "What is the output of this code?\n```js\nvar obj;\nconsole.log(obj);\n```",
+      "choices": {
+        "A": "`ReferenceError: obj is not defined`",
+        "B": "`{}`",
+        "C": "`undefined`",
+        "D": "`null`\n[Reference working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS078",
+      "question": "How would you use the TaxCalculator to determine the amount of tax on \\$50?\n```js\nclass TaxCalculator {\n  static calculate(total) {\n    return total * 0.05;\n  }\n}\n```",
+      "choices": {
+        "A": "calculate(50);",
+        "B": "new TaxCalculator().calculate(\\$50);",
+        "C": "TaxCalculator.calculate(50);",
+        "D": "new TaxCalculator().calculate(50);\n[Reference functions in javascript](https://www.w3schools.com/js/js_functions.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS079",
+      "question": "What is wrong with this code?\n```js\nconst foo = {\n  bar() {\n    console.log('Hello, world!');\n  },\n  name: 'Albert',\n  age: 26,\n};\n```",
+      "choices": {
+        "A": "The function bar needs to be defined as a key/value pair.",
+        "B": "Trailing commas are not allowed in JavaScript.",
+        "C": "Functions cannot be declared as properties of objects.",
+        "D": "Nothing, there are no errors.\n1. [Reference functions in javascript](https://www.w3schools.com/js/js_functions.asp)\n2. [Reference working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS080",
+      "question": "What will be logged to the console?\n```js\nconsole.log('I');\nsetTimeout(() => {\n  console.log('love');\n}, 0);\nconsole.log('Javascript!');\n```",
+      "choices": {
+        "A": ".\n```plaintext\nI\nJavascript!\nlove\n```",
+        "B": ".\n```plaintext\nlove\nI\nJavascript!\n```",
+        "C": "The output may change with each execution of code and cannot be determined.",
+        "D": ".\n```plaintext\nI\nlove\nJavascript!\n```\n\n**Reference**\nhttps://developer.mozilla.org/en-US/docs/Web/API/setTimeout#reasons_for_delays_longer_than_specified especially see the 'late timeouts' section."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS081",
+      "question": "What will this code log to the console?\n```js\nconst foo = [1, 2, 3];\nconst [n] = foo;\nconsole.log(n);\n```",
+      "choices": {
+        "A": "1",
+        "B": "undefined",
+        "C": "NaN",
+        "D": "Nothing--this is not proper JavaScript syntax and will throw an error.\n[Reference array deconstruction](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS082",
+      "question": "How do you remove the property name from this object?\n```js\nconst foo = {\n  name: 'Albert',\n};\n```",
+      "choices": {
+        "A": "delete name from foo;",
+        "B": "delete foo.name;",
+        "C": "del foo.name;",
+        "D": "remove foo.name;\n[Reference working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS083",
+      "question": "What is the difference between the `map()` and the `forEach()` methods on the Array prototype?",
+      "choices": {
+        "A": "There is no difference.",
+        "B": "The `forEach()` method returns a single output value, whereas the `map()` method performs operation on each value in the array.",
+        "C": "The map() method returns a new array with a transformation applied on each item in the original array, whereas the `forEach()` method iterates through an array with no return value.",
+        "D": "The `forEach()` method returns a new array with a transformation applied on each item in the original array, whereas the `map()` method iterates through an array with no return value.\n1. [Reference map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)\n2. [Reference Differences between forEach and for loop](https://www.geeksforgeeks.org/difference-between-foreach-and-for-loop-in-javascript/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS084",
+      "question": "Which concept does this code illustrate?\n```js\nfunction makeAdder(x) {\n  return function (y) {\n    return x + y;\n  };\n}\n\nvar addFive = makeAdder(5);\nconsole.log(addFive(3));\n```",
+      "choices": {
+        "A": "overloading",
+        "B": "closure",
+        "C": "currying",
+        "D": "overriding\n[Reference currying](https://javascript.info/currying-partials)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS085",
+      "question": "Which tag pair is used in HTML to embed JavaScript?",
+      "choices": {
+        "A": "`<script></script>`",
+        "B": "`<js></js>`",
+        "C": "`<javascript></javascript>`",
+        "D": "`<code></code>`\n[Reference add js to html file](https://www.w3schools.com/tags/tag_script.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "html",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS086",
+      "question": "If your app receives data from a third-party API, which HTTP response header must the server specify to allow exceptions to the same-origin policy?",
+      "choices": {
+        "A": "Security-Mode",
+        "B": "Access-Control-Allow-Origin",
+        "C": "Different-Origin",
+        "D": "Same-Origin\n[Reference Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS087",
+      "question": "What is the output of this code?\n```js\nlet rainForests = ['Amazon', 'Borneo', 'Cerrado', 'Congo'];\nrainForests.splice(0, 2);\nconsole.log(rainForests);\n```",
+      "choices": {
+        "A": "`[\"Amazon\",\"Borneo\",\"Cerrado\",\"Congo\"]`",
+        "B": "`[\"Cerrado\", \"Congo\"]`",
+        "C": "`[\"Congo\"]`",
+        "D": "`[\"Amazon\",\"Borneo\"]`\n[Reference array methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS088",
+      "question": "Which missing line would allow you to create five variables(one,two,three,four,five) that correspond to their numerical values (1,2,3,4,5)?\n```js\nconst numbers = [1, 2, 3, 4, 5];\n//MISSING LINE\n```",
+      "choices": {
+        "A": "`const [one,two,three,four,five]=numbers`",
+        "B": "`const {one,two,three,four,five}=numbers`",
+        "C": "`const [one,two,three,four,five]=[numbers]`",
+        "D": "`const {one,two,three,four,five}={numbers}`\n[Reference array destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS089",
+      "question": "What will this code print?\n```js\nconst obj = {\n  a: 1,\n  b: 2,\n  c: 3,\n};\n\nconst obj2 = {\n  ...obj,\n  a: 0,\n};\n\nconsole.log(obj2.a, obj2.b);\n```",
+      "choices": {
+        "A": "Nothing, it will throw an error",
+        "B": "0 2",
+        "C": "undefined 2",
+        "D": "undefined 2\n[Reference spread syntax es6](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS090",
+      "question": "Which line could you add to this code to print \"jaguar\" to the console?\n```js\nlet animals = ['jaguar', 'eagle'];\n//Missing Line\nconsole.log(animals.pop()); //Prints jaguar\n```",
+      "choices": {
+        "A": "`animals.filter(e => e === \"jaguar\");`",
+        "B": "`animals.reverse();`",
+        "C": "`animals.shift();`",
+        "D": "`animals.pop();`\n[Reference Javascript Array pop()](https://www.w3schools.com/jsref/jsref_pop.asp)\n\nshift() - removes the FIRST element of an array and returns the removed item.\n\npop() - removes the LAST element of an array and returns the removed item.\n\nreverse() - reverses the order of the elements in an array.\n\nfilter() - get every element in the array that meets the condition."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS091",
+      "question": "What line is missing from this code?\n```js\n//Missing Line\nfor (var i = 0; i < vowels.length; i++) {\n  console.log(vowels[i]);\n  //Each letter printed on a separate line as follows;\n  //a\n  //e\n  //i\n  //o\n  //u\n}\n```",
+      "choices": {
+        "A": "`let vowels = \"aeiou\".toArray();`",
+        "B": "`let vowels = Array.of(\"aeiou\");`",
+        "C": "`let vowels = {\"a\", \"e\", \"i\", \"o\", \"u\"};`",
+        "D": "`let vowels = \"aeiou\";`\n[Reference working with arrays](https://www.w3schools.com/js/js_arrays.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS092",
+      "question": "What will be logged to the console?\n```js\nconst x = 6 % 2;\nconst y = x ? 'One' : 'Two';\nconsole.log(y);\n```",
+      "choices": {
+        "A": "undefined",
+        "B": "One",
+        "C": "true",
+        "D": "Two\n**Note:** `this question is same with Q46.`\n[Reference ternary operator js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS093",
+      "question": "How would you access the word It from this multidimensional array?\n`let matrix = [[\"You\",\"Can\"],[\"Do\",\"It\"],[\"!\",\"!\",\"!\"]];`",
+      "choices": {
+        "A": "`matrix[1[2]]`",
+        "B": "`matrix[1][1]`",
+        "C": "`matrix[1,2]`",
+        "D": "`matrix[1][2]`"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS094",
+      "question": "What does this code do?\n```js\nconst animals = ['Rabbit', 'Dog', 'Cat'];\nanimals.unshift('Lizard');\n```",
+      "choices": {
+        "A": "It adds \"Lizard\" to the start of the animals array.",
+        "B": "It adds \"Lizard\" to the end of the animals array.",
+        "C": "It replaces \"Rabbit\" with \"Lizard\" in the animals array.",
+        "D": "It replaces \"Cat\" with \"Lizard\" in the animals array.\n[Reference working with arrays](https://www.w3schools.com/js/js_arrays.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS095",
+      "question": "What is the output of this code?\n```js\nlet x = 6 + 3 + '3';\nconsole.log(x);\n```",
+      "choices": {
+        "A": "93",
+        "B": "12",
+        "C": "66",
+        "D": "633\n[Reference type coercion](https://www.freecodecamp.org/news/js-type-coercion-explained-27ba3d9a2839/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS096",
+      "question": "Which statement can take a single expression as input and then look through a number of choices until one that matches that value is found?",
+      "choices": {
+        "A": "else",
+        "B": "when",
+        "C": "if",
+        "D": "switch\n[Reference switch](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS097",
+      "question": "Which statement prints \"roar\" to the console?\n```js\nvar sound = 'grunt';\nvar bear = { sound: 'roar' };\nfunction roar() {\n  console.log(this.sound);\n}\n```",
+      "choices": {
+        "A": "`bear.bind(roar);`",
+        "B": "`roar.bind(bear);`",
+        "C": "`roar.apply(bear);`",
+        "D": "`bear[roar]();`\n1. [Reference Apply](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)\n2. [Reference this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)\n3. [Reference bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS098",
+      "question": "Which choice is a valid example of an arrow function, assuming c is defined in the outer scope?",
+      "choices": {
+        "A": "`a, b => { return c; }`",
+        "B": "`a, b => c`",
+        "C": "`{ a, b } => c`",
+        "D": "`(a,b) => c`\n[Reference arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS099",
+      "question": "Which statement correctly imports this code from some-file.js?\n```js\n//some-file.js\nexport const printMe = (str) => console.log(str);\n```",
+      "choices": {
+        "A": "`import printMe from './some-file';`",
+        "B": "`import { printMe } from './some-file';`",
+        "C": "`import default as printMe from './some-file';`",
+        "D": "`const printMe = import './some-file';`\n[Reference importing libraries in javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS100",
+      "question": "What will be the output of the following code?\n```js\nconst arr1 = [2, 4, 6];\nconst arr2 = [3, 5, 7];\n\nconsole.log([...arr1, ...arr2]);\n```",
+      "choices": {
+        "A": "`[2, 3, 4, 5, 6, 7]`",
+        "B": "`[3,5,7,2,4,6]`",
+        "C": "`[3, 5, 7, 2, 4, 6]`",
+        "D": "`[[2, 4, 6], [3, 5, 7]]`"
+      },
+      "answer": "E",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS101",
+      "question": "Which method call is chained to handle a successful response returned by `fetch()`?",
+      "choices": {
+        "A": "`done()`",
+        "B": "`then()`",
+        "C": "`finally()`",
+        "D": "`catch()`\n[Reference fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS102",
+      "question": "Which choice is not an array method?",
+      "choices": {
+        "A": "`array.slice()`",
+        "B": "`array.shift()`",
+        "C": "`array.push()`",
+        "D": "`array.replace()`\n[Reference working with arrays](https://www.w3schools.com/js/js_arrays.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS103",
+      "question": "Which JavaScript loop ensures that at least a singular iteration will happen?",
+      "choices": {
+        "A": "do…while",
+        "B": "forEach",
+        "C": "while",
+        "D": "for\n[Reference loops in js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/do...while)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS104",
+      "question": "What will be logged to the console?\n```js\nconsole.log(typeof 'blueberry');\n```",
+      "choices": {
+        "A": "`string`",
+        "B": "`array`",
+        "C": "`Boolean`",
+        "D": "`object`\n[Reference what is typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#basic_usage)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS105",
+      "question": "What is the output that is printed when the div containing the text \"Click Here\" is clicked?\n```html\n//HTML Markup\n<div id=\"A\">\n  <div id=\"B\">\n    <div id=\"C\">Click Here</div>\n  </div>\n</div>\n```\n\n```js\n//JavaScript\ndocument.querySelectorAll('div').forEach((e) => {\n  e.onclick = (e) => console.log(e.currentTarget.id);\n});\n```",
+      "choices": {
+        "A": "C B A",
+        "B": "A",
+        "C": "C",
+        "D": "A B C\n1. [Reference query selector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)\n2. [Reference events](https://developer.mozilla.org/en-US/docs/Web/Events)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "queries",
+      "topic_category": "javascript",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS106",
+      "question": "What will this code log to the console?\n```js\nconst myNumbers = [1, 2, 3, 4, 5, 6, 7];\nconst myFunction = (arr) => {\n  return arr.map((x) => x + 3).filter((x) => x < 7);\n};\nconsole.log(myFunction(myNumbers));\n```",
+      "choices": {
+        "A": "`[4,5,6,7,8,9,10]`",
+        "B": "`[4,5,6,7]`",
+        "C": "`[1,2,3,4,5,6]`",
+        "D": "`[4,5,6]`\n[Reference functions in javascript](https://www.w3schools.com/js/js_functions.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS107",
+      "question": "What does this code print to the console?\n```js\nlet rainForestAcres = 10;\nlet animals = 0;\n\nwhile (rainForestAcres < 13 || animals <= 2) {\n  rainForestAcres++;\n  animals += 2;\n}\n\nconsole.log(animals);\n```",
+      "choices": {
+        "A": "2",
+        "B": "4",
+        "C": "6",
+        "D": "8\n[Reference MDN JavaScript Looping code](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Looping_code)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS108",
+      "question": "Which snippet could you add to this code to print \"YOU GOT THIS\" to the console?\n```js\nlet cipherText = [...'YZOGUT QGMORTZ MTRHTILS'];\nlet plainText = '';\n\n/* Missing Snippet */\n\nconsole.log(plainText); //Prints YOU GOT THIS\n```",
+      "choices": {
+        "A": "A\n```js\nfor (let key of cipherText.keys()) {\n  plainText += key % 2 === 0 ? key : ' ';\n}\n```",
+        "B": "B\n```js\nfor (let [index, value] of cipherText.entries()) {\n  plainText += index % 2 !== 0 ? value : '';\n}\n```",
+        "C": "C\n```js\nfor (let [index, value] of cipherText.entries()) {\n  plainText += index % 2 === 0 ? value : '';\n}\n```",
+        "D": "D\n```js\nfor (let value of cipherText) {\n  plainText += value;\n}\n```\n\n1. [Reference MDN JavaScript Destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)\n2. [Reference MDN JavaScript Array entries](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/entries)\n3. [Reference MDN JavaScript Remainder/Modulo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS109",
+      "question": "Which Pokemon will be logged to the console?\n```js\nvar pokedex = ['Snorlax', 'Jigglypuff', 'Charmander', 'Squirtle'];\npokedex.pop();\nconsole.log(pokedex.pop());\n```",
+      "choices": {
+        "A": "Charmander",
+        "B": "Jigglypuff",
+        "C": "Snorlax",
+        "D": "Squirtle\n**Explanation**: `The pop() method removes the last element from an array and returns that element. This method changes the length of the array.`\n\n[Reference Array.pop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS110",
+      "question": "Which statement can be used to select the element from the DOM containing the text \"The LinkedIn Learning library has great JavaScript courses\" from this markup?\n```html\n<h1 class=\"content\">LinkedIn Learning</h1>\n<div class=\"content\">\n  <span class=\"content\">The LinkedIn Learning library has great JavaScript courses!</span>\n</div>\n```",
+      "choices": {
+        "A": "document.querySelector(\"div.content\")",
+        "B": "document.querySelector(\"span.content\")",
+        "C": "document.querySelector(\".content\")",
+        "D": "document.querySelector(\"div.span\")"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS111",
+      "question": "Which value is not falsey?",
+      "choices": {
+        "A": "`[]`",
+        "B": "`undefined`",
+        "C": "`0`",
+        "D": "`null`\n[Reference Falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS112",
+      "question": "What line of code causes this code segment to throw an error?\n```js\nconst lion = 1;\nlet tiger = 2;\nvar bear;\n\n++lion;\nbear += lion + tiger;\ntiger++;\n```",
+      "choices": {
+        "A": "`line 5, because lion cannot be reassigned a value`",
+        "B": "`line 6, because the += operator cannot be used with the undefined variable bear`",
+        "C": "`line 5, because the prefix (++) operator does not exist in JavaScript`",
+        "D": "`line 3, because the variable bear is left undefined`\n1. [Reference const in js](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const)\n2. [Reference TypeError: invalid assignment to const \"x\"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_const_assignment)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS113",
+      "question": "What will be the value of `result` after running this code?\n```js\nconst person = { name: 'Dave', age: 40, hairColor: 'blue' };\nconst result = Object.keys(person).map((x) => x.toUpperCase());\n```",
+      "choices": {
+        "A": "It will throw a TypeError.",
+        "B": "`[\"Name\", \"Age\", \"HairColor\"]`",
+        "C": "`[\"DAVE\", 40, \"BLUE\"]`",
+        "D": "`[\"NAME\", \"AGE\", \"HAIRCOLOR\"]`\n1. [Reference Object.keys()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)\n2. [Reference Array.prototype.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\n3. [Reference String.prototype.toUpperCase()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS114",
+      "question": "Which snippet could you insert to this code to print \"swim\" to the console?\n```js\nlet animals = [\"eagle\", \"osprey\", \"salmon\"];\nlet key = animal => animal === \"salmon\";\n\nif(/* Insert Snippet Here */){\n  console.log(\"swim\");\n}\n```",
+      "choices": {
+        "A": "`animals.every(key)`",
+        "B": "`animals.some(key).length === 1`",
+        "C": "`animals.filter(key) === true`",
+        "D": "`animals.some(key)`\n[Reference Array.prototype.some](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS115",
+      "question": "What is the output of this code?\n```js\nclass RainForest {\n  static minimumRainFall = 60;\n}\n\nlet congo = new RainForest();\nRainForest.minimumRainFall = 80;\nconsole.log(congo.minimumRainFall);\n```",
+      "choices": {
+        "A": "`undefined`",
+        "B": "`60`",
+        "C": "`80`",
+        "D": "`None of the above, as static is not a feature in Javascript.`\n[Reference Classes static](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS116",
+      "question": "How can you attempt to access the property `a.b` on `obj` without throwing an error if a is undefined?\n```js\nlet obj = {};\n```",
+      "choices": {
+        "A": "`obj?.a.b`",
+        "B": "`obj.a?.b`",
+        "C": "`obj[a][b]`",
+        "D": "`obj.?a.?b`\n[Reference Optional chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS117",
+      "question": "What happens when you run this code?\n```js\nif (true) {\n  var x = 5;\n  const y = 6;\n  let z = 7;\n}\nconsole.log(x + y + z);\n```",
+      "choices": {
+        "A": "It will throw a `ReferenceError` about `x`.",
+        "B": "It will print `18`.",
+        "C": "It will print `undefined`.",
+        "D": "It will throw a `ReferenceError` about `y`.\n[Reference let statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS118",
+      "question": "What does this code print to the console?\n```js\nconst x = [1, 2];\nconst y = [5, 7];\nconst z = [...x, ...y];\nconsole.log(z);\n```",
+      "choices": {
+        "A": "`[1,2,5,7]`",
+        "B": "`[[1, 2], [5, 7]]`",
+        "C": "`[2,7]`",
+        "D": "`[2,1,7,5]`\n[Reference spread syntax (...)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS119",
+      "question": "Given this code, which statement will be evaluated as false?\n```js\nconst a = { x: 1 };\nconst b = { x: 1 };\n```",
+      "choices": {
+        "A": "`a['x'] === b['x']`",
+        "B": "`a != b`",
+        "C": "`a === b`",
+        "D": "`a.x === b.x`\n[Reference](http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS120",
+      "question": "What will this code log to the console?\n```js\nconsole.log(typeof 41.1);\n```",
+      "choices": {
+        "A": "`Nothing. It resuults in a ReferenceError.`",
+        "B": "`decimal`",
+        "C": "`float`",
+        "D": "`number`\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#basic_usage)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS121",
+      "question": "What is the output of this code?\n```js\nlet scores = [];\nscores.push(1, 2);\nscores.pop();\nscores.push(3, 4);\nscores.pop();\nscore = scores.reduce((a, b) => a + b);\nconsole.log(score);\n```",
+      "choices": {
+        "A": "`3`",
+        "B": "`4`",
+        "C": "`6`",
+        "D": "`7`\n1. [Reference Array.prototype.push()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)\n2. [Reference Array.prototype.pop()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)\n3. [Reference Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS122",
+      "question": "What does this code print to the console?\n```js\nlet bear = {\n  sound: 'roar',\n  roar() {\n    console.log(this.sound);\n  },\n};\n\nbear.sound = 'grunt';\nlet bearSound = bear.roar;\nbearSound();\n```",
+      "choices": {
+        "A": "`Nothing is printed to the console.`",
+        "B": "`grunt`",
+        "C": "`undefined`",
+        "D": "`roar`\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS123",
+      "question": "What is the output of this code?\n```js\nvar cat = { name: 'Athena' };\n\nfunction swap(feline) {\n  feline.name = 'Wild';\n  feline = { name: 'Tabby' };\n}\n\nswap(cat);\nconsole.log(cat.name);\n```",
+      "choices": {
+        "A": "undefined",
+        "B": "Wild",
+        "C": "Tabby",
+        "D": "Athena"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS124",
+      "question": "What will this code output to the log?\n```js\nvar thing;\nlet func = (str = 'no arg') => {\n  console.log(str);\n};\nfunc(thing);\nfunc(null);\n```",
+      "choices": {
+        "A": "null no arg",
+        "B": "no arg no arg",
+        "C": "null null",
+        "D": "no arg null"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS125",
+      "question": "What will this code print to the console?\n```js\nconst myFunc = () => {\n  const a = 2;\n  return () => console.log('a is ' + a);\n};\nconst a = 1;\nconst test = myFunc();\ntest();\n```",
+      "choices": {
+        "A": "a is 1",
+        "B": "a is undefined",
+        "C": "It won't print anything.",
+        "D": "a is 2"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS126",
+      "question": "What will this code print to the console?\n```js\nconst myFunc = (num1, num2 = 2, num3 = 2) => {\n  return num1 + num2 + num3;\n};\nlet values = [1, 5];\nconst test = myFunc(2, ...values);\nconsole.log(test);\n```",
+      "choices": {
+        "A": "8",
+        "B": "6",
+        "C": "2",
+        "D": "12"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS127",
+      "question": "Which code would you use to access the Irish flag?\n```js\nvar flagsJSON =\n  '{ \"countries\" : [' +\n  '{ \"country\":\"Ireland\" , \"flag\":\"🇮🇪\" },' +\n  '{ \"country\":\"Serbia\" , \"flag\":\"🇷🇸\" },' +\n  '{ \"country\":\"Peru\" , \"flag\":\"🇵🇪\" } ]}';\n\nvar flagDatabase = JSON.parse(flagsJSON);\n```",
+      "choices": {
+        "A": "flagDatabase.countries[1].flag",
+        "B": "flagDatabase.countries[0].flag",
+        "C": "flagDatabase[1].flag",
+        "D": "flagsJSON.countries[0].flag"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS128",
+      "question": "Which snippet allows the acresOfRainForest variable to increase?\n```js\nlet conservation = true;\nlet deforestation = false;\nlet acresOfRainForest = 100;\nif (/* Snipped goes here */){\n    ++acresOfRainForest;\n}\n```",
+      "choices": {
+        "A": "conservation && !deforestation",
+        "B": "!deforestation && !conservation",
+        "C": "!conservation || deforestation",
+        "D": "deforestation && conservation || deforestation"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS129",
+      "question": "Which of these evaluate to true?",
+      "choices": {
+        "A": "Boolean(\"false\")",
+        "B": "Boolean(\"\")",
+        "C": "Boolean(0)",
+        "D": "Boolean(NaN)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS130",
+      "question": "How would you add a data item named animal with a value of sloth to local storage for the current domain?",
+      "choices": {
+        "A": "LocalStorage.setItem(\"animal\",\"sloth\");",
+        "B": "document.localStorage.setItem(\"animal\",\"sloth\");",
+        "C": "localStorage.setItem({animal:\"sloth\"});",
+        "D": "localStorage.setItem(\"animal\",\"sloth\");\n[Reference](https://blog.logrocket.com/localstorage-javascript-complete-guide/#setitem)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS131",
+      "question": "What value is printed to the console after this code execute?\n```js\nlet cat = Object.create({ type: 'lion' });\ncat.size = 'large';\n\nlet copyCat = { ...cat };\ncat.type = 'tiger';\n\nconsole.log(copyCat.type, copyCat.size);\n```",
+      "choices": {
+        "A": "tiger large",
+        "B": "lion undefined",
+        "C": "undefined large",
+        "D": "lion large\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS132",
+      "question": "What does this code print to the console?\n```js\nlet animals = [{ type: 'lion' }, 'tiger'];\nlet clones = animals.slice();\n\nclones[0].type = 'bear';\nclones[1] = 'sheep';\n\nconsole.log(animals[0].type, clones[0].type);\nconsole.log(animals[1], clones[1]);\n```",
+      "choices": {
+        "A": "bear bear\ntiger sheep",
+        "B": "lion bear\nsheep sheep",
+        "C": "bear bear\ntiger tiger",
+        "D": "lion bear\ntiger sheep\n\n[Reference](https://blog.logrocket.com/localstorage-javascript-complete-guide/#setitem)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS133",
+      "question": "What will be the output of the following code snippet?\n```javascript\na=5;\nb=4;\nalert(a++(+(+(+b))));\n```",
+      "choices": {
+        "A": "18",
+        "B": "10",
+        "C": "9",
+        "D": "20"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS134",
+      "question": "Which snippet could you add to this code to print \"{\"type\": \"tiger\"}\" to the console?\n```js\nlet cat = { type: \"tiger\", size: \"large\" };\n\nlet json = /* Snippet here */;\n\nconsole.log(json); // print {\"type\":\"tiger\"}\n```",
+      "choices": {
+        "A": "`cat.toJSON(\"type\");`",
+        "B": "`JSON.stringify(cat, [\"type\"]);`",
+        "C": "`JSON.stringify(cat);`",
+        "D": "`JSON.stringify(cat, /type/);`\n[Reference](https://www.w3schools.com/jsref/jsref_stringify.asp)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "json",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS135",
+      "question": "Which document method is not used to get a reference to a DOM node?",
+      "choices": {
+        "A": "document.getNode();",
+        "B": "document.getElementsByClassName();",
+        "C": "document.querySelectorAll();",
+        "D": "document.querySelector();"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS136",
+      "question": "In JavaScript, all objects inherit a built-in property from a **\\*\\*\\*\\***\\_\\_\\_**\\*\\*\\*\\***.",
+      "choices": {
+        "A": "node",
+        "B": "instance variable",
+        "C": "prototype",
+        "D": "accessor\n[Reference](https://www.freecodecamp.org/news/javascript-prototype-explained-with-examples/)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "inheritance",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS137",
+      "question": "Which of the following are not server-side Javascript objects?",
+      "choices": {
+        "A": "Date",
+        "B": "FileUpload",
+        "C": "Function",
+        "D": "All of the above\n[Reference](https://docs.oracle.com/cd/E19957-01/816-6411-10/jsserv.htm#1035757)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS138",
+      "question": "What will be the output of the following code snippet?\n```javascript\nconst obj1 = { first: 20, second: 30, first: 50 };\nconsole.log(obj1);\n```",
+      "choices": {
+        "A": "first: 30 , second: 50",
+        "B": "first: 50 , second: 30",
+        "C": "first: 30 , second: 20",
+        "D": "None of the above"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS139",
+      "question": "Which object in Javascript doesn’t have a prototype?",
+      "choices": {
+        "A": "Base Object",
+        "B": "All objects have prototype",
+        "C": "None of the objects have prototype",
+        "D": "None of the above\n[Reference](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object_prototypes)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS140",
+      "question": "What does … operator do in JS?",
+      "choices": {
+        "A": "Used to spread iterables to individual elements",
+        "B": "Describe datatype of undefined",
+        "C": "No such operator exists",
+        "D": "None of the above"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS141",
+      "question": "How to stop an interval timer in Javascript?",
+      "choices": {
+        "A": "clearInterval",
+        "B": "clearTimer",
+        "C": "intervalOver",
+        "D": "None of the above\n[Reference](https://www.interviewbit.com/javascript-mcq/)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS142",
+      "question": "What will be the output of the following code snippet?\n```javascript\nprint(typeof NaN);\n```",
+      "choices": {
+        "A": "Object",
+        "B": "Number",
+        "C": "String",
+        "D": "None of the above"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS143",
+      "question": "What will be the output of the following code snippet?\n```javascript\n<script type=\"text/javascript\">a = 5 + \"9\"; document.write(a);</script>\n```",
+      "choices": {
+        "A": "Compilation Error",
+        "B": "14",
+        "C": "Runtime Error",
+        "D": "59"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS144",
+      "question": "Which of the following methods can be used to display data in some form using Javascript?",
+      "choices": {
+        "A": "document.write()",
+        "B": "console.log()",
+        "C": "window.alert()",
+        "D": "All of the above"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS145",
+      "question": "What value is assigned to total after this code executes?\n```javascript\nfunction sum(num1, num2 = 2, num3 = 3) {\n  return num1 + num2 + num3;\n}\nlet values = [1, 5];\nlet total = sum(4, ...values);\n```",
+      "choices": {
+        "A": "10",
+        "B": "6",
+        "C": "7",
+        "D": "8\n[Reference: Rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS146",
+      "question": "Which statement is applicable to the defer attribute of the HTML <script> tag?",
+      "choices": {
+        "A": "defer allows the browser to continue processing the page while the script loads in the background.",
+        "B": "defer causes the script to be loaded from the backup content delivery network (CDN).",
+        "C": "defer blocks the browser from processing HTML below the tag until the script is completely loaded.",
+        "D": "defer lazy loads the script, causing it to download only when it is called by another script on the page.\n[Reference: defer html script attribute](https://www.w3schools.com/tags/att_script_defer.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "html",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS147",
+      "question": "Which method of a class is called to initialize an object of that class?",
+      "choices": {
+        "A": "init()",
+        "B": "create()",
+        "C": "new()",
+        "D": "constructor()\n[Reference: constructor method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS148",
+      "question": "Which expression evaluates to true?",
+      "choices": {
+        "A": "Boolean(NaN)",
+        "B": "Boolean(0)",
+        "C": "Boolean(\"false\")",
+        "D": "Boolean(\"\")\n[Reference: Boolean object](https://www.w3schools.com/js/js_booleans.asp)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS149",
+      "question": "How would you check if the word \"pot\" is in the word \"potato\"?",
+      "choices": {
+        "A": "\"pot\".indexOf(\"potato\") !== -1",
+        "B": "\"potato\".includes(\"Pot\")",
+        "C": "\"potato\".includes(\"pot\")",
+        "D": "\"potato\".contains(\"pot\");\n[Reference: String.prototype.includes()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS150",
+      "question": "Which collection object allows a unique value to be inserted only once?",
+      "choices": {
+        "A": "Map",
+        "B": "Array",
+        "C": "Set",
+        "D": "Object\n[Reference: developer.mozilla Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS151",
+      "question": "How would you change the color of this header to pink?\n```javascript\n<h2 id=\"cleverest\">girls</h2>\n```",
+      "choices": {
+        "A": "document.getElementByName(\"cleverest\").style.color = \"pink\";",
+        "B": "document.getElementsByTagName(\"h2\").style.color = \"pink\";",
+        "C": "document.getElementByName(\"h2\").style.color = \"pink\";",
+        "D": "document.getElementById(\"cleverest\").style.color = \"pink\";\n[Reference: W3Schools HTML DOM Style color Property](https://www.w3schools.com/jsref/prop_style_color.asp)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS152",
+      "question": "Which line is missing from this code if you expect the code to evaluate to true?\n```js\nvar compare = function (test1, test2) {\n  // Missing line\n};\n\ncompare(1078, '1078'); // yields true\n```",
+      "choices": {
+        "A": "`test1==test2;`",
+        "B": "return test1===test2;",
+        "C": "return test1==test2;",
+        "D": "return test1!=test2;\n[Reference: MDN Equality Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS153",
+      "question": "What is the output of this code?\n```js\nif (true) {\n  var first = 'You';\n}\n\nfunction fScope() {\n  var second = 'got this!';\n}\nfScope();\nconsole.log(first);\nconsole.log(second);\n```",
+      "choices": {
+        "A": "You\nundefined",
+        "B": "You\nReferenceError",
+        "C": "undefined\nundefined",
+        "D": "You\ngot this!"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS154",
+      "question": "Events related to the browser window can be handled by?",
+      "choices": {
+        "A": "Onclicks",
+        "B": "Window",
+        "C": "querySelector",
+        "D": "None of the above\n[Reference: GeeksForGeeks](https://www.geeksforgeeks.org/javascript-course-quiz-1/)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS155",
+      "question": "How do you define a function in JavaScript?",
+      "choices": {
+        "A": "function myFunction() {}",
+        "B": "def myFunction() {}",
+        "C": "var myFunction = () => {}",
+        "D": "func myFunction() {}\n[Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS156",
+      "question": "Your code is producing the error: TypeError: Cannot read property 'reduce' of undefined. What does that mean?",
+      "choices": {
+        "A": "You are calling a method named reduce on an object that's declared but has no value.",
+        "B": "You are calling a method named reduce on an object that does not exist.",
+        "C": "You are calling a method named reduce on an empty array.",
+        "D": "You are calling a method named reduce on an object that has a null value."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS157",
+      "question": "Which of the following methods can be used to display data in some form using Javascript?",
+      "choices": {
+        "A": "document.write()",
+        "B": "console.log()",
+        "C": "window.alert()",
+        "D": "All of the above"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS158",
+      "question": "Which document method is not used to get a reference to a DOM node?",
+      "choices": {
+        "A": "document.getNode();",
+        "B": "document.getElementsByClassName();",
+        "C": "document.querySelectorAll();",
+        "D": "document.querySelector();"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS159",
+      "question": "Which of these is a valid variable name?",
+      "choices": {
+        "A": "5thItem",
+        "B": "firstName",
+        "C": "grand total",
+        "D": "function"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS160",
+      "question": "What function is used in JavaScript to schedule a function to run after a specified number of milliseconds?",
+      "choices": {
+        "A": "setTimeout()",
+        "B": "setInterval()",
+        "C": "delay()",
+        "D": "wait()\n[Reference](https://www.w3schools.com/js/js_timing.asp)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS161",
+      "question": "Which of the following is a server-side Java Script object?",
+      "choices": {
+        "A": "Function",
+        "B": "File",
+        "C": "FileUpload",
+        "D": "Date\n[Reference](https://www.wscubetech.com/quiz-result.html)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS162",
+      "question": "Which statement best describes the var keyword's scope in JavaScript?",
+      "choices": {
+        "A": "Block scope",
+        "B": "Function scope",
+        "C": "Global scope",
+        "D": "Instance scope"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS163",
+      "question": "What will be logged to the console?\n```js\nconst foo = () => console.log('First');\nconst bar = () => setTimeout(() => console.log('Second'), 0);\nfoo();\nbar();\nconsole.log('Third');\n```",
+      "choices": {
+        "A": "Second, First, Third",
+        "B": "First, Third, Second",
+        "C": "First, Second, Third",
+        "D": "Third, First, Second"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS164",
+      "question": "What will be the output of running this code?\n```js\nfunction scream(words) {\n  return words.toUpperCase() + '!!!';\n}\n\nscream('yay');\n```",
+      "choices": {
+        "A": "YAY!!!",
+        "B": "ReferenceError",
+        "C": "Undefined",
+        "D": "TypeError"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS165",
+      "question": "What is the output of the following code?\n```js\nconst obj = { a: 1, b: 2, c: 3 };\nconst { a, ...rest } = obj;\nconsole.log(rest);\n```",
+      "choices": {
+        "A": "`{ a: 1 }`",
+        "B": "`{ b: 2, c: 3 }`",
+        "C": "`{ a: 1, b: 2, c: 3 }`",
+        "D": "`undefined`\n[Reference Object Destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS166",
+      "question": "Which method is used to create a new array with all elements that pass a test implemented by a provided function?",
+      "choices": {
+        "A": "`map()`",
+        "B": "`filter()`",
+        "C": "`reduce()`",
+        "D": "`forEach()`\n[Reference Array.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS167",
+      "question": "What is the difference between `null` and `undefined`?",
+      "choices": {
+        "A": "They are exactly the same",
+        "B": "`null` is an assignment value representing no value, while `undefined` means a variable has been declared but not assigned a value",
+        "C": "`undefined` is an assignment value, while `null` means undeclared",
+        "D": "`null` is a string, `undefined` is a boolean\n[Reference null vs undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS168",
+      "question": "What will this code output?\n```js\nconst promise1 = Promise.resolve(3);\nconst promise2 = new Promise((resolve) => setTimeout(() => resolve('foo'), 1000));\nconst promise3 = Promise.resolve(42);\n\nPromise.all([promise1, promise2, promise3]).then((values) => {\n  console.log(values);\n});\n```",
+      "choices": {
+        "A": "`[3, 'foo', 42]` immediately",
+        "B": "`[3, 'foo', 42]` after 1 second",
+        "C": "`['foo', 3, 42]` after 1 second",
+        "D": "The promises will execute in random order\n[Reference Promise.all()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS169",
+      "question": "Which statement about arrow functions is correct?",
+      "choices": {
+        "A": "Arrow functions have their own `this` binding",
+        "B": "Arrow functions inherit `this` from the enclosing scope",
+        "C": "Arrow functions cannot be used as methods",
+        "D": "Arrow functions always return a value\n[Reference Arrow Functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS170",
+      "question": "What is the output of this code?\n```js\nconst arr = [1, 2, 3, 4, 5];\nconst result = arr.reduce((acc, curr) => acc + curr, 0);\nconsole.log(result);\n```",
+      "choices": {
+        "A": "`[1, 2, 3, 4, 5]`",
+        "B": "`5`",
+        "C": "`15`",
+        "D": "`0`\n[Reference Array.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS171",
+      "question": "Which method is used to add one or more elements to the end of an array?",
+      "choices": {
+        "A": "`unshift()`",
+        "B": "`push()`",
+        "C": "`concat()`",
+        "D": "`splice()`\n[Reference Array.push()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS172",
+      "question": "What is the correct way to import a default export from a module?\n```js\n// math.js\nexport default function add(a, b) {\n  return a + b;\n}\n```",
+      "choices": {
+        "A": "`import add from './math.js';`",
+        "B": "`import { add } from './math.js';`",
+        "C": "`import * as add from './math.js';`",
+        "D": "`import default add from './math.js';`\n[Reference ES6 Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "modules_and_imports",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS173",
+      "question": "What will this code print?\n```js\nconst obj = {\n  name: 'John',\n  greet: function () {\n    console.log(`Hello, ${this.name}`);\n  },\n};\n\nconst greetFunc = obj.greet;\ngreetFunc();\n```",
+      "choices": {
+        "A": "`Hello, John`",
+        "B": "`Hello, undefined`",
+        "C": "`Hello, `",
+        "D": "`TypeError`\n[Reference this binding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS174",
+      "question": "Which operator is used to check if a property exists in an object?",
+      "choices": {
+        "A": "`hasOwnProperty()`",
+        "B": "`in`",
+        "C": "`exists`",
+        "D": "`contains`\n```js\nconst obj = { name: 'John', age: 30 };\nconsole.log('name' in obj); // true\n```\n\n[Reference in operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS175",
+      "question": "What is the output of this code?\n```js\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map((num) => num * 2);\nconsole.log(numbers);\nconsole.log(doubled);\n```",
+      "choices": {
+        "A": "`[1, 2, 3, 4, 5]` and `[2, 4, 6, 8, 10]`",
+        "B": "`[2, 4, 6, 8, 10]` and `[2, 4, 6, 8, 10]`",
+        "C": "`[1, 2, 3, 4, 5]` and `[1, 2, 3, 4, 5]`",
+        "D": "`undefined` and `[2, 4, 6, 8, 10]`\n[Reference Array.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS176",
+      "question": "Which method creates a new array with all sub-array elements concatenated into it recursively up to the specified depth?",
+      "choices": {
+        "A": "`concat()`",
+        "B": "`flat()`",
+        "C": "`join()`",
+        "D": "`merge()`\n```js\nconst arr = [1, [2, 3], [4, [5, 6]]];\nconsole.log(arr.flat(2)); // [1, 2, 3, 4, 5, 6]\n```\n\n[Reference Array.flat()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS177",
+      "question": "What is the correct syntax for a template literal?",
+      "choices": {
+        "A": "`'Hello ' + name + '!'`",
+        "B": "`` `Hello ${name}!` ``",
+        "C": "`\"Hello #{name}!\"`",
+        "D": "`'Hello ${name}!'`\n[Reference Template Literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS178",
+      "question": "What will this async/await code output?\n```js\nasync function fetchData() {\n  try {\n    const data = await Promise.resolve('Success!');\n    console.log(data);\n  } catch (error) {\n    console.log('Error:', error);\n  }\n}\n\nfetchData();\n```",
+      "choices": {
+        "A": "`Success!`",
+        "B": "`Error: Success!`",
+        "C": "`undefined`",
+        "D": "`Promise { <pending> }`\n[Reference async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "error_handling",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS179",
+      "question": "Which method returns the first element in an array that satisfies a provided testing function?",
+      "choices": {
+        "A": "`find()`",
+        "B": "`filter()`",
+        "C": "`some()`",
+        "D": "`every()`\n[Reference Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS180",
+      "question": "What is the output of this code?\n```js\nconst set = new Set([1, 2, 2, 3, 3, 4]);\nconsole.log(set.size);\nconsole.log([...set]);\n```",
+      "choices": {
+        "A": "`6` and `[1, 2, 2, 3, 3, 4]`",
+        "B": "`4` and `[1, 2, 3, 4]`",
+        "C": "`4` and `{1, 2, 3, 4}`",
+        "D": "`6` and `[1, 2, 3, 4]`\n[Reference Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS181",
+      "question": "Which statement about JavaScript classes is correct?",
+      "choices": {
+        "A": "Classes are hoisted like function declarations",
+        "B": "Classes are not hoisted and must be declared before use",
+        "C": "Classes can only have static methods",
+        "D": "Classes cannot have constructors\n[Reference JavaScript Classes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "oop",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS182",
+      "question": "What will this code output?\n```js\nconst obj1 = { a: 1, b: 2 };\nconst obj2 = { b: 3, c: 4 };\nconst merged = { ...obj1, ...obj2 };\nconsole.log(merged);\n```",
+      "choices": {
+        "A": "`{ a: 1, b: 2, c: 4 }`",
+        "B": "`{ a: 1, b: 3, c: 4 }`",
+        "C": "`{ a: 1, b: 2, b: 3, c: 4 }`",
+        "D": "`Error: duplicate property 'b'`\n[Reference Spread Syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "merging",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS183",
+      "question": "Which method is used to execute a function once for each array element?",
+      "choices": {
+        "A": "`map()`",
+        "B": "`forEach()`",
+        "C": "`filter()`",
+        "D": "`reduce()`\n[Reference Array.forEach()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS184",
+      "question": "What is the correct way to create a Promise that resolves after 2 seconds?",
+      "choices": {
+        "A": "`new Promise(resolve => resolve(), 2000)`",
+        "B": "`new Promise(resolve => setTimeout(resolve, 2000))`",
+        "C": "`Promise.resolve().delay(2000)`",
+        "D": "`Promise.timeout(2000)`\n[Reference Promise Constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS185",
+      "question": "What will this code output?\n```js\nconst arr = [1, 2, 3];\narr.length = 5;\nconsole.log(arr);\nconsole.log(arr[4]);\n```",
+      "choices": {
+        "A": "`[1, 2, 3, undefined, undefined]` and `undefined`",
+        "B": "`[1, 2, 3, <2 empty items>]` and `undefined`",
+        "C": "`[1, 2, 3, null, null]` and `null`",
+        "D": "`Error: Cannot set length`\n[Reference Array Length](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS186",
+      "question": "Which method is used to test whether at least one element in an array passes a test?",
+      "choices": {
+        "A": "`every()`",
+        "B": "`some()`",
+        "C": "`includes()`",
+        "D": "`find()`\n[Reference Array.some()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS187",
+      "question": "What is the output of this code?\n```js\nconst func = (a = 5, b = a * 2) => a + b;\nconsole.log(func());\nconsole.log(func(3));\n```",
+      "choices": {
+        "A": "`15` and `9`",
+        "B": "`15` and `9`",
+        "C": "`15` and `15`",
+        "D": "`NaN` and `NaN`\n[Reference Default Parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS188",
+      "question": "Which statement about JavaScript modules is correct?",
+      "choices": {
+        "A": "Modules are executed every time they are imported",
+        "B": "Modules are executed only once, the first time they are imported",
+        "C": "Modules cannot export functions",
+        "D": "Modules must have a .js extension\n[Reference ES6 Modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS189",
+      "question": "What will this code output?\n```js\nconst weakMap = new WeakMap();\nconst obj = {};\nweakMap.set(obj, 'value');\nconsole.log(weakMap.get(obj));\n```",
+      "choices": {
+        "A": "`'value'`",
+        "B": "`undefined`",
+        "C": "`{}`",
+        "D": "`Error: WeakMap is not defined`\n[Reference WeakMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS190",
+      "question": "Which method creates a new array by calling a function for every array element?",
+      "choices": {
+        "A": "`map()`",
+        "B": "`forEach()`",
+        "C": "`filter()`",
+        "D": "`reduce()`\n[Reference Array.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS191",
+      "question": "What is the output of this code?\n```js\nconst generator = function* () {\n  yield 1;\n  yield 2;\n  yield 3;\n};\n\nconst gen = generator();\nconsole.log(gen.next().value);\nconsole.log(gen.next().value);\n```",
+      "choices": {
+        "A": "`1` and `2`",
+        "B": "`1` and `1`",
+        "C": "`[1, 2, 3]` and `[1, 2, 3]`",
+        "D": "`undefined` and `undefined`\n[Reference Generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "generators",
+      "topic_category": "javascript",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS192",
+      "question": "Which method is used to determine whether an array includes a certain value?",
+      "choices": {
+        "A": "`contains()`",
+        "B": "`includes()`",
+        "C": "`has()`",
+        "D": "`indexOf()`\n[Reference Array.includes()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS193",
+      "question": "What will this code output?\n```js\nconst proxy = new Proxy(\n  {},\n  {\n    get(target, prop) {\n      return prop in target ? target[prop] : 'Property not found';\n    },\n  },\n);\n\nproxy.name = 'John';\nconsole.log(proxy.name);\nconsole.log(proxy.age);\n```",
+      "choices": {
+        "A": "`'John'` and `'Property not found'`",
+        "B": "`'John'` and `undefined`",
+        "C": "`undefined` and `'Property not found'`",
+        "D": "`Error: Proxy is not defined`\n[Reference Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS194",
+      "question": "Which statement about JavaScript symbols is correct?",
+      "choices": {
+        "A": "Symbols are strings",
+        "B": "Symbols can be duplicated",
+        "C": "Symbols are unique and immutable",
+        "D": "Symbols are numbers\n[Reference Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS195",
+      "question": "What is the output of this code?\n```js\nconst arr = [1, 2, 3, 4, 5];\nconst [first, , third, ...rest] = arr;\nconsole.log(first, third, rest);\n```",
+      "choices": {
+        "A": "`1 3 [4, 5]`",
+        "B": "`1 2 [3, 4, 5]`",
+        "C": "`1 3 [2, 4, 5]`",
+        "D": "`1 undefined [4, 5]`\n[Reference Array Destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS196",
+      "question": "Which method is used to create a shallow copy of an array?",
+      "choices": {
+        "A": "`copy()`",
+        "B": "`clone()`",
+        "C": "`slice()`",
+        "D": "`duplicate()`\n```js\nconst original = [1, 2, 3];\nconst copy = original.slice();\n```\n\n[Reference Array.slice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS197",
+      "question": "What will this code output?\n```js\nconst obj = {\n  counter: 0,\n  increment() {\n    this.counter++;\n    return this;\n  },\n  decrement() {\n    this.counter--;\n    return this;\n  },\n};\n\nobj.increment().increment().decrement();\nconsole.log(obj.counter);\n```",
+      "choices": {
+        "A": "`0`",
+        "B": "`1`",
+        "C": "`2`",
+        "D": "`3`\n[Reference Method Chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS198",
+      "question": "Which method is used to convert a string to an integer?",
+      "choices": {
+        "A": "`Number()`",
+        "B": "`parseInt()`",
+        "C": "`parseFloat()`",
+        "D": "`toInteger()`\n[Reference parseInt()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS199",
+      "question": "What is the output of this code?\n```js\nconst promise = Promise.reject('Error occurred');\npromise\n  .then((result) => console.log('Success:', result))\n  .catch((error) => console.log('Caught:', error))\n  .finally(() => console.log('Finally executed'));\n```",
+      "choices": {
+        "A": "`Success: Error occurred` and `Finally executed`",
+        "B": "`Caught: Error occurred` and `Finally executed`",
+        "C": "`Finally executed` only",
+        "D": "`Error: Error occurred`\n[Reference Promise.catch()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS200",
+      "question": "Which method is used to remove and return the last element of an array?",
+      "choices": {
+        "A": "`shift()`",
+        "B": "`pop()`",
+        "C": "`splice()`",
+        "D": "`slice()`\n[Reference Array.pop()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS201",
+      "question": "What will this code output?\n```js\nconst func = async () => {\n  const result = await Promise.all([\n    Promise.resolve(1),\n    Promise.resolve(2),\n    Promise.reject('Error'),\n  ]);\n  return result;\n};\n\nfunc().catch((error) => console.log('Error:', error));\n```",
+      "choices": {
+        "A": "`[1, 2, 'Error']`",
+        "B": "`Error: Error`",
+        "C": "`[1, 2, undefined]`",
+        "D": "`Promise rejected`\n[Reference Promise.all() with rejection](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "async_programming",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS202",
+      "question": "Which statement about JavaScript closures is correct?",
+      "choices": {
+        "A": "Closures can only access global variables",
+        "B": "Closures can access variables from their outer scope even after the outer function returns",
+        "C": "Closures are only created with arrow functions",
+        "D": "Closures cannot access function parameters\n[Reference Closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS203",
+      "question": "What is the output of this code?\n```js\nconst map = new Map();\nmap.set('key1', 'value1');\nmap.set('key2', 'value2');\nmap.set('key1', 'updated value');\n\nconsole.log(map.size);\nconsole.log(map.get('key1'));\n```",
+      "choices": {
+        "A": "`3` and `'value1'`",
+        "B": "`2` and `'updated value'`",
+        "C": "`2` and `'value1'`",
+        "D": "`3` and `'updated value'`\n[Reference Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS204",
+      "question": "Which method is used to check if all elements in an array pass a test?",
+      "choices": {
+        "A": "`every()`",
+        "B": "`some()`",
+        "C": "`filter()`",
+        "D": "`includes()`\n[Reference Array.every()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS205",
+      "question": "What will this code output?\n```js\nconst obj = { a: 1 };\nObject.freeze(obj);\nobj.a = 2;\nobj.b = 3;\nconsole.log(obj);\n```",
+      "choices": {
+        "A": "`{ a: 2, b: 3 }`",
+        "B": "`{ a: 1 }`",
+        "C": "`{ a: 2 }`",
+        "D": "`Error: Cannot modify frozen object`\n[Reference Object.freeze()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS206",
+      "question": "Which method creates a new array with the results of calling a function for every array element and flattens the result?",
+      "choices": {
+        "A": "`map()`",
+        "B": "`flatMap()`",
+        "C": "`flat()`",
+        "D": "`concat()`\n[Reference Array.flatMap()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS207",
+      "question": "What is the output of this code?\n```js\nconst func = (x, y = x * 2, z = y + 1) => x + y + z;\nconsole.log(func(2));\n```",
+      "choices": {
+        "A": "`7`",
+        "B": "`11`",
+        "C": "`9`",
+        "D": "`NaN`\n**Explanation:** x=2, y=2\\*2=4, z=4+1=5, so 2+4+5=11\n\n[Reference Default Parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS208",
+      "question": "Which method is used to create a string from an array?",
+      "choices": {
+        "A": "`toString()`",
+        "B": "`join()`",
+        "C": "`concat()`",
+        "D": "`stringify()`\n[Reference Array.join()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS209",
+      "question": "What will this code output?\n```js\nconst regex = /\\d+/g;\nconst str = 'abc123def456';\nconsole.log(str.match(regex));\n```",
+      "choices": {
+        "A": "`['123']`",
+        "B": "`['123', '456']`",
+        "C": "`['abc', 'def']`",
+        "D": "`null`\n[Reference String.match()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "regular_expressions",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS210",
+      "question": "Which statement about JavaScript event loop is correct?",
+      "choices": {
+        "A": "The event loop runs synchronously",
+        "B": "The event loop handles asynchronous operations by using a callback queue",
+        "C": "The event loop only works with DOM events",
+        "D": "The event loop blocks the main thread\n[Reference Event Loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS211",
+      "question": "What is the output of this code?\n```js\nconst arr = [1, 2, 3, 4, 5];\nconst result = arr.reduceRight((acc, curr) => acc + curr, 0);\nconsole.log(result);\n```",
+      "choices": {
+        "A": "`5`",
+        "B": "`15`",
+        "C": "`[5, 4, 3, 2, 1]`",
+        "D": "`0`\n[Reference Array.reduceRight()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS212",
+      "question": "Which method is used to add elements to the beginning of an array?",
+      "choices": {
+        "A": "`unshift()`",
+        "B": "`push()`",
+        "C": "`concat()`",
+        "D": "`splice()`\n[Reference Array.unshift()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS213",
+      "question": "What will this code output?\n```js\nconst obj = {\n  name: 'John',\n  getName: () => {\n    return this.name;\n  },\n};\n\nconsole.log(obj.getName());\n```",
+      "choices": {
+        "A": "`'John'`",
+        "B": "`undefined`",
+        "C": "`'getName'`",
+        "D": "`Error`\n**Explanation:** Arrow functions don't have their own `this` binding, so `this` refers to the global object, not the `obj`.\n\n[Reference Arrow Functions and this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS214",
+      "question": "Which method is used to execute code after all promises in an array have settled (resolved or rejected)?",
+      "choices": {
+        "A": "`Promise.all()`",
+        "B": "`Promise.race()`",
+        "C": "`Promise.allSettled()`",
+        "D": "`Promise.any()`\n[Reference Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_JS215",
+      "question": "What will be the output of the following code?\n// code here:\nfunction createCounter() {\n  let count = 0;\n  return {\n    increment: () => count++,\n    getValue: () => count\n  };\n}\n\nconst counter1 = createCounter();\nconst counter2 = createCounter();\n\ncounter1.increment();\ncounter1.increment();\ncounter2.increment();\n\nconsole.log(counter1.getValue(), counter2.getValue());",
+      "choices": {
+        "A": "1,1",
+        "B": "3,3",
+        "C": "2,1",
+        "D": "undefined\nExplanation:\nEach call to createCounter() creates a new closure with its own independent count variable.\nSo:\ncounter1 increments twice → 2\ncounter2 increments once → 1\nClosures DO NOT share state unless they reference the same outer scope object.\n\n[Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures]"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "javascript",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+Agent Assessor v2 -- 6 agent(s), ~1572 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- coding_orchestrator (LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)) ---
+    500 questions (0 multi-step)
+  [  ] [LI_CO001] (intermediate) Asking... OK (B vs B) [11.9s] git
+  [  ] [LI_CO002] (intermediate) Asking... OK (B vs B) [28.7s] git
+  [  ] [LI_CO003] (advanced) Asking... OK (B vs B) [57.7s] merging
+  [  ] [LI_CO004] (intermediate) Asking... 

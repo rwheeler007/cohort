@@ -1,0 +1,10 @@
+Agent Assessor v2 -- 6 agent(s), ~1592 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- ceo_agent (LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)) ---
+    500 questions (0 multi-step)
+  [  ] [LI_CEO001] (intermediate) Asking... OK (C vs C) [29.1s] agile_methodologies
+  [  ] [LI_CEO002] (intermediate) Asking... ERR (? vs B) [180.0s] scrum
+  [  ] [LI_CEO003] (advanced) Asking... 

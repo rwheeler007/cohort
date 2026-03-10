@@ -1,0 +1,9 @@
+Agent Assessor v2 -- 7 agent(s), ~700 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- python_developer (Senior Python certification level (PCAP+/professional grade)) ---
+    100 questions (30 multi-step)
+  [  ] [PY001] (intermediate) Asking... OK (B vs B) [176.0s] closures_and_nonlocal
+  [  ] [PY002] (intermediate) Asking... 

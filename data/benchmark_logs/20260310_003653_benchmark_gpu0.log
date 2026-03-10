@@ -1,0 +1,9 @@
+Agent Assessor v2 -- 5 agent(s), ~1945 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- security_agent (MMLU-Pro (TIGER-Lab/MMLU-Pro)) ---
+    500 questions (0 multi-step)
+  [  ] [MP_SEC0001] (advanced) Asking... ERR (? vs H) [180.0s] computer_security
+  [  ] [MP_SEC0002] (advanced) Asking... 

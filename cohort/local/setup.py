@@ -38,7 +38,7 @@ OLLAMA_WINDOWS_INSTALLER = (
 )
 OLLAMA_LINUX_SCRIPT = "https://ollama.com/install.sh"
 
-TOTAL_STEPS = 7
+TOTAL_STEPS = 8
 
 # MCP server config snippet for Claude Code settings
 MCP_SERVER_CONFIG: dict[str, Any] = {
@@ -672,32 +672,51 @@ def _step_verify(model: str) -> bool:
     client = OllamaClient(base_url=OLLAMA_BASE_URL, timeout=120)
     test_prompt = "What makes a good code review? Answer in two sentences."
 
+    # Test 1: Basic generation (Smart mode)
     for attempt in range(2):
         _print_info("Asking the model a quick question...")
-        result = client.generate(model=model, prompt=test_prompt, temperature=0.3)
+        result = client.generate(model=model, prompt=test_prompt, temperature=0.3, think=False)
 
         if result is not None and result.text.strip():
             print()
             print(f'      > "{test_prompt}"')
             print()
-            # Wrap response text
             text = result.text.strip()
             for line in text.split("\n"):
                 print(f"      {line}")
             print()
             _print_ok(f"Response generated in {result.elapsed_seconds:.1f} seconds. Everything works!")
-            return True
+            break
 
         if attempt == 0:
             _print_info("The model loaded but didn't respond. First run can be slow.")
             _print_info("Trying once more...")
             print()
+    else:
+        _print_warn("Something's not quite right. Try running this in your terminal:")
+        print(f"    ollama run {model}")
+        print()
+        print("  The model is downloaded -- it may just need a moment to warm up.")
+        return False
 
-    _print_warn("Something's not quite right. Try running this in your terminal:")
-    print(f"    ollama run {model}")
+    # Test 2: Thinking mode (Smarter mode)
     print()
-    print("  The model is downloaded -- it may just need a moment to warm up.")
-    return False
+    _print_info("Testing thinking mode for Smarter [S+] responses...")
+    try:
+        think_result = client.generate(
+            model=model,
+            prompt="Is 17 a prime number? Think step by step, then answer yes or no.",
+            temperature=0.3,
+            think=True,
+        )
+        if think_result and think_result.text.strip():
+            _print_ok("Thinking mode works -- Smarter [S+] responses enabled!")
+        else:
+            _print_warn("Thinking mode returned empty. Smart [S] mode will be used as default.")
+    except Exception:
+        _print_warn("Thinking mode not available for this model. Smart [S] mode will be used.")
+
+    return True
 
 
 # =====================================================================
@@ -883,6 +902,115 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
 
 
 # =====================================================================
+# Step 8: Claude Code Connection
+# =====================================================================
+
+def _step_claude_connection() -> bool:
+    """Step 8: Configure Claude Code connection settings.
+
+    Detects Claude CLI, configures execution backend, response timeout,
+    and force-to-Claude mode. Shows response mode availability.
+
+    Returns True always (graceful -- never fails the wizard).
+    """
+    _print_step(8, "Connect Claude Code (Optional)")
+
+    print("  Claude Code is an AI coding assistant by Anthropic. Connecting")
+    print("  it lets your agents use advanced reasoning and unlocks the")
+    print("  Smartest [S++] response mode.")
+    print()
+
+    if not _ask_yes_no("Want to set this up now?"):
+        _print_info("Skipped. Configure Claude Code later in Settings.")
+        return True
+
+    # --- Detect Claude CLI ---
+    _print_info("Looking for Claude CLI...")
+    claude_path = shutil.which("claude")
+
+    if claude_path:
+        _print_ok(f"Found Claude CLI: {claude_path}")
+    else:
+        _print_warn("Claude CLI not found on your PATH.")
+        print()
+        print("  Install it from: https://docs.anthropic.com/en/docs/claude-code")
+        print()
+        claude_path = _ask_input("Or enter the full path to claude CLI (leave blank to skip)")
+        if not claude_path:
+            _print_info("Skipped. You can configure this later in Settings.")
+            return True
+
+    print()
+
+    # --- Agents Root ---
+    # Auto-detect: look for agents/ dir from the script's location
+    script_root = Path(__file__).resolve().parent.parent.parent
+    default_root = str(script_root) if (script_root / "agents").is_dir() else ""
+    agents_root = _ask_input("Agents root directory", default_root)
+
+    # --- Execution Backend ---
+    print()
+    print("  Task Execution Backend:")
+    print("    1. Claude CLI (subprocess) -- recommended")
+    print("    2. Anthropic API (direct)")
+    print("    3. Chat-routed (@mention)")
+    backend_choice = _ask_input("Pick a number", "1")
+    backend_map = {"1": "cli", "2": "api", "3": "chat"}
+    execution_backend = backend_map.get(backend_choice, "cli")
+
+    # --- Response Timeout ---
+    timeout_str = _ask_input("Response timeout in seconds", "300")
+    try:
+        response_timeout = max(30, min(600, int(timeout_str)))
+    except ValueError:
+        response_timeout = 300
+
+    # --- Force to Claude Code ---
+    print()
+    force_claude = _ask_yes_no(
+        "Force ALL responses through Claude Code (bypass local Ollama)?",
+        default=False,
+    )
+
+    # --- Save settings ---
+    settings_path = Path("data") / "settings.json"
+    settings: dict = {}
+    if settings_path.exists():
+        try:
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    settings["claude_cmd"] = claude_path
+    settings["agents_root"] = agents_root
+    settings["execution_backend"] = execution_backend
+    settings["response_timeout"] = response_timeout
+    settings["force_to_claude_code"] = force_claude
+    settings["claude_enabled"] = True
+
+    try:
+        settings_path.parent.mkdir(parents=True, exist_ok=True)
+        settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+        _print_ok("Claude Code settings saved.")
+    except OSError as exc:
+        _print_warn(f"Could not save settings: {exc}")
+
+    # --- Response Modes Summary ---
+    print()
+    print("  Response Modes:")
+    print("    [S]  Smart    -- Fast local responses, no thinking (free)")
+    print("    [S+] Smarter  -- Local with thinking enabled (free, default)")
+    print("    [S++] Smartest -- Local reasoning + Claude refinement")
+    print()
+    if claude_path and Path(claude_path).exists():
+        _print_ok("Smartest [S++] mode available -- Claude CLI detected!")
+    else:
+        _print_info("Smartest [S++] mode requires a working Claude CLI.")
+
+    return True
+
+
+# =====================================================================
 # Success Summary
 # =====================================================================
 
@@ -904,6 +1032,35 @@ def _print_success(hw: HardwareInfo, model: str) -> None:
     print(f"    Engine:    Ollama (running on localhost:11434)")
     print(f"    Model:     {model}")
     print()
+
+    # Load settings to show Claude status
+    settings: dict = {}
+    try:
+        sp = Path("data") / "settings.json"
+        if sp.exists():
+            settings = json.loads(sp.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        pass
+
+    claude_cmd = settings.get("claude_cmd", "")
+    if claude_cmd:
+        print(f"    Claude:    Connected ({settings.get('execution_backend', 'cli')} mode)")
+        print(f"    Timeout:   {settings.get('response_timeout', 300)}s")
+        if settings.get("force_to_claude_code"):
+            print(f"    Routing:   All responses forced through Claude Code")
+    else:
+        print(f"    Claude:    Not configured (local-only mode)")
+
+    print()
+    print("  Response Modes:")
+    print("    [S]  Smart    -- fast, no thinking        (always available)")
+    print("    [S+] Smarter  -- thinking enabled          (default)")
+    if claude_cmd:
+        print("    [S++] Smartest -- Qwen + Claude refinement (available!)")
+    else:
+        print("    [S++] Smartest -- requires Claude CLI       (not configured)")
+
+    print()
     print("  What's next:")
     print()
     print("    1. Start the Cohort server:")
@@ -912,10 +1069,11 @@ def _print_success(hw: HardwareInfo, model: str) -> None:
     print("    2. Open your browser:")
     print("       http://localhost:5100")
     print()
-    print("    3. Claude Code integration:")
-    print("       If you set up the MCP server, Claude Code can now")
-    print("       use your local model as a tool. Just open a project")
-    print("       and start coding!")
+    if claude_cmd:
+        print("    3. Your agents can use both local AI and Claude Code!")
+    else:
+        print("    3. Claude Code integration (optional):")
+        print("       Configure Claude in Settings to unlock Smartest mode.")
     print()
     print("    4. Meet the team -- your agents are ready to work with you!")
     print()
@@ -958,6 +1116,9 @@ def run_setup() -> int:
 
         # Step 7: Content pipeline
         _step_content_pipeline()
+
+        # Step 8: Claude Code connection
+        _step_claude_connection()
 
         # Success
         _print_success(hw, model)

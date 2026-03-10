@@ -1,0 +1,147 @@
+{
+  "started_at": "2026-03-10T00:42:25.809965",
+  "model": "qwen3.5:9b",
+  "banks": [
+    "benchmark",
+    "linkedin",
+    "original"
+  ],
+  "limit": 500,
+  "workers": [
+    {
+      "gpu": 0,
+      "bank": "benchmark",
+      "agents": [
+        "security_agent",
+        "python_developer",
+        "hardware_agent",
+        "web_developer",
+        "ai_infrastructure_agent"
+      ],
+      "questions": 1945,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_benchmark_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "benchmark",
+      "agents": [
+        "system_coder",
+        "javascript_developer",
+        "ceo_agent",
+        "database_developer",
+        "coding_orchestrator"
+      ],
+      "questions": 1966,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_benchmark_gpu1.log"
+    },
+    {
+      "gpu": 0,
+      "bank": "linkedin",
+      "agents": [
+        "coding_orchestrator",
+        "web_developer",
+        "python_developer",
+        "system_coder",
+        "ai_infrastructure_agent",
+        "hardware_agent"
+      ],
+      "questions": 1572,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_linkedin_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "linkedin",
+      "agents": [
+        "ceo_agent",
+        "qa_agent",
+        "database_developer",
+        "javascript_developer",
+        "security_agent",
+        "documentation_agent"
+      ],
+      "questions": 1592,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_linkedin_gpu1.log"
+    },
+    {
+      "gpu": 0,
+      "bank": "original",
+      "agents": [
+        "python_developer",
+        "coding_orchestrator",
+        "documentation_agent",
+        "javascript_developer",
+        "security_agent",
+        "web_developer",
+        "supervisor_agent"
+      ],
+      "questions": 700,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_original_gpu0.log"
+    },
+    {
+      "gpu": 1,
+      "bank": "original",
+      "agents": [
+        "ceo_agent",
+        "database_developer",
+        "hardware_agent",
+        "qa_agent",
+        "system_coder",
+        "code_archaeologist",
+        "setup_guide"
+      ],
+      "questions": 700,
+      "log": "G:\\cohort\\data\\benchmark_logs\\20260310_004225_original_gpu1.log"
+    }
+  ],
+  "bank_results": [
+    {
+      "bank": "benchmark",
+      "completed_at": "2026-03-10T00:44:55.838318",
+      "results": [
+        {
+          "gpu": "GPU0",
+          "bank": "benchmark",
+          "exit_code": 1
+        },
+        {
+          "gpu": "GPU1",
+          "bank": "benchmark",
+          "exit_code": 1
+        }
+      ]
+    },
+    {
+      "bank": "linkedin",
+      "completed_at": "2026-03-10T00:47:25.875456",
+      "results": [
+        {
+          "gpu": "GPU0",
+          "bank": "linkedin",
+          "exit_code": 1
+        },
+        {
+          "gpu": "GPU1",
+          "bank": "linkedin",
+          "exit_code": 1
+        }
+      ]
+    },
+    {
+      "bank": "original",
+      "completed_at": "2026-03-10T00:48:55.896686",
+      "results": [
+        {
+          "gpu": "GPU0",
+          "bank": "original",
+          "exit_code": 1
+        },
+        {
+          "gpu": "GPU1",
+          "bank": "original",
+          "exit_code": 1
+        }
+      ]
+    }
+  ],
+  "completed_at": "2026-03-10T00:48:55.897253"
+}

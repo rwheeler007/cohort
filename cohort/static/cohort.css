@@ -194,8 +194,11 @@ body {
 }
 
 .sidebar__footer {
+    position: relative;
+    z-index: 2;
     padding: var(--space-3);
     border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-secondary);
     display: flex;
     justify-content: center;
     gap: var(--space-2);
@@ -2335,6 +2338,56 @@ textarea.form-input {
 }
 
 /* =============================================================================
+   Folder Sub-Section (inside Channels)
+   ============================================================================= */
+
+.sidebar-nav__sub-section {
+    margin-bottom: var(--space-1);
+}
+
+.sidebar-nav__sub-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-4);
+    cursor: pointer;
+}
+
+.sidebar-nav__sub-toggle {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-nav__sub-section.open .sidebar-nav__sub-toggle {
+    transform: rotate(90deg);
+}
+
+.sidebar-nav__sub-section .sidebar-nav__folders {
+    display: none;
+}
+
+.sidebar-nav__sub-section.open .sidebar-nav__folders {
+    display: block;
+}
+
+.sidebar-nav__sub-title {
+    font-size: 10px;
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    flex: 1;
+}
+
+.sidebar-nav__sub-header .sidebar-nav__add-btn {
+    font-size: 12px;
+}
+
+/* =============================================================================
    Channel List (sidebar)
    ============================================================================= */
 
@@ -2532,12 +2585,11 @@ textarea.form-input {
 }
 
 .sidebar-tool-icon {
-    font-family: var(--font-family-mono);
-    font-size: 11px;
-    color: var(--color-accent);
     flex-shrink: 0;
-    width: 18px;
-    text-align: center;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-text-muted);
 }
 
 .sidebar-tool-phases {
@@ -2546,11 +2598,110 @@ textarea.form-input {
     flex-shrink: 0;
 }
 
+.sidebar-tool-icon--up { background-color: var(--color-success); }
+.sidebar-tool-icon--down { background-color: var(--color-error); }
+.sidebar-tool-icon--unknown { background-color: var(--color-text-muted); }
+.sidebar-tool-icon--degraded { background-color: var(--color-warning); }
+.sidebar-tool-icon--checking { background-color: var(--color-warning); animation: pulse 1.5s ease-in-out infinite; }
+
+.sidebar-tool-tag {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    margin-left: auto;
+    min-width: 24px;
+    text-align: center;
+}
+.sidebar-tool-item:hover .sidebar-tool-tag,
+.sidebar-tool-item.active .sidebar-tool-tag {
+    color: var(--color-accent);
+}
+
+.sidebar-tools-summary {
+    padding: 2px 16px 6px;
+    font-size: 10px;
+    color: var(--color-text-muted);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--color-border);
+}
+.sidebar-tools-summary__pip {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 .sidebar-tool-empty {
     padding: 4px 16px;
     color: var(--color-text-muted);
     font-size: 11px;
     list-style: none;
+}
+
+/* =============================================================================
+   Archived Agent Groups (sidebar)
+   ============================================================================= */
+
+.archived-agent-group {
+    list-style: none;
+}
+
+.archived-agent-group__header {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px 4px 16px;
+    cursor: pointer;
+    user-select: none;
+    gap: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    transition: background-color var(--transition-fast);
+}
+
+.archived-agent-group__header:hover {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
+}
+
+.archived-agent-group__toggle {
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.archived-agent-group.open .archived-agent-group__toggle {
+    transform: rotate(90deg);
+}
+
+.archived-agent-group__name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+}
+
+.archived-agent-group__count {
+    font-size: 10px;
+    color: var(--color-text-muted);
+}
+
+.archived-agent-group__children {
+    display: none;
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.archived-agent-group.open .archived-agent-group__children {
+    display: block;
 }
 
 /* =============================================================================
@@ -3665,6 +3816,20 @@ select.tool-config-card__input option {
     font-style: italic;
 }
 
+.tool-config-card--link {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.tool-config-card--link:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.tool-config-card__value--link {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
 .btn--lock-config {
     background: none;
     border: 1px solid var(--color-border);
@@ -4166,6 +4331,339 @@ select.tool-config-card__input option {
 
 .tool-activity-log__item--expanded .tool-activity-log__detail {
     display: block;
+}
+
+/* =============================================================================
+   Health Monitor Service Table
+   ============================================================================= */
+
+.health-actions-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.health-last-check {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.health-svc-table {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.health-svc-header {
+    display: grid;
+    grid-template-columns: 20px 1fr 80px 80px 80px 120px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.health-svc-row {
+    display: grid;
+    grid-template-columns: 20px 1fr 80px 80px 80px 120px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-primary);
+    align-items: center;
+    font-size: var(--font-size-sm);
+    transition: background-color var(--transition-fast);
+}
+
+.health-svc-row:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.health-svc-row--loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.health-svc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.health-svc-name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.health-svc-detail {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.health-svc-status {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.health-svc-latency,
+.health-svc-checked {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.health-svc-actions {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.health-svc-btn {
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+.health-svc-btn--danger {
+    color: var(--color-error);
+    border-color: var(--color-error);
+}
+
+.health-svc-btn--danger:hover {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.health-svc-self-hosted {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* =============================================================================
+   Service Status Grid (Email & Calendar, etc.)
+   ============================================================================= */
+
+.service-status-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.service-status-item {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-primary);
+    align-items: center;
+    font-size: var(--font-size-sm);
+}
+
+.service-status-item__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-text-muted);
+}
+
+.service-status-item__dot--up { background-color: var(--color-success); }
+.service-status-item__dot--down { background-color: var(--color-error); }
+.service-status-item__dot--degraded { background-color: var(--color-warning); }
+.service-status-item__dot--not_configured { background-color: var(--color-text-muted); opacity: 0.4; }
+
+.service-status-item__name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.service-status-item__detail {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.service-status-grid__footer {
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-tertiary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* =============================================================================
+   Trust Banner (Comms Safety)
+   ============================================================================= */
+
+.trust-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-3);
+    background-color: rgba(74, 222, 128, 0.1);
+    color: var(--color-success);
+}
+
+.trust-banner--warning {
+    background-color: rgba(250, 166, 26, 0.1);
+    color: var(--color-warning);
+}
+
+.trust-banner--error {
+    background-color: rgba(248, 113, 113, 0.1);
+    color: var(--color-error);
+}
+
+.trust-banner__icon {
+    font-weight: 700;
+    font-family: var(--font-family-mono);
+    flex-shrink: 0;
+}
+
+.trust-banner__stats {
+    margin-left: auto;
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+}
+
+/* =============================================================================
+   Approval Cards
+   ============================================================================= */
+
+.approval-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-1);
+    font-size: var(--font-size-sm);
+    align-items: center;
+}
+
+.approval-card__platform {
+    font-weight: 600;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    color: var(--color-accent);
+}
+
+.approval-card__text {
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.approval-card__time {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+/* =============================================================================
+   Tool Skeleton Loading
+   ============================================================================= */
+
+.tool-skeleton {
+    padding: var(--space-4);
+}
+
+.tool-skeleton__row {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.tool-skeleton__card {
+    flex: 1;
+    height: 60px;
+    background-color: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.tool-skeleton__bar {
+    height: 16px;
+    background-color: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.tool-skeleton__bar:nth-child(2) { width: 80%; }
+.tool-skeleton__bar:nth-child(3) { width: 60%; }
+
+/* =============================================================================
+   Misc Tool Components
+   ============================================================================= */
+
+.tool-config-card__display {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    padding: var(--space-1) 0;
+}
+
+.empty-state__cta {
+    margin-top: var(--space-3);
+}
+
+.empty-state__example {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-top: var(--space-1);
+}
+
+.doc-text-input,
+.doc-url-input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+}
+
+.doc-text-input:focus,
+.doc-url-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.ws-try-it__results,
+.yt-try-it__results {
+    margin-top: var(--space-3);
+    min-height: 40px;
+}
+
+.wq-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-border);
 }
 
 /* Progress bar */

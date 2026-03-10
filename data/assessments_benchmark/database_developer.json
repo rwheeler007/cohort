@@ -1,0 +1,4862 @@
+{
+  "agent_id": "database_developer",
+  "source": "CodeMMLU (Fsoft-AIC/CodeMMLU)",
+  "total_questions": 271,
+  "difficulty_distribution": {
+    "intermediate": 196,
+    "advanced": 73,
+    "expert": 2
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "CM_DB0001",
+      "question": "When you have done changes in a model, which command has to be executed in order to make the changes take effect in the database?",
+      "choices": {
+        "A": "py manage.py makemigrations",
+        "B": "py manage.py executemigrations",
+        "C": "py manage.py runmigrations"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "api_frameworks",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k00088"
+    },
+    {
+      "id": "CM_DB0002",
+      "question": "Consider an application that needs to securely communicate with Azure SQL Database. How can the application use Managed Identities for Azure Resources to authenticate ?",
+      "choices": {
+        "A": "By using the Azure CLI to fetch an access token and then using it to connect to the SQL database",
+        "B": "Managed Identities can't be used for Azure SQL Database authentication",
+        "C": "By directly using the managed identity's client ID in the connection string",
+        "D": "Managed identities don't require any authentication"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "api_frameworks",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k00315"
+    },
+    {
+      "id": "CM_DB0003",
+      "question": "If you want to allow an Azure Logic App to access an Azure SQL Database without storing credentials, how can you accomplish this ?",
+      "choices": {
+        "A": "By using Azure Logic App Managed Identity",
+        "B": "By using Azure Virtual Network Gateways",
+        "C": "Azure SQL Database doesn't support Managed Identities",
+        "D": "By using Azure Service Bus"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "api_frameworks",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k00320"
+    },
+    {
+      "id": "CM_DB0004",
+      "question": "How would you manage application secrets (like database connection strings, API keys) in Azure in a secure manner ?",
+      "choices": {
+        "A": "Store them in plain text within the application code",
+        "B": "Use Azure Key Vault to store and access them",
+        "C": "Store them in environment variables of the Azure Web App service",
+        "D": "Encrypt them and store them in Azure Storage"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "api_frameworks",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k00325"
+    },
+    {
+      "id": "CM_DB0005",
+      "question": "Which JDBC interface is responsible for establishing a connection to a database?",
+      "choices": {
+        "A": "java.sql.Statement",
+        "B": "java.sql.ResultSet",
+        "C": "java.sql.DriverManager",
+        "D": "java.sql.Connection"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "programming_syntax",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k05988"
+    },
+    {
+      "id": "CM_DB0006",
+      "question": "Which of the following statements is used to execute SQL queries in JDBC?",
+      "choices": {
+        "A": "java.sql.Statement",
+        "B": "java.sql.ResultSet",
+        "C": "java.sql.DriverManager",
+        "D": "java.sql.Connection"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "programming_syntax",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k05990"
+    },
+    {
+      "id": "CM_DB0007",
+      "question": "In JDBC, which method is used to close a connection to the database?",
+      "choices": {
+        "A": "close()",
+        "B": "shutdown()",
+        "C": "closeConnection()",
+        "D": "disconnect()"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "programming_syntax",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k06012"
+    },
+    {
+      "id": "CM_DB0008",
+      "question": "Suppose yuo have a MongoDB database, having a collection named as Movies, then select the command which would help in finding the movies which are developed in 1983, the collection contains a column as Year.",
+      "choices": {
+        "A": "db.movies.find(\"Year\" : \"1983\");",
+        "B": "db.movies.find{\"Year\" : \"1983\"};",
+        "C": "db.movies.find({\"Year\" : \"1983\"});",
+        "D": "db.movies.findOne({\"Year\" : \"1983\"});"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07745"
+    },
+    {
+      "id": "CM_DB0009",
+      "question": "Suppose, you have a MongoDB database with a collection named as Movies, then you needed to see one of the document present in that collection, which one of the following command will be the correct to see a collection data?",
+      "choices": {
+        "A": "DB.Movies.findOne()",
+        "B": "DB.Movies.one()",
+        "C": "DB.Movies.collectionDataOne()",
+        "D": "DB.Movies()"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07746"
+    },
+    {
+      "id": "CM_DB0010",
+      "question": "Suppose, you have a MongoDB database with a collection named as Movies, then you needed to see one of the document present in that collection, which one of the following command will be the correct to see a collection data?",
+      "choices": {
+        "A": "DB.Movies.findOne()",
+        "B": "DB.Movies.one()",
+        "C": "DB.Movies.collectionDataOne()",
+        "D": "DB.Movies()"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07748"
+    },
+    {
+      "id": "CM_DB0011",
+      "question": "Which of the following are the simplest NoSQL databases?",
+      "choices": {
+        "A": "Row-column",
+        "B": "Key-Value",
+        "C": "Tabular form",
+        "D": "All of these"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07749"
+    },
+    {
+      "id": "CM_DB0012",
+      "question": "In the nomenclature of MongoDB, as there is a tables in relational model, what can we call it in MongoDB?",
+      "choices": {
+        "A": "Database",
+        "B": "Collections",
+        "C": "Tables",
+        "D": "Tuples"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07750"
+    },
+    {
+      "id": "CM_DB0013",
+      "question": "In the nomenclature of MongoDB, as there is a database in relational model, what can we call it in MongoDB?",
+      "choices": {
+        "A": "Database",
+        "B": "Tables",
+        "C": "Set of data",
+        "D": "Data system"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07751"
+    },
+    {
+      "id": "CM_DB0014",
+      "question": "Advantages of Non-Relational Databases are?",
+      "choices": {
+        "A": "Massive dataset organization",
+        "B": "Flexible database expansion",
+        "C": "Multiple data structures",
+        "D": "All of these"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07752"
+    },
+    {
+      "id": "CM_DB0015",
+      "question": "Example of Non-Relational Database is?",
+      "choices": {
+        "A": "MongoDB",
+        "B": "MySQL",
+        "C": "Oracle",
+        "D": "IBM DB2"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07753"
+    },
+    {
+      "id": "CM_DB0016",
+      "question": "NoSQL or Non-relational databases are used to store which type of data?",
+      "choices": {
+        "A": "Structured data",
+        "B": "Semi-structured data",
+        "C": "Unstructured data",
+        "D": "All of these"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07754"
+    },
+    {
+      "id": "CM_DB0017",
+      "question": "Non-Relational Databases are?",
+      "choices": {
+        "A": "Non-Tabular based storage system",
+        "B": "No SQL",
+        "C": "More flexible than SQL based",
+        "D": "All of these"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07756"
+    },
+    {
+      "id": "CM_DB0018",
+      "question": "In MongoDB, suppose you need to see the execution stats of the query which is running on the system, then how would you do that?",
+      "choices": {
+        "A": "Explain(\"ExecutionStats\");",
+        "B": "Explain(\"Execution\");",
+        "C": "Explain(\"Stats\");",
+        "D": "None of the above"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07758"
+    },
+    {
+      "id": "CM_DB0019",
+      "question": "Database follows property/properties and they are-",
+      "choices": {
+        "A": "Atomicity",
+        "B": "Consistency",
+        "C": "Isolation",
+        "D": "Durability",
+        "E": "All of the above"
+      },
+      "answer": "E",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07770"
+    },
+    {
+      "id": "CM_DB0020",
+      "question": "In database , the datapoints are represented as",
+      "choices": {
+        "A": "rows and columns",
+        "B": "rows",
+        "C": "columns",
+        "D": "graph based"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07771"
+    },
+    {
+      "id": "CM_DB0021",
+      "question": "Which of the following is not a valid SQL statement?",
+      "choices": {
+        "A": "a) SELECT *FROM tableWHERE column = 'value';",
+        "B": "b) UPDATE tableSET column = 'value'WHERE column = 'other_value';",
+        "C": "c) DELETE FROM tableWHERE column = 'value';",
+        "D": "d) ADD TO table(column1, column2, column3)VALUES (value1, value2, value3);"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07781"
+    },
+    {
+      "id": "CM_DB0022",
+      "question": "Which of the following is a key difference between relational and non-relational databases?",
+      "choices": {
+        "A": "a) Relational databases use SQL for querying, while non-relational databases use NoSQL.",
+        "B": "b) Relational databases use a fixed schema, while non-relational databases use a flexible schema.",
+        "C": "c) Relational databases are designed for transactional processing, while non-relational databases are designed for analytical processing.",
+        "D": "d) Relational databases store data in tables, while non-relational databases store data in documents, key-value pairs, or other formats."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07783"
+    },
+    {
+      "id": "CM_DB0023",
+      "question": "Which of the following is not a valid use case for a document database?",
+      "choices": {
+        "A": "a) Storing semi-structured data",
+        "B": "b) Providing flexible schema design",
+        "C": "c) Facilitating high-speed transactions",
+        "D": "d) Supporting distributed data management"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07784"
+    },
+    {
+      "id": "CM_DB0024",
+      "question": "Which of the following is not a valid NoSQL data model?",
+      "choices": {
+        "A": "a) Key-value store",
+        "B": "b) Column-family store",
+        "C": "c) Object-oriented database",
+        "D": "d) XML database"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07787"
+    },
+    {
+      "id": "CM_DB0025",
+      "question": "Which of the following is not a valid SQL aggregate function?",
+      "choices": {
+        "A": "a) COUNT",
+        "B": "b) MAX",
+        "C": "c) AVG",
+        "D": "d) MINUS"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07789"
+    },
+    {
+      "id": "CM_DB0026",
+      "question": "Which of the following is not a valid database normalization form?",
+      "choices": {
+        "A": "a) First normal form (1NF)",
+        "B": "b) Second normal form (2NF)",
+        "C": "c) Third normal form (3NF)",
+        "D": "d) Fourth normal form (4NF)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07790"
+    },
+    {
+      "id": "CM_DB0027",
+      "question": "Which of the following is not a valid data type in a relational database?",
+      "choices": {
+        "A": "a) Date",
+        "B": "b) Time",
+        "C": "c) Array",
+        "D": "d) Boolean"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07791"
+    },
+    {
+      "id": "CM_DB0028",
+      "question": "Which of the following is not a valid SQL join type?",
+      "choices": {
+        "A": "a) Inner join",
+        "B": "b) Outer join",
+        "C": "c) Cross join",
+        "D": "d) Union join"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07792"
+    },
+    {
+      "id": "CM_DB0029",
+      "question": "Which of the following is not a common component of a database system?",
+      "choices": {
+        "A": "a) Data dictionary",
+        "B": "b) Query language",
+        "C": "c) User interface",
+        "D": "d) File system"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "react",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07794"
+    },
+    {
+      "id": "CM_DB0030",
+      "question": "Which of the following is not a benefit of using a database management system (DBMS)?",
+      "choices": {
+        "A": "a) Improved data sharing",
+        "B": "b) Reduced data redundancy",
+        "C": "c) Increased data security",
+        "D": "d) Decreased processing speed"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07795"
+    },
+    {
+      "id": "CM_DB0031",
+      "question": "Which of the following is not a type of database model?",
+      "choices": {
+        "A": "a) Relational",
+        "B": "b) Object-oriented",
+        "C": "c) Hierarchical",
+        "D": "d) Linear"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07796"
+    },
+    {
+      "id": "CM_DB0032",
+      "question": "Which of the following is not a valid property of a relational database?",
+      "choices": {
+        "A": "a) Consistency",
+        "B": "b) Atomicity",
+        "C": "c) Durability",
+        "D": "d) Concurrency"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07797"
+    },
+    {
+      "id": "CM_DB0033",
+      "question": "Which all types of files can be stored in a Database?",
+      "choices": {
+        "A": "Text files",
+        "B": "Image",
+        "C": "Audio and video files",
+        "D": "All of the above"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07798"
+    },
+    {
+      "id": "CM_DB0034",
+      "question": "High-level database models provide concepts for presenting data in ways that are close to the way?",
+      "choices": {
+        "A": "People perceive data",
+        "B": "Machine perceive data",
+        "C": "Artificial Intelligence perceive data",
+        "D": "Model perceive data"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07799"
+    },
+    {
+      "id": "CM_DB0035",
+      "question": "Which of the following is a common advantage of relational databases over non-relational databases?",
+      "choices": {
+        "A": "a) More flexible schema design",
+        "B": "b) Better scalability for large datasets",
+        "C": "c) Higher performance for analytical processing",
+        "D": "d) Strong data consistency and integrity"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07800"
+    },
+    {
+      "id": "CM_DB0036",
+      "question": "Which of the following is a common advantage of non-relational databases over relational databases?",
+      "choices": {
+        "A": "a) Better support for transactional processing",
+        "B": "b) Higher performance for analytical processing",
+        "C": "c) More effective data partitioning and distribution",
+        "D": "d) More efficient indexing of data"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07802"
+    },
+    {
+      "id": "CM_DB0037",
+      "question": "Which of the following is a key consideration when choosing between a relational and non-relational database?",
+      "choices": {
+        "A": "a) The size of the dataset being managed",
+        "B": "b) The performance requirements of the application",
+        "C": "c) The complexity of the data relationships",
+        "D": "d) The need for high data consistency and integrity"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07803"
+    },
+    {
+      "id": "CM_DB0038",
+      "question": "Some of the features of Database includes?",
+      "choices": {
+        "A": "No data backup",
+        "B": "Security isn’t provided",
+        "C": "Only authorized users can access data",
+        "D": "Data is stored at infinite locations"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07809"
+    },
+    {
+      "id": "CM_DB0039",
+      "question": "Which of the following is not a type of Database?",
+      "choices": {
+        "A": "Decentralized",
+        "B": "Network",
+        "C": "Cloud",
+        "D": "Object-oriented"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07810"
+    },
+    {
+      "id": "CM_DB0040",
+      "question": "Which of the following is a common disadvantage of non-relational databases?",
+      "choices": {
+        "A": "a) Inconsistent or unpredictable query performance",
+        "B": "b) Limited support for complex data relationships",
+        "C": "c) Less efficient indexing of data",
+        "D": "d) Poor scalability for large datasets"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07821"
+    },
+    {
+      "id": "CM_DB0041",
+      "question": "RDBMS is a type of Database which includes?",
+      "choices": {
+        "A": "Collection of Values",
+        "B": "Collection of Tables",
+        "C": "Collection of Columns",
+        "D": "Collection of Rows"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07822"
+    },
+    {
+      "id": "CM_DB0042",
+      "question": "Which one of the following data structures is preferred in database-system implementation?",
+      "choices": {
+        "A": "Binary Search tree",
+        "B": "B+ tree",
+        "C": "Splay Tree",
+        "D": "AVL tree"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k09548"
+    },
+    {
+      "id": "CM_DB0043",
+      "question": "B+ trees are preferred to binary trees in databases because (GATE CS 2000)",
+      "choices": {
+        "A": "Disk capacities are greater than memory capacities",
+        "B": "Disk access is much slower than memory access",
+        "C": "Disk data transfer rates are much less than memory data transfer rates",
+        "D": "Disks are more reliable than memory"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k09751"
+    },
+    {
+      "id": "CM_DB0044",
+      "question": "Which one of the following is a key factor for preferring B-trees to binary search trees for indexing database relations?",
+      "choices": {
+        "A": "Database relations have a large number of records",
+        "B": "Database relations are sorted on the primary key",
+        "C": "B-trees require less memory than binary search trees",
+        "D": "Data transfer form disks is in blocks."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "software_principles",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k09752"
+    },
+    {
+      "id": "CM_DB0045",
+      "question": "Which of the following statements regarding the features of the object-oriented approach to databases are true? \r(a)The ability to develop more realistic models of the real world. \r(b)The ability to represent the world in a non-geometric way. \r(c)The ability to develop databases using natural language approaches. \r(d)The need to split objects into their component parts. \r(e)The ability to develop database models based on location rather than state and behaviour. \rCodes:",
+      "choices": {
+        "A": "(a), (b) and (c)",
+        "B": "(b), (c) and (d)",
+        "C": "(a), (d) and (e)",
+        "D": "(c), (d) and (e)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "bash",
+      "topic_category": "software_principles",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10158"
+    },
+    {
+      "id": "CM_DB0046",
+      "question": "With MySQL, how do you select all the records from a table named \"Persons\" where the \"LastName\" is alphabetically between (and including) \"Hansen\" and \"Pettersen\"?",
+      "choices": {
+        "A": "SELECT LastName>'Hansen' AND LastName<'Pettersen' FROM Persons",
+        "B": "SELECT * FROM Persons WHERE LastName>'Hansen' AND LastName<'Pettersen'",
+        "C": "SELECT * FROM Persons WHERE LastName BETWEEN 'Hansen' AND 'Pettersen'"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07823"
+    },
+    {
+      "id": "CM_DB0047",
+      "question": "Which MySQL statement is used to select data from a database?",
+      "choices": {
+        "A": "GET",
+        "B": "SELECT",
+        "C": "OPEN",
+        "D": "EXTRACT"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07824"
+    },
+    {
+      "id": "CM_DB0048",
+      "question": "Which MySQL statement is used to update data in a database?",
+      "choices": {
+        "A": "MODIFY",
+        "B": "UPDATE",
+        "C": "SAVE",
+        "D": "INSERT"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07825"
+    },
+    {
+      "id": "CM_DB0049",
+      "question": "Which MySQL statement is used to delete data from a database?",
+      "choices": {
+        "A": "COLLAPSE",
+        "B": "DELETE",
+        "C": "REMOVE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07826"
+    },
+    {
+      "id": "CM_DB0050",
+      "question": "Which MYSQL statement is used to insert new data in a database?",
+      "choices": {
+        "A": "INSERT NEW",
+        "B": "INSERT INTO",
+        "C": "ADD RECORD",
+        "D": "ADD NEW"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07827"
+    },
+    {
+      "id": "CM_DB0051",
+      "question": "With MySQL, how do you select a column named \"FirstName\" from a table named \"Persons\"?",
+      "choices": {
+        "A": "EXTRACT FirstName FROM Persons",
+        "B": "SELECT FirstName FROM Persons",
+        "C": "SELECT Persons.FirstName"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07828"
+    },
+    {
+      "id": "CM_DB0052",
+      "question": "With MySQL, how do you select all the columns from a table named \"Persons\"?",
+      "choices": {
+        "A": "SELECT [all] FROM Persons",
+        "B": "SELECT * FROM Persons",
+        "C": "SELECT Persons",
+        "D": "SELECT *.Persons"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07829"
+    },
+    {
+      "id": "CM_DB0053",
+      "question": "With MySQL, how do you select all the records from a table named \"Persons\" where the value of the column \"FirstName\" is \"Peter\"?",
+      "choices": {
+        "A": "SELECT [all] FROM Persons WHERE FirstName LIKE 'Peter'",
+        "B": "SELECT * FROM Persons WHERE FirstName='Peter'",
+        "C": "SELECT [all] FROM Persons WHERE FirstName='Peter'",
+        "D": "SELECT * FROM Persons WHERE FirstName<>'Peter'"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07830"
+    },
+    {
+      "id": "CM_DB0054",
+      "question": "With MySQL, how do you select all the records from a table named \"Persons\" where the value of the column \"FirstName\" starts with an \"a\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons WHERE FirstName LIKE '%a'",
+        "B": "SELECT * FROM Persons WHERE FirstName='%a%'",
+        "C": "SELECT * FROM Persons WHERE FirstName='a'",
+        "D": "SELECT * FROM Persons WHERE FirstName LIKE 'a%'"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07831"
+    },
+    {
+      "id": "CM_DB0055",
+      "question": "With MySQL, how do you select all the records from a table named \"Persons\" where the \"FirstName\" is \"Peter\" and the \"LastName\" is \"Jackson\"?",
+      "choices": {
+        "A": "SELECT FirstName='Peter', LastName='Jackson' FROM Persons",
+        "B": "SELECT * FROM Persons WHERE FirstName='Peter' AND LastName='Jackson'",
+        "C": "SELECT * FROM Persons WHERE FirstName<>'Peter' AND LastName<>'Jackson'"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07833"
+    },
+    {
+      "id": "CM_DB0056",
+      "question": "Which MySQL statement is used to return only different values?",
+      "choices": {
+        "A": "SELECT DISTINCT",
+        "B": "SELECT DIFFERENT",
+        "C": "SELECT UNIQUE"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07835"
+    },
+    {
+      "id": "CM_DB0057",
+      "question": "Which MySQL keyword is used to sort the result-set?",
+      "choices": {
+        "A": "SORT BY",
+        "B": "SORT",
+        "C": "ORDER",
+        "D": "ORDER BY"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07836"
+    },
+    {
+      "id": "CM_DB0058",
+      "question": "With MySQL, how can you return all the records from a table named \"Persons\" sorted descending by \"FirstName\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons ORDER BY FirstName DESC",
+        "B": "SELECT * FROM Persons SORT 'FirstName' DESC",
+        "C": "SELECT * FROM Persons SORT BY 'FirstName' DESC",
+        "D": "SELECT * FROM Persons ORDER FirstName DESC"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07837"
+    },
+    {
+      "id": "CM_DB0059",
+      "question": "With MySQL, how can you insert a new record into the \"Persons\" table?",
+      "choices": {
+        "A": "INSERT INTO Persons VALUES ('Jimmy', 'Jackson')",
+        "B": "INSERT ('Jimmy', 'Jackson') INTO Persons",
+        "C": "INSERT VALUES ('Jimmy', 'Jackson') INTO Persons"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07838"
+    },
+    {
+      "id": "CM_DB0060",
+      "question": "With MySQL, how can you insert \"Olsen\" as the \"LastName\" in the \"Persons\" table?",
+      "choices": {
+        "A": "INSERT ('Olsen') INTO Persons (LastName)",
+        "B": "INSERT INTO Persons (LastName) VALUES ('Olsen')",
+        "C": "INSERT INTO Persons ('Olsen') INTO LastName"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07839"
+    },
+    {
+      "id": "CM_DB0061",
+      "question": "With MySQL, how can you delete the records where the \"FirstName\" is \"Peter\" in the Persons Table?",
+      "choices": {
+        "A": "DELETE FROM Persons WHERE FirstName = 'Peter'",
+        "B": "DELETE ROW FirstName='Peter' FROM Persons",
+        "C": "DELETE FirstName='Peter' FROM Persons"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07841"
+    },
+    {
+      "id": "CM_DB0062",
+      "question": "With MySQL, how can you return the number of records in the \"Persons\" table?",
+      "choices": {
+        "A": "SELECT COLUMNS(*) FROM Persons",
+        "B": "SELECT LEN(*) FROM Persons",
+        "C": "SELECT COUNT(*) FROM Persons",
+        "D": "SELECT NO(*) FROM Persons"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07842"
+    },
+    {
+      "id": "CM_DB0063",
+      "question": "What is MySQL?",
+      "choices": {
+        "A": "Cross-platform, open-source and free",
+        "B": "A relational database management system",
+        "C": "Developed, distributed, and supported by Oracle Corporation",
+        "D": "All the options are correct"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07843"
+    },
+    {
+      "id": "CM_DB0064",
+      "question": "What are the supported types of joins in MySQL?",
+      "choices": {
+        "A": "INNER JOIN, LEFT JOIN, RIGHT JOIN, CROSS JOIN",
+        "B": "INNER JOIN, OUTER JOIN, LEFT JOIN, RIGHT JOIN"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07846"
+    },
+    {
+      "id": "CM_DB0065",
+      "question": "Which SQL statement is used to update data in a table?",
+      "choices": {
+        "A": "UPDATE",
+        "B": "SAVE",
+        "C": "MODIFY",
+        "D": "SAVE AS"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07847"
+    },
+    {
+      "id": "CM_DB0066",
+      "question": "With SQL, how can you return the number of records in the 'customers' table?",
+      "choices": {
+        "A": "SELECT NUMBER(*) FROM customers",
+        "B": "SELECT COLUMNS(*) FROM customers",
+        "C": "SELECT LEN(*) FROM customers",
+        "D": "SELECT COUNT(*) FROM customers"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07852"
+    },
+    {
+      "id": "CM_DB0067",
+      "question": "Which SQL keyword is used to sort the result in a SELECT statement?",
+      "choices": {
+        "A": "SORT BY",
+        "B": "SORT",
+        "C": "ORDER",
+        "D": "ORDER BY"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07853"
+    },
+    {
+      "id": "CM_DB0068",
+      "question": "Which SQL statement is used to return only different values?",
+      "choices": {
+        "A": "SELECT UNIQUE",
+        "B": "SELECT DISTINCT",
+        "C": "SELECT DIFFERENT",
+        "D": "SELECT IN"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07854"
+    },
+    {
+      "id": "CM_DB0069",
+      "question": "What is a valid SQL statement to delete all records in a table called 'cars'?",
+      "choices": {
+        "A": "DELETE TABLE cars",
+        "B": "EMPTY TABLE cars",
+        "C": "TRUNCATE TABLE cars",
+        "D": "DROP TABLE cars;"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07858"
+    },
+    {
+      "id": "CM_DB0070",
+      "question": "If you delete one record from a table in a PostgreSQL database, what is the return value given from PostgreSQL?",
+      "choices": {
+        "A": "[0 1]",
+        "B": "DELETE 1",
+        "C": "-1",
+        "D": "1 RECORD(S) DELETED"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07859"
+    },
+    {
+      "id": "CM_DB0071",
+      "question": "These two SQL statements will return the same result:SELECT model AS car FROM cars;SELECT model car FROM cars;```\nSELECT model AS car FROM cars;\n``````\nSELECT model car FROM cars;\n```",
+      "choices": {
+        "A": "Yes",
+        "B": "No"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07860"
+    },
+    {
+      "id": "CM_DB0072",
+      "question": "The semicolon at the end of an SQL statement is optional?",
+      "choices": {
+        "A": "Yes, in PostgreSQL you can skip the semicolon",
+        "B": "No, in PostgreSQL the semicolon is required"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07861"
+    },
+    {
+      "id": "CM_DB0073",
+      "question": "With SQL, how do you select a column named 'model' from a table named 'cars'?",
+      "choices": {
+        "A": "GET cars.model;",
+        "B": "SELECT model FROM cars;",
+        "C": "EXTRACT FROM cars [model];"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07862"
+    },
+    {
+      "id": "CM_DB0074",
+      "question": "Which SQL statement is used to insert a new record into a table?",
+      "choices": {
+        "A": "INSERT NEW",
+        "B": "ALTER NEW",
+        "C": "ADD",
+        "D": "INSERT INTO"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07863"
+    },
+    {
+      "id": "CM_DB0075",
+      "question": "Which SQL clause is used to return 20 records, but skip the first 40?",
+      "choices": {
+        "A": "LIMIT 20 START 40",
+        "B": "TOP 20 LIMIT 40",
+        "C": "LIMIT 20 OFFSET 40",
+        "D": "TOP 20 :: 40"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07864"
+    },
+    {
+      "id": "CM_DB0076",
+      "question": "Which SQL clause is used to return a maximum number of records?",
+      "choices": {
+        "A": "SIZE",
+        "B": "TOP",
+        "C": "COUNT",
+        "D": "LIMIT"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07865"
+    },
+    {
+      "id": "CM_DB0077",
+      "question": "Which SQL statement is used to delete record(s) from a table?",
+      "choices": {
+        "A": "COLLAPSE",
+        "B": "REMOVE",
+        "C": "DELETE",
+        "D": "DROP"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07866"
+    },
+    {
+      "id": "CM_DB0078",
+      "question": "Which SQL statement is used to create a new table in the database?",
+      "choices": {
+        "A": "ALTER TABLE",
+        "B": "CREATE TABLE",
+        "C": "NEW TABLE",
+        "D": "ADD TABLE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07868"
+    },
+    {
+      "id": "CM_DB0079",
+      "question": "Which is NOT a valid operator in PostgreSQL?",
+      "choices": {
+        "A": "AND",
+        "B": "ILIKE",
+        "C": "IS",
+        "D": "LIKE"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07870"
+    },
+    {
+      "id": "CM_DB0080",
+      "question": "Which SQL statement is used to extract data from a database?",
+      "choices": {
+        "A": "OPEN",
+        "B": "EXTRACT",
+        "C": "GET",
+        "D": "SELECT"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07872"
+    },
+    {
+      "id": "CM_DB0081",
+      "question": "Which SQL statement is used to update data in a database?",
+      "choices": {
+        "A": "SAVE",
+        "B": "SAVE AS",
+        "C": "UPDATE",
+        "D": "MODIFY"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07873"
+    },
+    {
+      "id": "CM_DB0082",
+      "question": "Which SQL statement is used to delete data from a database?",
+      "choices": {
+        "A": "COLLAPSE",
+        "B": "DELETE",
+        "C": "REMOVE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07874"
+    },
+    {
+      "id": "CM_DB0083",
+      "question": "Which SQL statement is used to insert new data in a database?",
+      "choices": {
+        "A": "INSERT INTO",
+        "B": "INSERT NEW",
+        "C": "ADD NEW",
+        "D": "ADD RECORD"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07875"
+    },
+    {
+      "id": "CM_DB0084",
+      "question": "With SQL, how do you select a column named \"FirstName\" from a table named \"Persons\"?",
+      "choices": {
+        "A": "SELECT FirstName FROM Persons",
+        "B": "EXTRACT FirstName FROM Persons",
+        "C": "SELECT Persons.FirstName"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07876"
+    },
+    {
+      "id": "CM_DB0085",
+      "question": "With SQL, how do you select all the columns from a table named \"Persons\"?",
+      "choices": {
+        "A": "SELECT *.Persons",
+        "B": "SELECT Persons",
+        "C": "SELECT [all] FROM Persons",
+        "D": "SELECT * FROM Persons"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07877"
+    },
+    {
+      "id": "CM_DB0086",
+      "question": "With SQL, how do you select all the records from a table named \"Persons\" where the value of the column \"FirstName\" is \"Peter\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons WHERE FirstName<>'Peter'",
+        "B": "SELECT * FROM Persons WHERE FirstName='Peter'",
+        "C": "SELECT [all] FROM Persons WHERE FirstName LIKE 'Peter'",
+        "D": "SELECT [all] FROM Persons WHERE FirstName='Peter'"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07878"
+    },
+    {
+      "id": "CM_DB0087",
+      "question": "With SQL, how do you select all the records from a table named \"Persons\" where the value of the column \"FirstName\" starts with an \"a\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons WHERE FirstName='a'",
+        "B": "SELECT * FROM Persons WHERE FirstName LIKE 'a%'",
+        "C": "SELECT * FROM Persons WHERE FirstName='%a%'",
+        "D": "SELECT * FROM Persons WHERE FirstName LIKE '%a'"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07879"
+    },
+    {
+      "id": "CM_DB0088",
+      "question": "With SQL, how do you select all the records from a table named \"Persons\" where the \"FirstName\" is \"Peter\" and the \"LastName\" is \"Jackson\"?",
+      "choices": {
+        "A": "SELECT FirstName='Peter', LastName='Jackson' FROM Persons",
+        "B": "SELECT * FROM Persons WHERE FirstName<>'Peter' AND LastName<>'Jackson'",
+        "C": "SELECT * FROM Persons WHERE FirstName='Peter' AND LastName='Jackson'"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07881"
+    },
+    {
+      "id": "CM_DB0089",
+      "question": "With SQL, how do you select all the records from a table named \"Persons\" where the \"LastName\" is alphabetically between (and including) \"Hansen\" and \"Pettersen\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons WHERE LastName>'Hansen' AND LastName<'Pettersen'",
+        "B": "SELECT LastName>'Hansen' AND LastName<'Pettersen' FROM Persons",
+        "C": "SELECT * FROM Persons WHERE LastName BETWEEN 'Hansen' AND 'Pettersen'"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07882"
+    },
+    {
+      "id": "CM_DB0090",
+      "question": "Which SQL keyword is used to sort the result-set?",
+      "choices": {
+        "A": "ORDER BY",
+        "B": "SORT",
+        "C": "ORDER",
+        "D": "SORT BY"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07883"
+    },
+    {
+      "id": "CM_DB0091",
+      "question": "With SQL, how can you return all the records from a table named \"Persons\" sorted descending by \"FirstName\"?",
+      "choices": {
+        "A": "SELECT * FROM Persons ORDER FirstName DESC",
+        "B": "SELECT * FROM Persons SORT 'FirstName' DESC",
+        "C": "SELECT * FROM Persons ORDER BY FirstName DESC",
+        "D": "SELECT * FROM Persons SORT BY 'FirstName' DESC"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07884"
+    },
+    {
+      "id": "CM_DB0092",
+      "question": "With SQL, how can you insert a new record into the \"Persons\" table?",
+      "choices": {
+        "A": "INSERT INTO Persons VALUES ('Jimmy', 'Jackson')",
+        "B": "INSERT ('Jimmy', 'Jackson') INTO Persons",
+        "C": "INSERT VALUES ('Jimmy', 'Jackson') INTO Persons"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07885"
+    },
+    {
+      "id": "CM_DB0093",
+      "question": "With SQL, how can you insert \"Olsen\" as the \"LastName\" in the \"Persons\" table?",
+      "choices": {
+        "A": "INSERT INTO Persons (LastName) VALUES ('Olsen')",
+        "B": "INSERT ('Olsen') INTO Persons (LastName)",
+        "C": "INSERT INTO Persons ('Olsen') INTO LastName"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07886"
+    },
+    {
+      "id": "CM_DB0094",
+      "question": "With SQL, how can you delete the records where the \"FirstName\" is \"Peter\" in the Persons Table?",
+      "choices": {
+        "A": "DELETE ROW FirstName='Peter' FROM Persons",
+        "B": "DELETE FROM Persons WHERE FirstName = 'Peter'",
+        "C": "DELETE FirstName='Peter' FROM Persons"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07888"
+    },
+    {
+      "id": "CM_DB0095",
+      "question": "With SQL, how can you return the number of records in the \"Persons\" table?",
+      "choices": {
+        "A": "SELECT LEN(*) FROM Persons",
+        "B": "SELECT COLUMNS(*) FROM Persons",
+        "C": "SELECT NO(*) FROM Persons",
+        "D": "SELECT COUNT(*) FROM Persons"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07889"
+    },
+    {
+      "id": "CM_DB0096",
+      "question": "Which SQL statement is used to return only different values?",
+      "choices": {
+        "A": "SELECT DISTINCT",
+        "B": "SELECT UNIQUE",
+        "C": "SELECT DIFFERENT"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07893"
+    },
+    {
+      "id": "CM_DB0097",
+      "question": "What does SQL stand for?",
+      "choices": {
+        "A": "Structured Question Language",
+        "B": "Strong Question Language",
+        "C": "Structured Query Language"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07894"
+    },
+    {
+      "id": "CM_DB0098",
+      "question": "Consider the following two tables and four queries in SQL.\r\rBook (isbn, bname), Stock (isbn, copies)\r\r\rQuery 1:\r\r\nSELECT B.isbn, S.copies\r\nFROM Book B INNER JOIN Stock S\r\nON B.isbn = S.isbn;\r\n\r\n\r\nQuery 2:\r\n\r\nSELECT B.isbn, S.copies\r\nFROM B B LEFT OUTER JOIN Stock S\r\nON B.isbn = S.isbn;\r\n\r\n\r\nQuery 3:\r\n\r\nSELECT B.isbn, S.copies\r\nFROM Book B RIGHT OUTER JOIN Stock S\r\nON B.isbn = S.isbn;\r\n\r\n\r\nQuery 4:\r\n\r\nSELECT B.isbn, S.copies\r\nFROM B B FULL OUTER JOIN Stock S\r\nON B.isbn = S.isbn;\r\n\r\n\r\nWhich one of the queries above is certain to have an output that is a superset of the outputs of the other three queries?",
+      "choices": {
+        "A": "Query 1",
+        "B": "Query 2",
+        "C": "Query 3",
+        "D": "Query 4"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07906"
+    },
+    {
+      "id": "CM_DB0099",
+      "question": "Consider the following relational schema:\r\r\nEmployeeDetail (EmpId, FullName, ManagerID, DateOfJoining)\r\nEmployeeSalary (EmpID, Project, Salary)\r\n\r\n\r\nConsider the following relational query on the above database:\r\n\r\nSELECT Salary\r\nFROM EmployeeSalary Emp1\r\nWHERE 2 = (\r\n                SELECT COUNT( DISTINCT ( Emp2.Salary ) )\r\n                FROM EmployeeSalary Emp2\r\n                WHERE Emp2.Salary > Emp1.Salary\r\n            )\r\n\r\n\r\nAssume that relations corresponding to the above schema are not empty. Which one of the following is the correct interpretation of the above query?",
+      "choices": {
+        "A": "find the highest salary from table",
+        "B": "find the 2nd highest salary from table",
+        "C": "find the 3rd highest salary from table",
+        "D": "None of above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07908"
+    },
+    {
+      "id": "CM_DB0100",
+      "question": "In SQL, __________ is an Aggregate function.",
+      "choices": {
+        "A": "SELECT",
+        "B": "CREATE",
+        "C": "AVG",
+        "D": "MODIFY"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07912"
+    },
+    {
+      "id": "CM_DB0101",
+      "question": "__________ SQL command changes one or more fields in a record.",
+      "choices": {
+        "A": "LOOK-UP",
+        "B": "INSERT",
+        "C": "MODIFY",
+        "D": "CHANGE"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07917"
+    },
+    {
+      "id": "CM_DB0102",
+      "question": "Which option is true about the SQL query given below? \r\r\r\nSELECT firstName, lastName \r\nFROM Employee \r\nWHERE lastName BETWEEN \\'A%\\' AND \\'D%\\';",
+      "choices": {
+        "A": "It will display all the employees having last names starting with the alphabets \\'A\\' till \\'D\\' inclusive of A and exclusive of D.",
+        "B": "It will throw an error as BETWEEN can only be used for Numbers and not strings.",
+        "C": "It will display all the employees having last names starting from \\'A\\' and ending with \\'D\\'.",
+        "D": "It will display all the employees having last names in the range of starting alphabets as \\'A\\' and \\'D\\' excluding the names starting with \\'A\\' and \\'D\\'."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07921"
+    },
+    {
+      "id": "CM_DB0103",
+      "question": "A relational database contains two tables student and department in which student table has columns roll_no, name and dept_id and department table has columns dept_id and dept_name. The following insert statements were executed successfully to populate the empty tables: Insert into department values (1, \\'Mathematics\\')\r\nInsert into department values (2, \\'Physics\\')\r\nInsert into student values (l, \\'Navin\\', 1)\r\nInsert into student values (2, \\'Mukesh\\', 2)\r\nInsert into student values (3, \\'Gita\\', 1) \r\nHow many rows and columns will be retrieved by the following SQL statement?\r\nSelect * from student, department",
+      "choices": {
+        "A": "0 row and 4 columns",
+        "B": "3 rows and 4 columns",
+        "C": "3 rows and 5 columns",
+        "D": "6 rows and 5 columns"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07926"
+    },
+    {
+      "id": "CM_DB0104",
+      "question": "Consider the following entity relationship diagram (ERD), where two entities E1 and E2 have a relation R of cardinality 1 : m.\r\rThe attributes of E1 are A11, A12 and A13 where A11 is the key attribute. The attributes of E2 are A21, A22 and A23 where A21 is the key attribute and A23 is a multi-valued attribute. Relation R does not have any attribute. A relational database containing minimum number of tables with each table satisfying the requirements of the third normal form (3NF) is designed from the above ERD. The number of tables in the database is",
+      "choices": {
+        "A": "2",
+        "B": "3",
+        "C": "5",
+        "D": "4"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07927"
+    },
+    {
+      "id": "CM_DB0105",
+      "question": "In a Hierachical database, a hashing function is used to locate the ________.",
+      "choices": {
+        "A": "Collision",
+        "B": "Root",
+        "C": "Foreign Key",
+        "D": "Records"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07928"
+    },
+    {
+      "id": "CM_DB0106",
+      "question": "A database table T1 has 2000 records and occupies 80 disk blocks. Another table T2 has 400 records and occupies 20 disk blocks. These two tables have to be joined as per a specified join condition that needs to be evaluated for every pair of records from these two tables. The memory buffer space available can hold exactly one block of records for T1 and one block of records for T2 simultaneously at any point in time. No index is available on either table. If Nested-loop join algorithm is employed to perform the join, with the most appropriate choice of table to be used in outer loop, the number of block accesses required for reading the data are",
+      "choices": {
+        "A": "800000",
+        "B": "40080",
+        "C": "32020",
+        "D": "100"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07930"
+    },
+    {
+      "id": "CM_DB0107",
+      "question": "Student (school-id, sch-roll-no, sname, saddress)\rSchool (school-id, sch-name, sch-address, sch-phone)\rEnrolment(school-id sch-roll-no, erollno, examname)\rExamResult(erollno, examname, marks)\r\rWhat does the following SQL query output?\r\n\n\nSELECT\tsch-name, COUNT (*)\nFROM\tSchool C, Enrolment E, ExamResult R\nWHERE\tE.school-id = C.school-id\nAND\nE.examname = R.examname AND E.erollno = R.erollno\nAND\nR.marks = 100 AND S.school-id IN (SELECT school-id\n                                FROM student\n                                GROUP BY school-id\n                                 HAVING COUNT (*) > 200)\nGROUP By school-id\n /* Add code here. Remove these lines if not writing code */ \n\n``````C",
+      "choices": {
+        "A": "for each school with more than 200 students appearing in exams, the name of the school and the number of 100s scored by its students",
+        "B": "for each school with more than 200 students in it, the name of the school and the number of 100s scored by its students",
+        "C": "for each school with more than 200 students in it, the name of the school and the number of its students scoring 100 in at least one exam",
+        "D": "nothing; the query has a syntax error"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07934"
+    },
+    {
+      "id": "CM_DB0108",
+      "question": "A company maintains records of sales made by its salespersons and pays them commission based on each individual\\'s total sales made in a year. This data is maintained in a table with following schema:salesinfo = (salespersonid, totalsales, commission)In a certain year, due to better business results, the company decides to further reward its salespersons by enhancing the commission paid to them as per the following formula:If commission < = 50000, enhance it by 2% If 50000 < commission < = 100000, enhance it by 4% If commission > 100000, enhance it by 6%The IT staff has written three different SQL scripts to calculate enhancement for each slab, each of these scripts is to run as a separate transaction as follows:  T1Update salesinfo\n\nSet commission = commission * 1.02\n\nWhere commission < = 50000; T2Update salesinfo\n\nSet commission = commission * 1.04\n\nWhere commission > 50000 and commission is < = 100000; T3Update salesinfo\n\nSet commission = commission * 1.06\n\nWhere commission > 100000;\nWhich of the following options of running these transactions will update the commission of all salespersons correctly",
+      "choices": {
+        "A": "Execute T1 followed by T2 followed by T3",
+        "B": "Execute T2, followed by T3; T1 running concurrently throughout",
+        "C": "Execute T3 followed by T2; T1 running concurrently throughout",
+        "D": "Execute T3 followed by T2 followed by T1"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07936"
+    },
+    {
+      "id": "CM_DB0109",
+      "question": "Consider the following relation  \r\n  Cinema (theater, address, capacity)  \r\nWhich of the following options will be needed at the end of the SQL query \r\nSELECT P1. address\r\nFROM Cinema P1 \r\nSuch that it always finds the addresses of theaters with maximum capacity?",
+      "choices": {
+        "A": "WHERE P1. Capacity> = All (select P2. Capacity from Cinema P2)",
+        "B": "WHERE P1. Capacity> = Any (select P2. Capacity from Cinema P2)",
+        "C": "WHERE P1. Capacity > All (select max(P2. Capacity) from Cinema P2)",
+        "D": "WHERE P1. Capacity > Any (select max (P2. Capacity) from Cinema P2)"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07937"
+    },
+    {
+      "id": "CM_DB0110",
+      "question": "Consider the following relations:\r\r \r\nSELECT S. Student_Name, sum(P.Marks)\r\n     FROM Student S, Performance P\r\n     WHERE S.Roll_No = P.Roll_No\r\n     GROUP BY S.Student_Name \r\nThe number of rows that will be returned by the SQL query is _________",
+      "choices": {
+        "A": "0",
+        "B": "1",
+        "C": "2",
+        "D": "3"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07938"
+    },
+    {
+      "id": "CM_DB0111",
+      "question": "In SQL, relations can contain null values, and comparisons with null values are treated as unknown. Suppose all comparisons with a null value are treated as false. Which of the following pairs is not equivalent?",
+      "choices": {
+        "A": "x = 5  AND        not(not(x = 5))",
+        "B": "x = 5   AND        x> 4 and x < 6, where x is an integer",
+        "C": "x  ≠  5  AND   not (x = 5)",
+        "D": "None of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07941"
+    },
+    {
+      "id": "CM_DB0112",
+      "question": "A table \\'student\\' with schema (roll, name, hostel, marks), and another table \\'hobby\\' with schema (roll, hobbyname) contains records as shown below:\rTable: Student   Roll Name Hostel Marks     1798 Manoj Rathod 7 95   2154 Soumic Banerjee 5 68   2369 Gumma Reddy 7 86   2581 Pradeep Pendse 6 92   2643 Suhas Kulkarni 5 78   2711 Nitin Kadam 8 72   2872 Kiran Vora 5 92   2926 Manoj Kunkalikar 5 94   2959 Hemant Karkhanis 7 88   3125 Rajesh Doshi 5 82   \r \rTable: hobby   Roll Hobbyname     1798 chess   1798 music   2154 music   2369 swimming   2581 cricket   2643 chess   2643 hockey   2711 volleyball   2872 football   2926 cricket   2959 photography   3125 music   3125 chess   \rThe following SQL query is executed on the above tables:\rselect hostel\r\nfrom student natural join hobby\r\nwhere marks > = 75 and roll between 2000 and 3000;\r\n\r\nRelations S and H with the same schema as those of these two tables respectively contain the same information as tuples. A new relation S’ is obtained by the following relational algebra operation:\r\n\r\nS’ = ∏hostel ((σs.roll = H.roll (σmarks > 75 and roll > 2000 and roll < 3000 (S)) X (H))\r\n\r\nThe difference between the number of rows output by the SQL statement and the number of tuples in S’ is",
+      "choices": {
+        "A": "6",
+        "B": "4",
+        "C": "2",
+        "D": "0"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07943"
+    },
+    {
+      "id": "CM_DB0113",
+      "question": "Consider the set of relations shown below and the SQL query that follows.\rStudents: (Roll_number, Name, Date_of_birth)\r\n  Courses: (Course number, Course_name, Instructor)\r\n  Grades: (Roll_number, Course_number, Grade)\n select distinct Name\r\n         from Students, Courses, Grades\r\n         where Students. Roll_number = Grades.Roll_number\r\n              and Courses.Instructor = Korth\r\n              and Courses.Course_number = Grades.Course_number\r\n              and Grades.grade = A\r\nWhich of the following sets is computed by the above query?",
+      "choices": {
+        "A": "Names of students who have got an A grade in all courses taught by Korth",
+        "B": "Names of students who have got an A grade in all courses",
+        "C": "Names of students who have got an A grade in at least one of the courses taught by Korth",
+        "D": "None of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07944"
+    },
+    {
+      "id": "CM_DB0114",
+      "question": "Given a block can hold either 3 records or 10 key pointers. A database contains n records, then how many blocks do we need to hold the data file and the dense index",
+      "choices": {
+        "A": "13n/30",
+        "B": "n/3",
+        "C": "n/10",
+        "D": "n/30"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07951"
+    },
+    {
+      "id": "CM_DB0115",
+      "question": "Consider the following database table named water_schemes :\r\r\r\rThe number of tuples returned by the following SQL query is\rwith total(name, capacity) as\r\n   select district_name, sum(capacity)\r\n   from water_schemes\r\n   group by district_name\r\nwith total_avg(capacity) as\r\n   select avg(capacity)\r\n   from total\r\nselect name\r\n   from total, total_avg\r\n   where total.capacity >= total_avg.capacity",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "4"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07953"
+    },
+    {
+      "id": "CM_DB0116",
+      "question": "In an inventory management system implemented at a trading corporation, there are several tables designed to hold all the information. Amongst these, the following two tables hold information on which items are supplied by which suppliers, and which warehouse keeps which items along with the stock-level of these items.\r\rSupply = (supplierid, itemcode)\rInventory = (itemcode, warehouse, stocklevel)\r\rFor a specific information required by the management, following SQL query has been written\rSelect distinct STMP.supplierid\r\nFrom Supply as STMP\r\nWhere not unique (Select ITMP.supplierid\r\n                  From Inventory, Supply as ITMP\r\n                  Where STMP.supplierid = ITMP.supplierid\r\n                  And ITMP.itemcode = Inventory.itemcode\r\n                  And Inventory.warehouse = \\'Nagpur\\');\r\n\r\nFor the warehouse at Nagpur, this query will find all suppliers who",
+      "choices": {
+        "A": "do not supply any item",
+        "B": "supply exactly one item",
+        "C": "supply one or more items",
+        "D": "supply two or more items"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07954"
+    },
+    {
+      "id": "CM_DB0117",
+      "question": "Database applications were built directly on top of file system to overcome the following drawbacks of using file-systems: \r\r(i) Data redundancy and inconsistency \r(ii) Difficulty in accessing Data \r(iii) Data isolation \r(iv) Integrity problems",
+      "choices": {
+        "A": "(i)",
+        "B": "(i) and (iv)",
+        "C": "(i), (ii) and (iii)",
+        "D": "(i), (ii), (iii) and (iv)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07957"
+    },
+    {
+      "id": "CM_DB0118",
+      "question": "Database systems that store each relation in a separate operating system file may use the operating system’s authorization scheme, instead of defining a special scheme themselves. In this case, which of the following is false?",
+      "choices": {
+        "A": "The administrator enjoys more control on the grant option",
+        "B": "It is difficult to differentiate among the update, delete and insert authorizations.",
+        "C": "Cannot store more than one relation in a file.",
+        "D": "Operations on the database are speeded up as the authorization procedure is carried out at the operating system level."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07961"
+    },
+    {
+      "id": "CM_DB0119",
+      "question": "Consider the following functional dependencies in a database:\r  Data_of_Birth → Age\r\n  Age → Eligibility\r\n  Name → Roll_number\r\n  Roll_number → Name\r\n  Course_number → Course_name\r\n  Course_number → Instructor\r\n  (Roll_number, Course_number) → Grade\r\nThe relation (Roll_number, Name, Date_of_birth, Age) is:",
+      "choices": {
+        "A": "In second normal form but not in third normal form",
+        "B": "In third normal form but not in BCNF",
+        "C": "In BCNF",
+        "D": "None of the above"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07968"
+    },
+    {
+      "id": "CM_DB0120",
+      "question": "What is the output of the following SQL query?\rselect count(*) from ((select Employee, Department from Overtime_allowance) as S\r\nnatural join (select Department, OT_allowance from Overtime_allowance) as T);",
+      "choices": {
+        "A": "16",
+        "B": "4",
+        "C": "8",
+        "D": "None of the above",
+        "E": "none"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07973"
+    },
+    {
+      "id": "CM_DB0121",
+      "question": "The relation book (title,price) contains the titles and prices of different books. Assuming that no two books have the same price, what does the following SQL query list?\rselect title\rfrom book as B\rwhere (select count(*)\rfrom book as T\rwhere T.price>B.price)<5",
+      "choices": {
+        "A": "Titles of the four most expensive books",
+        "B": "Title of the fifth most inexpensive book",
+        "C": "Title of the fifth most expensive book",
+        "D": "Titles of the five most expensive books"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07974"
+    },
+    {
+      "id": "CM_DB0122",
+      "question": "Consider the following relational schema:\rSuppliers(sid:integer, sname:string, city:string, street:string)\r\nParts(pid:integer, pname:string, color:string)\r\nCatalog(sid:integer, pid:integer, cost:real)\r\nConsider the following relational query on the above database:\r\nSELECT S.sname\r\n    FROM Suppliers S\r\n        WHERE S.sid NOT IN (SELECT C.sid\r\n                            FROM Catalog C\r\n                            WHERE C.pid NOT IN (SELECT P.pid  \r\n                                                FROM Parts P\r\n                                                WHERE P.color<> \\'blue\\'))\r\nAssume that relations corresponding to the above schema are not empty. Which one of the following is the correct interpretation of the above query?",
+      "choices": {
+        "A": "Find the names of all suppliers who have supplied a non-blue part.",
+        "B": "Find the names of all suppliers who have not supplied a non-blue part",
+        "C": "Find the names of all suppliers who have supplied only non blue parts.",
+        "D": "Find the names of all suppliers who have not supplied only non-blue parts."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07975"
+    },
+    {
+      "id": "CM_DB0123",
+      "question": "Data which improves the performance and accessibility of the database are called:",
+      "choices": {
+        "A": "Indexes",
+        "B": "User Data",
+        "C": "Application Metadata",
+        "D": "Data Dictionary"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07976"
+    },
+    {
+      "id": "CM_DB0124",
+      "question": "Consider a “CUSTOMERS” database table having a column “CITY” filled with all the names of Indian cities (in capital letters). The SQL statement that finds all cities that have “GAR” somewhere in its name, is:",
+      "choices": {
+        "A": "Select * from customers where city = ‘%GAR%’;",
+        "B": "Select * from customers where city = ‘$GAR$’;",
+        "C": "Select * from customers where city like ‘%GAR%’;",
+        "D": "Select * from customers where city as ‘%GAR’;"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07978"
+    },
+    {
+      "id": "CM_DB0125",
+      "question": "Consider the following dependencies and the BOOK table in a relational database design. Determine the normal form of the given relation.\r ISBN → Title\r\n ISBN → Publisher\r\n Publisher → Address",
+      "choices": {
+        "A": "First Normal Form",
+        "B": "Second Normal Form",
+        "C": "Third Normal Form",
+        "D": "BCNF"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07979"
+    },
+    {
+      "id": "CM_DB0126",
+      "question": "Consider the following tables :\r\r\r\rWhat will be the output of following SQL query ?\r\r\nSELECT * FROM EMPLOYEE E    \r\nWHERE 2 = (SELECT COUNT(DISTINCT E1.SALARY)    \r\nFROM EMPLOYEE E1    \r\nWHERE E1.SALARY>E.SALARY)",
+      "choices": {
+        "A": "Second highest salary",
+        "B": "Two distinct salary of employees",
+        "C": "Third highest salary",
+        "D": "Employee with  second highest salary"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07984"
+    },
+    {
+      "id": "CM_DB0127",
+      "question": "The employee information in a company is stored in the relation\rEmployee (name, sex, salary, deptName)\r\nConsider the following SQL query\r\nselect deptName\r\n       from Employee\r\n       where sex = \\'M\\'\r\n       group by deptName\r\n       having avg (salary) > (select avg (salary) from Employee)\r\n\r\nIt returns the names of the department in which",
+      "choices": {
+        "A": "the average salary is more than the average salary in the company",
+        "B": "the average salary of male employees is more than the average salary of all male employees in the company",
+        "C": "the average salary of male employees is more than the average salary of employees in the same department",
+        "D": "the average salary of male employees is more than the average salary in the company"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07985"
+    },
+    {
+      "id": "CM_DB0128",
+      "question": "Which of the following command is used to delete a table in SQL?",
+      "choices": {
+        "A": "delete",
+        "B": "truncate",
+        "C": "remove",
+        "D": "drop"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07986"
+    },
+    {
+      "id": "CM_DB0129",
+      "question": "Which of the following statements are TRUE about an SQL query? P : An SQL query can contain a HAVING clause even if it does not have a GROUP BY clause Q : An SQL query can contain a HAVING clause only if it has a GROUP BY clause R : All attributes used in the GROUP BY clause must appear in the SELECT clause S : Not all attributes used in the GROUP BY clause need to appear in the SELECT clause",
+      "choices": {
+        "A": "P and R",
+        "B": "P and S",
+        "C": "Q and R",
+        "D": "Q and S"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07987"
+    },
+    {
+      "id": "CM_DB0130",
+      "question": "Table A\r\nId   Name    Age\r\n----------------\r\n12   Arun    60\r\n15   Shreya  24\r\n99   Rohit   11\r\n\r\n\r\nTable B\r\nId   Name   Age\r\n----------------\r\n15   Shreya  24\r\n25   Hari    40\r\n98   Rohit   20\r\n99   Rohit   11\r\n\r\n\r\nTable C\r\nId   Phone  Area\r\n-----------------\r\n10   2200   02  \r\n99   2100   01\n\r\rConsider the above tables A, B and C. How many tuples does the result of the following SQL query contains?\r\r\nSELECT A.id \r\nFROM   A \r\nWHERE  A.age > ALL (SELECT B.age \r\n                    FROM   B \r\n                    WHERE  B. name = \"arun\")",
+      "choices": {
+        "A": "4",
+        "B": "3",
+        "C": "0",
+        "D": "1"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07988"
+    },
+    {
+      "id": "CM_DB0131",
+      "question": "Which one of the following pairs is correctly matched in the context of database design?",
+      "choices": {
+        "A": "(1)",
+        "B": "(2)",
+        "C": "(3)",
+        "D": "(4)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07989"
+    },
+    {
+      "id": "CM_DB0132",
+      "question": "Consider the following relational schema:  Suppliers(sid:integer, sname:string, city:string, street:string)\nParts(pid:integer, pname:string, color:string)\nCatalog(sid:integer, pid:integer, cost:real)\nConsider the following relational query on the above database:  \nSELECT S.sname\n    FROM Suppliers S\n        WHERE S.sid NOT IN (SELECT C.sid\n                            FROM Catalog C\n                            WHERE C.pid NOT IN (SELECT P.pid  \n                                                FROM Parts P\n                                                WHERE P.color<> \\'blue\\'))\nAssume that relations corresponding to the above schema are not empty. Which one of the following is the correct interpretation of the above query?",
+      "choices": {
+        "A": "Find the names of all suppliers who have supplied a non-blue part.",
+        "B": "Find the names of all suppliers who have not supplied a non-blue part.",
+        "C": "Find the names of all suppliers who have supplied only blue parts.",
+        "D": "Find the names of all suppliers who have not supplied only blue parts.",
+        "E": "None"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07991"
+    },
+    {
+      "id": "CM_DB0133",
+      "question": "Select operation in SQL is equivalent to",
+      "choices": {
+        "A": "the selection operation in relational algebra",
+        "B": "the selection operation in relational algebra, except that select in SQL retains duplicates",
+        "C": "the projection operation in relational algebra",
+        "D": "the projection operation in relational algebra, except that select in SQL retains duplicates"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07992"
+    },
+    {
+      "id": "CM_DB0134",
+      "question": "Consider the following relation schema pertaining to a students database: \r\nStudent (rollno, name, address)\r\nEnroll (rollno, courseno, coursename)\r\nwhere the primary keys are shown underlined. The number of tuples in the Student and Enroll tables are 120 and 8 respectively. What are the maximum and minimum number of tuples that can be present in (Student * Enroll), where \\'*\\' denotes natural join ?",
+      "choices": {
+        "A": "8, 8",
+        "B": "120, 8",
+        "C": "960, 8",
+        "D": "960, 120"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07993"
+    },
+    {
+      "id": "CM_DB0135",
+      "question": "A relation r(A,B) in a relational database has 1200 tuples. The attribute A has integer values ranging from 6 to 20, and the attribute B has integer values ranging from 1 to 20. Assume that the attributes A and B are independently distributed.\r\rThe estimated number of tuples in the output of σ(A>10)∨(B=18)(r) is ____________.",
+      "choices": {
+        "A": "820",
+        "B": "1200",
+        "C": "960",
+        "D": "1000"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k07999"
+    },
+    {
+      "id": "CM_DB0136",
+      "question": "Consider the following database table: \rCreate table test( \r                  one integer, \r                  two integer, \r                  primary key(one), \r                  unique(two), \r                  check(one >= 1 and <= 10), \r                  check(two >= 1 and <= 5) \r                  );\t\t\t\t\t\rHow many data records/tuples atmost can this table containt?",
+      "choices": {
+        "A": "5",
+        "B": "10",
+        "C": "15",
+        "D": "50"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08003"
+    },
+    {
+      "id": "CM_DB0137",
+      "question": "For a database relation R(a, b, c, d) where the domains of a, b, c and d include only atomic\rvalues, and only the following functional dependencies and those that can be inferred from\rthem hold :\ra → c\rb → d\rThe relation is in _________.",
+      "choices": {
+        "A": "First normal form but not in second normal form",
+        "B": "Second normal form but not in third normal form",
+        "C": "Third normal form",
+        "D": "BCNF"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08005"
+    },
+    {
+      "id": "CM_DB0138",
+      "question": "For a database relation R(a,b,c,d) where the domains of a, b, c and d include only atomic values, only the following functional dependencies and those that can be inferred from them hold\ra -> c\r\nb -> d\r\n\r\nThe relation is in",
+      "choices": {
+        "A": "First normal form but not in second normal form",
+        "B": "Second normal form but not in third normal form",
+        "C": "Third normal form",
+        "D": "None of the above"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08007"
+    },
+    {
+      "id": "CM_DB0139",
+      "question": "The statement that is executed automatically by the system as a side effect of the modification of the database is",
+      "choices": {
+        "A": "backup",
+        "B": "assertion",
+        "C": "recovery",
+        "D": "trigger"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08013"
+    },
+    {
+      "id": "CM_DB0140",
+      "question": "Database table by name Loan_Records is given below.\rBorrower    Bank_Manager   Loan_Amount\r\n Ramesh      Sunderajan     10000.00\r\n Suresh      Ramgopal       5000.00\r\n Mahesh      Sunderajan     7000.00\r\nWhat is the output of the following SQL query?\r\nSELECT Count(*) \r\nFROM  ( ( SELECT Borrower, Bank_Manager \r\n          FROM Loan_Records) AS S \r\n          NATURAL JOIN ( SELECT Bank_Manager, Loan_Amount \r\n                         FROM Loan_Records) AS T );",
+      "choices": {
+        "A": "3",
+        "B": "9",
+        "C": "5",
+        "D": "6"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08014"
+    },
+    {
+      "id": "CM_DB0141",
+      "question": "Which normal form is considered adequate for normal relational database design?",
+      "choices": {
+        "A": "2NF",
+        "B": "5NF",
+        "C": "4NF",
+        "D": "3NF"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08017"
+    },
+    {
+      "id": "CM_DB0142",
+      "question": "Consider a relation book (title, price) which contains the titles and prices of different books.\rAssuming that no two books have the same price, what does the following SQL query list ?\rSelect title\r\nfrom book as B\r\nwhere (select count ( * )\r\nfrom book as T\r\nwhere T.price > B.price) < 7",
+      "choices": {
+        "A": "Titles of the six most expensive books.",
+        "B": "Title of the sixth most expensive books.",
+        "C": "Titles of the seven most expensive books.",
+        "D": "Title of the seventh most expensive books."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08018"
+    },
+    {
+      "id": "CM_DB0143",
+      "question": "Consider the set of relations given below and the SQL query that follows\r\rStudents : (Roll number, Name, Date of birth)\r\nCourses: (Course number, Course name, instructor)\r\nGrades: (Roll number, Course number, Grade)\r\nSELECT DISTINCT Name\r\nFROM Students, Courses, Grades\r\nWHERE Students.Roll_number = Grades.Roll_number\r\n       AND Courses.Instructor =Sriram\r\n       AND Courses.Course_number = Grades.Course_number\r\n       AND Grades.Grade = A\r\n\r\nWhich of the following sets is computed by the above query?",
+      "choices": {
+        "A": "Names of Students who have got an A grade in all courses taught by Sriram",
+        "B": "Names of Students who have got an A grade in all courses",
+        "C": "Names of Students who have got an A grade in at least one of the courses taught by Sriram",
+        "D": "None of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08020"
+    },
+    {
+      "id": "CM_DB0144",
+      "question": "Which of the following is true ?\rI.   Implementation of self-join is possible in SQL with table alias.\rII.  Outer-join operation is basic operation in relational algebra.\rIII. Natural join and outer join operations are equivalent.",
+      "choices": {
+        "A": "I and II are correct.",
+        "B": "II and III are correct.",
+        "C": "Only III is correct.",
+        "D": "Only I is correct."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08021"
+    },
+    {
+      "id": "CM_DB0145",
+      "question": "Which of the following is aggregate function in SQL?",
+      "choices": {
+        "A": "Avg",
+        "B": "Select",
+        "C": "Ordered by",
+        "D": "distinct"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08022"
+    },
+    {
+      "id": "CM_DB0146",
+      "question": "For a database relation R(a,b,c,d), where the domains a, b, c, d include only atomic values, only the following functional dependencies and those that can be inferred from them hold:\r{ a → c, b → d } \r\nThis relation is",
+      "choices": {
+        "A": "in first normal form but not in second normal form",
+        "B": "in second normal form but not in first normal form",
+        "C": "in third normal form",
+        "D": "None of the above"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08023"
+    },
+    {
+      "id": "CM_DB0147",
+      "question": "The STUDENT information in a university stored in the relation STUDENT (Name, SEX, Marks, DEPT_Name)\rConsider the following SQL Query SELECT DEPT_Name from STUDENT where SEX = \\'M\\' group by DEPT_Name having avg (Marks)>SELECT avg (Marks) from STUDENT. It Returns the Name of the Department for which:",
+      "choices": {
+        "A": "The Average marks of Male students is more than the average marks of students in the same Department",
+        "B": "The average marks of male students is more than the average marks of students in the University",
+        "C": "The average marks of male students is more than the average marks of male students in the University",
+        "D": "The average marks of students is more than the average marks of male students in the University"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08024"
+    },
+    {
+      "id": "CM_DB0148",
+      "question": "Suppose ORACLE relation R(A, B) currently has tuples {(1, 2), (1, 3), (3, 4)} and relation S(B, C) currently has {(2, 5), (4, 6), (7, 8)}. Consider the following two SQL queries SQ1 and SQ2 : \rSQ1 : Select *\r      From R Full Join S \r      On R.B = S.B;\rSQ2 : Select *\r      From R Inner Join S \r      On R.B = S.B;\rThe numbers of tuples in the result of the SQL query SQ1 and the SQL query SQ2 are given by:",
+      "choices": {
+        "A": "2 and 6 respectively",
+        "B": "6 and 2 respectively",
+        "C": "2 and 4 respectively",
+        "D": "4 and 2 respectively"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08025"
+    },
+    {
+      "id": "CM_DB0149",
+      "question": "An Assertion is a predicate expressing a condition we wish database to always satisfy. The correct syntax for Assertion is :",
+      "choices": {
+        "A": "CREATE ASSERTION ‘ASSERTION Name’ CHECK ‘Predicate’",
+        "B": "CREATE ASSERTION ‘ASSERTION Name’",
+        "C": "CREATE ASSERTION, CHECK Predicate",
+        "D": "SELECT ASSERTION"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "nodejs",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08026"
+    },
+    {
+      "id": "CM_DB0150",
+      "question": "Consider the following ORACLE relations :\rR (A, B, C) = {<1, 2, 3>, <1, 2, 0>, <1, 3, 1>, <6, 2, 3>, <1, 4, 2>, <3, 1, 4> }\rS (B, C, D) = {<2, 3, 7>, <1, 4, 5>, <1, 2, 3>, <2, 3, 4>, <3, 1, 4>}.\rConsider the following two SQL queries SQ1 and SQ2 :\rSQ1 : SELECT R⋅B, AVG (S⋅B)\rFROM R, S\rWHERE R⋅A = S⋅C AND S⋅D < 7\rGROUP BY R⋅B;\rSQ2 : SELECT DISTINCT S⋅B, MIN (S⋅C)\rFROM S\rGROUP BY S⋅B\rHAVING COUNT (DISTINCT S⋅D) > 1;\rIf M is the number of tuples returned by SQ1 and N is the number of tuples returned by SQ2 then",
+      "choices": {
+        "A": "M = 4, N = 2",
+        "B": "M = 5, N = 3",
+        "C": "M = 2, N = 2",
+        "D": "M = 3, N = 3"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08028"
+    },
+    {
+      "id": "CM_DB0151",
+      "question": "In distributed databases, location transparency allows for database users, programmers and administrators to treat the data as if it is at one location. A SQL query with location transparency needs to specify:",
+      "choices": {
+        "A": "Inheritances",
+        "B": "Fragments",
+        "C": "Locations",
+        "D": "Local formats"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08029"
+    },
+    {
+      "id": "CM_DB0152",
+      "question": "Consider the following ORACLE relations :\rOne (x, y) = {<2, 5>, <1, 6>, <1, 6>, <1, 6>, <4, 8>, <4, 8>}\rTwo (x, y) = {<2, 55>, <1, 1>, <4, 4>, <1, 6>, <4, 8>, <4, 8>, <9, 9>, <1, 6>}\rConsider the following two SQL queries SQ1 and SQ2 :\rSQ1 : SELECT * FROM One)\r\n           EXCEPT\r\n      (SELECT * FROM Two);\r\nSQ2 : SELECT * FROM One)\r\n        EXCEPT ALL\r\n      (SELECT * FROM Two);\r\nFor each of the SQL queries, what is the cardinality (number of rows) of the result obtained when applied to the instances above ?",
+      "choices": {
+        "A": "2 and 1 respectively",
+        "B": "1 and 2 respectively",
+        "C": "2 and 2 respectively",
+        "D": "1 and 1 respectively"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08030"
+    },
+    {
+      "id": "CM_DB0153",
+      "question": "Consider the following schema:\rEmp (Empcode, Name, Sex, Salary, Deptt)\r\n\r\nA simple SQL query is executed as follows:\r\n\r\nSELECT Deptt FROM Emp\r\nWHERE sex = \\'M\\'\r\nGROUP by Dept\r\nHaving avg (Salary) > {select avg (Salary) from Emp}\r\nThe output will be",
+      "choices": {
+        "A": "Average salary of male employee is the average salary of the organization",
+        "B": "Average salary of male employee is less than the average salary of the organization",
+        "C": "Average salary of male employee is equal to the average salary of the organization",
+        "D": "Average salary of male employee is more than the average salary of the organization"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08031"
+    },
+    {
+      "id": "CM_DB0154",
+      "question": "Consider the following three SQL queries (Assume the data in the people table): \r(a)Select Name from people where  Age > 21; \r(b)Select Name from people where Height > 180; \r(c)Select Name from people where (Age > 21) or (Height > 180); \rIf the SQL queries (a) and (b) above, return 10 rows and 7 rows in the result set respectively, then what is one possible number of rows returned by the SQL query (c) ?",
+      "choices": {
+        "A": "3",
+        "B": "7",
+        "C": "10",
+        "D": "21"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08032"
+    },
+    {
+      "id": "CM_DB0155",
+      "question": "Consider a database with the following schema:\r\r\nPerson ( name, age, gender )\r\nname is a key\r\nFrequents ( name, pizzeria )\r\n(name, pizzeria) is a key\r\nEats ( name, pizza )\r\n(name, pizza) is a key\r\nServes ( pizzeria, pizza, price )\r\n(pizzeria, pizza) is a key\r\n\r\nRelational algebra expression for query \"Names of all people who frequent only pizzeria\\'s serving at least one pizza they eat\" is",
+      "choices": {
+        "A": "",
+        "B": "",
+        "C": "",
+        "D": "None of the above"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "nodejs",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08034"
+    },
+    {
+      "id": "CM_DB0156",
+      "question": "Which of the following statements is/are True regarding some advantages that an object-oriented DBMS (OODBMS) offers over a relational database ?\rI. An OODBMS avoids the “impedance mismatch” problem.\rII. An OODBMS avoids the “phantom” problem.\rIII. An OODBMS provides higher performance concurrency control than most relational databases.\rIV. An OODBMS provides faster access to individual data objects once they have been read from disk.",
+      "choices": {
+        "A": "II and III only",
+        "B": "I and IV only",
+        "C": "I, II, and III only",
+        "D": "I, III and IV only"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08037"
+    },
+    {
+      "id": "CM_DB0157",
+      "question": "Consider a database table R with attributes A and B. Which of the following SQL queries is illegal ?",
+      "choices": {
+        "A": "SELECT A FROM R;",
+        "B": "SELECT A, COUNT(*) FROM R;",
+        "C": "SELECT A, COUNT(*) FROM R GROUP BY A;",
+        "D": "SELECT A, B, COUNT(*) FROM R GROUP BY A, B;"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08039"
+    },
+    {
+      "id": "CM_DB0158",
+      "question": "DBMS provides the facility of accessing data from a database through",
+      "choices": {
+        "A": "DDL",
+        "B": "DML",
+        "C": "DBA",
+        "D": "Schema"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08040"
+    },
+    {
+      "id": "CM_DB0159",
+      "question": "For a database relation R(A, B, C, D) where the domains of A, B, C and D include only atomic values, only the following functional dependencies and those that can be inferred from them are :\rA → C\rB → D\rThe relation R is in _______.",
+      "choices": {
+        "A": "First normal form but not in second normal form.",
+        "B": "Both in first normal form as well as in second normal form.",
+        "C": "Second normal form but not in third normal form.",
+        "D": "Both in second normal form as well as in third normal form."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08042"
+    },
+    {
+      "id": "CM_DB0160",
+      "question": "Given the following statements: \r\n    S1: A foreign key declaration can always \r\n        be replaced by an equivalent check\r\n        assertion in SQL.\r\n    S2: Given the table R(a,b,c) where a and\r\n        b together form the primary key, the \r\n        following is a valid table definition.\r\n        CREATE TABLE S (\r\n            a INTEGER,\r\n            d INTEGER,\r\n            e INTEGER,\r\n            PRIMARY KEY (d),\r\n            FOREIGN KEY (a) references R) \r\nWhich one of the following statements is CORRECT?",
+      "choices": {
+        "A": "S1 is TRUE and S2 is FALSE.",
+        "B": "Both S1 and S2 are TRUE.",
+        "C": "S1 is FALSE and S2 is TRUE.",
+        "D": "Both S1 and S2 are FALSE."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08045"
+    },
+    {
+      "id": "CM_DB0161",
+      "question": "A library relational database system uses the following schemaUSERS (User#, UserName, HomeTown)\nBOOKS (Book#, BookTitle, AuthorName)\nISSUED (Book#, User#, Date)\nExplain in one English sentence, what each of the following relational algebra queries is designed to determine",
+      "choices": {
+        "A": "Show all the Book Title which have been issued by User# 6.",
+        "B": "The user who’s home town is Delhi and issued a book, Show all the name authors of the book he/she have issued."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08046"
+    },
+    {
+      "id": "CM_DB0162",
+      "question": "The relation scheme given below is used to store information about the employees of a company, where empId is the key and deptId indicates the department to which the employee is assigned. Each employee is assigned to exactly one department.\r\r\nemp(empId, name, gender, salary, deptId) \r\nConsider the following SQL query:\r\n\r\nselect deptId, count(*)\r\nfrom emp\r\nwhere gender = “female” and salary > (select avg(salary)from emp)\r\ngroup by deptId; \r\nThe above query gives, for each department in the company, the number of female employees whose salary is greater than the average salary of",
+      "choices": {
+        "A": "employees in the department",
+        "B": "employees in the company",
+        "C": "female employees in the department",
+        "D": "female employees in the company"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08048"
+    },
+    {
+      "id": "CM_DB0163",
+      "question": "Given the following statements: \r\n    S1: A foreign key declaration can always \r\n        be replaced by an equivalent check\r\n        assertion in SQL.\r\n    S2: Given the table R(a,b,c) where a and\r\n        b together form the primary key, the \r\n        following is a valid table definition.\r\n        CREATE TABLE S (\r\n            a INTEGER,\r\n            d INTEGER,\r\n            e INTEGER,\r\n            PRIMARY KEY (d),\r\n            FOREIGN KEY (a) references R) \r\nWhich one of the following statements is CORRECT?",
+      "choices": {
+        "A": "S1 is TRUE and S2 is FALSE.",
+        "B": "Both S1 and S2 are TRUE.",
+        "C": "S1 is FALSE and S2 is TRUE.",
+        "D": "Both S1 and S2 are FALSE."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08060"
+    },
+    {
+      "id": "CM_DB0164",
+      "question": "Database table by name Loan_Records is given below.\rBorrower    Bank_Manager   Loan_Amount\r\n Ramesh      Sunderajan     10000.00\r\n Suresh      Ramgopal       5000.00\r\n Mahesh      Sunderajan     7000.00\r\nWhat is the output of the following SQL query?\r\nSELECT Count(*) \r\nFROM  ( ( SELECT Borrower, Bank_Manager \r\n          FROM Loan_Records) AS S \r\n          NATURAL JOIN ( SELECT Bank_Manager, Loan_Amount \r\n                         FROM Loan_Records) AS T );",
+      "choices": {
+        "A": "3",
+        "B": "9",
+        "C": "5",
+        "D": "6"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08066"
+    },
+    {
+      "id": "CM_DB0165",
+      "question": "Database applications were built directly on top of file system to overcome the following drawbacks of using file-systems: \r\r(i) Data redundancy and inconsistency \r(ii) Difficulty in accessing Data \r(iii) Data isolation \r(iv) Integrity problems",
+      "choices": {
+        "A": "(i)",
+        "B": "(i) and (iv)",
+        "C": "(i), (ii) and (iii)",
+        "D": "(i), (ii), (iii) and (iv)"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08067"
+    },
+    {
+      "id": "CM_DB0166",
+      "question": "The statement that is executed automatically by the system as a side effect of the modification of the database is",
+      "choices": {
+        "A": "backup",
+        "B": "assertion",
+        "C": "recovery",
+        "D": "trigger"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08069"
+    },
+    {
+      "id": "CM_DB0167",
+      "question": "Consider the following relation schema pertaining to a students database: \r\nStudent (rollno, name, address)\r\nEnroll (rollno, courseno, coursename)\r\nwhere the primary keys are shown underlined. The number of tuples in the Student and Enroll tables are 120 and 8 respectively. What are the maximum and minimum number of tuples that can be present in (Student * Enroll), where \\'*\\' denotes natural join ?",
+      "choices": {
+        "A": "8, 8",
+        "B": "120, 8",
+        "C": "960, 8",
+        "D": "960, 120"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08071"
+    },
+    {
+      "id": "CM_DB0168",
+      "question": "A view of database that appears to an application program is known as",
+      "choices": {
+        "A": "Schema",
+        "B": "Subschema",
+        "C": "Virtual table",
+        "D": "None of these"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08081"
+    },
+    {
+      "id": "CM_DB0169",
+      "question": "A relation r(A,B) in a relational database has 1200 tuples. The attribute A has integer values ranging from 6 to 20, and the attribute B has integer values ranging from 1 to 20. Assume that the attributes A and B are independently distributed.\r\rThe estimated number of tuples in the output of σ(A>10)∨(B=18)(r) is ____________.",
+      "choices": {
+        "A": "820",
+        "B": "1200",
+        "C": "960",
+        "D": "1000"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08088"
+    },
+    {
+      "id": "CM_DB0170",
+      "question": "Consider the following relational schema:  Suppliers(sid:integer, sname:string, city:string, street:string)\nParts(pid:integer, pname:string, color:string)\nCatalog(sid:integer, pid:integer, cost:real)\nConsider the following relational query on the above database:  \nSELECT S.sname\n    FROM Suppliers S\n        WHERE S.sid NOT IN (SELECT C.sid\n                            FROM Catalog C\n                            WHERE C.pid NOT IN (SELECT P.pid  \n                                                FROM Parts P\n                                                WHERE P.color<> \\'blue\\'))\nAssume that relations corresponding to the above schema are not empty. Which one of the following is the correct interpretation of the above query?",
+      "choices": {
+        "A": "Find the names of all suppliers who have supplied a non-blue part.",
+        "B": "Find the names of all suppliers who have not supplied a non-blue part.",
+        "C": "Find the names of all suppliers who have supplied only blue parts.",
+        "D": "Find the names of all suppliers who have not supplied only blue parts.",
+        "E": "None"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "expert",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08094"
+    },
+    {
+      "id": "CM_DB0171",
+      "question": "Suppose a database system crashes again while recovering from a previous crash. Assume checkpointing is not done by the database either during the transactions or during recovery.\r\rWhich of the following statements is/are correct?",
+      "choices": {
+        "A": "The same undo and redo list will be used while recovering again",
+        "B": "The system cannot recover any further",
+        "C": "All the transactions that are already undone and redone will not be recovered again",
+        "D": "The database will become inconsistent"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08096"
+    },
+    {
+      "id": "CM_DB0172",
+      "question": "Which of the following statements are TRUE about an SQL query? P : An SQL query can contain a HAVING clause even if it does not have a GROUP BY clause Q : An SQL query can contain a HAVING clause only if it has a GROUP BY clause R : All attributes used in the GROUP BY clause must appear in the SELECT clause S : Not all attributes used in the GROUP BY clause need to appear in the SELECT clause",
+      "choices": {
+        "A": "P and R",
+        "B": "P and S",
+        "C": "Q and R",
+        "D": "Q and S"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08097"
+    },
+    {
+      "id": "CM_DB0173",
+      "question": "A relational schema for a train reservation database is given below.\rPassenger (pid, pname, age)\rReservation (pid, class, tid)  Table: Passenger\r\npid   pname   age\r\n-----------------\r\n 0    Sachin   65\r\n 1    Rahul    66\r\n 2    Sourav   67\r\n 3    Anil     69\r\n\r\nTable : Reservation\r\npid  class  tid\r\n---------------\r\n 0    AC   8200\r\n 1    AC   8201\r\n 2    SC   8201\r\n 5    AC   8203\r\n 1    SC   8204\r\n 3    AC   8202\r\nWhat pids are returned by the following SQL query for the above instance of the tables?\r\nSLECT pid\r\nFROM Reservation ,\r\nWHERE class ‘AC’ AND\r\n    EXISTS (SELECT *\r\n       FROM Passenger\r\n       WHERE age > 65 AND\r\n       Passenger. pid = Reservation.pid)",
+      "choices": {
+        "A": "1, 0",
+        "B": "1, 2",
+        "C": "1, 3",
+        "D": "1, 5"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08098"
+    },
+    {
+      "id": "CM_DB0174",
+      "question": "Let R and S be relational schemes such that R={a,b,c} and S={c}. Now consider the following queries on the database:\r IV) SELECT R.a, R.b\r\n       FROM R,S\r\n            WHERE R.c=S.c\r\nWhich of the above queries are equivalent?",
+      "choices": {
+        "A": "I and II",
+        "B": "I and III",
+        "C": "II and IV",
+        "D": "III and IV"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08099"
+    },
+    {
+      "id": "CM_DB0175",
+      "question": "Given the following schema: \r\n     employees(emp-id, first-name, last-name, hire-date, dept-id, salary)\r\n     departments(dept-id, dept-name, manager-id, location-id) \r\nYou want to display the last names and hire dates of all latest hires in their respective departments in the location ID 1700. You issue the following query:\r\n\r\nSQL> SELECT last-name, hire-date\r\n     FROM employees\r\n     WHERE (dept-id, hire-date) IN ( SELECT dept-id, MAX(hire-date)\r\n                                     FROM employees JOIN departments USING(dept-id)\r\n                                     WHERE location-id = 1700\r\n                                     GROUP BY dept-id); \r\nWhat is the outcome?",
+      "choices": {
+        "A": "It executes but does not give the correct result.",
+        "B": "It executes and gives the correct result.",
+        "C": "It generates an error because of pairwise comparison.",
+        "D": "It generates an error because the GROUP BY clause cannot be used with table joins in a subquery"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08101"
+    },
+    {
+      "id": "CM_DB0176",
+      "question": "SQL allows tuples in relations, and correspondingly defines the multiplicity of tuples in the result of joins. Which one of the following queries always gives the same answer as the nested query shown below: \r\n    select * from R where a in (select S.a from S)",
+      "choices": {
+        "A": "select R.* from R, S where R.a=S.a\r(D)",
+        "B": "select distinct R.* from R,S where R.a=S.a",
+        "C": "select R.* from R,(select distinct a from S) as S1 where\rR.a=S1.a",
+        "D": "select R.* from R,S where R.a=S.a and is unique R"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08102"
+    },
+    {
+      "id": "CM_DB0177",
+      "question": "Consider the relation account (customer, balance) where customer is a primary key and there are no null values. We would like to rank customers according to decreasing balance. The customer with the largest balance gets rank 1. ties are not broke but ranks are skipped: if exactly two customers have the largest balance they each get rank 1 and rank 2 is not assigned\r\r\nQuery1:\r\n  select A.customer, count(B.customer)\r\n  from account A, account B\r\n  where A.balance <=B.balance\r\n  group by A.customer\r\n\r\nQuery2:\r\n  select A.customer, 1+count(B.customer)\r\n  from account A, account B\r\n  where A.balance < B.balance\r\n  group by A.customer \r\n\r\nConsider these statements about Query1 and Query2. \r\n1. Query1 will produce the same row set as Query2 for \r\n   some but not all databases.\r\n2. Both Query1 and Query2 are correct implementation \r\n   of the specification\r\n3. Query1 is a correct implementation of the specification\r\n   but Query2 is not\r\n4. Neither Query1 nor Query2 is a correct implementation\r\n   of the specification\r\n5. Assigning rank with a pure relational query takes \r\n   less time than scanning in decreasing balance order \r\n   assigning ranks using ODBC. \r\nWhich two of the above statements are correct?",
+      "choices": {
+        "A": "2 and 5",
+        "B": "1 and 3",
+        "C": "1 and 4",
+        "D": "3 and 5"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08103"
+    },
+    {
+      "id": "CM_DB0178",
+      "question": "The relation book (title, price) contains the titles and prices of different books. Assuming that no two books have the same price, what does the following SQL query list?\r\r\n  select title\r\n  from book as B\r\n  where (select count(*)\r\n     from book as T\r\n     where T.price > B.price) < 5",
+      "choices": {
+        "A": "Titles of the four most expensive books",
+        "B": "Title of the fifth most inexpensive book",
+        "C": "Title of the fifth most expensive bookTitles of the five most expensive books",
+        "D": "Titles of the five most expensive books"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08105"
+    },
+    {
+      "id": "CM_DB0179",
+      "question": "Consider the following SQL query \r\nselect distinct al, a2,........., an\r\nfrom r1, r2,........, rm\r\nwhere P \r\nFor an arbitrary predicate P, this query is equivalent to which of the following relational algebra expressions ?\r\nA: [Tex]\\\\prod_{a_{1},a_{2},...a_{n}}\\\\sigma_{\\\\rho} (r_{1}\\\\times r_{2}\\\\times r_{3}....\\\\times r_{m})[/Tex]\r\nB: [Tex]\\\\prod_{a_{1},a_{2},...a_{n}}\\\\sigma_{\\\\rho} (r_{1}\\\\bowtie r_{2}\\\\bowtie r_{3}....\\\\bowtie r_{m})[/Tex]\r\nC: [Tex]\\\\prod_{a_{1},a_{2},...a_{n}}\\\\sigma_{\\\\rho} (r_{1}\\\\cup r_{2}\\\\cup r_{3}....\\\\cup r_{m})[/Tex]\r\nD: [Tex]\\\\prod_{a_{1},a_{2},...a_{n}}\\\\sigma_{\\\\rho} (r_{1}\\\\cap r_{2}\\\\cap r_{3}....\\\\cap r_{m})[/Tex]",
+      "choices": {
+        "A": "A",
+        "B": "B",
+        "C": "C",
+        "D": "D"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08106"
+    },
+    {
+      "id": "CM_DB0180",
+      "question": "Consider the following relational schemes for a library database:\rBook (Title, Author, Catalog_no, Publisher, Year, Price)\rCollection (Title, Author, Catalog_no)\r\rwith in the following functional dependencies: \r\nI. Title Author --> Catalog_no\r\nII. Catalog_no --> Title, Author, Publisher, Year\r\nIII. Publisher Title Year --> Price \r\n\r\nAssume {Author, Title} is the key for both schemes. Which of the following statements is true?",
+      "choices": {
+        "A": "Both Book and Collection are in BCNF",
+        "B": "Both Book and Collection are in 3NF only",
+        "C": "Book is in 2NF and Collection is in 3NF",
+        "D": "Both Book and Collection are in 2NF only"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08111"
+    },
+    {
+      "id": "CM_DB0181",
+      "question": "Table A\r\nId   Name    Age\r\n----------------\r\n12   Arun    60\r\n15   Shreya  24\r\n99   Rohit   11\r\n\r\n\r\nTable B\r\nId   Name   Age\r\n----------------\r\n15   Shreya  24\r\n25   Hari    40\r\n98   Rohit   20\r\n99   Rohit   11\r\n\r\n\r\nTable C\r\nId   Phone  Area\r\n-----------------\r\n10   2200   02  \r\n99   2100   01\n\r\rConsider the above tables A, B and C. How many tuples does the result of the following SQL query contains?\r\r\nSELECT A.id \r\nFROM   A \r\nWHERE  A.age > ALL (SELECT B.age \r\n                    FROM   B \r\n                    WHERE  B. name = \"arun\")",
+      "choices": {
+        "A": "4",
+        "B": "3",
+        "C": "0",
+        "D": "1"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08114"
+    },
+    {
+      "id": "CM_DB0182",
+      "question": "Consider a database table T containing two columns X and Y each of type integer. After the creation of the table, one record (X=1, Y=1) is inserted in the table.\r\r        Let MX and My denote the respective maximum values of X and Y among all records in the table at any point in time. Using MX and MY, new records are inserted in the table 128 times with X and Y values being MX+1, 2*MY+1 respectively. It may be noted that each time after the insertion, values of MX and MY change. What will be the output of the following SQL query after the steps mentioned above are carried out?\r\r\nSELECT Y FROM T WHERE X=7;",
+      "choices": {
+        "A": "127",
+        "B": "255",
+        "C": "129",
+        "D": "257"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08115"
+    },
+    {
+      "id": "CM_DB0183",
+      "question": "Which of the following command is used to delete a table in SQL?",
+      "choices": {
+        "A": "delete",
+        "B": "truncate",
+        "C": "remove",
+        "D": "drop"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08120"
+    },
+    {
+      "id": "CM_DB0184",
+      "question": "The employee information in a company is stored in the relation\rEmployee (name, sex, salary, deptName)\r\nConsider the following SQL query\r\nselect deptName\r\n       from Employee\r\n       where sex = \\'M\\'\r\n       group by deptName\r\n       having avg (salary) > (select avg (salary) from Employee)\r\n\r\nIt returns the names of the department in which",
+      "choices": {
+        "A": "the average salary is more than the average salary in the company",
+        "B": "the average salary of male employees is more than the average salary of all male employees in the company",
+        "C": "the average salary of male employees is more than the average salary of employees in the same department",
+        "D": "the average salary of male employees is more than the average salary in the company"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08122"
+    },
+    {
+      "id": "CM_DB0185",
+      "question": "A database table T1 has 2000 records and occupies 80 disk blocks. Another table T2 has 400 records and occupies 20 disk blocks. These two tables have to be joined as per a specified join condition that needs to be evaluated for every pair of records from these two tables. The memory buffer space available can hold exactly one block of records for T1 and one block of records for T2 simultaneously at any point in time. No index is available on either table. If Nested-loop join algorithm is employed to perform the join, with the most appropriate choice of table to be used in outer loop, the number of block accesses required for reading the data are",
+      "choices": {
+        "A": "800000",
+        "B": "40080",
+        "C": "32020",
+        "D": "100"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08123"
+    },
+    {
+      "id": "CM_DB0186",
+      "question": "Select operation in SQL is equivalent to",
+      "choices": {
+        "A": "the selection operation in relational algebra",
+        "B": "the selection operation in relational algebra, except that select in SQL retains duplicates",
+        "C": "the projection operation in relational algebra",
+        "D": "the projection operation in relational algebra, except that select in SQL retains duplicates"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08125"
+    },
+    {
+      "id": "CM_DB0187",
+      "question": "In a Hierachical database, a hashing function is used to locate the ________.",
+      "choices": {
+        "A": "Collision",
+        "B": "Root",
+        "C": "Foreign Key",
+        "D": "Records"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08126"
+    },
+    {
+      "id": "CM_DB0188",
+      "question": "Consider the following tables :\r\r\r\rWhat will be the output of following SQL query ?\r\r\nSELECT * FROM EMPLOYEE E    \r\nWHERE 2 = (SELECT COUNT(DISTINCT E1.SALARY)    \r\nFROM EMPLOYEE E1    \r\nWHERE E1.SALARY>E.SALARY)",
+      "choices": {
+        "A": "Second highest salary",
+        "B": "Two distinct salary of employees",
+        "C": "Third highest salary",
+        "D": "Employee with  second highest salary"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08127"
+    },
+    {
+      "id": "CM_DB0189",
+      "question": "A database table T1 has 2000 records and occupies 80 disk blocks. Another table T2 has 400 records and occupies 20 disk blocks. These two tables have to be joined as per a specified join condition that needs to be evaluated for every pair of records from these two tables. The memory buffer space available can hold exactly one block of records for T1 and one block of records for T2 simultaneously at any point in time. No index is available on either table. If, instead of Nested-loop join, Block nested-loop join is used, again with the most appropriate choice of table in the outer loop, the reduction in number of block accesses required for reading the data will be",
+      "choices": {
+        "A": "0",
+        "B": "30400",
+        "C": "38400",
+        "D": "798400"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08131"
+    },
+    {
+      "id": "CM_DB0190",
+      "question": "There are 5 records in a database.\nName     Age    Occupation    Category\nRama     27       CON            A\nAbdul    22       ENG            A\nJeniffer 28       DOC            B\nMaya     32       SER            D\nDev      24       MUS            C\nThere is an index file associated with this and it contain the values 1, 3, 2, 5 and 4. Which one of the fields is the index built form?",
+      "choices": {
+        "A": "Age",
+        "B": "Name",
+        "C": "Occupation",
+        "D": "Category"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08132"
+    },
+    {
+      "id": "CM_DB0191",
+      "question": "What is the purpose of a rollback in SQL?",
+      "choices": {
+        "A": "To commit the changes made by a transaction",
+        "B": "To save the changes made by a transaction",
+        "C": "To undo the changes made by a transaction",
+        "D": "To finalize the changes made by a transaction"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08136"
+    },
+    {
+      "id": "CM_DB0192",
+      "question": "Which SQL statement is used to commit a transaction?",
+      "choices": {
+        "A": "COMMIT",
+        "B": "END TRANSACTION",
+        "C": "SAVE TRANSACTION",
+        "D": "FINALIZE TRANSACTION"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08137"
+    },
+    {
+      "id": "CM_DB0193",
+      "question": "Which SQL statement is used to begin a transaction?",
+      "choices": {
+        "A": "BEGIN TRANSACTION",
+        "B": "START TRANSACTION",
+        "C": "INITIATE TRANSACTION",
+        "D": "TRANSACTION BEGIN"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08138"
+    },
+    {
+      "id": "CM_DB0194",
+      "question": "Write an SQL query to retrieve the names of employees who belong to the 'Sales' department and have a salary greater than 60000.",
+      "choices": {
+        "A": "SELECT name FROM employees WHERE department = 'Sales' AND salary > 60000;",
+        "B": "SELECT name FROM employees WHERE department = 'Sales' OR salary > 60000;",
+        "C": "SELECT name FROM employees WHERE department = 'Sales' HAVING salary > 60000;",
+        "D": "SELECT name FROM employees GROUP BY department, salary HAVING department = 'Sales' AND salary > 60000;"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08139"
+    },
+    {
+      "id": "CM_DB0195",
+      "question": "Which type of index is automatically created by the database management system to enforce the PRIMARY KEY constraint?",
+      "choices": {
+        "A": "Clustered index",
+        "B": "Non-clustered index",
+        "C": "Unique index",
+        "D": "Composite index"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08140"
+    },
+    {
+      "id": "CM_DB0196",
+      "question": "What is the purpose of an index in SQL?",
+      "choices": {
+        "A": "To enforce data integrity constraints",
+        "B": "To store intermediate query results",
+        "C": "To improve the speed of data retrieval operations",
+        "D": "To perform calculations on aggregate data"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08141"
+    },
+    {
+      "id": "CM_DB0197",
+      "question": "What is a transaction in SQL?",
+      "choices": {
+        "A": "A set of operations that are executed as a single unit of work",
+        "B": "A temporary storage area used for intermediate data processing",
+        "C": "A constraint that ensures data integrity",
+        "D": "A function that calculates aggregate values"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08142"
+    },
+    {
+      "id": "CM_DB0198",
+      "question": "What is the purpose of a savepoint in SQL transactions?",
+      "choices": {
+        "A": "To rollback the entire transaction",
+        "B": "To mark a point within a transaction to which you can later roll back",
+        "C": "To commit the changes made by a transaction",
+        "D": "To finalize the changes made by a transaction"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08143"
+    },
+    {
+      "id": "CM_DB0199",
+      "question": "Write an SQL query to retrieve the names of employees who joined in the year 2021.",
+      "choices": {
+        "A": "SELECT name FROM employees WHERE JOIN_YEAR = 2021;",
+        "B": "SELECT name FROM employees WHERE JOIN_DATE LIKE '2021%';",
+        "C": "SELECT name FROM employees WHERE YEAR(JOIN_DATE) = 2021;",
+        "D": "SELECT name FROM employees WHERE JOIN_DATE BETWEEN '2021-01-01' AND '2021-12-31';"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08144"
+    },
+    {
+      "id": "CM_DB0200",
+      "question": "Write an SQL query to retrieve all columns from the \"employees\" table.",
+      "choices": {
+        "A": "SELECT * FROM employees;",
+        "B": "SELECT ALL employees;",
+        "C": "SELECT COLUMN employees;",
+        "D": "SELECT employees;"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08145"
+    },
+    {
+      "id": "CM_DB0201",
+      "question": "Write an SQL query to retrieve distinct values from the \"department\" column of the \"employees\" table.",
+      "choices": {
+        "A": "SELECT DISTINCT department FROM employees;",
+        "B": "SELECT UNIQUE department FROM employees;",
+        "C": "SELECT department FROM employees DISTINCT;",
+        "D": "SELECT department DISTINCT FROM employees;"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08146"
+    },
+    {
+      "id": "CM_DB0202",
+      "question": "Write an SQL query to retrieve the names of employees whose salary is greater than 50000.",
+      "choices": {
+        "A": "SELECT name FROM employees HAVING salary > 50000;",
+        "B": "SELECT name FROM employees WHERE salary > 50000;",
+        "C": "SELECT name FROM employees WHERE salary > '50000';",
+        "D": "SELECT name FROM employees GROUP BY salary HAVING salary > 50000;"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08147"
+    },
+    {
+      "id": "CM_DB0203",
+      "question": "Write an SQL query to retrieve the number of employees in each department.",
+      "choices": {
+        "A": "SELECT COUNT() FROM employees ORDER BY department;",
+        "B": "SELECT COUNT(department) FROM employees GROUP BY department;",
+        "C": "SELECT COUNT() FROM employees GROUP BY department;",
+        "D": "SELECT COUNT(*) AS employees_count, department FROM employees;"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08148"
+    },
+    {
+      "id": "CM_DB0204",
+      "question": "Write an SQL query to retrieve the highest salary from the \"employees\" table.",
+      "choices": {
+        "A": "SELECT TOP 1 salary FROM employees ORDER BY salary DESC;",
+        "B": "SELECT salary FROM employees WHERE salary = MAX(salary);",
+        "C": "SELECT salary FROM employees ORDER BY salary DESC LIMIT 1;",
+        "D": "SELECT MAX(salary) FROM employees;"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08149"
+    },
+    {
+      "id": "CM_DB0205",
+      "question": "Write an SQL query to retrieve the names of employees whose names start with 'A'.",
+      "choices": {
+        "A": "SELECT name FROM employees WHERE name LIKE 'A%';",
+        "B": "SELECT name FROM employees WHERE name = 'A%';",
+        "C": "SELECT name FROM employees WHERE name LIKE '%A';",
+        "D": "SELECT name FROM employees WHERE name = '%A%';"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08150"
+    },
+    {
+      "id": "CM_DB0206",
+      "question": "Write an SQL query to retrieve the average salary of all employees.",
+      "choices": {
+        "A": "SELECT AVERAGE(salary) FROM employees;",
+        "B": "SELECT AVG(salary) FROM employees;",
+        "C": "SELECT SUM(salary) / COUNT(salary) FROM employees;",
+        "D": "SELECT MEAN(salary) FROM employees;"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08151"
+    },
+    {
+      "id": "CM_DB0207",
+      "question": "Which SQL statement is used to create an index?",
+      "choices": {
+        "A": "CREATE INDEX",
+        "B": "ADD INDEX",
+        "C": "INDEX TABLE",
+        "D": "SET INDEX"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08152"
+    },
+    {
+      "id": "CM_DB0208",
+      "question": "What is an index in SQL?",
+      "choices": {
+        "A": "A data structure that stores values in sorted order for fast retrieval",
+        "B": "A temporary table used for intermediate data processing",
+        "C": "A constraint that ensures data integrity",
+        "D": "A function that calculates aggregate values"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08154"
+    },
+    {
+      "id": "CM_DB0209",
+      "question": "Which SQL operator is used to check if a value is NULL?",
+      "choices": {
+        "A": "IS NULL",
+        "B": "EXISTS",
+        "C": "NOT",
+        "D": "EMPTY"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08155"
+    },
+    {
+      "id": "CM_DB0210",
+      "question": "Which SQL operator is used to test for negation?",
+      "choices": {
+        "A": "NOT",
+        "B": "EXISTS",
+        "C": "IS",
+        "D": "!="
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08156"
+    },
+    {
+      "id": "CM_DB0211",
+      "question": "What does the SQL function \"COUNT()\" do?",
+      "choices": {
+        "A": "Calculates the sum of values in a column",
+        "B": "Counts the number of rows in a result set",
+        "C": "Finds the maximum value in a column",
+        "D": "Computes the median value of a column"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08157"
+    },
+    {
+      "id": "CM_DB0212",
+      "question": "Which SQL function is used to find the highest value in a column?",
+      "choices": {
+        "A": "AVG()",
+        "B": "SUM()",
+        "C": "COUNT()",
+        "D": "MAX()"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08158"
+    },
+    {
+      "id": "CM_DB0213",
+      "question": "What does the SQL function \"SUM()\" do?",
+      "choices": {
+        "A": "Computes the median value of a column",
+        "B": "Calculates the average value of a column",
+        "C": "Finds the total sum of values in a column",
+        "D": "Counts the number of rows in a result set"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08159"
+    },
+    {
+      "id": "CM_DB0214",
+      "question": "Which SQL constraint is used to ensure that all values in a column are unique?",
+      "choices": {
+        "A": "PRIMARY KEY",
+        "B": "UNIQUE",
+        "C": "CHECK",
+        "D": "FOREIGN KEY"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08160"
+    },
+    {
+      "id": "CM_DB0215",
+      "question": "What does the SQL constraint \"PRIMARY KEY\" do?",
+      "choices": {
+        "A": "Ensures that all values in a column are unique",
+        "B": "Specifies a default value for a column",
+        "C": "Defines a column to uniquely identify each row in a table",
+        "D": "Enforces a condition on the values allowed in a column"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08161"
+    },
+    {
+      "id": "CM_DB0216",
+      "question": "Which SQL constraint is used to ensure that a column only contains values from a specified set?",
+      "choices": {
+        "A": "PRIMARY KEY",
+        "B": "UNIQUE",
+        "C": "CHECK",
+        "D": "FOREIGN KEY"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08162"
+    },
+    {
+      "id": "CM_DB0217",
+      "question": "What does the SQL constraint \"FOREIGN KEY\" do?",
+      "choices": {
+        "A": "Ensures that all values in a column are unique",
+        "B": "Specifies a default value for a column",
+        "C": "Links a column to a primary key in another table",
+        "D": "Enforces a condition on the values allowed in a column"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08163"
+    },
+    {
+      "id": "CM_DB0218",
+      "question": "What does the SQL operator \"IS\" do?",
+      "choices": {
+        "A": "Checks if a value is NULL",
+        "B": "Checks if a subquery returns any rows",
+        "C": "Performs pattern matching on a string value",
+        "D": "Compares two values for equality"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08164"
+    },
+    {
+      "id": "CM_DB0219",
+      "question": "Which SQL constraint is used to enforce a condition on the values allowed in a column?",
+      "choices": {
+        "A": "PRIMARY KEY",
+        "B": "UNIQUE",
+        "C": "CHECK",
+        "D": "FOREIGN KEY"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08165"
+    },
+    {
+      "id": "CM_DB0220",
+      "question": "What does the SQL operator \"LIKE\" do?",
+      "choices": {
+        "A": "Checks if a value is NULL",
+        "B": "Checks if a value is within a specified range",
+        "C": "Performs pattern matching on a string value",
+        "D": "Compares two values for equality"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08166"
+    },
+    {
+      "id": "CM_DB0221",
+      "question": "What does the SQL operator \"IN\" do?",
+      "choices": {
+        "A": "Checks if a value is NULL",
+        "B": "Checks if a value is within a specified set of values",
+        "C": "Performs pattern matching on a string value",
+        "D": "Compares two values for equality"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08167"
+    },
+    {
+      "id": "CM_DB0222",
+      "question": "Which SQL operator is used to compare two values for equality?",
+      "choices": {
+        "A": "EQUALS",
+        "B": "COMPARE",
+        "C": "=",
+        "D": "IS"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08168"
+    },
+    {
+      "id": "CM_DB0223",
+      "question": "What does the SQL operator \"NOT\" do?",
+      "choices": {
+        "A": "Negates a condition",
+        "B": "Checks if a value is NULL",
+        "C": "Performs pattern matching on a string value",
+        "D": "Compares two values for equality"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08169"
+    },
+    {
+      "id": "CM_DB0224",
+      "question": "Which SQL operator is used to compare two values for inequality?",
+      "choices": {
+        "A": "<>",
+        "B": "!=",
+        "C": "NOT",
+        "D": "IS"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08170"
+    },
+    {
+      "id": "CM_DB0225",
+      "question": "What does the SQL operator \"EXISTS\" do?",
+      "choices": {
+        "A": "Checks if a value is NULL",
+        "B": "Checks if a subquery returns any rows",
+        "C": "Performs pattern matching on a string value",
+        "D": "Compares two values for equality"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08171"
+    },
+    {
+      "id": "CM_DB0226",
+      "question": "What does the SQL constraint \"DEFAULT\" do?",
+      "choices": {
+        "A": "Ensures that all values in a column are unique",
+        "B": "Specifies a default value for a column",
+        "C": "Defines a column to uniquely identify each row in a table",
+        "D": "Enforces a condition on the values allowed in a column"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08172"
+    },
+    {
+      "id": "CM_DB0227",
+      "question": "Which SQL operator is used to check if a value is within a specified range?",
+      "choices": {
+        "A": "IN",
+        "B": "BETWEEN",
+        "C": "LIKE",
+        "D": "IS NULL"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08173"
+    },
+    {
+      "id": "CM_DB0228",
+      "question": "Write an SQL query to retrieve the names of employees who have 'Manager' in their job titles.",
+      "choices": {
+        "A": "SELECT name FROM employees WHERE job_title = 'Manager';",
+        "B": "SELECT name FROM employees WHERE job_title LIKE '%Manager%';",
+        "C": "SELECT name FROM employees WHERE job_title = '%Manager%';",
+        "D": "SELECT name FROM employees WHERE job_title LIKE 'Manager';"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08174"
+    },
+    {
+      "id": "CM_DB0229",
+      "question": "Which SQL keyword is used to retrieve data from a database?",
+      "choices": {
+        "A": "FETCH",
+        "B": "EXTRACT",
+        "C": "SELECT",
+        "D": "RECOVER"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08176"
+    },
+    {
+      "id": "CM_DB0230",
+      "question": "What does the SQL function \"LOWER()\" do?",
+      "choices": {
+        "A": "Adds two numbers together",
+        "B": "Concatenates two or more strings",
+        "C": "Converts a string to lowercase",
+        "D": "Returns the length of a string"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08177"
+    },
+    {
+      "id": "CM_DB0231",
+      "question": "Which SQL JOIN type returns all rows from the left table and matching rows from the right table?",
+      "choices": {
+        "A": "INNER JOIN",
+        "B": "LEFT JOIN",
+        "C": "RIGHT JOIN",
+        "D": "FULL JOIN"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08178"
+    },
+    {
+      "id": "CM_DB0232",
+      "question": "What does the SQL function \"UPPER()\" do?",
+      "choices": {
+        "A": "Adds two numbers together",
+        "B": "Concatenates two or more strings",
+        "C": "Converts a string to uppercase",
+        "D": "Returns the length of a string"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08179"
+    },
+    {
+      "id": "CM_DB0233",
+      "question": "Which SQL JOIN type returns all rows from the right table and matching rows from the left table?",
+      "choices": {
+        "A": "INNER JOIN",
+        "B": "LEFT JOIN",
+        "C": "RIGHT JOIN",
+        "D": "FULL JOIN"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08180"
+    },
+    {
+      "id": "CM_DB0234",
+      "question": "What does the SQL function \"LENGTH()\" do?",
+      "choices": {
+        "A": "Adds two numbers together",
+        "B": "Concatenates two or more strings",
+        "C": "Converts a string to lowercase",
+        "D": "Returns the length of a string"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08181"
+    },
+    {
+      "id": "CM_DB0235",
+      "question": "Which SQL JOIN type returns all rows when there is a match in either the left or right table?",
+      "choices": {
+        "A": "INNER JOIN",
+        "B": "LEFT JOIN",
+        "C": "RIGHT JOIN",
+        "D": "FULL JOIN"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08182"
+    },
+    {
+      "id": "CM_DB0236",
+      "question": "What does the SQL function \"ROUND()\" do?",
+      "choices": {
+        "A": "Rounds a number to the nearest integer",
+        "B": "Concatenates two or more strings",
+        "C": "Converts a string to lowercase",
+        "D": "Returns the length of a string"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08183"
+    },
+    {
+      "id": "CM_DB0237",
+      "question": "Which SQL JOIN type returns only the rows that have matching values in both tables?",
+      "choices": {
+        "A": "INNER JOIN",
+        "B": "LEFT JOIN",
+        "C": "RIGHT JOIN",
+        "D": "FULL JOIN"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08184"
+    },
+    {
+      "id": "CM_DB0238",
+      "question": "CREATE TABLE sql(Name varchar(100),Phnnumber varchar(10),Age int,Income int);Insert into sql values(‘aaaa’, ‘9993999939’, 19);Insert into sql values(‘para’, ‘9767699939’, 17);Insert into sql values(‘aaaa’, ‘000000000’, 19);The client is only concerned about the unique Name columns in the database. What’s theline of code to be added to the above given code?",
+      "choices": {
+        "A": "select distinct Name from sql;",
+        "B": "select * from sql;",
+        "C": "Name from sql;",
+        "D": "select Name from sql;"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08185"
+    },
+    {
+      "id": "CM_DB0239",
+      "question": "SELECT COUNT(DISTINCT NAME) FROM sql, this statement returns which of the following",
+      "choices": {
+        "A": "lists the number of different (distinct) names",
+        "B": "lists the number of different (distinct) entries in sql",
+        "C": "deletes the number of different (distinct) customer countries",
+        "D": "Deletes the number of different (distinct) entries in sql"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08187"
+    },
+    {
+      "id": "CM_DB0240",
+      "question": "SELECT COUNT(DISTINCT Roll_no) FROM sql, this statement returns which of the following",
+      "choices": {
+        "A": "lists the number of different (distinct) names",
+        "B": "lists the number of different (distinct) Roll numbers",
+        "C": "deletes the number of different (distinct) customer countries",
+        "D": "Deletes the number of different (distinct) entries in sql"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08188"
+    },
+    {
+      "id": "CM_DB0241",
+      "question": "What is regex in SQL?",
+      "choices": {
+        "A": "used for pattern matching",
+        "B": "searching a string",
+        "C": "modifying a string",
+        "D": "None of these"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08189"
+    },
+    {
+      "id": "CM_DB0242",
+      "question": "The client is only concerned about the distinct Roll_no column in the database. What’s theline of code to be added to the above given code?",
+      "choices": {
+        "A": "select Roll_no from sql;",
+        "B": "select * from sql;",
+        "C": "select Roll_no from sql;",
+        "D": "select distinct Roll_no from sql;"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08193"
+    },
+    {
+      "id": "CM_DB0243",
+      "question": "What does the SQL function \"CONCAT()\" do?",
+      "choices": {
+        "A": "Adds two numbers together",
+        "B": "Concatenates two or more strings",
+        "C": "Converts a string to uppercase",
+        "D": "Returns the length of a string"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08194"
+    },
+    {
+      "id": "CM_DB0244",
+      "question": "Which SQL JOIN type returns all rows from both tables, joining records where available?",
+      "choices": {
+        "A": "INNER JOIN",
+        "B": "LEFT JOIN",
+        "C": "RIGHT JOIN",
+        "D": "FULL JOIN"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08195"
+    },
+    {
+      "id": "CM_DB0245",
+      "question": "What does the SQL keyword \"UPDATE\" do?",
+      "choices": {
+        "A": "Adds a new column to a table",
+        "B": "Retrieves data from a database",
+        "C": "Modifies existing records in a table",
+        "D": "Deletes specific rows from a table"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08196"
+    },
+    {
+      "id": "CM_DB0246",
+      "question": "What is the purpose of the WHERE clause in SQL?",
+      "choices": {
+        "A": "To specify which columns to select",
+        "B": "To specify which table to select from",
+        "C": "To filter rows based on a specified condition",
+        "D": "To order the results"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08197"
+    },
+    {
+      "id": "CM_DB0247",
+      "question": "Which SQL statement is used to update data in a database?",
+      "choices": {
+        "A": "MODIFY",
+        "B": "UPDATE",
+        "C": "ALTER",
+        "D": "CHANGE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08198"
+    },
+    {
+      "id": "CM_DB0248",
+      "question": "What does the SQL keyword \"GROUP BY\" do?",
+      "choices": {
+        "A": "Orders the result set in ascending order",
+        "B": "Group rows that have the same values into summary rows",
+        "C": "Filters rows based on a specified condition",
+        "D": "Joins two or more tables"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08199"
+    },
+    {
+      "id": "CM_DB0249",
+      "question": "Which SQL operator is used to combine two or more conditions in a WHERE clause?",
+      "choices": {
+        "A": "AND",
+        "B": "OR",
+        "C": "NOT",
+        "D": "LIKE"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08200"
+    },
+    {
+      "id": "CM_DB0250",
+      "question": "What does the SQL keyword \"ORDER BY\" do?",
+      "choices": {
+        "A": "Filters rows based on a specified condition",
+        "B": "Group rows that have the same values into summary rows",
+        "C": "Orders the result set based on specified columns",
+        "D": "Joins two or more tables"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08201"
+    },
+    {
+      "id": "CM_DB0251",
+      "question": "Which SQL statement is used to delete data from a database?",
+      "choices": {
+        "A": "TRUNCATE",
+        "B": "DELETE",
+        "C": "DROP",
+        "D": "REMOVE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08202"
+    },
+    {
+      "id": "CM_DB0252",
+      "question": "What does the SQL keyword \"DISTINCT\" do?",
+      "choices": {
+        "A": "Filters duplicate rows from the result set",
+        "B": "Orders the result set in ascending order",
+        "C": "Group rows that have the same values into summary rows",
+        "D": "Joins two or more tables"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08203"
+    },
+    {
+      "id": "CM_DB0253",
+      "question": "Which SQL statement is used to add a new column to an existing table?",
+      "choices": {
+        "A": "MODIFY",
+        "B": "INSERT",
+        "C": "ALTER",
+        "D": "ADD"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08204"
+    },
+    {
+      "id": "CM_DB0254",
+      "question": "Which SQL statement is used to create a new table?",
+      "choices": {
+        "A": "INSERT",
+        "B": "CREATE",
+        "C": "ADD",
+        "D": "MAKE"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08205"
+    },
+    {
+      "id": "CM_DB0255",
+      "question": "What does the SQL acronym CRUD stand for?",
+      "choices": {
+        "A": "Create, Read, Update, Destroy",
+        "B": "Create, Read, Update, Delete",
+        "C": "Copy, Read, Update, Delete",
+        "D": "Construct, Retrieve, Update, Delete"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08206"
+    },
+    {
+      "id": "CM_DB0256",
+      "question": "Which SQL statement is used to insert new data into a table?",
+      "choices": {
+        "A": "UPDATE",
+        "B": "INSERT",
+        "C": "ADD",
+        "D": "APPEND"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08207"
+    },
+    {
+      "id": "CM_DB0257",
+      "question": "What does the SQL keyword \"DELETE\" do?",
+      "choices": {
+        "A": "Removes specific rows from a table",
+        "B": "Updates existing records in a table",
+        "C": "Adds a new column to a table",
+        "D": "Creates a new table"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08208"
+    },
+    {
+      "id": "CM_DB0258",
+      "question": "Which SQL statement is used to update existing data in a table?",
+      "choices": {
+        "A": "MODIFY",
+        "B": "ALTER",
+        "C": "UPDATE",
+        "D": "CHANGE"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08209"
+    },
+    {
+      "id": "CM_DB0259",
+      "question": "What does the SQL keyword \"SELECT\" do?",
+      "choices": {
+        "A": "Adds new records to a table",
+        "B": "Updates existing records in a table",
+        "C": "Retrieves data from a database",
+        "D": "Deletes specific rows from a table"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08210"
+    },
+    {
+      "id": "CM_DB0260",
+      "question": "Which SQL statement is used to delete a table from a database?",
+      "choices": {
+        "A": "REMOVE",
+        "B": "DROP",
+        "C": "DELETE",
+        "D": "DESTROY"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08211"
+    },
+    {
+      "id": "CM_DB0261",
+      "question": "What does the SQL keyword \"INSERT INTO\" do?",
+      "choices": {
+        "A": "Modifies the structure of an existing table",
+        "B": "Deletes specific records from a table",
+        "C": "Adds a new column to a table",
+        "D": "Inserts new records into a table"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08212"
+    },
+    {
+      "id": "CM_DB0262",
+      "question": "Which SQL statement is used to modify the structure of an existing table?",
+      "choices": {
+        "A": "MODIFY",
+        "B": "CHANGE",
+        "C": "ALTER",
+        "D": "UPDATE"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08213"
+    },
+    {
+      "id": "CM_DB0263",
+      "question": "What does SQL stand for?",
+      "choices": {
+        "A": "Structure Query Language",
+        "B": "Sequential Query Language",
+        "C": "Systematic Query Language",
+        "D": "Structured Question Language"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "dbms_sql",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08214"
+    },
+    {
+      "id": "CM_DB0264",
+      "question": "Which SQL function is used to calculate the average value of a numeric column?",
+      "choices": {
+        "A": "AVG()",
+        "B": "SUM()",
+        "C": "COUNT()",
+        "D": "MAX()"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "javascript",
+      "topic_category": "dbms_sql",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k08215"
+    },
+    {
+      "id": "CM_DB0265",
+      "question": "Which database is ideal for large organizations and enterprises?",
+      "choices": {
+        "A": "MySQL",
+        "B": "PostgreSQL",
+        "C": "Amazon Aurora"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10427"
+    },
+    {
+      "id": "CM_DB0266",
+      "question": "Who is responsible of managing storage and database in AWS Cloud?",
+      "choices": {
+        "A": "AWS",
+        "B": "Customers"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10431"
+    },
+    {
+      "id": "CM_DB0267",
+      "question": "Which AWS database service proviced historical data of your application changes?",
+      "choices": {
+        "A": "AWS ElastiCache",
+        "B": "AWS DocumentDB",
+        "C": "AWS Neptune",
+        "D": "AWS Quantum Ledger Database"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10441"
+    },
+    {
+      "id": "CM_DB0268",
+      "question": "What kind of database is AWS DynamoDB?",
+      "choices": {
+        "A": "NoSQL database",
+        "B": "Relational database",
+        "C": "Document database"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10462"
+    },
+    {
+      "id": "CM_DB0269",
+      "question": "What is SQL injection?",
+      "choices": {
+        "A": "It is used to inject malicious code to a database server, through a query",
+        "B": "It is used in Buffer Overflow attacks to overwrite memory",
+        "C": "It is used to spoof or inject false headers in a HTTP request"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10530"
+    },
+    {
+      "id": "CM_DB0270",
+      "question": "What is best practice in defending against SQL injection?",
+      "choices": {
+        "A": "Blocking specific ports that SQL injections are usually attacked via",
+        "B": "Programmers will not make web applications that allow user input",
+        "C": "Sanitizing users input in a web application"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "sql",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k10531"
+    },
+    {
+      "id": "CM_DB0271",
+      "question": "MongoDB achieves atomicity for Write Operation at which level",
+      "choices": {
+        "A": "Row",
+        "B": "Collection",
+        "C": "Document",
+        "D": "None of the above"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "general",
+      "topic_category": "others",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "codemmlu",
+      "source_id": "k11123"
+    }
+  ]
+}

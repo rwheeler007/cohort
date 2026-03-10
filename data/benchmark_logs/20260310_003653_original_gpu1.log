@@ -1,0 +1,10 @@
+Agent Assessor v2 -- 7 agent(s), ~700 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- ceo_agent (Executive leadership & strategic management (professional grade)) ---
+    100 questions (30 multi-step)
+  [  ] [CEO001] (intermediate) Asking... OK (B vs B) [23.8s] rapid_framework
+  [  ] [CEO002] (intermediate) Asking... ERR (? vs B) [180.0s] rapid_framework
+  [  ] [CEO003] (intermediate) Asking... 

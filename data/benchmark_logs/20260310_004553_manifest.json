@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-03-10T00:45:53.592036",
+  "model": "qwen3.5:9b",
+  "banks": [
+    "benchmark",
+    "linkedin",
+    "original"
+  ],
+  "limit": 500,
+  "workers": [],
+  "bank_results": []
+}

@@ -334,9 +334,20 @@ const setupWizard = {
             resultEl.style.display = '';
 
             if (data.success) {
+                let thinkingHtml = '';
+                if (data.thinking_ok) {
+                    thinkingHtml = '<div class="setup-wizard__status setup-wizard__status--ok" style="margin-top:var(--space-2)">'
+                        + '[OK] Thinking mode works -- Smarter [S+] responses enabled</div>';
+                } else {
+                    thinkingHtml = '<div class="setup-wizard__status setup-wizard__status--warn" style="margin-top:var(--space-2)">'
+                        + '[!] Thinking mode not available -- Smart [S] mode will be used'
+                        + (data.thinking_error ? ': ' + escapeHtml(data.thinking_error) : '')
+                        + '</div>';
+                }
                 resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">[OK] Everything works!</div>'
-                    + `<blockquote class="setup-wizard__quote">${data.text}</blockquote>`
-                    + `<div class="text-muted">Response generated in ${data.elapsed_seconds.toFixed(1)} seconds</div>`;
+                    + `<blockquote class="setup-wizard__quote">${escapeHtml(data.text)}</blockquote>`
+                    + `<div class="text-muted">Response generated in ${data.elapsed_seconds.toFixed(1)} seconds</div>`
+                    + thinkingHtml;
                 this.markDone(4);
             } else {
                 resultEl.innerHTML = `<div class="setup-wizard__status setup-wizard__status--err">[X] ${data.error}</div>`;
@@ -544,8 +555,13 @@ const setupWizard = {
         configEl.style.display = 'none';
 
         try {
-            const resp = await fetch('/api/setup/detect-claude', { method: 'POST' });
-            const data = await resp.json();
+            // Fetch detection + current settings in parallel
+            const [detectResp, settingsResp] = await Promise.all([
+                fetch('/api/setup/detect-claude', { method: 'POST' }),
+                fetch('/api/settings'),
+            ]);
+            const data = await detectResp.json();
+            const settings = await settingsResp.json();
             this.claudeData = data;
 
             if (data.found) {
@@ -566,8 +582,31 @@ const setupWizard = {
             // Pre-populate fields from detection or existing settings
             const cmdInput = $('#setup-claude-cmd');
             const rootInput = $('#setup-agents-root');
+            const backendInput = $('#setup-exec-backend');
+            const timeoutInput = $('#setup-response-timeout');
+            const forceClaudeInput = $('#setup-force-claude');
+
             if (cmdInput) cmdInput.value = data.existing_claude_cmd || data.claude_path || '';
             if (rootInput) rootInput.value = data.existing_agents_root || data.agents_root_detected || '';
+            if (backendInput) backendInput.value = settings.execution_backend || 'cli';
+            if (timeoutInput) timeoutInput.value = settings.response_timeout || 300;
+            if (forceClaudeInput) forceClaudeInput.checked = settings.force_to_claude_code || false;
+
+            // Smartest mode status
+            const smartestEl = $('#setup-smartest-status');
+            if (smartestEl) {
+                if (settings.smartest_available) {
+                    smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
+                        + '[OK] Smartest mode available -- Claude CLI detected and working</div>';
+                } else if (data.found) {
+                    smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">'
+                        + '[!] Claude CLI found but Smartest mode could not be verified. '
+                        + 'Save settings and test the connection to enable it.</div>';
+                } else {
+                    smartestEl.innerHTML = '<div class="text-muted" style="font-size:var(--font-size-sm)">'
+                        + 'Smartest mode requires Claude CLI. Install it to unlock [S++] responses.</div>';
+                }
+            }
 
             configEl.style.display = '';
         } catch (e) {
@@ -610,28 +649,29 @@ const setupWizard = {
         }
     },
 
-    async _saveClaudeFieldsQuiet() {
-        const payload = {
+    _gatherClaudeFields() {
+        const timeoutVal = parseInt(($('#setup-response-timeout') || {}).value) || 300;
+        return {
             claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
             agents_root: ($('#setup-agents-root') || {}).value || '',
             execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
+            response_timeout: Math.max(30, Math.min(600, timeoutVal)),
+            force_to_claude_code: ($('#setup-force-claude') || {}).checked || false,
         };
+    },
+
+    async _saveClaudeFieldsQuiet() {
         try {
             await fetch('/api/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: JSON.stringify(this._gatherClaudeFields()),
             });
         } catch (e) { /* silent */ }
     },
 
     async saveClaudeSettings() {
-        const payload = {
-            claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
-            agents_root: ($('#setup-agents-root') || {}).value || '',
-            response_timeout: 300,
-            execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
-        };
+        const payload = this._gatherClaudeFields();
 
         try {
             const resp = await fetch('/api/settings', {

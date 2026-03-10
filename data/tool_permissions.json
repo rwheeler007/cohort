@@ -72,14 +72,14 @@
     }
   },
   "agent_defaults": {
-    "core_developers": "developer",
-    "infrastructure": "readonly",
-    "leadership": "readonly",
-    "marketing_content": "researcher",
-    "quality_security": "developer",
-    "social_media": "researcher",
-    "specialists": "developer",
-    "support": "readonly"
+    "core_developers": "minimal",
+    "infrastructure": "minimal",
+    "leadership": "minimal",
+    "marketing_content": "minimal",
+    "quality_security": "minimal",
+    "social_media": "minimal",
+    "specialists": "minimal",
+    "support": "minimal"
   },
   "mcp_servers": {
     "cohort": {
@@ -97,55 +97,17 @@
       ]
     }
   },
-  "denied_tools": [
-    "InternalWebFetch",
-    "InternalWebSearch"
-  ],
+  "denied_tools": [],
   "file_permissions": {
     "defaults": {
-      "core_developers": [
-        {
-          "path": "G:/**",
-          "access": "write"
-        }
-      ],
-      "infrastructure": [
-        {
-          "path": "G:/**",
-          "access": "read"
-        }
-      ],
-      "leadership": [
-        {
-          "path": "G:/**",
-          "access": "read"
-        }
-      ],
-      "marketing_content": [
-        {
-          "path": "G:/**",
-          "access": "read"
-        }
-      ],
-      "quality_security": [
-        {
-          "path": "G:/**",
-          "access": "write"
-        }
-      ],
+      "core_developers": [],
+      "infrastructure": [],
+      "leadership": [],
+      "marketing_content": [],
+      "quality_security": [],
       "social_media": [],
-      "specialists": [
-        {
-          "path": "G:/**",
-          "access": "write"
-        }
-      ],
-      "support": [
-        {
-          "path": "G:/**",
-          "access": "read"
-        }
-      ]
+      "specialists": [],
+      "support": []
     },
     "agent_overrides": {}
   }

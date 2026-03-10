@@ -316,16 +316,27 @@ class CohortClient:
         agent_id: str,
         description: str,
         priority: str = "medium",
+        trigger_type: str = "manual",
+        trigger_source: str = "user",
+        tool: str | None = None,
+        success_criteria: str | None = None,
     ) -> dict[str, Any] | None:
         """POST /api/tasks -> create and assign a task."""
+        body: dict[str, Any] = {
+            "agent_id": agent_id,
+            "description": description,
+            "priority": priority,
+            "trigger_type": trigger_type,
+            "trigger_source": trigger_source,
+        }
+        if tool:
+            body["tool"] = tool
+        if success_criteria:
+            body["success_criteria"] = success_criteria
         return await _request(
             "POST",
             f"{self.base_url}/api/tasks",
-            json_body={
-                "agent_id": agent_id,
-                "description": description,
-                "priority": priority,
-            },
+            json_body=body,
         )
 
     # -- work queue (sequential execution) --------------------------------

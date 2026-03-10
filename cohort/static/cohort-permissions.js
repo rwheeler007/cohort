@@ -327,6 +327,10 @@ function renderServiceKeys() {
             ? ''
             : `<button class="btn btn--small btn--secondary" onclick="editServiceKey(${idx})" title="Edit key">Edit</button>`;
 
+        const testBtn = (svc.has_key || isLocal)
+            ? `<button class="btn btn--small btn--test" onclick="testServiceKey(${idx})" title="Test connection" data-test-idx="${idx}">Test</button>`
+            : '';
+
         return `
             <div class="service-key-card" data-service-idx="${idx}">
                 <div class="service-key-card__icon" style="background-color: ${meta.color}">${meta.icon}</div>
@@ -336,6 +340,7 @@ function renderServiceKeys() {
                 </div>
                 <span class="service-key-card__status service-key-card__status--${statusClass}">${statusText}</span>
                 <div class="service-key-card__actions">
+                    ${testBtn}
                     ${editBtn}
                     <button class="btn btn--small btn--danger" onclick="removeServiceKey(${idx})" title="Remove">&times;</button>
                 </div>
@@ -716,6 +721,78 @@ function removeServiceKey(idx) {
     renderServiceKeys();
     renderPermGrid();
     showToast('Service removed -- save to persist', 'info');
+}
+
+function testServiceKey(idx) {
+    const svc = permState.services[idx];
+    if (!svc) return;
+
+    const btn = document.querySelector(`[data-test-idx="${idx}"]`);
+    const statusEl = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
+    if (!btn) return;
+
+    // Set loading state
+    btn.disabled = true;
+    btn.textContent = '...';
+    btn.classList.add('btn--test-loading');
+    if (statusEl) {
+        statusEl.className = 'service-key-card__status service-key-card__status--checking';
+        statusEl.textContent = 'Testing...';
+    }
+
+    fetch('/api/service-keys/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service_id: svc.id }),
+    })
+        .then(r => {
+            if (!r.ok && r.status === 404) throw new Error('Server needs restart to load test endpoint');
+            return r.json();
+        })
+        .then(data => {
+            btn.disabled = false;
+            btn.classList.remove('btn--test-loading');
+
+            if (data.success) {
+                btn.textContent = 'Pass';
+                btn.classList.add('btn--test-pass');
+                if (statusEl) {
+                    statusEl.className = 'service-key-card__status service-key-card__status--active';
+                    statusEl.textContent = 'Connected';
+                    if (data.latency_ms) statusEl.title = `${data.latency_ms}ms`;
+                }
+                showToast(`${svc.name}: ${data.message}`, 'success');
+            } else {
+                btn.textContent = 'Fail';
+                btn.classList.add('btn--test-fail');
+                if (statusEl) {
+                    statusEl.className = 'service-key-card__status service-key-card__status--missing';
+                    statusEl.textContent = 'Failed';
+                }
+                showToast(`${svc.name}: ${data.message}`, 'error');
+            }
+
+            // Reset button text after 4 seconds
+            setTimeout(() => {
+                btn.textContent = 'Test';
+                btn.classList.remove('btn--test-pass', 'btn--test-fail');
+            }, 4000);
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.textContent = 'Fail';
+            btn.classList.remove('btn--test-loading');
+            btn.classList.add('btn--test-fail');
+            if (statusEl) {
+                statusEl.className = 'service-key-card__status service-key-card__status--missing';
+                statusEl.textContent = 'Error';
+            }
+            showToast(`${svc.name}: Connection test failed -- ${err.message}`, 'error');
+            setTimeout(() => {
+                btn.textContent = 'Test';
+                btn.classList.remove('btn--test-fail');
+            }, 4000);
+        });
 }
 
 function toggleServiceKeyVisibility() {

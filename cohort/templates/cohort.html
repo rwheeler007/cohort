@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cohort - Coding Team Dashboard">
+    <meta name="description" content="Cohort - Collaborative AI Agents">
     <title>Cohort - Team Dashboard</title>
     <!-- Press Start 2P font: self-hosted via @font-face in cohort.css -->
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
@@ -24,25 +24,17 @@
         <aside class="sidebar" id="sidebar">
             <header class="sidebar__header">
                 <h1 class="sidebar__title">Cohort</h1>
-                <p class="sidebar__tagline">Coding Team Dashboard</p>
+                <p class="sidebar__tagline">Collaborative AI Agents</p>
                 <span class="sidebar__status" id="connection-status">Connecting...</span>
             </header>
 
             <nav class="sidebar-nav" aria-label="Dashboard navigation">
-                <h2 class="sidebar-nav__title">Panels</h2>
                 <ul class="sidebar-nav__list" id="nav-list">
                     <li>
                         <button class="sidebar-nav__item active" data-panel="team" aria-current="true">
                             <span class="sidebar-nav__icon">[T]</span>
                             <span class="sidebar-nav__label">Team</span>
                             <span class="sidebar-nav__badge" id="team-badge">0</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button class="sidebar-nav__item" data-panel="queue">
-                            <span class="sidebar-nav__icon">[Q]</span>
-                            <span class="sidebar-nav__label">Work Queue</span>
-                            <span class="sidebar-nav__badge" id="queue-badge">0</span>
                         </button>
                     </li>
                     <li>
@@ -55,7 +47,7 @@
                     <li>
                         <button class="sidebar-nav__item" data-panel="output">
                             <span class="sidebar-nav__icon">[O]</span>
-                            <span class="sidebar-nav__label">Pending Review</span>
+                            <span class="sidebar-nav__label">Review</span>
                             <span class="sidebar-nav__badge" id="output-badge">0</span>
                         </button>
                     </li>
@@ -67,9 +59,21 @@
                         <h2 class="sidebar-nav__title">Channels</h2>
                         <button class="sidebar-nav__add-btn" id="add-channel-btn" title="Create channel" onclick="event.stopPropagation()">+</button>
                     </div>
-                    <ul class="sidebar-nav__section-body sidebar-nav__channels" id="channel-list">
-                        <!-- Channel list populated by JS -->
-                    </ul>
+                    <div class="sidebar-nav__section-body">
+                        <div class="sidebar-nav__sub-section open" id="folders-sub-section">
+                            <div class="sidebar-nav__sub-header" onclick="toggleFoldersSubSection()">
+                                <span class="sidebar-nav__sub-toggle">></span>
+                                <span class="sidebar-nav__sub-title">Folders</span>
+                                <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder" onclick="event.stopPropagation()">+</button>
+                            </div>
+                            <div class="sidebar-nav__folders" id="folder-list">
+                                <!-- Folders populated by JS -->
+                            </div>
+                        </div>
+                        <ul class="sidebar-nav__channels" id="channel-list">
+                            <!-- Channel list populated by JS -->
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="sidebar-nav__section open" data-section="agent-chats">
@@ -102,16 +106,6 @@
                     </ul>
                 </div>
 
-                <div class="sidebar-nav__section open" data-section="folders">
-                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('folders')">
-                        <span class="sidebar-nav__toggle">></span>
-                        <h2 class="sidebar-nav__title">Folders</h2>
-                        <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder" onclick="event.stopPropagation()">+</button>
-                    </div>
-                    <div class="sidebar-nav__section-body sidebar-nav__folders" id="folder-list">
-                        <!-- Folders populated by JS -->
-                    </div>
-                </div>
 
 
             </nav>
@@ -138,6 +132,7 @@
                     <p class="panel-header__subtitle" id="panel-subtitle">Agent status and skills</p>
                 </div>
                 <div class="panel-header__actions">
+                    <button class="btn btn--small btn--secondary" id="create-channel-from-chat-btn" style="display: none;" onclick="createChannelFromChat()" title="Save this conversation as a channel">Create Channel</button>
                     <div class="panel-header__filter" id="filter-container" style="display: none;">
                         <select class="filter-select" id="filter-select">
                             <option value="all">All</option>
@@ -215,19 +210,7 @@
                 </div>
             </section>
 
-            <!-- Work Queue Panel (Execution Queue only) -->
-            <section class="panel panel--queue" id="panel-queue" role="region" aria-label="Work Queue" style="display: none;">
-                <div class="wq-section">
-                    <div class="work-queue-list" id="work-queue-list">
-                        <div class="empty-state" id="wq-empty">
-                            <p class="empty-state__text">Queue is empty</p>
-                            <p class="empty-state__hint">Items execute one at a time in priority order</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Tasks Panel -->
+            <!-- Tasks Panel (merged with Work Queue) -->
             <section class="panel panel--tasks" id="panel-tasks" role="region" aria-label="Tasks" style="display: none;">
                 <nav class="task-sub-tabs" role="tablist" aria-label="Task views">
                     <button class="task-sub-tab active" role="tab" aria-selected="true" data-task-view="active" onclick="CohortTasks.switchView('active')">Active</button>
@@ -239,24 +222,28 @@
                 <div class="task-view" id="task-view-active">
                     <div class="task-list" id="task-list">
                         <div class="empty-state" id="tasks-empty">
-                            <p class="empty-state__text">No tasks assigned</p>
-                            <p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>
+                            <p class="empty-state__text">Assign your first task</p>
+                            <p class="empty-state__hint">Pick an agent and give it something to do</p>
+                            <p class="empty-state__example">e.g., "Review my Python code for security issues"</p>
+                            <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Assign Task</button>
                         </div>
                     </div>
                 </div>
                 <div class="task-view" id="task-view-scheduled" style="display: none;">
                     <div class="schedule-list" id="schedule-list">
                         <div class="empty-state" id="schedules-empty">
-                            <p class="empty-state__text">No scheduled tasks</p>
-                            <p class="empty-state__hint">Create recurring tasks that run on a schedule</p>
+                            <p class="empty-state__text">Set up a recurring task</p>
+                            <p class="empty-state__hint">Agents can run tasks on a schedule -- daily code reviews, weekly reports, and more</p>
+                            <p class="empty-state__example">e.g., "Check code quality every morning at 9am"</p>
+                            <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Schedule Task</button>
                         </div>
                     </div>
                 </div>
                 <div class="task-view" id="task-view-completed" style="display: none;">
                     <div class="task-list" id="completed-task-list">
                         <div class="empty-state" id="completed-empty">
-                            <p class="empty-state__text">No completed tasks</p>
-                            <p class="empty-state__hint">Completed task runs will appear here</p>
+                            <p class="empty-state__text">No completed tasks yet</p>
+                            <p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>
                         </div>
                     </div>
                 </div>
@@ -269,12 +256,12 @@
                 </div>
             </section>
 
-            <!-- Pending Review Panel -->
-            <section class="panel panel--output" id="panel-output" role="region" aria-label="Pending Review" style="display: none;">
+            <!-- Review Panel -->
+            <section class="panel panel--output" id="panel-output" role="region" aria-label="Review" style="display: none;">
                 <div class="output-list" id="output-list">
                     <div class="empty-state" id="output-empty">
                         <p class="empty-state__text">No outputs to review</p>
-                        <p class="empty-state__hint">Completed task outputs will appear here for review</p>
+                        <p class="empty-state__hint">When tasks complete, their output appears here for your review</p>
                     </div>
                 </div>
             </section>
@@ -1025,7 +1012,45 @@
                                     <option value="chat">Chat-routed (@mention)</option>
                                 </select>
                             </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-response-timeout" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Response Timeout (seconds)
+                                </label>
+                                <input type="number" class="form-input" id="setup-response-timeout"
+                                       value="300" min="30" max="600" step="30"
+                                       placeholder="300">
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    How long to wait for agent responses (30-600s)
+                                </span>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
+                                    <input type="checkbox" id="setup-force-claude" style="width:auto">
+                                    Force all responses through Claude Code
+                                </label>
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    Bypass local Ollama models and route everything through Claude CLI
+                                </span>
+                            </div>
                         </div>
+
+                        <!-- Response Modes Info -->
+                        <div class="setup-wizard__card" id="setup-response-modes-info" style="margin-top:var(--space-3)">
+                            <h4 style="margin-bottom:var(--space-2)">Response Modes</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                Cohort supports three response quality tiers:
+                            </p>
+                            <div class="setup-wizard__info-grid" style="gap:var(--space-1) var(--space-3)">
+                                <span class="text-muted"><strong>[S] Smart</strong></span>
+                                <span>Fast local responses, no thinking (free)</span>
+                                <span class="text-muted"><strong>[S+] Smarter</strong></span>
+                                <span>Local with thinking enabled -- default (free)</span>
+                                <span class="text-muted"><strong>[S++] Smartest</strong></span>
+                                <span>Local reasoning + Claude refinement (requires Claude CLI)</span>
+                            </div>
+                            <div id="setup-smartest-status" style="margin-top:var(--space-2)"></div>
+                        </div>
+
                         <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3);align-items:center">
                             <button class="btn btn--secondary" id="setup-claude-test-btn">Test Connection</button>
                             <div class="settings-connection-status" id="setup-claude-status" style="margin-bottom:0">

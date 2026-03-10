@@ -1,0 +1,1016 @@
+{
+  "agent_id": "hardware_agent",
+  "source": "LinkedIn Skill Assessments (Ebazhanov/linkedin-skill-assessments-quizzes)",
+  "total_questions": 59,
+  "difficulty_distribution": {
+    "intermediate": 56,
+    "advanced": 3,
+    "expert": 0
+  },
+  "multi_step_count": 0,
+  "questions": [
+    {
+      "id": "LI_HW001",
+      "question": "You are configuring a Wi-Fi base station using DHCP. Which items should you set or change?",
+      "choices": {
+        "A": "A\n- Reset administrator password.\n- Set network name.\n- Set network security.\n- Set network password.",
+        "B": "B\n- Reset administrator password.\n- Set network name.\n- Set network password.",
+        "C": "C\n- Set network name.\n- Set network password.\n- Assign DNS servers.",
+        "D": "D\n- Change administrator account name.\n- Set network password.\n- Set network name.\n- Assign DNS servers."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW002",
+      "question": "Can you connect a DisplayPort monitor to a USB-C port on your computer?",
+      "choices": {
+        "A": "Yes. The DisplayPort cable plugs directly into the USB connector.",
+        "B": "Yes. An adapter or dongle may be required.",
+        "C": "No. While you can rig a connection, video quality will be poor.",
+        "D": "No. The two standards are incompatible."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW003",
+      "question": "What is the I/O panel?",
+      "choices": {
+        "A": "the location where expansion cards can connect to peripherals",
+        "B": "a cluster of ports and connectors found on the back of the computer case",
+        "C": "the switches that turn on, sleep, and turn off the computer",
+        "D": "the portion of the motherboard where non-power cables connect"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW004",
+      "question": "The computer consistently boots into Safe Mode. How would you address this issue?",
+      "choices": {
+        "A": "Edit the Registry key that controls the boot sequence.",
+        "B": "Hold the Shift key as Windows boots.",
+        "C": "Check the MSCONFIG utility to ensure that Normal boot is selected.",
+        "D": "Fix the issue in Safe Mode that is causing the system to restart in this mode."
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW005",
+      "question": "Which choice is not a typical adjustment found on a monitor?",
+      "choices": {
+        "A": "resolution",
+        "B": "color temperature",
+        "C": "contrast",
+        "D": "brightness"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW006",
+      "question": "Assuming that the gateway, modem, and switch are separate units, in what order should a small office or home office LAN be restarted?",
+      "choices": {
+        "A": "A\n1. Modem\n2. Gateway\n3. Switch",
+        "B": "B\n1. Modem\n2. Switch\n3. Gateway",
+        "C": "C\n1. Gateway\n2. Switch",
+        "D": "The order is not important."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "rest_api",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW007",
+      "question": "A client needs to secure their cafe's wireless network, which is used only by employees. What is the best approach for a finite list of devices?",
+      "choices": {
+        "A": "Limit access to specific MAC addresses.",
+        "B": "Do not broadcast the SSID.",
+        "C": "Apply a metered connection.",
+        "D": "Apply a password."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW008",
+      "question": "Which hardware port would not be found on a typical gateway?",
+      "choices": {
+        "A": "WAN",
+        "B": "USB",
+        "C": "LAN",
+        "D": "uplink"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW009",
+      "question": "The recent Windows update introduced some quirks in the system. How can you enter the Windows Recovery Environment to recover from the update?",
+      "choices": {
+        "A": "Hold the Shift key when selecting the **Restart** command.",
+        "B": "Restart in Safe Mode where the Recovery item is located on the Start menu.",
+        "C": "Press the any key at the boot screen.",
+        "D": "Go to the Task Manager **Startup** tab."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW010",
+      "question": "Which components are typically found on the motherboard?",
+      "choices": {
+        "A": "&shy;\nbasic I/O\n      graphics\n      NIC\n      battery\n      expansion slots",
+        "B": "&shy;\nbasic I/O\n      cooling\n      NIC\n      graphics\n      expansion slots",
+        "C": "&shy;\nbasic I/O\n      graphics\n      NIC\n      mass storage\n      expansion slots",
+        "D": "&shy;\nbasic I/O\n      graphics\n      NIC\n      power supply\n      expansion slots"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "components",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW011",
+      "question": "What does the acronym RAID refer to?",
+      "choices": {
+        "A": "Repeating Architecture for Internal Drives",
+        "B": "Recoverable Advanced Integration and Duplication",
+        "C": "Redundant Array of Independent Disks",
+        "D": "Replicated Array of Internal Devices"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW012",
+      "question": "Your computer boots at very low resolution that cannot be increased through display settings. What is the most likely solution?",
+      "choices": {
+        "A": "The connection between the display and the computer is loose.",
+        "B": "You need to reinstall the display drivers.",
+        "C": "You need to replace your monitor.",
+        "D": "Some of your RAM is failing."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW013",
+      "question": "To which choice can the wget program be considered similar?",
+      "choices": {
+        "A": "tracert",
+        "B": "netstat",
+        "C": "ping",
+        "D": "cURL"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW014",
+      "question": "Does an incognito window prevent websites from tracking your activity on the web?",
+      "choices": {
+        "A": "No. Incognito mode only prevents the site from appearing in your browser history.",
+        "B": "Yes. Incognito mode encrypts data packets, making it difficult for websites to track your activity.",
+        "C": "No. Some websites track by ID, and if you sign into a site even in incognito, your activity is known.",
+        "D": "Yes. Incognito mode blocks all cookies and tracking IDs and suppresses browser history."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW015",
+      "question": "What must you confirm before performing a processor upgrade?",
+      "choices": {
+        "A": "The new processor is compatible with the current motherboard.",
+        "B": "The new processor is the same type as the old.",
+        "C": "The new processor is compatible with the operating system.",
+        "D": "The new processor fits into the old processor's slot."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW016",
+      "question": "Which type of storage has the fastest data access speeds?",
+      "choices": {
+        "A": "Secure Sockets Layer drive",
+        "B": "solid-state drive",
+        "C": "serial attached storage device",
+        "D": "SCSI drive"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW017",
+      "question": "Which peripheral is most likely to require entering a Bluetooth pairing passcode?",
+      "choices": {
+        "A": "A. Keyboard",
+        "B": "B. Mouse",
+        "C": "C. Headset",
+        "D": "D. Printer\n> _Explanation:_ Many Bluetooth keyboards (especially older or “legacy” models) require entering a pairing/passcode during initial pairing. Mice and headsets can require pairing too, but keyboards historically + most commonly use a numeric pairing code. This question is somewhat hardware-dependent — see PR discussion for edge-cases and references.\n\n---"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW018",
+      "question": "Walt's computer is several years old and he wants to ensure that the system works until he gets a replacement. What should he do first?",
+      "choices": {
+        "A": "Run a file check daily.",
+        "B": "Obtain an extended warranty.",
+        "C": "Back up his data.",
+        "D": "Ensure that the system is protected against malware.\n---"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW019",
+      "question": "Which statement best describes a drive?",
+      "choices": {
+        "A": "A. A drive is hardware that reads/writes data and often accepts removable media (e.g., disk, CD).",
+        "B": "B. A drive is a software component that manages files.",
+        "C": "C. A drive is a network service for file transfer.",
+        "D": "D. A drive is an encryption method.\n> _Explanation:_ A drive is a physical device that performs read/write operations; removable-media drives (CD/DVD, removable disk) accept media, while non-removable drives (SSD/HDD) provide storage without separate media.\n\n---"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW020",
+      "question": "Mass storage inside a desktop computer case is usually found where?",
+      "choices": {
+        "A": "in an expansion slot",
+        "B": "attached to the front of the case",
+        "C": "in a drive cage",
+        "D": "on the motherboard\n---"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW021",
+      "question": "Which device is used to connect computers on a local network (LAN) at Layer 2?",
+      "choices": {
+        "A": "A. Switch (Layer 2)",
+        "B": "B. Server",
+        "C": "C. Router",
+        "D": "D. Gateway\n> _Explanation:_ A network switch operates at Layer 2 and forwards frames between devices on the same LAN. Servers provide services but do not serve the traffic-forwarding role of a switch.\n\n---"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW022",
+      "question": "If you move a user’s data and installed programs from one system to another, this process is called:",
+      "choices": {
+        "A": "A. Migration",
+        "B": "B. Profile transfer",
+        "C": "C. Backup",
+        "D": "D. Restore\n> _Explanation:_ A migration moves data and installed applications/settings from one environment to another; a “profile transfer” generally refers only to user profile data.\n\n---"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW023",
+      "question": "To access extra keys or alternate key functions on some laptop keyboards (compact layouts), which key is typically used?",
+      "choices": {
+        "A": "A. Alt/Option",
+        "B": "B. Ctrl",
+        "C": "C. Fn",
+        "D": "D. Shift\n> _Explanation:_ The **Fn** (Function) key is commonly used to access alternate functions on laptop/compact keyboards (media keys, secondary key legends). Alt/Option performs different roles and is not the usual way to access alternate hardware keysets.\n\n---"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW024",
+      "question": "If a PC repeatedly boots into Safe Mode, what is the most appropriate next step?",
+      "choices": {
+        "A": "A. Reboot immediately and hope it resolves.",
+        "B": "B. Investigate the cause (Safe Mode indicates the system detected a problem).",
+        "C": "C. Reinstall the OS right away.",
+        "D": "D. Ignore and continue using.\n> _Explanation:_ Persistent boots into Safe Mode indicate underlying problems (driver, hardware, or config). Investigate logs, recent changes and safe-mode diagnostics before opting to reinstall or only restart. (A quick restart can be used as a test, but repeated Safe Mode boots should be diagnosed.)"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW025",
+      "question": "Which security tool can be doubled up to offer additional protection without being redundant?",
+      "choices": {
+        "A": "account protection",
+        "B": "firewall",
+        "C": "antivirus",
+        "D": "backup"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW026",
+      "question": "The mouse pointer is behaving erratically. What should you do first?",
+      "choices": {
+        "A": "Use the keyboard instead",
+        "B": "Restart the computer",
+        "C": "Clean the mouse, specifically its optical sensor, and ensure that you are using it on the proper surface",
+        "D": "Disassemble the mouse to look for loose parts or corrosion"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW027",
+      "question": "How many wire pairs are in a CAT-5 cable?",
+      "choices": {
+        "A": "8",
+        "B": "4",
+        "C": "5",
+        "D": "16"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW028",
+      "question": "What is the difference between a USB hub and a powered USB hub?",
+      "choices": {
+        "A": "The powered hub has a power supply and is suitable for running powered peripherals.",
+        "B": "A powered USB hub is found on the computer case; all other hubs are non-powered.",
+        "C": "The powered hub supplies 12V of power, whereas the standard hub only 5V.",
+        "D": "Powered hubs are external to the computer case."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW029",
+      "question": "Which of the following users has the smartest approach to online security?",
+      "choices": {
+        "A": "Jarred uses a unique password for each site.",
+        "B": "Jen uses the same password on each site, but with two-factor authentication.",
+        "C": "Jason uses a unique password for each site along with two-factor authentication.",
+        "D": "Jackie uses the same password on each site, but with a different user name."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "testing",
+      "topic_category": "it_operations",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW030",
+      "question": "Which is an example of a phishing attack?",
+      "choices": {
+        "A": "Yousef sees an onscreen notification indicating that an operating system is pending and instructing him to click a link to continue.",
+        "B": "After visiting a website, Carla notices that her computer is running slowly.",
+        "C": "Bob receives an email from his bank, asking him to click a link to verify his account.",
+        "D": "Ellen's email inbox is flooded with unwanted advertising."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW031",
+      "question": "You receive a malware warning regarding a specific file. Which approach should you take to ensure that you do not have false positive?",
+      "choices": {
+        "A": "Restart in Safe Mode to remove the file.",
+        "B": "Remove the file.",
+        "C": "Run a thorough scan to validate the results.",
+        "D": "Quarantine the file."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW032",
+      "question": "What are the best tools to use for cleaning a computer?",
+      "choices": {
+        "A": "Handheld vacuum cleaner, air can, soft flashlight.",
+        "B": "air can, microfiber cloth, alcohol wipes, flashlight.",
+        "C": "handheld vacuum cleaner, ammonia, alcohol, microfiber cloth.",
+        "D": "air can, screwdriver, soft cloth, household cleaner."
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW033",
+      "question": "A computer power supply is measured in \\_.",
+      "choices": {
+        "A": "watts",
+        "B": "hertz",
+        "C": "amperes",
+        "D": "volts"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW034",
+      "question": "If you had a 255.255.255.0 subnet mask, how many usable IP addresses would you have for hosts?",
+      "choices": {
+        "A": "24",
+        "B": "255",
+        "C": "254",
+        "D": "256"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW035",
+      "question": "Tania was told to change a setting in the UEFI. How is it accessed?",
+      "choices": {
+        "A": "by using the System Configuration Utility (MSCONFIG)",
+        "B": "from the BIOS",
+        "C": "from the computer's startup menu",
+        "D": "on the network"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW036",
+      "question": "What is the technical reason why you must properly eject media?",
+      "choices": {
+        "A": "File I/O is buffered. If you remove the media before the buffer is cleared, files remain open and potentially corrupt.",
+        "B": "The Storage Inventory Manager (SIM) can lose its drive references, which may corrupt other storage in the system.",
+        "C": "The drive must receive the eject signal and turn itself off, dropping the DTR signal and indicating the media is safe to remove.",
+        "D": "The computer must stop the 5-volt signal to media, otherwise the drive may short."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW037",
+      "question": "Which part of the network assigns an IP address?",
+      "choices": {
+        "A": "the modem using TCP/IP protocol",
+        "B": "the gateway/router using DHCP",
+        "C": "the device's NIC based on the MAC address",
+        "D": "IP addresses are always assigned manually"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW038",
+      "question": "Expansion cards follow which current interface standard?",
+      "choices": {
+        "A": "MCA",
+        "B": "PCMCIA",
+        "C": "ISA",
+        "D": "PCIe"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW039",
+      "question": "Which action triggers a UAC warning?",
+      "choices": {
+        "A": "all settings changes in Windows",
+        "B": "any unauthorized access to the computer system",
+        "C": "an attempt to change a setting with consequences that affect the entire system",
+        "D": "any action involving the user account, such as a password reset"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW040",
+      "question": "Which choice is not a current mass storage type?",
+      "choices": {
+        "A": "SSD",
+        "B": "MO",
+        "C": "HDD",
+        "D": "NVMe"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW041",
+      "question": "Which statement most accurately describes the north-bridge or host-bridge?",
+      "choices": {
+        "A": "It is a high priority connection to the processor, also called the Memory Controller Hub.",
+        "B": "It has been integrated into the southbridge to provide support for the CPU.",
+        "C": "It is the peripheral and I/O controller, connected to the processor via the southbridge.",
+        "D": "It provides mathematical and 3D physics support for the CPU in the absence of a GPU."
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW042",
+      "question": "Which characters are not allowed in a filename?",
+      "choices": {
+        "A": "anything other than a letter, number, or space",
+        "B": "spaces, periods, and commas",
+        "C": "`\\, /, :, ?, and *`",
+        "D": "`!, ^, &, (,), and \"`"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW043",
+      "question": "What is the most direct way to change the desktop background in Windows OS?",
+      "choices": {
+        "A": "Alter your user account settings or preferences.",
+        "B": "Right-click a blank part of the desktop.",
+        "C": "Run programs full-screen.",
+        "D": "Use Settings (Windows) or Preferences (Mac)."
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW044",
+      "question": "Which I/O components are typically found in a chipset on the motherboard?",
+      "choices": {
+        "A": "USB, SATA and internal communications",
+        "B": "display adapter, networking, audio, and basic I/O",
+        "C": "the processor, RAM, and expansion cards",
+        "D": "I/O components are not on the motherboard. They are located on the rear of the case"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "components",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW045",
+      "question": "What does the acronym RAID refer to?",
+      "choices": {
+        "A": "Redudant Array of Independent Disk",
+        "B": "Repeating Architecture for Internal Drives",
+        "C": "Recoverable Advanced Integration and Duplication",
+        "D": "Replicated Array of Internal Devices"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW046",
+      "question": "What is an example of a top-level domain (TLD)?",
+      "choices": {
+        "A": "NET",
+        "B": "HTTP",
+        "C": "//",
+        "D": "DNS"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "dom_manipulation",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW047",
+      "question": "Jan is setting up a coffee shop's wireless network. Given the number of Wi-Fi networks within range, which are the best choices for a 2.4GHz Wi-Fi channel?",
+      "choices": {
+        "A": "3, 6, 9",
+        "B": "3, 10, 12",
+        "C": "1, 6, 11",
+        "D": "1, 2, 8"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW048",
+      "question": "What is a duplex printer?",
+      "choices": {
+        "A": "a printer that also acts as a scanner, copier. and fax machine",
+        "B": "a printer with automatic and manual feeding mechanism",
+        "C": "a printer than can print on both sides of a sheet of paper",
+        "D": "a printer has two paper trays"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW049",
+      "question": "Which choice is not an internal computer upgrade?",
+      "choices": {
+        "A": "primary storage",
+        "B": "I/O devices",
+        "C": "memory",
+        "D": "expansion card"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW050",
+      "question": "In a hybrid cloud architecture, what is the main challenge of maintaining consistent configuration states across on-premises and cloud environments?",
+      "choices": {
+        "A": "Limited network throughput between environments",
+        "B": "Configuration drift due to asynchronous state management and differing IaC tool versions",
+        "C": "Incompatible authentication mechanisms between providers",
+        "D": "Lack of hardware abstraction at the virtualization layer"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW051",
+      "question": "In enterprise IT monitoring, what problem does \"cardinality explosion\" refer to?",
+      "choices": {
+        "A": "The exponential growth in metric series when combining multiple label dimensions (e.g., host, service, region)",
+        "B": "The overuse of alerting thresholds across distributed systems",
+        "C": "The inability to track metrics due to missing time-series indexes",
+        "D": "The merging of multiple metric stores into a single pipeline"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW052",
+      "question": "In a CI/CD pipeline, why is using **immutable infrastructure** considered best practice?",
+      "choices": {
+        "A": "It allows manual patching of existing servers to maintain consistency",
+        "B": "It ensures that each deployment creates a new environment instance, preventing configuration drift",
+        "C": "It eliminates the need for orchestration or automation tools",
+        "D": "It enables incremental updates instead of full rebuilds"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "package_management",
+      "topic_category": "it_operations",
+      "difficulty": "advanced",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW053",
+      "question": "What issue arises when using synchronous microservice calls in a globally distributed production system?",
+      "choices": {
+        "A": "Increased CPU utilization in backend servers",
+        "B": "Reduced need for caching layers",
+        "C": "Simplified tracing and logging mechanisms",
+        "D": "High inter-service latency and cascading failures under network partitions"
+      },
+      "answer": "D",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW054",
+      "question": "In container orchestration systems like Kubernetes, what does the **control plane** primarily manage?",
+      "choices": {
+        "A": "The desired state of the cluster, ensuring workloads match declared configurations via reconciliation loops",
+        "B": "The real-time network routing between pods",
+        "C": "The physical resource allocation at the hardware level",
+        "D": "The filesystem synchronization across distributed nodes"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "containers",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW055",
+      "question": "In distributed systems observability, what is the primary purpose of implementing distributed tracing with context propagation?",
+      "choices": {
+        "A": "To record only local system metrics",
+        "B": "To replicate log data across all services",
+        "C": "To track a single request across multiple services by passing unique identifiers through each span",
+        "D": "To store trace data directly within the message queue"
+      },
+      "answer": "C",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW056",
+      "question": "Why might an SRE team prefer a **Service Level Objective (SLO)** expressed as an error budget over a 100% uptime target?",
+      "choices": {
+        "A": "Because it balances reliability with development velocity and provides a measurable tolerance for controlled risk",
+        "B": "Because it enforces stricter deployment rules in CI/CD pipelines",
+        "C": "Because it automatically configures monitoring alerts based on uptime",
+        "D": "Because it eliminates the need for any downtime management"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW057",
+      "question": "What operational issue is most likely if a message broker in an event-driven system begins showing a consistent lag in queue depth?",
+      "choices": {
+        "A": "Excessive horizontal scaling of producers",
+        "B": "Consumers are processing messages slower than the production rate, causing backpressure",
+        "C": "Queue visibility timeout misconfiguration",
+        "D": "Duplicate message publishing from producers"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW058",
+      "question": "In large-scale infrastructure management, what’s a key operational advantage of **GitOps** over traditional configuration management approaches?",
+      "choices": {
+        "A": "It replaces container orchestration with simple shell automation",
+        "B": "It provides a declarative, version-controlled, and auditable single source of truth for infrastructure state",
+        "C": "It allows runtime state changes without version tracking",
+        "D": "It relies solely on imperative deployment scripts"
+      },
+      "answer": "B",
+      "explanation": "",
+      "topic": "it_operations",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    },
+    {
+      "id": "LI_HW059",
+      "question": "When autoscaling a stateful application, why can horizontal scaling lead to inconsistency issues?",
+      "choices": {
+        "A": "Because new replicas may lack synchronized persistent state or shared volume access, leading to data divergence",
+        "B": "Because CPU requests cannot be adjusted dynamically",
+        "C": "Because vertical scaling is disabled by default",
+        "D": "Because service discovery protocols fail to register new instances"
+      },
+      "answer": "A",
+      "explanation": "",
+      "topic": "state_management",
+      "topic_category": "it_operations",
+      "difficulty": "intermediate",
+      "type": "standard",
+      "source": "linkedin_skill_assessment"
+    }
+  ]
+}

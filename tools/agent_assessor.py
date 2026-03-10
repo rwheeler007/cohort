@@ -13,6 +13,8 @@ Usage:
     python tools/agent_assessor.py --category async       # Only async topic category
     python tools/agent_assessor.py --limit 30             # First N questions only
     python tools/agent_assessor.py --legacy               # Use old single-file format
+    python tools/agent_assessor.py --linkedin             # Use LinkedIn skill assessment bank
+    python tools/agent_assessor.py --assessment-dir path/ # Use custom assessment directory
     python tools/agent_assessor.py --report               # Show last results without running
 """
 
@@ -31,15 +33,19 @@ except ImportError:
 
 COHORT_ROOT = Path(__file__).parent.parent
 ASSESSMENTS_DIR = COHORT_ROOT / "data" / "assessments"
+LINKEDIN_ASSESSMENTS_DIR = COHORT_ROOT / "data" / "assessments_linkedin"
+BENCHMARK_ASSESSMENTS_DIR = COHORT_ROOT / "data" / "assessments_benchmark"
 LEGACY_ASSESSMENTS_FILE = COHORT_ROOT / "data" / "agent_assessments.json"
 RESULTS_DIR = COHORT_ROOT / "data" / "assessment_results"  # updated dynamically for --model
 AGENTS_DIR = COHORT_ROOT / "agents"
 DEFAULT_OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_URL = DEFAULT_OLLAMA_URL  # overridden by --ollama-url flag
+DEFAULT_LLAMACPP_URL = "http://localhost:11435"
+INFERENCE_URL = DEFAULT_OLLAMA_URL  # overridden by --ollama-url or --backend
+BACKEND = "ollama"  # "ollama" or "llamacpp"
 DEFAULT_MODEL = "qwen3.5:9b"
 MODEL = DEFAULT_MODEL  # overridden by --model flag
 PASSING_SCORE = 70
-REQUEST_TIMEOUT = 180  # 3 min for multi-step questions
+REQUEST_TIMEOUT = 300  # 5 min -- benchmark questions with long code can be slow
 
 
 def load_assessment(agent_id: str, use_legacy: bool = False) -> dict | None:
@@ -94,14 +100,8 @@ def load_agent_config(agent_id: str) -> dict:
     return {}
 
 
-def ask_ollama(system_prompt: str, question_text: str, temperature: float = 0.15) -> str:
-    """Send a question to Ollama and get the agent's answer."""
-    prompt = (
-        f"{question_text}\n\n"
-        "After your analysis, state your final answer in this exact format on its own line:\n"
-        "ANSWER: <letter>"
-    )
-
+def _ask_ollama(system_prompt: str, prompt: str, temperature: float) -> str:
+    """Send a question via Ollama's /api/generate endpoint."""
     payload = {
         "model": MODEL,
         "prompt": prompt,
@@ -114,9 +114,8 @@ def ask_ollama(system_prompt: str, question_text: str, temperature: float = 0.15
         "keep_alive": "30m",
         "think": False,
     }
-
     try:
-        resp = requests.post(OLLAMA_URL, json=payload, timeout=REQUEST_TIMEOUT)
+        resp = requests.post(INFERENCE_URL, json=payload, timeout=REQUEST_TIMEOUT)
         resp.raise_for_status()
         data = resp.json()
         return data.get("response", "").strip()
@@ -124,43 +123,91 @@ def ask_ollama(system_prompt: str, question_text: str, temperature: float = 0.15
         return f"[ERROR] Ollama request failed: {e}"
 
 
-def extract_answer(response: str) -> str | None:
-    """Extract the answer letter from the model's response."""
+def _ask_llamacpp(system_prompt: str, prompt: str, temperature: float) -> str:
+    """Send a question via llama-server's OpenAI-compatible /v1/chat/completions."""
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ],
+        "temperature": temperature,
+        "max_tokens": 5000,
+        "stream": False,
+    }
+    url = INFERENCE_URL.rstrip("/") + "/v1/chat/completions"
+    try:
+        resp = requests.post(url, json=payload, timeout=REQUEST_TIMEOUT)
+        resp.raise_for_status()
+        data = resp.json()
+        choices = data.get("choices", [])
+        if choices:
+            return choices[0].get("message", {}).get("content", "").strip()
+        return "[ERROR] No choices in response"
+    except requests.RequestException as e:
+        return f"[ERROR] llama-server request failed: {e}"
+
+
+def ask_model(system_prompt: str, question_text: str, temperature: float = 0.15) -> str:
+    """Send a question to the configured inference backend."""
+    prompt = (
+        f"{question_text}\n\n"
+        "After your analysis, state your final answer in this exact format on its own line:\n"
+        "ANSWER: <letter>"
+    )
+    if BACKEND == "llamacpp":
+        return _ask_llamacpp(system_prompt, prompt, temperature)
+    return _ask_ollama(system_prompt, prompt, temperature)
+
+
+def extract_answer(response: str, valid_letters: str = "ABCDEFGHIJ") -> str | None:
+    """Extract the answer letter from the model's response.
+
+    Args:
+        response: The model's raw response text.
+        valid_letters: Which letters are valid choices (e.g. "ABCD" for 4-choice,
+                       "ABCDEFGHIJ" for 10-choice MMLU-Pro). Defaults to A-J.
+    """
     response_clean = response.strip()
     if not response_clean:
         return None
 
+    vl = valid_letters.upper()
+    vl_lower = valid_letters.lower()
+    # Build regex character class like [A-Ja-j]
+    char_class = f"[{vl}{vl_lower}]"
+
     # Pattern 1: "ANSWER: B" (our requested format)
-    m = re.search(r"ANSWER\s*:\s*([A-Da-d])", response_clean, re.IGNORECASE)
+    m = re.search(rf"ANSWER\s*:\s*({char_class})", response_clean, re.IGNORECASE)
     if m:
         return m.group(1).upper()
 
     # Pattern 2: "The answer is B" / "the correct answer is B"
-    m = re.search(r"(?:the\s+)?(?:correct\s+)?answer\s+is\s+\**([A-Da-d])\**", response_clean, re.IGNORECASE)
+    m = re.search(rf"(?:the\s+)?(?:correct\s+)?answer\s+is\s+\**({char_class})\**", response_clean, re.IGNORECASE)
     if m:
         return m.group(1).upper()
 
     # Pattern 3: "Answer: B" or "Choice: B"
-    m = re.search(r"(?:answer|choice)[\s:]+\**([A-Da-d])\**", response_clean, re.IGNORECASE)
+    m = re.search(rf"(?:answer|choice)[\s:]+\**({char_class})\**", response_clean, re.IGNORECASE)
     if m:
         return m.group(1).upper()
 
-    # Pattern 4: Starts with just a letter (A/B/C/D)
-    if response_clean[0].upper() in "ABCD" and (len(response_clean) == 1 or response_clean[1] in " .\n\r\t)-:"):
+    # Pattern 4: Starts with just a letter
+    if response_clean[0].upper() in vl and (len(response_clean) == 1 or response_clean[1] in " .\n\r\t)-:"):
         return response_clean[0].upper()
 
     # Pattern 5: "**B**" or "(B)" standalone on a line
-    m = re.search(r"(?:^|\n)\s*(?:\*\*)?([A-D])(?:\*\*)?\s*(?:$|\n|[.)\-:])", response_clean)
+    m = re.search(rf"(?:^|\n)\s*(?:\*\*)?({char_class})(?:\*\*)?\s*(?:$|\n|[.)\-:])", response_clean)
     if m:
         return m.group(1).upper()
 
     # Pattern 6: last resort -- find last mention of "option X"
-    m = re.search(r"option\s+([A-Da-d])", response_clean, re.IGNORECASE)
+    m = re.search(rf"option\s+({char_class})", response_clean, re.IGNORECASE)
     if m:
         return m.group(1).upper()
 
     # Pattern 7: Look for the last "A)" "B)" etc. pattern
-    matches = re.findall(r"\b([A-D])\)", response_clean)
+    matches = re.findall(rf"\b({char_class})\)", response_clean)
     if matches:
         return matches[-1].upper()
 
@@ -178,8 +225,9 @@ def format_question(q: dict) -> str:
         lines.append("")
     lines.append(f"Question: {q['question']}")
     lines.append("")
-    for letter in "ABCD":
-        lines.append(f"  {letter}) {q['choices'][letter]}")
+    for letter in "ABCDEFGHIJ":
+        if letter in q["choices"]:
+            lines.append(f"  {letter}) {q['choices'][letter]}")
     return "\n".join(lines)
 
 
@@ -303,10 +351,11 @@ def assess_agent(agent_id: str, questions: list, dry_run: bool = False,
         marker = "[MS]" if q_type == "multi_step" else "[  ]"
         print(f"  {marker} [{q_id}] ({difficulty}) Asking... ", end="", flush=True)
         start = time.time()
-        response = ask_ollama(system_prompt, q_text, temperature)
+        response = ask_model(system_prompt, q_text, temperature)
         elapsed = time.time() - start
 
-        agent_answer = extract_answer(response)
+        valid_letters = "".join(sorted(q["choices"].keys()))
+        agent_answer = extract_answer(response, valid_letters=valid_letters)
         is_correct = agent_answer == q["answer"]
 
         if agent_answer is None:
@@ -496,11 +545,15 @@ def parse_args():
         "resume": False,
         "legacy": False,
         "report": False,
+        "linkedin": False,
+        "benchmark": False,
+        "assessment_dir": None,
         "difficulty": None,
         "category": None,
         "limit": None,
         "model": None,
         "ollama_url": None,
+        "backend": None,
         "bare": False,
         "agents": [],
     }
@@ -532,8 +585,18 @@ def parse_args():
         elif arg == "--ollama-url" and i + 1 < len(argv):
             i += 1
             args["ollama_url"] = argv[i]
+        elif arg == "--backend" and i + 1 < len(argv):
+            i += 1
+            args["backend"] = argv[i]
         elif arg == "--bare":
             args["bare"] = True
+        elif arg == "--linkedin":
+            args["linkedin"] = True
+        elif arg == "--benchmark":
+            args["benchmark"] = True
+        elif arg == "--assessment-dir" and i + 1 < len(argv):
+            i += 1
+            args["assessment_dir"] = argv[i]
         elif not arg.startswith("-"):
             args["agents"].append(arg)
         i += 1
@@ -542,13 +605,26 @@ def parse_args():
 
 
 def main():
-    global MODEL, OLLAMA_URL
+    global MODEL, INFERENCE_URL, BACKEND
     args = parse_args()
 
     if args.get("model"):
         MODEL = args["model"]
-    if args.get("ollama_url"):
-        OLLAMA_URL = args["ollama_url"]
+
+    # Backend selection: --backend llamacpp uses llama-server on port 11435
+    if args.get("backend") == "llamacpp":
+        BACKEND = "llamacpp"
+        INFERENCE_URL = args.get("ollama_url") or DEFAULT_LLAMACPP_URL
+    elif args.get("ollama_url"):
+        INFERENCE_URL = args["ollama_url"]
+
+    # LinkedIn / benchmark / custom assessment directory support
+    if args.get("assessment_dir"):
+        globals()["ASSESSMENTS_DIR"] = Path(args["assessment_dir"])
+    elif args.get("benchmark"):
+        globals()["ASSESSMENTS_DIR"] = BENCHMARK_ASSESSMENTS_DIR
+    elif args.get("linkedin"):
+        globals()["ASSESSMENTS_DIR"] = LINKEDIN_ASSESSMENTS_DIR
 
     # Use model-specific results directory to avoid overwriting across runs
     model_slug = MODEL.replace(':', '_').replace('/', '_')

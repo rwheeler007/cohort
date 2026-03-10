@@ -706,7 +706,10 @@ def build_channel_context(channel_id: str) -> str:
         parts.append("\n--- Recent Messages ---")
         for msg in messages:
             ts = msg.timestamp.split("T")[1][:8] if "T" in msg.timestamp else msg.timestamp
-            parts.append(f"[{ts}] {msg.sender}: {msg.content[:2000]}")
+            # System messages (tool context, instructions) get higher limit
+            # to avoid clipping injected knowledge
+            limit = 6000 if msg.sender == "system" else 2000
+            parts.append(f"[{ts}] {msg.sender}: {msg.content[:limit]}")
 
     parts.append("=== END CHANNEL CONTEXT ===\n")
     return "\n".join(parts)

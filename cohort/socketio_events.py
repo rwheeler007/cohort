@@ -38,6 +38,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+import time
 from typing import Any
 
 import socketio
@@ -198,7 +199,15 @@ async def assign_task(sid: str, data: dict) -> dict:
     if not agent_id or not description:
         return {"error": "Missing agent_id or description"}
 
-    task = _task_store.create_task(agent_id, description, priority)
+    # Build trigger from the submission source
+    trigger = {
+        "type": data.get("trigger_type", "manual"),
+        "source": data.get("trigger_source", "user"),
+    }
+
+    task = _task_store.create_task(
+        agent_id, description, priority, trigger=trigger,
+    )
     await sio.emit("cohort:task_assigned", task)
 
     # Start conversational briefing
@@ -210,7 +219,11 @@ async def assign_task(sid: str, data: dict) -> dict:
 
 @sio.event
 async def confirm_task(sid: str, data: dict) -> dict:
-    """User confirms the briefing -- transition to execution."""
+    """User confirms the briefing -- transition to execution.
+
+    Extracts action and outcome from the confirmed brief (Tool/Outcome
+    fields) and persists them on the task before execution.
+    """
     if _task_store is None:
         return {"error": "Task store not initialised"}
 
@@ -220,7 +233,17 @@ async def confirm_task(sid: str, data: dict) -> dict:
     if not task_id:
         return {"error": "Missing task_id"}
 
-    task = _task_store.update_task(task_id, status="assigned", brief=confirmed_brief)
+    # Extract triad fields from the confirmed brief
+    from cohort.briefing import extract_triad_from_brief
+    action, outcome = extract_triad_from_brief(confirmed_brief)
+
+    updates: dict = {"status": "assigned", "brief": confirmed_brief}
+    if action:
+        updates["action"] = action
+    if outcome:
+        updates["outcome"] = outcome
+
+    task = _task_store.update_task(task_id, **updates)
     if not task:
         return {"error": "Task not found"}
 
@@ -527,7 +550,9 @@ async def send_message(sid: str, data: dict) -> dict:
     await sio.emit("new_message", msg_data)
 
     # Route @mentions to agent response pipeline
-    mentions = msg.metadata.get("mentions", [])
+    # Skip routing for system messages -- these are context injections
+    # (e.g. tool help context) that should not trigger agent responses.
+    mentions = msg.metadata.get("mentions", []) if sender != "system" else []
 
     # Auto-route in DM channels: if this is a dm-<agent> channel and the
     # sender is a human (not the agent itself), inject the agent as a mention
@@ -596,6 +621,63 @@ async def archive_channel(sid: str, data: dict) -> dict:
         return {"error": "Channel not found"}
     await _broadcast_channel_lists()
     return {"success": True}
+
+
+@sio.event
+async def create_channel_from_chat(sid: str, data: dict) -> dict:
+    """Create a named channel by copying messages from a DM, then archive the DM.
+
+    Expected data: {"source_channel_id": str, "channel_name": str, "description": str?}
+    """
+    if _chat is None:
+        return {"error": "Chat not initialised"}
+
+    source_id = data.get("source_channel_id")
+    channel_name = data.get("channel_name", "").strip()
+    if not source_id or not channel_name:
+        return {"error": "Missing source_channel_id or channel_name"}
+
+    # Slugify the channel name for the ID
+    channel_id = re.sub(r"[^a-z0-9]+", "-", channel_name.lower()).strip("-")
+    if not channel_id:
+        return {"error": "Invalid channel name"}
+
+    # Avoid collision
+    if _chat.get_channel(channel_id) is not None:
+        channel_id = f"{channel_id}-{int(time.time())}"
+
+    description = data.get("description", f"Created from chat: {source_id}")
+
+    # Create the new channel (id = slug, then rename to display name)
+    _chat.create_channel(name=channel_id, description=description)
+    _chat.rename_channel(channel_id, channel_name)
+
+    # Copy messages from the source DM (skip system "channel created" messages)
+    source_msgs = _chat.get_channel_messages(source_id, limit=500)
+    for msg in source_msgs:
+        if msg.sender == "system" and "created:" in msg.content:
+            continue
+        _chat.post_message(
+            channel_id=channel_id,
+            sender=msg.sender,
+            content=msg.content,
+            message_type=msg.message_type,
+            metadata=msg.metadata,
+        )
+
+    # Archive the source DM
+    _chat.archive_channel(source_id, archived_by="user")
+
+    await _broadcast_channel_lists()
+
+    # Send the new channel's messages to the requesting client
+    new_msgs = _chat.get_channel_messages(channel_id, limit=500)
+    await sio.emit("channel_messages", {
+        "channel_id": channel_id,
+        "messages": [m.to_dict() for m in new_msgs],
+    }, to=sid)
+
+    return {"success": True, "channel_id": channel_id}
 
 
 @sio.event

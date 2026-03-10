@@ -28,6 +28,8 @@ Before you can begin work, make sure you understand:
 - Any constraints or preferences on approach
 - Which files or systems are involved (if applicable)
 - How we'll know the task is done (acceptance criteria)
+- What tool, script, or action you will use to accomplish the task
+- What concrete output (report, file, state change, etc.) you will produce
 
 Ask about these naturally based on what's missing from the brief.  If the
 brief is already clear and complete, say so and move straight to your
@@ -41,6 +43,8 @@ Goal: <one-line goal>
 Approach: <how you'll do it>
 Scope: <files/areas involved>
 Acceptance: <how we'll know it's done>
+Tool: <the specific tool, script, or action to execute>
+Outcome: <what concrete artifact or result will be produced>
 ---END_CONFIRMED---
 
 Then wait for the user to approve before proceeding.
@@ -111,6 +115,33 @@ def build_execution_prompt(
         f"- {key}: {value}" for key, value in confirmed_brief.items() if value
     )
 
+    # Inject action/outcome constraints if available on the task
+    action = task.get("action") or {}
+    outcome = task.get("outcome") or {}
+    constraints = []
+
+    tool_name = action.get("tool")
+    if tool_name:
+        tool_ref = action.get("tool_ref")
+        ref_note = f" ({tool_ref})" if tool_ref else ""
+        constraints.append(f"REQUIRED TOOL: You MUST use {tool_name}{ref_note}.")
+
+    success_criteria = outcome.get("success_criteria")
+    if success_criteria:
+        constraints.append(
+            f"SUCCESS CRITERIA: {success_criteria}\n"
+            f"Your output MUST include a reference to the artifact produced "
+            f"(file path, URL, or description of the state change)."
+        )
+
+    constraint_block = ""
+    if constraints:
+        constraint_block = (
+            "\n=== EXECUTION CONSTRAINTS ===\n"
+            + "\n".join(constraints)
+            + "\n=== END CONSTRAINTS ===\n\n"
+        )
+
     return (
         f"You are the {agent_id} agent executing an approved task.\n\n"
         f"Follow this agent prompt exactly:\n"
@@ -121,6 +152,7 @@ def build_execution_prompt(
         f"Original request: {description}\n\n"
         f"Agreed plan:\n{brief_lines}\n"
         f"=== END CONFIRMED TASK ===\n\n"
+        f"{constraint_block}"
         f"{channel_context}"
         f"Now execute the task.  Produce the deliverable."
     )
@@ -135,14 +167,17 @@ _CONFIRMED_RE = re.compile(
     re.DOTALL,
 )
 
-_FIELD_RE = re.compile(r"^(Goal|Approach|Scope|Acceptance)\s*:\s*(.+)", re.MULTILINE)
+_FIELD_RE = re.compile(
+    r"^(Goal|Approach|Scope|Acceptance|Tool|Outcome)\s*:\s*(.+)", re.MULTILINE,
+)
 
 
 def parse_confirmation(message_content: str) -> dict[str, str] | None:
     """Extract a structured task confirmation from an agent's message.
 
     Returns a dict with keys ``goal``, ``approach``, ``scope``,
-    ``acceptance`` if a valid block is found, otherwise ``None``.
+    ``acceptance``, and optionally ``tool`` and ``outcome``
+    if a valid block is found, otherwise ``None``.
     """
     match = _CONFIRMED_RE.search(message_content)
     if not match:
@@ -161,3 +196,47 @@ def parse_confirmation(message_content: str) -> dict[str, str] | None:
         return None
 
     return fields
+
+
+def extract_triad_from_brief(
+    confirmed_brief: dict[str, str],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Extract action and outcome dicts from a parsed confirmation brief.
+
+    Returns (action_dict, outcome_dict). Either may be None if the
+    corresponding field wasn't in the confirmation block.
+    """
+    action = None
+    outcome = None
+
+    tool_text = confirmed_brief.get("tool")
+    if tool_text:
+        action = {"tool": tool_text, "tool_ref": None, "parameters": {}}
+
+    outcome_text = confirmed_brief.get("outcome")
+    acceptance_text = confirmed_brief.get("acceptance")
+    if outcome_text or acceptance_text:
+        outcome = {
+            "type": _infer_outcome_type(outcome_text or ""),
+            "success_criteria": acceptance_text or outcome_text,
+            "artifact_ref": None,
+            "verified": False,
+        }
+
+    return action, outcome
+
+
+def _infer_outcome_type(outcome_text: str) -> str:
+    """Infer the outcome type from free-text description."""
+    text_lower = outcome_text.lower()
+    if any(w in text_lower for w in ("report", "summary", "briefing", "digest")):
+        return "report"
+    if any(w in text_lower for w in ("file", "document", "pdf", "html", "csv")):
+        return "artifact"
+    if any(w in text_lower for w in ("update", "change", "modify", "set", "toggle")):
+        return "state_change"
+    if any(w in text_lower for w in ("notify", "alert", "email", "message", "post")):
+        return "notification"
+    if any(w in text_lower for w in ("analyze", "scan", "audit", "review", "assess")):
+        return "analysis"
+    return "artifact"  # default

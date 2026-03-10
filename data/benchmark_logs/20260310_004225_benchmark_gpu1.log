@@ -1,0 +1,8 @@
+Agent Assessor v2 -- 5 agent(s), ~1966 questions
+Model: qwen3.5:9b | Pass: 70%
+Filter: limit=500
+[*] Resume mode: skipping already-answered questions
+
+--- system_coder (CodeMMLU (Fsoft-AIC/CodeMMLU)) ---
+    500 questions (0 multi-step)
+  [  ] [CM_SYS0001] (advanced) Asking... 

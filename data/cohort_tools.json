@@ -1,6 +1,6 @@
 {
   "_comment": "Curated agent capabilities for Cohort. Remove this file to show all tools.",
-  "version": 1,
+  "version": 2,
   "tools": [
     "comms_service",
     "web_search",
@@ -36,6 +36,133 @@
     "web_search": "http://127.0.0.1:8005/health",
     "youtube_service": "http://127.0.0.1:8002/health",
     "health_monitor": "http://127.0.0.1:8400/health",
-    "llm_manager": "http://127.0.0.1:11434/api/tags"
+    "llm_manager": "http://127.0.0.1:11434/api/tags",
+    "document_processor": "http://127.0.0.1:11434/api/tags",
+    "intel_scheduler": "http://127.0.0.1:5000/health",
+    "content_monitor_scheduler": "http://127.0.0.1:5000/health"
+  },
+  "tool_context": {
+    "comms_service": {
+      "what_it_does": "Sends emails via Resend, manages Google Calendar events, and posts to social media (Twitter, LinkedIn, Facebook, Threads). Every outbound message goes through a human approval gate before sending -- nothing leaves without your explicit OK.",
+      "settings": {
+        "email_provider": {"type": "select", "default": "Resend", "options": ["Resend"], "description": "Email delivery service. Resend is the default provider -- handles transactional and marketing emails with delivery tracking."},
+        "calendar_provider": {"type": "select", "default": "Google Calendar", "options": ["Google Calendar"], "description": "Calendar integration for creating and managing events. Requires Google OAuth credentials configured in the service."}
+      },
+      "faq": [
+        {"q": "Which social platforms are supported?", "a": "Twitter, LinkedIn, Facebook, and Threads. AI agents can draft posts that get queued for your approval. You review and approve/reject each post before it goes live."},
+        {"q": "How does the approval gate work?", "a": "All outbound messages (emails, social posts, calendar invites) must be approved by you before sending. When an agent drafts a message, it appears in the Pending Approval queue. You can approve, edit, or reject each item. Nothing is ever sent automatically."},
+        {"q": "What does the audit log track?", "a": "Every outbound action is logged with full details: who requested it, what was sent, which channels it went to, timestamps, and approval status. You can review the complete history in Today's Activity."},
+        {"q": "How do I set up email sending?", "a": "Email uses Resend as the delivery provider. You need a Resend API key configured in the service. Once set up, agents can draft emails that go through the approval queue."},
+        {"q": "What do Sent/Failed/Errors/Pending mean?", "a": "Sent Today = successfully delivered messages. Failed = messages that couldn't be delivered (check the activity log for details). Errors = messages flagged with priority 'error'. Pending = posts waiting for your approval before sending."}
+      ]
+    },
+    "web_search": {
+      "what_it_does": "Provides web search to all agents. Two providers: API-based search (SerpAPI/Serper/Google) which requires an API key and costs per request, and Local search via DuckDuckGo (ddgs) which is completely free and runs locally. You can enable both, either, or neither. Agents automatically use whichever is available.",
+      "settings": {
+        "api_search_enabled": {"type": "toggle", "default": true, "description": "Enable/disable the API search provider. When enabled, agents can search via SerpAPI, Serper, or Google. Requires an API key and is billed per request."},
+        "local_search_enabled": {"type": "toggle", "default": true, "description": "Enable/disable local DuckDuckGo search. Free, no API key needed, runs locally via the ddgs Python package. Install with: pip install ddgs"},
+        "provider": {"type": "select", "default": "SerpAPI", "options": ["SerpAPI", "Serper", "Google"], "description": "Which API search backend to use. SerpAPI and Serper are third-party services; Google uses the Custom Search JSON API. All require API keys."},
+        "rate_limit_per_min": {"type": "number", "default": 30, "min": 1, "max": 120, "description": "Maximum API search requests per minute. Prevents runaway agent loops from burning through your API quota."},
+        "rate_limit_per_day": {"type": "number", "default": 250, "min": 1, "max": 10000, "description": "Maximum API search requests per day. Hard cap to control costs. Local DuckDuckGo search is not rate-limited."}
+      },
+      "faq": [
+        {"q": "Should I use API or local search?", "a": "Local (DuckDuckGo) is free and good for general searches. API providers (SerpAPI, Serper) give higher-quality results with better snippets and structured data but cost money. You can enable both -- agents will try API first and fall back to local."},
+        {"q": "How do I install local search?", "a": "Run 'pip install ddgs' in your terminal. Once installed, the local search toggle will show as 'Available'. No API key needed."},
+        {"q": "What are the rate limits for?", "a": "Rate limits prevent agents from making too many API search requests, which costs money. The per-minute limit prevents burst usage; the per-day limit caps total spending. Local DuckDuckGo search is unlimited."},
+        {"q": "Why is web search showing as offline?", "a": "The API search status depends on the web search microservice running on port 8005. If it's down, API search won't work, but local DuckDuckGo search can still operate independently."}
+      ]
+    },
+    "youtube_service": {
+      "what_it_does": "Search YouTube videos by keyword, get detailed video metadata (title, description, channel, view counts, duration), and auto-extract chapter timestamps from video descriptions. Agents use this for research, content analysis, and finding relevant video resources.",
+      "settings": {
+        "rate_limit_per_min": {"type": "number", "default": 30, "min": 1, "max": 120, "description": "Maximum YouTube API requests per minute."},
+        "rate_limit_per_day": {"type": "number", "default": 1000, "min": 1, "max": 10000, "description": "Maximum YouTube API requests per day. YouTube Data API has a daily quota."},
+        "default_results": {"type": "number", "default": 10, "min": 1, "max": 50, "description": "Default number of search results returned per query."}
+      },
+      "faq": [
+        {"q": "What can the YouTube service do?", "a": "Three main features: (1) Search videos by keyword with filters, (2) Get detailed metadata for any video (title, description, channel info, view counts, duration, tags), (3) Auto-extract chapter timestamps from video descriptions."},
+        {"q": "Do I need a YouTube API key?", "a": "Yes, the YouTube service requires a Google YouTube Data API key. The service runs on port 8002."},
+        {"q": "What are chapters?", "a": "When a video creator adds timestamps to their description (like '0:00 Intro, 2:30 Setup'), the YouTube service can automatically extract these as structured chapter data. Useful for jumping to specific parts of tutorials."},
+        {"q": "Why is YouTube showing offline?", "a": "The YouTube microservice runs on port 8002. Check that it's running and that your YouTube API key is configured correctly."}
+      ]
+    },
+    "intel_scheduler": {
+      "what_it_does": "Automated tech intelligence pipeline. Monitors RSS feeds on a schedule, fetches new articles, scores them for relevance (0-10), and generates periodic briefings. The pipeline has three stages: RSS Fetch (discover new articles), Analysis (score and summarize), and Briefing (compile weekly digest).",
+      "settings": {
+        "fetch_interval_hrs": {"type": "number", "default": 4, "min": 1, "max": 24, "description": "How often to check RSS feeds for new articles, in hours."},
+        "fetch_window_start": {"type": "number", "default": 8, "min": 0, "max": 23, "description": "Earliest hour to run RSS fetches (24h format). Prevents overnight fetching."},
+        "fetch_window_end": {"type": "number", "default": 18, "min": 0, "max": 23, "description": "Latest hour to run RSS fetches (24h format)."},
+        "analysis_days": {"type": "select", "default": "Weekdays", "options": ["Weekdays", "Daily", "Weekends"], "description": "Which days to run article analysis and scoring."},
+        "analysis_time": {"type": "text", "default": "07:00", "description": "Time of day to run article analysis (HH:MM format)."},
+        "briefing_day": {"type": "select", "default": "Sunday", "options": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "description": "Which day of the week to compile the weekly briefing digest."},
+        "briefing_time": {"type": "text", "default": "18:00", "description": "Time of day to generate the weekly briefing."},
+        "max_fetches_day": {"type": "number", "default": 6, "min": 1, "max": 50, "description": "Maximum RSS fetch cycles per day. Safety limit to avoid overwhelming feed sources."},
+        "max_articles_day": {"type": "number", "default": 200, "min": 1, "max": 1000, "description": "Maximum articles to process per day across all feeds."},
+        "min_relevance": {"type": "number", "default": 5, "min": 0, "max": 10, "description": "Minimum relevance score (0-10) for an article to be included in briefings. Higher = more selective. Admin setting."}
+      },
+      "faq": [
+        {"q": "What does the relevance score mean?", "a": "Each article is scored 0-10 by AI based on how relevant it is to your configured interests. 7+ is high relevance (green), 4-6 is moderate (yellow), below 4 is low priority. The Min Relevance setting controls the cutoff for briefings."},
+        {"q": "How do I add RSS feeds?", "a": "Feed sources are configured in the backend. The panel shows how many feeds are being monitored. To add new feeds, configure them in the RSS service settings."},
+        {"q": "What's the fetch window?", "a": "The start/end hours define when RSS fetching is allowed. For example, 8:00-18:00 means feeds are only checked during business hours. Outside this window, no fetches run."},
+        {"q": "What does Last Run / Last Fetch / Recent Total show?", "a": "Last Run = when the most recent fetch cycle ran. Last Fetch = how many new articles were found in that run. Recent Total = total new articles across all recent runs. Feeds = number of RSS sources monitored."}
+      ]
+    },
+    "content_monitor_scheduler": {
+      "what_it_does": "Content marketing automation pipeline. Discovers relevant content from Reddit, forums, and RSS feeds, then drafts social media posts for your brand. The pipeline flows: Fetch (discover content) -> Analyze (score relevance) -> Draft (AI writes posts) -> Pending (you review) -> Approved (ready to publish). All posts require human approval.",
+      "settings": {
+        "fetch_interval_hrs": {"type": "number", "default": 2, "min": 1, "max": 24, "description": "How often to fetch new content from monitored sources."},
+        "fetch_window_start": {"type": "number", "default": 9, "min": 0, "max": 23, "description": "Earliest hour for content fetching."},
+        "fetch_window_end": {"type": "number", "default": 21, "min": 0, "max": 23, "description": "Latest hour for content fetching."},
+        "analysis_interval_hrs": {"type": "number", "default": 4, "min": 1, "max": 24, "description": "How often to analyze and score fetched content for relevance."},
+        "drafting_days": {"type": "select", "default": "Weekdays", "options": ["Weekdays", "Daily", "Weekends"], "description": "Which days to auto-draft social media posts from high-scoring content."},
+        "drafting_time": {"type": "text", "default": "08:00", "description": "Time of day to run the post drafting stage."},
+        "digest_day": {"type": "select", "default": "Sunday", "options": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "description": "Day for the weekly content digest summary."},
+        "digest_time": {"type": "text", "default": "18:00", "description": "Time for the weekly digest."},
+        "min_relevance_for_draft": {"type": "number", "default": 5, "min": 0, "max": 10, "description": "Minimum relevance score for content to trigger a draft post. Higher = fewer but more targeted posts. Admin setting."}
+      },
+      "faq": [
+        {"q": "How does the content pipeline work?", "a": "Four stages: (1) Fetch discovers content from RSS, Reddit, and forums. (2) Analysis scores each piece for relevance to your brand. (3) Drafting creates social media posts from high-scoring content using AI. (4) You review and approve/reject each draft before it goes live."},
+        {"q": "How do I approve or reject posts?", "a": "Drafted posts appear in the Posts section with Pending status. Click on a post to expand it, then use the Approve or Reject buttons. Approved posts move to the 'ready to publish' queue."},
+        {"q": "What are the Daily Limits?", "a": "Safety caps to prevent runaway automation: max fetches per day, max articles analyzed per day, and max drafts per day. These protect against loops and control AI usage costs."},
+        {"q": "What does the relevance score on posts mean?", "a": "Each piece of source content is scored 0-10 for relevance to your brand. Posts show this score: green (7+) = highly relevant, yellow (4-6) = moderately relevant. The Min Relevance setting controls the threshold for drafting."},
+        {"q": "What are Monitored Feeds?", "a": "The list of content sources being tracked -- RSS feeds, Reddit subreddits, and forum URLs. These are configured in the backend content monitor config."}
+      ]
+    },
+    "document_processor": {
+      "what_it_does": "Process and analyze documents using local AI. Supports PDF, Word, Excel, images, video, HTML, CSV, JSON, code files, and plain text. Three input methods: drag-and-drop files, paste a URL, or paste text directly. Four analysis modes: Summary (concise paragraph), Outline (hierarchical structure), Key Points (bullet list of findings), and All (runs all three). Image mode describes visual content.",
+      "settings": {},
+      "faq": [
+        {"q": "What file types are supported?", "a": "PDF, Word (.docx), Excel (.xlsx/.xls), images (PNG, JPG, GIF, BMP, WebP, TIFF), video (MP4, AVI, MOV, MKV, WebM), HTML, CSV, JSON, Markdown, plain text, Python, JavaScript, TypeScript, CSS, YAML, XML, and SQL files."},
+        {"q": "What's the difference between Ollama and Smart mode?", "a": "Ollama mode processes documents entirely on your local machine using installed AI models (free, private). Smart mode uses Claude Code CLI (cloud-based, paid, higher quality for complex documents). Toggle between them at the top of the panel."},
+        {"q": "Which model should I select?", "a": "For general use, qwen3.5:9b is a good all-rounder. For code files, qwen2.5-coder models are optimized. The model dropdown shows all models installed in Ollama. Larger models give better results but use more GPU memory."},
+        {"q": "Can I process a URL?", "a": "Yes -- paste any web URL in the 'Or enter a web address' field. The system will fetch the page, extract its content, and process it with the selected analysis mode."},
+        {"q": "What do the analysis modes do?", "a": "Summary = concise paragraph of main ideas. Outline = hierarchical structure with headings. Key Points = bullet list of important facts. All = runs all three and shows results together. Image = describes visual content of image files."}
+      ]
+    },
+    "health_monitor": {
+      "what_it_does": "Monitors all system services and lets you start, stop, and restart them. Click 'Run All Checks' to scan every service, then use the Start/Stop/Restart buttons to control individual services. Services are defined in data/services/health_monitor/service_registry.yaml -- add new services there with their port, health endpoint, and start command.",
+      "settings": {},
+      "faq": [
+        {"q": "What do Healthy/Down/Unknown mean?", "a": "Healthy (green) = service responded to its health check. Down (red) = service is not responding. Unknown (gray) = hasn't been checked yet. Click 'Run All Checks' to refresh."},
+        {"q": "How do I start a service?", "a": "Click the 'Start' button next to any stopped (Down) service. The system will launch it using its configured start_command and verify it comes up healthy."},
+        {"q": "How do I stop a service?", "a": "Click the 'Stop' button next to any running (Healthy) service. This kills the process on that port. The Cohort server itself is marked 'self-hosted' and cannot be stopped from within."},
+        {"q": "How do I restart a service?", "a": "Click the 'Restart' button next to any running service. This kills the existing process, waits for the port to free up, then launches a fresh instance."},
+        {"q": "How do I add a new service?", "a": "Edit data/services/health_monitor/service_registry.yaml. Add a new entry with port, health_endpoint, start_command, and start_cwd. The service will appear on next refresh."},
+        {"q": "What does 'self-hosted' mean?", "a": "The Cohort server itself (port 5100) is self-hosted -- it cannot stop or restart itself from its own UI. To restart Cohort, do it from the terminal."},
+        {"q": "What does 'Run All Checks' do?", "a": "Sends an HTTP GET to every service's health endpoint and updates the status display. Services that fail get one automatic retry after 1 second to avoid false positives from transient glitches."}
+      ]
+    },
+    "llm_manager": {
+      "what_it_does": "Manage local AI models via Ollama. View installed models, check GPU memory usage, pull new models, and remove ones you don't need. Models power the document processor, agent responses, and all local AI features. Shows real-time VRAM usage and which models are currently loaded in GPU memory.",
+      "settings": {},
+      "faq": [
+        {"q": "How do I install a new model?", "a": "Type the model name in the 'Pull New Model' field (e.g., 'qwen3.5:9b', 'llama3.2:1b') and click Pull. The model will download and become available. Quick-pull buttons are provided for recommended models."},
+        {"q": "Which model should I use?", "a": "Depends on your GPU. With 12GB VRAM: qwen3.5:9b is the best all-rounder (6.6GB, 262K context). With 8GB: qwen3.5:4b or gemma3:4b. With 4GB or CPU-only: llama3.2:1b or qwen3.5:2b. For code tasks specifically, qwen2.5-coder:7b is excellent."},
+        {"q": "What does the GPU Memory bar show?", "a": "Shows how much VRAM is currently used by loaded models out of your GPU's total (e.g., 12GB for RTX 3080). Models are loaded on-demand and unloaded after use. If a model is [LOADED], it's currently in GPU memory."},
+        {"q": "Why is Ollama showing offline?", "a": "Ollama needs to be running as a background service. Start it with 'ollama serve' in your terminal. It runs on port 11434 by default."},
+        {"q": "Can I remove a model?", "a": "Yes, click the Remove button next to any installed model. This frees disk space. You can always re-pull a model later. Removing a model that's currently loaded will unload it first."},
+        {"q": "What does [LOADED] mean?", "a": "A model marked [LOADED] is currently in GPU memory and ready for instant inference. Models not loaded need a few seconds to load when first called. Models auto-unload after use to free VRAM."}
+      ]
+    }
   }
 }

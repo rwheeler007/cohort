@@ -384,7 +384,25 @@ async def create_task(request: Request) -> JSONResponse:
             status_code=400,
         )
 
-    task = _task_store.create_task(agent_id, description, priority)
+    # Build triad fields from request body
+    trigger = {
+        "type": body.get("trigger_type", "manual"),
+        "source": body.get("trigger_source", "user"),
+    }
+    action = None
+    if body.get("tool"):
+        action = {"tool": body["tool"], "tool_ref": body.get("tool_ref"), "parameters": {}}
+    outcome = None
+    if body.get("success_criteria"):
+        outcome = {
+            "type": body.get("outcome_type", "artifact"),
+            "success_criteria": body["success_criteria"],
+        }
+
+    task = _task_store.create_task(
+        agent_id, description, priority,
+        trigger=trigger, action=action, outcome=outcome,
+    )
 
     # Broadcast via Socket.IO if available
     try:
@@ -1457,6 +1475,287 @@ async def post_permissions(request: Request) -> JSONResponse:
 
 
 # =====================================================================
+# Service Key Testing API
+# =====================================================================
+
+async def test_service_key(request: Request) -> JSONResponse:
+    """POST /api/service-keys/test -- verify a service key connects successfully.
+
+    Body: { "service_id": "anthropic_default" }
+    Returns: { "success": true/false, "message": "...", "latency_ms": 123 }
+    """
+    import time
+    import urllib.request
+    import urllib.error
+
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        return JSONResponse({"success": False, "message": "Invalid JSON body"}, status_code=400)
+
+    service_id = body.get("service_id", "")
+    if not service_id:
+        return JSONResponse({"success": False, "message": "Missing service_id"}, status_code=400)
+
+    settings = _load_settings()
+    raw_services = settings.get("service_keys", [])
+    svc = next((s for s in raw_services if s.get("id") == service_id), None)
+    if not svc:
+        return JSONResponse({"success": False, "message": "Service not found"})
+
+    svc_type = svc.get("type", "custom")
+    key = svc.get("key", "")
+    extra = svc.get("extra", "")
+
+    if not key and svc_type not in ("internal_web", "internal_web_search", "rss"):
+        return JSONResponse({"success": False, "message": "No API key configured"})
+
+    # Parse extra fields (JSON string with additional credentials)
+    extra_data = {}
+    if extra:
+        try:
+            extra_data = json.loads(extra)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    t0 = time.monotonic()
+
+    try:
+        result = await _test_service_connection(svc_type, key, extra_data)
+        latency = int((time.monotonic() - t0) * 1000)
+        result["latency_ms"] = latency
+        return JSONResponse(result)
+    except Exception as exc:
+        latency = int((time.monotonic() - t0) * 1000)
+        return JSONResponse({
+            "success": False,
+            "message": f"Connection failed: {exc}",
+            "latency_ms": latency,
+        })
+
+
+async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict:
+    """Run a lightweight connectivity test for a given service type.
+
+    Returns {"success": bool, "message": str}.
+    """
+    import urllib.request
+    import urllib.error
+
+    def _http_test(url: str, headers: dict | None = None, method: str = "GET") -> dict:
+        """Synchronous HTTP request helper for API tests."""
+        req = urllib.request.Request(url, method=method, headers=headers or {})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                status = resp.status
+                if 200 <= status < 300:
+                    return {"success": True, "message": f"Connected (HTTP {status})"}
+                return {"success": False, "message": f"Unexpected status: HTTP {status}"}
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                return {"success": False, "message": "Authentication failed (401) -- check your API key"}
+            if e.code == 403:
+                return {"success": False, "message": "Access denied (403) -- key may lack required permissions"}
+            return {"success": False, "message": f"HTTP error: {e.code} {e.reason}"}
+        except urllib.error.URLError as e:
+            return {"success": False, "message": f"Connection error: {e.reason}"}
+
+    # --- Anthropic ---
+    if svc_type == "anthropic":
+        # Minimal messages API call with max_tokens=1
+        import urllib.request
+        url = "https://api.anthropic.com/v1/messages"
+        data = json.dumps({
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 1,
+            "messages": [{"role": "user", "content": "hi"}],
+        }).encode()
+        req = urllib.request.Request(url, data=data, method="POST", headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                return {"success": True, "message": "API key valid -- connected to Anthropic"}
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                return {"success": False, "message": "Invalid API key (401)"}
+            if e.code == 403:
+                return {"success": False, "message": "API key lacks permissions (403)"}
+            if e.code == 429:
+                # Rate limited means the key IS valid
+                return {"success": True, "message": "API key valid (rate limited, try again later)"}
+            if e.code == 400:
+                body_text = e.read().decode("utf-8", errors="replace")
+                # Key is valid if Anthropic recognized it but rejected for billing
+                if "credit balance" in body_text or "billing" in body_text.lower():
+                    return {"success": True, "message": "API key valid (account has no credits -- check Plans & Billing)"}
+                return {"success": False, "message": f"Bad request (400): {body_text[:200]}"}
+            return {"success": False, "message": f"HTTP {e.code}: {e.reason}"}
+        except urllib.error.URLError as e:
+            return {"success": False, "message": f"Connection failed: {e.reason}"}
+
+    # --- OpenAI ---
+    if svc_type == "openai":
+        return _http_test("https://api.openai.com/v1/models", headers={
+            "Authorization": f"Bearer {key}",
+        })
+
+    # --- GitHub ---
+    if svc_type == "github":
+        return _http_test("https://api.github.com/user", headers={
+            "Authorization": f"Bearer {key}",
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "Cohort-ServiceTest/1.0",
+        })
+
+    # --- YouTube ---
+    if svc_type == "youtube":
+        # YouTube Data API key test -- list a public video category
+        url = f"https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key={key}"
+        result = _http_test(url)
+        if not result["success"] and "403" in result["message"]:
+            result["message"] = "API key valid but YouTube Data API v3 is not enabled -- enable it in Google Cloud Console"
+            result["success"] = True  # key itself is valid
+        return result
+
+    # --- Google Cloud ---
+    if svc_type == "google":
+        # OAuth token test
+        return _http_test("https://www.googleapis.com/oauth2/v1/tokeninfo", headers={
+            "Authorization": f"Bearer {key}",
+        })
+
+    # --- Cloudflare ---
+    if svc_type == "cloudflare":
+        return _http_test("https://api.cloudflare.com/client/v4/user/tokens/verify", headers={
+            "Authorization": f"Bearer {key}",
+        })
+
+    # --- Resend ---
+    if svc_type == "resend":
+        result = _http_test("https://api.resend.com/api-keys", headers={
+            "Authorization": f"Bearer {key}",
+        })
+        if not result["success"] and "403" in result["message"]:
+            # 403 means the key authenticated but has limited scope (e.g. sending-only)
+            result["success"] = True
+            result["message"] = "API key valid (sending-only scope -- cannot list api-keys)"
+        return result
+
+    # --- Twitter/X ---
+    if svc_type == "twitter":
+        # Use bearer token if available in extra, otherwise use main key
+        bearer = extra.get("bearer_token") or key
+        return _http_test("https://api.twitter.com/2/users/me", headers={
+            "Authorization": f"Bearer {bearer}",
+        })
+
+    # --- Reddit ---
+    if svc_type == "reddit":
+        return _http_test("https://www.reddit.com/api/v1/me", headers={
+            "Authorization": f"Bearer {key}",
+            "User-Agent": "Cohort-ServiceTest/1.0",
+        })
+
+    # --- LinkedIn ---
+    if svc_type == "linkedin":
+        return _http_test("https://api.linkedin.com/v2/userinfo", headers={
+            "Authorization": f"Bearer {key}",
+        })
+
+    # --- Slack (webhook) ---
+    if svc_type == "slack":
+        # Slack webhooks don't have a "test" endpoint. We can only verify the URL format.
+        if key.startswith("https://hooks.slack.com/"):
+            return {"success": True, "message": "Webhook URL format valid (cannot verify without sending)"}
+        return {"success": False, "message": "Invalid Slack webhook URL -- should start with https://hooks.slack.com/"}
+
+    # --- Discord (webhook) ---
+    if svc_type == "discord":
+        if key.startswith("https://discord.com/api/webhooks/") or key.startswith("https://discordapp.com/api/webhooks/"):
+            # Discord webhooks support GET to verify
+            return _http_test(key)
+        return {"success": False, "message": "Invalid Discord webhook URL"}
+
+    # --- AWS ---
+    if svc_type == "aws":
+        # AWS needs access_key + secret_key -- can test with STS GetCallerIdentity
+        secret = extra.get("secret_access_key", "")
+        region = extra.get("region", "us-east-1")
+        if not secret:
+            return {"success": False, "message": "Missing Secret Access Key in extra fields"}
+        # Lightweight check: just verify credentials are non-empty and formatted correctly
+        if len(key) == 20 and key.startswith("AKIA"):
+            return {"success": True, "message": f"Credentials format valid (region: {region}) -- full STS test not implemented"}
+        return {"success": True, "message": f"Credentials set (region: {region}) -- format unrecognized but may still work"}
+
+    # --- Email SMTP ---
+    if svc_type == "email_smtp":
+        import smtplib
+        host = extra.get("host", "")
+        port = int(extra.get("port", 587))
+        username = extra.get("username", "")
+        if not host:
+            return {"success": False, "message": "Missing SMTP host in extra fields"}
+        try:
+            with smtplib.SMTP(host, port, timeout=10) as smtp:
+                smtp.ehlo()
+                if port in (587, 465):
+                    smtp.starttls()
+                if username and key:
+                    smtp.login(username, key)
+                return {"success": True, "message": f"SMTP connected to {host}:{port}"}
+        except smtplib.SMTPAuthenticationError:
+            return {"success": False, "message": "SMTP authentication failed -- check username/password"}
+        except Exception as e:
+            return {"success": False, "message": f"SMTP connection failed: {e}"}
+
+    # --- Email IMAP ---
+    if svc_type == "email_imap":
+        import imaplib
+        host = extra.get("host", "")
+        port = int(extra.get("port", 993))
+        username = extra.get("username", "")
+        if not host:
+            return {"success": False, "message": "Missing IMAP host in extra fields"}
+        try:
+            imap = imaplib.IMAP4_SSL(host, port) if port == 993 else imaplib.IMAP4(host, port)
+            if username and key:
+                imap.login(username, key)
+            imap.logout()
+            return {"success": True, "message": f"IMAP connected to {host}:{port}"}
+        except imaplib.IMAP4.error as e:
+            return {"success": False, "message": f"IMAP auth failed: {e}"}
+        except Exception as e:
+            return {"success": False, "message": f"IMAP connection failed: {e}"}
+
+    # --- Internal Web (local) ---
+    if svc_type in ("internal_web", "internal_web_search"):
+        parts = []
+        try:
+            import playwright  # noqa: F401
+            parts.append("Playwright: OK")
+        except ImportError:
+            parts.append("Playwright: not installed")
+        try:
+            import ddgs  # noqa: F401
+            parts.append("DuckDuckGo Search: OK")
+        except ImportError:
+            parts.append("DuckDuckGo Search: not installed")
+        ok = any("OK" in p for p in parts)
+        return {"success": ok, "message": " | ".join(parts)}
+
+    # --- RSS ---
+    if svc_type == "rss":
+        return {"success": True, "message": "RSS feeds are fetched on-demand -- no key needed"}
+
+    # --- Fallback for custom/unknown ---
+    return {"success": False, "message": f"No test available for service type '{svc_type}'"}
+
+
+# =====================================================================
 # Tool Permissions API (per-agent tool access)
 # =====================================================================
 
@@ -1811,7 +2110,14 @@ async def _stream_model_pull(model: str, sio_server: Any) -> None:
 
 
 async def setup_verify_model(request: Request) -> JSONResponse:
-    """POST /api/setup/verify -- test inference with the selected model."""
+    """POST /api/setup/verify -- test inference with the selected model.
+
+    Runs two tests:
+    1. Basic generation (no thinking) -- confirms model works
+    2. Thinking mode test -- confirms /think works for Smarter mode
+
+    Returns both results so the UI can show thinking mode status.
+    """
     from cohort.local.ollama import OllamaClient
 
     settings = _load_settings()
@@ -1820,6 +2126,8 @@ async def setup_verify_model(request: Request) -> JSONResponse:
         return JSONResponse({"error": "No model selected"}, status_code=400)
 
     client = OllamaClient(timeout=120)
+
+    # Test 1: Basic generation (Smart mode equivalent)
     result = await asyncio.to_thread(
         client.generate,
         model=model,
@@ -1827,19 +2135,41 @@ async def setup_verify_model(request: Request) -> JSONResponse:
         temperature=0.3,
     )
 
-    if result and result.text.strip():
-        settings["model_verified"] = True
-        _save_settings(settings)
+    if not result or not result.text.strip():
         return JSONResponse({
-            "success": True,
-            "text": result.text.strip(),
-            "elapsed_seconds": result.elapsed_seconds,
-            "model": model,
+            "success": False,
+            "error": "Model produced no output. First run can be slow -- try again.",
         })
 
+    basic_text = result.text.strip()
+    basic_elapsed = result.elapsed_seconds
+
+    # Test 2: Thinking mode (Smarter mode equivalent)
+    thinking_ok = False
+    thinking_error = ""
+    try:
+        think_result = await asyncio.to_thread(
+            client.generate,
+            model=model,
+            prompt="Is 17 a prime number? Think step by step, then answer yes or no.",
+            temperature=0.3,
+            think=True,
+        )
+        if think_result and think_result.text.strip():
+            thinking_ok = True
+    except Exception as exc:
+        thinking_error = str(exc)
+
+    settings["model_verified"] = True
+    _save_settings(settings)
+
     return JSONResponse({
-        "success": False,
-        "error": "Model produced no output. First run can be slow -- try again.",
+        "success": True,
+        "text": basic_text,
+        "elapsed_seconds": basic_elapsed,
+        "model": model,
+        "thinking_ok": thinking_ok,
+        "thinking_error": thinking_error,
     })
 
 
@@ -2104,9 +2434,37 @@ async def get_service_status(request: Request) -> JSONResponse:
                 body = json.loads(resp.read().decode("utf-8"))
             except Exception:
                 body = {}
-            return JSONResponse({"status": status, "detail": body})
+            result = {"status": status, "detail": body}
+
+            # Enrich comms_service with provider status
+            if service_id == "comms_service":
+                svc_status = status  # "up" or "down"
+                result["providers"] = {
+                    "email": {"name": "Resend", "status": svc_status},
+                    "calendar": {"name": "Google Calendar", "status": svc_status},
+                    "social": {
+                        "twitter": {"status": "not_configured"},
+                        "linkedin": {"status": "not_configured"},
+                        "facebook": {"status": "not_configured"},
+                        "threads": {"status": "not_configured"},
+                    },
+                }
+
+            return JSONResponse(result)
     except Exception:
-        return JSONResponse({"status": "down", "detail": "Connection failed"})
+        result = {"status": "down", "detail": "Connection failed"}
+        if service_id == "comms_service":
+            result["providers"] = {
+                "email": {"name": "Resend", "status": "down"},
+                "calendar": {"name": "Google Calendar", "status": "down"},
+                "social": {
+                    "twitter": {"status": "not_configured"},
+                    "linkedin": {"status": "not_configured"},
+                    "facebook": {"status": "not_configured"},
+                    "threads": {"status": "not_configured"},
+                },
+            }
+        return JSONResponse(result)
 
 
 async def get_tool_config(request: Request) -> JSONResponse:
@@ -2122,6 +2480,47 @@ async def get_tool_config(request: Request) -> JSONResponse:
         "name": display_names.get(tool_id, tool_id.replace("_", " ").title()),
         "description": descriptions.get(tool_id, ""),
         "has_health_endpoint": has_health,
+    })
+
+
+async def get_tool_context(request: Request) -> JSONResponse:
+    """GET /api/tool-context/{tool_id} -- rich context for the help agent.
+
+    Returns tool knowledge (what_it_does, settings schema, FAQ) merged with
+    live state (current config values, service health status).
+    """
+    import urllib.request
+
+    tool_id = request.path_params["tool_id"]
+    tools_cfg = _load_tools_config()
+    display_names = tools_cfg.get("display_names", {})
+    descriptions = tools_cfg.get("descriptions", {})
+    tool_ctx = tools_cfg.get("tool_context", {}).get(tool_id, {})
+
+    # Live config values
+    all_values = _load_tool_config_values()
+    live_values = all_values.get(tool_id, {})
+
+    # Live service status
+    health_url = tools_cfg.get("health_endpoints", {}).get(tool_id)
+    service_status = "unknown"
+    if health_url and ("127.0.0.1" in health_url or "localhost" in health_url):
+        try:
+            req = urllib.request.Request(health_url, method="GET")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                service_status = "up" if resp.status == 200 else "down"
+        except Exception:
+            service_status = "down"
+
+    return JSONResponse({
+        "id": tool_id,
+        "name": display_names.get(tool_id, tool_id.replace("_", " ").title()),
+        "description": descriptions.get(tool_id, ""),
+        "what_it_does": tool_ctx.get("what_it_does", ""),
+        "settings": tool_ctx.get("settings", {}),
+        "faq": tool_ctx.get("faq", []),
+        "current_values": live_values,
+        "service_status": service_status,
     })
 
 
@@ -2287,10 +2686,10 @@ def _read_json_safe(path: Path) -> dict | list | None:
 
 async def get_health_monitor_state(request: Request) -> JSONResponse:
     """GET /api/health-monitor/state -- return full health monitor state."""
-    state_path = _cohort_data_dir() / "health_monitor" / "state.json"
-    data = _read_json_safe(state_path)
-    if data is None:
-        return JSONResponse({"error": "Health monitor state not available", "services": [], "alerts": {}})
+    from cohort.health_monitor import get_state
+    data = get_state()
+    if not data:
+        return JSONResponse({"error": "Health monitor state not available", "target_status": {}, "last_alerts": {}})
     return JSONResponse(data)
 
 
@@ -2308,13 +2707,60 @@ async def get_health_monitor_alerts(request: Request) -> JSONResponse:
                     line = line.strip()
                     if not line:
                         continue
-                    # Parse lines like: [2026-03-04 10:49:59] [!] ALERT: Service DOWN: SMACK Chat
                     alerts.append({"raw": line})
     except Exception:
         pass
 
-    # Return last N alerts (newest last)
     return JSONResponse({"alerts": alerts[-limit:], "date": today})
+
+
+async def health_monitor_run_checks(request: Request) -> JSONResponse:
+    """POST /api/health-monitor/run -- run health checks on all services now."""
+    import asyncio
+    from cohort.health_monitor import run_service_checks
+    # Run blocking checks in a thread to not block the event loop
+    loop = asyncio.get_event_loop()
+    state = await loop.run_in_executor(None, run_service_checks)
+    return JSONResponse(state)
+
+
+async def health_monitor_services(request: Request) -> JSONResponse:
+    """GET /api/health-monitor/services -- list all registered services."""
+    from cohort.health_monitor import list_services
+    return JSONResponse({"services": list_services()})
+
+
+async def health_monitor_stop(request: Request) -> JSONResponse:
+    """POST /api/health-monitor/stop/{service_key} -- stop a service."""
+    import asyncio
+    from cohort.health_monitor import stop_service
+    service_key = request.path_params["service_key"]
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, stop_service, service_key)
+    status_code = 200 if result.get("success") else 400
+    return JSONResponse(result, status_code=status_code)
+
+
+async def health_monitor_start(request: Request) -> JSONResponse:
+    """POST /api/health-monitor/start/{service_key} -- start a service."""
+    import asyncio
+    from cohort.health_monitor import start_service
+    service_key = request.path_params["service_key"]
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, start_service, service_key)
+    status_code = 200 if result.get("success") else 400
+    return JSONResponse(result, status_code=status_code)
+
+
+async def health_monitor_restart(request: Request) -> JSONResponse:
+    """POST /api/health-monitor/restart/{service_key} -- restart a service."""
+    import asyncio
+    from cohort.health_monitor import restart_service
+    service_key = request.path_params["service_key"]
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, restart_service, service_key)
+    status_code = 200 if result.get("success") else 400
+    return JSONResponse(result, status_code=status_code)
 
 
 async def get_scheduler_recent_runs(request: Request) -> JSONResponse:
@@ -3626,6 +4072,70 @@ async def get_comms_pending_approvals(request: Request) -> JSONResponse:
     return JSONResponse({"count": len(pending), "pending": pending[:10]})
 
 
+async def get_comms_safety_status(request: Request) -> JSONResponse:
+    """GET /api/comms/safety-status -- aggregate safety/audit data for the comms panel."""
+    svc_data = _cohort_data_dir()
+    posts_dir = svc_data / "comms_service" / "social_posts"
+
+    approved_count = 0
+    denied_count = 0
+    pending_count = 0
+    total_drafted = 0
+    integrity_violations = 0
+    last_action_at = None
+
+    if posts_dir.is_dir():
+        for fp in posts_dir.glob("*.json"):
+            try:
+                data = json.loads(fp.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            total_drafted += 1
+            status = data.get("status", "")
+            if status == "pending":
+                pending_count += 1
+            elif status == "approved":
+                approved_count += 1
+            elif status in ("rejected", "denied"):
+                denied_count += 1
+
+            # Integrity check: posted_at set but approved_at not set
+            if data.get("posted_at") and not data.get("approved_at"):
+                integrity_violations += 1
+
+            # Track most recent action timestamp
+            for ts_key in ("approved_at", "rejected_at", "posted_at", "created_at"):
+                ts_val = data.get(ts_key)
+                if ts_val and (last_action_at is None or ts_val > last_action_at):
+                    last_action_at = ts_val
+
+    # Read today's webhook log for recent activity
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_path = svc_data / "comms_service" / "webhook_logs" / f"{today}.json"
+    log_data = _read_json_safe(log_path)
+    recent_activity = []
+    if isinstance(log_data, list):
+        for entry in log_data[-8:]:
+            recent_activity.append({
+                "timestamp": entry.get("timestamp"),
+                "agent_id": entry.get("agent_id"),
+                "title": entry.get("title"),
+                "message": (entry.get("message") or "")[:200],
+                "priority": entry.get("priority"),
+            })
+
+    return JSONResponse({
+        "gate_active": True,
+        "integrity_violations": integrity_violations,
+        "approved_count": approved_count,
+        "denied_count": denied_count,
+        "pending_count": pending_count,
+        "total_drafted": total_drafted,
+        "last_action_at": last_action_at,
+        "recent_activity": recent_activity,
+    })
+
+
 # =====================================================================
 # App factory
 # =====================================================================
@@ -3791,6 +4301,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/settings/test-connection", test_connection, methods=["POST"]),
         Route("/api/permissions", get_permissions, methods=["GET"]),
         Route("/api/permissions", post_permissions, methods=["POST"]),
+        Route("/api/service-keys/test", test_service_key, methods=["POST"]),
         Route("/api/tool-permissions", get_tool_permissions, methods=["GET"]),
         Route("/api/tool-permissions", put_tool_permissions, methods=["PUT"]),
         Route("/api/internal-web/status", get_internal_web_status, methods=["GET"]),
@@ -3854,6 +4365,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/roundtable/channel/{channel_id}", get_channel_session, methods=["GET"]),
         # Tool dashboard endpoints
         Route("/api/service-status/{service_id}", get_service_status, methods=["GET"]),
+        Route("/api/tool-context/{tool_id}", get_tool_context, methods=["GET"]),
         Route("/api/tool-config/{tool_id}/values", get_tool_config_values, methods=["GET"]),
         Route("/api/tool-config/{tool_id}/values", put_tool_config_value, methods=["PUT"]),
         Route("/api/tool-config/{tool_id}", get_tool_config, methods=["GET"]),
@@ -3865,6 +4377,11 @@ def create_app(data_dir: str = "data") -> Starlette:
         # Tool data endpoints (read from Cohort service data directory)
         Route("/api/health-monitor/state", get_health_monitor_state, methods=["GET"]),
         Route("/api/health-monitor/alerts", get_health_monitor_alerts, methods=["GET"]),
+        Route("/api/health-monitor/run", health_monitor_run_checks, methods=["POST"]),
+        Route("/api/health-monitor/services", health_monitor_services, methods=["GET"]),
+        Route("/api/health-monitor/stop/{service_key}", health_monitor_stop, methods=["POST"]),
+        Route("/api/health-monitor/start/{service_key}", health_monitor_start, methods=["POST"]),
+        Route("/api/health-monitor/restart/{service_key}", health_monitor_restart, methods=["POST"]),
         Route("/api/scheduler/recent-runs", get_scheduler_recent_runs, methods=["GET"]),
         Route("/api/comms/recent-activity", get_comms_recent_activity, methods=["GET"]),
         Route("/api/intel/recent-articles", get_intel_recent_articles, methods=["GET"]),
@@ -3883,6 +4400,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/doc-processor/history", doc_history_post, methods=["POST"]),
         Route("/api/doc-processor/history", doc_history_delete, methods=["DELETE"]),
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
+        Route("/api/comms/safety-status", get_comms_safety_status, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 

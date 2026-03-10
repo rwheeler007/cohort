@@ -228,10 +228,11 @@ const panelConfig = {
         filter: false,
     },
     queue: {
-        title: 'Work Queue',
-        subtitle: 'Sequential execution queue',
-        panel: () => dom.panelQueue,
-        filter: false,
+        // Legacy: Work Queue merged into Tasks. Redirect to tasks panel.
+        title: 'Tasks',
+        subtitle: 'Agent task assignment and progress',
+        panel: () => dom.panelTasks,
+        filter: true,
     },
     tasks: {
         title: 'Tasks',
@@ -240,8 +241,8 @@ const panelConfig = {
         filter: true,
     },
     output: {
-        title: 'Pending Review',
-        subtitle: 'Task outputs and social posts awaiting approval',
+        title: 'Review',
+        subtitle: 'Task outputs awaiting approval',
         panel: () => dom.panelOutput,
         filter: true,
     },
@@ -265,7 +266,7 @@ function switchPanel(panelName) {
     });
 
     // Hide all panels
-    [dom.panelTeam, dom.panelChat, dom.panelQueue, dom.panelTasks, dom.panelOutput, dom.panelTool].forEach((p) => {
+    [dom.panelTeam, dom.panelChat, dom.panelTasks, dom.panelOutput, dom.panelTool].forEach((p) => {
         if (p) {
             p.style.display = 'none';
             p.classList.remove('active');
@@ -285,6 +286,7 @@ function switchPanel(panelName) {
     dom.filterContainer.style.display = config.filter ? '' : 'none';
 
     updatePanelCount();
+    _updateCreateChannelBtn();
 }
 
 function updatePanelCount() {
@@ -945,6 +947,8 @@ async function fetchTools() {
         const data = await resp.json();
         state.tools = data.tools || [];
         renderSidebarTools();
+        // Fetch health statuses in background, then re-render sidebar with dots
+        fetchToolHealthStatuses();
     } catch (err) {
         console.warn('Failed to fetch tools:', err);
     }
@@ -959,15 +963,71 @@ function renderSidebarTools() {
         return;
     }
 
-    dom.sidebarToolList.innerHTML = tools.map(tool => {
+    // Health summary counts
+    const statuses = state.toolHealthCache || {};
+    const upCount = tools.filter(t => statuses[t.id] === 'up').length;
+    const downCount = tools.filter(t => statuses[t.id] === 'down').length;
+    const unknownCount = tools.length - upCount - downCount;
+
+    let summaryHtml = '';
+    if (Object.keys(statuses).length > 0) {
+        const parts = [];
+        if (upCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-success)"></span>${upCount} up`);
+        if (downCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-error)"></span>${downCount} down`);
+        if (unknownCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-text-muted)"></span>${unknownCount} pending`);
+        summaryHtml = `<li class="sidebar-tools-summary">${parts.join(' ')}</li>`;
+    }
+
+    const toolItems = tools.map(tool => {
         const isActive = state.currentTool === tool.id && state.currentPanel === 'tool';
+        const healthStatus = statuses[tool.id] || 'unknown';
         return `
             <li class="sidebar-tool-item ${isActive ? 'active' : ''}" title="${escapeHtml(tool.description)}"
                 onclick="openToolDetail('${escapeHtml(tool.id)}')">
-                <span class="sidebar-tool-icon">[*]</span>
+                <span class="sidebar-tool-icon sidebar-tool-icon--${healthStatus}"></span>
                 <span class="channel-item__name">${escapeHtml(tool.name)}</span>
             </li>`;
     }).join('');
+
+    dom.sidebarToolList.innerHTML = summaryHtml + toolItems;
+}
+
+/** Fetch health status for all tools and cache results. */
+async function fetchToolHealthStatuses() {
+    const tools = state.tools || [];
+    if (tools.length === 0) return;
+    if (!state.toolHealthCache) state.toolHealthCache = {};
+
+    // Fire all health checks in parallel
+    const checks = tools.map(async (tool) => {
+        try {
+            const resp = await fetch('/api/service-status/' + encodeURIComponent(tool.id));
+            if (!resp.ok) return { id: tool.id, status: 'unknown' };
+            const data = await resp.json();
+            return { id: tool.id, status: data.status || 'unknown' };
+        } catch {
+            return { id: tool.id, status: 'unknown' };
+        }
+    });
+
+    const results = await Promise.all(checks);
+    results.forEach(r => { state.toolHealthCache[r.id] = r.status; });
+    renderSidebarTools();
+}
+
+/** Map tool IDs to short letter tags (stable version). SVG icons reserved for pretty version. */
+function _toolLetterTag(toolId) {
+    const tags = {
+        comms_service:               'E',
+        web_search:                  'W',
+        youtube_service:             'Y',
+        intel_scheduler:             'R',
+        content_monitor_scheduler:   'C',
+        document_processor:          'D',
+        health_monitor:              'H',
+        llm_manager:                 'L',
+    };
+    return tags[toolId] || '?';
 }
 
 function openToolDetail(toolId) {
@@ -999,7 +1059,18 @@ async function renderToolPanel(tool) {
 
     const renderer = toolRenderers[tool.id];
     if (renderer) {
-        dom.toolPanelContent.innerHTML = '<div class="tool-dashboard"><p style="color:var(--color-text-secondary)">Loading...</p></div>';
+        dom.toolPanelContent.innerHTML = `<div class="tool-skeleton">
+            <div class="tool-skeleton__bar tool-skeleton__bar--header"></div>
+            <div class="tool-skeleton__bar tool-skeleton__bar--subtitle"></div>
+            <div class="tool-skeleton__row">
+                <div class="tool-skeleton__card"></div>
+                <div class="tool-skeleton__card"></div>
+                <div class="tool-skeleton__card"></div>
+                <div class="tool-skeleton__card"></div>
+            </div>
+            <div class="tool-skeleton__bar" style="width:80%"></div>
+            <div class="tool-skeleton__bar" style="width:60%"></div>
+        </div>`;
         await renderer(tool);
     } else {
         dom.toolPanelContent.innerHTML = renderGenericToolPanel(tool);
@@ -1018,9 +1089,11 @@ const toolRenderers = {
 };
 
 function toolHeader(tool, statusHtml) {
+    // Use first letter of tool name as icon
+    const initial = (tool.name || '?').charAt(0).toUpperCase();
     return `
         <div class="tool-dashboard__header">
-            <div class="tool-dashboard__icon">[*]</div>
+            <div class="tool-dashboard__icon">${initial}</div>
             <div>
                 <h2 class="tool-dashboard__title">${escapeHtml(tool.name)}</h2>
                 <p class="tool-dashboard__desc">${escapeHtml(tool.description || '')}</p>
@@ -1041,6 +1114,31 @@ function configCard(label, value) {
         </div>`;
 }
 
+/**
+ * A clickable info link that opens the help chat with a pre-filled question.
+ * Use instead of static configCards for descriptive/informational content.
+ */
+function configLearnMore(label, helpQuestion) {
+    return `
+        <div class="tool-config-card tool-config-card--link" onclick="_askToolHelp('${escapeHtml(helpQuestion)}')" title="Ask Cohort about this">
+            <p class="tool-config-card__label">${escapeHtml(label)}</p>
+            <p class="tool-config-card__value tool-config-card__value--link">[?] Learn more</p>
+        </div>`;
+}
+
+function _askToolHelp(question) {
+    // Open the help panel and send the question
+    const body = document.getElementById('tool-help-body');
+    if (body && body.style.display === 'none') {
+        toggleToolHelpChat();
+    }
+    const input = document.getElementById('tool-help-input');
+    if (input) {
+        input.value = question;
+        sendToolHelpMessage();
+    }
+}
+
 function _editableCardWrap(label, value, toolId, key, editorHtml) {
     const muteClass = value ? '' : ' tool-config-card__value--muted';
     const display = value || 'Not configured';
@@ -1049,7 +1147,7 @@ function _editableCardWrap(label, value, toolId, key, editorHtml) {
             <div class="tool-config-card__header">
                 <p class="tool-config-card__label">${escapeHtml(label)}</p>
                 <button class="btn btn--icon btn--edit-config" title="Edit" onclick="editConfigCard(this)">
-                    [e]
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M12.1 1.3a1.5 1.5 0 012.1 2.1L5.4 12.2l-3.2.8.8-3.2L12.1 1.3z"/></svg>
                 </button>
             </div>
             <div class="tool-config-card__display">
@@ -1091,7 +1189,7 @@ function configLocked(label, value) {
             <div class="tool-config-card__header">
                 <p class="tool-config-card__label">${escapeHtml(label)}</p>
                 <button class="btn btn--icon btn--lock-config" title="Admin Mode required" onclick="onLockedFieldClick()">
-                    [lock]
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a4 4 0 00-4 4v2H3a1 1 0 00-1 1v6a1 1 0 001 1h10a1 1 0 001-1V8a1 1 0 00-1-1h-1V5a4 4 0 00-4-4zm2 6H6V5a2 2 0 114 0v2z"/></svg>
                 </button>
             </div>
             <p class="tool-config-card__value tool-config-card__value--locked${muteClass}">${escapeHtml(display)}</p>
@@ -1364,6 +1462,7 @@ async function saveConfigCard(btn) {
 let _toolHelpChannel = null;
 let _toolHelpJoined = false;
 let _toolHelpContextSent = false;
+const _TOOL_HELP_ARCHIVE_MS = 60 * 60 * 1000; // 1 hour inactivity threshold
 
 function showToolHelpChat(toolId) {
     const el = document.getElementById('tool-help-chat');
@@ -1379,6 +1478,37 @@ function showToolHelpChat(toolId) {
         if (arrow) arrow.textContent = '[^]';
         el.classList.remove('tool-help-chat--expanded');
     }
+}
+
+/**
+ * Auto-archive stale tool-help channels.
+ * If the last message in the channel is older than 1 hour, archive it
+ * and switch to a fresh channel so the user gets clean context.
+ */
+function _maybeArchiveStaleToolHelp(toolId) {
+    const channelId = _toolHelpChannel;
+    const msgs = state.messages[channelId] || [];
+    if (msgs.length === 0) return; // nothing to archive
+
+    // Check last message timestamp
+    const lastMsg = msgs[msgs.length - 1];
+    const lastTime = lastMsg.timestamp ? new Date(lastMsg.timestamp).getTime() : 0;
+    const age = Date.now() - lastTime;
+
+    if (age < _TOOL_HELP_ARCHIVE_MS) return; // still fresh
+
+    // Archive the stale channel
+    if (state.socket && state.connected) {
+        state.socket.emit('archive_channel', { channel_id: channelId });
+    }
+    // Clear local messages for the archived channel
+    delete state.messages[channelId];
+
+    // Create a fresh channel with timestamp suffix for uniqueness
+    const ts = Date.now().toString(36);
+    _toolHelpChannel = `tool-help-${toolId}-${ts}`;
+    _toolHelpJoined = false;
+    _toolHelpContextSent = false;
 }
 
 function _joinToolHelpChannel() {
@@ -1400,6 +1530,21 @@ function _joinToolHelpChannel() {
         });
     }
     renderToolHelpMessages();
+
+    // After messages load, check if the channel is stale and needs archiving.
+    // Use a short delay to let channel_messages event populate state.messages.
+    const toolId = _toolHelpChannel.replace(/^tool-help-/, '').replace(/-\d+$/, '');
+    setTimeout(() => {
+        const beforeChannel = _toolHelpChannel;
+        _maybeArchiveStaleToolHelp(toolId);
+        if (_toolHelpChannel !== beforeChannel) {
+            // Channel was archived and replaced — join the fresh one
+            _toolHelpJoined = false;
+            _joinToolHelpChannel();
+        } else {
+            renderToolHelpMessages();
+        }
+    }, 500);
 }
 
 // --- Tool help chat: drag-to-resize + click-to-toggle ---
@@ -1486,7 +1631,7 @@ function toggleToolHelpChat() {
     }
 })();
 
-function sendToolHelpMessage() {
+async function sendToolHelpMessage() {
     const input = document.getElementById('tool-help-input');
     if (!input) return;
     const content = input.value.trim();
@@ -1499,17 +1644,17 @@ function sendToolHelpMessage() {
     // Ensure channel is joined
     _joinToolHelpChannel();
 
-    // On first message in this tool session, inject tool context so the agent
-    // knows which tool the user is configuring
+    // On first message in this tool session, inject rich tool context so the
+    // agent knows what the tool does, its settings, FAQ, and live state
     if (!_toolHelpContextSent) {
         _toolHelpContextSent = true;
-        const tool = (state.tools || []).find(t => t.id === state.currentTool);
-        if (tool) {
-            const configSummary = _buildToolConfigSummary(tool);
+        const toolId = state.currentTool;
+        if (toolId) {
+            const ctx = await _fetchToolHelpContext(toolId);
             state.socket.emit('send_message', {
                 channel_id: _toolHelpChannel,
                 sender: 'system',
-                content: `@setup_guide The user is viewing the **${tool.name}** configuration panel. ${configSummary}Help them configure this tool.`,
+                content: ctx,
             });
         }
     }
@@ -1524,6 +1669,74 @@ function sendToolHelpMessage() {
     });
 
     input.value = '';
+}
+
+/**
+ * Fetch rich tool context from the API and format it as a system prompt.
+ * Includes: what the tool does, configurable settings with descriptions,
+ * FAQ, current config values, and live service status.
+ */
+async function _fetchToolHelpContext(toolId) {
+    let ctx;
+    try {
+        const resp = await fetch(`/api/tool-context/${encodeURIComponent(toolId)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        ctx = await resp.json();
+        if (!ctx.what_it_does && !(ctx.faq || []).length) throw new Error('Empty context');
+    } catch (err) {
+        // Fallback to basic context if API fails or returns empty
+        console.warn('[tool-help] Context API unavailable, using fallback:', err.message);
+        const tool = (state.tools || []).find(t => t.id === toolId);
+        const configSummary = _buildToolConfigSummary(tool);
+        return `@setup_guide The user is viewing the **${tool ? tool.name : toolId}** configuration panel. ${configSummary}Help them configure this tool.`;
+    }
+
+    const parts = [`@setup_guide You are helping the user configure the **${ctx.name}** tool.`];
+
+    // What it does
+    if (ctx.what_it_does) {
+        parts.push(`\n**What this tool does:** ${ctx.what_it_does}`);
+    } else if (ctx.description) {
+        parts.push(`\n**Description:** ${ctx.description}`);
+    }
+
+    // Service status
+    if (ctx.service_status && ctx.service_status !== 'unknown') {
+        parts.push(`\n**Current status:** ${ctx.service_status === 'up' ? 'Online and running' : 'OFFLINE -- not responding'}`);
+    }
+
+    // Settings with descriptions
+    const settings = ctx.settings || {};
+    const currentVals = ctx.current_values || {};
+    const settingKeys = Object.keys(settings);
+    if (settingKeys.length > 0) {
+        parts.push('\n**Configurable settings:**');
+        for (const key of settingKeys) {
+            const s = settings[key];
+            const current = currentVals[key];
+            let line = `- **${key}** (${s.type}`;
+            if (s.default != null) line += `, default: ${s.default}`;
+            if (s.min != null) line += `, min: ${s.min}`;
+            if (s.max != null) line += `, max: ${s.max}`;
+            if (s.options) line += `, options: ${s.options.join(', ')}`;
+            line += `): ${s.description}`;
+            if (current != null) line += ` [Currently set to: ${current}]`;
+            parts.push(line);
+        }
+    }
+
+    // FAQ
+    const faq = ctx.faq || [];
+    if (faq.length > 0) {
+        parts.push('\n**Common questions and answers:**');
+        for (const item of faq) {
+            parts.push(`- Q: ${item.q}\n  A: ${item.a}`);
+        }
+    }
+
+    parts.push('\nUse the above context to give accurate, specific answers. If the user asks about a setting, explain what it does and what values make sense. Keep answers concise (1-3 paragraphs).');
+
+    return parts.join('\n');
 }
 
 function renderToolHelpMessages() {
@@ -1584,15 +1797,15 @@ async function fetchServiceStatus(serviceId) {
 }
 
 function statusDotHtml(status) {
-    const cls = status === 'up' ? 'up' : status === 'down' ? 'down' : 'unknown';
-    const label = status === 'up' ? 'Online' : status === 'down' ? 'Offline' : 'Unknown';
+    const cls = status === 'up' ? 'up' : status === 'down' ? 'down' : status === 'degraded' ? 'degraded' : 'unknown';
+    const label = status === 'up' ? 'Online' : status === 'down' ? 'Offline' : status === 'degraded' ? 'Degraded' : 'Unknown';
     return `<span class="tool-status-dot tool-status-dot--${cls}"></span> ${label}`;
 }
 
 function renderGenericToolPanel(tool) {
     return `<div class="tool-dashboard">
-        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--unknown"></span> --')}
-        ${configSection('About', configCard('Type', 'Agent capability'))}
+        ${toolHeader(tool, statusDotHtml('unknown'))}
+        ${configSection('About', configLearnMore('Getting Started', 'How do I set up and use this tool?'))}
     </div>`;
 }
 
@@ -1635,19 +1848,24 @@ async function renderCommsPanel(tool) {
     const sent = activity.filter(a => (a.channels_sent || []).length > 0).length;
     const failed = activity.filter(a => (a.channels_failed || []).length > 0).length;
     const errors = activity.filter(a => a.priority === 'error').length;
-    const warnings = activity.filter(a => a.priority === 'warning').length;
+    const isUp = status.status === 'up';
+
+    // Zero-state: distinguish healthy-zero from broken-zero
+    const sentColor = !isUp ? 'error' : 'success';
+    const sentSub = !isUp ? 'Service offline' : (sent === 0 ? 'No activity yet' : '');
+    const failedSub = !isUp ? 'Service offline' : '';
 
     // Pending approval cards
     let pendingHtml = '';
     if (pendingCount > 0) {
-        const cards = pendingPosts.map(p => `<div class="comms-pending-card">
-            <span class="comms-pending-card__platform">${escapeHtml(p.platform || 'post')}</span>
-            <span class="comms-pending-card__text">${escapeHtml(p.text || '')}</span>
-            <span class="comms-pending-card__time">${p.created_at ? timeAgo(p.created_at) : '--'}</span>
+        const cards = pendingPosts.map(p => `<div class="approval-card">
+            <span class="approval-card__platform">${escapeHtml(p.platform || 'post')}</span>
+            <span class="approval-card__text">${escapeHtml((p.text || '').substring(0, 60))}</span>
+            <span class="approval-card__time">${p.created_at ? timeAgo(p.created_at) : '--'}</span>
         </div>`).join('');
         pendingHtml = configSectionFull(
             `Pending Approval (${pendingCount})`,
-            `<div class="comms-pending-list">${cards}</div>
+            `<div>${cards}</div>
             <p style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-top:var(--space-2)">Approve posts on the Social Media & Marketing page</p>`
         );
     }
@@ -1664,29 +1882,148 @@ async function renderCommsPanel(tool) {
         detail: `${count} message${count !== 1 ? 's' : ''}`,
     }));
 
+    // Per-service status indicators (all names from backend, no hardcoding)
+    const providers = status.providers || {};
+    const emailProv = providers.email || {};
+    const calProv = providers.calendar || {};
+    const socialProvs = providers.social || {};
+
+    const _svcDetail = (s) => s === 'up' ? 'Connected' : s === 'degraded' ? 'Degraded' : s === 'not_configured' ? 'Not configured' : 'Offline';
+    const serviceItems = [
+        { name: emailProv.name || 'Email', dot: emailProv.status || (isUp ? 'up' : 'down'), detail: _svcDetail(emailProv.status || (isUp ? 'up' : 'down')) },
+        { name: calProv.name || 'Calendar', dot: calProv.status || (isUp ? 'up' : 'down'), detail: _svcDetail(calProv.status || (isUp ? 'up' : 'down')) },
+    ];
+    // Social platforms: names from backend keys or fallback labels
+    const _socialFallback = { twitter: 'Twitter', linkedin: 'LinkedIn', facebook: 'Facebook', threads: 'Threads' };
+    for (const [key, sp] of Object.entries(socialProvs)) {
+        const spStatus = (sp && sp.status) || 'not_configured';
+        serviceItems.push({
+            name: (sp && sp.name) || _socialFallback[key] || key,
+            dot: spStatus,
+            detail: _svcDetail(spStatus),
+        });
+    }
+    // If backend didn't return social providers, show defaults
+    if (Object.keys(socialProvs).length === 0) {
+        for (const [, label] of Object.entries(_socialFallback)) {
+            serviceItems.push({ name: label, dot: 'not_configured', detail: 'Not configured' });
+        }
+    }
+
+    const checkedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const servicesGridHtml = `<div class="service-status-grid">${serviceItems.map(s =>
+        `<div class="service-status-item">
+            <span class="service-status-item__dot service-status-item__dot--${s.dot}"></span>
+            <span class="service-status-item__name">${escapeHtml(s.name)}</span>
+            <span class="service-status-item__detail">${escapeHtml(s.detail)}</span>
+        </div>`
+    ).join('')}<div class="service-status-grid__footer">Status checked ${checkedAt}</div></div>`;
+
+    // Safety section: trust banner + audit trail
+    let safetyData = { gate_active: true, integrity_violations: 0, approved_count: 0, denied_count: 0, pending_count: pendingCount, total_drafted: 0, recent_activity: [] };
+    try {
+        const safetyResp = await fetch('/api/comms/safety-status');
+        if (safetyResp.ok) safetyData = await safetyResp.json();
+    } catch {}
+
+    const violations = safetyData.integrity_violations || 0;
+    const trustClass = violations > 0 ? 'error' : pendingCount > 0 ? 'warning' : 'ok';
+    const trustIcon = violations > 0 ? '!!' : pendingCount > 0 ? '!' : 'OK';
+    const trustMsg = violations > 0
+        ? `Integrity alert: ${violations} item${violations !== 1 ? 's' : ''} bypassed approval gate`
+        : pendingCount > 0
+            ? `${pendingCount} item${pendingCount !== 1 ? 's' : ''} awaiting your review`
+            : 'All outbound gated -- nothing sent without approval';
+    const totalDrafted = safetyData.total_drafted || 0;
+    const trustStats = `Today: ${totalDrafted} drafted, ${safetyData.approved_count || 0} approved, ${safetyData.denied_count || 0} denied, ${violations} bypassed`;
+
+    const trustBannerHtml = `<div class="trust-banner trust-banner--${trustClass}">
+        <span class="trust-banner__icon">[${trustIcon}]</span>
+        <span>${escapeHtml(trustMsg)}</span>
+        <span class="trust-banner__stats">${escapeHtml(trustStats)}</span>
+    </div>`;
+
+    const auditItems = (safetyData.recent_activity || []).map(a => ({
+        time: fmtTime(a.timestamp),
+        status: a.priority === 'error' ? 'error' : 'success',
+        message: `${(a.agent_id || 'system').replace(/_/g, ' ')}: ${(a.title || a.message || '').substring(0, 60)}`,
+    }));
+
+    const safetyHtml = `
+        ${trustBannerHtml}
+        ${pendingHtml}
+        ${configSectionFull('Audit Trail', activityLog(auditItems, { emptyMsg: 'No activity recorded today' }))}
+    `;
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
         ${toolHeader(tool, statusDotHtml(status.status))}
         ${statRow(
-            statCard('Sent Today', sent, { color: 'success' }) +
-            statCard('Failed', failed, { color: failed > 0 ? 'error' : 'success' }) +
-            statCard('Errors', errors, { color: errors > 0 ? 'error' : 'success' }) +
+            statCard('Sent Today', sent, { color: sentColor, subtitle: sentSub }) +
+            statCard('Failed', failed, { color: failed > 0 ? 'error' : sentColor, subtitle: failedSub }) +
+            statCard('Errors', errors, { color: errors > 0 ? 'error' : sentColor }) +
             statCard('Pending', pendingCount, { color: pendingCount > 0 ? 'warning' : 'success', subtitle: 'awaiting approval' })
         )}
-        ${pendingHtml}
         ${configSectionFull('Today\'s Activity', activityLog(items, { emptyMsg: 'No outbound messages today' }))}
         ${agentItems.length > 0 ? configSectionFull('Messages by Source', statusGrid(agentItems)) : ''}
-        ${configSection('Services',
-            configAdminSelect('Email Provider', 'Resend', ['Resend'], tid, 'email_provider') +
-            configAdminSelect('Calendar', 'Google Calendar', ['Google Calendar'], tid, 'calendar_provider') +
-            configCard('Social Platforms', 'Twitter, LinkedIn, Facebook, Threads')
-        )}
-        ${configSection('Safety',
-            configCard('Approval Gate', 'All outbound messages require human approval') +
-            configCard('Audit Log', 'All actions logged with full audit trail')
-        )}
+        ${configSectionFull('Services', servicesGridHtml)}
+        ${configSectionFull('Safety', safetyHtml)}
     </div>`;
     applySavedConfigValues(tid);
     showToolHelpChat(tid);
+
+    // Auto-refresh safety + services every 30s while this panel is visible
+    _startCommsAutoRefresh(tool);
+}
+
+let _commsRefreshTimer = null;
+function _startCommsAutoRefresh(tool) {
+    _stopCommsAutoRefresh();
+    _commsRefreshTimer = setInterval(async () => {
+        // Only refresh if comms panel is still visible
+        if (state.currentTool !== 'comms_service' || state.currentPanel !== 'tool') {
+            _stopCommsAutoRefresh();
+            return;
+        }
+        // Refresh safety data + services grid in-place
+        try {
+            const [safetyResp, statusResp] = await Promise.all([
+                fetch('/api/comms/safety-status'),
+                fetchServiceStatus('comms_service'),
+            ]);
+            const safetyData = safetyResp.ok ? await safetyResp.json() : null;
+            if (!safetyData) return;
+
+            // Update trust banner
+            const violations = safetyData.integrity_violations || 0;
+            const pendingCount = safetyData.pending_count || 0;
+            const trustClass = violations > 0 ? 'error' : pendingCount > 0 ? 'warning' : 'ok';
+            const trustIcon = violations > 0 ? '!!' : pendingCount > 0 ? '!' : 'OK';
+            const trustMsg = violations > 0
+                ? `Integrity alert: ${violations} item${violations !== 1 ? 's' : ''} bypassed approval gate`
+                : pendingCount > 0
+                    ? `${pendingCount} item${pendingCount !== 1 ? 's' : ''} awaiting your review`
+                    : 'All outbound gated -- nothing sent without approval';
+            const totalDrafted = safetyData.total_drafted || 0;
+            const trustStats = `Today: ${totalDrafted} drafted, ${safetyData.approved_count || 0} approved, ${safetyData.denied_count || 0} denied, ${violations} bypassed`;
+
+            const banner = document.querySelector('.trust-banner');
+            if (banner) {
+                banner.className = `trust-banner trust-banner--${trustClass}`;
+                banner.querySelector('.trust-banner__icon').textContent = `[${trustIcon}]`;
+                banner.children[1].textContent = trustMsg;
+                banner.querySelector('.trust-banner__stats').textContent = trustStats;
+            }
+
+            // Update last-checked timestamp
+            const footer = document.querySelector('.service-status-grid__footer');
+            if (footer) {
+                footer.textContent = `Status checked ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+        } catch {}
+    }, 30000);
+}
+function _stopCommsAutoRefresh() {
+    if (_commsRefreshTimer) { clearInterval(_commsRefreshTimer); _commsRefreshTimer = null; }
 }
 
 /* ── Web Search ── */
@@ -1909,10 +2246,8 @@ async function renderYouTubePanel(tool) {
             configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day') +
             configNumber('Default Results', 10, 1, 50, tid, 'default_results')
         )}
-        ${configSection('Capabilities',
-            configCard('Video Search', 'Search by keyword with filters') +
-            configCard('Metadata', 'Video details, channel info, view counts') +
-            configCard('Chapters', 'Auto-extract timestamps from descriptions')
+        ${configSection('More',
+            configLearnMore('Capabilities', 'What can the YouTube service do? What search filters and features are available?')
         )}
     </div>`;
     applySavedConfigValues(tid);
@@ -2010,7 +2345,7 @@ async function renderRSSPanel(tool) {
     }));
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${toolHeader(tool, statusDotHtml('up'))}
         ${statsHtml}
         ${configSectionFull('Run History', activityLog(runItems, { emptyMsg: 'No recent runs' }))}
         ${configSectionFull('Recent Articles', activityLog(articleItems, { emptyMsg: 'No recent articles' }))}
@@ -2143,7 +2478,7 @@ async function renderContentMonitorPanel(tool) {
     }
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, '<span class="tool-status-dot tool-status-dot--up"></span> Scheduled')}
+        ${toolHeader(tool, statusDotHtml('up'))}
         ${configSectionFull('Content Pipeline', pipelineFlowHtml)}
         ${configSectionFull('Daily Limits', limitsHtml)}
         ${postsHtml}
@@ -3193,82 +3528,165 @@ function _renderDocResultAll(results) {
 
 /* ── System Health Monitor ── */
 
+function _healthServiceRow(svc) {
+    const dotCls = svc.status === 'healthy' ? 'up' : svc.status === 'snoozed' ? 'stale' : svc.status === 'down' ? 'down' : 'unknown';
+    const statusLabel = svc.status === 'healthy' ? 'Healthy' : svc.status === 'snoozed' ? 'Snoozed' : svc.status === 'down' ? 'Down' : 'Unknown';
+    const latency = svc.response_ms != null ? `${svc.response_ms}ms` : '';
+    const lastCheck = svc.last_checked ? timeAgo(svc.last_checked) : 'never';
+    const port = svc.port ? `:${svc.port}` : '';
+
+    // Action buttons -- only show for controllable services
+    let actions = '';
+    if (svc.controllable) {
+        const isUp = svc.status === 'healthy';
+        if (isUp) {
+            actions = `
+                <button class="btn btn--sm health-svc-btn" onclick="healthServiceAction('restart','${svc.key}')" title="Restart">Restart</button>
+                <button class="btn btn--sm health-svc-btn health-svc-btn--danger" onclick="healthServiceAction('stop','${svc.key}')" title="Stop">Stop</button>`;
+        } else {
+            actions = `
+                <button class="btn btn--sm btn--primary health-svc-btn" onclick="healthServiceAction('start','${svc.key}')" title="Start">Start</button>`;
+        }
+    } else if (svc.self_hosted) {
+        actions = '<span class="health-svc-self-hosted">self-hosted</span>';
+    }
+
+    return `<div class="health-svc-row" data-service="${escapeHtml(svc.key)}">
+        <span class="tool-status-item__dot tool-status-item__dot--${dotCls}"></span>
+        <div class="health-svc-info">
+            <span class="health-svc-name">${escapeHtml(svc.key)}</span>
+            <span class="health-svc-detail">${escapeHtml(svc.description || '')}${port ? ' ' + port : ''}</span>
+        </div>
+        <span class="health-svc-status">${statusLabel}</span>
+        <span class="health-svc-latency">${latency}</span>
+        <span class="health-svc-checked">${lastCheck}</span>
+        <div class="health-svc-actions">${actions}</div>
+    </div>`;
+}
+
+async function healthServiceAction(action, serviceKey) {
+    const row = document.querySelector(`.health-svc-row[data-service="${serviceKey}"]`);
+    if (row) row.classList.add('health-svc-row--loading');
+
+    const actionLabel = action === 'start' ? 'Starting' : action === 'stop' ? 'Stopping' : 'Restarting';
+    showToast(`${actionLabel} ${serviceKey}...`, 'info');
+
+    try {
+        const resp = await fetch(`/api/health-monitor/${action}/${serviceKey}`, { method: 'POST' });
+        const data = await resp.json();
+
+        if (data.success) {
+            const suffix = data.healthy ? ' -- service is healthy' : action === 'stop' ? '' : ' -- waiting for health check';
+            showToast(`${serviceKey}: ${action} complete${suffix}`, data.healthy || action === 'stop' ? 'success' : 'warning');
+        } else {
+            showToast(`${serviceKey}: ${data.error || 'Failed'}`, 'error');
+        }
+    } catch (err) {
+        showToast(`${serviceKey}: ${action} failed -- ${err.message}`, 'error');
+    }
+
+    // Refresh the panel after action
+    setTimeout(async () => {
+        const tool = window._currentTool;
+        if (tool && tool.id === 'health_monitor') renderHealthMonitorPanel(tool);
+    }, 1000);
+}
+
+async function healthRunChecks() {
+    showToast('Running health checks...', 'info');
+    document.getElementById('health-run-btn')?.setAttribute('disabled', 'true');
+    try {
+        const resp = await fetch('/api/health-monitor/run', { method: 'POST' });
+        const data = await resp.json();
+        const total = Object.keys(data.target_status || {}).length;
+        const healthy = Object.values(data.target_status || {}).filter(v => v.ok).length;
+        showToast(`Health check complete: ${healthy}/${total} healthy`, healthy === total ? 'success' : 'warning');
+    } catch (err) {
+        showToast(`Health check failed: ${err.message}`, 'error');
+    }
+    // Refresh panel
+    const tool = window._currentTool;
+    if (tool && tool.id === 'health_monitor') renderHealthMonitorPanel(tool);
+}
+
 async function renderHealthMonitorPanel(tool) {
     const tid = tool.id;
-    const status = await fetchServiceStatus('health_monitor');
+    window._currentTool = tool;
 
-    // Fetch real health data
+    // Fetch services list and state in parallel
+    let services = [];
     let healthData = {};
+    let alertData = {};
     try {
-        const resp = await fetch('/api/health-monitor/state');
-        healthData = await resp.json();
+        const [svcResp, stateResp, alertResp] = await Promise.all([
+            fetch('/api/health-monitor/services').then(r => r.json()).catch(() => ({ services: [] })),
+            fetch('/api/health-monitor/state').then(r => r.json()).catch(() => ({})),
+            fetch('/api/health-monitor/alerts').then(r => r.json()).catch(() => ({ alerts: [] })),
+        ]);
+        services = svcResp.services || [];
+        healthData = stateResp;
+        alertData = alertResp;
     } catch {}
 
-    const targetStatus = healthData.target_status || {};
     const lastAlerts = healthData.last_alerts || {};
     const paused = healthData.paused || false;
 
-    // Categorize targets
-    const services = [];
-    const schedulers = [];
-    const websites = [];
-    const apis = [];
-
-    for (const [key, val] of Object.entries(targetStatus)) {
-        const name = key.replace(/^(service|scheduler|website|api):/, '');
-        const isHealthy = val.ok === true || val.status === 'healthy';
-        const isStale = val.status === 'stale';
-        const dotStatus = isHealthy ? 'up' : isStale ? 'stale' : 'down';
-        const detail = val.last_checked ? timeAgo(val.last_checked) : '';
-
-        if (key.startsWith('service:')) {
-            services.push({ name, status: dotStatus, detail });
-        } else if (key.startsWith('scheduler:')) {
-            const hrs = val.hours_since != null ? Math.round(val.hours_since) + 'h ago' : '';
-            schedulers.push({ name, status: dotStatus, detail: hrs });
-        } else if (key.startsWith('website:')) {
-            websites.push({ name, status: dotStatus, detail });
-        } else if (key.startsWith('api:')) {
-            apis.push({ name, status: dotStatus, detail });
-        }
-    }
-
     // Count by status
-    const allItems = [...services, ...schedulers, ...websites, ...apis];
-    const upCount = allItems.filter(i => i.status === 'up').length;
-    const downCount = allItems.filter(i => i.status === 'down').length;
-    const staleCount = allItems.filter(i => i.status === 'stale').length;
+    const upCount = services.filter(s => s.status === 'healthy').length;
+    const downCount = services.filter(s => s.status === 'down').length;
+    const unknownCount = services.filter(s => s.status === 'unknown').length;
+    const totalCount = services.length;
 
-    // Active alerts as log items
+    // Build service rows
+    const serviceRowsHtml = services.length > 0
+        ? `<div class="health-svc-table">
+            <div class="health-svc-header">
+                <span></span>
+                <span>Service</span>
+                <span>Status</span>
+                <span>Latency</span>
+                <span>Checked</span>
+                <span>Actions</span>
+            </div>
+            ${services.map(s => _healthServiceRow(s)).join('')}
+          </div>`
+        : '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No services registered. Run a health check to populate.</p>';
+
+    // Alerts
     const alertItems = Object.entries(lastAlerts)
+        .filter(([, a]) => !a.recovered)
         .sort((a, b) => (b[1].timestamp || '').localeCompare(a[1].timestamp || ''))
         .slice(0, 15)
         .map(([key, alert]) => ({
             time: fmtTime(alert.timestamp),
             status: alert.severity === 'error' ? 'error' : 'warning',
-            message: (alert.message || '').replace(/^(Service DOWN|Scheduler stale|Scheduler never run|Website DOWN|API credential missing): /, ''),
+            message: (alert.message || '').replace(/^(Service DOWN|Scheduler stale): /, ''),
             detail: alert.message || '',
         }));
 
     const pausedBanner = paused ? '<div style="padding:var(--space-2) var(--space-3);background:rgba(250,166,26,0.15);border-radius:var(--radius-md);margin-bottom:var(--space-3);font-size:var(--font-size-sm);color:var(--color-warning)">[!] Health monitor is paused -- data may be stale</div>' : '';
 
+    const lastChecked = healthData.last_checks?.services ? `Last check: ${timeAgo(healthData.last_checks.services)}` : 'Never checked';
+
+    const status = upCount > 0 && downCount === 0 ? 'up' : downCount > 0 ? 'down' : 'unknown';
+
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, statusDotHtml(status.status))}
+        ${toolHeader(tool, statusDotHtml(status))}
         ${pausedBanner}
+        <div class="health-actions-bar">
+            <button class="btn btn--primary btn--sm" id="health-run-btn" onclick="healthRunChecks()">Run All Checks</button>
+            <span class="health-last-check">${lastChecked}</span>
+        </div>
         ${statRow(
             statCard('Healthy', upCount, { color: 'success' }) +
             statCard('Down', downCount, { color: downCount > 0 ? 'error' : 'success' }) +
-            statCard('Stale', staleCount, { color: staleCount > 0 ? 'warning' : 'success' }) +
-            statCard('Total', allItems.length)
+            statCard('Unknown', unknownCount, { color: unknownCount > 0 ? 'warning' : 'success' }) +
+            statCard('Total', totalCount)
         )}
-        ${services.length > 0 ? configSectionFull('Services (' + services.length + ')', statusGrid(services)) : ''}
-        ${schedulers.length > 0 ? configSectionFull('Schedulers (' + schedulers.length + ')', statusGrid(schedulers)) : ''}
-        ${websites.length > 0 ? configSectionFull('Websites (' + websites.length + ')', statusGrid(websites)) : ''}
-        ${apis.length > 0 ? configSectionFull('API Keys (' + apis.length + ')', statusGrid(apis)) : ''}
+        ${configSectionFull('Services (' + totalCount + ')', serviceRowsHtml)}
         ${configSectionFull('Recent Alerts (' + alertItems.length + ')', activityLog(alertItems, { emptyMsg: 'No active alerts' }))}
         ${configSection('Alert Settings',
-            configCard('Channel', '#system-health') +
-            configCard('Cooldown', '60 minute deduplication')
+            configLearnMore('Alert Configuration', 'Services are configured in data/services/health_monitor/service_registry.yaml. Add new services there with port, health_endpoint, and start_command.')
         )}
     </div>`;
     showToolHelpChat(tid);
@@ -3649,27 +4067,64 @@ function renderArchivedChats() {
         byAgent[agentId].push(ch);
     }
 
+    // Load collapsed state from localStorage
+    const archivedState = _loadArchivedAgentState();
+
     let html = '';
     for (const [agentId, channels] of Object.entries(byAgent)) {
         const profile = state.agentProfiles[agentId];
         const displayName = profile ? (profile.nickname || profile.name || agentId) : agentId.replace(/_/g, ' ');
+        const isOpen = archivedState[agentId] !== false; // default open
 
         // Sort newest first (by archived_at or created_at)
         channels.sort((a, b) => (b.archived_at || b.created_at || '').localeCompare(a.archived_at || a.created_at || ''));
 
+        let childrenHtml = '';
         for (const ch of channels) {
             const isActive = ch.id === state.currentChannel;
             const dateLabel = _formatShortDate(ch.archived_at || ch.created_at);
-            html += `
+            childrenHtml += `
                 <li class="channel-item channel-item--archived ${isActive ? 'active' : ''}"
                     data-channel="${escapeHtml(ch.id)}"
                     onclick="switchChannel('${escapeHtml(ch.id)}')">
                     <span class="channel-item__name">@ ${escapeHtml(displayName)}${dateLabel ? ' - ' + escapeHtml(dateLabel) : ''}</span>
                 </li>`;
         }
+
+        html += `
+            <li class="archived-agent-group ${isOpen ? 'open' : ''}" data-agent-id="${escapeHtml(agentId)}">
+                <div class="archived-agent-group__header" onclick="toggleArchivedAgent('${escapeHtml(agentId)}')">
+                    <span class="archived-agent-group__toggle">></span>
+                    <span class="archived-agent-group__name">${escapeHtml(displayName)}</span>
+                    <span class="archived-agent-group__count">${channels.length}</span>
+                </div>
+                <ul class="archived-agent-group__children">
+                    ${childrenHtml}
+                </ul>
+            </li>`;
     }
 
     dom.archivedChatList.innerHTML = html;
+}
+
+function _loadArchivedAgentState() {
+    try {
+        const raw = localStorage.getItem('cohort_archived_agents');
+        return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+}
+
+function _saveArchivedAgentState(state) {
+    localStorage.setItem('cohort_archived_agents', JSON.stringify(state));
+}
+
+function toggleArchivedAgent(agentId) {
+    const el = document.querySelector(`.archived-agent-group[data-agent-id="${agentId}"]`);
+    if (!el) return;
+    const isOpen = el.classList.toggle('open');
+    const s = _loadArchivedAgentState();
+    s[agentId] = isOpen;
+    _saveArchivedAgentState(s);
 }
 
 // =====================================================================
@@ -3728,6 +4183,20 @@ function restoreSidebarSections() {
             el.classList.remove('open');
         }
     });
+    // Restore folders sub-section state
+    if (ss['folders-sub'] === false) {
+        const fss = document.getElementById('folders-sub-section');
+        if (fss) fss.classList.remove('open');
+    }
+}
+
+function toggleFoldersSubSection() {
+    const el = document.getElementById('folders-sub-section');
+    if (!el) return;
+    const isOpen = el.classList.toggle('open');
+    const ss = loadSidebarSectionState();
+    ss['folders-sub'] = isOpen;
+    saveSidebarSectionState(ss);
 }
 
 function toggleFolder(folderId) {
@@ -3913,7 +4382,7 @@ function renderFolders() {
     if (!dom.folderList) return;
 
     if (state.folders.length === 0) {
-        dom.folderList.innerHTML = '<div style="padding: 8px 16px; color: var(--color-text-muted); font-size: 12px;">No folders yet</div>';
+        dom.folderList.innerHTML = '';
         return;
     }
 
@@ -4223,6 +4692,8 @@ function switchChannel(channelId) {
     _updateArchivedBanner();
     // Sync deep mode button state for this channel
     _updateResponseModeBtn();
+    // Show "Create Channel" button only in DM channels
+    _updateCreateChannelBtn();
     // Close add-member dropdown when switching channels
     if (dom.addMemberDropdown) dom.addMemberDropdown.style.display = 'none';
 }
@@ -4556,14 +5027,16 @@ function renderTaskCard(task) {
     const priority = task.priority || 'medium';
     const timeAgo = formatTimeAgo(task.created_at);
     const isBriefing = task.status === 'briefing';
+    const isRunning = task.status === 'in_progress' || task.status === 'running' || task.status === 'assigned';
     const clickAction = isBriefing
         ? `onclick="switchChannel('task-${escapeHtml(task.task_id)}')" style="cursor: pointer;"`
         : '';
-    const statusLabel = isBriefing ? 'briefing - click to chat' : escapeHtml(task.status);
+    const statusLabel = isBriefing ? 'briefing - click to chat' : isRunning ? 'running...' : escapeHtml(task.status);
     const recurringBadge = task.schedule_id ? ' <span class="task-card__badge task-card__badge--recurring">[R]</span>' : '';
+    const runningClass = isRunning ? ' task-card--running' : '';
 
     return `
-    <div class="task-card task-card--${priority} ${isBriefing ? 'task-card--briefing' : ''}" data-task-id="${escapeHtml(task.task_id)}" ${clickAction}>
+    <div class="task-card task-card--${priority}${runningClass} ${isBriefing ? 'task-card--briefing' : ''}" data-task-id="${escapeHtml(task.task_id)}" ${clickAction}>
         <div class="task-card__header">
             <span class="task-card__agent">${escapeHtml(task.agent_id)}${recurringBadge}</span>
             <span class="task-card__priority task-card__priority--${priority}">${priority}</span>
@@ -4689,12 +5162,12 @@ function renderTeam() {
 function renderQueue() {
     renderWorkQueue();
     renderTaskList();
-    // Badge: queued/active work items only
+    // Combined badge: active tasks + queued work items
     const wqCount = state.workQueue.filter((i) => i.status === 'queued' || i.status === 'active').length;
-    dom.queueBadge.textContent = wqCount;
-    // Task badge
     const taskCount = state.tasks.filter((t) => t.status !== 'complete').length;
-    if (dom.taskBadge) dom.taskBadge.textContent = taskCount;
+    if (dom.taskBadge) dom.taskBadge.textContent = taskCount + wqCount;
+    // Legacy queue badge (sidebar item removed, but keep safe)
+    if (dom.queueBadge) dom.queueBadge.textContent = wqCount;
     updatePanelCount();
 }
 
@@ -4740,8 +5213,10 @@ function renderTaskList() {
     if (tasks.length === 0) {
         dom.taskList.innerHTML =
             '<div class="empty-state" id="tasks-empty">' +
-            '<p class="empty-state__text">No tasks assigned</p>' +
-            '<p class="empty-state__hint">Assign tasks to agents from the Team panel or click below</p>' +
+            '<p class="empty-state__text">Assign your first task</p>' +
+            '<p class="empty-state__hint">Pick an agent and give it something to do</p>' +
+            '<p class="empty-state__example">e.g., "Review my Python code for security issues"</p>' +
+            '<button class="empty-state__cta" onclick="document.getElementById(\'assign-task-btn\').click()">+ Assign Task</button>' +
             '</div>';
         return;
     }
@@ -4772,7 +5247,7 @@ function renderOutputs() {
 
     if (!combinedHtml) {
         dom.outputList.innerHTML = '';
-        const emptyEl = createEmpty('output-empty', 'No outputs to review', 'Completed task outputs and pending social posts will appear here');
+        const emptyEl = createEmpty('output-empty', 'No outputs to review', 'When tasks complete, their output appears here for your review');
         dom.outputList.appendChild(emptyEl);
     } else {
         dom.outputList.innerHTML = combinedHtml;
@@ -5120,6 +5595,9 @@ function openNewChatForAgent(agentId) {
         for (const ch of existing) {
             state.socket.emit('archive_channel', { channel_id: ch.id });
         }
+        // Move archived channels out of active list immediately (don't wait for server)
+        const archivedIds = new Set(existing.map(ch => ch.id));
+        state.channels = state.channels.filter(ch => !archivedIds.has(ch.id));
     }
 
     // Calculate next channel ID, checking both active and archived to avoid collisions
@@ -5145,6 +5623,9 @@ function openNewChatForAgent(agentId) {
         channelId = `dm-${agentId}-${maxNum + 1}`;
     }
 
+    // Clear any stale messages for this channel ID so we start fresh
+    delete state.messages[channelId];
+
     addChannelMember(channelId, 'user');
     addChannelMember(channelId, agentId);
     switchChannel(channelId);
@@ -5153,6 +5634,71 @@ function openNewChatForAgent(agentId) {
     if (state.socket && state.connected) {
         state.socket.emit('get_channels', {});
     }
+}
+
+// =====================================================================
+// Create Channel from DM Chat
+// =====================================================================
+
+function _updateCreateChannelBtn() {
+    const btn = document.getElementById('create-channel-from-chat-btn');
+    if (!btn) return;
+    const isDm = state.currentChannel && state.currentChannel.startsWith('dm-');
+    const isArchived = state.archivedChannels.some(ch => ch.id === state.currentChannel);
+    btn.style.display = (isDm && !isArchived) ? '' : 'none';
+}
+
+function createChannelFromChat() {
+    if (!state.currentChannel || !state.currentChannel.startsWith('dm-')) return;
+
+    // Extract agent name for default channel name
+    const stripped = state.currentChannel.replace(/^dm-/, '');
+    const agentId = stripped.replace(/-\d+$/, '');
+    const agentProfile = state.agentProfiles[agentId];
+    const agentName = agentProfile ? (agentProfile.nickname || agentId) : agentId.replace(/_/g, ' ');
+
+    // Build a default name from the first user message content
+    const msgs = state.messages[state.currentChannel] || [];
+    const firstUserMsg = msgs.find(m => m.sender === 'user');
+    let defaultName = agentName;
+    if (firstUserMsg) {
+        // Use first ~40 chars of the first user message as a topic hint
+        const snippet = firstUserMsg.content.replace(/[@#]/g, '').trim().substring(0, 40).trim();
+        if (snippet) defaultName = snippet;
+    }
+
+    const channelName = prompt('Channel name:', defaultName);
+    if (!channelName || !channelName.trim()) return;
+
+    if (!state.socket || !state.connected) {
+        showToast('Not connected to server', 'error');
+        return;
+    }
+
+    const sourceId = state.currentChannel;
+
+    state.socket.emit('create_channel_from_chat', {
+        source_channel_id: sourceId,
+        channel_name: channelName.trim(),
+        description: `Created from ${agentName} chat`,
+    }, (response) => {
+        if (response && response.error) {
+            showToast(`Error: ${response.error}`, 'error');
+            return;
+        }
+
+        // Remove the archived DM from active channels locally
+        state.channels = state.channels.filter(ch => ch.id !== sourceId);
+
+        // Switch to the new channel
+        const newId = response.channel_id;
+        switchChannel(newId);
+
+        // Refresh channel lists
+        state.socket.emit('get_channels', {});
+
+        showToast(`Channel "${channelName}" created`, 'success');
+    });
 }
 
 function openAssignForAgent(agentId) {

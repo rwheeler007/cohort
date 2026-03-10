@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1773069585865,
+    "timestamp": "2026-03-09T15:19:45.865Z",
+    "source": "https://www.uktech.news/ai/london-based-ai-hyperscaler-ra...",
+    "mode": "extract_key_points",
+    "status": "success",
+    "model": "qwen3.5:9b",
+    "file_type": "url",
+    "stats": {
+      "url": "https://www.uktech.news/ai/london-based-ai-hyperscaler-raises-billions-in-massive-series-c-20260309",
+      "content_size": 110844,
+      "input_words": 621,
+      "input_chars": 3976,
+      "output_words": 216,
+      "compression_pct": 65.2,
+      "tokens_in": 883,
+      "tokens_out": 2878,
+      "elapsed_seconds": 38.9
+    },
+    "fullData": {
+      "ok": true,
+      "summary": "*   **Company:** Nscale (London-based AI hyperscaler and large-scale cloud provider specializing in AI data centres).\n*   **Funding Amount:** Raised $2bn (£1.5bn) in a Series C funding round.\n*   **Valuation:** Reached a $14.6bn valuation less than three years after its first investment.\n*   **Founding Date:** Founded in 2023.\n*   **CEO/Founder:** Josh Payne.\n*   **Lead Investors:** Aker ASA (Norwegian industrial group) and 8090 Industries (New York).\n*   **Supporting Investors:** NVIDIA, Dell Technologies, Lenovo, Citadel, Jane Street, Nokia, and Point72.\n*   **Strategic Partners:** OpenAI and NVIDIA provided financial and strategic support.\n*   **Key Project:** Tapped by OpenAI to build Stargate Norway (the European arm of OpenAI’s global data centre programme).\n*   **Capital Usage:** Funds will be used to expand the AI infrastructure platform in Europe, North America, and Asia.\n*   **Future Outlook:** CEO Josh Payne predicts AI integration into every industry, product, and job over the next five years.\n*   **Related News Dates & Topics (Sidebar):**\n    *   UK under-16s social media ban policy discussion: Wed 25 Feb 2026.\n    *   Northern scale-up struggle / AI surge: Tue 24 Feb 2026.\n    *   Canva acquires Manchester animation software group Cavalry: Tue 24 Feb 2026.\n    *   OpenAI names London as its next major research hub: Thu 26 Feb 2026.\n*   **Website Actions Available:** Register, Log in, Manage privacy settings (cookies), Accept/Deny consent options.",
+      "mode": "extract_key_points",
+      "model": "qwen3.5:9b",
+      "file_type": "url",
+      "filename": "www.uktech.news",
+      "stats": {
+        "url": "https://www.uktech.news/ai/london-based-ai-hyperscaler-raises-billions-in-massive-series-c-20260309",
+        "content_size": 110844,
+        "input_words": 621,
+        "input_chars": 3976,
+        "output_words": 216,
+        "compression_pct": 65.2,
+        "tokens_in": 883,
+        "tokens_out": 2878,
+        "elapsed_seconds": 38.9
+      }
+    }
+  },
+  {
+    "id": 1773069521225,
+    "timestamp": "2026-03-09T15:18:41.225Z",
+    "source": "https://www.uktech.news/ai/london-based-ai-hyperscaler-ra...",
+    "mode": "summary",
+    "status": "success",
+    "model": "qwen3.5:9b",
+    "file_type": "url",
+    "stats": {
+      "url": "https://www.uktech.news/ai/london-based-ai-hyperscaler-raises-billions-in-massive-series-c-20260309",
+      "content_size": 110844,
+      "input_words": 621,
+      "input_chars": 3976,
+      "output_words": 92,
+      "compression_pct": 85.2,
+      "tokens_in": 885,
+      "tokens_out": 1317,
+      "elapsed_seconds": 22.7
+    },
+    "fullData": {
+      "ok": true,
+      "summary": "*   **Funding & Valuation:** London-based AI hyperscaler Nscale has raised $2bn (£1.5bn) in its Series C round, achieving a $14.6bn valuation less than three years after founding.\n*   **Investors & Partners:** The round was led by Aker ASA and 8090 Industries with support from NVIDIA, Dell, and Lenovo, while OpenAI tapped Nscale to build the Stargate Norway data centre.\n*   **Strategic Expansion:** Capital raised will be used to expand AI infrastructure platforms across Europe, North America, and Asia to support the integration of AI into every industry over the next five years.",
+      "mode": "summary",
+      "model": "qwen3.5:9b",
+      "file_type": "url",
+      "filename": "www.uktech.news",
+      "stats": {
+        "url": "https://www.uktech.news/ai/london-based-ai-hyperscaler-raises-billions-in-massive-series-c-20260309",
+        "content_size": 110844,
+        "input_words": 621,
+        "input_chars": 3976,
+        "output_words": 92,
+        "compression_pct": 85.2,
+        "tokens_in": 885,
+        "tokens_out": 1317,
+        "elapsed_seconds": 22.7
+      }
+    }
+  }
+]

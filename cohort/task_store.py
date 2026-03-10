@@ -43,6 +43,11 @@ VALID_TASK_STATUSES = frozenset({
 })
 MAX_RUNS_PER_SCHEDULE = 100  # Keep last N runs, prune older
 
+VALID_TRIGGER_TYPES = frozenset({"manual", "scheduled", "event", "mcp"})
+VALID_OUTCOME_TYPES = frozenset({
+    "report", "artifact", "state_change", "notification", "analysis",
+})
+
 # -- Helpers -----------------------------------------------------------------
 
 def _now_iso() -> str:
@@ -119,6 +124,10 @@ class TaskSchedule:
     updated_at: str = ""
     created_by: str = "user"
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+    # Triad templates -- pre-filled into task instances on scheduled runs
+    action_template: Dict[str, Any] = field(default_factory=dict)
+    outcome_template: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -224,10 +233,51 @@ class TaskStore:
         description: str,
         priority: str = "medium",
         schedule_id: Optional[str] = None,
+        trigger: Optional[Dict[str, Any]] = None,
+        action: Optional[Dict[str, Any]] = None,
+        outcome: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Create a new task. Returns the task dict."""
+        """Create a new task. Returns the task dict.
+
+        Parameters
+        ----------
+        trigger:
+            How the task was initiated. Required for new tasks.
+            ``{"type": "manual|scheduled|event|mcp", "source": "...", "fired_at": "..."}``
+        action:
+            What tool/script the task will execute. Can be set later during briefing.
+            ``{"tool": "...", "tool_ref": "...", "parameters": {}}``
+        outcome:
+            Expected result of the task. Can be set later during briefing.
+            ``{"type": "report|artifact|...", "success_criteria": "...", "artifact_ref": null, "verified": false}``
+        """
         task_id = _gen_id("task")
         now = _now_iso()
+
+        # Build trigger -- default to manual if not provided
+        if trigger is None:
+            trigger = {"type": "manual", "source": "user", "fired_at": now}
+        else:
+            trigger.setdefault("fired_at", now)
+            if trigger.get("type") not in VALID_TRIGGER_TYPES:
+                trigger["type"] = "manual"
+
+        # Build action skeleton
+        if action is None:
+            action = {"tool": None, "tool_ref": None, "parameters": {}}
+
+        # Build outcome skeleton
+        if outcome is None:
+            outcome = {
+                "type": None,
+                "success_criteria": None,
+                "artifact_ref": None,
+                "verified": False,
+            }
+        else:
+            outcome.setdefault("artifact_ref", None)
+            outcome.setdefault("verified", False)
+
         task = {
             "task_id": task_id,
             "agent_id": agent_id,
@@ -242,6 +292,9 @@ class TaskStore:
             "output": None,
             "review": None,
             "completed_at": None,
+            "trigger": trigger,
+            "action": action,
+            "outcome": outcome,
         }
         with self._lock:
             self._ensure_loaded()
@@ -276,8 +329,17 @@ class TaskStore:
         self,
         task_id: str,
         output: Optional[Dict[str, Any]] = None,
+        artifact_ref: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
-        """Mark a task as complete with optional output."""
+        """Mark a task as complete with optional output.
+
+        Parameters
+        ----------
+        artifact_ref:
+            Path, URL, or identifier for the produced artifact.
+            Stored in ``task["outcome"]["artifact_ref"]`` and used
+            for outcome verification.
+        """
         now = _now_iso()
         with self._lock:
             self._ensure_loaded()
@@ -289,6 +351,16 @@ class TaskStore:
             task["completed_at"] = now
             if output:
                 task["output"] = _scan_output(output)
+
+            # Update outcome with artifact reference
+            outcome = task.get("outcome") or {}
+            if artifact_ref:
+                outcome["artifact_ref"] = artifact_ref
+            outcome["verified"] = bool(
+                outcome.get("success_criteria")
+                and (artifact_ref or (output and output.get("content")))
+            )
+            task["outcome"] = outcome
 
             # Update parent schedule stats if this is a scheduled run
             schedule_id = task.get("schedule_id")
@@ -587,12 +659,30 @@ class TaskStore:
         return due
 
     def create_scheduled_task(self, schedule: TaskSchedule) -> Dict[str, Any]:
-        """Create a task instance from a schedule (skips briefing)."""
+        """Create a task instance from a schedule (skips briefing).
+
+        Populates trigger from schedule metadata, and action/outcome from
+        the schedule's templates if defined.
+        """
+        now = _now_iso()
+        trigger = {
+            "type": "scheduled",
+            "source": schedule.id,
+            "fired_at": now,
+        }
+
+        # Use schedule templates if defined, otherwise leave as skeleton
+        action = dict(schedule.action_template) if schedule.action_template else None
+        outcome = dict(schedule.outcome_template) if schedule.outcome_template else None
+
         task = self.create_task(
             agent_id=schedule.agent_id,
             description=schedule.description,
             priority=schedule.priority,
             schedule_id=schedule.id,
+            trigger=trigger,
+            action=action,
+            outcome=outcome,
         )
         # Scheduled tasks skip briefing -- go straight to assigned
         self.update_task(task["task_id"], status="assigned")

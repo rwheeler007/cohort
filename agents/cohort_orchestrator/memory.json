@@ -70,6 +70,12 @@
       "channel": "dm-cohort_orchestrator-3",
       "input": "What do you think of cohort as a whole?  Are we almost ready to share publicaly",
       "response": "You've hit your limit · resets 8pm (America/Denver)"
+    },
+    {
+      "timestamp": "2026-03-09T12:58:42.210465",
+      "channel": "dm-cohort_orchestrator-3",
+      "input": "What tools do our agents have available to them currently",
+      "response": "Current available tools are defined dynamically via `local/config.py` and agent `capabilities` fields, not hardcoded.\n\n**1. Local Inference (Ollama)**\n- **Model:** `qwen3.5:9b`\n- **Usage:** Handles `smart`, `smarter`, and Phase 1/2 of `smartest` mode.\n- **Status:** Always active on local hardware (RTX 3080).\n\n**2. External API (Claude CLI)**\n- **Model:** Claude (via CLI)\n- **Usage:** Handles Phase 3 of `smartest` mode for final response refinement.\n- **Status:** Currently rate-limited until 8pm "
     }
   ],
   "learning_history": [],
