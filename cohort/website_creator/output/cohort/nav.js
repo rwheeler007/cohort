@@ -17,6 +17,7 @@ const NAV_ITEMS = [
         label: "How It Works", children: [
             { label: "Features", href: "features.html" },
             { label: "Use Cases", href: "use-cases.html" },
+            { label: "Conversations", href: "conversations.html" },
             { label: "Content Pipeline", href: "marketing.html" }
         ]
     },

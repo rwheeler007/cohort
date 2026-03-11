@@ -4,12 +4,41 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
 logger = logging.getLogger(__name__)
+
+
+def create_storage(data_dir: Path | str = "data") -> Any:
+    """Factory: return the configured storage backend.
+
+    Reads ``COHORT_STORAGE_BACKEND`` env var (default ``"auto"``).
+
+    * ``"sqlite"`` -- always use :class:`SqliteStorage`
+    * ``"json"`` -- always use :class:`JsonFileStorage`
+    * ``"auto"`` -- use SQLite if ``cohort.db`` exists, else JSON
+    """
+    from cohort.sqlite_storage import SqliteStorage  # local to avoid circular
+
+    data_path = Path(data_dir)
+    backend = os.environ.get("COHORT_STORAGE_BACKEND", "auto").lower()
+
+    if backend == "sqlite":
+        logger.info("Storage backend: sqlite (forced)")
+        return SqliteStorage(data_path)
+    elif backend == "json":
+        logger.info("Storage backend: json (forced)")
+        return JsonFileStorage(data_path)
+    else:  # auto
+        if (data_path / "cohort.db").exists():
+            logger.info("Storage backend: sqlite (auto-detected cohort.db)")
+            return SqliteStorage(data_path)
+        logger.info("Storage backend: json (default)")
+        return JsonFileStorage(data_path)
 
 
 # =====================================================================

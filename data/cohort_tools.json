@@ -38,8 +38,8 @@
     "health_monitor": "http://127.0.0.1:5100/health",
     "llm_manager": "http://127.0.0.1:11434/api/tags",
     "document_processor": "http://127.0.0.1:11434/api/tags",
-    "intel_scheduler": "http://127.0.0.1:5000/health",
-    "content_monitor_scheduler": "http://127.0.0.1:5000/health"
+    "intel_scheduler": "http://127.0.0.1:5100/health",
+    "content_monitor_scheduler": "http://127.0.0.1:5100/health"
   },
   "tool_context": {
     "comms_service": {

@@ -44,7 +44,7 @@ from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secre
 from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager
 from cohort.local.config import DEFAULT_MODEL
-from cohort.registry import JsonFileStorage
+from cohort.registry import JsonFileStorage, create_storage
 
 logger = logging.getLogger(__name__)
 
@@ -2544,13 +2544,16 @@ async def get_service_status(request: Request) -> JSONResponse:
     if not url:
         return JSONResponse({"status": "unknown", "detail": "No health endpoint configured"})
 
-    # Health monitor is a built-in Cohort feature -- if it has service data
-    # it's working.  A self-request would deadlock the event loop.
+    # Built-in Cohort features: a self-request would deadlock the event loop.
+    # If the server is serving this request, these features are up.
     if service_id == "health_monitor":
         from cohort.health_monitor import list_services
         svcs = list_services()
         status = "up" if svcs else "unknown"
         return JSONResponse({"status": status, "detail": {"services": len(svcs)}})
+
+    if service_id in ("intel_scheduler", "content_monitor_scheduler"):
+        return JSONResponse({"status": "up", "detail": "Built-in scheduler"})
 
     # Only allow localhost URLs
     if "127.0.0.1" not in url and "localhost" not in url:
@@ -4752,7 +4755,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     global _settings_path  # noqa: PLW0603
 
     resolved_dir = os.environ.get("COHORT_DATA_DIR", data_dir)
-    storage = JsonFileStorage(resolved_dir)
+    storage = create_storage(resolved_dir)
     _chat = ChatManager(storage)
 
     _settings_path = Path(resolved_dir) / "settings.json"

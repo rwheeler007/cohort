@@ -172,10 +172,10 @@ def _cmd_briefing(args: argparse.Namespace) -> int:
 
     from cohort.chat import ChatManager
     from cohort.executive_briefing import ExecutiveBriefing
-    from cohort.registry import JsonFileStorage
+    from cohort.registry import create_storage
 
     resolved_dir = os.environ.get("COHORT_DATA_DIR", getattr(args, "data_dir", "data"))
-    storage = JsonFileStorage(resolved_dir)
+    storage = create_storage(resolved_dir)
     chat = ChatManager(storage)
 
     # Try to load work queue (optional)

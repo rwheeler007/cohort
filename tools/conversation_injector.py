@@ -694,9 +694,9 @@ class OfflineInjector:
         # Lazy import
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
         from cohort.chat import ChatManager
-        from cohort.registry import JsonFileStorage
+        from cohort.registry import create_storage
 
-        self.storage = JsonFileStorage(self.data_dir)
+        self.storage = create_storage(self.data_dir)
         self.chat = ChatManager(self.storage)
 
     def send(
