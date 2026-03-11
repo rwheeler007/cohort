@@ -89,6 +89,32 @@
 </section>
 {% endif %}
 
+{% if page.content.ai_perspective is defined and page.content.ai_perspective %}
+<!-- AI's Perspective Teaser -->
+<section class="section-spacing">
+    <div class="container text-center">
+        <h2 class="responsive-h2">{{ page.content.ai_perspective.heading | default("The AI's Perspective") }}</h2>
+        <p class="responsive-p-body" style="max-width: 700px; margin: 1rem auto 2.5rem; opacity: 0.8; font-style: italic;">{{ page.content.ai_perspective.intro }}</p>
+
+        <div style="max-width: 860px; margin: 0 auto 2rem; text-align: left; background: #fff; border-left: 4px solid var(--color-primary); padding: 2rem 2.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+            <h3 class="responsive-h3" style="margin-bottom: 1rem; text-align: center;">{{ page.content.ai_perspective.review_title }}</h3>
+            {% for paragraph in page.content.ai_perspective.teaser_paragraphs %}
+            {% if paragraph.style == "highlight" %}
+            <p style="margin-bottom: 0; line-height: 1.8; font-size: 1.35em; font-weight: 600;"><span style="background-image: linear-gradient(90deg, rgba(217, 119, 87, 0) 0%, rgba(217, 119, 87, 0.35) 3%, rgba(217, 119, 87, 0.35) 97%, rgba(217, 119, 87, 0) 100%); padding: 0.25em 0.6em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">{{ paragraph.text | safe }}</span></p>
+            {% else %}
+            <p style="margin-bottom: 1rem; line-height: 1.8;">{{ paragraph.text | safe }}</p>
+            {% endif %}
+            {% endfor %}
+            {% if page.content.ai_perspective.attribution %}
+            <cite style="display: block; text-align: right; margin-top: 1.5rem; font-style: normal; font-weight: 600;">{{ page.content.ai_perspective.attribution }}</cite>
+            {% endif %}
+        </div>
+
+        <a href="{{ page.content.ai_perspective.full_page_href | default('ai-perspective.html') }}" class="btn-primary">{{ page.content.ai_perspective.cta_text | default("Read the Full Review") }}</a>
+    </div>
+</section>
+{% endif %}
+
 {% if pricing_tiers %}
 <!-- Pricing Preview -->
 <section class="section-spacing" style="background: {{ brand.accent_color }};">

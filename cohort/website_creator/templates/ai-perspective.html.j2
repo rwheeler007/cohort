@@ -1,0 +1,67 @@
+{# AI Perspective Page -- Claude's self-review of Cohort #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Header -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{{ page.title }}</h1>
+        {% if page.content.subheadline %}
+        <p class="responsive-p-large">{{ page.content.subheadline }}</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- The Prompt -->
+{% if page.content.prompt_text %}
+<section class="section-spacing">
+    <div class="container" style="max-width: 860px;">
+        <p class="responsive-p-body" style="max-width: 700px; margin: 0 auto 2.5rem; opacity: 0.8; font-style: italic; text-align: center;">{{ page.content.intro_text }}</p>
+
+        <div style="text-align: left; background: #2D2D2D; color: #C8C8C8; padding: 1.5rem 2rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+            <div style="color: #888; margin-bottom: 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">{{ page.content.prompt_label | default("The prompt -- unedited, typos and all:") }}</div>
+            <p style="margin: 0;">"{{ page.content.prompt_text }}"</p>
+        </div>
+        {% if page.content.prompt_note %}
+        <p class="responsive-p-body" style="max-width: 700px; margin: 1rem auto 0; opacity: 0.6; font-size: 0.85rem; text-align: center;">{{ page.content.prompt_note }}</p>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- The Review -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container" style="max-width: 860px;">
+        <div style="text-align: left; background: #fff; border-left: 4px solid {{ brand.primary_color }}; padding: 2.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+            {% if page.content.review_title %}
+            <h2 class="responsive-h2" style="margin-bottom: 1.5rem; text-align: center;">{{ page.content.review_title }}</h2>
+            {% endif %}
+
+            {% for paragraph in page.content.review_paragraphs %}
+            {% if paragraph.style == "bold_intro" %}
+            <p style="margin-bottom: 1.5rem; line-height: 1.8; font-weight: 600;">{{ paragraph.text | safe }}</p>
+            {% elif paragraph.style == "highlight" %}
+            <p style="margin-bottom: 0; line-height: 1.8; font-size: 1.35em; font-weight: 600;"><span style="background-image: linear-gradient(90deg, rgba(217, 119, 87, 0) 0%, rgba(217, 119, 87, 0.35) 3%, rgba(217, 119, 87, 0.35) 97%, rgba(217, 119, 87, 0) 100%); padding: 0.25em 0.6em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">{{ paragraph.text | safe }}</span></p>
+            {% else %}
+            <p style="margin-bottom: 1rem; line-height: 1.8;">{{ paragraph.text | safe }}</p>
+            {% endif %}
+            {% endfor %}
+
+            {% if page.content.review_attribution %}
+            <cite style="display: block; text-align: right; margin-top: 1.5rem; font-style: normal; font-weight: 600;">{{ page.content.review_attribution }}</cite>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{{ page.content.cta_heading | default("See It In Action") }}</h2>
+        <div class="button-group">
+            <a href="{{ page.content.cta_href | default('features.html') }}" class="btn-primary">{{ page.content.cta_text | default("How It Works") }}</a>
+            <a href="{{ page.content.cta_secondary_href | default('pricing.html') }}" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">{{ page.content.cta_secondary_text | default("View Pricing") }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
