@@ -42,6 +42,7 @@ COHORT            </a>
                 <li><a href="features.html">How It Works</a></li>
                 <li><a href="tools.html">Tools</a></li>
                 <li><a href="use-cases.html">Use Cases</a></li>
+                <li><a href="marketing.html">Marketing</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="benchmarks.html">Benchmarks</a></li>
                 <li><a href="docs.html">Docs</a></li>
@@ -60,31 +61,290 @@ COHORT            </a>
     </div>
 </section>
 
-<!-- Content Body -->
+<!-- Table of Contents -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container" style="max-width: 800px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <a href="#install" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #D97757; margin-bottom: 0.25rem;">Installation</div>
+                <div style="font-size: 0.85rem;">Zero-dep core, optional extras</div>
+            </a>
+            <a href="#quickstart" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #58a6ff; margin-bottom: 0.25rem;">Quick Start</div>
+                <div style="font-size: 0.85rem;">First meeting in 10 lines</div>
+            </a>
+            <a href="#agents" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #3fb950; margin-bottom: 0.25rem;">Agent Development</div>
+                <div style="font-size: 0.85rem;">Protocol, config, scoring</div>
+            </a>
+            <a href="#api" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #d29922; margin-bottom: 0.25rem;">API Reference</div>
+                <div style="font-size: 0.85rem;">REST endpoints, CLI, MCP</div>
+            </a>
+            <a href="#storage" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #bc8cff; margin-bottom: 0.25rem;">Storage Backends</div>
+                <div style="font-size: 0.85rem;">JSON, JSONL, or bring your own</div>
+            </a>
+            <a href="#cli" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
+                <div style="font-weight: 600; color: #f85149; margin-bottom: 0.25rem;">CLI Reference</div>
+                <div style="font-size: 0.85rem;">serve, say, gate, next-speaker</div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Installation -->
 <section class="section-spacing">
     <div class="container" style="max-width: 800px;">
-            <div style="margin-bottom: 3rem;">
-                <h2 class="responsive-h2">Quick Start</h2>
-                <div class="responsive-p-body" style="max-width: none;">Install Cohort and run your first multi-agent task in under 5 minutes.</div>
-                <ul style="padding-left: 1.5rem; margin-top: 1rem;">
-                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">pip install cohort</li>
-                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">cohort init my-project</li>
-                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">cohort serve --port 5100</li>
-                    <li class="responsive-p-body" style="margin-bottom: 0.5rem;">Open http://localhost:5100 in your browser</li>
-                </ul>
+
+        <div id="install" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[I]</div>
+            <h2 class="responsive-h2">Installation</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Cohort's core library has zero dependencies -- just the Python standard library. Install extras only for the features you need. Requires Python 3.11+.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Install options</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Zero-dependency core</span>
+pip install cohort
+
+<span style="color: #888;"># REST API + Socket.IO dashboard</span>
+pip install cohort[server]
+
+<span style="color: #888;"># MCP bridge for Claude Code</span>
+pip install cohort[claude]
+
+<span style="color: #888;"># Agent-as-a-service HTTP API</span>
+pip install cohort[agent-api]
+
+<span style="color: #888;"># Everything</span>
+pip install cohort[all]</pre>
             </div>
-            <div style="margin-bottom: 3rem;">
-                <h2 class="responsive-h2">Core Concepts</h2>
-                <div class="responsive-p-body" style="max-width: none;">Understand the building blocks: agents, sessions, roundtables, work queues, and briefings.</div>
+        </div>
+
+        <!-- Quick Start -->
+        <div id="quickstart" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[QS]</div>
+            <h2 class="responsive-h2">Quick Start</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Create a channel, define agents, start a session, and let the orchestrator pick who speaks next. This is the complete working example -- 10 lines to your first multi-agent meeting.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">examples/quick_cohort.py</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">from</span> cohort <span style="color: #d29922;">import</span> JsonFileStorage, Orchestrator
+<span style="color: #d29922;">from</span> cohort.chat <span style="color: #d29922;">import</span> ChatManager
+
+<span style="color: #888;"># 1. Set up storage and chat</span>
+chat = ChatManager(JsonFileStorage(<span style="color: #3fb950;">"my_data"</span>))
+chat.create_channel(<span style="color: #3fb950;">"design-review"</span>, <span style="color: #3fb950;">"API design review"</span>)
+
+<span style="color: #888;"># 2. Define agents</span>
+agents = {
+    <span style="color: #3fb950;">"architect"</span>: {<span style="color: #3fb950;">"triggers"</span>: [<span style="color: #3fb950;">"api"</span>, <span style="color: #3fb950;">"design"</span>], <span style="color: #3fb950;">"capabilities"</span>: [<span style="color: #3fb950;">"backend architecture"</span>]},
+    <span style="color: #3fb950;">"tester"</span>:    {<span style="color: #3fb950;">"triggers"</span>: [<span style="color: #3fb950;">"testing"</span>, <span style="color: #3fb950;">"qa"</span>], <span style="color: #3fb950;">"capabilities"</span>: [<span style="color: #3fb950;">"test strategy"</span>]},
+}
+
+<span style="color: #888;"># 3. Start orchestrator session</span>
+orch = Orchestrator(chat, agents=agents)
+session = orch.start_session(<span style="color: #3fb950;">"design-review"</span>, <span style="color: #3fb950;">"REST API design review"</span>, list(agents))
+
+<span style="color: #888;"># 4. Get next speaker recommendation</span>
+rec = orch.get_next_speaker(session.session_id)
+print(f<span style="color: #3fb950;">"Next: {rec['recommended_speaker']} - {rec['reason']}"</span>)
+
+<span style="color: #888;"># 5. Record a turn (agent spoke)</span>
+orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</span>, <span style="color: #3fb950;">"msg-001"</span>)</pre>
             </div>
-            <div style="margin-bottom: 3rem;">
-                <h2 class="responsive-h2">API Reference</h2>
-                <div class="responsive-p-body" style="max-width: none;">Full REST API documentation for the Cohort server. All endpoints, request/response schemas, and WebSocket events.</div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">No HTTP server required. The orchestrator works directly with file-backed storage. Add cohort[server] when you want the dashboard.</p>
+        </div>
+
+        <!-- Agent Development -->
+        <div id="agents" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[AG]</div>
+            <h2 class="responsive-h2">Agent Development</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Agents are duck-typed. Any object with <code>name</code>, <code>role</code>, <code>capabilities</code>, <code>relevance_score()</code>, and <code>can_contribute()</code> satisfies the protocol. No base class, no imports, no vendor SDK.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">cohort/registry.py -- the entire agent interface</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">@runtime_checkable</span>
+<span style="color: #d29922;">class</span> <span style="color: #58a6ff;">AgentProfile</span>(<span style="color: #58a6ff;">Protocol</span>):
+    <span style="color: #888;">"""Any object with these attributes works."""</span>
+
+    name: <span style="color: #58a6ff;">str</span>
+    role: <span style="color: #58a6ff;">str</span>
+    capabilities: <span style="color: #58a6ff;">list</span>[<span style="color: #58a6ff;">str</span>]
+
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">relevance_score</span>(self, topic: str) -> float: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">can_contribute</span>(self, context: dict) -> bool: ...</pre>
             </div>
-            <div style="margin-bottom: 3rem;">
-                <h2 class="responsive-h2">Agent Development</h2>
-                <div class="responsive-p-body" style="max-width: none;">Create custom agents with agent_config.json, agent_persona.md, and agent_prompt.md. No base class required -- just implement the protocol.</div>
+
+            <p class="responsive-p-body" style="margin-top: 1.5rem;">For most use cases, define agents as simple JSON. Cohort's built-in <code>AgentConfig</code> handles scoring automatically.</p>
+
+            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">agents.json -- agent definition</div>
+<pre style="margin: 0; white-space: pre-wrap;">{
+  <span style="color: #58a6ff;">"architect"</span>: {
+    <span style="color: #3fb950;">"triggers"</span>: [<span style="color: #3fb950;">"api"</span>, <span style="color: #3fb950;">"design"</span>, <span style="color: #3fb950;">"architecture"</span>],
+    <span style="color: #3fb950;">"capabilities"</span>: [<span style="color: #3fb950;">"REST API design"</span>, <span style="color: #3fb950;">"system design"</span>],
+    <span style="color: #3fb950;">"complementary_agents"</span>: [<span style="color: #3fb950;">"developer"</span>, <span style="color: #3fb950;">"tester"</span>],
+    <span style="color: #3fb950;">"phase_roles"</span>: {
+      <span style="color: #3fb950;">"DISCOVER"</span>: <span style="color: #3fb950;">"high"</span>,
+      <span style="color: #3fb950;">"PLAN"</span>: <span style="color: #3fb950;">"high"</span>,
+      <span style="color: #3fb950;">"EXECUTE"</span>: <span style="color: #3fb950;">"low"</span>
+    }
+  }
+}</pre>
             </div>
+
+            <!-- Scoring breakdown -->
+            <p class="responsive-p-body" style="margin-top: 1.5rem;">The orchestrator scores agents across 5 dimensions to pick the next speaker:</p>
+            <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #D97757;">30%</div>
+                    <div style="font-size: 0.7rem; color: #C8C8C8;">Domain Expertise</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #58a6ff;">25%</div>
+                    <div style="font-size: 0.7rem; color: #C8C8C8;">Complementary</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #3fb950;">20%</div>
+                    <div style="font-size: 0.7rem; color: #C8C8C8;">History</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #d29922;">15%</div>
+                    <div style="font-size: 0.7rem; color: #C8C8C8;">Phase</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #bc8cff;">10%</div>
+                    <div style="font-size: 0.7rem; color: #C8C8C8;">Data Ownership</div>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Agents progress through stakeholder statuses (active -> approved_silent -> observer -> dormant) as their contribution threshold rises. Topic shifts re-engage dormant agents whose expertise becomes relevant again.</p>
+        </div>
+
+        <!-- API Reference -->
+        <div id="api" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[API]</div>
+            <h2 class="responsive-h2">API Reference</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Start the server with <code>python -m cohort serve --port 5100</code>. All endpoints return JSON.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">REST API endpoints</div>
+
+                <div style="display: grid; grid-template-columns: auto auto 1fr; gap: 0.5rem 1rem; align-items: center;">
+                    <div style="background: #3fb950; color: #000; border-radius: 4px; padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: center;">GET</div>
+                    <div style="font-family: monospace; color: #58a6ff;">/health</div>
+                    <div>Liveness probe</div>
+
+                    <div style="background: #3fb950; color: #000; border-radius: 4px; padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: center;">GET</div>
+                    <div style="font-family: monospace; color: #58a6ff;">/api/channels</div>
+                    <div>List all non-archived channels</div>
+
+                    <div style="background: #D97757; color: #000; border-radius: 4px; padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: center;">POST</div>
+                    <div style="font-family: monospace; color: #58a6ff;">/api/channels</div>
+                    <div>Create new channel</div>
+
+                    <div style="background: #3fb950; color: #000; border-radius: 4px; padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: center;">GET</div>
+                    <div style="font-family: monospace; color: #58a6ff;">/api/messages?channel=X</div>
+                    <div>Fetch channel messages</div>
+
+                    <div style="background: #D97757; color: #000; border-radius: 4px; padding: 0.15rem 0.5rem; font-family: monospace; font-size: 0.75rem; font-weight: 600; text-align: center;">POST</div>
+                    <div style="font-family: monospace; color: #58a6ff;">/api/send</div>
+                    <div>Post message (auto-routes @mentions)</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">POST /api/send -- example</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Request</span>
+{
+  <span style="color: #3fb950;">"channel"</span>: <span style="color: #3fb950;">"design-review"</span>,
+  <span style="color: #3fb950;">"sender"</span>: <span style="color: #3fb950;">"architect"</span>,
+  <span style="color: #3fb950;">"message"</span>: <span style="color: #3fb950;">"We need cursor-based pagination @developer"</span>,
+  <span style="color: #3fb950;">"response_mode"</span>: <span style="color: #3fb950;">"smarter"</span>  <span style="color: #888;">// smart | smarter | smartest</span>
+}
+
+<span style="color: #888;"># Response</span>
+{<span style="color: #3fb950;">"success"</span>: true, <span style="color: #3fb950;">"message_id"</span>: <span style="color: #3fb950;">"a1b2c3d4..."</span>}</pre>
+            </div>
+
+            <!-- MCP -->
+            <p class="responsive-p-body" style="margin-top: 1.5rem;"><strong>MCP Integration</strong> -- Use Cohort from Claude Code via the MCP bridge:</p>
+            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Start MCP server</span>
+python -m cohort.mcp.server
+
+<span style="color: #888;"># Available MCP tools:</span>
+read_channel       <span style="color: #888;"># Fetch messages (read-only)</span>
+post_message       <span style="color: #888;"># Post to channel</span>
+list_channels      <span style="color: #888;"># List channels (read-only)</span>
+create_channel     <span style="color: #888;"># Create new channel</span>
+channel_summary    <span style="color: #888;"># Compact activity summary (read-only)</span>
+condense_channel   <span style="color: #888;"># Archive + summarize old messages</span></pre>
+            </div>
+        </div>
+
+        <!-- Storage Backends -->
+        <div id="storage" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[S]</div>
+            <h2 class="responsive-h2">Storage Backends</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Storage is protocol-based. Cohort ships two backends; implement the interface to bring your own (Postgres, Redis, SQLite, etc.).</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">cohort/registry.py -- storage protocol</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">class</span> <span style="color: #58a6ff;">StorageBackend</span>(<span style="color: #58a6ff;">Protocol</span>):
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">save_message</span>(self, channel: str, message: dict) -> str: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">get_messages</span>(self, channel: str, limit: int = 50) -> list[dict]: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">save_channel</span>(self, channel_id: str, metadata: dict) -> None: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">get_channel</span>(self, channel_id: str) -> dict | None: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">list_channels</span>(self) -> list[dict]: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">delete_channel</span>(self, channel_id: str) -> bool: ...
+    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">restore_channel</span>(self, channel_id: str) -> bool: ...</pre>
+            </div>
+
+            <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 600; color: #58a6ff; margin-bottom: 0.5rem;">JsonFileStorage</div>
+                    <div style="font-size: 0.85rem; color: #C8C8C8;">Flat JSON files. Default backend. Messages in <code>messages.json</code>, channels in <code>channels.json</code>. Soft-delete with 30-day trash retention.</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 600; color: #3fb950; margin-bottom: 0.5rem;">JsonlFileStorage</div>
+                    <div style="font-size: 0.85rem; color: #C8C8C8;">Append-only JSONL. One line per message. Ideal for polyglot agent pipelines where multiple processes write concurrently.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLI Reference -->
+        <div id="cli" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[CLI]</div>
+            <h2 class="responsive-h2">CLI Reference</h2>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Cohort works without a server. Use CLI commands for file-based scoring, polyglot integration, and quick experiments.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">CLI commands</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Start HTTP server with dashboard</span>
+python -m cohort serve --host 0.0.0.0 --port 5100 --data-dir data
+
+<span style="color: #888;"># Post a message (file-based, no server)</span>
+python -m cohort say --sender architect --channel review \
+    --file conv.jsonl --message <span style="color: #3fb950;">"We need pagination"</span>
+
+<span style="color: #888;"># Should this agent speak? (exit 0 = yes, 1 = no)</span>
+python -m cohort gate --agent developer --channel review \
+    --file conv.jsonl --agents agents.json --format json
+
+<span style="color: #888;"># Who should speak next? (ranked list with scores)</span>
+python -m cohort next-speaker --channel review \
+    --file conv.jsonl --agents agents.json --top 3
+
+<span style="color: #888;"># Generate executive briefing</span>
+python -m cohort briefing generate --hours 24 --format json
+
+<span style="color: #888;"># Interactive setup (Ollama + models + feeds)</span>
+python -m cohort setup</pre>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">The gate and next-speaker commands work with JSONL files, making Cohort a drop-in scoring engine for agents written in any language -- Python, Node, Go, Bash scripts.</p>
+        </div>
+
     </div>
 </section>
     </main>

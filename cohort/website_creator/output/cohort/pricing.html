@@ -42,6 +42,7 @@ COHORT            </a>
                 <li><a href="features.html">How It Works</a></li>
                 <li><a href="tools.html">Tools</a></li>
                 <li><a href="use-cases.html">Use Cases</a></li>
+                <li><a href="marketing.html">Marketing</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
                 <li><a href="benchmarks.html">Benchmarks</a></li>
                 <li><a href="docs.html">Docs</a></li>
@@ -52,114 +53,263 @@ COHORT            </a>
 
     <!-- Main Content -->
     <main id="main">
-<!-- Solution Hero -->
+<!-- Pricing Hero -->
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
         <h1 class="responsive-h1">Simple, Transparent Pricing</h1>
-        <p class="responsive-p-large">Start free. Scale when you're ready.</p>
+        <p class="responsive-p-large">The core framework is free and open source. Pay only for premium tooling and support.</p>
     </div>
 </section>
 
-<!-- Feature Details -->
+<!-- Pricing Cards -->
 <section class="section-spacing">
     <div class="container">
-        <div style="display: flex; flex-direction: row; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Compiled Roundtables</h2>
-                <p class="responsive-p-body" style="max-width: none;">Load 3-8 agent personas into a single LLM call. 90% token reduction vs. sequential agent conversations. Real debate, real disagreements, real consensus.</p>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row-reverse; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Contribution Scoring</h2>
-                <p class="responsive-p-body" style="max-width: none;">5-dimension relevance scoring prevents agent loops and ensures the right expert speaks at the right time. No more circular conversations.</p>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Work Queue</h2>
-                <p class="responsive-p-body" style="max-width: none;">Break complex tasks into parallel work items with dependency tracking. Agents claim, execute, and deliver -- automatically.</p>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row-reverse; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Zero API Costs</h2>
-                <p class="responsive-p-body" style="max-width: none;">Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing.</p>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Protocol-First</h2>
-                <p class="responsive-p-body" style="max-width: none;">Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. pip install cohort pulls nothing.</p>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row-reverse; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 class="responsive-h2">Executive Briefings</h2>
-                <p class="responsive-p-body" style="max-width: none;">Auto-generated HTML reports with agent activity narratives, intel summaries, and task execution history. Know what your AI team did overnight.</p>
-            </div>
-        </div>
-    </div>
-</section>
+        <div class="grid-3" style="margin-top: 0; align-items: stretch;">
 
-<!-- Pricing -->
-<section class="section-spacing" style="background: #F5E6DE;">
-    <div class="container text-center">
-        <h2 class="responsive-h2">Choose Your Plan</h2>
-        <p class="responsive-p-large"></p>
-        <div class="grid-3" style="margin-top: 2rem;">
-            <div class="card" style="position: relative;">
+            <!-- Open Source -->
+            <div class="card" style="position: relative; display: flex; flex-direction: column;">
                 <h3 class="responsive-h3">Open Source</h3>
                 <div style="font-size: 2.5rem; font-weight: 700; color: var(--color-primary); margin: 1rem 0;">
-                    Free<span style="font-size: 1rem; font-weight: 400; color: var(--color-text);"></span>
+                    $0<span style="font-size: 1rem; font-weight: 400; color: var(--color-text);"> forever</span>
                 </div>
-                <p class="responsive-p-body">Full framework. Self-hosted. Community support.</p>
-                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0;">
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Unlimited agents</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Compiled roundtables</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Work queue orchestration</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Executive briefings</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Local model support (Ollama/llama.cpp)</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] MCP integration</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Community Discord</li>
+                <p class="responsive-p-body">The full orchestration engine. Self-hosted on your hardware. No feature gates, no token limits, no telemetry.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0; flex: 1;">
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Unlimited agents & meetings</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Compiled roundtables</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Contribution scoring</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Work queue orchestration</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Persistent agent memory</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Local inference (Ollama / llama.cpp)</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Protocol-first architecture</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> MCP tool integration</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Community Discord</li>
                 </ul>
                 <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="width: 100%;">Star on GitHub</a>
             </div>
-            <div class="card card-highlighted" style="position: relative;">
+
+            <!-- Pro -->
+            <div class="card card-highlighted" style="position: relative; display: flex; flex-direction: column;">
                 <div class="pricing-badge">Most Popular</div>
                 <h3 class="responsive-h3">Pro</h3>
                 <div style="font-size: 2.5rem; font-weight: 700; color: var(--color-primary); margin: 1rem 0;">
                     $49<span style="font-size: 1rem; font-weight: 400; color: var(--color-text);">/month</span>
                 </div>
-                <p class="responsive-p-body">For teams shipping with multi-agent workflows daily.</p>
-                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0;">
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Everything in Open Source</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Website Creator pipeline</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Priority support</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Pre-built workflow templates</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Advanced analytics dashboard</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Cloud model fallback (Claude, GPT)</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Team collaboration features</li>
+                <p class="responsive-p-body">For teams shipping production work with multi-agent workflows every day.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0; flex: 1;">
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Everything in Open Source</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Website Creator pipeline</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Content pipeline (RSS to publish)</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Executive briefing generator</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Pre-built workflow templates</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Agent training & certification</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Cloud model fallback (Claude, GPT)</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Analytics dashboard</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Priority email support</li>
                 </ul>
-                <a href="#" class="btn-primary" style="width: 100%;">Start Free Trial</a>
+                <a href="#" class="btn-primary" style="width: 100%;">Start 14-Day Free Trial</a>
             </div>
-            <div class="card" style="position: relative;">
+
+            <!-- Enterprise -->
+            <div class="card" style="position: relative; display: flex; flex-direction: column;">
                 <h3 class="responsive-h3">Enterprise</h3>
                 <div style="font-size: 2.5rem; font-weight: 700; color: var(--color-primary); margin: 1rem 0;">
                     Custom<span style="font-size: 1rem; font-weight: 400; color: var(--color-text);"></span>
                 </div>
-                <p class="responsive-p-body">Dedicated support, custom agents, SLA guarantees.</p>
-                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0;">
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Everything in Pro</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Custom agent development</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] SSO / SAML authentication</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] 99.9% uptime SLA</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Dedicated support engineer</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] On-premise deployment</li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] Custom integrations</li>
+                <p class="responsive-p-body">For organizations that need dedicated infrastructure, compliance, and hands-on support.</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0; flex: 1;">
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Everything in Pro</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> Custom agent development</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> SSO / SAML authentication</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> 99.9% uptime SLA</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> Dedicated support engineer</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> On-premise / air-gapped deployment</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> Custom integrations & connectors</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> Volume licensing</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #58a6ff; font-weight: 700;">[*]</span> SOC 2 / HIPAA compliance</li>
                 </ul>
                 <a href="contact.html" class="btn-primary" style="width: 100%;">Contact Sales</a>
             </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Cost Comparison -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">What You're Actually Paying For</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Cohort's core engine is MIT-licensed. The free tier isn't a demo -- it's the same orchestration powering production workloads. Pro adds turnkey pipelines so you don't have to build them yourself.</p>
+
+        <!-- Cost breakdown -->
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+            <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Monthly cost comparison -- 14 agents, daily workloads</div>
+
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem 1.5rem; align-items: center;">
+                <div>Cohort Open Source (local inference)</div>
+                <div style="font-weight: 700; color: #3fb950; text-align: right;">$0/mo</div>
+
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem;">Cohort Pro (local inference + premium pipelines)</div>
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem; font-weight: 700; color: #D97757; text-align: right;">$49/mo</div>
+
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem; color: #888;">Comparable cloud API costs (14 agents, daily roundtables)</div>
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem; font-weight: 700; color: #f85149; text-align: right;">$800-2,400/mo</div>
+
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem; color: #888;">Hosted multi-agent platforms (per-seat pricing)</div>
+                <div style="border-top: 1px solid #444; padding-top: 0.5rem; font-weight: 700; color: #f85149; text-align: right;">$200-500/seat/mo</div>
+            </div>
+        </div>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Cloud API estimate based on 14 agents running daily roundtables and work queue tasks with GPT-4/Claude-class models. Actual costs vary by usage.</p>
+    </div>
+</section>
+
+<!-- Feature Comparison Table -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Feature Comparison</h2>
+
+        <div style="overflow-x: auto; margin-top: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                        <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600;"></th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">Open Source</th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600; color: var(--color-primary);">Pro</th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Agent orchestration</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">Unlimited</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">Unlimited</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">Unlimited</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Compiled roundtables</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Contribution scoring</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Work queue</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Persistent memory</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Local inference</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Website Creator</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Content pipeline</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Executive briefings</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Agent training & certification</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Cloud model fallback</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">SSO / SAML</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Custom agent development</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Uptime SLA</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">99.9%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Support</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">Community</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">Priority email</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">Dedicated engineer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-spacing" style="background: #f9fafb;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Frequently Asked Questions</h2>
+        <div style="margin-top: 2rem;">
+
+            <div style="margin-bottom: 2rem;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">What hardware do I need?</h3>
+                <p class="responsive-p-body" style="max-width: none;">A single consumer GPU with 8-12GB VRAM runs the default model (qwen3.5:9b) comfortably. An RTX 3060/3070/3080 or equivalent is plenty. CPU-only mode works but is slower. No cloud GPU required.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">Is the free tier actually usable in production?</h3>
+                <p class="responsive-p-body" style="max-width: none;">Yes. The open source tier is the same orchestration engine that runs in Pro and Enterprise. Unlimited agents, full roundtables, contribution scoring, work queue, persistent memory. The paid tiers add pre-built vertical pipelines (website builder, content engine, briefing generator) and support -- they don't gate the core framework.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">Can I use cloud models instead of local ones?</h3>
+                <p class="responsive-p-body" style="max-width: none;">On the Pro and Enterprise tiers, yes. Cohort supports cloud model fallback to Claude, GPT, and other providers as an escalation path. The open source tier runs entirely on local models -- you supply the GPU, Cohort supplies the orchestration.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">What does "protocol-first" mean for vendor lock-in?</h3>
+                <p class="responsive-p-body" style="max-width: none;">Cohort uses duck-typed Python protocols for agents, storage, and inference. Implement the interface and Cohort uses it. No base classes, no vendor SDK. <code>pip install cohort</code> has zero dependencies beyond the standard library. If you stop paying, your agents, data, and workflows remain fully functional on the open source tier.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">How does the 14-day trial work?</h3>
+                <p class="responsive-p-body" style="max-width: none;">Full Pro features for 14 days. No credit card required to start. If you don't upgrade, you keep the open source tier with no data loss -- your agents and their accumulated knowledge stay intact.</p>
+            </div>
+
+            <div style="margin-bottom: 0;">
+                <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">Do you offer annual pricing?</h3>
+                <p class="responsive-p-body" style="max-width: none;">Yes. Annual Pro is $470/year (2 months free). Enterprise pricing is negotiated per contract. <a href="contact.html" style="color: var(--color-primary); font-weight: 600;">Contact us</a> for details.</p>
+            </div>
+
         </div>
     </div>
 </section>
@@ -167,9 +317,11 @@ COHORT            </a>
 <!-- CTA -->
 <section class="section-spacing" style="background: #2B2D31; color: #fff;">
     <div class="container text-center">
-        <h2 class="responsive-h2" style="color: #fff;">Questions?</h2>
+        <h2 class="responsive-h2" style="color: #fff;">Start Building Today</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">The open source tier is production-ready. No signup, no API keys, no credit card. Just <code style="background: rgba(255,255,255,0.15); padding: 0.15rem 0.5rem; border-radius: 4px;">pip install cohort</code> and go.</p>
         <div class="button-group">
-            <a href="contact.html" class="btn-primary">Contact Us</a>
+            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: #D97757; color: #fff;">Get Started Free</a>
+            <a href="contact.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Talk to Sales</a>
         </div>
     </div>
 </section>
