@@ -22,6 +22,7 @@ var FOOTER_CONFIG = {
                 { label: "Documentation", href: "docs.html" },
                 { label: "Benchmarks", href: "benchmarks.html" },
                 { label: "Compare", href: "compare.html" },
+                { label: "The Team", href: "team.html" },
                 { label: "AI's Take", href: "ai-perspective.html" },
                 { label: "GitHub", href: "https://github.com/cohort-dev/cohort", external: true }
             ]

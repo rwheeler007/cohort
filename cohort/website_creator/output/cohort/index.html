@@ -26,6 +26,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .product-window-frame{border-radius:12px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.4);background:#1a1d21}
+        @media(min-width:768px){.product-window-frame{transform:perspective(1500px) rotateX(2deg);transition:transform .3s ease}.product-window-frame:hover{transform:perspective(1500px) rotateX(0deg)}}
+        @media(min-width:768px){.mock-sidebar-col{display:block}}
+        @media(max-width:767px){.mock-sidebar-col{display:none}}
+        .chat-msg{display:flex;gap:10px;margin-bottom:1rem;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-msg.visible{opacity:1;transform:translateY(0)}
+        .chat-avatar{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:#1a1d21;flex-shrink:0}
+        .chat-evt{text-align:center;margin:1rem 0;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-evt.visible{opacity:1;transform:translateY(0)}
+        .chat-gate{text-align:center;margin:.75rem 0;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-gate.visible{opacity:1;transform:translateY(0)}
+        .chat-sum{margin:1rem .5rem .5rem;background:rgba(40,200,64,0.08);border:1px solid rgba(40,200,64,0.2);border-radius:8px;padding:1rem;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-sum.visible{opacity:1;transform:translateY(0)}
+        .chat-sum ul{margin:0;padding-left:1.2rem}
+        .chat-sum li{font-size:.8rem;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:2px}
+        .rel-bar{width:60px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+        .rel-fill{height:100%;background:#D97757;border-radius:2px;transition:width .6s ease}
+        @media(prefers-reduced-motion:reduce){.chat-msg,.chat-evt,.chat-gate,.chat-sum,.product-window-frame{opacity:1!important;transform:none!important;transition:none!important}}
+    </style>
 </head>
 <body>
     <!-- Skip to content -->
@@ -59,16 +79,131 @@ COHORT            </a>
 <!-- Hero Section -->
 <section class="section-spacing-hero" style="background: #2B2D31; color: #fff; padding: 4rem 0;">
     <div class="container text-center">
-        <p style="color: var(--color-primary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem;">AI Team Coordination</p>
         <h1 class="responsive-h1" style="color: #fff;">Finished work, not drafts.</h1>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships -- so you get finished results, not suggestions to babysit. It looks like the tools your team already lives in. No training required.</p>
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1.5rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
         <div class="button-group">
             <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: #D97757; color: #fff;">Get Started Free</a>
-            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">See How It Works</a>
+            <a href="#product-showcase" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">See It In Action</a>
         </div>
     </div>
 </section>
+
+<!-- Gradient bridge: hero to showcase -->
+<div style="height:80px; background:linear-gradient(to bottom, #2B2D31, #232528);"></div>
+
+<!-- Product Showcase (Dashboard) -->
+<section id="product-showcase" style="background:#232528; padding:0 0 4rem 0; overflow:hidden; scroll-margin-top:80px;">
+    <div style="max-width:1100px; margin:0 auto; padding:0 1rem;">
+        <div class="product-window-frame">
+            <div style="background:#1E2024; padding:12px 16px; display:flex; align-items:center; gap:8px; border-radius:12px 12px 0 0;">
+                <span style="width:12px;height:12px;border-radius:50%;background:#FF5F57;"></span>
+                <span style="width:12px;height:12px;border-radius:50%;background:#FEBC2E;"></span>
+                <span style="width:12px;height:12px;border-radius:50%;background:#28C840;"></span>
+                <span style="flex:1;text-align:center;color:rgba(255,255,255,0.4);font-size:0.8rem;">Cohort Dashboard</span>
+                <span style="width:52px;"></span>
+            </div>
+            <div style="background:#2B2D31; border-radius:0 0 12px 12px; padding:1.5rem; font-family:var(--font-body); color:#fff;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <h3 style="font-family:var(--font-body); font-size:1.1rem; font-weight:600; margin:0; color:#fff;">Team Dashboard</h3>
+                    <span style="color:rgba(255,255,255,0.4); font-size:0.85rem;">22 agents</span>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <div class="mock-sidebar-col" style="width:180px; flex-shrink:0;">
+                        <div style="padding:8px 12px; border-radius:4px; font-size:0.8rem; background:rgba(217,119,87,0.15); color:#D97757; display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span>Team</span><span style="background:rgba(217,119,87,0.3); border-radius:10px; padding:1px 8px; font-size:0.7rem;">22</span>
+                        </div>
+                        <div style="padding:8px 12px; border-radius:4px; font-size:0.8rem; color:rgba(255,255,255,0.5); display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span>Tasks</span><span style="background:rgba(255,255,255,0.1); border-radius:10px; padding:1px 8px; font-size:0.7rem;">3</span>
+                        </div>
+                        <div style="padding:8px 12px; border-radius:4px; font-size:0.8rem; color:rgba(255,255,255,0.5); display:flex; justify-content:space-between;">
+                            <span>Review</span><span style="background:rgba(255,255,255,0.1); border-radius:10px; padding:1px 8px; font-size:0.7rem;">1</span>
+                        </div>
+                        <div style="padding:8px 12px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.25); margin-top:1rem;">Channels</div>
+                        <div style="padding:8px 12px; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.25); margin-top:0.5rem;">Tools</div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="margin-bottom:1.25rem;">
+                            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.35); margin-bottom:0.75rem; display:flex; justify-content:space-between;">
+                                <span>Leadership</span><span>2</span>
+                            </div>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:0.75rem;">
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem;">
+                                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                        Cohort <span style="font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:500; background:rgba(40,200,64,0.15); color:#28C840;">IDLE</span>
+                                    </div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Agent discovery</span>
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Task routing</span>
+                                    </div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem;">
+                                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                        Supervisor <span style="font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:500; background:rgba(40,200,64,0.15); color:#28C840;">IDLE</span>
+                                    </div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Performance monitoring</span>
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Quality assurance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.35); margin-bottom:0.75rem; display:flex; justify-content:space-between;">
+                                <span>Core Developers</span><span>5</span>
+                            </div>
+                            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:0.75rem;">
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem;">
+                                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                        Python Developer <span style="font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:500; background:rgba(254,188,46,0.15); color:#FEBC2E;">BUSY</span>
+                                    </div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Security scan</span>
+                                    </div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem;">
+                                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                        Web Developer <span style="font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:500; background:rgba(40,200,64,0.15); color:#28C840;">IDLE</span>
+                                    </div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">HTML5 / WCAG</span>
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">CSS Grid</span>
+                                    </div>
+                                </div>
+                                <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:1rem;">
+                                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                        JS Developer <span style="font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:500; background:rgba(40,200,64,0.15); color:#28C840;">IDLE</span>
+                                    </div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">React</span>
+                                        <span style="font-size:0.65rem; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.45); padding:2px 8px; border-radius:3px;">Node.js</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p style="text-align:center; color:rgba(255,255,255,0.5); font-size:0.85rem; margin-top:1.5rem; letter-spacing:0.05em;">Your team at a glance</p>
+</section>
+
+<!-- Animated Chat Demo -->
+<section style="background:#1E2024; padding:4rem 0;">
+    <h2 class="responsive-h2" style="text-align:center; color:#fff; margin-bottom:0.5rem;">Watch your team think together</h2>
+    <p style="text-align:center; color:rgba(255,255,255,0.5); font-size:0.95rem; margin-bottom:2.5rem;">Cohort picks the right voice at the right time -- and knows when to stop.</p>
+    <div style="max-width:560px; margin:0 auto; background:#2B2D31; border-radius:12px; box-shadow:0 15px 50px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="background:#1a1d21; padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="color:rgba(255,255,255,0.3); font-size:0.85rem;">#</span>
+            <span id="chatChannel" style="color:rgba(255,255,255,0.7); font-size:0.85rem; font-weight:600;">q3-planning-review</span>
+        </div>
+        <div id="chatMessages" style="padding:1rem; min-height:360px;"></div>
+    </div>
+</section>
+
+<!-- Bridge: chat demo to content -->
+<div style="height:80px; background:linear-gradient(to bottom, #1E2024, var(--color-background));"></div>
 
 <!-- Problem Statement -->
 <section class="section-spacing" style="background: var(--color-background);">
@@ -385,5 +520,72 @@ COHORT            </a>
     </footer>
 <script src="nav.js"></script>
 <script src="footer.js"></script>
+<script src="hero-demo.js"></script>
+<script>
+(function(){
+    var box=document.getElementById("chatMessages");
+    var chanEl=document.getElementById("chatChannel");
+    if(!box||typeof DEMO_SCENARIOS==="undefined")return;
+
+    var scIdx=0,idx=0,iv=null,vis=false,els=[];
+
+    function buildEl(i){
+        var e;
+        if(i.t==="msg"){
+            e=document.createElement("div");e.className="chat-msg";
+            e.innerHTML='<div class="chat-avatar" style="background:'+i.c+'">'+i.v+'</div><div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:600;color:#fff;margin-bottom:2px">'+i.a+'</div><div style="font-size:.85rem;color:rgba(255,255,255,0.8);line-height:1.5">'+i.m+'</div></div>';
+        }else if(i.t==="score"){
+            e=document.createElement("div");e.className="chat-evt";
+            e.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;background:rgba(217,119,87,0.1);border:1px solid rgba(217,119,87,0.2);border-radius:20px;padding:6px 16px;font-size:.75rem;color:#D97757">'+i.m+'<span class="rel-bar"><span class="rel-fill" style="width:0" data-f="'+i.f+'"></span></span></span>';
+        }else if(i.t==="gate"){
+            e=document.createElement("div");e.className="chat-gate";
+            e.innerHTML='<span style="font-size:.7rem;color:rgba(255,255,255,0.35);font-style:italic">'+i.m+'</span>';
+        }else if(i.t==="sum"){
+            e=document.createElement("div");e.className="chat-sum";
+            e.innerHTML='<div style="font-size:.75rem;font-weight:600;color:#28C840;margin-bottom:8px">[OK] '+i.title+'</div><ul>'+i.items.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>';
+        }
+        return e;
+    }
+
+    function loadScenario(s){
+        box.innerHTML="";els=[];idx=0;
+        if(chanEl)chanEl.textContent=s.channel;
+        s.transcript.forEach(function(i){var e=buildEl(i);box.appendChild(e);els.push(e);});
+    }
+
+    function showNext(){
+        if(idx>=els.length){clearInterval(iv);setTimeout(nextScenario,4000);return;}
+        var e=els[idx];e.classList.add("visible");
+        var f=e.querySelector(".rel-fill");if(f)setTimeout(function(){f.style.width=f.getAttribute("data-f")+"%";},100);
+        idx++;
+    }
+
+    function nextScenario(){
+        scIdx=(scIdx+1)%DEMO_SCENARIOS.length;
+        loadScenario(DEMO_SCENARIOS[scIdx]);
+        if(vis)setTimeout(play,500);
+    }
+
+    function play(){if(iv)clearInterval(iv);showNext();iv=setInterval(showNext,2200);}
+
+    // Reduced motion: show first scenario statically
+    if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){
+        loadScenario(DEMO_SCENARIOS[0]);
+        els.forEach(function(e){e.classList.add("visible");var f=e.querySelector(".rel-fill");if(f)f.style.width=f.getAttribute("data-f")+"%";});
+        return;
+    }
+
+    // Load first scenario
+    loadScenario(DEMO_SCENARIOS[0]);
+
+    // Play when visible, pause when not
+    if("IntersectionObserver"in window){
+        new IntersectionObserver(function(es){es.forEach(function(en){
+            if(en.isIntersecting&&!vis){vis=true;play();}
+            else if(!en.isIntersecting&&vis){vis=false;clearInterval(iv);}
+        });},{threshold:0.3}).observe(box);
+    }else{vis=true;play();}
+})();
+</script>
 </body>
 </html>
