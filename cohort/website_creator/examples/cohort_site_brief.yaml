@@ -912,14 +912,10 @@ pages:
       cta_secondary_href: "pricing.html"
 
 # --- Footer ---
-footer_text: "&copy; 2026 Cohort. Open source under MIT License."
+footer_text: '&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.'
 footer_links:
   - label: "GitHub"
     href: "https://github.com/cohort-dev/cohort"
     external: true
   - label: "Documentation"
     href: "docs.html"
-  - label: "Use Cases"
-    href: "use-cases.html"
-  - label: "Contact"
-    href: "contact.html"
