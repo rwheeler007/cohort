@@ -311,7 +311,8 @@ function updatePanelCount() {
             break;
         case 'output': {
             const socialCount = (state.pendingSocialPosts || []).length;
-            const totalItems = state.outputs.length + socialCount;
+            const briefingCount = state.tasks.filter(t => t.status === 'briefing').length;
+            const totalItems = state.outputs.length + briefingCount + socialCount;
             count = `${totalItems} items`;
             break;
         }
@@ -2454,7 +2455,8 @@ async function tryYouTubeSearch() {
 async function renderRSSPanel(tool) {
     const tid = 'intel_scheduler';
 
-    // Fetch live data in parallel
+    // Fetch live status + data in parallel
+    const statusData = await fetchServiceStatus(tid);
     let runsData = { runs: [] };
     let articlesData = { articles: [] };
     let feedsData = { feeds: [], keywords: [], topics: {} };
@@ -2593,7 +2595,7 @@ async function renderRSSPanel(tool) {
         </div>`;
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, statusDotHtml('up'))}
+        ${toolHeader(tool, statusDotHtml(statusData.status))}
         ${statsHtml}
         ${configSectionFull('Run History', activityLog(runItems, { emptyMsg: 'No recent runs' }))}
         ${configSectionFull('Recent Articles', activityLog(articleItems, { emptyMsg: 'No recent articles' }))}
@@ -2877,6 +2879,7 @@ let _editingProject = null; // null = not editing, 'new' = creating, project_id 
 async function renderContentMonitorPanel(tool) {
     const tid = 'content_monitor_scheduler';
 
+    const statusData = await fetchServiceStatus(tid);
     // Fetch all data in parallel
     const [pipelineResp, postsResp, configResp, projectsResp] = await Promise.all([
         fetch('/api/content-monitor/pipeline-status').catch(() => null),
@@ -2982,7 +2985,7 @@ async function renderContentMonitorPanel(tool) {
     }
 
     dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
-        ${toolHeader(tool, statusDotHtml('up'))}
+        ${toolHeader(tool, statusDotHtml(statusData.status))}
         ${configSectionFull('Content Pipeline', pipelineFlowHtml)}
         ${configSectionFull('Daily Limits', limitsHtml)}
         ${projectsHtml}
@@ -3476,7 +3479,8 @@ async function fetchPendingSocialPosts() {
     }
     // Update badge even if we're not on the output panel
     const taskReviewCount = state.tasks.filter(t => t.status === 'complete' && !t.review).length;
-    const totalPending = taskReviewCount + state.pendingSocialPosts.length;
+    const briefingCount = state.tasks.filter(t => t.status === 'briefing').length;
+    const totalPending = taskReviewCount + briefingCount + state.pendingSocialPosts.length;
     if (dom.outputBadge) dom.outputBadge.textContent = totalPending;
     if (state.currentPanel === 'output') renderOutputs();
 }
@@ -5041,6 +5045,53 @@ function getUnfolderedChannels() {
     return state.channels.filter(ch => !folderedIds.has(ch.id) && !ch.id.startsWith('dm-'));
 }
 
+/**
+ * Auto-file system-generated channels into their designated folders.
+ * Creates system folders on first encounter. Runs after channels_list updates.
+ *
+ * Pattern -> Folder mapping:
+ *   task-*           -> "Task Conversations"
+ *   session-setup    -> "Task Conversations"
+ */
+const SYSTEM_FOLDER_RULES = [
+    { prefix: 'task-', folder: 'Task Conversations' },
+    { exact: 'session-setup', folder: 'Task Conversations' },
+];
+
+function autoFileSystemChannels() {
+    let changed = false;
+
+    // Build set of all currently foldered channel IDs
+    const folderedIds = new Set();
+    state.folders.forEach(f => f.channelIds.forEach(id => folderedIds.add(id)));
+
+    for (const ch of state.channels) {
+        if (folderedIds.has(ch.id)) continue;  // already in a folder
+
+        // Find matching rule
+        const rule = SYSTEM_FOLDER_RULES.find(r =>
+            (r.prefix && ch.id.startsWith(r.prefix)) ||
+            (r.exact && ch.id === r.exact)
+        );
+        if (!rule) continue;
+
+        // Find or create the system folder
+        let folder = state.folders.find(f => f.name === rule.folder && f.system);
+        if (!folder) {
+            folder = { id: 'sys_' + rule.folder.toLowerCase().replace(/\s+/g, '_'), name: rule.folder, channelIds: [], open: false, system: true };
+            state.folders.push(folder);
+        }
+
+        if (!folder.channelIds.includes(ch.id)) {
+            folder.channelIds.push(ch.id);
+            folderedIds.add(ch.id);
+            changed = true;
+        }
+    }
+
+    if (changed) saveFolders();
+}
+
 // =====================================================================
 // Channel Members
 // =====================================================================
@@ -5189,39 +5240,41 @@ function renderFolders() {
     }
 
     dom.folderList.innerHTML = state.folders.map(folder => {
+        const isSystem = !!folder.system;
         const channelsHtml = folder.channelIds.map(chId => {
             const ch = state.channels.find(c => c.id === chId);
             if (!ch) return '';
             const isActive = ch.id === state.currentChannel;
+            // Use channel description for task channels (cleaner than "task-task_abc123")
+            const displayName = ch.description || ch.name || ch.id;
+            const draggable = isSystem ? '' : 'draggable="true"';
+            const editBtn = isSystem ? '' : `<button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>`;
             return `<li class="channel-item ${isActive ? 'active' : ''}"
                         data-channel="${escapeHtml(ch.id)}"
-                        draggable="true"
+                        ${draggable}
                         onclick="switchChannel('${escapeHtml(ch.id)}')">
-                        <span class="channel-item__name"># ${escapeHtml(ch.name || ch.id)}</span>
-                        <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'channel', '${escapeHtml(ch.id)}')" title="Edit">[:]</button>
+                        <span class="channel-item__name"># ${escapeHtml(displayName)}</span>
+                        ${editBtn}
                     </li>`;
         }).join('');
 
         const emptyHtml = folder.channelIds.length === 0
-            ? '<div class="folder-item__empty">Drop channels here</div>'
+            ? (isSystem ? '' : '<div class="folder-item__empty">Drop channels here</div>')
             : '';
+        const editBtn = isSystem ? '' : `<button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'folder', '${escapeHtml(folder.id)}')" title="Edit">[:]</button>`;
 
         return `
-            <div class="folder-item ${folder.open ? 'open' : ''}" data-folder-id="${escapeHtml(folder.id)}">
+            <div class="folder-item ${folder.open ? 'open' : ''} ${isSystem ? 'folder-item--system' : ''}" data-folder-id="${escapeHtml(folder.id)}">
                 <div class="folder-item__header"
-                     ondragover="handleFolderDragOver(event)"
-                     ondragleave="handleFolderDragLeave(event)"
-                     ondrop="handleFolderDrop(event, '${escapeHtml(folder.id)}')"
+                     ${isSystem ? '' : `ondragover="handleFolderDragOver(event)" ondragleave="handleFolderDragLeave(event)" ondrop="handleFolderDrop(event, '${escapeHtml(folder.id)}')"`}
                      onclick="toggleFolder('${escapeHtml(folder.id)}')">
                     <span class="folder-item__toggle">></span>
                     <span class="folder-item__name">${escapeHtml(folder.name)}</span>
                     <span class="folder-item__count">${folder.channelIds.length}</span>
-                    <button class="item-edit-btn" onclick="event.stopPropagation(); openEditMenu(this, 'folder', '${escapeHtml(folder.id)}')" title="Edit">[:]</button>
+                    ${editBtn}
                 </div>
                 <ul class="folder-item__children"
-                    ondragover="handleFolderDragOver(event)"
-                    ondragleave="handleFolderDragLeave(event)"
-                    ondrop="handleFolderDrop(event, '${escapeHtml(folder.id)}')">
+                    ${isSystem ? '' : `ondragover="handleFolderDragOver(event)" ondragleave="handleFolderDragLeave(event)" ondrop="handleFolderDrop(event, '${escapeHtml(folder.id)}')"`}>
                     ${channelsHtml}
                     ${emptyHtml}
                 </ul>
@@ -5880,6 +5933,85 @@ function renderOutputCard(task) {
     </div>`;
 }
 
+function renderBriefingCard(task) {
+    const brief = task.brief || {};
+    const timeAgo = formatTimeAgo(task.created_at);
+    const hasBrief = brief.goal || brief.approach;
+
+    let briefHtml = '';
+    if (hasBrief) {
+        const fields = ['goal', 'approach', 'scope', 'acceptance', 'tool', 'outcome'];
+        const labels = { goal: 'Goal', approach: 'Approach', scope: 'Scope', acceptance: 'Acceptance', tool: 'Action', outcome: 'Outcome' };
+        briefHtml = fields
+            .filter(k => brief[k])
+            .map(k => `<div class="output-card__brief-field"><strong>${labels[k]}:</strong> ${escapeHtml(brief[k])}</div>`)
+            .join('');
+    } else {
+        briefHtml = '<p class="output-card__brief-pending">Awaiting briefing from agent -- click Chat to open the task conversation.</p>';
+    }
+
+    return `
+    <div class="output-card output-card--briefing" data-task-id="${escapeHtml(task.task_id)}">
+        <div class="output-card__header">
+            <h4 class="output-card__title">${escapeHtml(task.description || task.task_id)}</h4>
+            <span class="output-card__agent">${escapeHtml(task.agent_id)}</span>
+        </div>
+        <div class="output-card__body">
+            <div class="output-card__briefing-label">Briefing -- awaiting confirmation</div>
+            ${briefHtml}
+        </div>
+        <div class="output-card__footer">
+            <span class="output-card__time">${timeAgo}</span>
+            <div class="output-card__actions">
+                <button class="btn btn--secondary btn--small" onclick="switchChannel('task-${escapeHtml(task.task_id)}')">Chat</button>
+                ${hasBrief ? `<button class="btn btn--primary btn--small" onclick="confirmBriefingFromReview('${escapeHtml(task.task_id)}')">Confirm</button>` : ''}
+                <button class="btn btn--danger btn--small" onclick="cancelTaskFromReview('${escapeHtml(task.task_id)}')">Decline</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+window.confirmBriefingFromReview = function(taskId) {
+    if (!state.socket || !state.connected) {
+        showToast('Not connected', 'error');
+        return;
+    }
+    const task = state.tasks.find(t => t.task_id === taskId);
+    const brief = (task && task.brief) || {};
+
+    state.socket.emit('confirm_task', { task_id: taskId, brief: brief }, (response) => {
+        if (response && response.error) {
+            showToast(response.error, 'error');
+        } else {
+            showToast('Task execution started', 'success');
+            // Update local state -- task_assigned event will also fire
+            const t = state.tasks.find(t => t.task_id === taskId);
+            if (t) t.status = 'assigned';
+            renderOutputs();
+            renderTaskList();
+        }
+    });
+};
+
+window.cancelTaskFromReview = function(taskId) {
+    if (!state.socket || !state.connected) {
+        showToast('Not connected', 'error');
+        return;
+    }
+    state.socket.emit('cancel_task', { task_id: taskId }, (response) => {
+        if (response && response.error) {
+            showToast(response.error, 'error');
+        } else {
+            showToast('Task declined', 'success');
+            // Update local state
+            const t = state.tasks.find(t => t.task_id === taskId);
+            if (t) t.status = 'failed';
+            renderOutputs();
+            renderTaskList();
+        }
+    });
+};
+
 // =====================================================================
 // Agent group collapse state (localStorage-persisted)
 // =====================================================================
@@ -6044,24 +6176,29 @@ function renderTaskList() {
 
 function renderOutputs() {
     const outputs = state.tasks.filter((t) => t.status === 'complete');
+    const briefings = state.tasks.filter((t) => t.status === 'briefing');
     state.outputs = outputs;
 
     let filtered = outputs;
+    let filteredBriefings = briefings;
     if (state.filter === 'needs_review') {
         filtered = outputs.filter((t) => !t.review);
     } else if (state.filter === 'approved') {
         filtered = outputs.filter((t) => t.review && t.review.verdict === 'approved');
+        filteredBriefings = [];
     } else if (state.filter === 'rejected') {
         filtered = outputs.filter((t) => t.review && t.review.verdict === 'rejected');
+        filteredBriefings = [];
     }
 
     // Include pending social media posts in the review panel
     const socialPosts = state.pendingSocialPosts || [];
     const showSocial = state.filter === 'all' || state.filter === 'needs_review';
 
+    const briefingCardsHtml = filteredBriefings.map(renderBriefingCard).join('');
     const taskCardsHtml = filtered.map(renderOutputCard).join('');
     const socialCardsHtml = showSocial ? socialPosts.map(renderSocialPostOutputCard).join('') : '';
-    const combinedHtml = socialCardsHtml + taskCardsHtml;
+    const combinedHtml = briefingCardsHtml + socialCardsHtml + taskCardsHtml;
 
     if (!combinedHtml) {
         dom.outputList.innerHTML = '';
@@ -6072,7 +6209,7 @@ function renderOutputs() {
     }
 
     const taskReviewCount = outputs.filter((t) => !t.review).length;
-    const totalPending = taskReviewCount + socialPosts.length;
+    const totalPending = taskReviewCount + briefings.length + socialPosts.length;
     dom.outputBadge.textContent = totalPending;
     updatePanelCount();
 }
@@ -6188,6 +6325,12 @@ function connectSocket() {
         renderAgentChats();
     });
 
+    sock.on('cohort:tasks_sync', (data) => {
+        state.tasks = data.tasks || [];
+        renderTaskList();
+        renderOutputs();
+    });
+
     sock.on('cohort:task_assigned', (task) => {
         const idx = state.tasks.findIndex((t) => t.task_id === task.task_id);
         if (idx >= 0) {
@@ -6205,6 +6348,16 @@ function connectSocket() {
             Object.assign(task, data);
             renderQueue();
         }
+    });
+
+    sock.on('cohort:task_updated', (data) => {
+        const task = state.tasks.find((t) => t.task_id === data.task_id);
+        if (task) {
+            Object.assign(task, data);
+        }
+        renderQueue();
+        renderOutputs();
+        renderTaskList();
     });
 
     sock.on('cohort:task_complete', (data) => {
@@ -6279,6 +6432,7 @@ function connectSocket() {
 
     sock.on('channels_list', (data) => {
         state.channels = data.channels || [];
+        autoFileSystemChannels();
         renderChannels();
         renderAgentChats();
         renderArchivedChats();

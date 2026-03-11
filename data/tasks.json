@@ -1,21 +1,25 @@
 {
   "version": "1.0",
-  "last_updated": "2026-03-10T15:48:44.605515+00:00",
+  "last_updated": "2026-03-11T21:58:03.886147+00:00",
   "tasks": [
     {
       "task_id": "task_ee69d776",
       "agent_id": "python_developer",
       "description": "Scan all Python files for security vulnerabilities",
       "priority": "high",
-      "status": "briefing",
+      "status": "failed",
       "created_at": "2026-03-10T14:57:37.380767+00:00",
-      "updated_at": "2026-03-10T14:57:37.407718+00:00",
+      "updated_at": "2026-03-11T00:00:00+00:00",
       "schedule_id": null,
       "channel_id": "task-task_ee69d776",
       "brief": null,
-      "output": null,
+      "output": {
+        "content": "Stale briefing - never confirmed",
+        "backend": "error",
+        "completed_at": "2026-03-11T00:00:00+00:00"
+      },
       "review": null,
-      "completed_at": null,
+      "completed_at": "2026-03-11T00:00:00+00:00",
       "trigger": {
         "type": "manual",
         "source": "user",
@@ -88,19 +92,63 @@
       "agent_id": "python_developer",
       "description": "Scan all Python files for security vulnerabilities",
       "priority": "high",
-      "status": "briefing",
+      "status": "failed",
       "created_at": "2026-03-10T15:48:44.572974+00:00",
-      "updated_at": "2026-03-10T15:48:44.605317+00:00",
+      "updated_at": "2026-03-11T00:00:00+00:00",
       "schedule_id": null,
       "channel_id": "task-task_17ec5155",
       "brief": null,
-      "output": null,
+      "output": {
+        "content": "Stale briefing - never confirmed",
+        "backend": "error",
+        "completed_at": "2026-03-11T00:00:00+00:00"
+      },
       "review": null,
-      "completed_at": null,
+      "completed_at": "2026-03-11T00:00:00+00:00",
       "trigger": {
         "type": "manual",
         "source": "user",
         "fired_at": "2026-03-10T15:48:44.572974+00:00"
+      },
+      "action": {
+        "tool": null,
+        "tool_ref": null,
+        "parameters": {}
+      },
+      "outcome": {
+        "type": null,
+        "success_criteria": null,
+        "artifact_ref": null,
+        "verified": false
+      }
+    },
+    {
+      "task_id": "task_test_briefing",
+      "agent_id": "web_developer",
+      "description": "Test task: verify Review panel shows briefing items",
+      "priority": "medium",
+      "status": "failed",
+      "created_at": "2026-03-11T12:00:00+00:00",
+      "updated_at": "2026-03-11T21:58:03.885899+00:00",
+      "schedule_id": null,
+      "channel_id": null,
+      "brief": {
+        "goal": "Verify that briefing tasks appear in the Review panel",
+        "approach": "Manual UI test - check Review tab shows this card with Confirm/Decline buttons",
+        "scope": "Cohort dashboard Review panel",
+        "acceptance": "Card visible with correct buttons and styling"
+      },
+      "output": {
+        "content": "Stale briefing - unconfirmed after 9h",
+        "backend": "error",
+        "completed_at": "2026-03-11T21:58:03.885899+00:00"
+      },
+      "review": null,
+      "completed_at": "2026-03-11T21:58:03.885899+00:00",
+      "trigger": {
+        "type": "manual",
+        "source": "user",
+        "fired_at": "2026-03-11T12:00:00+00:00"
       },
       "action": {
         "tool": null,

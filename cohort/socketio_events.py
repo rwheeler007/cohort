@@ -133,6 +133,10 @@ async def join(sid: str, data: dict | None = None) -> dict:
             {"items": [i.to_dict() for i in items]},
             to=sid,
         )
+    # Send task list (for Review panel -- briefing + complete tasks)
+    if _task_store is not None:
+        tasks = _task_store.list_tasks(limit=200)
+        await sio.emit("cohort:tasks_sync", {"tasks": tasks}, to=sid)
     # Send schedule state
     if _task_store is not None:
         schedules = _task_store.list_schedules()
@@ -266,6 +270,24 @@ async def confirm_task(sid: str, data: dict) -> dict:
     if _task_executor:
         asyncio.create_task(_task_executor.execute_task(task, confirmed_brief))
 
+    return {"status": "ok"}
+
+
+@sio.event
+async def cancel_task(sid: str, data: dict) -> dict:
+    """User declines a briefing -- mark task as failed."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    task_id = data.get("task_id")
+    if not task_id:
+        return {"error": "Missing task_id"}
+
+    task = _task_store.fail_task(task_id, reason="Declined by user from review panel")
+    if not task:
+        return {"error": "Task not found"}
+
+    await sio.emit("cohort:task_updated", task)
     return {"status": "ok"}
 
 

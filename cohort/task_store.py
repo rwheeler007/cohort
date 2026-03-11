@@ -465,6 +465,41 @@ class TaskStore:
         logger.info("[*] Review for %s: %s", task_id, verdict)
         return review
 
+    def reap_stale_briefings(self, max_age_hours: int = 4) -> list[str]:
+        """Auto-fail tasks stuck in 'briefing' status longer than max_age_hours.
+
+        Returns list of reaped task IDs.
+        """
+        now = datetime.now(timezone.utc)
+        reaped: list[str] = []
+        with self._lock:
+            self._ensure_loaded()
+            for task in list(self._tasks.values()):
+                if task.get("status") != "briefing":
+                    continue
+                created = task.get("created_at", "")
+                try:
+                    created_dt = datetime.fromisoformat(created)
+                except (ValueError, TypeError):
+                    continue
+                age_hours = (now - created_dt).total_seconds() / 3600
+                if age_hours >= max_age_hours:
+                    now_iso = _now_iso()
+                    task["status"] = "failed"
+                    task["updated_at"] = now_iso
+                    task["completed_at"] = now_iso
+                    task["output"] = {
+                        "content": f"Stale briefing - unconfirmed after {int(age_hours)}h",
+                        "backend": "error",
+                        "completed_at": now_iso,
+                    }
+                    reaped.append(task["task_id"])
+            if reaped:
+                self._save_tasks()
+                logger.info("[*] Reaped %d stale briefing task(s): %s",
+                            len(reaped), ", ".join(reaped))
+        return reaped
+
     def prune_old_runs(self, schedule_id: str) -> int:
         """Keep only the last MAX_RUNS_PER_SCHEDULE runs for a schedule."""
         with self._lock:

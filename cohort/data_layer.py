@@ -53,8 +53,9 @@ class CohortDataLayer:
 
     def get_team_snapshot(self) -> dict[str, Any]:
         """Return current state of all agents for the Team Dashboard panel."""
-        # Read tasks from TaskStore (persistent)
+        # Reap stale briefings before reading, then fetch tasks
         if self._task_store is not None:
+            self._task_store.reap_stale_briefings()
             all_tasks = self._task_store.list_tasks(limit=500)
         else:
             all_tasks = []

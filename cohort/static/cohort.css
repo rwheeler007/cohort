@@ -1164,6 +1164,42 @@ body {
     color: var(--color-warning);
 }
 
+/* Briefing card variant */
+.output-card--briefing {
+    border-left: 3px solid var(--color-warning);
+}
+
+.output-card__briefing-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-warning);
+    margin-bottom: var(--space-2);
+}
+
+.output-card__brief-field {
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin-bottom: var(--space-1);
+}
+
+.output-card__brief-pending {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.output-card__footer .output-card__time {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-right: auto;
+}
+
+.output-card__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
 /* =============================================================================
    Empty State
    ============================================================================= */
@@ -2858,6 +2894,11 @@ textarea.form-input {
 
 .folder-item.open .folder-item__children {
     display: block;
+}
+
+/* System folders (auto-managed) */
+.folder-item--system .folder-item__name {
+    font-style: italic;
 }
 
 /* Empty folder placeholder */
