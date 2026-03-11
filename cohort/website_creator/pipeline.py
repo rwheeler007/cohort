@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -166,6 +167,67 @@ class WebsiteCreator:
         brief["roundtable_decisions"] = decisions
         return brief
 
+    def graduate(self, project_name: str, destination: Path) -> Path:
+        """Move a generated site out of the creator into a permanent location.
+
+        Updates the status to 'graduated' in both the destination copy and
+        the source brief in examples/ (if it exists), preventing future
+        renders from overwriting the production site.
+
+        Args:
+            project_name: Name of the project directory in output_base.
+            destination: Parent directory for the graduated site
+                         (e.g. ``cohort/website/``).
+
+        Returns:
+            Path to the graduated site directory.
+        """
+        source = self.output_base / project_name
+        if not source.exists():
+            raise FileNotFoundError(f"No generated site: {project_name}")
+
+        dest = destination / project_name
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source, dest, dirs_exist_ok=True)
+
+        # Update status in the destination brief
+        dest_brief_path = dest / "site_brief.yaml"
+        if dest_brief_path.exists():
+            brief = SiteBrief.from_yaml(dest_brief_path)
+            brief.status = "graduated"
+            brief.save_yaml(dest_brief_path)
+
+        # Also update the canonical source brief in examples/
+        examples_brief = Path(__file__).parent / "examples" / f"{project_name}_site_brief.yaml"
+        if examples_brief.exists():
+            src_brief = SiteBrief.from_yaml(examples_brief)
+            src_brief.status = "graduated"
+            src_brief.save_yaml(examples_brief)
+
+        log.info("[OK] Graduated '%s' to %s", project_name, dest)
+        return dest
+
+    async def preview(self, brief_path: str | Path) -> Path:
+        """Render a site to a preview location, bypassing graduation guard.
+
+        Useful for testing template changes against a graduated site
+        without touching the production files.
+
+        Returns:
+            Path to the preview directory.
+        """
+        brief = SiteBrief.from_yaml(brief_path)
+        project_name = brief.product_name.lower().replace(" ", "-") or "site"
+        preview_dir = self.output_base / f"{project_name}-preview"
+
+        log.info("Rendering preview for %s...", brief.product_name)
+        start = time.time()
+        result = self.renderer.render(brief, preview_dir, ignore_status=True)
+        elapsed = time.time() - start
+        log.info("Preview rendered: %d pages in %.1fs -> %s",
+                 len(brief.pages), elapsed, result)
+        return result
+
     def _validate(self, output_dir: Path, brief: SiteBrief) -> list[str]:
         """Basic validation of generated site."""
         issues = []
@@ -203,21 +265,42 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python -m cohort.website_creator.pipeline <site_brief.yaml>")
         print("       python -m cohort.website_creator.pipeline --demo")
+        print("       python -m cohort.website_creator.pipeline --graduate <project> <dest>")
+        print("       python -m cohort.website_creator.pipeline --preview <site_brief.yaml>")
         sys.exit(1)
 
-    if sys.argv[1] == "--demo":
-        # Generate from the Cohort test brief
+    output_base = Path(__file__).parent / "output"
+    creator = WebsiteCreator(output_base=output_base)
+
+    if sys.argv[1] == "--graduate":
+        if len(sys.argv) < 4:
+            print("Usage: --graduate <project_name> <destination_dir>")
+            sys.exit(1)
+        result = creator.graduate(sys.argv[2], Path(sys.argv[3]))
+        print(f"\n[OK] Graduated: {result}")
+
+    elif sys.argv[1] == "--preview":
+        if len(sys.argv) < 3:
+            print("Usage: --preview <site_brief.yaml>")
+            sys.exit(1)
+        result = asyncio.run(creator.preview(sys.argv[2]))
+        print(f"\n[OK] Preview rendered: {result}")
+        print(f"     Open {result / 'index.html'} in your browser.")
+
+    elif sys.argv[1] == "--demo":
         brief_path = Path(__file__).parent / "examples" / "cohort_site_brief.yaml"
         if not brief_path.exists():
             print(f"Demo brief not found: {brief_path}")
             sys.exit(1)
+        result = asyncio.run(creator.create_from_yaml(brief_path))
+        print(f"\n[OK] Site generated: {result}")
+        print(f"     Open {result / 'index.html'} in your browser.")
+
     else:
         brief_path = Path(sys.argv[1])
-
-    creator = WebsiteCreator(output_base=Path(__file__).parent / "output")
-    result = asyncio.run(creator.create_from_yaml(brief_path))
-    print(f"\n[OK] Site generated: {result}")
-    print(f"     Open {result / 'index.html'} in your browser.")
+        result = asyncio.run(creator.create_from_yaml(brief_path))
+        print(f"\n[OK] Site generated: {result}")
+        print(f"     Open {result / 'index.html'} in your browser.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,12 @@
+{
+  "oauth2-security-review": {
+    "channel": "oauth2-security-review",
+    "model": "qwen3.5:9b",
+    "tokens_in": 337,
+    "tokens_out": 1300,
+    "total_tokens": 1637,
+    "latency_ms": 45516,
+    "latency_s": 45.5,
+    "agent_count": 3
+  }
+}

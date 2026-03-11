@@ -218,8 +218,20 @@ class SiteBrief:
     current_site_analysis: dict[str, Any] = field(default_factory=dict)
     competitor_analyses: list[dict[str, Any]] = field(default_factory=list)
 
+    # --- Lifecycle ---
+    status: str = "draft"         # draft | active | graduated
+
     # --- Assets ---
     assets_dir: str = ""          # Directory containing images, etc.
+
+    VALID_STATUSES = ("draft", "active", "graduated")
+
+    def __post_init__(self):
+        if self.status not in self.VALID_STATUSES:
+            raise ValueError(
+                f"Invalid site status '{self.status}'. "
+                f"Must be one of: {', '.join(self.VALID_STATUSES)}"
+            )
 
     # ------------------------------------------------------------------
     # I/O
@@ -241,7 +253,7 @@ class SiteBrief:
         # Simple scalar fields
         for key in ("product_name", "tagline", "description", "logo",
                     "favicon", "footer_text", "built_with_cohort",
-                    "assets_dir"):
+                    "assets_dir", "status"):
             if key in data:
                 setattr(brief, key, data[key])
 

@@ -13,8 +13,17 @@ import html as html_mod
 import re
 import requests
 
+import os
+
 COHORT_API = "http://localhost:5100"
-OUTPUT_DIR = "G:/cohort/cohort/website_creator/output/cohort"
+
+# Graduated site location (production); falls back to creator output
+_GRADUATED_DIR = "G:/cohort/cohort/website/cohort"
+_CREATOR_DIR = "G:/cohort/cohort/website_creator/output/cohort"
+OUTPUT_DIR = os.environ.get(
+    "COHORT_SITE_DIR",
+    _GRADUATED_DIR if os.path.isdir(_GRADUATED_DIR) else _CREATOR_DIR,
+)
 METADATA_FILE = f"{OUTPUT_DIR}/conversation-meta.json"
 
 AGENT_META = {

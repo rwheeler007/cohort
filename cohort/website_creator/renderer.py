@@ -49,11 +49,23 @@ class TemplateRenderer:
             lstrip_blocks=True,
         )
 
-    def render(self, brief: SiteBrief, output_dir: str | Path) -> Path:
+    def render(self, brief: SiteBrief, output_dir: str | Path, *,
+               ignore_status: bool = False) -> Path:
         """Render the full site into output_dir.
+
+        Args:
+            brief: The site specification to render.
+            output_dir: Target directory for generated files.
+            ignore_status: If True, skip the graduation guard (used by preview mode).
 
         Returns the output directory Path.
         """
+        if not ignore_status and getattr(brief, "status", "draft") == "graduated":
+            raise RuntimeError(
+                f"Cannot render graduated site '{brief.product_name}'. "
+                f"Use preview mode or change status in site_brief.yaml."
+            )
+
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 

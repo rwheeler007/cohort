@@ -4675,51 +4675,59 @@ async def website_worksheet(request: Request) -> JSONResponse:
     return JSONResponse({"questions": get_worksheet_questions()})
 
 
+_GRADUATED_DIR = Path(__file__).parent / "website"
+_CREATOR_OUTPUT_DIR = Path(__file__).parent / "website_creator" / "output"
+
+
+def _resolve_project_path(project: str, filename: str) -> tuple[Path | None, bool]:
+    """Resolve a project file, checking graduated location first.
+
+    Returns (file_path, is_graduated). None if not found.
+    """
+    for base, graduated in ((_GRADUATED_DIR, True), (_CREATOR_OUTPUT_DIR, False)):
+        if not base.exists():
+            continue
+        candidate = base / project / filename
+        if not candidate.exists() or not candidate.is_file():
+            continue
+        try:
+            candidate.resolve().relative_to(base.resolve())
+        except ValueError:
+            continue
+        return candidate, graduated
+    return None, False
+
+
 async def website_list_projects(request: Request) -> JSONResponse:
     """GET /api/website/projects -- List generated website projects."""
-    output_dir = Path(__file__).parent / "website_creator" / "output"
     projects = []
-    if output_dir.is_dir():
-        for d in sorted(output_dir.iterdir()):
+    seen = set()
+
+    # Graduated sites first (take priority)
+    for base, graduated in ((_GRADUATED_DIR, True), (_CREATOR_OUTPUT_DIR, False)):
+        if not base.is_dir():
+            continue
+        for d in sorted(base.iterdir()):
+            if d.name in seen:
+                continue
             if d.is_dir() and (d / "index.html").exists():
+                seen.add(d.name)
                 files = [f.name for f in d.iterdir() if f.is_file()]
                 projects.append({
                     "name": d.name,
                     "files": files,
+                    "graduated": graduated,
                     "preview_url": f"/api/website/projects/{d.name}/index.html",
                 })
     return JSONResponse({"projects": projects})
 
 
-async def website_serve_page(request: Request) -> Response:
-    """GET /api/website/projects/{project_name}/{path} -- Serve generated pages."""
+def _serve_static_site_file(file_path: Path, is_graduated: bool) -> "Response":
+    """Serve a static site file with appropriate headers."""
     from starlette.responses import HTMLResponse, Response as StarletteResponse
-    project_name = request.path_params["project_name"]
-
-    # project_name may include the filename (e.g. "cohort/index.html")
-    parts = project_name.split("/", 1)
-    if len(parts) == 2:
-        project = parts[0]
-        filename = parts[1]
-    else:
-        project = parts[0]
-        filename = "index.html"
-
-    output_dir = Path(__file__).parent / "website_creator" / "output"
-    file_path = output_dir / project / filename
-
-    if not file_path.exists() or not file_path.is_file():
-        return JSONResponse({"error": f"Not found: {project}/{filename}"}, status_code=404)
-
-    # Prevent path traversal
-    try:
-        file_path.resolve().relative_to(output_dir.resolve())
-    except ValueError:
-        return JSONResponse({"error": "Invalid path"}, status_code=403)
 
     content = file_path.read_text(encoding="utf-8")
 
-    # Content type from extension
     ext = file_path.suffix.lower()
     content_types = {
         ".html": "text/html",
@@ -4732,9 +4740,80 @@ async def website_serve_page(request: Request) -> Response:
     }
     ct = content_types.get(ext, "text/plain")
 
+    # Cache headers: graduated sites can cache, drafts/previews should not
+    cache = "max-age=3600" if is_graduated else "no-cache"
+    headers = {
+        "Cache-Control": cache,
+        "X-Content-Type-Options": "nosniff",
+    }
+
     if ext == ".html":
-        return HTMLResponse(content)
-    return StarletteResponse(content, media_type=ct)
+        return HTMLResponse(content, headers=headers)
+    return StarletteResponse(content, media_type=ct, headers=headers)
+
+
+async def website_serve_page(request: Request) -> Response:
+    """GET /api/website/projects/{project_name}/{path} -- Serve generated pages."""
+    project_name = request.path_params["project_name"]
+
+    # project_name may include the filename (e.g. "cohort/index.html")
+    parts = project_name.split("/", 1)
+    if len(parts) == 2:
+        project = parts[0]
+        filename = parts[1]
+    else:
+        project = parts[0]
+        filename = "index.html"
+
+    file_path, is_graduated = _resolve_project_path(project, filename)
+
+    if file_path is None:
+        return JSONResponse({"error": f"Not found: {project}/{filename}"}, status_code=404)
+
+    return _serve_static_site_file(file_path, is_graduated)
+
+
+async def website_serve_preview(request: Request) -> Response:
+    """GET /api/website/preview/{project_name}/{path} -- Serve preview pages."""
+    project_name = request.path_params["project_name"]
+
+    parts = project_name.split("/", 1)
+    if len(parts) == 2:
+        project = parts[0]
+        filename = parts[1]
+    else:
+        project = parts[0]
+        filename = "index.html"
+
+    preview_dir = _CREATOR_OUTPUT_DIR / f"{project}-preview"
+    if not preview_dir.exists():
+        return JSONResponse({"error": f"No preview for: {project}"}, status_code=404)
+
+    file_path = preview_dir / filename
+    if not file_path.exists() or not file_path.is_file():
+        return JSONResponse({"error": f"Not found: {project}/{filename}"}, status_code=404)
+
+    # Path traversal guard
+    try:
+        file_path.resolve().relative_to(preview_dir.resolve())
+    except ValueError:
+        return JSONResponse({"error": "Invalid path"}, status_code=403)
+
+    from starlette.responses import HTMLResponse, Response as StarletteResponse
+
+    content = file_path.read_text(encoding="utf-8")
+    ext = file_path.suffix.lower()
+    content_types = {
+        ".html": "text/html", ".css": "text/css",
+        ".js": "application/javascript", ".xml": "application/xml",
+        ".txt": "text/plain", ".json": "application/json",
+    }
+    ct = content_types.get(ext, "text/plain")
+    headers = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
+
+    if ext == ".html":
+        return HTMLResponse(content, headers=headers)
+    return StarletteResponse(content, media_type=ct, headers=headers)
 
 
 # =====================================================================
@@ -5026,6 +5105,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/website/worksheet", website_worksheet, methods=["GET"]),
         Route("/api/website/projects", website_list_projects, methods=["GET"]),
         Route("/api/website/projects/{project_name:path}", website_serve_page, methods=["GET"]),
+        Route("/api/website/preview/{project_name:path}", website_serve_preview, methods=["GET"]),
         Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
 

@@ -20,6 +20,9 @@ build/
 *secret*
 *.token
 
+# Website creator preview directories (ephemeral)
+cohort/website_creator/output/*-preview/
+
 # Runtime data (generated at startup)
 data/messages.json
 data/channels.json
