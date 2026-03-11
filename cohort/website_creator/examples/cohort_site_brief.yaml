@@ -59,6 +59,8 @@ nav_items:
     href: "benchmarks.html"
   - label: "Docs"
     href: "docs.html"
+  - label: "Compare"
+    href: "compare.html"
   - label: "Contact"
     href: "contact.html"
 
@@ -919,3 +921,7 @@ footer_links:
     external: true
   - label: "Documentation"
     href: "docs.html"
+  - label: "Use Cases"
+    href: "use-cases.html"
+  - label: "Contact"
+    href: "contact.html"
