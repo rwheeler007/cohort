@@ -11,6 +11,7 @@ Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7
 | 03 | [Landing Page Copy](03-landing-page-copy.md) | Full page: hero, problem, value props, security, anti-disruption, proof, CTA | Website visitors |
 | 04 | [The AI Productivity Gap](04-blog-the-ai-productivity-gap.md) | Anchor blog post -- SEO, thought leadership, security section | General audience, HN, LinkedIn |
 | 05 | [Objection Handling](05-objection-handling.md) | 10 objections with short + detailed responses, meta-rules | Sales, community support, HN comments |
+| 06 | [Creator Targets](06-creator-targets.md) | 35+ verified content creators, outreach strategy, templates | Marketing, outreach |
 
 ## Five Positioning Pillars
 

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <defs>
+    <style>
+      @font-face { font-family: 'monospace'; }
+      .term-text { font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'SF Mono', 'Consolas', monospace; font-size: 11.5px; }
+      .cmd { fill: #3fb950; }
+      .out { fill: #cdd6f4; }
+      .dim { fill: #6c7086; }
+      .hl { fill: #D97757; }
+      .phase { fill: #89b4fa; font-weight: bold; }
+      .speak { fill: #a6e3a1; }
+      .silent { fill: #f38ba8; }
+      .bar { fill: #D97757; opacity: 0.7; }
+      .title-text { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 13px; fill: #9399b2; }
+    </style>
+  </defs>
+
+  <!-- Terminal window -->
+  <rect width="900" height="600" rx="10" ry="10" fill="#2B2D31"/>
+
+  <!-- Title bar -->
+  <rect width="900" height="38" rx="10" ry="10" fill="#2B2D31"/>
+  <rect y="28" width="900" height="10" fill="#2B2D31"/>
+
+  <!-- Window dots -->
+  <circle cx="20" cy="19" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="19" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="19" r="6" fill="#28c840"/>
+
+  <!-- Title -->
+  <text x="450" y="23" text-anchor="middle" class="title-text">Terminal -- design_review_demo.py</text>
+
+  <!-- Terminal body -->
+  <rect x="0" y="38" width="900" height="562" rx="0" ry="0" fill="#1e1e2e"/>
+  <rect x="0" y="590" width="900" height="10" rx="0" ry="10" fill="#1e1e2e"/>
+
+  <!-- Content area -->
+  <g class="term-text" transform="translate(16, 60)">
+    <!-- Command -->
+    <text y="0" class="cmd">$ python examples/design_review_demo.py</text>
+
+    <!-- Header -->
+    <text y="24" class="dim">===================================================================</text>
+    <text y="38" class="phase">  Cohort Design Review Demo</text>
+    <text y="52" class="dim">  4 agents, 1 JSONL file, zero infrastructure</text>
+    <text y="66" class="dim">===================================================================</text>
+
+    <!-- Phase 1 -->
+    <text y="90" class="phase">== PHASE 1: DISCOVER -- Research the existing API ==</text>
+
+    <text y="110" class="out">  architect           | Let's investigate the existing /users endpoint...</text>
+
+    <text y="130" class="dim">  -- Who should speak? --</text>
+    <text y="146" class="dim">    Rank  Agent                  Score   Phase</text>
+    <text y="160"><tspan class="hl">    1.    researcher              0.82</tspan><tspan class="dim">    DISCOVER  </tspan><tspan class="bar">################</tspan></text>
+    <text y="174"><tspan class="hl">    2.    architect               0.71</tspan><tspan class="dim">    DISCOVER  </tspan><tspan class="bar">##############</tspan></text>
+    <text y="188"><tspan class="dim">    3.    developer               0.35    DISCOVER  </tspan><tspan class="bar">#######</tspan></text>
+    <text y="202"><tspan class="dim">    4.    tester                  0.18    DISCOVER  </tspan><tspan class="bar">###</tspan></text>
+
+    <text y="222" class="dim">  -- Gating each agent --</text>
+    <text y="236"><tspan class="out">    gate(researcher          ) -> </tspan><tspan class="speak">SPEAK </tspan><tspan class="hl">  score=0.82  threshold=0.30</tspan></text>
+    <text y="250"><tspan class="out">    gate(developer           ) -> </tspan><tspan class="speak">SPEAK </tspan><tspan class="dim">  score=0.35  threshold=0.30</tspan></text>
+    <text y="264"><tspan class="out">    gate(tester              ) -> </tspan><tspan class="silent">SILENT</tspan><tspan class="dim">  score=0.18  threshold=0.30</tspan></text>
+
+    <!-- Phase 3 -->
+    <text y="292" class="phase">== PHASE 3: EXECUTE -- Build the implementation ==</text>
+
+    <text y="312" class="out">  architect           | @developer please implement cursor-based pagination...</text>
+
+    <text y="332" class="dim">  -- Direct mention + EXECUTE phase: developer should rank high --</text>
+    <text y="348"><tspan class="hl">    1.    developer               0.91</tspan><tspan class="dim">    EXECUTE   </tspan><tspan class="bar">##################</tspan></text>
+    <text y="362"><tspan class="dim">    2.    architect               0.44    EXECUTE   </tspan><tspan class="bar">########</tspan></text>
+    <text y="376"><tspan class="dim">    3.    tester                  0.28    EXECUTE   </tspan><tspan class="bar">#####</tspan></text>
+
+    <text y="396" class="out">  developer           | Implementation complete. Handles forward/backward cursors...</text>
+
+    <text y="416" class="dim">  -- After developer speaks twice, novelty drops --</text>
+    <text y="432"><tspan class="hl">    1.    tester                  0.67</tspan><tspan class="dim">    EXECUTE   </tspan><tspan class="bar">#############</tspan></text>
+    <text y="446"><tspan class="dim">    2.    developer               0.38    EXECUTE   </tspan><tspan class="bar">#######</tspan></text>
+
+    <!-- Phase 4: Loop prevention -->
+    <text y="474" class="phase">== PHASE 4: VALIDATE -- Test and review ==</text>
+
+    <text y="494" class="dim">  -- Gating: architect has contributed enough --</text>
+    <text y="508"><tspan class="out">    gate(architect          ) -> </tspan><tspan class="silent">SILENT</tspan><tspan class="hl">  score=0.24  threshold=0.30</tspan></text>
+    <text y="522"><tspan class="out">    gate(tester              ) -> </tspan><tspan class="speak">SPEAK </tspan><tspan class="hl">  score=0.79  threshold=0.30</tspan></text>
+
+    <!-- Cursor blinking -->
+    <rect x="0" y="538" width="8" height="14" fill="#cdd6f4" opacity="0.7"/>
+  </g>
+</svg>

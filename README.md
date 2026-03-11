@@ -4,6 +4,26 @@ Multi-agent orchestration with loop prevention and contribution scoring.
 
 Cohort manages structured discussions between AI agents. It decides **who speaks next**, prevents conversational loops, and scores contributions across five dimensions -- so your agents stay productive instead of talking in circles.
 
+## Why Cohort?
+
+Every multi-agent framework lets agents talk. Cohort decides **who should talk, when they should stop, and whether what they said was worth hearing.**
+
+| | Cohort | CrewAI | LangGraph |
+| --- | --- | --- | --- |
+| **Core deps** | 0 | 25+ | 30+ (transitive) |
+| **Default inference** | Local (Ollama / llama.cpp) | Cloud (OpenAI) | Cloud (varies) |
+| **API key required** | No (local) / optional (cloud) | Yes | Yes |
+| **Contribution scoring** | 5-dimension engine | -- | -- |
+| **Loop prevention** | Architectural (recency + novelty + gating) | Max iterations (timeout) | Conditional edges (manual) |
+| **Data leaves your machine** | Your choice (local default) | Yes + telemetry | Optional |
+| **Cost** | $0 local | API + $99-$10K Enterprise | API + $39/seat Platform |
+
+**Zero dependencies.** `pip install cohort` pulls nothing. Your agents, your hardware, your data.
+
+**Extracted from production.** These patterns weren't designed from theory -- they were extracted from a system running 60+ agents, then packaged clean with 600+ tests.
+
+See the [full comparison](https://cohort.dev/compare.html) and [benchmarks](https://cohort.dev/benchmarks.html) for details.
+
 ## Features
 
 - **Zero dependencies** -- `pip install cohort` pulls nothing
@@ -24,6 +44,10 @@ pip install cohort[all]         # everything
 ```
 
 Requires Python 3.11+.
+
+## Demo
+
+![Cohort Demo](docs/launch-kit/assets/demo-terminal.svg)
 
 ## Quick Start
 
@@ -55,6 +79,8 @@ orch.record_turn(session.session_id, "architect", "msg-001")
 ```
 
 ## Architecture
+
+![Cohort Architecture](docs/launch-kit/assets/architecture-diagram.svg)
 
 ```
                     +-----------------+

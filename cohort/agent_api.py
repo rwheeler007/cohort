@@ -1,8 +1,9 @@
 """Cohort Agent API -- Agent-as-a-Service server.
 
 A FastAPI service that serves agent intelligence (configs, prompts, learned
-facts) to cohort users over HTTP. This is the monetization layer: Free-tier
-users get the 12 core dev agents, Pro-tier users get the full extended roster.
+facts) to cohort users over HTTP. This is the monetization layer: 5 hardcover
+agents ship with pip install, free-tier users get 7 more from the Agent Store
+(12 total), Pro-tier users get the full 22+ roster.
 
 This server runs on YOUR infrastructure (not the user's machine). The local
 cohort server (server.py) is the user-facing UI server. This is the agent
@@ -80,33 +81,33 @@ _API_KEYS: dict[str, str] = {}
 _request_counts: dict[str, list[float]] = {}
 READ_RATE_LIMIT = 120  # max reads per minute per key
 
-# Free-tier agent IDs (15 agents: full dev team + content/growth stack)
+# Hardcover agents -- ship with `pip install cohort`, always available locally.
+# These do NOT come from the Agent Store / Gateway API.
+HARDCOVER_AGENTS: set[str] = {
+    "cohort_orchestrator",      # multi-agent workflow engine
+    "marketing_agent",          # strategy and growth
+    "content_strategy_agent",   # content planning
+    "analytics_agent",          # data and insights
+    "python_developer",         # code development
+}
+
+# Free-tier agent IDs -- available from the Agent Store at no cost.
+# Combined with hardcover agents, free users get 12 agents total.
 FREE_TIER_AGENTS: set[str] = {
-    # Core developers
-    "python_developer",
+    # Hardcover (also listed here for visibility checks)
+    *HARDCOVER_AGENTS,
+    # Free Agent Store agents
     "web_developer",
     "javascript_developer",
-    "system_coder",
-    "database_developer",
-    "cpp_developer",
-    # Quality & security
-    "qa_agent",
     "security_agent",
-    # DevOps & analysis
-    "devops_agent",
-    "code_archaeologist",
-    # Coordination & docs
-    "coding_orchestrator",
+    "qa_agent",
     "documentation_agent",
-    # Content & growth
-    "marketing_agent",
-    "content_strategy_agent",
-    "analytics_agent",
+    "code_archaeologist",
+    "setup_guide",
 }
 
 # Enterprise-only agents (factory layer -- not visible to free or pro)
 ENTERPRISE_ONLY_AGENTS: set[str] = {
-    "cohort_orchestrator",
     "supervisor_agent",
 }
 
@@ -456,19 +457,19 @@ async def get_tiers():
         tiers=[
             TierInfo(
                 tier="free",
-                description="Full AI development team -- 15 agents, orchestration engine, content pipeline, full UI",
+                description="5 hardcover agents + 7 free from Agent Store (12 total). Includes roundtables, work queue, executive briefings, local inference.",
                 agents=free_agents,
                 agent_count=len(free_agents),
             ),
             TierInfo(
                 tier="pro",
-                description="Extended agent roster (50+), continuously trained by the agent factory, memory archives",
+                description="Full Agent Store access (22+ agents). Website Creator, content pipeline, cloud model fallback. $49/mo.",
                 agents=all_non_enterprise,
                 agent_count=len(all_non_enterprise),
             ),
             TierInfo(
                 tier="enterprise",
-                description="The factory: agent creation, training pipeline, supervisor, orchestration meta-layer",
+                description="Agent Factory, assessment & training, cron scheduling, SSO, SLA. Starting at $299/mo.",
                 agents=all_non_enterprise + enterprise_agents,
                 agent_count=len(all_non_enterprise) + len(enterprise_agents),
             ),

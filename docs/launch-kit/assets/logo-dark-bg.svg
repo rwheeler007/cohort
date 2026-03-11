@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="400" height="100">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P');
+    </style>
+  </defs>
+  <rect width="400" height="100" fill="#2B2D31" rx="4"/>
+
+  <!-- Speech bubble icon (favicon style) -->
+  <g transform="translate(30, 22)">
+    <rect x="3" y="4" width="42" height="30" rx="4" fill="#D97757"/>
+    <polygon points="12,34 22,34 16,44" fill="#D97757"/>
+    <text x="24" y="26" text-anchor="middle" font-family="'Press Start 2P', monospace" font-weight="bold" font-size="14" fill="#1a1d21">CO</text>
+  </g>
+
+  <!-- Pixelated wordmark -->
+  <text x="95" y="62" font-family="'Press Start 2P', monospace" font-size="28" fill="#FFFFFF" letter-spacing="0.08em">COHORT</text>
+</svg>

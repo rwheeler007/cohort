@@ -518,3 +518,26 @@ body {
 .bench-cat-score {
     font-weight: 600;
 }
+
+/* ---- Responsive Inline Grid Overrides ---- */
+/* Apply these classes to inline-styled grids that need mobile stacking */
+@media (max-width: 639px) {
+    .mobile-stack {
+        grid-template-columns: 1fr !important;
+    }
+    .mobile-stack-2col {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+    .mobile-stack-4to2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* UI Mock: hide sidebar on mobile */
+@media (max-width: 639px) {
+    .ui-mock-sidebar {
+        display: none !important;
+    }
+}

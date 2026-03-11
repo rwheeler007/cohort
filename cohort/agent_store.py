@@ -92,36 +92,34 @@ class AgentStore:
             self._sync_from_gateway()
         self._loaded_all = True
 
-    # Cohort's curated agent roster — only these are synced from the Gateway.
-    # Local agents (cohort_orchestrator, setup_guide) excluded — local takes priority.
-    # Orchestration agents (ceo_agent, coding_orchestrator) excluded from sync.
-    # Sales/biz agents held for future update.
+    # Agent Store roster -- these are fetched from the remote Gateway API.
+    # Hardcover agents (cohort_orchestrator, marketing_agent, content_strategy_agent,
+    # analytics_agent, python_developer) are excluded -- they ship locally with
+    # `pip install cohort` and don't need Gateway sync.
+    #
+    # Tier gating is handled by agent_api.py (FREE_TIER_AGENTS vs Pro vs Enterprise).
+    # This set only controls WHICH agents are eligible for remote sync.
     GATEWAY_AGENTS = frozenset({
-        # Core Developers
-        "python_developer",
-        "javascript_developer",
+        # Free Store agents (available at no cost from Agent Store)
         "web_developer",
-        "system_coder",
-        # Quality & Security
+        "javascript_developer",
         "security_agent",
         "qa_agent",
-        "code_archaeologist",
-        # Leadership
-        "supervisor_agent",
-        # Support
-        "database_developer",
-        "hardware_agent",
         "documentation_agent",
-        # Marketing & Content
-        "marketing_agent",
+        "code_archaeologist",
+        "setup_guide",
+        # Pro Store agents ($49/mo)
+        "system_coder",
+        "database_developer",
+        "brand_design_agent",
         "campaign_orchestrator",
-        "content_strategy_agent",
-        "analytics_agent",
         "email_agent",
+        "hardware_agent",
         "linkedin",
         "reddit",
         "media_production_agent",
-        "brand_design_agent",
+        # Enterprise agent
+        "supervisor_agent",
     })
 
     def _sync_from_gateway(self) -> None:
