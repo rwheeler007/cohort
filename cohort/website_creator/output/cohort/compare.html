@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cohort vs OpenClaw vs CrewAI vs LangGraph | COHORT</title>
-    <meta name="description" content="Honest comparison of AI agent frameworks: Cohort, OpenClaw, CrewAI, and LangGraph. Architecture, privacy, cost, and when to use each.">
+    <meta name="description" content="Compare Cohort, OpenClaw, CrewAI, and LangGraph. See what multi-agent orchestration actually delivers vs personal assistants and task pipelines.">
     <meta name="keywords" content="Cohort vs OpenClaw, Cohort vs CrewAI, Cohort vs LangGraph, OpenClaw alternative, multi-agent framework comparison, AI orchestration comparison">
 
     <link rel="canonical" href="https://cohort.dev/compare.html">
@@ -13,12 +13,12 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cohort.dev/compare.html">
     <meta property="og:title" content="Cohort vs OpenClaw vs CrewAI vs LangGraph | COHORT">
-    <meta property="og:description" content="Honest comparison of AI agent frameworks: Cohort, OpenClaw, CrewAI, and LangGraph. Architecture, privacy, cost, and when to use each.">
+    <meta property="og:description" content="Compare Cohort, OpenClaw, CrewAI, and LangGraph. What you get, what you pay, and what actually ships.">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cohort vs OpenClaw vs CrewAI vs LangGraph | COHORT">
-    <meta name="twitter:description" content="Honest comparison of AI agent frameworks: Cohort, OpenClaw, CrewAI, and LangGraph.">
+    <meta name="twitter:description" content="Compare Cohort, OpenClaw, CrewAI, and LangGraph. What you get, what you pay, and what actually ships.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,83 +56,88 @@ COHORT            </a>
 <!-- Hero -->
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
-        <h1 class="responsive-h1">Framework Comparison</h1>
-        <p class="responsive-p-large">An honest look at four open-source AI agent projects -- what they do, what they cost, and when to use each.</p>
+        <h1 class="responsive-h1">Drafts vs. Finished Work</h1>
+        <p class="responsive-p-large">Every tool on this page can generate a response. Only one coordinates a team of specialists to deliver work that's been debated, reviewed, tested, and approved.</p>
     </div>
 </section>
 
-<!-- The Key Distinction -->
+<!-- What Only Cohort Does -->
 <section class="section-spacing">
     <div class="container" style="max-width: 1000px;">
-        <div style="text-align: center; max-width: 750px; margin: 0 auto 2.5rem;">
-            <p class="responsive-p-body" style="opacity: 0.8;">These four projects are all open source and all involve AI agents. But they solve <strong>fundamentally different problems</strong>. Understanding the category each occupies matters more than comparing feature lists.</p>
-        </div>
+        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 0.75rem;">What Only Cohort Does</h2>
+        <p class="responsive-p-body" style="text-align: center; max-width: 700px; margin: 0 auto 2rem; opacity: 0.8;">These capabilities don't exist in OpenClaw, CrewAI, or LangGraph. Not as plugins. Not as workarounds. They're architectural -- built into how Cohort decides who speaks, when they stop, and what ships.</p>
 
-        <!-- Category Split -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
-            <div style="background: #f9fafb; border-radius: 8px; padding: 2rem; border-top: 4px solid #D97757;">
-                <h3 class="responsive-h3" style="margin-bottom: 0.75rem;">Multi-Agent Orchestration</h3>
-                <p style="font-size: 0.9rem; color: #666; line-height: 1.7; margin-bottom: 1rem;">Multiple AI specialists coordinate to produce finished, reviewed work. The system decides who speaks, prevents loops, and enforces quality gates.</p>
-                <div style="display: flex; gap: 0.75rem;">
-                    <span style="background: #D97757; color: #fff; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">Cohort</span>
-                    <span style="background: #58a6ff; color: #fff; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">CrewAI</span>
-                    <span style="background: #3fb950; color: #fff; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">LangGraph</span>
-                </div>
+        <div class="grid-3" style="margin-bottom: 2.5rem;">
+            <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; background: #fff; border-radius: 0 8px 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Contribution Scoring</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">Five-dimension scoring (expertise, novelty, ownership, phase, history) decides which agent speaks next. Agents earn turns -- they don't just take them. No other framework scores agent contributions.</p>
             </div>
-            <div style="background: #f9fafb; border-radius: 8px; padding: 2rem; border-top: 4px solid #bc8cff;">
-                <h3 class="responsive-h3" style="margin-bottom: 0.75rem;">Personal AI Assistant</h3>
-                <p style="font-size: 0.9rem; color: #666; line-height: 1.7; margin-bottom: 1rem;">One AI agent that remembers your context across conversations and channels. Connects to messaging apps and automates personal tasks 24/7.</p>
-                <div style="display: flex; gap: 0.75rem;">
-                    <span style="background: #bc8cff; color: #fff; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">OpenClaw</span>
-                </div>
+            <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; background: #fff; border-radius: 0 8px 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Loop Prevention</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">Recency penalties, novelty detection, and stakeholder gating stop agents from repeating each other. CrewAI and LangGraph rely on max-iteration caps -- a timeout, not a solution.</p>
+            </div>
+            <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; background: #fff; border-radius: 0 8px 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Security Agent in Every Pipeline</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">A security specialist reviews every deliverable -- not as a checkbox at the end, but as an active participant throughout. Write-access controls enforce what agents can touch by architecture, not policy.</p>
             </div>
         </div>
 
-        <!-- At-a-Glance Cards -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 3rem;">
-            <div class="card" style="border-top: 4px solid #D97757; padding: 1.25rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">Cohort</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Multi-agent orchestration with contribution scoring</p>
-                <div style="font-size: 0.85rem; line-height: 1.7;">
-                    <div><strong>Runs on:</strong> Local GPU</div>
-                    <div><strong>Deps:</strong> Zero</div>
-                    <div><strong>Cost:</strong> Free</div>
-                    <div><strong>Stars:</strong> New</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+            <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; background: #fff; border-radius: 0 8px 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Stakeholder Gating</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">Agents progress through statuses (active -> approved_silent -> observer -> dormant) as their contribution threshold rises. Topic shifts automatically re-engage dormant specialists. No manual wiring.</p>
+            </div>
+            <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; background: #fff; border-radius: 0 8px 8px 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Human Approval Gates</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">Nothing consequential ships without human sign-off. The orchestrator knows what's risky and routes it to a person. Not "human-in-the-loop optional" -- human oversight is structural.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- The Output Gap -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2" style="text-align: center; color: #fff; margin-bottom: 2rem;">The Output Gap</h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">What the others give you</div>
+                <div style="border-left: 3px solid #555; padding-left: 1.25rem; margin-bottom: 1.25rem;">
+                    <div style="font-weight: 600; color: #bc8cff; margin-bottom: 0.25rem;">OpenClaw</div>
+                    <div style="font-size: 0.9rem; color: #C8C8C8; line-height: 1.6;">A better individual response. One AI, one conversation, better memory. Excellent for personal productivity.</div>
+                </div>
+                <div style="border-left: 3px solid #555; padding-left: 1.25rem; margin-bottom: 1.25rem;">
+                    <div style="font-weight: 600; color: #58a6ff; margin-bottom: 0.25rem;">CrewAI</div>
+                    <div style="font-size: 0.9rem; color: #C8C8C8; line-height: 1.6;">A completed task chain. Agent A does research, hands to Agent B for writing. Sequential output, no debate.</div>
+                </div>
+                <div style="border-left: 3px solid #555; padding-left: 1.25rem;">
+                    <div style="font-weight: 600; color: #3fb950; margin-bottom: 0.25rem;">LangGraph</div>
+                    <div style="font-size: 0.9rem; color: #C8C8C8; line-height: 1.6;">A state machine result. Precise control flow, conditional branching, checkpointed state. Maximum engineering control.</div>
                 </div>
             </div>
-            <div class="card" style="border-top: 4px solid #bc8cff; padding: 1.25rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">OpenClaw</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Personal AI assistant across messaging channels</p>
-                <div style="font-size: 0.85rem; line-height: 1.7;">
-                    <div><strong>Runs on:</strong> Cloud APIs</div>
-                    <div><strong>Deps:</strong> Node.js</div>
-                    <div><strong>Cost:</strong> $10-30/mo APIs</div>
-                    <div><strong>Stars:</strong> 250K+</div>
-                </div>
-            </div>
-            <div class="card" style="border-top: 4px solid #58a6ff; padding: 1.25rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">CrewAI</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Role-based agent crews with task hand-offs</p>
-                <div style="font-size: 0.85rem; line-height: 1.7;">
-                    <div><strong>Runs on:</strong> Cloud APIs</div>
-                    <div><strong>Deps:</strong> 25+</div>
-                    <div><strong>Cost:</strong> API + $99/mo Enterprise</div>
-                    <div><strong>Stars:</strong> 44K+</div>
-                </div>
-            </div>
-            <div class="card" style="border-top: 4px solid #3fb950; padding: 1.25rem;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">LangGraph</h3>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 0.75rem;">Graph-based state machines for agent workflows</p>
-                <div style="font-size: 0.85rem; line-height: 1.7;">
-                    <div><strong>Runs on:</strong> Any LLM API</div>
-                    <div><strong>Deps:</strong> 30+ transitive</div>
-                    <div><strong>Cost:</strong> API + $39/seat Platform</div>
-                    <div><strong>Stars:</strong> 26K+</div>
+            <div>
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">What Cohort gives you</div>
+                <div style="border-left: 3px solid #D97757; padding-left: 1.25rem;">
+                    <div style="font-weight: 600; color: #D97757; margin-bottom: 0.5rem;">Finished work.</div>
+                    <div style="font-size: 0.9rem; color: #C8C8C8; line-height: 1.8;">
+                        A developer writes it.<br>
+                        A reviewer tears it apart.<br>
+                        A security agent audits it.<br>
+                        Tests run automatically.<br>
+                        A human approves the result.<br><br>
+                        <span style="opacity: 0.7;">Not a draft. Not a response. Not a pipeline output.</span><br>
+                        <strong style="color: #fff;">Finished, multi-agent-reviewed, human-approved work.</strong>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Comparison Table -->
+<!-- Comparison Table -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 1050px;">
         <h2 class="responsive-h2" style="text-align: center; margin-bottom: 2rem;">Feature-by-Feature</h2>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; line-height: 1.5;">
@@ -148,24 +153,24 @@ COHORT            </a>
                 <tbody>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Category</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Multi-agent orchestration</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Business orchestration</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Personal AI assistant</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Multi-agent pipelines</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Agent workflow graphs</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">License</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">MIT</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Apache 2.0</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">MIT</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">MIT</td>
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Output</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Finished, reviewed work</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Better individual responses</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Task chain results</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">State machine output</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Language</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Python</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">TypeScript / Node.js</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Python</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Python / TypeScript</td>
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Monthly Cost</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">$0 local / $49 Pro</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">$10-30+ (API costs)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $99-$10K Enterprise</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $39/seat Platform</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Core Dependencies</td>
@@ -176,99 +181,85 @@ COHORT            </a>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Default Inference</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Local (Ollama)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud (Anthropic, OpenAI, etc.)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Local (Ollama / llama.cpp)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud APIs</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud (OpenAI)</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud (varies)</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Local LLM Support</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Native (localhost-enforced)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Via Ollama / LM Studio</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Via LiteLLM adapter</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Via LangChain adapters</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">API Key Required</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">No</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes (default)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes (default)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes (default)</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Monthly Cost</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">$0 (local inference)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">$10-30 (API costs)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $99-$10K Enterprise</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $39/seat Platform</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Orchestration Model</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Contribution scoring + turn management</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Single agent + skills (multi-agent opt-in)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Task chains (sequential / parallel / hierarchical)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">State graphs (nodes + edges)</td>
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Data Leaves Machine</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Never (enforced in code)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes (cloud APIs default)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Yes + telemetry</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Optional (tracing opt-in)</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Contribution Scoring</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">5-dimension scoring engine</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">--</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Loop Prevention</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Built-in (recency penalty, stakeholder gating)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">N/A (single agent)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Manual (max iterations)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Manual (conditional edges)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Architectural (recency + novelty + gating)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">N/A (single agent)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Max iterations (timeout)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Conditional edges (manual)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Security Review</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Built-in (security agent + write controls)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">User responsibility</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">User responsibility</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">User responsibility</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Human Approval Gates</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Structural (orchestrator-enforced)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Chat-based</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Manual intervention</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Checkpoint pause/resume</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Agent Memory</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Multi-layer (working + learned facts + history)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">File-based (Markdown skills, session transcripts)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">File-based (Markdown + transcripts)</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">4 types (STM, LTM, entity, external)</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Checkpoints + cross-thread stores</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Agent Interface</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Duck-typed protocol (3 attrs, 2 methods)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Markdown skill files</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Class-based (Agent, Task, Crew)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Graph nodes (functions)</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Data Privacy</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">Localhost-enforced, no telemetry</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Local-first, but cloud APIs default</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud default + telemetry</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Tracing opt-in</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Human-in-the-Loop</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Approval gates, operator overrides</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Chat-based (you are the loop)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Manual intervention points</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Native (checkpoint pause/resume)</td>
-                    </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Messaging Integration</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Built-in chat UI (SMACK)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #bc8cff;">20+ platforms (Slack, Discord, WhatsApp, etc.)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">None built-in</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">None built-in</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Built-in chat UI + MCP bridge</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #bc8cff;">20+ platforms</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">--</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; color: #ccc;">--</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
-                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Extensibility</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Protocol-based (bring your own agents + storage)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">5,400+ community skills on ClawHub</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">crewai-tools package</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">LangChain integrations ecosystem</td>
+                        <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Vendor Lock-in</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">None (protocol-first, zero deps)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Low (self-hosted)</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Enterprise platform features</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">LangSmith / Platform ecosystem</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Security Track Record</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Write-access controls, security agent in pipeline</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">RCE CVE (2026), 341 malicious skills found on ClawHub</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Write-access controls, security agent</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">RCE CVE + 341 malicious ClawHub skills</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Telemetry disclosure concerns</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">Platform license-check calls</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Community</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">New (v0.2, Mar 2026)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #bc8cff;">250K+ GitHub stars</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">250K+ GitHub stars</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">44K+ GitHub stars</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center;">26K+ GitHub stars</td>
                     </tr>
@@ -281,161 +272,111 @@ COHORT            </a>
 <!-- Deep Dives -->
 <section class="section-spacing" style="background: #f9fafb;">
     <div class="container" style="max-width: 900px;">
-        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 2.5rem;">Where Each Project Shines</h2>
-
-        <!-- Cohort -->
-        <div style="margin-bottom: 2.5rem;">
-            <h3 class="responsive-h3" style="color: #D97757;">Cohort: When Agents Need to Think Together</h3>
-            <p class="responsive-p-body">Cohort is built around a contribution scoring engine that decides which agent should speak next based on five dimensions: domain expertise (30%), complementary value (25%), historical success (20%), phase alignment (15%), and data ownership (10%). Agents don't just take turns -- they earn turns.</p>
-            <p class="responsive-p-body">This matters when you need genuine multi-perspective analysis. In a real roundtable, Cohort's scoring prevented a CEO agent from dominating a pitch workshop and surfaced a Code Archaeologist agent that fact-checked claims against git history -- producing a final output better than any single agent could have generated.</p>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; margin-top: 1rem;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-family: -apple-system, sans-serif;">Cohort -- 4 lines to orchestrate</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">from</span> cohort <span style="color: #d29922;">import</span> Orchestrator
-
-orch = Orchestrator(agents, storage)
-session = orch.start_session(<span style="color: #3fb950;">"design-review"</span>, <span style="color: #3fb950;">"API pagination strategy"</span>)
-rec = orch.get_next_speaker(session.session_id)  <span style="color: #888;"># scored recommendation</span></pre>
-            </div>
-            <p class="responsive-p-body" style="margin-top: 1rem;"><strong>Trade-off:</strong> Cohort is new (v0.2, March 2026). The community is small. If you need battle-tested production tooling, large ecosystem, or managed hosting today, the other three have years of head start.</p>
-        </div>
+        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 2.5rem;">Honest Takes</h2>
 
         <!-- OpenClaw -->
         <div style="margin-bottom: 2.5rem;">
-            <h3 class="responsive-h3" style="color: #bc8cff;">OpenClaw: When You Want a Personal AI That Never Forgets</h3>
-            <p class="responsive-p-body">OpenClaw is the viral open-source AI assistant (250K+ GitHub stars, surpassing React) created by Peter Steinberger. It connects a single AI agent to your messaging apps -- Slack, Discord, WhatsApp, iMessage, Telegram, and 15+ more -- and runs 24/7 as a proactive personal assistant.</p>
-            <p class="responsive-p-body">The killer feature is persistence: OpenClaw remembers context across every conversation and channel. Its file-based memory (Markdown skills, session transcripts) and 5,400+ community AgentSkills on ClawHub give it enormous breadth. If you want one AI that handles your calendar, controls your smart home, monitors your health data, and answers questions across every messaging platform, OpenClaw is unmatched.</p>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; margin-top: 1rem;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-family: -apple-system, sans-serif;">OpenClaw -- configuration, not code</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># OpenClaw treats agent creation as a configuration problem.</span>
-<span style="color: #888;"># Define skills as Markdown files, connect channels, go.</span>
-<span style="color: #888;"># No code required for most personal automation.</span>
-~/clawd/skills/my-skill/SKILL.md   <span style="color: #888;"># Markdown = capability</span>
-~/clawd/config.yaml                 <span style="color: #888;"># Channels + model selection</span></pre>
-            </div>
-            <p class="responsive-p-body" style="margin-top: 1rem;"><strong>Trade-off:</strong> OpenClaw is a personal assistant, not a business orchestration layer. It doesn't coordinate multiple agents debating strategy or enforce quality gates across a team pipeline. Its supply chain has had security issues (RCE CVE, 341 malicious skills discovered on ClawHub). Monthly API costs ($10-30+) scale with usage since it defaults to cloud inference.</p>
+            <h3 class="responsive-h3" style="color: #bc8cff;">OpenClaw (250K+ stars)</h3>
+            <p class="responsive-p-body">OpenClaw is a phenomenal personal AI assistant -- the most popular open-source AI project on GitHub. It connects to 20+ messaging platforms, has 5,400+ community skills, and runs 24/7 as your always-on personal aide. For individual productivity, it's unmatched.</p>
+            <p class="responsive-p-body">But OpenClaw is one AI helping one person. Its own Vision document explicitly rejects "agent-hierarchy frameworks" and "heavy orchestration layers." When you need a developer to write code, a reviewer to catch bugs, a security agent to audit it, and a human to approve it -- that's not a personal assistant problem. That's an orchestration problem. OpenClaw doesn't coordinate agent teams because it was never meant to.</p>
+            <p class="responsive-p-body"><strong>Use OpenClaw when:</strong> You want a personal AI that remembers everything and connects to all your messaging apps.<br><strong>Use Cohort when:</strong> You need an AI team that ships finished, reviewed work for your business.</p>
         </div>
 
         <!-- CrewAI -->
         <div style="margin-bottom: 2.5rem;">
-            <h3 class="responsive-h3" style="color: #58a6ff;">CrewAI: When Agents Need to Complete Tasks</h3>
-            <p class="responsive-p-body">CrewAI excels at structured task execution. Define agents with roles and backstories, assign tasks with expected outputs, and let the crew run -- sequentially, in parallel, or with a hierarchical manager. It's the most intuitive model if you're thinking in terms of "this agent does X, then hands off to Y."</p>
-            <p class="responsive-p-body">The ecosystem is mature (44K+ GitHub stars, 100K+ developers) with a no-code builder, monitoring dashboard, and enterprise support. If you need to ship a production multi-agent pipeline this week and your team uses OpenAI, CrewAI has the smoothest on-ramp.</p>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; margin-top: 1rem;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-family: -apple-system, sans-serif;">CrewAI -- task-based pipeline</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">from</span> crewai <span style="color: #d29922;">import</span> Agent, Task, Crew
-
-researcher = Agent(role=<span style="color: #3fb950;">"Researcher"</span>, goal=<span style="color: #3fb950;">"Find market data"</span>, llm=<span style="color: #3fb950;">"gpt-4"</span>)
-writer = Agent(role=<span style="color: #3fb950;">"Writer"</span>, goal=<span style="color: #3fb950;">"Draft the report"</span>, llm=<span style="color: #3fb950;">"gpt-4"</span>)
-crew = Crew(agents=[researcher, writer], tasks=[research_task, write_task])
-result = crew.kickoff()  <span style="color: #888;"># sequential execution</span></pre>
-            </div>
-            <p class="responsive-p-body" style="margin-top: 1rem;"><strong>Trade-off:</strong> Default-on telemetry. Cloud API dependency baked into the package (openai is a hard requirement even for local setups). Enterprise pricing scales steeply ($99/mo to $10K/mo). Local model support works but struggles with smaller models that can't handle function calling.</p>
+            <h3 class="responsive-h3" style="color: #58a6ff;">CrewAI (44K+ stars)</h3>
+            <p class="responsive-p-body">CrewAI is a mature multi-agent framework with an intuitive task-chain model. Define agents with roles, assign tasks, let the crew execute. Great for linear pipelines where Agent A researches, Agent B writes, Agent C edits. The no-code builder and enterprise support make it accessible.</p>
+            <p class="responsive-p-body">The gap: CrewAI agents don't debate. They hand off. There's no contribution scoring to surface the right expert, no loop prevention beyond max-iteration caps, and no built-in security review. The openai package is a hard dependency even for local setups. Default telemetry is on. And the pricing ramp is steep -- $99/mo to $10K/mo for Enterprise, on top of cloud API costs.</p>
+            <p class="responsive-p-body"><strong>Use CrewAI when:</strong> You need sequential task pipelines, your team uses OpenAI, and you want enterprise support now.<br><strong>Use Cohort when:</strong> You need agents that challenge each other's work, run on your hardware for $0, and ship with security review built in.</p>
         </div>
 
         <!-- LangGraph -->
         <div style="margin-bottom: 2.5rem;">
-            <h3 class="responsive-h3" style="color: #3fb950;">LangGraph: When You Need Maximum Control Flow</h3>
-            <p class="responsive-p-body">LangGraph models agent workflows as directed graphs with shared state. Every node is a function, every edge is a routing decision, and the state object flows through the entire graph. If you need conditional branching, cycles, parallel fan-out/fan-in, or checkpoint-based human-in-the-loop, LangGraph gives you the most granular control.</p>
-            <p class="responsive-p-body">The LangChain ecosystem (100K+ GitHub stars across projects) provides deep integrations with every major LLM provider, vector store, and tool. LangGraph Studio offers a visual debugger for complex workflows. It's the power-user choice for teams already in the LangChain world.</p>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; margin-top: 1rem;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-family: -apple-system, sans-serif;">LangGraph -- graph-based orchestration</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">from</span> langgraph.graph <span style="color: #d29922;">import</span> StateGraph
+            <h3 class="responsive-h3" style="color: #3fb950;">LangGraph (26K+ stars)</h3>
+            <p class="responsive-p-body">LangGraph gives you maximum control over agent workflows via directed graphs. If you need conditional branching, cycles, fan-out/fan-in, and checkpoint-based human-in-the-loop, it's the most granular option. The LangChain ecosystem (100K+ stars across projects) provides deep integrations with every provider.</p>
+            <p class="responsive-p-body">The trade-off: the graph abstraction adds complexity that Python control flow already handles. 30+ transitive dependencies. The ecosystem gravitates toward paid LangSmith ($2.50-$5/1K traces) and Platform ($39/seat/mo) for production observability. Deployment has known dependency resolution issues. And like CrewAI, it has no built-in contribution scoring, loop prevention, or security review.</p>
+            <p class="responsive-p-body"><strong>Use LangGraph when:</strong> You need precise workflow engineering and your team is already in the LangChain ecosystem.<br><strong>Use Cohort when:</strong> You want orchestration that handles the coordination logic for you instead of making you build it as a graph.</p>
+        </div>
 
-graph = StateGraph(AgentState)
-graph.add_node(<span style="color: #3fb950;">"researcher"</span>, research_fn)
-graph.add_node(<span style="color: #3fb950;">"writer"</span>, write_fn)
-graph.add_conditional_edges(<span style="color: #3fb950;">"researcher"</span>, route_fn)  <span style="color: #888;"># dynamic routing</span>
-app = graph.compile(checkpointer=SqliteSaver())</pre>
-            </div>
-            <p class="responsive-p-body" style="margin-top: 1rem;"><strong>Trade-off:</strong> The graph abstraction adds complexity that Python control flow already handles natively. Steeper learning curve than task-based frameworks. The ecosystem gravitates toward paid LangSmith/Platform for production observability. Deployment has known dependency resolution issues.</p>
+        <!-- Cohort -->
+        <div style="margin-bottom: 0;">
+            <h3 class="responsive-h3" style="color: #D97757;">Cohort (v0.2 -- new, honest about it)</h3>
+            <p class="responsive-p-body">Cohort is the newest project here. Smaller community. Fewer integrations. No managed hosting. We're transparent about that.</p>
+            <p class="responsive-p-body">What we're not transparent enough about is this: the orchestration patterns in Cohort were extracted from 18 months of production use, not designed from theory. The contribution scoring, loop prevention, stakeholder gating, and security pipeline exist because they solved real problems in a real system running real agents daily. The packaging is new. The patterns are battle-tested.</p>
+            <p class="responsive-p-body">And the math works: 22 agents running daily roundtables, work queue tasks, and overnight training on a single consumer GPU. Zero API costs. Zero data leaving the network. Zero vendor lock-in. <a href="pricing.html" style="color: #D97757; font-weight: 600;">$0/mo for open source, $49/mo for Pro.</a></p>
         </div>
     </div>
 </section>
 
-<!-- The Real Question -->
+<!-- The Cost Math -->
 <section class="section-spacing">
     <div class="container" style="max-width: 900px;">
-        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 1rem;">The Real Question</h2>
-        <p class="responsive-p-body" style="text-align: center; max-width: 700px; margin: 0 auto 2rem; opacity: 0.8;">It's not "which is best." It's "what are you building?"</p>
+        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 1.5rem;">The Cost Math</h2>
+        <p class="responsive-p-body" style="text-align: center; max-width: 700px; margin: 0 auto 2rem; opacity: 0.8;">Multi-agent systems multiply token consumption. When agents talk to each other, every conversation is an API call. Here's what that actually costs.</p>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-            <!-- Privacy -->
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem;">
-                <div style="font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Where does your data go?</div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #D97757; font-weight: 600;">Cohort:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> Never leaves your machine. Enforced in code.</span>
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #bc8cff; font-weight: 600;">OpenClaw:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> Local gateway, but cloud APIs by default.</span>
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #58a6ff; font-weight: 600;">CrewAI:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> Cloud + telemetry on by default.</span>
-                </div>
-                <div>
-                    <span style="color: #3fb950; font-weight: 600;">LangGraph:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> Tracing opt-in. Platform has license checks.</span>
-                </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">Cohort</div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">22 agents, local GPU</div>
+                <div style="font-size: 0.75rem; color: #888;">Your data stays home</div>
             </div>
-
-            <!-- Cost -->
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem;">
-                <div style="font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">What does it cost to run?</div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #D97757; font-weight: 600;">Cohort:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> $0. Your GPU, your electricity.</span>
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #bc8cff; font-weight: 600;">OpenClaw:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> $10-30/mo typical (cloud API costs).</span>
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <span style="color: #58a6ff; font-weight: 600;">CrewAI:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> API costs + $99-$10K/mo Enterprise.</span>
-                </div>
-                <div>
-                    <span style="color: #3fb950; font-weight: 600;">LangGraph:</span>
-                    <span style="color: #C8C8C8; font-size: 0.9rem;"> API costs + $39/seat/mo Platform.</span>
-                </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #bc8cff;">$30</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">OpenClaw</div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">1 agent, cloud APIs</div>
+                <div style="font-size: 0.75rem; color: #888;">Moderate automation</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">$800+</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">CrewAI</div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">Multi-agent, cloud APIs</div>
+                <div style="font-size: 0.75rem; color: #888;">+ $99/mo Enterprise</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">$500+</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">LangGraph</div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">Multi-agent, cloud APIs</div>
+                <div style="font-size: 0.75rem; color: #888;">+ $39/seat Platform</div>
             </div>
         </div>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic; text-align: center;">Cloud API estimates based on 14 agents running daily workloads with GPT-4/Claude-class models. Actual costs vary. <a href="pricing.html" style="color: #D97757;">See full pricing breakdown.</a></p>
     </div>
 </section>
 
 <!-- Decision Guide -->
 <section class="section-spacing" style="background: #f9fafb;">
     <div class="container" style="max-width: 900px;">
-        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 2rem;">Which One Should You Pick?</h2>
+        <h2 class="responsive-h2" style="text-align: center; margin-bottom: 2rem;">Pick the Right Tool</h2>
 
         <div style="max-width: 750px; margin: 0 auto;">
             <div style="border-left: 4px solid #D97757; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; background: #fff; border-radius: 0 8px 8px 0;">
-                <p style="margin: 0; line-height: 1.7;"><strong>Choose Cohort</strong> if you need multiple AI specialists coordinating to ship finished, reviewed work. You want agents that debate, disagree, and converge. Data privacy is non-negotiable. Zero vendor lock-in.</p>
+                <p style="margin: 0; line-height: 1.7;"><strong style="color: #D97757;">Cohort</strong> -- You need AI specialists that coordinate, debate, review each other's work, and ship finished deliverables. Data privacy is non-negotiable. You have a GPU and want $0/mo operating costs.</p>
             </div>
             <div style="border-left: 4px solid #bc8cff; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; background: #fff; border-radius: 0 8px 8px 0;">
-                <p style="margin: 0; line-height: 1.7;"><strong>Choose OpenClaw</strong> if you want a personal AI assistant that connects to your messaging apps, remembers everything, and automates your daily life. One user, one very capable AI.</p>
+                <p style="margin: 0; line-height: 1.7;"><strong style="color: #bc8cff;">OpenClaw</strong> -- You want a personal AI assistant that connects to your messaging apps, remembers everything, and automates your daily life. One user, one brilliant AI.</p>
             </div>
             <div style="border-left: 4px solid #58a6ff; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; background: #fff; border-radius: 0 8px 8px 0;">
-                <p style="margin: 0; line-height: 1.7;"><strong>Choose CrewAI</strong> if you need task-based agent pipelines with a mature ecosystem, enterprise support, and the smoothest on-ramp for teams already using OpenAI.</p>
+                <p style="margin: 0; line-height: 1.7;"><strong style="color: #58a6ff;">CrewAI</strong> -- You need task-based agent pipelines with a mature ecosystem, enterprise support, and you're comfortable with cloud API costs.</p>
             </div>
             <div style="border-left: 4px solid #3fb950; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; background: #fff; border-radius: 0 8px 8px 0;">
-                <p style="margin: 0; line-height: 1.7;"><strong>Choose LangGraph</strong> if you need fine-grained control over complex workflows with conditional branching, checkpoint-based human-in-the-loop, and deep LangChain ecosystem integration.</p>
+                <p style="margin: 0; line-height: 1.7;"><strong style="color: #3fb950;">LangGraph</strong> -- You need fine-grained workflow engineering with conditional branching and your team is already in the LangChain ecosystem.</p>
             </div>
         </div>
 
-        <p class="responsive-p-body" style="text-align: center; margin-top: 2rem; font-style: italic; opacity: 0.7;">OpenClaw is a better personal assistant. Cohort is an entire department working for your business. They're as different as Gmail and Slack -- and you can use both.</p>
+        <p class="responsive-p-body" style="text-align: center; margin-top: 2rem; opacity: 0.7; font-style: italic;">OpenClaw is a better personal assistant. Cohort is an entire department working for your business. You can use both.</p>
     </div>
 </section>
 
 <!-- CTA -->
 <section class="section-spacing" style="background: #2B2D31; color: #fff;">
     <div class="container text-center">
-        <h2 class="responsive-h2" style="color: #fff;">Try Cohort</h2>
+        <h2 class="responsive-h2" style="color: #fff;">Ready to Ship?</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.85);">The open source tier runs 22 agents on your GPU for $0/mo.<br>Pro adds turnkey pipelines for $49/mo. No API keys required.</p>
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
         <div class="button-group" style="margin-top: 1rem;">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">Get Started</a>
-            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">How It Works</a>
+            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">Get Started Free</a>
+            <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
 </section>
