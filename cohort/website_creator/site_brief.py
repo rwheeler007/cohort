@@ -41,10 +41,18 @@ class BrandTokens:
 
 @dataclass
 class NavItem:
-    """Single navigation link."""
+    """Single navigation link, optionally with dropdown children."""
     label: str = ""
     href: str = ""
     external: bool = False
+    children: list["NavItem"] = field(default_factory=list)
+
+
+@dataclass
+class FooterColumn:
+    """A column in the site footer with a heading and links."""
+    heading: str = ""
+    links: list[NavItem] = field(default_factory=list)
 
 
 @dataclass
@@ -199,7 +207,8 @@ class SiteBrief:
 
     # --- Footer ---
     footer_text: str = ""
-    footer_links: list[NavItem] = field(default_factory=list)
+    footer_links: list[NavItem] = field(default_factory=list)  # Legacy flat links (fallback)
+    footer_columns: list[FooterColumn] = field(default_factory=list)  # Structured columns for footer.js
     built_with_cohort: bool = True  # Show "Built with Cohort" badge
 
     # --- Roundtable decisions (populated by LLM pipeline) ---
@@ -243,9 +252,9 @@ class SiteBrief:
                 if k in BrandTokens.__dataclass_fields__
             })
 
-        # Navigation
+        # Navigation (supports nested children for dropdowns)
         if "nav_items" in data:
-            brief.nav_items = [NavItem(**n) for n in data["nav_items"]]
+            brief.nav_items = [cls._parse_nav_item(n) for n in data["nav_items"]]
 
         # Hero
         if "hero" in data:
@@ -272,7 +281,10 @@ class SiteBrief:
 
         # Pricing tiers
         if "pricing_tiers" in data:
-            brief.pricing_tiers = [PricingTier(**t) for t in data["pricing_tiers"]]
+            brief.pricing_tiers = [PricingTier(**{
+                k: v for k, v in t.items()
+                if k in PricingTier.__dataclass_fields__
+            }) for t in data["pricing_tiers"]]
 
         # Contact
         if "contact" in data:
@@ -295,9 +307,19 @@ class SiteBrief:
         if "pages" in data:
             brief.pages = [PageConfig(**p) for p in data["pages"]]
 
-        # Footer links
+        # Footer links (legacy flat list)
         if "footer_links" in data:
-            brief.footer_links = [NavItem(**n) for n in data["footer_links"]]
+            brief.footer_links = [cls._parse_nav_item(n) for n in data["footer_links"]]
+
+        # Footer columns (structured)
+        if "footer_columns" in data:
+            brief.footer_columns = [
+                FooterColumn(
+                    heading=col.get("heading", ""),
+                    links=[cls._parse_nav_item(lnk) for lnk in col.get("links", [])],
+                )
+                for col in data["footer_columns"]
+            ]
 
         # Pass-through dicts
         for key in ("roundtable_decisions", "current_site_analysis",
@@ -306,6 +328,18 @@ class SiteBrief:
                 setattr(brief, key, data[key])
 
         return brief
+
+    @staticmethod
+    def _parse_nav_item(data: dict) -> NavItem:
+        """Parse a NavItem dict, recursively handling children."""
+        children_raw = data.pop("children", [])
+        item = NavItem(**{k: v for k, v in data.items() if k in NavItem.__dataclass_fields__})
+        if children_raw:
+            item.children = [SiteBrief._parse_nav_item(c) for c in children_raw]
+        # Restore mutated dict (pop removed 'children')
+        if children_raw:
+            data["children"] = children_raw
+        return item
 
     def to_dict(self) -> dict:
         """Serialize to a plain dict for YAML export or template context."""

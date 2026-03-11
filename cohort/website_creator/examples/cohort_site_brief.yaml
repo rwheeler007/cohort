@@ -46,25 +46,29 @@ seo:
 # --- Navigation ---
 nav_items:
   - label: "How It Works"
-    href: "features.html"
-  - label: "Tools"
-    href: "tools.html"
-  - label: "Use Cases"
-    href: "use-cases.html"
-  - label: "Content Pipeline"
-    href: "marketing.html"
+    children:
+      - label: "Features"
+        href: "features.html"
+      - label: "Use Cases"
+        href: "use-cases.html"
+      - label: "Content Pipeline"
+        href: "marketing.html"
   - label: "Pricing"
     href: "pricing.html"
-  - label: "Benchmarks"
-    href: "benchmarks.html"
   - label: "Docs"
-    href: "docs.html"
-  - label: "Compare"
-    href: "compare.html"
-  - label: "AI's Take"
-    href: "ai-perspective.html"
-  - label: "Contact"
-    href: "contact.html"
+    children:
+      - label: "Documentation"
+        href: "docs.html"
+      - label: "Benchmarks"
+        href: "benchmarks.html"
+      - label: "Compare"
+        href: "compare.html"
+  - label: "The Tools"
+    href: "tools.html"
+  - label: "The Team"
+    children:
+      - label: "AI's Take"
+        href: "ai-perspective.html"
 
 # --- Hero ---
 hero:
@@ -921,6 +925,48 @@ pages:
 
 # --- Footer ---
 footer_text: '&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.'
+
+# Structured footer columns (used by footer.js)
+footer_columns:
+  - heading: "Product"
+    links:
+      - label: "How It Works"
+        href: "features.html"
+      - label: "The Tools"
+        href: "tools.html"
+      - label: "Use Cases"
+        href: "use-cases.html"
+      - label: "Content Pipeline"
+        href: "marketing.html"
+      - label: "Pricing"
+        href: "pricing.html"
+  - heading: "Resources"
+    links:
+      - label: "Documentation"
+        href: "docs.html"
+      - label: "Benchmarks"
+        href: "benchmarks.html"
+      - label: "Compare"
+        href: "compare.html"
+      - label: "AI's Take"
+        href: "ai-perspective.html"
+      - label: "GitHub"
+        href: "https://github.com/cohort-dev/cohort"
+        external: true
+  - heading: "Connect"
+    links:
+      - label: "Contact"
+        href: "contact.html"
+      - label: "hello@cohort.dev"
+        href: "mailto:hello@cohort.dev"
+      - label: "Twitter/X"
+        href: "https://twitter.com/cohort_dev"
+        external: true
+      - label: "Discord"
+        href: "https://discord.gg/cohort"
+        external: true
+
+# Legacy flat footer links (fallback if footer_columns not defined)
 footer_links:
   - label: "GitHub"
     href: "https://github.com/cohort-dev/cohort"
