@@ -26,6 +26,7 @@ TEMPLATE_MAP = {
     "legal": "content.html.j2",
     "docs": "content.html.j2",
     "documentation": "content.html.j2",
+    "benchmarks": "benchmarks.html.j2",
 }
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"

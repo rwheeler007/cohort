@@ -101,6 +101,7 @@ class Feature:
     description: str = ""
     icon: str = ""
     image: str = ""
+    href: str = ""
 
 
 @dataclass

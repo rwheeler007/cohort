@@ -41,8 +41,10 @@ COHORT            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="features.html">How It Works</a></li>
+                <li><a href="tools.html">Tools</a></li>
                 <li><a href="use-cases.html">Use Cases</a></li>
                 <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="benchmarks.html">Benchmarks</a></li>
                 <li><a href="docs.html">Docs</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
@@ -100,183 +102,37 @@ COHORT            </a>
 <section class="section-spacing" style="background: #f9fafb;">
     <div class="container">
         <h2 class="responsive-h2 text-center">Core Capabilities</h2>
-
-        <div id="roundtables" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[RT]</div>
-            <h3 class="responsive-h3">Agent Roundtables</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Assemble 3-8 specialist agents into a structured discussion. Each agent brings a distinct persona, domain expertise, and priorities. The conversation produces a synthesis that no single agent would have reached alone.</p>
-            <p class="responsive-p-body">Cohort supports both sequential roundtables (each agent responds in turn) and compiled mode (all personas loaded into a single LLM call for 90% token reduction). Choose the mode that fits your latency and depth requirements.</p>
-
-            <!-- Real example: Elevator Pitch Workshop roundtable -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Real conversation -- #elevator-pitch-workshop, 7 agents</div>
-
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #D97757;">
-                    <div style="color: #D97757; font-weight: 600; margin-bottom: 0.25rem;">BOSS Agent</div>
-                    <div>The CEO's draft needs sharper differentiation by highlighting the unique 76-agent team dynamic and strict process enforcement rather than generic features. The pitch must emphasize that BOSS ships finished work -- not suggestions.</div>
-                </div>
-
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                    <div style="color: #58a6ff; font-weight: 600; margin-bottom: 0.25rem;">Marketing Agent</div>
-                    <div>The pitch must shift from describing features to reframing BOSS as a self-running company rather than an employee-like AI. Replace jargon with relatable analogies, lead with the founder's story.</div>
-                </div>
-
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #3fb950;">
-                    <div style="color: #3fb950; font-weight: 600; margin-bottom: 0.25rem;">Content Strategy Agent</div>
-                    <div>The narrative structure is backwards. Every draft opens with what BOSS <em>is</em>. Non-technical audiences don't care what it is until they care <em>why it exists</em>. The pitch needs a story arc: tension, revelation, proof.</div>
-                </div>
-
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #d29922;">
-                    <div style="color: #d29922; font-weight: 600; margin-bottom: 0.25rem;">Product Manager Agent</div>
-                    <div>Strong contributions across the board -- but one critical gap: <strong>who is this for?</strong> Every pitch describes what BOSS <em>is</em> and what it <em>does</em>. None answer the question: what job is the buyer hiring BOSS to do?</div>
-                </div>
-
-                <div style="padding-left: 1rem; border-left: 3px solid #bc8cff;">
-                    <div style="color: #bc8cff; font-weight: 600; margin-bottom: 0.25rem;">CEO Agent (synthesis)</div>
-                    <div>Six agents, one prompt, and we've gone from a flat feature list to a category-creating narrative in under 10 minutes. Structure: Content Strategy's arc wins. Frame: Marketing's category-creation angle. Proof point: Sales's code queue story. One round of refinement, then we ship it.</div>
-                </div>
+        <div class="grid-3" style="margin-top: 2rem;">
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[RT]</div>
+                <h3 class="responsive-h3">Agent Roundtables</h3>
+                <p class="responsive-p-body">Assemble 3-8 specialist agents into a structured discussion. Security challenges the developer. Strategy reframes the CTO's concern. Real debate, real disagreements, real consensus.</p>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">From a real roundtable session. Each agent pushed back on the previous contribution. The CEO synthesized the final direction from all inputs.</p>
-        </div>
-
-        <div id="scoring" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[S]</div>
-            <h3 class="responsive-h3">Contribution Scoring</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Every potential response is scored across 4 weighted dimensions before an agent speaks. High-scoring agents speak next. Low-scoring agents yield the floor. The conversation self-organizes toward the experts who actually have something to add.</p>
-            <p class="responsive-p-body">This eliminates the most common failure mode in multi-agent systems: circular conversations where agents politely agree with each other until the token budget runs out.</p>
-
-            <!-- Real example: scoring code -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">From cohort/meeting.py -- calculate_contribution_score()</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Dimensions: novelty (35%), expertise (30%), ownership (20%), question (15%)</span>
-
-<span style="color: #888;"># Novelty -- is this new information or a repeat?</span>
-novelty = calculate_novelty(proposed_message, recent_messages[-5:])
-score += SCORING_WEIGHTS[<span style="color: #3fb950;">"novelty"</span>] * novelty
-
-<span style="color: #888;"># Expertise -- does this agent's domain match the topic?</span>
-score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * calculate_expertise_relevance(
-    agent_config, topic_keywords
-)
-
-<span style="color: #888;"># Ownership -- is this agent a primary stakeholder?</span>
-<span style="color: #d29922;">if</span> agent_id <span style="color: #d29922;">in</span> primary_stakeholders:
-    score += SCORING_WEIGHTS[<span style="color: #3fb950;">"ownership"</span>]
-
-<span style="color: #888;"># Direct question -- was this agent asked specifically?</span>
-<span style="color: #d29922;">if</span> is_directly_questioned(agent_id, recent_messages):
-    score += SCORING_WEIGHTS[<span style="color: #3fb950;">"question"</span>]</pre>
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[S]</div>
+                <h3 class="responsive-h3">Contribution Scoring</h3>
+                <p class="responsive-p-body">5-dimension relevance scoring ensures the right expert speaks at the right time. Agents earn their turn instead of talking in circles.</p>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Novelty dominates at 35% -- repeating what someone already said tanks your score. Explicit @mentions bypass scoring entirely, so you can always summon a specific agent.</p>
-        </div>
-
-        <div id="local-inference" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[$0]</div>
-            <h3 class="responsive-h3">Zero API Costs</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Cohort runs on Ollama and llama.cpp out of the box. A single consumer GPU runs the default model fast enough for real-time multi-agent discussions. Your data never leaves your machine.</p>
-            <p class="responsive-p-body">Cloud APIs are supported as an optional escalation path, but the default pipeline is fully local. No API keys required to get started.</p>
-
-            <!-- Real benchmark numbers -->
-            <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">31</div>
-                    <div style="font-size: 0.8rem; color: #C8C8C8;">tokens/sec generation</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">qwen3.5:9b on RTX 3080</div>
-                </div>
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">95.8%</div>
-                    <div style="font-size: 0.8rem; color: #C8C8C8;">assessment pass rate</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">1,399 questions, 14 agents</div>
-                </div>
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #D97757;">$0</div>
-                    <div style="font-size: 0.8rem; color: #C8C8C8;">API costs</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">all local inference</div>
-                </div>
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[$0]</div>
+                <h3 class="responsive-h3">Zero API Costs</h3>
+                <p class="responsive-p-body">Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing, no data leaving your network.</p>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Benchmarked on consumer hardware: RTX 3080 12GB, running llama.cpp with qwen3.5:9b (Q4_K_M). No cloud GPUs, no API keys.</p>
-        </div>
-
-        <div id="protocols" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[P]</div>
-            <h3 class="responsive-h3">Protocol-First Architecture</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Agents, storage backends, and inference providers are all duck-typed protocols. Implement the interface, and Cohort uses it. No base classes to inherit, no vendor SDK to import. <code>pip install cohort</code> pulls zero dependencies beyond the standard library.</p>
-            <p class="responsive-p-body">Swap Ollama for llama.cpp. Replace SQLite with Postgres. Bring your own agents written in any framework. Cohort doesn't care -- it talks protocols, not implementations.</p>
-
-            <!-- Real protocol code -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">From cohort/registry.py -- the entire agent interface</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #d29922;">@runtime_checkable</span>
-<span style="color: #d29922;">class</span> <span style="color: #58a6ff;">AgentProfile</span>(<span style="color: #58a6ff;">Protocol</span>):
-    <span style="color: #888;">"""Duck-typed interface for agent profiles.
-    Any object with these attributes satisfies the protocol.
-    No subclassing required."""</span>
-
-    name: <span style="color: #58a6ff;">str</span>
-    role: <span style="color: #58a6ff;">str</span>
-    capabilities: <span style="color: #58a6ff;">list</span>[<span style="color: #58a6ff;">str</span>]
-
-    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">relevance_score</span>(self, topic: str) -> float: ...
-    <span style="color: #d29922;">def</span> <span style="color: #3fb950;">can_contribute</span>(self, context: dict) -> bool: ...</pre>
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[P]</div>
+                <h3 class="responsive-h3">Protocol-First</h3>
+                <p class="responsive-p-body">Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. pip install cohort pulls nothing.</p>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">That's the complete agent contract. Three attributes, two methods. If your object has them, Cohort can use it -- no imports, no inheritance.</p>
-        </div>
-
-        <div id="briefings" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[B]</div>
-            <h3 class="responsive-h3">Executive Briefings</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Auto-generated HTML reports show what your AI team did overnight: agent activity narratives, intel summaries, task execution metrics, and system health. Delivered to your inbox or served from a local dashboard.</p>
-            <p class="responsive-p-body"><a href="samples/executive_briefing.html" style="color: var(--color-primary); font-weight: 600;">See a real sample briefing →</a></p>
-
-            <!-- Briefing preview -->
-            <div style="margin-top: 1rem; background: #0d1117; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #e6edf3; border: 1px solid #30363d;">
-                <div style="text-align: center; border-bottom: 3px double #30363d; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <div style="font-size: 1.1rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Executive Briefing</div>
-                    <div style="color: #8b949e; font-size: 0.8rem;">Mon Mar 10, 2026</div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
-                    <div style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Agents Active</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #3fb950;">14</div>
-                    </div>
-                    <div style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Intel Articles</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #58a6ff;">23</div>
-                    </div>
-                    <div style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">System Health</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #3fb950;">OK</div>
-                    </div>
-                </div>
-                <div style="font-style: italic; color: #8b949e; font-size: 0.8rem;">Agent narratives, task execution history, tech intel digest, and system health metrics -- generated automatically at 6am daily.</div>
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[B]</div>
+                <h3 class="responsive-h3">Executive Briefings</h3>
+                <p class="responsive-p-body">Auto-generated HTML reports with agent activity narratives, intel summaries, and task execution history. Know what your AI team did overnight.</p>
             </div>
-        </div>
-
-        <div id="memory" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[M]</div>
-            <h3 class="responsive-h3">Persistent Memory</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Every agent has a persistent memory store that accumulates domain knowledge across sessions. When a security agent learns about a new vulnerability class, that knowledge is available in every future audit -- not just the current conversation.</p>
-            <p class="responsive-p-body">Overnight training pipelines research topics, curate materials from a document library, inject verified facts, and assess agent performance automatically. Agents don't just run tasks -- they develop expertise over time.</p>
-
-            <!-- Real memory.json excerpt -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">From python_developer/memory.json -- accumulated knowledge</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;">// Training scores</span>
-{ <span style="color: #3fb950;">"fact"</span>: <span style="color: #3fb950;">"Completed training on parallel_change_pattern (score: 100.0%)"</span>,
-  <span style="color: #3fb950;">"learned_from"</span>: <span style="color: #3fb950;">"teacher_agent"</span>, <span style="color: #3fb950;">"confidence"</span>: <span style="color: #3fb950;">"high"</span> }
-
-<span style="color: #888;">// Assessment remediation -- learned from mistakes</span>
-{ <span style="color: #3fb950;">"fact"</span>: <span style="color: #3fb950;">"Always include concrete code snippets when explaining
-  Python concepts - never describe without demonstrating"</span>,
-  <span style="color: #3fb950;">"learned_from"</span>: <span style="color: #3fb950;">"assessment_remediation"</span> }
-
-<span style="color: #888;">// Deep domain knowledge injected by training pipeline</span>
-{ <span style="color: #3fb950;">"fact"</span>: <span style="color: #3fb950;">"asyncio.TaskGroup (Python 3.11+) provides structured
-  concurrency: all tasks awaited together, if any raises an
-  exception all siblings are cancelled. Replaces gather()."</span>,
-  <span style="color: #3fb950;">"learned_from"</span>: <span style="color: #3fb950;">"pattern_knowledge"</span>, <span style="color: #3fb950;">"confidence"</span>: <span style="color: #3fb950;">"medium"</span> }</pre>
+            <div class="card text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">[M]</div>
+                <h3 class="responsive-h3">Persistent Memory</h3>
+                <p class="responsive-p-body">Agents accumulate expertise across sessions. Overnight training pipelines research, curate, and inject domain knowledge. Your team gets smarter while you sleep.</p>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Real entries from the python_developer agent. Training scores, lessons from failed assessments, and domain knowledge -- all persisted across sessions and used in future tasks.</p>
         </div>
     </div>
 </section>

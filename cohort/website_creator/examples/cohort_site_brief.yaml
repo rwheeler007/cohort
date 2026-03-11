@@ -49,10 +49,14 @@ nav_items:
     href: "index.html"
   - label: "How It Works"
     href: "features.html"
+  - label: "Tools"
+    href: "tools.html"
   - label: "Use Cases"
     href: "use-cases.html"
   - label: "Pricing"
     href: "pricing.html"
+  - label: "Benchmarks"
+    href: "benchmarks.html"
   - label: "Docs"
     href: "docs.html"
   - label: "Contact"
@@ -232,6 +236,15 @@ pages:
       cta_text: "View Pricing"
       cta_href: "pricing.html"
 
+  - slug: "tools"
+    title: "Tools"
+    template: "content"
+    nav_label: "Tools"
+    in_nav: true
+    meta_description: "Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more."
+    content:
+      subheadline: "Everything Cohort ships out of the box."
+
   - slug: "use-cases"
     title: "Use Cases"
     template: "content"
@@ -265,6 +278,178 @@ pages:
       cta_heading: "Questions?"
       cta_text: "Contact Us"
       cta_href: "contact.html"
+
+  - slug: "benchmarks"
+    title: "Agent Benchmarks"
+    template: "benchmarks"
+    nav_label: "Benchmarks"
+    in_nav: true
+    meta_description: "Independent benchmark results for Cohort's AI agents -- 1,399 questions across 14 specialist agents with 95.8% overall accuracy."
+    content:
+      subheadline: "We don't just claim our agents work. We prove it."
+      hero_stats:
+        - value: "95.8%"
+          label: "Overall Accuracy"
+        - value: "1,399"
+          label: "Questions Tested"
+        - value: "14"
+          label: "Specialist Agents"
+        - value: "0"
+          label: "Agents Failed"
+      scorecard_heading: "Agent Scorecard"
+      scorecard_subtitle: "Every agent tested on 100 domain-specific questions spanning intermediate, advanced, and expert difficulty. Passing threshold: 70%."
+      agents:
+        - name: "Documentation Agent"
+          score: 100
+          categories: [writing_craft, api_docs, docs_as_code, information_architecture, style_guides, diagramming, markdown, localization, accessibility, metrics]
+          difficulty: {intermediate: "100%", advanced: "100%", expert: "100%"}
+        - name: "Coding Orchestrator"
+          score: 99
+          categories: [task_routing, testing, cicd, code_review, cross_language, security, cloud, priority, architecture]
+          difficulty: {intermediate: "100%", advanced: "100%", expert: "97%"}
+        - name: "Setup Guide"
+          score: 99
+          categories: [ollama_setup, hardware_vram, security_privacy, communication, cohort_ecosystem, onboarding, troubleshooting, model_selection]
+          difficulty: {intermediate: "100%", advanced: "100%", expert: "97%"}
+        - name: "Security Agent"
+          score: 98
+          categories: [owasp_top10, injection, web_headers, python_security, cryptography, supply_chain, threat_modeling, secrets_management, auth, infrastructure]
+          difficulty: {intermediate: "100%", advanced: "96%", expert: "100%"}
+        - name: "Supervisor Agent"
+          score: 98
+          categories: [monitoring, sre, quality, incident, process, risk, chaos, capacity, compliance, agent_performance]
+          difficulty: {intermediate: "100%", advanced: "100%", expert: "93%"}
+        - name: "System Coder"
+          score: 98
+          categories: [bash, docker, linux, terraform, ansible, powershell, cicd, kubernetes, security, networking, git]
+          difficulty: {intermediate: "95%", advanced: "100%", expert: "97%"}
+        - name: "CEO Agent"
+          score: 96
+          categories: [decision_frameworks, strategic_planning, leadership, risk_management, performance, product_strategy, communication, resource_management]
+          difficulty: {intermediate: "100%", advanced: "98%", expert: "90%"}
+        - name: "QA Agent"
+          score: 96
+          categories: [test_strategy, bug_reporting, istqb, api_testing, coverage_analysis, performance_testing, edge_case_analysis, release_management, security_testing, test_process]
+          difficulty: {intermediate: "95%", advanced: "100%", expert: "90%"}
+        - name: "Database Developer"
+          score: 95
+          categories: [sql_queries, schema_design, transactions, indexing, optimization, postgresql, nosql, security, data_modeling, migrations]
+          difficulty: {intermediate: "100%", advanced: "98%", expert: "87%"}
+        - name: "Hardware Agent"
+          score: 95
+          categories: [cpu, memory, storage, power_cooling, networking, virtualization, form_factors, remote_management, gpu, home_lab]
+          difficulty: {intermediate: "95%", advanced: "92%", expert: "100%"}
+        - name: "Python Developer"
+          score: 93
+          categories: [core_python, api_design, testing, async, orm_database, data_processing, security, devops]
+          difficulty: {intermediate: "90%", advanced: "100%", expert: "83%"}
+        - name: "JavaScript Developer"
+          score: 92
+          categories: [core_javascript, react, nodejs, typescript, build_tools, testing, state_management, performance]
+          difficulty: {intermediate: "100%", advanced: "94%", expert: "83%"}
+        - name: "Code Archaeologist"
+          score: 91
+          categories: [static_analysis, code_metrics, documentation, architecture, diagramming, flow_analysis, design_patterns, tech_debt, dependencies]
+          difficulty: {intermediate: "95%", advanced: "94%", expert: "83%"}
+        - name: "Web Developer"
+          score: 90
+          categories: [html_semantics, css_architecture, responsive_design, accessibility, performance, design_systems, cross_browser]
+          difficulty: {intermediate: "95%", advanced: "100%", expert: "70%"}
+
+      details_heading: "Category Breakdowns"
+      details_subtitle: "Drill into each agent's domain expertise. Every category represents a distinct skill area tested independently."
+      agent_details:
+        - name: "Security Agent"
+          score: 98
+          categories:
+            - {name: "OWASP Top 10", correct: 10, total: 10, pct: 100}
+            - {name: "Injection", correct: 20, total: 20, pct: 100}
+            - {name: "Auth", correct: 15, total: 15, pct: 100}
+            - {name: "Cryptography", correct: 9, total: 9, pct: 100}
+            - {name: "Supply Chain", correct: 8, total: 8, pct: 100}
+            - {name: "Secrets Mgmt", correct: 8, total: 8, pct: 100}
+            - {name: "Web Headers", correct: 10, total: 11, pct: 91}
+            - {name: "Python Security", correct: 10, total: 11, pct: 91}
+        - name: "Python Developer"
+          score: 93
+          categories:
+            - {name: "API Design", correct: 13, total: 13, pct: 100}
+            - {name: "ORM / Database", correct: 10, total: 10, pct: 100}
+            - {name: "Data Processing", correct: 9, total: 9, pct: 100}
+            - {name: "Security", correct: 11, total: 11, pct: 100}
+            - {name: "Core Python", correct: 19, total: 21, pct: 90}
+            - {name: "Async", correct: 13, total: 15, pct: 87}
+            - {name: "Testing", correct: 12, total: 14, pct: 86}
+            - {name: "DevOps", correct: 6, total: 7, pct: 86}
+        - name: "System Coder"
+          score: 98
+          categories:
+            - {name: "Bash", correct: 18, total: 18, pct: 100}
+            - {name: "Docker", correct: 14, total: 14, pct: 100}
+            - {name: "Linux", correct: 10, total: 10, pct: 100}
+            - {name: "Terraform", correct: 11, total: 11, pct: 100}
+            - {name: "Ansible", correct: 8, total: 8, pct: 100}
+            - {name: "CI/CD", correct: 9, total: 9, pct: 100}
+            - {name: "Kubernetes", correct: 11, total: 12, pct: 92}
+            - {name: "Security", correct: 4, total: 5, pct: 80}
+        - name: "Web Developer"
+          score: 90
+          categories:
+            - {name: "Design Systems", correct: 9, total: 9, pct: 100}
+            - {name: "Cross-Browser", correct: 6, total: 6, pct: 100}
+            - {name: "Performance", correct: 18, total: 19, pct: 95}
+            - {name: "Accessibility", correct: 24, total: 27, pct: 89}
+            - {name: "Responsive Design", correct: 9, total: 11, pct: 82}
+            - {name: "CSS Architecture", correct: 17, total: 21, pct: 81}
+            - {name: "HTML Semantics", correct: 7, total: 7, pct: 100}
+        - name: "Database Developer"
+          score: 95
+          categories:
+            - {name: "SQL Queries", correct: 11, total: 11, pct: 100}
+            - {name: "Transactions", correct: 12, total: 12, pct: 100}
+            - {name: "Indexing", correct: 10, total: 10, pct: 100}
+            - {name: "PostgreSQL", correct: 12, total: 12, pct: 100}
+            - {name: "Data Modeling", correct: 7, total: 7, pct: 100}
+            - {name: "Migrations", correct: 9, total: 9, pct: 100}
+            - {name: "Schema Design", correct: 7, total: 8, pct: 88}
+            - {name: "Optimization", correct: 15, total: 18, pct: 83}
+        - name: "CEO Agent"
+          score: 96
+          categories:
+            - {name: "Leadership", correct: 15, total: 15, pct: 100}
+            - {name: "Performance", correct: 11, total: 11, pct: 100}
+            - {name: "Product Strategy", correct: 9, total: 9, pct: 100}
+            - {name: "Communication", correct: 10, total: 10, pct: 100}
+            - {name: "Resource Mgmt", correct: 11, total: 11, pct: 100}
+            - {name: "Strategic Planning", correct: 13, total: 14, pct: 93}
+            - {name: "Risk Management", correct: 12, total: 13, pct: 92}
+            - {name: "Decision Frameworks", correct: 15, total: 17, pct: 88}
+
+      methodology_heading: "How We Test"
+      methodology:
+        - heading: "Question Design"
+          body: "Each agent is tested on 100 domain-specific questions written to probe real-world competence, not trivia. Questions span three difficulty tiers with weighted representation."
+          list_items:
+            - "Intermediate (20%) -- Core concepts every practitioner should know"
+            - "Advanced (50%) -- Applied scenarios requiring synthesis across sub-domains"
+            - "Expert (30%) -- Edge cases, tradeoffs, and production gotchas"
+        - heading: "Anti-Hallucination Controls"
+          body: "Default LLM temperature (0.8) causes agents to hallucinate confidently. Every Cohort agent runs at a tuned temperature calibrated through A/B testing to minimize fabrication while preserving useful reasoning."
+          list_items:
+            - "Agent-specific temperatures (0.15 - 0.35) vs default 0.8"
+            - "A/B tested: 3/3 agents hallucinated at 0.8, 0/3 at tuned temps"
+            - "External grading -- agents don't score themselves"
+        - heading: "Infrastructure"
+          body: "All tests run on local hardware with local models -- no cloud API calls, no cherry-picked examples, no prompt engineering to boost scores. The same model and configuration used in production is what gets tested."
+          list_items:
+            - "Model: qwen3.5:9b (dense 9B parameter, 6.6GB VRAM)"
+            - "Hardware: Consumer GPU (RTX 3080 12GB)"
+            - "Fully reproducible -- same model, same prompts, same temperatures"
+
+      cta_heading: "Build With Agents You Can Trust"
+      cta_subheading: "Every agent ships with the same assessment pipeline. Run benchmarks on your own hardware."
+      cta_text: "Get Started"
+      cta_href: "docs.html"
 
   - slug: "docs"
     title: "Documentation"
