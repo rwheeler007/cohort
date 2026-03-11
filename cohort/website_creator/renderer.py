@@ -38,8 +38,9 @@ TOKENS_DIR = Path(__file__).parent / "tokens"
 class TemplateRenderer:
     """Renders a SiteBrief into a directory of static HTML + CSS files."""
 
-    def __init__(self, templates_dir: Path | None = None):
+    def __init__(self, templates_dir: Path | None = None, *, overwrite_existing: bool = False):
         self.templates_dir = templates_dir or TEMPLATES_DIR
+        self.overwrite_existing = overwrite_existing
         self.env = Environment(
             loader=FileSystemLoader(str(self.templates_dir)),
             autoescape=select_autoescape(["html"]),
@@ -101,7 +102,23 @@ class TemplateRenderer:
             (output_dir / "styles.css").write_text(css, encoding="utf-8")
 
     def _render_page(self, page_cfg: dict, context: dict, output_dir: Path) -> None:
-        """Render a single page."""
+        """Render a single page.
+
+        Skips pages that already exist on disk unless the page config
+        sets ``overwrite: true`` or the renderer was created with
+        ``overwrite_existing=True``.  This protects hand-edited HTML
+        from being clobbered by a re-render.
+        """
+        slug = page_cfg.get("slug", "page")
+        filename = f"{slug}.html"
+        target = output_dir / filename
+
+        # Skip existing files unless explicitly told to overwrite
+        if target.exists() and not self.overwrite_existing:
+            page_overwrite = page_cfg.get("overwrite", False)
+            if not page_overwrite:
+                return
+
         template_name = page_cfg.get("template", "content")
         template_file = TEMPLATE_MAP.get(template_name, "content.html.j2")
 
@@ -114,10 +131,8 @@ class TemplateRenderer:
         # Merge page-specific context
         page_context = {**context, "page": page_cfg}
 
-        slug = page_cfg.get("slug", "page")
-        filename = f"{slug}.html"
         html = template.render(**page_context)
-        (output_dir / filename).write_text(html, encoding="utf-8")
+        target.write_text(html, encoding="utf-8")
 
     def _render_sitemap(self, brief: SiteBrief, output_dir: Path) -> None:
         """Generate a simple sitemap.xml."""

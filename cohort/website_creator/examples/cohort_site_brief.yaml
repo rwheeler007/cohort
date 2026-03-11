@@ -45,15 +45,13 @@ seo:
 
 # --- Navigation ---
 nav_items:
-  - label: "Home"
-    href: "index.html"
   - label: "How It Works"
     href: "features.html"
   - label: "Tools"
     href: "tools.html"
   - label: "Use Cases"
     href: "use-cases.html"
-  - label: "Marketing"
+  - label: "Content Pipeline"
     href: "marketing.html"
   - label: "Pricing"
     href: "pricing.html"
@@ -66,13 +64,14 @@ nav_items:
 
 # --- Hero ---
 hero:
-  headline: "Your AI Team, Orchestrated"
-  subheadline: "Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. This website? The engine behind it was built by Cohort in 7 minutes and 39 seconds. That engine built the MVP for this site in 0.55 seconds -- with zero human intervention, start to finish."
-  cta_primary_text: "Try the Demo"
+  headline: "Your AI Team. Built to Ship."
+  subheadline: "Cohort coordinates specialized AI agents -- designers, developers, strategists, security experts -- to deliver professional work in minutes. The engine behind this website was built by Cohort in 7 minutes and 39 seconds -- with zero human intervention, start to finish."
+  cta_primary_text: "Get Started"
   cta_primary_href: "https://github.com/cohort-dev/cohort"
   cta_secondary_text: "See How It Works"
   cta_secondary_href: "features.html"
   background_style: "gradient"
+  install_command: "pip install cohort"
 
 # --- Features ---
 features:
@@ -105,16 +104,16 @@ features:
 steps:
   - number: 1
     title: "Define Your Task"
-    description: "Describe what you need -- a website, a code review, a content plan, a security audit. One sentence to get started. The agents will ask for what they need."
+    description: "One sentence replaces a 2-hour kickoff meeting. Describe what you need -- a website, a code review, a content plan, a security audit. The agents will ask for what they need."
   - number: 2
     title: "Cohort Selects Agents"
-    description: "The orchestrator identifies which specialists are needed and assembles the team. No manual configuration."
+    description: "No more manual tool configuration. The orchestrator identifies which specialists are needed and assembles the team automatically."
   - number: 3
     title: "Agents Collaborate"
-    description: "Roundtable discussions, breakout groups, and parallel execution. Agents debate, disagree, and converge on the best approach."
+    description: "No more circular AI conversations. Contribution scoring ensures agents debate, disagree, and converge -- not talk in circles until the token budget runs out."
   - number: 4
     title: "You Get Results"
-    description: "A complete deliverable -- not a draft, not a suggestion. Working code, live websites, formatted reports."
+    description: "Not a draft. Not a suggestion. Working code, live websites, formatted reports -- complete deliverables you can ship."
 
 # --- Pain Points (The Problem) ---
 pain_points:
@@ -913,14 +912,14 @@ pages:
       cta_secondary_href: "pricing.html"
 
 # --- Footer ---
-footer_text: "2026 Cohort. Open source under MIT License."
+footer_text: "&copy; 2026 Cohort. Open source under MIT License."
 footer_links:
   - label: "GitHub"
     href: "https://github.com/cohort-dev/cohort"
     external: true
   - label: "Documentation"
     href: "docs.html"
-  - label: "Privacy"
-    href: "#"
-  - label: "Terms"
-    href: "#"
+  - label: "Use Cases"
+    href: "use-cases.html"
+  - label: "Contact"
+    href: "contact.html"
