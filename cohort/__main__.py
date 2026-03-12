@@ -7,6 +7,7 @@ Usage::
     python -m cohort next-speaker --channel review --file conv.jsonl --agents agents.json
     python -m cohort briefing generate --hours 24
     python -m cohort setup
+    python -m cohort tutorial
 """
 
 import argparse
@@ -299,12 +300,22 @@ def main() -> None:
         help="Interactive setup wizard (Ollama + model + content feeds)",
     )
 
+    # -- tutorial ---------------------------------------------------
+    sub.add_parser(
+        "tutorial",
+        help="Interactive walkthrough of Cohort's scoring engine",
+    )
+
     args = parser.parse_args()
 
     if args.command == "setup":
         from cohort.local.setup import run_setup
 
         sys.exit(run_setup())
+    elif args.command == "tutorial":
+        from cohort.local.tutorial import run_tutorial
+
+        sys.exit(run_tutorial())
     elif args.command == "gate":
         sys.exit(_cmd_gate(args))
     elif args.command == "next-speaker":
