@@ -24,11 +24,10 @@ import json
 import sys
 import tempfile
 
-from cohort.chat import parse_mentions
-from cohort.agent_store import AgentStore
-from cohort.context_window import truncate_context
-from cohort.personas import load_persona
-from cohort.tool_permissions import resolve_permissions, get_central_permissions, ResolvedPermissions
+from cohort.api import (
+    parse_mentions, AgentStore, truncate_context, load_persona,
+    resolve_permissions, get_central_permissions, ResolvedPermissions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +116,7 @@ def _load_agent_credentials(agent_id: str) -> dict[str, str]:
         return {}
 
     # Decrypt secrets in-place (same as server._load_settings)
-    from cohort.secret_store import decrypt_settings_secrets
+    from cohort.secret_store import decrypt_settings_secrets  # proprietary: cohort_app
     decrypt_settings_secrets(settings)
 
     service_keys = settings.get("service_keys", [])
@@ -754,7 +753,7 @@ def _invoke_smartest_pipeline(
 
     # Phase 1: Qwen reasoning pass
     try:
-        from cohort.local import LocalRouter
+        from cohort.api import LocalRouter
 
         router = LocalRouter()
         task_type = "code" if any(
@@ -795,7 +794,7 @@ def _invoke_smartest_pipeline(
 
     # Phase 3: Claude CLI
     try:
-        from cohort.local.config import SMARTEST_CLAUDE_PROMPT
+        from cohort.api import SMARTEST_CLAUDE_PROMPT
 
         # Load lightweight persona (not full agent_prompt.md)
         persona = ""
@@ -1030,13 +1029,13 @@ def _invoke_agent_sync(item: dict) -> None:
     # Standard local routing (smart / smarter modes)
     if not response_content and not _force_claude_code:
         try:
-            from cohort.local import LocalRouter
+            from cohort.api import LocalRouter
 
             router = LocalRouter()
 
             if perms and perms.allowed_tools:
                 # Tool-enabled local routing: use /api/chat with native tool calling
-                from cohort.local.tools import build_tool_schemas, execute_tool
+                from cohort.api import build_tool_schemas, execute_tool
 
                 tool_schemas = build_tool_schemas(perms.allowed_tools)
                 if tool_schemas:
@@ -1218,8 +1217,8 @@ def _invoke_agent_sync(item: dict) -> None:
     # Record to agent memory (if store is available)
     if _agent_store is not None:
         try:
-            from cohort.agent import WorkingMemoryEntry
-            from cohort.memory_manager import MemoryManager
+            from cohort.api import WorkingMemoryEntry
+            from cohort.api import MemoryManager
 
             mm = MemoryManager(_agent_store)
             mm.add_working_memory(agent_id, WorkingMemoryEntry(

@@ -40,6 +40,7 @@ VALID_SCHEDULE_TYPES = frozenset({"once", "interval", "cron"})
 VALID_TASK_STATUSES = frozenset({
     "briefing", "assigned", "in_progress", "complete",
     "approved", "needs_work", "rejected", "failed",
+    "archived",
 })
 MAX_RUNS_PER_SCHEDULE = 100  # Keep last N runs, prune older
 
@@ -411,6 +412,34 @@ class TaskStore:
             self._save_tasks()
 
         logger.info("[X] Task %s failed: %s", task_id, reason[:100])
+        return task
+
+    def delete_task(self, task_id: str) -> bool:
+        """Permanently remove a task from the store."""
+        with self._lock:
+            self._ensure_loaded()
+            if task_id not in self._tasks:
+                return False
+            del self._tasks[task_id]
+            self._save_tasks()
+        logger.info("[OK] Task %s deleted", task_id)
+        return True
+
+    def archive_task(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """Move a completed/failed task to archived status."""
+        now = _now_iso()
+        with self._lock:
+            self._ensure_loaded()
+            task = self._tasks.get(task_id)
+            if task is None:
+                return None
+            if task.get("status") not in ("complete", "failed", "approved", "rejected", "needs_work"):
+                return None  # Only finished tasks can be archived
+            task["status"] = "archived"
+            task["archived_at"] = now
+            task["updated_at"] = now
+            self._save_tasks()
+        logger.info("[OK] Task %s archived", task_id)
         return task
 
     def list_tasks(

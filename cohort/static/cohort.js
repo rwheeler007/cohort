@@ -69,6 +69,7 @@ function initDom() {
         panelTasks: $('#panel-tasks'),
         panelOutput: $('#panel-output'),
         panelTool: $('#panel-tool'),
+        panelBenchmark: $('#panel-benchmark'),
         toolPanelContent: $('#tool-panel-content'),
         panelTitle: $('#panel-title'),
         panelSubtitle: $('#panel-subtitle'),
@@ -253,6 +254,12 @@ const panelConfig = {
         panel: () => dom.panelTool,
         filter: false,
     },
+    benchmark: {
+        title: 'Benchmark A/B',
+        subtitle: 'Compare local-only vs hybrid response quality',
+        panel: () => dom.panelBenchmark,
+        filter: false,
+    },
 };
 
 function switchPanel(panelName) {
@@ -267,7 +274,7 @@ function switchPanel(panelName) {
     });
 
     // Hide all panels
-    [dom.panelTeam, dom.panelChat, dom.panelTasks, dom.panelOutput, dom.panelTool].forEach((p) => {
+    [dom.panelTeam, dom.panelChat, dom.panelTasks, dom.panelOutput, dom.panelTool, dom.panelBenchmark].forEach((p) => {
         if (p) {
             p.style.display = 'none';
             p.classList.remove('active');
@@ -5891,6 +5898,11 @@ function renderTaskCard(task) {
     const statusLabel = isBriefing ? 'briefing - click to chat' : isRunning ? 'running...' : escapeHtml(task.status);
     const recurringBadge = task.schedule_id ? ' <span class="task-card__badge task-card__badge--recurring">[R]</span>' : '';
     const runningClass = isRunning ? ' task-card--running' : '';
+    const isFinished = ['complete', 'failed', 'approved', 'rejected', 'needs_work'].includes(task.status);
+    const archiveBtn = isFinished
+        ? `<button class="btn btn--small btn--secondary" onclick="event.stopPropagation(); archiveTask('${escapeHtml(task.task_id)}')">Archive</button>`
+        : '';
+    const deleteBtnDisabled = isRunning ? ' disabled title="Cannot delete a running task"' : '';
 
     return `
     <div class="task-card task-card--${priority}${runningClass} ${isBriefing ? 'task-card--briefing' : ''}" data-task-id="${escapeHtml(task.task_id)}" ${clickAction}>
@@ -5902,6 +5914,8 @@ function renderTaskCard(task) {
         <div class="task-card__footer">
             <span class="task-card__status">${statusLabel}</span>
             <span class="task-card__time">${timeAgo}</span>
+            ${archiveBtn}
+            <button class="btn btn--small btn--danger" onclick="event.stopPropagation(); deleteTask('${escapeHtml(task.task_id)}')"${deleteBtnDisabled}>Delete</button>
         </div>
     </div>`;
 }
@@ -6139,9 +6153,32 @@ function renderWorkQueue() {
     }).join('');
 }
 
+function deleteTask(taskId) {
+    if (!confirm('Delete this task?')) return;
+    if (!state.socket || !state.connected) { showToast('Not connected', 'error'); return; }
+    state.socket.emit('delete_task', { task_id: taskId }, (response) => {
+        if (response && response.error) {
+            showToast(response.error, 'error');
+        } else {
+            showToast('Task deleted', 'success');
+        }
+    });
+}
+
+function archiveTask(taskId) {
+    if (!state.socket || !state.connected) { showToast('Not connected', 'error'); return; }
+    state.socket.emit('archive_task', { task_id: taskId }, (response) => {
+        if (response && response.error) {
+            showToast(response.error, 'error');
+        } else {
+            showToast('Task archived', 'success');
+        }
+    });
+}
+
 function renderTaskList() {
     if (!dom.taskList) return;
-    let tasks = state.tasks;
+    let tasks = state.tasks.filter((t) => t.status !== 'archived');
     if (state.filter !== 'all') {
         tasks = tasks.filter((t) => t.status === state.filter);
     }
@@ -6329,6 +6366,8 @@ function connectSocket() {
         state.tasks = data.tasks || [];
         renderTaskList();
         renderOutputs();
+        CohortTasks.renderCompletedTasks();
+        CohortTasks.renderArchivedTasks();
     });
 
     sock.on('cohort:task_assigned', (task) => {

@@ -19,53 +19,33 @@ brand:
   primary_hover: '#C56648'
 nav_items:
 - label: How It Works
-  href: ''
-  external: false
   children:
   - label: Features
     href: features.html
-    external: false
-    children: []
   - label: Use Cases
     href: use-cases.html
-    external: false
-    children: []
+  - label: Conversations
+    href: conversations.html
   - label: Content Pipeline
     href: marketing.html
-    external: false
-    children: []
 - label: Pricing
   href: pricing.html
-  external: false
-  children: []
 - label: Docs
-  href: ''
-  external: false
   children:
   - label: Documentation
     href: docs.html
-    external: false
-    children: []
   - label: Benchmarks
     href: benchmarks.html
-    external: false
-    children: []
   - label: Compare
     href: compare.html
-    external: false
-    children: []
 - label: The Tools
   href: tools.html
-  external: false
-  children: []
 - label: The Team
-  href: ''
-  external: false
   children:
+  - label: Meet the Agents
+    href: team.html
   - label: AI's Take
     href: ai-perspective.html
-    external: false
-    children: []
 pages:
 - slug: index
   title: Home
@@ -1394,64 +1374,41 @@ footer_columns:
   links:
   - label: How It Works
     href: features.html
-    external: false
-    children: []
   - label: The Tools
     href: tools.html
-    external: false
-    children: []
   - label: Use Cases
     href: use-cases.html
-    external: false
-    children: []
   - label: Content Pipeline
     href: marketing.html
-    external: false
-    children: []
   - label: Pricing
     href: pricing.html
-    external: false
-    children: []
 - heading: Resources
   links:
   - label: Documentation
     href: docs.html
-    external: false
-    children: []
   - label: Benchmarks
     href: benchmarks.html
-    external: false
-    children: []
   - label: Compare
     href: compare.html
-    external: false
-    children: []
+  - label: The Team
+    href: team.html
   - label: AI's Take
     href: ai-perspective.html
-    external: false
-    children: []
   - label: GitHub
     href: https://github.com/cohort-dev/cohort
     external: true
-    children: []
 - heading: Connect
   links:
   - label: Contact
     href: contact.html
-    external: false
-    children: []
   - label: hello@cohort.dev
     href: mailto:hello@cohort.dev
-    external: false
-    children: []
   - label: Twitter/X
     href: https://twitter.com/cohort_dev
     external: true
-    children: []
   - label: Discord
     href: https://discord.gg/cohort
     external: true
-    children: []
 built_with_cohort: true
 roundtable_decisions: {}
 current_site_analysis: {}

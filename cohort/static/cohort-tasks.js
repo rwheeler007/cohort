@@ -32,6 +32,9 @@ const CohortTasks = (() => {
             viewCompleted: document.getElementById('task-view-completed'),
             scheduleList: document.getElementById('schedule-list'),
             completedTaskList: document.getElementById('completed-task-list'),
+            viewArchived: document.getElementById('task-view-archived'),
+            archivedTaskList: document.getElementById('archived-task-list'),
+            archivedBadge: document.getElementById('archived-badge'),
             scheduleBadge: document.getElementById('schedule-badge'),
             // Scheduler heartbeat
             schedulerDot: document.getElementById('scheduler-dot'),
@@ -74,10 +77,12 @@ const CohortTasks = (() => {
         if (_dom.viewActive) _dom.viewActive.style.display = view === 'active' ? '' : 'none';
         if (_dom.viewScheduled) _dom.viewScheduled.style.display = view === 'scheduled' ? '' : 'none';
         if (_dom.viewCompleted) _dom.viewCompleted.style.display = view === 'completed' ? '' : 'none';
+        if (_dom.viewArchived) _dom.viewArchived.style.display = view === 'archived' ? '' : 'none';
 
         // Re-render the selected view
         if (view === 'scheduled') renderScheduleList();
         if (view === 'completed') renderCompletedTasks();
+        if (view === 'archived') renderArchivedTasks();
     }
 
     // =====================================================================
@@ -279,6 +284,49 @@ const CohortTasks = (() => {
                 <div class="task-card__footer">
                     <span class="task-card__status">${task.status}</span>
                     <span class="task-card__time">${timeStr}</span>
+                    <button class="btn btn--small btn--secondary" onclick="archiveTask('${escapeHtml(task.task_id)}')">Archive</button>
+                    <button class="btn btn--small btn--danger" onclick="deleteTask('${escapeHtml(task.task_id)}')">Delete</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderArchivedTasks() {
+        const archived = (state.tasks || []).filter(t => t.status === 'archived');
+
+        // Always update badge count
+        if (_dom.archivedBadge) {
+            _dom.archivedBadge.textContent = archived.length;
+            _dom.archivedBadge.style.display = archived.length > 0 ? '' : 'none';
+        }
+
+        if (!_dom.archivedTaskList) return;
+
+        if (archived.length === 0) {
+            _dom.archivedTaskList.innerHTML =
+                '<div class="empty-state">' +
+                '<p class="empty-state__text">No archived tasks</p>' +
+                '<p class="empty-state__hint">Archived tasks are moved here to keep your completed list clean</p>' +
+                '</div>';
+            return;
+        }
+
+        _dom.archivedTaskList.innerHTML = archived.map(task => {
+            const isScheduled = !!task.schedule_id;
+            const recurringBadge = isScheduled ? '<span class="task-card__badge task-card__badge--recurring">[R]</span>' : '';
+            const timeStr = formatTimeAgo(task.archived_at || task.updated_at);
+
+            return `
+            <div class="task-card task-card--archived" data-task-id="${escapeHtml(task.task_id)}">
+                <div class="task-card__header">
+                    <span class="task-card__agent">${escapeHtml(task.agent_id)} ${recurringBadge}</span>
+                    <span class="task-card__priority task-card__priority--${task.priority || 'medium'}">${task.priority || 'medium'}</span>
+                </div>
+                <p class="task-card__description">${escapeHtml(task.description)}</p>
+                <div class="task-card__footer">
+                    <span class="task-card__status">archived</span>
+                    <span class="task-card__time">${timeStr}</span>
+                    <button class="btn btn--small btn--danger" onclick="deleteTask('${escapeHtml(task.task_id)}')">Delete</button>
                 </div>
             </div>`;
         }).join('');
@@ -622,6 +670,7 @@ const CohortTasks = (() => {
         openScheduleModal,
         renderScheduleList,
         renderCompletedTasks,
+        renderArchivedTasks,
         updateSchedulerHeartbeat,
         // Socket handlers
         onSchedulesUpdate,

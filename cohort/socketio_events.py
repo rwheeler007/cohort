@@ -291,6 +291,46 @@ async def cancel_task(sid: str, data: dict) -> dict:
     return {"status": "ok"}
 
 
+@sio.event
+async def delete_task(sid: str, data: dict) -> dict:
+    """Permanently delete a task."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    task_id = data.get("task_id")
+    if not task_id:
+        return {"error": "Missing task_id"}
+
+    success = _task_store.delete_task(task_id)
+    if not success:
+        return {"error": "Task not found"}
+
+    # Broadcast updated task list to all clients
+    tasks = _task_store.list_tasks(limit=200)
+    await sio.emit("cohort:tasks_sync", {"tasks": tasks})
+    return {"status": "ok"}
+
+
+@sio.event
+async def archive_task(sid: str, data: dict) -> dict:
+    """Move a completed/failed task to archived status."""
+    if _task_store is None:
+        return {"error": "Task store not initialised"}
+
+    task_id = data.get("task_id")
+    if not task_id:
+        return {"error": "Missing task_id"}
+
+    task = _task_store.archive_task(task_id)
+    if not task:
+        return {"error": "Task not found or not in a finished state"}
+
+    # Broadcast updated task list to all clients
+    tasks = _task_store.list_tasks(limit=200)
+    await sio.emit("cohort:tasks_sync", {"tasks": tasks})
+    return {"status": "ok"}
+
+
 # =====================================================================
 # Client -> Server events: Schedules
 # =====================================================================

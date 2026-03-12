@@ -41,10 +41,7 @@ from starlette.staticfiles import StaticFiles
 
 from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secrets
 
-from cohort.agent_store import AgentStore
-from cohort.chat import ChatManager
-from cohort.local.config import DEFAULT_MODEL
-from cohort.registry import JsonFileStorage, create_storage
+from cohort.api import AgentStore, ChatManager, DEFAULT_MODEL, JsonFileStorage, create_storage
 
 logger = logging.getLogger(__name__)
 
@@ -627,7 +624,7 @@ async def create_schedule_endpoint(request: Request) -> JSONResponse:
     # Resolve preset
     if preset:
         try:
-            from cohort.cron import resolve_preset
+            from cohort.api import resolve_preset
             schedule_type, schedule_expr = resolve_preset(preset)
         except ValueError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
@@ -639,7 +636,7 @@ async def create_schedule_endpoint(request: Request) -> JSONResponse:
         )
 
     try:
-        from cohort.cron import compute_next_run
+        from cohort.api import compute_next_run
         from datetime import timezone
         next_run = compute_next_run(
             schedule_type, schedule_expr, datetime.now(timezone.utc),
@@ -735,7 +732,7 @@ async def get_scheduler_status(request: Request) -> JSONResponse:
 
 async def get_schedule_presets(request: Request) -> JSONResponse:
     """GET /api/schedules/presets -- list available schedule presets."""
-    from cohort.cron import PRESETS, preset_label
+    from cohort.api import PRESETS, preset_label
     presets = [
         {"id": name, "label": preset_label(name), "type": ptype, "expr": pexpr}
         for name, (ptype, pexpr) in PRESETS.items()
@@ -899,7 +896,7 @@ async def fetch_intel(request: Request) -> JSONResponse:
     keywords = body.get("keywords")
 
     try:
-        from cohort.intel_fetcher import IntelFetcher
+        from cohort.api import IntelFetcher
 
         data_dir = Path(_resolved_data_dir)
         fetcher = IntelFetcher(data_dir)
@@ -910,9 +907,112 @@ async def fetch_intel(request: Request) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=500)
 
 
+# =====================================================================
+# Benchmark A/B endpoints (dev tool -- gated by BENCHMARK_ENABLED)
+# =====================================================================
+
+def _benchmark_enabled() -> bool:
+    from cohort.api import BENCHMARK_ENABLED
+    return BENCHMARK_ENABLED
+
+
+async def benchmark_status(request: Request) -> JSONResponse:
+    """GET /api/benchmark/status -- check if benchmark is enabled."""
+    return JSONResponse({"enabled": _benchmark_enabled()})
+
+
+async def benchmark_scenarios(request: Request) -> JSONResponse:
+    """GET /api/benchmark/scenarios -- list available benchmark scenarios."""
+    if not _benchmark_enabled():
+        return JSONResponse({"error": "Benchmark disabled", "enabled": False}, status_code=403)
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+    return JSONResponse({"scenarios": runner.list_scenarios()})
+
+
+async def benchmark_runs(request: Request) -> JSONResponse:
+    """GET /api/benchmark/runs -- list recent benchmark runs."""
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+    return JSONResponse({"runs": runner.list_runs()})
+
+
+async def benchmark_run_detail(request: Request) -> JSONResponse:
+    """GET /api/benchmark/runs/{run_id} -- get a specific run."""
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+    run_id = request.path_params["run_id"]
+    run = runner.get_run(run_id)
+    if run is None:
+        return JSONResponse({"error": "Run not found"}, status_code=404)
+    return JSONResponse(run)
+
+
+async def benchmark_start(request: Request) -> JSONResponse:
+    """POST /api/benchmark/start -- start a new A/B benchmark run."""
+    if not _benchmark_enabled():
+        return JSONResponse({"error": "Benchmark disabled"}, status_code=403)
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    scenario_id = body.get("scenario_id")
+    if not scenario_id:
+        return JSONResponse({"error": "Missing scenario_id"}, status_code=400)
+
+    if runner.is_running:
+        return JSONResponse({"error": "A benchmark is already running"}, status_code=409)
+
+    result = runner.start_run(scenario_id)
+    if result is None:
+        return JSONResponse({"error": "Unknown scenario"}, status_code=404)
+
+    return JSONResponse({"status": "started", "run": result})
+
+
+async def benchmark_score(request: Request) -> JSONResponse:
+    """POST /api/benchmark/runs/{run_id}/score -- score one arm of a run."""
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+
+    run_id = request.path_params["run_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    arm = body.get("arm")
+    scores = body.get("scores", {})
+    if arm not in ("a", "b"):
+        return JSONResponse({"error": "arm must be 'a' or 'b'"}, status_code=400)
+
+    result = runner.score_run(run_id, arm, scores)
+    if result is None:
+        return JSONResponse({"error": "Run not found"}, status_code=404)
+
+    return JSONResponse({"status": "scored", "run": result})
+
+
+async def benchmark_auto_score(request: Request) -> JSONResponse:
+    """POST /api/benchmark/runs/{run_id}/auto-score -- trigger auto-scoring on a completed run."""
+    from cohort.api import get_benchmark_runner
+    runner = get_benchmark_runner()
+
+    run_id = request.path_params["run_id"]
+    result = runner.trigger_auto_score(run_id)
+    if result is None:
+        return JSONResponse({"error": "Run not found or not in scoreable state"}, status_code=404)
+
+    return JSONResponse({"status": "scoring", "run_id": run_id})
+
+
 async def get_agent_registry(request: Request) -> JSONResponse:
     """GET /api/agent-registry -- return all agent visual profiles (avatars, colors, nicknames)."""
-    from cohort.agent_registry import get_all_agents
+    from cohort.api import get_all_agents
     profiles = get_all_agents()
 
     # Apply user identity from settings to the 'user' profile
@@ -1000,7 +1100,7 @@ async def create_agent(request: Request) -> JSONResponse:
         )
 
     try:
-        from cohort.agent_creator import AgentCreator, AgentSpec, AgentType
+        from cohort.api import AgentCreator, AgentSpec, AgentType
 
         agent_type_str = body.get("agent_type", "specialist")
         try:
@@ -1056,7 +1156,7 @@ async def clean_agent_memory(request: Request) -> JSONResponse:
     dry_run = body.get("dry_run", False)
 
     try:
-        from cohort.memory_manager import MemoryManager
+        from cohort.api import MemoryManager
 
         mm = MemoryManager(_agent_store, keep_last=keep_last)
         result = mm.clean_agent(agent_id, keep_last=keep_last, dry_run=dry_run)
@@ -1090,8 +1190,8 @@ async def add_agent_fact(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Missing required field: fact"}, status_code=400)
 
     try:
-        from cohort.agent import LearnedFact
-        from cohort.memory_manager import MemoryManager
+        from cohort.api import LearnedFact
+        from cohort.api import MemoryManager
 
         fact = LearnedFact(
             fact=fact_text,
@@ -1119,7 +1219,7 @@ def _get_session_orch():
     """Lazy-load session orchestrator singleton."""
     global _session_orch  # noqa: PLW0603
     if _session_orch is None:
-        from cohort.orchestrator import Orchestrator
+        from cohort.api import Orchestrator
         from cohort.socketio_events import orchestrator_event_bridge
         agents_config = _data_layer._agents if _data_layer else {}
         _session_orch = Orchestrator(
@@ -1906,14 +2006,14 @@ def _save_tool_permissions(data: dict[str, Any]) -> None:
 
     # Invalidate the cached permissions so the next resolve_permissions()
     # call picks up the new values immediately.
-    from cohort.tool_permissions import reload_central_permissions
+    from cohort.api import reload_central_permissions
     reload_central_permissions(path.parent)
 
 
 async def get_tool_permissions(request: Request) -> JSONResponse:
     """GET /api/tool-permissions -- profiles, defaults, and per-agent resolved view."""
     import re
-    from cohort.tool_permissions import resolve_permissions
+    from cohort.api import resolve_permissions
 
     central = _load_tool_permissions()
     profiles = central.get("tool_profiles", {})
@@ -2077,8 +2177,8 @@ async def setup_status(request: Request) -> JSONResponse:
 
 async def setup_detect_hardware(request: Request) -> JSONResponse:
     """POST /api/setup/detect -- detect GPU and VRAM."""
-    from cohort.local.config import MODEL_DESCRIPTIONS, get_model_for_vram
-    from cohort.local.detect import detect_hardware
+    from cohort.api import MODEL_DESCRIPTIONS, get_model_for_vram
+    from cohort.api import detect_hardware
 
     hw = detect_hardware()
     model = get_model_for_vram(hw.vram_mb)
@@ -2120,7 +2220,7 @@ async def setup_check_ollama(request: Request) -> JSONResponse:
     """POST /api/setup/check-ollama -- check if Ollama is running."""
     import shutil
 
-    from cohort.local.ollama import OllamaClient
+    from cohort.api import OllamaClient
 
     client = OllamaClient(timeout=5)
     running = client.health_check()
@@ -2233,7 +2333,7 @@ async def setup_verify_model(request: Request) -> JSONResponse:
 
     Returns both results so the UI can show thinking mode status.
     """
-    from cohort.local.ollama import OllamaClient
+    from cohort.api import OllamaClient
 
     settings = _load_settings()
     model = settings.get("model_name", "")
@@ -2290,7 +2390,7 @@ async def setup_verify_model(request: Request) -> JSONResponse:
 
 async def setup_get_topics(request: Request) -> JSONResponse:
     """GET /api/setup/topics -- return available content pipeline topics."""
-    from cohort.local.setup import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
+    from cohort.api import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
 
     topics = {}
     for topic, feeds in TOPIC_FEEDS.items():
@@ -2353,7 +2453,7 @@ async def setup_check_mcp(request: Request) -> JSONResponse:
     # 2. Check Ollama reachability
     ollama_ok = False
     try:
-        from cohort.local.ollama import OllamaClient
+        from cohort.api import OllamaClient
         client = OllamaClient(timeout=5)
         ollama_ok = client.health_check()
     except Exception:
@@ -2366,7 +2466,7 @@ async def setup_check_mcp(request: Request) -> JSONResponse:
     model_name = settings.get("model_name", "")
     if ollama_ok and model_name:
         try:
-            from cohort.local.ollama import OllamaClient
+            from cohort.api import OllamaClient
             client = OllamaClient(timeout=5)
             models = client.list_models()
             base = model_name.split(":")[0]
@@ -2547,7 +2647,7 @@ async def get_service_status(request: Request) -> JSONResponse:
     # Built-in Cohort features: a self-request would deadlock the event loop.
     # If the server is serving this request, these features are up.
     if service_id == "health_monitor":
-        from cohort.health_monitor import list_services
+        from cohort.api import list_services
         svcs = list_services()
         status = "up" if svcs else "unknown"
         return JSONResponse({"status": status, "detail": {"services": len(svcs)}})
@@ -2819,7 +2919,7 @@ def _read_json_safe(path: Path) -> dict | list | None:
 
 async def get_health_monitor_state(request: Request) -> JSONResponse:
     """GET /api/health-monitor/state -- return full health monitor state."""
-    from cohort.health_monitor import get_state
+    from cohort.api import get_state
     data = get_state()
     if not data:
         return JSONResponse({"error": "Health monitor state not available", "target_status": {}, "last_alerts": {}})
@@ -2850,7 +2950,7 @@ async def get_health_monitor_alerts(request: Request) -> JSONResponse:
 async def health_monitor_run_checks(request: Request) -> JSONResponse:
     """POST /api/health-monitor/run -- run health checks on all services now."""
     import asyncio
-    from cohort.health_monitor import run_service_checks
+    from cohort.api import run_service_checks
     # Run blocking checks in a thread to not block the event loop
     loop = asyncio.get_event_loop()
     state = await loop.run_in_executor(None, run_service_checks)
@@ -2859,14 +2959,14 @@ async def health_monitor_run_checks(request: Request) -> JSONResponse:
 
 async def health_monitor_services(request: Request) -> JSONResponse:
     """GET /api/health-monitor/services -- list all registered services."""
-    from cohort.health_monitor import list_services
+    from cohort.api import list_services
     return JSONResponse({"services": list_services()})
 
 
 async def health_monitor_stop(request: Request) -> JSONResponse:
     """POST /api/health-monitor/stop/{service_key} -- stop a service."""
     import asyncio
-    from cohort.health_monitor import stop_service
+    from cohort.api import stop_service
     service_key = request.path_params["service_key"]
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, stop_service, service_key)
@@ -2877,7 +2977,7 @@ async def health_monitor_stop(request: Request) -> JSONResponse:
 async def health_monitor_start(request: Request) -> JSONResponse:
     """POST /api/health-monitor/start/{service_key} -- start a service."""
     import asyncio
-    from cohort.health_monitor import start_service
+    from cohort.api import start_service
     service_key = request.path_params["service_key"]
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, start_service, service_key)
@@ -2888,7 +2988,7 @@ async def health_monitor_start(request: Request) -> JSONResponse:
 async def health_monitor_restart(request: Request) -> JSONResponse:
     """POST /api/health-monitor/restart/{service_key} -- restart a service."""
     import asyncio
-    from cohort.health_monitor import restart_service
+    from cohort.api import restart_service
     service_key = request.path_params["service_key"]
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, restart_service, service_key)
@@ -2953,7 +3053,7 @@ async def get_intel_recent_articles(request: Request) -> JSONResponse:
 
 async def get_intel_feeds(request: Request) -> JSONResponse:
     """GET /api/intel/feeds -- return configured RSS feeds and available topics."""
-    from cohort.local.setup import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
+    from cohort.api import TOPIC_CATEGORIES, TOPIC_FEEDS, TOPIC_KEYWORDS
 
     config_path = Path(_resolved_data_dir) / "content_config.json"
     config = _read_json_safe(config_path) or {}
@@ -3478,14 +3578,14 @@ async def score_article_endpoint(request: Request) -> JSONResponse:
     except Exception:
         return JSONResponse({"error": "Invalid JSON"}, status_code=400)
 
-    from cohort.content_analyzer import score_article
+    from cohort.api import score_article
     result = score_article(article, project)
     return JSONResponse(result)
 
 
 async def score_all_articles_for_projects(request: Request) -> JSONResponse:
     """POST /api/content-projects/score-all -- score existing articles against all active projects."""
-    from cohort.intel_fetcher import IntelFetcher
+    from cohort.api import IntelFetcher
 
     data = _load_projects()
     projects = [p for p in data.get("projects", {}).values() if p.get("active", True)]
@@ -3499,7 +3599,7 @@ async def score_all_articles_for_projects(request: Request) -> JSONResponse:
 
 async def get_project_articles(request: Request) -> JSONResponse:
     """GET /api/content-projects/{project_id}/articles -- get top articles for a project."""
-    from cohort.intel_fetcher import IntelFetcher
+    from cohort.api import IntelFetcher
 
     project_id = request.path_params["project_id"]
     data = _load_projects()
@@ -3691,7 +3791,7 @@ def _claude_cli_vision_request(
 
 async def doc_summarize(request: Request) -> JSONResponse:
     """POST /api/doc-processor/summarize -- summarize text via local Ollama or Claude CLI."""
-    from cohort.local.ollama import OllamaClient
+    from cohort.api import OllamaClient
 
     try:
         body = await request.json()
@@ -4170,7 +4270,7 @@ async def doc_process_file(request: Request) -> JSONResponse:
         return JSONResponse({"ok": False, "error": f"No text could be extracted from {filename}"})
 
     # Now summarize the extracted text
-    from cohort.local.ollama import OllamaClient
+    from cohort.api import OllamaClient
 
     # SVG files: describe the visual rather than summarizing XML code
     ext = Path(filename).suffix.lower() if filename else ""
@@ -4433,7 +4533,7 @@ async def doc_fetch_url(request: Request) -> JSONResponse:
             return JSONResponse({"ok": False, "error": f"Claude CLI error: {exc}"})
 
     # Default: Ollama
-    from cohort.local.ollama import OllamaClient
+    from cohort.api import OllamaClient
     client = OllamaClient(timeout=180)
     try:
         result = await asyncio.to_thread(
@@ -4843,8 +4943,8 @@ def create_app(data_dir: str = "data") -> Starlette:
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
     # -- Agent store (file-backed agent configs + memory) ---------------
-    from cohort.agent_registry import _LEGACY_REGISTRY, set_store
-    from cohort.agent_store import set_global_store
+    from cohort.api import _LEGACY_REGISTRY, set_registry_store as set_store
+    from cohort.api import set_global_store
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
     if agents_dir_env:
@@ -4881,7 +4981,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     set_global_store(_agent_store)
 
     # -- Load tool permissions (central defaults) ----------------------
-    from cohort.tool_permissions import load_central_permissions
+    from cohort.api import load_central_permissions
     tp = load_central_permissions(Path(resolved_dir))
     if tp:
         logger.info("[OK] Tool permissions loaded (%d profiles)",
@@ -4911,7 +5011,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     _apply_router_settings(saved_settings)
 
     # -- Task executor (briefing + execution layer) ---------------------
-    from cohort.task_executor import TaskExecutor
+    from cohort.api import TaskExecutor
     from cohort.socketio_events import setup_task_executor
 
     executor_settings = {**saved_settings, "agents_root": str(agents_root)}
@@ -4920,14 +5020,14 @@ def create_app(data_dir: str = "data") -> Starlette:
     setup_task_executor(executor)
 
     # -- Work Queue (sequential execution queue) ------------------------
-    from cohort.work_queue import WorkQueue
+    from cohort.api import WorkQueue
     from cohort.socketio_events import setup_work_queue
     _work_queue = WorkQueue(Path(resolved_dir))
     setup_work_queue(_work_queue)
     logger.info("[OK] Work queue initialised")
 
     # -- Task Store (file-backed tasks + schedules) -----------------------
-    from cohort.task_store import TaskStore
+    from cohort.api import TaskStore
     from cohort.socketio_events import setup_task_store, setup_scheduler
     global _task_store, _scheduler  # noqa: PLW0603
     _task_store = TaskStore(Path(resolved_dir))
@@ -4937,7 +5037,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     logger.info("[OK] Task store initialised")
 
     # -- Task Scheduler (asyncio background tick loop) --------------------
-    from cohort.scheduler import TaskScheduler
+    from cohort.api import TaskScheduler
     _scheduler = TaskScheduler(
         task_store=_task_store,
         task_executor=executor,
@@ -4947,7 +5047,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     logger.info("[OK] Task scheduler initialised (starts on event loop capture)")
 
     # -- Executive Briefing ---------------------------------------------
-    from cohort.executive_briefing import ExecutiveBriefing
+    from cohort.api import ExecutiveBriefing
     global _briefing  # noqa: PLW0603
     _briefing = ExecutiveBriefing(
         data_dir=Path(resolved_dir),
@@ -4957,6 +5057,13 @@ def create_app(data_dir: str = "data") -> Starlette:
         orchestrator_getter=_get_session_orch,
     )
     logger.info("[OK] Executive briefing initialised")
+
+    # -- Benchmark Runner -----------------------------------------------
+    from cohort.api import get_benchmark_runner
+    _bench = get_benchmark_runner(data_dir=_resolved_data_dir)
+    _bench.set_chat(_chat)
+    _bench.set_agent_store(_agent_store)
+    logger.info("[OK] Benchmark runner initialised")
 
     # -- Routes ---------------------------------------------------------
     routes = [
@@ -5101,6 +5208,15 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/comms/pending-approvals", get_comms_pending_approvals, methods=["GET"]),
         Route("/api/comms/safety-status", get_comms_safety_status, methods=["GET"]),
         # Website Creator
+        # Benchmark A/B (dev tool)
+        Route("/api/benchmark/status", benchmark_status, methods=["GET"]),
+        Route("/api/benchmark/scenarios", benchmark_scenarios, methods=["GET"]),
+        Route("/api/benchmark/runs", benchmark_runs, methods=["GET"]),
+        Route("/api/benchmark/runs/{run_id}", benchmark_run_detail, methods=["GET"]),
+        Route("/api/benchmark/start", benchmark_start, methods=["POST"]),
+        Route("/api/benchmark/runs/{run_id}/score", benchmark_score, methods=["POST"]),
+        Route("/api/benchmark/runs/{run_id}/auto-score", benchmark_auto_score, methods=["POST"]),
+        # Website Creator
         Route("/api/website/create", website_create, methods=["POST"]),
         Route("/api/website/worksheet", website_worksheet, methods=["GET"]),
         Route("/api/website/projects", website_list_projects, methods=["GET"]),
@@ -5140,6 +5256,10 @@ def create_app(data_dir: str = "data") -> Starlette:
         set_event_loop(loop)
         executor.set_event_loop(loop)
         logger.info("[OK] Event loop captured for agent router + task executor")
+
+        # Wire benchmark runner to Socket.IO
+        _bench.set_emit(sio.emit, loop)
+        logger.info("[OK] Benchmark runner wired to Socket.IO")
 
         # Start the task scheduler background loop
         if _scheduler is not None:

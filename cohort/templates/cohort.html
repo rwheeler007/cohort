@@ -125,7 +125,17 @@
                     </ul>
                 </div>
 
-
+                <div class="sidebar-nav__section sidebar-nav__section--dev" data-section="benchmark" id="benchmark-section">
+                    <div class="sidebar-nav__section-header sidebar-nav__section-header--dev" onclick="toggleSidebarSection('benchmark')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">[DEV] Benchmark A/B</h2>
+                    </div>
+                    <div class="sidebar-nav__section-body" id="benchmark-sidebar">
+                        <ul class="sidebar-nav__channels" id="benchmark-scenario-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
 
             </nav>
 
@@ -238,6 +248,9 @@
                             Scheduled <span class="task-sub-tab__badge" id="schedule-badge">0</span>
                         </button>
                         <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="completed" onclick="CohortTasks.switchView('completed')">Completed</button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="archived" onclick="CohortTasks.switchView('archived')">
+                            Archived <span class="task-sub-tab__badge" id="archived-badge" style="display:none">0</span>
+                        </button>
                     </nav>
                     <div class="task-view" id="task-view-active">
                         <div class="task-list" id="task-list">
@@ -264,6 +277,14 @@
                             <div class="empty-state" id="completed-empty">
                                 <p class="empty-state__text">No completed tasks yet</p>
                                 <p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-archived" style="display: none;">
+                        <div class="task-list" id="archived-task-list">
+                            <div class="empty-state" id="archived-empty">
+                                <p class="empty-state__text">No archived tasks</p>
+                                <p class="empty-state__hint">Archived tasks are moved here to keep your completed list clean</p>
                             </div>
                         </div>
                     </div>
@@ -325,6 +346,75 @@
                             <input type="text" class="tool-help-chat__input" id="tool-help-input"
                                    placeholder="Ask a question about this tool..." />
                             <button class="btn btn--primary btn--sm" onclick="sendToolHelpMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Benchmark A/B Panel -->
+            <section class="panel panel--benchmark" id="panel-benchmark" role="region" aria-label="Benchmark A/B" style="display: none;">
+                <div class="benchmark-panel" id="benchmark-panel-content">
+                    <!-- Scenario selector -->
+                    <div class="benchmark-header" id="benchmark-header">
+                        <div class="benchmark-scenario-cards" id="benchmark-scenario-cards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Active run display -->
+                    <div class="benchmark-run" id="benchmark-run" style="display: none;">
+                        <div class="benchmark-run__status" id="benchmark-run-status">
+                            <span class="benchmark-run__badge" id="benchmark-run-badge">Running</span>
+                            <span class="benchmark-run__id" id="benchmark-run-id"></span>
+                        </div>
+
+                        <!-- Side-by-side comparison -->
+                        <div class="benchmark-comparison">
+                            <div class="benchmark-arm" id="benchmark-arm-a">
+                                <h3 class="benchmark-arm__title">Arm A: Local Only (Smarter)</h3>
+                                <div class="benchmark-arm__status" id="arm-a-status">Pending</div>
+                                <div class="benchmark-arm__meta" id="arm-a-meta"></div>
+                                <div class="benchmark-arm__responses" id="arm-a-responses">
+                                    <!-- Agent responses rendered here -->
+                                </div>
+                            </div>
+                            <div class="benchmark-arm" id="benchmark-arm-b">
+                                <h3 class="benchmark-arm__title">Arm B: Hybrid (Smartest)</h3>
+                                <div class="benchmark-arm__status" id="arm-b-status">Pending</div>
+                                <div class="benchmark-arm__meta" id="arm-b-meta"></div>
+                                <div class="benchmark-arm__responses" id="arm-b-responses">
+                                    <!-- Agent responses rendered here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scoring section -->
+                        <div class="benchmark-scoring" id="benchmark-scoring" style="display: none;">
+                            <h3>Scoring</h3>
+                            <p class="benchmark-scoring__hint">Scores are auto-generated by LLM judge. Override any value and re-submit if needed.</p>
+                            <div class="benchmark-scoring__grid" id="benchmark-scoring-grid">
+                                <!-- Populated by JS with criteria rows -->
+                            </div>
+                            <div class="benchmark-scoring__actions">
+                                <button class="btn btn--primary" id="benchmark-submit-scores" onclick="CohortBenchmark.submitScores()">Submit Scores</button>
+                            </div>
+                        </div>
+
+                        <!-- Results summary (after scoring) -->
+                        <div class="benchmark-results" id="benchmark-results" style="display: none;">
+                            <h3>Results</h3>
+                            <div class="benchmark-results__summary" id="benchmark-results-summary"></div>
+                        </div>
+                    </div>
+
+                    <!-- Run history -->
+                    <div class="benchmark-history" id="benchmark-history">
+                        <h3>Previous Runs</h3>
+                        <div class="benchmark-history__list" id="benchmark-history-list">
+                            <div class="empty-state">
+                                <p class="empty-state__text">No benchmark runs yet</p>
+                                <p class="empty-state__hint">Select a scenario above to start your first A/B comparison</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1167,5 +1257,6 @@
     <script src="/static/cohort-permissions.js"></script>
     <script src="/static/cohort-setup.js"></script>
     <script src="/static/cohort-tasks.js"></script>
+    <script src="/static/cohort-benchmark.js"></script>
 </body>
 </html>

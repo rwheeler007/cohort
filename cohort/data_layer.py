@@ -14,7 +14,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from cohort.chat import ChatManager
+from cohort.api import ChatManager
 
 logger = logging.getLogger(__name__)
 
