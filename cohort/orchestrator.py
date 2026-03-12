@@ -179,7 +179,10 @@ class Orchestrator:
         # Detect explicit agent mentions (e.g. "with security and python")
         explicit_agents: list[str] = []
         text_lower = text.lower()
-        from cohort.agent_router import AGENT_ALIASES
+        try:
+            from cohort.agent_registry import AGENT_ALIASES
+        except ImportError:
+            AGENT_ALIASES = {}
         for alias, agent_id in AGENT_ALIASES.items():
             if alias in text_lower and agent_id not in explicit_agents:
                 explicit_agents.append(agent_id)

@@ -244,3 +244,56 @@ def get_temperature(task_type: str | None = None) -> float:
     if task_type is None:
         return DEFAULT_TEMPERATURE
     return TASK_TEMPERATURES.get(task_type.lower(), DEFAULT_TEMPERATURE)
+
+
+# =====================================================================
+# Confidence Classification
+# =====================================================================
+# Classifies response confidence based on task type, pipeline, and model
+# tier. Small local models are reliable for generation but unreliable
+# for review/synthesis tasks (correcting, critiquing, orchestrating).
+# This is a structural signal, not a self-assessment by the model.
+
+# Prompt keywords that indicate review/synthesis tasks --
+# where small models hallucinate corrections confidently.
+_REVIEW_KEYWORDS: set[str] = {
+    "review", "critique", "correct", "evaluate", "assess",
+    "what did they miss", "what's wrong", "find issues",
+    "compare", "verify", "validate", "fact-check", "audit",
+    "improve this", "fix this", "what errors",
+}
+
+# Model size threshold: models at or below this tier are flagged
+# for review tasks. Tier 3 = qwen3.5:9b, Tier 4 = qwen3.5:9b (10GB+).
+_SMALL_MODEL_MAX_TIER = 4
+
+
+def classify_confidence(
+    prompt: str,
+    pipeline: str,
+    tier: int | None,
+    response_mode: str = "smarter",
+) -> str:
+    """Classify confidence level of a response.
+
+    Returns:
+        "high" - Claude pipeline or local model on generation tasks
+        "guarded" - Local model on review/synthesis tasks (hallucination risk)
+
+    The classification is based on task type detection (keyword matching
+    on the prompt) and the pipeline used. Claude-backed responses are
+    always "high". Local model responses are "guarded" when the prompt
+    indicates a review, critique, or correction task.
+    """
+    # Claude-backed pipelines are always high confidence
+    if pipeline in ("smartest", "claude"):
+        return "high"
+
+    # Local model: check if the task is review/synthesis
+    if tier is not None and tier <= _SMALL_MODEL_MAX_TIER:
+        prompt_lower = prompt.lower()
+        for keyword in _REVIEW_KEYWORDS:
+            if keyword in prompt_lower:
+                return "guarded"
+
+    return "high"

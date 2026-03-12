@@ -1,6 +1,6 @@
 # Cohort
 
-Multi-agent orchestration with loop prevention and contribution scoring.
+Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration.
 
 Cohort manages structured discussions between AI agents. It decides **who speaks next**, prevents conversational loops, and scores contributions across five dimensions -- so your agents stay productive instead of talking in circles.
 
@@ -16,40 +16,80 @@ Every multi-agent framework lets agents talk. Cohort decides **who should talk, 
 | **Contribution scoring** | 5-dimension engine | -- | -- |
 | **Loop prevention** | Architectural (recency + novelty + gating) | Max iterations (timeout) | Conditional edges (manual) |
 | **Data leaves your machine** | Your choice (local default) | Yes + telemetry | Optional |
+| **MCP integration** | Built-in (lite + full modes) | -- | -- |
 | **Cost** | $0 local | API + $99-$10K Enterprise | API + $39/seat Platform |
 
 **Zero dependencies.** `pip install cohort` pulls nothing. Your agents, your hardware, your data.
 
-**Extracted from production.** These patterns weren't designed from theory -- they were extracted from a system running 60+ agents, then packaged clean with 600+ tests.
-
-See the [full comparison](https://cohort.dev/compare.html) and [benchmarks](https://cohort.dev/benchmarks.html) for details.
+**Extracted from production.** These patterns weren't designed from theory -- they were extracted from a system running 60+ agents, then packaged clean with 785+ tests.
 
 ## Features
 
 - **Zero dependencies** -- `pip install cohort` pulls nothing
+- **MCP integration** -- Claude Code tools for channels, agents, search, checklists (works standalone or with server)
 - **Contribution scoring** -- 5-dimension relevance matrix (novelty, expertise, ownership, phase alignment, data ownership)
 - **Loop prevention** -- Stakeholder gating keeps agents from repeating each other
 - **Topic shift detection** -- Automatically re-engages relevant agents when the conversation changes direction
+- **Local LLM** -- Hardware detection, Ollama/llama.cpp integration, setup wizard
 - **Protocol-first design** -- `AgentProfile` and `StorageBackend` are `@runtime_checkable` protocols. Bring your own agents and storage.
-- **Optional HTTP server** -- `pip install cohort[server]` adds a REST API + Socket.IO for multi-process agent communication
-- **Optional MCP bridge** -- `pip install cohort[claude]` connects Claude Code agents via MCP
 
 ## Install
 
 ```bash
 pip install cohort              # zero-dep core library
-pip install cohort[server]      # adds HTTP server (starlette + uvicorn)
-pip install cohort[claude]      # adds MCP bridge for Claude Code
-pip install cohort[all]         # everything
+pip install cohort[claude]      # adds MCP tools for Claude Code
+pip install cohort[all]         # everything including dev tools
 ```
 
 Requires Python 3.11+.
 
-## Demo
+## MCP Integration (Claude Code)
 
-![Cohort Demo](docs/launch-kit/assets/demo-terminal.svg)
+Cohort includes a built-in MCP server for Claude Code with two operating modes:
 
-## Quick Start
+**Lite mode** (standalone, no server required):
+```json
+{
+  "mcpServers": {
+    "cohort": {
+      "command": "python",
+      "args": ["-m", "cohort.mcp.server"],
+      "env": {
+        "COHORT_DATA_DIR": "/path/to/your/data"
+      }
+    }
+  }
+}
+```
+
+Lite mode operates directly on file-based storage. Channels, messages, agent profiles, checklists, and search all work without any server process.
+
+**Full mode** (auto-detected when Cohort server is running):
+
+If a Cohort server is running on `localhost:5100`, the MCP server automatically upgrades to full mode with live agent routing, real-time sessions, work queue, and briefing generation.
+
+### Available MCP Tools
+
+| Tool | Lite | Full | Description |
+|------|------|------|-------------|
+| `read_channel` | Yes | Yes | Read messages from a channel |
+| `post_message` | Yes | Yes | Post a message to a channel |
+| `list_channels` | Yes | Yes | List all channels |
+| `cohort_create_channel` | Yes | Yes | Create a new channel |
+| `channel_summary` | Yes | Yes | Compact activity summary |
+| `cohort_list_agents` | Yes | Yes | List all agents |
+| `cohort_get_agent` | Yes | Yes | Get agent details |
+| `cohort_get_agent_memory` | Yes | Yes | View agent memory |
+| `cohort_add_fact` | Yes | Yes | Add a learned fact |
+| `cohort_clean_memory` | Yes | Yes | Trim working memory |
+| `cohort_search_messages` | Yes | Yes | Search across channels |
+| `get_checklist` | Yes | Yes | Read to-do checklist |
+| `update_checklist` | Yes | Yes | Add/complete/remove tasks |
+| `condense_channel` | -- | Yes | LLM-powered summarisation |
+| `cohort_roundtable` | -- | Yes | Live multi-agent session |
+| `cohort_execute` | -- | Yes | Work queue operations |
+
+## Quick Start (Python API)
 
 ```python
 from cohort import JsonFileStorage, Orchestrator
@@ -65,9 +105,10 @@ agents = {
     "tester":    {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
 }
 
-# 3. Start a session -- Cohort picks the right speakers
+# 3. Post a message and start a session
+chat.post_message("design-review", sender="user", content="Review the REST API design")
 orch = Orchestrator(chat, agents=agents)
-session = orch.start_session("design-review", "REST API design review")
+session = orch.start_session("design-review", "REST API design review", initial_agents=list(agents))
 
 # 4. Ask who should speak next
 rec = orch.get_next_speaker(session.session_id)
@@ -78,9 +119,31 @@ print(f"Reason: {rec['reason']}")
 orch.record_turn(session.session_id, "architect", "msg-001")
 ```
 
-## Architecture
+## CLI
 
-![Cohort Architecture](docs/launch-kit/assets/architecture-diagram.svg)
+Cohort includes CLI commands for file-based collaboration. Agents in **any language** can participate by appending to a shared `.jsonl` file.
+
+```bash
+# Append a message
+python -m cohort say --sender architect --channel review --file conv.jsonl \
+    --message "We should use pagination for the list endpoint"
+
+# Check if an agent should respond (exit 0 = speak, exit 1 = don't)
+python -m cohort gate --agent tester --channel review --file conv.jsonl \
+    --agents agents.json --format json
+
+# Rank who should speak next
+python -m cohort next-speaker --channel review --file conv.jsonl \
+    --agents agents.json --top 3
+
+# Generate an executive briefing
+python -m cohort briefing generate --hours 24
+
+# Interactive setup wizard (Ollama + model selection)
+python -m cohort setup
+```
+
+## Architecture
 
 ```
                     +-----------------+
@@ -97,126 +160,36 @@ orch.record_turn(session.session_id, "architect", "msg-001")
      +--------+--------+
      | StorageBackend   |  (Protocol -- bring your own)
      |  JsonFileStorage |  (default: flat-file JSON)
+     |  SqliteStorage   |  (optional: SQLite)
      +-----------------+
 ```
 
-**Orchestrator** manages sessions: who's invited, whose turn it is, when the topic shifts. It delegates message storage to **ChatManager** and contribution decisions to the **Meeting** engine.
+**Orchestrator** manages sessions: who's invited, whose turn it is, when the topic shifts.
 
 **Meeting** scores each agent across five dimensions before allowing them to speak:
 
 | Dimension | Weight | What it measures |
 |-----------|--------|-----------------|
-| Novelty | 35% | Is this new information vs. what's been said? |
-| Expertise | 30% | Do the agent's capabilities match the topic? |
-| Ownership | 20% | Is this agent a primary stakeholder? |
-| Question | 15% | Was the agent directly asked something? |
-
-Agents move through stakeholder statuses: **active** -> **approved_silent** -> **observer** -> **dormant**. Each status has a higher threshold to speak, preventing agents from dominating after they've contributed.
-
-### Composite Relevance (5-Dimension Matrix)
-
-When using `calculate_composite_relevance` or `Orchestrator.get_next_speaker`, Cohort scores agents across a richer five-dimension matrix:
-
-| Dimension | Weight | What it measures |
-|-----------|--------|-----------------|
 | Domain expertise | 30% | Keyword overlap between topic and agent triggers/capabilities |
-| Complementary value | 25% | Are this agent's complementary partners active? |
+| Complementary value | 25% | Are this agent's partners active? |
 | Historical success | 20% | Past performance on similar topics |
 | Phase alignment | 15% | Is this the right agent for the current workflow phase? |
 | Data ownership | 10% | Does this agent own data relevant to the topic? |
 
-Three of these dimensions -- complementary value, phase alignment, and data ownership -- use **per-agent scoring metadata** that can be configured externally.
+Agents move through stakeholder statuses: **active** -> **approved_silent** -> **observer** -> **dormant**. Each status raises the threshold to speak, preventing agents from dominating.
 
-### Scoring Metadata
+## Local LLM Integration
 
-By default, Cohort includes built-in scoring metadata for common agent roles. You can override or extend this by adding three optional fields to any agent's config:
-
-```json
-{
-  "architect": {
-    "triggers": ["api", "design"],
-    "capabilities": ["backend architecture"],
-    "complementary_agents": ["tester", "developer"],
-    "data_sources": ["architecture_docs", "design_decisions"],
-    "phase_roles": {"PLAN": "high", "DISCOVER": "medium"}
-  }
-}
-```
-
-| Field | Type | Effect |
-|-------|------|--------|
-| `complementary_agents` | `list[str]` | Agent IDs that work well with this agent. Boosts score when partners are active. |
-| `data_sources` | `list[str]` | Data this agent owns. Boosts score when topic keywords match. |
-| `phase_roles` | `dict[str, str]` | Workflow phase relevance. Keys: `DISCOVER`, `PLAN`, `EXECUTE`, `VALIDATE`. Values: `high` (1.0), `medium` (0.6), `low` (0.2). |
-
-**Resolution order** (3-tier fallback):
-
-1. Explicit value in agent config (from `agents.json` or `AgentConfig`)
-2. Built-in defaults (for known agent roles like `python_developer`, `cohort_orchestrator`, etc.)
-3. Neutral fallback (unknown agents get 0.0 for complementary/ownership, 0.5 for phase alignment)
-
-This means zero-config works out of the box -- agents with no scoring metadata still participate with neutral scores.
-
-## CLI
-
-Cohort includes CLI commands for file-based collaboration. Agents in **any language** can participate by appending to a shared `.jsonl` file, with Cohort acting as the scoring referee.
+Cohort includes built-in support for local inference:
 
 ```bash
-# Append a message
-python -m cohort say --sender architect --channel review --file conv.jsonl \
-    --message "We should use pagination for the list endpoint"
-
-# Check if an agent should respond (exit 0 = speak, exit 1 = don't)
-python -m cohort gate --agent tester --channel review --file conv.jsonl \
-    --agents agents.json --format json
-
-# Rank who should speak next
-python -m cohort next-speaker --channel review --file conv.jsonl \
-    --agents agents.json --top 3
+python -m cohort setup  # Interactive wizard: detects GPU, installs Ollama, picks model
 ```
 
-The `agents.json` file defines agent capabilities (and optional scoring metadata):
-
-```json
-{
-  "architect": {"triggers": ["api", "design"], "capabilities": ["backend architecture"]},
-  "tester": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
-  "developer": {"triggers": ["python", "code"], "capabilities": ["implementation"]}
-}
-```
-
-### JSONL File Transport
-
-For programmatic use, `JsonlFileStorage` provides an append-only storage backend:
-
-```python
-from cohort import JsonlFileStorage
-from cohort.chat import ChatManager
-
-storage = JsonlFileStorage("conversation.jsonl")
-chat = ChatManager(storage)
-chat.create_channel("review", "API design review")
-chat.post_message("review", "architect", "Hello!")
-```
-
-Messages are stored as one JSON object per line. Channel metadata lives in a companion `{stem}_channels.json` file. Zero external dependencies.
-
-## HTTP Server
-
-```bash
-pip install cohort[server]
-python -m cohort serve --port 5100
-```
-
-Endpoints:
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/health` | Liveness probe |
-| GET | `/api/channels` | List channels |
-| GET | `/api/messages?channel=X&limit=N` | Fetch messages |
-| POST | `/api/send` | Post a message `{channel, sender, message}` |
-| POST | `/api/channels/{id}/condense` | Trim old messages `{keep_last}` |
+- **Hardware detection** -- Identifies GPU VRAM and recommends appropriate models
+- **Ollama client** -- Direct integration for local inference
+- **llama.cpp support** -- For direct GGUF model serving
+- **Model routing** -- Automatic model selection based on task complexity
 
 ## Protocols
 
@@ -225,7 +198,6 @@ Cohort uses Python protocols -- no base classes required:
 ```python
 from cohort import AgentProfile, StorageBackend
 
-# Any class with these attributes/methods works
 class MyAgent:
     name: str = "custom"
     role: str = "specialist"
@@ -243,7 +215,7 @@ assert isinstance(MyAgent(), AgentProfile)  # True -- duck typing
 ## Development
 
 ```bash
-git clone https://github.com/your-org/cohort.git
+git clone https://github.com/rwheeler007/cohort.git
 cd cohort
 pip install -e ".[dev]"
 pytest
@@ -253,4 +225,4 @@ mypy cohort/
 
 ## License
 
-MIT
+Apache 2.0 -- see [LICENSE](LICENSE) for details.

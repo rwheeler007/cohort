@@ -63,7 +63,7 @@
 
   <!-- Bottom right info -->
   <text x="1100" y="555" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#D97757" text-anchor="end">cohort.dev</text>
-  <text x="1100" y="582" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#F5E6DE" text-anchor="end" opacity="0.6">Open Source / MIT</text>
+  <text x="1100" y="582" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#F5E6DE" text-anchor="end" opacity="0.6">Open Source / Apache 2.0</text>
 
   <!-- Bottom accent bar -->
   <rect x="0" y="626" width="1200" height="4" fill="url(#accent-line)"/>

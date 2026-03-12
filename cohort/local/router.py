@@ -25,6 +25,7 @@ from cohort.local.config import (
     MIN_CONTENT_CHARS,
     RESPONSE_MODE_PARAMS,
     THINKING_DRAIN_TOKEN_THRESHOLD,
+    classify_confidence,
     get_model_for_vram,
     get_temperature,
     get_tier_for_model,
@@ -44,6 +45,7 @@ class RouteResult:
     tokens_out: int = 0
     elapsed_seconds: float = 0.0
     pipeline: str = "local"  # "local", "smartest", "smartest-degraded", "claude"
+    confidence: str = "high"  # "high" or "guarded" (review task on small model)
 
 logger = logging.getLogger(__name__)
 
@@ -242,6 +244,10 @@ class LocalRouter:
                     return None
 
             tier = get_tier_for_model(model)
+            confidence = classify_confidence(
+                prompt=prompt, pipeline="local", tier=tier,
+                response_mode=response_mode,
+            )
             return RouteResult(
                 text=result.text,
                 model=result.model,
@@ -249,6 +255,7 @@ class LocalRouter:
                 tokens_in=result.tokens_in,
                 tokens_out=result.tokens_out,
                 elapsed_seconds=result.elapsed_seconds,
+                confidence=confidence,
             )
 
         except Exception:
@@ -385,6 +392,16 @@ class LocalRouter:
                             turn, ", ".join(tools_used),
                         )
 
+                    # Extract user message for confidence classification
+                    user_text = ""
+                    for m in messages:
+                        if m.get("role") == "user":
+                            user_text = m.get("content", "")
+                    confidence = classify_confidence(
+                        prompt=user_text, pipeline="local", tier=tier,
+                        response_mode=response_mode,
+                    )
+
                     return RouteResult(
                         text=result.content,
                         model=model,
@@ -392,6 +409,7 @@ class LocalRouter:
                         tokens_in=total_tokens_in,
                         tokens_out=total_tokens_out,
                         elapsed_seconds=elapsed,
+                        confidence=confidence,
                     )
 
                 # No content and no tool calls -- unexpected, bail out

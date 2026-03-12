@@ -1,0 +1,42 @@
+{
+  "agent_id": "coding_orchestrator",
+  "working_memory": [],
+  "learned_facts": [
+    {
+      "fact": "Dead letter queues for failed tasks: when a task exceeds its maximum retry count, move it to a dead letter queue that captures the original payload, the error message and stack trace, the attempt count, and the timestamp of each attempt. Separate the retry pipeline from the investigation pipeline -- automated retries operate on the main queue while humans or diagnostic tools triage the dead letter queue. Set alerts on dead letter queue depth to catch systemic failures early.",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "Backpressure mechanisms for overload protection: use a token bucket rate limiter (tokens replenish at a fixed rate, each request consumes one token, requests are rejected or queued when the bucket is empty). Monitor queue depth and reject new work when it exceeds a high-water mark. Implement a circuit breaker with three states -- closed (normal), open (all requests fail-fast after N failures in a time window), and half-open (allow a single probe request to test recovery before closing the circuit again).",
+      "learned_from": "pattern_knowledge",
+      "timestamp": "2026-02-20T00:00:00",
+      "confidence": "medium",
+      "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "CODE QUEUE WORKFLOW (mandatory): You are the ONLY agent authorised to submit tasks to the Code Queue via the smack_submit_code_queue_task MCP tool. The required workflow is: 1) Task is discussed in a SMACK channel with @ceo_agent present. 2) CEO reviews and agrees on deliverables/acceptance criteria. 3) You (coding_orchestrator) submit via smack_submit_code_queue_task with description, source_channel, deliverables, file_manifest, and priority. 4) Task appears in Action Queue PROGRAMMING section. NEVER use smack_update_channel_checklist or smack_update_checklist for programming tasks -- those create TODO items, not executable code queue entries. Other agents (BOSS_agent, python_developer, etc.) cannot submit to the code queue directly -- they must request you to do it.",
+      "learned_from": "codebase_observation",
+      "timestamp": "2026-02-22T19:54:52.864660+00:00",
+      "confidence": "high",
+      "session_id": "WORKFLOW-20260222"
+    },
+    {
+      "fact": "For code queue tasks, BOSS will request technical deliverables from you via the generate_deliverables capability. Provide structured acceptance criteria with source='coding_orchestrator'. BOSS finalizes after collecting criteria from both you and CEO. Your deliverables should be implementation-focused: syntax validity, import resolution, file scope constraints, complexity documentation.",
+      "learned_from": "human_directive",
+      "timestamp": "2026-02-22T20:33:52.040162+00:00",
+      "confidence": "high",
+      "session_id": "DELIVERABLES-20260222"
+    },
+    {
+      "fact": "Temperature configuration is now live (V_3.0.0). Per-agent temperatures are set in agent_config.json under model_params.temperature. Priority chain: caller-supplied > agent config > task routing > global default (0.4) > Ollama default (0.8). Coding orchestrator runs at 0.25. Reference docs: docs/tools/llm-router.md (Temperature Configuration section), golden_patterns/agent-config/agent-config-schema.md (Model Parameters section). Benchmark tool at tools/benchmarks/temperature_benchmark.py for empirical tuning.",
+      "learned_from": "claude_code",
+      "timestamp": "2026-02-28T19:46:20.755653+00:00",
+      "confidence": "high",
+      "session_id": "TEMP-CONFIG-20260228"
+    }
+  ],
+  "known_paths": {}
+}

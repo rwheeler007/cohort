@@ -42,7 +42,7 @@
 
 **For HN, dev conferences, Anthropic DevRel outreach:**
 
-> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. It manages structured agent discussions with 5-dimension contribution scoring, stakeholder gating, and topic-shift detection so agents stop talking in circles and start shipping work. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 18 months of production use. MIT licensed. `pip install cohort`.
+> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. It manages structured agent discussions with 5-dimension contribution scoring, stakeholder gating, and topic-shift detection so agents stop talking in circles and start shipping work. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 18 months of production use. 785+ tests. Apache 2.0 licensed. `pip install cohort`.
 
 ---
 

@@ -4,14 +4,16 @@ Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7
 
 ## Assets
 
-| # | Asset | Purpose | Primary Audience |
-|---|-------|---------|-----------------|
-| 01 | [Positioning Statement](01-positioning-statement.md) | Five pillars, messaging hierarchy, language rules | Internal (all team members) |
-| 02 | [Elevator Pitches](02-elevator-pitches.md) | One-liner through 60-second pitches, audience variants, quick objection responses | Sales, founders, community |
-| 03 | [Landing Page Copy](03-landing-page-copy.md) | Full page: hero, problem, value props, security, anti-disruption, proof, CTA | Website visitors |
-| 04 | [The AI Productivity Gap](04-blog-the-ai-productivity-gap.md) | Anchor blog post -- SEO, thought leadership, security section | General audience, HN, LinkedIn |
-| 05 | [Objection Handling](05-objection-handling.md) | 10 objections with short + detailed responses, meta-rules | Sales, community support, HN comments |
-| 06 | [Creator Targets](06-creator-targets.md) | 35+ verified content creators, outreach strategy, templates | Marketing, outreach |
+| # | Asset | Purpose | Primary Audience | Status |
+|---|-------|---------|-----------------|--------|
+| 01 | [Positioning Statement](01-positioning-statement.md) | Five pillars, messaging hierarchy, language rules | Internal (all team members) | Ready |
+| 02 | [Elevator Pitches](02-elevator-pitches.md) | One-liner through 60-second pitches, audience variants, quick objection responses | Sales, founders, community | Ready |
+| 03 | [Landing Page Copy](03-landing-page-copy.md) | Full page: hero, problem, value props, security, anti-disruption, proof, CTA | Website visitors | Ready (hero A/B resolved) |
+| 04 | [The AI Productivity Gap](04-blog-the-ai-productivity-gap.md) | Anchor blog post -- SEO, thought leadership, security section | General audience, HN, LinkedIn | Ready |
+| 05 | [Objection Handling](05-objection-handling.md) | 10 objections with short + detailed responses, meta-rules + 2026 competitor briefing | Sales, community support, HN comments | Updated 2026-03-11 |
+| 06 | [Creator Targets](06-creator-targets.md) | 35+ verified content creators, outreach strategy, templates | Marketing, outreach | Ready (kit checklist partial) |
+| 07 | [Show HN Draft](07-show-hn-draft.md) | HN submission title, comment, Q&A playbook, timing strategy | Launch day | **NEW** 2026-03-11 |
+| 08 | [Launch Day Social Posts](08-launch-day-social-posts.md) | Pre-written posts for Twitter, Reddit, LinkedIn with posting schedule | Launch day | **NEW** 2026-03-11 |
 
 ## Five Positioning Pillars
 

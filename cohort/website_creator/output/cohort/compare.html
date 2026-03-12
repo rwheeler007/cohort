@@ -169,9 +169,9 @@ COHORT            </a>
                     <tr style="border-bottom: 1px solid #e5e7eb;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Monthly Cost</td>
                         <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 600; color: #D97757;">$0 local / $49 Pro</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">$10-30+ (API costs)</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $99-$10K Enterprise</td>
-                        <td style="padding: 0.6rem 0.75rem; text-align: center;">API + $39/seat Platform</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud API costs</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud API + platform fees</td>
+                        <td style="padding: 0.6rem 0.75rem; text-align: center;">Cloud API + per-seat fees</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #e5e7eb; background: #fafafa;">
                         <td style="padding: 0.6rem 0.75rem; font-weight: 600;">Core Dependencies</td>
@@ -316,7 +316,7 @@ COHORT            </a>
         <div style="margin-bottom: 2.5rem;">
             <h3 class="responsive-h3" style="color: #58a6ff;">CrewAI (44K+ stars)</h3>
             <p class="responsive-p-body">CrewAI is a mature multi-agent framework with an intuitive task-chain model. Define agents with roles, assign tasks, let the crew execute. Great for linear pipelines where Agent A researches, Agent B writes, Agent C edits. The no-code builder and enterprise support make it accessible.</p>
-            <p class="responsive-p-body">The gap: CrewAI agents don't debate. They hand off. There's no contribution scoring to surface the right expert, no loop prevention beyond max-iteration caps, and no built-in security review. The openai package is a hard dependency even for local setups. Default telemetry is on. And the pricing ramp is steep -- $99/mo to $10K/mo for Enterprise, on top of cloud API costs.</p>
+            <p class="responsive-p-body">The gap: CrewAI agents don't debate. They hand off. There's no contribution scoring to surface the right expert, no loop prevention beyond max-iteration caps, and no built-in security review. The openai package is a hard dependency even for local setups. Default telemetry is on. And the pricing ramp is steep -- platform fees on top of cloud API costs.</p>
             <p class="responsive-p-body"><strong>Use CrewAI when:</strong> You need sequential task pipelines, your team uses OpenAI, and you want enterprise support now.<br><strong>Use Cohort when:</strong> You need agents that challenge each other's work, score contributions fairly, and run on your hardware for $0.</p>
         </div>
 
@@ -324,7 +324,7 @@ COHORT            </a>
         <div style="margin-bottom: 2.5rem;">
             <h3 class="responsive-h3" style="color: #3fb950;">LangGraph (26K+ stars)</h3>
             <p class="responsive-p-body">LangGraph gives you maximum control over agent workflows via directed graphs. If you need conditional branching, cycles, fan-out/fan-in, and checkpoint-based human-in-the-loop, it's the most granular option. The LangChain ecosystem (100K+ stars across projects) provides deep integrations with every provider.</p>
-            <p class="responsive-p-body">The trade-off: the graph abstraction adds complexity that Python control flow already handles. 30+ transitive dependencies. The ecosystem gravitates toward paid LangSmith ($2.50-$5/1K traces) and Platform ($39/seat/mo) for production observability. Deployment has known dependency resolution issues. And like CrewAI, it has no built-in contribution scoring, loop prevention, or security review.</p>
+            <p class="responsive-p-body">The trade-off: the graph abstraction adds complexity that Python control flow already handles. 30+ transitive dependencies. The ecosystem gravitates toward paid LangSmith and Platform subscriptions for production observability. Deployment has known dependency resolution issues. And like CrewAI, it has no built-in contribution scoring, loop prevention, or security review.</p>
             <p class="responsive-p-body"><strong>Use LangGraph when:</strong> You need precise workflow engineering and your team is already in the LangChain ecosystem.<br><strong>Use Cohort when:</strong> You want orchestration that handles the coordination logic for you instead of making you build it as a graph.</p>
         </div>
 
@@ -352,25 +352,25 @@ COHORT            </a>
                 <div style="font-size: 0.75rem; color: #888;">Local default, cloud opt-in</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
-                <div style="font-size: 2.5rem; font-weight: 700; color: #bc8cff;">$30</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #bc8cff;">API</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">OpenClaw</div>
                 <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">1 agent, cloud APIs</div>
-                <div style="font-size: 0.75rem; color: #888;">Moderate automation</div>
+                <div style="font-size: 0.75rem; color: #888;">Usage-based pricing</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
-                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">$800+</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">API+</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">CrewAI</div>
                 <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">Multi-agent, cloud APIs</div>
-                <div style="font-size: 0.75rem; color: #888;">+ $99/mo Enterprise</div>
+                <div style="font-size: 0.75rem; color: #888;">+ platform subscription</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; text-align: center;">
-                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">$500+</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #f85149;">API+</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8; font-weight: 600;">LangGraph</div>
                 <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">Multi-agent, cloud APIs</div>
-                <div style="font-size: 0.75rem; color: #888;">+ $39/seat Platform</div>
+                <div style="font-size: 0.75rem; color: #888;">+ per-seat platform fees</div>
             </div>
         </div>
-        <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic; text-align: center;">Cloud API estimates based on 14 agents running daily workloads with GPT-4/Claude-class models. Actual costs vary. <a href="pricing.html" style="color: #D97757;">See full pricing breakdown.</a></p>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic; text-align: center;">Competitor pricing varies by usage and plan. Cohort runs locally for $0 -- cloud API costs apply only if you opt in. <a href="pricing.html" style="color: #D97757;">See Cohort pricing.</a></p>
     </div>
 </section>
 
@@ -411,7 +411,7 @@ COHORT            </a>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.85);">Run unlimited agents on your GPU for $0/mo. Add Claude API for premium reasoning.<br>Pro adds turnkey pipelines for <strong>$49/mo</strong> -- less than a single hour of cloud API costs for most multi-agent setups.</p>
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
         <div class="button-group" style="margin-top: 1rem;">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">Get Started Free</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary">Get Started Free</a>
             <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
@@ -429,20 +429,20 @@ COHORT            </a>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

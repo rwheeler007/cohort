@@ -24,7 +24,7 @@ var FOOTER_CONFIG = {
                 { label: "Compare", href: "compare.html" },
                 { label: "The Team", href: "team.html" },
                 { label: "AI's Take", href: "ai-perspective.html" },
-                { label: "GitHub", href: "https://github.com/cohort-dev/cohort", external: true }
+                { label: "GitHub", href: "https://github.com/rwheeler007/cohort", external: true }
             ]
         },
         {
@@ -38,7 +38,7 @@ var FOOTER_CONFIG = {
         }
     ],
     bottom: {
-        copyright: "&copy; 2026 Cohort. Open source under <a href=\"https://github.com/cohort-dev/cohort/blob/main/LICENSE\" style=\"color: rgba(255,255,255,0.7);\">MIT License</a>.",
+        copyright: "&copy; 2026 Cohort. Open source under <a href=\"https://github.com/rwheeler007/cohort/blob/main/LICENSE\" style=\"color: rgba(255,255,255,0.7);\">Apache 2.0 License</a>.",
         badge: "[*] Built with Cohort"
     }
 };

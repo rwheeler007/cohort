@@ -48,6 +48,13 @@ For sales conversations, community questions, HN comments, and support interacti
 **Response (detailed):**
 > CrewAI, AutoGen, and LangGraph are excellent tools for defining agent tasks and execution flows. Cohort does something different: it manages the conversation dynamics between agents. Who should speak next? Is this agent repeating what was already said? Has the topic shifted and should new specialists engage? These are coordination problems, not pipeline problems. You could use Cohort alongside those frameworks. The other key difference: Cohort was extracted from 18 months of production use, not designed from first principles. The patterns come from what actually worked.
 
+**Emerging competitors to be aware of (as of March 2026):**
+- **Microsoft Agent Framework** -- AutoGen + Semantic Kernel merger. Hit RC in Feb 2026, GA targeted end of Q1. Enterprise play with A2A, MCP, AG-UI protocols. Heavy (.NET + Python), Azure-oriented. Response: "Enterprise-first, heavy integration surface. Cohort is zero-dep and running today."
+- **OpenAI Agents SDK** -- Lightweight handoff + agent-as-tool patterns. Provider-agnostic (100+ LLMs). Response: "Good SDK, but no contribution scoring, no loop prevention, no structured coordination. It's plumbing, not orchestration."
+- **NVIDIA NemoClaw** -- Open-sourced March 6, 2026. Enterprise agent framework, GPU-oriented. Response: "Built for NVIDIA's ecosystem and enterprise GPU clusters. Cohort runs on a $300 consumer GPU."
+- **Agno** (formerly Phidata) -- Full-stack with memory, knowledge, guardrails, 100+ integrations. Response: "Feature-rich but complex. Cohort's zero-dep core means zero supply chain risk and zero version conflicts."
+- **OpenAgents** -- Claims native MCP + A2A (Agent2Agent Protocol) support. Response: "Interoperability focus, not coordination. No contribution scoring, no loop prevention."
+
 **Never say:** "Those tools are bad" (many prospects use them and like them).
 
 ---
@@ -78,7 +85,7 @@ For sales conversations, community questions, HN comments, and support interacti
 > It was extracted FROM production. The system it came from runs agents daily and has for 18 months. Cohort is the battle-tested patterns, packaged clean. IBM-level integration safety, startup-level innovation speed.
 
 **Response (detailed):**
-> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily for 18 months. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 488+ tests across 26 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
+> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily for 18 months. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 785+ tests across 25 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
 
 **Never say:** "It's totally production ready for enterprise" (be honest about version maturity).
 

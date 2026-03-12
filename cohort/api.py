@@ -93,6 +93,7 @@ from cohort.cron import resolve_preset, compute_next_run, PRESETS, preset_label
 
 # -- Intelligence --------------------------------------------------------
 
+from cohort.briefing import extract_triad_from_brief
 from cohort.executive_briefing import ExecutiveBriefing
 from cohort.intel_fetcher import IntelFetcher
 from cohort.content_analyzer import score_article
@@ -191,4 +192,5 @@ __all__ = [
     "BENCHMARK_ENABLED",
     "get_benchmark_runner",
     "MemoryManager",
+    "extract_triad_from_brief",
 ]

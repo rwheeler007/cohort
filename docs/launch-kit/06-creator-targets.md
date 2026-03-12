@@ -117,12 +117,12 @@ Prepare these before any outreach:
 - [ ] 1-page positioning brief (summarize 01-positioning-statement.md)
 - [ ] 3 demo scenarios with complete runnable code
 - [ ] Terminal recording of design_review_demo.py (GIF or asciinema)
-- [ ] Architecture diagram (SVG, thumbnail-quality)
-- [ ] Logo pack (SVG, PNG transparent, dark/light variants)
-- [ ] Social card (1200x630 for link previews)
+- [x] Architecture diagram (SVG) -- `launch-kit/assets/architecture-diagram.svg`
+- [x] Logo pack (SVG dark/light + icon) -- `launch-kit/assets/logo-*.svg`
+- [x] Social card (1200x630) -- `launch-kit/assets/social-card.svg`
 - [ ] Benchmark summary graphic (comparison table as image)
 - [ ] Private Discord/channel invite for early-access creators
-- [ ] Outreach template (personalized per-creator, not mass mail)
+- [x] Outreach template (personalized per-creator) -- see below in this doc
 
 ---
 

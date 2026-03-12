@@ -110,6 +110,8 @@ def _ask_ollama(system_prompt: str, prompt: str, temperature: float) -> str:
         "options": {
             "temperature": temperature,
             "num_predict": 5000,
+            "num_ctx": 8192,
+            "num_batch": 1024,
         },
         "keep_alive": "30m",
         "think": False,

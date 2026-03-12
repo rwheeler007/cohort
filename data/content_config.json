@@ -1,1 +1,28 @@
-{"feeds": [{"name": "Hacker News (best)", "url": "https://hnrss.org/best"}], "interest_keywords": ["python", "ai", "llm", "agent"]}
+{
+  "feeds": [
+    {
+      "name": "Hacker News (best)",
+      "url": "https://hnrss.org/best"
+    },
+    {
+      "name": "The Batch (deeplearning.ai)",
+      "url": "https://www.deeplearning.ai/the-batch/feed/"
+    },
+    {
+      "name": "MIT Technology Review AI",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed"
+    }
+  ],
+  "topic": "ai",
+  "check_interval_minutes": 60,
+  "max_articles_per_feed": 10,
+  "interest_keywords": [
+    "ai",
+    "llm",
+    "gpt",
+    "claude",
+    "transformer",
+    "neural network",
+    "agent"
+  ]
+}

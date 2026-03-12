@@ -93,13 +93,18 @@ class AgentStore:
         self._loaded_all = True
 
     # Agent Store roster -- these are fetched from the remote Gateway API.
-    # Hardcover agents (cohort_orchestrator, marketing_agent, content_strategy_agent,
-    # analytics_agent, python_developer) are excluded -- they ship locally with
-    # `pip install cohort` and don't need Gateway sync.
+    # Includes hardcover agents so the store can push upgraded configs/facts
+    # to replace the minimal versions that ship with `pip install cohort`.
     #
     # Tier gating is handled by agent_api.py (FREE_TIER_AGENTS vs Pro vs Enterprise).
     # This set only controls WHICH agents are eligible for remote sync.
     GATEWAY_AGENTS = frozenset({
+        # Hardcover agents (ship locally but get upgrades from store)
+        "cohort_orchestrator",
+        "marketing_agent",
+        "content_strategy_agent",
+        "analytics_agent",
+        "python_developer",
         # Free Store agents (available at no cost from Agent Store)
         "web_developer",
         "javascript_developer",
@@ -123,24 +128,22 @@ class AgentStore:
     })
 
     def _sync_from_gateway(self) -> None:
-        """Fetch curated agents from the Gateway that aren't already local."""
+        """Fetch curated agents from the Gateway, upgrading existing configs."""
         try:
-            import httpx
+            import httpx  # noqa: F811
         except ImportError:
             return
-        loaded = 0
+        synced = 0
         for agent_id in self.GATEWAY_AGENTS:
-            if agent_id in self._cache:
-                continue
             try:
                 config = self._load_from_remote(agent_id)
                 if config:
                     self._cache[agent_id] = config
-                    loaded += 1
+                    synced += 1
             except Exception as exc:
                 logger.debug("[!] Gateway fetch failed for %s: %s", agent_id, exc)
-        if loaded:
-            logger.info("[OK] Gateway sync: loaded %d agents", loaded)
+        if synced:
+            logger.info("[OK] Gateway sync: %d agents synced", synced)
 
     def load_agent(self, agent_id: str) -> AgentConfig | None:
         """Load a single agent by ID.

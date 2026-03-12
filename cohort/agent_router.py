@@ -28,6 +28,7 @@ from cohort.api import (
     parse_mentions, AgentStore, truncate_context, load_persona,
     resolve_permissions, get_central_permissions, ResolvedPermissions,
 )
+from cohort.local.config import classify_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -845,6 +846,7 @@ def _invoke_smartest_pipeline(
                 "tier": 6,
                 "model": f"{phase1_result.model}+claude",
                 "pipeline": "smartest",
+                "confidence": "high",
                 "elapsed_seconds": elapsed,
                 "tokens_in": phase1_result.tokens_in + est_claude_in,
                 "tokens_out": phase1_result.tokens_out + est_claude_out,
@@ -862,10 +864,15 @@ def _invoke_smartest_pipeline(
 
     # Degraded: return Qwen's draft answer
     elapsed = round(time.monotonic() - t0, 1)
+    confidence = classify_confidence(
+        prompt=user_message, pipeline="smartest-degraded",
+        tier=phase1_result.tier,
+    )
     metadata = {
         "tier": phase1_result.tier,
         "model": phase1_result.model,
         "pipeline": "smartest-degraded",
+        "confidence": confidence,
         "elapsed_seconds": elapsed,
         "tokens_in": phase1_result.tokens_in,
         "tokens_out": phase1_result.tokens_out,
@@ -1057,6 +1064,7 @@ def _invoke_agent_sync(item: dict) -> None:
                         response_metadata = {
                             "tier": route_result.tier,
                             "model": route_result.model,
+                            "confidence": route_result.confidence,
                             "elapsed_seconds": route_result.elapsed_seconds,
                             "tokens_in": route_result.tokens_in,
                             "tokens_out": route_result.tokens_out,
@@ -1078,6 +1086,7 @@ def _invoke_agent_sync(item: dict) -> None:
                     response_metadata = {
                         "tier": route_result.tier,
                         "model": route_result.model,
+                        "confidence": route_result.confidence,
                         "elapsed_seconds": route_result.elapsed_seconds,
                         "tokens_in": route_result.tokens_in,
                         "tokens_out": route_result.tokens_out,
@@ -1171,6 +1180,7 @@ def _invoke_agent_sync(item: dict) -> None:
                 response_metadata = {
                     "tier": 5,
                     "model": "claude_code",
+                    "confidence": "high",
                     "elapsed_seconds": cli_elapsed,
                     "tokens_in": est_in,
                     "tokens_out": est_out,

@@ -165,8 +165,11 @@ class TaskExecutor:
             return
 
         # Build the briefing prompt
-        from cohort.agent_router import build_channel_context
-        context = build_channel_context(channel_id)
+        try:
+            from cohort.agent_router import build_channel_context
+            context = build_channel_context(channel_id)
+        except ImportError:
+            context = ""
         full_prompt = build_briefing_prompt(agent_prompt, task, context)
 
         # Typing indicator
@@ -375,9 +378,12 @@ class TaskExecutor:
         if not agent_prompt:
             return f"[Error] No prompt found for agent {agent_id}"
 
-        from cohort.agent_router import build_channel_context
-        channel_id = task.get("channel_id", f"task-{task['task_id']}")
-        context = build_channel_context(channel_id)
+        try:
+            from cohort.agent_router import build_channel_context
+            channel_id = task.get("channel_id", f"task-{task['task_id']}")
+            context = build_channel_context(channel_id)
+        except ImportError:
+            context = ""
 
         full_prompt = build_execution_prompt(
             agent_prompt, task, confirmed_brief, context,
@@ -460,11 +466,14 @@ class TaskExecutor:
         )
         self._emit_sync("new_message", msg.to_dict())
 
-        # Route the @mention through agent_router
+        # Route the @mention through agent_router (requires web app)
         mentions = msg.metadata.get("mentions", [])
         if mentions:
-            from cohort.agent_router import route_mentions
-            route_mentions(msg, mentions)
+            try:
+                from cohort.agent_router import route_mentions
+                route_mentions(msg, mentions)
+            except ImportError:
+                logger.debug("agent_router not available (core-only mode)")
 
     # =================================================================
     # Scheduled execution (skips briefing)
@@ -587,7 +596,11 @@ class TaskExecutor:
 
     def _load_agent_prompt(self, agent_id: str) -> str | None:
         """Load an agent's prompt file, return None if missing."""
-        from cohort.agent_router import get_agent_prompt_path
+        try:
+            from cohort.agent_router import get_agent_prompt_path
+        except ImportError:
+            logger.warning("[!] agent_router not available, cannot load prompt for %s", agent_id)
+            return None
         prompt_path = get_agent_prompt_path(agent_id)
         if not prompt_path:
             logger.warning("[!] No prompt file for %s", agent_id)

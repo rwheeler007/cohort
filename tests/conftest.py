@@ -1,21 +1,15 @@
-"""Shared fixtures for Cohort integration tests.
+"""Shared fixtures for Cohort core tests.
 
-Provides async app factories, httpx clients, mock agent configs,
-API key helpers, and pytest markers for both the Starlette server
-and the FastAPI agent_api.
+Provides data directories, storage backends, mock agent configs,
+and pytest markers for the open source core library.
 """
 
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
-from typing import AsyncGenerator
-from unittest.mock import patch
 
-import httpx
 import pytest
-import pytest_asyncio
 
 from cohort.chat import ChatManager
 from cohort.registry import JsonFileStorage
@@ -28,13 +22,10 @@ from cohort.registry import JsonFileStorage
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers."""
     config.addinivalue_line("markers", "integration: mark test as integration test")
-    config.addinivalue_line("markers", "server: mark test as Starlette server test")
-    config.addinivalue_line("markers", "agent_api: mark test as FastAPI agent_api test")
-    config.addinivalue_line("markers", "socketio: mark test as Socket.IO event test")
 
 
 # =====================================================================
-# Core data fixtures (shared across all test types)
+# Core data fixtures
 # =====================================================================
 
 @pytest.fixture
@@ -101,112 +92,3 @@ def agents_dir(tmp_path: Path) -> Path:
             encoding="utf-8",
         )
     return agents_root
-
-
-# =====================================================================
-# API key fixtures (for agent_api tier testing)
-# =====================================================================
-
-FREE_KEY = "test-free-key"
-PRO_KEY = "test-pro-key"
-ENTERPRISE_KEY = "test-enterprise-key"
-INVALID_KEY = "test-invalid-key"
-
-
-@pytest.fixture
-def api_keys_env() -> str:
-    """API keys string in COHORT_AGENT_API_KEYS format."""
-    return f"{FREE_KEY}:free,{PRO_KEY}:pro,{ENTERPRISE_KEY}:enterprise"
-
-
-# =====================================================================
-# Starlette server app factory
-# =====================================================================
-
-@pytest_asyncio.fixture
-async def server_app(data_dir: Path, agents_dir: Path):
-    """Create a Starlette server ASGI app with isolated data."""
-    env = {
-        "COHORT_DATA_DIR": str(data_dir),
-        "COHORT_AGENTS_DIR": str(agents_dir),
-        "COHORT_AGENTS_ROOT": str(agents_dir.parent),
-    }
-    with patch.dict(os.environ, env, clear=False):
-        from cohort.server import create_app
-        app = create_app(data_dir=str(data_dir))
-    return app
-
-
-@pytest_asyncio.fixture
-async def server_client(server_app) -> AsyncGenerator[httpx.AsyncClient, None]:
-    """httpx.AsyncClient wired to the Starlette server via ASGITransport."""
-    transport = httpx.ASGITransport(app=server_app)
-    # Patch route_mentions to prevent background thread spawning during tests.
-    # The send_message endpoint lazily imports route_mentions from agent_router,
-    # and the background thread outlives the test event loop causing teardown errors.
-    with patch("cohort.agent_router.route_mentions"):
-        async with httpx.AsyncClient(
-            transport=transport,
-            base_url="http://testserver",
-        ) as client:
-            yield client
-
-
-# =====================================================================
-# FastAPI agent_api app factory
-# =====================================================================
-
-@pytest_asyncio.fixture
-async def agent_api_app(agents_dir: Path, api_keys_env: str):
-    """Create a FastAPI agent_api app with isolated agents and keys."""
-    import cohort.agent_api as api_mod
-
-    env = {
-        "COHORT_AGENT_API_DIR": str(agents_dir),
-        "COHORT_AGENT_API_KEYS": api_keys_env,
-    }
-    with patch.dict(os.environ, env, clear=False):
-        # Reset module-level state so lifespan re-reads env
-        api_mod._API_KEYS.clear()
-        api_mod.AGENTS_DIR = agents_dir
-        api_mod._load_api_keys()
-        yield api_mod.app
-
-
-@pytest_asyncio.fixture
-async def agent_api_client(agent_api_app) -> AsyncGenerator[httpx.AsyncClient, None]:
-    """httpx.AsyncClient wired to the FastAPI agent_api via ASGITransport."""
-    transport = httpx.ASGITransport(app=agent_api_app)
-    async with httpx.AsyncClient(
-        transport=transport,
-        base_url="http://testserver",
-    ) as client:
-        yield client
-
-
-# =====================================================================
-# Convenience header fixtures for agent_api auth
-# =====================================================================
-
-@pytest.fixture
-def free_headers() -> dict[str, str]:
-    """Headers with free-tier API key."""
-    return {"X-API-Key": FREE_KEY}
-
-
-@pytest.fixture
-def pro_headers() -> dict[str, str]:
-    """Headers with pro-tier API key."""
-    return {"X-API-Key": PRO_KEY}
-
-
-@pytest.fixture
-def enterprise_headers() -> dict[str, str]:
-    """Headers with enterprise-tier API key."""
-    return {"X-API-Key": ENTERPRISE_KEY}
-
-
-@pytest.fixture
-def no_auth_headers() -> dict[str, str]:
-    """Headers with no API key (anonymous)."""
-    return {}

@@ -2,13 +2,11 @@
 
 Usage::
 
-    python -m cohort serve                  # start HTTP server
-    python -m cohort serve --port 8080      # custom port
-    python -m cohort serve --data-dir /tmp  # custom data directory
-
     python -m cohort say --sender architect --channel review --file conv.jsonl --message "Hello"
     python -m cohort gate --agent architect --channel review --file conv.jsonl --agents agents.json
     python -m cohort next-speaker --channel review --file conv.jsonl --agents agents.json
+    python -m cohort briefing generate --hours 24
+    python -m cohort setup
 """
 
 import argparse
@@ -250,12 +248,6 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="cohort -- multi-agent orchestration")
     sub = parser.add_subparsers(dest="command")
 
-    # -- serve ----------------------------------------------------------
-    serve_parser = sub.add_parser("serve", help="Start the HTTP server")
-    serve_parser.add_argument("--host", default="0.0.0.0", help="Bind address")
-    serve_parser.add_argument("--port", type=int, default=5100, help="Port")
-    serve_parser.add_argument("--data-dir", default="data", help="Data directory")
-
     # -- gate -----------------------------------------------------------
     gate_parser = sub.add_parser("gate", help="Check if an agent should respond")
     gate_parser.add_argument("--agent", required=True, help="Agent ID to check")
@@ -282,14 +274,6 @@ def main() -> None:
     say_parser.add_argument("--channel", required=True, help="Channel ID")
     say_parser.add_argument("--file", required=True, help="Path to conversation .jsonl file")
     say_parser.add_argument("--message", required=True, help="Message content")
-
-    # -- serve-agents ---------------------------------------------------
-    sa_parser = sub.add_parser(
-        "serve-agents", help="Start the Agent API server (agent-as-a-service)"
-    )
-    sa_parser.add_argument("--host", default="0.0.0.0", help="Bind address")
-    sa_parser.add_argument("--port", type=int, default=8200, help="Port")
-    sa_parser.add_argument("--agents-dir", default=None, help="Path to agents directory")
 
     # -- briefing -------------------------------------------------------
     brief_parser = sub.add_parser("briefing", help="Generate or view executive briefing")
@@ -321,12 +305,6 @@ def main() -> None:
         from cohort.local.setup import run_setup
 
         sys.exit(run_setup())
-    elif args.command == "serve":
-        from cohort.server import serve
-
-        print(f"[*] cohort server starting on {args.host}:{args.port}")
-        print(f"[*] data dir: {args.data_dir}")
-        serve(host=args.host, port=args.port, data_dir=args.data_dir)
     elif args.command == "gate":
         sys.exit(_cmd_gate(args))
     elif args.command == "next-speaker":
@@ -335,13 +313,6 @@ def main() -> None:
         sys.exit(_cmd_say(args))
     elif args.command == "briefing":
         sys.exit(_cmd_briefing(args))
-    elif args.command == "serve-agents":
-        from cohort.agent_api import serve_agents
-
-        print(f"[*] cohort agent API starting on {args.host}:{args.port}")
-        if args.agents_dir:
-            print(f"[*] agents dir: {args.agents_dir}")
-        serve_agents(host=args.host, port=args.port, agents_dir=args.agents_dir)
     else:
         parser.print_help()
         sys.exit(1)

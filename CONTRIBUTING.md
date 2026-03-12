@@ -5,7 +5,7 @@ Thanks for your interest in contributing to Cohort. This guide covers the basics
 ## Development Setup
 
 ```bash
-git clone https://github.com/cohort-dev/cohort.git
+git clone https://github.com/rwheeler007/cohort.git
 cd cohort
 pip install -e ".[dev]"
 ```
@@ -33,7 +33,7 @@ All three checks (pytest, ruff, mypy) must pass before submitting a PR.
 
 - **Ruff** handles formatting and linting -- run `ruff check --fix` before committing
 - **Type hints** on all public functions
-- **No new dependencies** for the core library (`cohort/`). The zero-dep core is a design constraint, not an accident. Optional extras (`[server]`, `[claude]`) can add dependencies.
+- **No new dependencies** for the core library (`cohort/`). The zero-dep core is a design constraint, not an accident. The `[claude]` extra can add dependencies (httpx, fastmcp).
 
 ## What to Work On
 
@@ -51,4 +51,4 @@ Open an issue with:
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the Apache License 2.0.

@@ -4,6 +4,17 @@ Provides native MCP tool access to cohort channels, messages, and
 checklists.  Returns compact, pre-filtered responses to minimise
 token usage in iterative conversations.
 
+Supports two modes:
+
+* **Full mode** -- connects to a running Cohort web app via HTTP
+  (CohortClient).  All features including live agent routing,
+  session management, briefings, and work queue.
+* **Lite mode** -- file-backed storage only (LiteBackend).  Works
+  standalone without the web app.  Channel CRUD, messages, agent
+  profiles, checklists, and search.
+
+Mode is auto-detected on startup by probing the Cohort server.
+
 Usage::
 
     python -m cohort.mcp.server          # stdio transport (default)
@@ -12,6 +23,8 @@ Usage::
 
 from __future__ import annotations
 
+import logging
+import os
 import re
 import uuid
 from collections import Counter
@@ -22,7 +35,9 @@ from typing import List, Optional
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, ConfigDict, Field
 
-from cohort.mcp.client import CohortClient
+from cohort.mcp.client import CohortClient, DEFAULT_URL
+
+logger = logging.getLogger(__name__)
 
 # =====================================================================
 # Server
@@ -42,8 +57,34 @@ _STOP_WORDS = frozenset(
     "he him his she her they them their what which who whom".split()
 )
 
-# Default client instance
-_client = CohortClient()
+
+def _create_backend():
+    """Auto-detect whether the Cohort server is running and pick a backend.
+
+    Returns a CohortClient (full mode) or LiteBackend (lite mode).
+    """
+    import httpx
+
+    base_url = os.environ.get("COHORT_SERVER_URL", DEFAULT_URL)
+    try:
+        resp = httpx.get(f"{base_url}/health", timeout=2.0)
+        if resp.status_code == 200:
+            logger.info("[*] MCP: connected to Cohort server at %s", base_url)
+            return CohortClient(base_url=base_url)
+    except Exception:
+        pass
+
+    # Server not reachable -- use lite file-backed mode
+    from cohort.mcp.lite_backend import LiteBackend
+
+    data_dir = os.environ.get("COHORT_DATA_DIR", "data")
+    agents_dir = os.environ.get("COHORT_AGENTS_DIR")
+    logger.info("[*] MCP: lite mode (file-backed, data_dir=%s)", data_dir)
+    return LiteBackend(data_dir=data_dir, agents_dir=agents_dir)
+
+
+# Backend instance -- auto-detected on import
+_client = _create_backend()
 
 
 # =====================================================================

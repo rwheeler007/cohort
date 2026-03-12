@@ -611,6 +611,8 @@ class BenchmarkRunner:
             self._execute_arm(run, run.arm_b, scenario, channel_id, "B")
 
             run.completed_at = datetime.now().isoformat()
+            run.status = "complete"
+            self._persist(run)  # Save as complete BEFORE scoring attempt
 
             # Auto-score both arms
             self._emit_sync("benchmark:scoring", {"run_id": run.id})
@@ -900,32 +902,61 @@ class BenchmarkRunner:
 **Agent responses to evaluate:**
 {combined_responses}
 
-**Evaluation criteria (score each 0-5, where 0=completely missed, 3=adequate, 5=excellent):**
+**Evaluation criteria:**
 {criteria_lines}
 
-Score ONLY based on what is present in the responses. Be strict but fair.
+**Scoring rubric (use the FULL range — most scores should be 2-4, not 4-5):**
+- 0: Not mentioned at all
+- 1: Mentioned but wrong or misleading (e.g., claims to fix an issue but the fix code has bugs)
+- 2: Partially addressed — identifies the issue but explanation is shallow or fix is incomplete
+- 3: Adequate — correctly identifies and explains the issue with a reasonable fix
+- 4: Strong — thorough analysis with correct, production-quality fix code
+- 5: Exceptional — only award 5 if the response demonstrates insight beyond the obvious (e.g., catches edge cases, explains WHY the fix works, considers operational impact). A score of 5 should be rare.
+
+**Verification rules:**
+- If code examples are provided, CHECK them for correctness. Code with syntax errors, undefined variables, or non-existent APIs scores at most 2 regardless of how well the concept is explained.
+- If an agent claims to correct another agent's work, verify the correction is actually right. Wrong corrections score 1.
+- "Challenges Assumptions" requires the challenge to be VALID. Challenging something that was already correct scores 0-1.
+- "Convergence" requires a SINGLE unified plan, not two separate proposals restated.
 
 Respond with ONLY a JSON object mapping criterion_id to integer score. No other text.
-Example: {{"sql_injection": 4, "weak_hash": 5, ...}}
+Example: {{"sql_injection": 3, "weak_hash": 2, ...}}
 
 JSON:"""
 
             try:
-                from cohort.local import LocalRouter
-                router = LocalRouter()
-                result = router.route(
-                    judge_prompt,
-                    task_type="reasoning",
-                    temperature=0.1,
-                    response_mode="smarter",
+                # Use Claude CLI as judge for accurate scoring
+                import subprocess
+                import sys
+                import os
+
+                claude_cmd = os.environ.get("COHORT_CLAUDE_CMD", "claude")
+                cli_cmd = [claude_cmd, "-p", "-"]
+                if sys.platform == "win32":
+                    cli_cmd = ["cmd", "/c"] + cli_cmd
+
+                proc = subprocess.run(
+                    cli_cmd,
+                    input=judge_prompt,
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
+                    shell=False,
+                    encoding="utf-8",
+                    errors="replace",
                 )
 
-                if result is None or not result.text.strip():
-                    logger.warning("[!] Auto-scorer returned empty for arm %s", arm_key)
+                text = proc.stdout.strip()
+                if proc.returncode != 0 and not text:
+                    logger.warning("[!] Claude judge failed for arm %s: %s", arm_key, proc.stderr[:200])
+                    continue
+
+                if not text:
+                    logger.warning("[!] Claude judge returned empty for arm %s", arm_key)
                     continue
 
                 # Extract JSON from response (may have markdown fences)
-                text = result.text.strip()
+                text = text.strip()
                 if "```" in text:
                     # Pull content between first ``` pair
                     parts = text.split("```")
@@ -955,6 +986,8 @@ JSON:"""
                     ", ".join(f"{k}={v}" for k, v in valid_scores.items()),
                 )
 
+            except subprocess.TimeoutExpired:
+                logger.warning("[!] Claude judge timed out for arm %s (300s)", arm_key)
             except (json.JSONDecodeError, ValueError) as exc:
                 logger.warning("[!] Auto-scorer JSON parse failed for arm %s: %s", arm_key, exc)
             except Exception:

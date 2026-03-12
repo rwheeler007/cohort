@@ -89,7 +89,7 @@ COHORT            </a>
             </a>
             <a href="#cli" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
                 <div style="font-weight: 600; color: #f85149; margin-bottom: 0.25rem;">CLI Reference</div>
-                <div style="font-size: 0.85rem;">serve, say, gate, next-speaker</div>
+                <div style="font-size: 0.85rem;">say, gate, next-speaker, setup</div>
             </a>
         </div>
     </div>
@@ -109,14 +109,11 @@ COHORT            </a>
 <pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Zero-dependency core</span>
 pip install cohort
 
-<span style="color: #888;"># REST API + Socket.IO dashboard</span>
-pip install cohort[server]
-
 <span style="color: #888;"># MCP bridge for Claude Code</span>
 pip install cohort[claude]
 
-<span style="color: #888;"># Agent-as-a-service HTTP API</span>
-pip install cohort[agent-api]
+<span style="color: #888;"># Development tools (pytest, ruff, mypy)</span>
+pip install cohort[dev]
 
 <span style="color: #888;"># Everything</span>
 pip install cohort[all]</pre>
@@ -144,9 +141,10 @@ agents = {
     <span style="color: #3fb950;">"tester"</span>:    {<span style="color: #3fb950;">"triggers"</span>: [<span style="color: #3fb950;">"testing"</span>, <span style="color: #3fb950;">"qa"</span>], <span style="color: #3fb950;">"capabilities"</span>: [<span style="color: #3fb950;">"test strategy"</span>]},
 }
 
-<span style="color: #888;"># 3. Start orchestrator session</span>
+<span style="color: #888;"># 3. Post a message and start a session</span>
+chat.post_message(<span style="color: #3fb950;">"design-review"</span>, sender=<span style="color: #3fb950;">"user"</span>, content=<span style="color: #3fb950;">"Review the REST API design"</span>)
 orch = Orchestrator(chat, agents=agents)
-session = orch.start_session(<span style="color: #3fb950;">"design-review"</span>, <span style="color: #3fb950;">"REST API design review"</span>, list(agents))
+session = orch.start_session(<span style="color: #3fb950;">"design-review"</span>, <span style="color: #3fb950;">"REST API design review"</span>, initial_agents=list(agents))
 
 <span style="color: #888;"># 4. Get next speaker recommendation</span>
 rec = orch.get_next_speaker(session.session_id)
@@ -155,7 +153,7 @@ print(f<span style="color: #3fb950;">"Next: {rec['recommended_speaker']} - {rec[
 <span style="color: #888;"># 5. Record a turn (agent spoke)</span>
 orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</span>, <span style="color: #3fb950;">"msg-001"</span>)</pre>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">No HTTP server required. The orchestrator works directly with file-backed storage. Add cohort[server] when you want the dashboard.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">No HTTP server required. The orchestrator works directly with file-backed storage.</p>
         </div>
 
         <!-- Agent Development -->
@@ -227,7 +225,7 @@ orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</
         <div id="api" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[API]</div>
             <h2 class="responsive-h2">API Reference</h2>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Start the server with <code>python -m cohort serve --port 5100</code>. All endpoints return JSON.</p>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">When using cohort as a library, the REST API is available for integration. All endpoints return JSON.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
                 <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">REST API endpoints</div>
@@ -323,10 +321,7 @@ condense_channel   <span style="color: #888;"># Archive + summarize old messages
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
                 <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">CLI commands</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Start HTTP server with dashboard</span>
-python -m cohort serve --host 0.0.0.0 --port 5100 --data-dir data
-
-<span style="color: #888;"># Post a message (file-based, no server)</span>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Post a message (file-based, no server)</span>
 python -m cohort say --sender architect --channel review \
     --file conv.jsonl --message <span style="color: #3fb950;">"We need pagination"</span>
 
@@ -357,7 +352,7 @@ python -m cohort setup</pre>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.8);">Install Cohort and have your first multi-agent discussion running in under five minutes.</p>
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
         <div class="button-group" style="margin-top: 1rem;">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">GitHub</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary">GitHub</a>
             <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
@@ -375,20 +370,20 @@ python -m cohort setup</pre>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

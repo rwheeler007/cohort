@@ -4,13 +4,11 @@
 
 ## Hero Section
 
-### Headline (A/B test both)
+### Headline
 
-**Option A:**
 # Finished work, not drafts.
 
-**Option B:**
-# Day One Productive.
+*Decision (2026-03-11): "Finished work, not drafts" selected. Already live on website. "Day One Productive" remains a supporting tagline (Pillar 5) but not the hero.*
 
 ### Subheadline
 Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships -- so you get finished results, not suggestions to babysit. It looks like the tools your team already lives in. No training required.
@@ -165,8 +163,8 @@ Code is written, reviewed, tested, and security-audited. Marketing copy is draft
 - **5-dimension contribution scoring**: Domain expertise, complementary value, historical success, phase alignment, data ownership. Deterministic, auditable, no black box.
 - **Security agent architecture**: Participates in orchestration loop, not bolted on as a post-process. Write access controls, credential detection, human approval gates.
 - **Hardware-aware local LLM routing**: Detects your GPU, sizes models automatically. Three response tiers: smart (fast), smarter (default), smartest (premium quality).
-- **488+ tests** across 26 test files. Python 3.11, 3.12, 3.13.
-- **MIT licensed.** Extracted from 18 months of production infrastructure.
+- **785+ tests** across 25 test files. Python 3.11, 3.12, 3.13.
+- **Apache 2.0 licensed.** Extracted from 18 months of production infrastructure.
 
 ```
 pip install cohort              # Core (zero deps)
