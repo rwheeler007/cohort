@@ -283,8 +283,8 @@ def test_get_model_for_vram_tier2():
 
 
 def test_get_model_for_vram_tier3():
-    """Test model selection for 6-10GB VRAM."""
-    model = get_model_for_vram(7000)  # 7GB
+    """Test model selection for 8-10GB VRAM."""
+    model = get_model_for_vram(9000)  # 9GB
     assert model == "qwen3.5:9b"
 
 

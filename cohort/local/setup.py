@@ -16,6 +16,7 @@ import json
 import os
 import platform
 import shutil
+import subprocess
 import sys
 import time
 import urllib.error
@@ -1095,6 +1096,70 @@ def _step_content_pipeline(data_dir: str = "data") -> bool:
 
 
 # =====================================================================
+# =====================================================================
+# Global Agent Link Helper
+# =====================================================================
+
+def _create_global_agent_links(cohort_root: Path) -> None:
+    """Junction/symlink ~/.claude/agents and ~/.claude/skills to Cohort.
+
+    Makes Cohort agents available in any Claude Code project, not just
+    the Cohort folder.  Non-blocking -- warns on failure, never crashes.
+    Works on Windows (junction) and macOS/Linux (symlink).
+    """
+    global_claude = Path.home() / ".claude"
+    global_claude.mkdir(exist_ok=True)
+
+    targets = {
+        "agents": cohort_root / ".claude" / "agents",
+        "skills": cohort_root / ".claude" / "skills",
+    }
+
+    plat = platform.system()
+    all_ok = True
+
+    for name, source in targets.items():
+        link = global_claude / name
+
+        if not source.exists():
+            _print_warn(f"  Source not found, skipping: {source}")
+            all_ok = False
+            continue
+
+        if link.exists():
+            # Real directory (not a link) -- don't clobber user files
+            if not os.path.islink(str(link)):
+                _print_warn(
+                    f"  {link} already exists as a real directory. "
+                    f"Remove it manually to enable global agents."
+                )
+                all_ok = False
+                continue
+            # Already linked -- nothing to do
+            continue
+
+        try:
+            if plat == "Windows":
+                result = subprocess.run(
+                    ["cmd", "/c", "mklink", "/J", str(link), str(source)],
+                    check=True, capture_output=True, text=True,
+                )
+            else:
+                link.symlink_to(source)
+        except Exception as exc:  # noqa: BLE001
+            _print_warn(f"  Could not link {name}: {exc}")
+            all_ok = False
+            continue
+
+    if all_ok:
+        _print_ok("Agents available in all Claude Code projects.")
+    else:
+        _print_info(
+            "Some agent links could not be created. "
+            "See docs/setup.md for manual steps."
+        )
+
+
 # Step 8: Claude Code Connection
 # =====================================================================
 
@@ -1181,6 +1246,36 @@ def _step_claude_connection() -> bool:
     settings["force_to_claude_code"] = force_claude
     settings["claude_enabled"] = True
 
+    # --- Default Permissions for new projects ---
+    print()
+    print("  Default agent permissions for new projects:")
+    print("    1. developer  -- Read, Write, Edit, Bash, Glob, Grep  (recommended)")
+    print("    2. readonly   -- Read, Glob, Grep only")
+    print("    3. researcher -- Read + web search")
+    print()
+    profile_choice = _ask_input("Pick a profile for new projects", "1")
+    profile_map = {"1": "developer", "2": "readonly", "3": "researcher"}
+    default_profile = profile_map.get(profile_choice, "developer")
+
+    # Drive-level deny list
+    print()
+    print("  Which drives/paths should agents NEVER edit?")
+    print("  (comma-separated, e.g. D:/ or /mnt/backup -- leave blank for none)")
+    deny_raw = _ask_input("Deny paths", "")
+    deny_paths: list[str] = [p.strip() for p in deny_raw.split(",") if p.strip()] if deny_raw else []
+
+    settings["default_permissions"] = {
+        "profile": default_profile,
+        "allow_paths": [],   # filled per-project at creation time
+        "deny_paths": deny_paths,
+        "allowed_tools": {
+            "developer":  ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+            "readonly":   ["Read", "Glob", "Grep"],
+            "researcher": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+        }.get(default_profile, ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]),
+        "max_turns": 15,
+    }
+
     try:
         settings_path.parent.mkdir(parents=True, exist_ok=True)
         settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
@@ -1199,6 +1294,11 @@ def _step_claude_connection() -> bool:
         _print_ok("Smartest [S++] mode available -- Claude CLI detected!")
     else:
         _print_info("Smartest [S++] mode requires a working Claude CLI.")
+
+    # --- Global Agent Availability ---
+    print()
+    _print_info("Making your agents available in all Claude Code projects...")
+    _create_global_agent_links(script_root)
 
     return True
 

@@ -109,6 +109,48 @@ def _save_settings(settings: dict[str, Any]) -> None:
         logger.warning("Failed to save settings.json: %s", exc)
 
 
+def _apply_global_agent_links(enable: bool) -> None:
+    """Create or remove ~/.claude/agents and ~/.claude/skills junctions/symlinks.
+
+    Called when the user toggles the global agents setting.  Non-blocking.
+    """
+    import os
+    import platform
+    import subprocess as _sp
+
+    cohort_root = Path(__file__).resolve().parent.parent
+    global_claude = Path.home() / ".claude"
+    link_names = ("agents", "skills")
+
+    if enable:
+        global_claude.mkdir(exist_ok=True)
+        plat = platform.system()
+        for name in link_names:
+            source = cohort_root / ".claude" / name
+            link = global_claude / name
+            if not source.exists() or link.exists():
+                continue
+            try:
+                if plat == "Windows":
+                    _sp.run(
+                        ["cmd", "/c", "mklink", "/J", str(link), str(source)],
+                        check=True, capture_output=True, text=True,
+                    )
+                else:
+                    link.symlink_to(source)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Could not create global agent link %s: %s", name, exc)
+    else:
+        for name in link_names:
+            link = global_claude / name
+            try:
+                if os.path.islink(str(link)):
+                    link.unlink()
+                # Never remove real directories -- only junctions/symlinks
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Could not remove global agent link %s: %s", name, exc)
+
+
 def _load_tool_filter() -> tuple[list[str], dict[str, str]] | None:
     """Load curated tool ID list and display names from cohort_tools.json.
 
@@ -1529,9 +1571,15 @@ async def get_settings(request: Request) -> JSONResponse:
         "smartest_available": smartest_available,
         "admin_mode": settings.get("admin_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
+        "global_agents_linked": settings.get("global_agents_linked", False),
         "user_display_name": settings.get("user_display_name", ""),
         "user_display_role": settings.get("user_display_role", ""),
         "user_display_avatar": settings.get("user_display_avatar", ""),
+        "default_permissions": settings.get("default_permissions", {
+            "profile": "developer",
+            "deny_paths": [],
+            "max_turns": 15,
+        }),
     })
 
 
@@ -1564,6 +1612,10 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["admin_mode"] = bool(body["admin_mode"])
     if "force_to_claude_code" in body:
         settings["force_to_claude_code"] = bool(body["force_to_claude_code"])
+    if "global_agents_linked" in body:
+        want = bool(body["global_agents_linked"])
+        settings["global_agents_linked"] = want
+        _apply_global_agent_links(want)
     if "user_display_name" in body:
         name = str(body["user_display_name"]).strip()[:40]
         settings["user_display_name"] = name
@@ -1573,6 +1625,28 @@ async def post_settings(request: Request) -> JSONResponse:
     if "user_display_avatar" in body:
         avatar = str(body["user_display_avatar"]).strip().upper()[:3]
         settings["user_display_avatar"] = avatar
+    if "default_permissions" in body:
+        dp = body["default_permissions"]
+        if isinstance(dp, dict):
+            valid_profiles = {"readonly", "developer", "researcher", "research_local", "research_hybrid", "minimal"}
+            profile = dp.get("profile", "developer")
+            if profile not in valid_profiles:
+                profile = "developer"
+            deny_paths = [str(p) for p in dp.get("deny_paths", []) if str(p).strip()]
+            settings["default_permissions"] = {
+                "profile": profile,
+                "allow_paths": [],
+                "deny_paths": deny_paths,
+                "allowed_tools": {
+                    "developer":  ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+                    "readonly":   ["Read", "Glob", "Grep"],
+                    "researcher": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+                    "research_local": ["Read", "Glob", "Grep"],
+                    "research_hybrid": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+                    "minimal": [],
+                }.get(profile, ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]),
+                "max_turns": max(1, min(50, int(dp.get("max_turns", 15)))),
+            }
 
     _save_settings(settings)
 
@@ -2534,6 +2608,60 @@ async def setup_write_mcp_config(request: Request) -> JSONResponse:
         return JSONResponse({"success": True})
     except OSError as exc:
         return JSONResponse({"success": False, "error": str(exc)}, status_code=500)
+
+
+async def setup_global_agents(request: Request) -> JSONResponse:
+    """POST /api/setup/global-agents -- junction ~/.claude/agents and skills to Cohort.
+
+    Makes Cohort agents available in any Claude Code project, not just the
+    Cohort folder.  Non-blocking -- returns success:false with a message on
+    failure rather than raising.
+    """
+    import os
+    import platform
+    import subprocess as _sp
+
+    cohort_root = Path(__file__).resolve().parent.parent
+    global_claude = Path.home() / ".claude"
+    global_claude.mkdir(exist_ok=True)
+
+    targets = {
+        "agents": cohort_root / ".claude" / "agents",
+        "skills": cohort_root / ".claude" / "skills",
+    }
+
+    plat = platform.system()
+    warnings: list[str] = []
+
+    for name, source in targets.items():
+        link = global_claude / name
+
+        if not source.exists():
+            warnings.append(f"Source not found: {source}")
+            continue
+
+        if link.exists():
+            if not os.path.islink(str(link)):
+                warnings.append(
+                    f"{link} exists as a real directory -- remove it manually to enable global agents"
+                )
+            # Already linked or real dir handled above -- skip
+            continue
+
+        try:
+            if plat == "Windows":
+                _sp.run(
+                    ["cmd", "/c", "mklink", "/J", str(link), str(source)],
+                    check=True, capture_output=True, text=True,
+                )
+            else:
+                link.symlink_to(source)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"Could not link {name}: {exc}")
+
+    if warnings:
+        return JSONResponse({"success": False, "warnings": warnings})
+    return JSONResponse({"success": True})
 
 
 async def setup_detect_claude(request: Request) -> JSONResponse:
@@ -4917,6 +5045,369 @@ async def website_serve_preview(request: Request) -> Response:
 
 
 # =====================================================================
+# Project Manager endpoints
+# =====================================================================
+
+def _projects_registry_path() -> Path:
+    """Path to the projects registry JSON file."""
+    return Path(_resolved_data_dir) / "projects_registry.json"
+
+
+def _load_projects_registry() -> dict[str, Any]:
+    """Load projects registry.  Returns {"projects": [...]} ."""
+    path = _projects_registry_path()
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {"projects": []}
+
+
+def _save_projects_registry(data: dict[str, Any]) -> None:
+    path = _projects_registry_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def _scan_project(entry: dict[str, Any]) -> dict[str, Any]:
+    """Enrich a registry entry with live filesystem status."""
+    project_dir = Path(entry["path"])
+    entry["exists"] = project_dir.exists()
+    entry["has_manifest"] = (project_dir / ".cohort").exists() if entry["exists"] else False
+    entry["has_git"] = (project_dir / ".git").exists() if entry["exists"] else False
+
+    # Read manifest permissions if present
+    if entry["has_manifest"]:
+        try:
+            from cohort.project_manifest import CohortManifest
+            manifest = CohortManifest.load(project_dir)
+            entry["permissions"] = manifest.permissions.to_dict()
+        except Exception:
+            entry["permissions"] = None
+    else:
+        entry["permissions"] = None
+
+    return entry
+
+
+async def list_projects(request: Request) -> JSONResponse:
+    """GET /api/projects -- list all registered projects with live status."""
+    registry = _load_projects_registry()
+    projects = [_scan_project(dict(p)) for p in registry.get("projects", [])]
+    return JSONResponse({"projects": projects})
+
+
+async def create_project(request: Request) -> JSONResponse:
+    """POST /api/projects -- create a new project (like 'cohort new')."""
+    import subprocess as _sp
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    name = str(body.get("name", "")).strip()
+    parent = str(body.get("parent_dir", "")).strip()
+    profile = str(body.get("profile", "developer")).strip()
+    deny_paths = [str(p).strip() for p in body.get("deny_paths", []) if str(p).strip()]
+    max_turns = max(1, min(50, int(body.get("max_turns", 15))))
+    init_git = bool(body.get("init_git", True))
+
+    if not name:
+        return JSONResponse({"error": "Project name is required"}, status_code=400)
+    if not parent:
+        return JSONResponse({"error": "Parent directory is required"}, status_code=400)
+
+    parent_path = Path(parent)
+    if not parent_path.exists():
+        return JSONResponse({"error": f"Parent directory not found: {parent}"}, status_code=400)
+
+    project_dir = parent_path / name
+    if project_dir.exists():
+        return JSONResponse({"error": f"Directory already exists: {project_dir}"}, status_code=400)
+
+    cohort_root = Path(__file__).resolve().parent.parent
+    settings = _load_settings()
+
+    # Profile -> tools mapping
+    profile_tools = {
+        "developer":  ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+        "readonly":   ["Read", "Glob", "Grep"],
+        "researcher": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+        "minimal":    [],
+    }
+
+    try:
+        # Create directory
+        project_dir.mkdir(parents=True)
+
+        # Git init
+        if init_git:
+            try:
+                _sp.run(["git", "init", str(project_dir)], check=True, capture_output=True, text=True)
+            except Exception:
+                pass
+
+        # Housekeeping: .gitignore
+        gitignore = project_dir / ".gitignore"
+        gitignore.write_text(
+            "# Cohort working memory\n.cohort-memory/\n\n# Secrets\n.env\n*.pem\n*.key\n\n"
+            "# Python\n__pycache__/\n*.py[cod]\n.venv/\nvenv/\n\n"
+            "# Node\nnode_modules/\n.next/\ndist/\n\n"
+            "# OS / IDE\n.DS_Store\nThumbs.db\n.vscode/\n.idea/\n",
+            encoding="utf-8",
+        )
+
+        # .env.example + .env
+        (project_dir / ".env.example").write_text(
+            "# Copy to .env and fill in values\n# .env is git-ignored\n", encoding="utf-8"
+        )
+        (project_dir / ".env").write_text("# Project secrets -- do not commit\n", encoding="utf-8")
+
+        # Build manifest
+        from cohort.project_manifest import CohortManifest, ProjectPermissions
+        permissions = ProjectPermissions(
+            profile=profile,
+            allow_paths=[str(project_dir)],
+            deny_paths=deny_paths,
+            allowed_tools=profile_tools.get(profile, profile_tools["developer"]),
+            max_turns=max_turns,
+        )
+        manifest = CohortManifest.create(
+            project_dir=project_dir,
+            cohort_root=cohort_root,
+            project_name=name,
+            permissions=permissions,
+        )
+        manifest.write(project_dir)
+        manifest.ensure_working_memory_dir(project_dir)
+
+        # Register in projects list
+        registry = _load_projects_registry()
+        registry["projects"].append({
+            "name": name,
+            "path": str(project_dir),
+            "created_at": __import__("datetime").datetime.now().isoformat(),
+            "type": "new",
+        })
+        _save_projects_registry(registry)
+
+        return JSONResponse({
+            "success": True,
+            "project": _scan_project({
+                "name": name,
+                "path": str(project_dir),
+                "type": "new",
+            }),
+        })
+
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def link_project(request: Request) -> JSONResponse:
+    """POST /api/projects/link -- link an existing directory (like 'cohort link')."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    dir_path = str(body.get("dir", "")).strip()
+    name_override = str(body.get("name", "")).strip() or None
+    profile = str(body.get("profile", "developer")).strip()
+    deny_paths = [str(p).strip() for p in body.get("deny_paths", []) if str(p).strip()]
+    max_turns = max(1, min(50, int(body.get("max_turns", 15))))
+
+    if not dir_path:
+        return JSONResponse({"error": "Directory path is required"}, status_code=400)
+
+    project_dir = Path(dir_path).resolve()
+    if not project_dir.exists():
+        return JSONResponse({"error": f"Directory not found: {project_dir}"}, status_code=400)
+
+    if (project_dir / ".cohort").exists():
+        return JSONResponse({"error": "Project already linked (has .cohort file)"}, status_code=400)
+
+    cohort_root = Path(__file__).resolve().parent.parent
+    project_name = name_override or project_dir.name
+
+    profile_tools = {
+        "developer":  ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+        "readonly":   ["Read", "Glob", "Grep"],
+        "researcher": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+        "minimal":    [],
+    }
+
+    try:
+        # Housekeeping: merge .gitignore
+        gitignore = project_dir / ".gitignore"
+        cohort_lines = [".cohort-memory/", ".env"]
+        if gitignore.exists():
+            existing = gitignore.read_text(encoding="utf-8")
+            additions = [line for line in cohort_lines if line not in existing]
+            if additions:
+                gitignore.write_text(
+                    existing.rstrip() + "\n" + "\n".join(additions) + "\n",
+                    encoding="utf-8",
+                )
+        else:
+            gitignore.write_text("\n".join(cohort_lines) + "\n", encoding="utf-8")
+
+        # .env.example + .env
+        if not (project_dir / ".env.example").exists():
+            (project_dir / ".env.example").write_text(
+                "# Copy to .env and fill in values\n# .env is git-ignored\n", encoding="utf-8"
+            )
+        if not (project_dir / ".env").exists():
+            (project_dir / ".env").write_text("# Project secrets -- do not commit\n", encoding="utf-8")
+
+        # Build manifest
+        from cohort.project_manifest import CohortManifest, ProjectPermissions
+        permissions = ProjectPermissions(
+            profile=profile,
+            allow_paths=[str(project_dir)],
+            deny_paths=deny_paths,
+            allowed_tools=profile_tools.get(profile, profile_tools["developer"]),
+            max_turns=max_turns,
+        )
+        manifest = CohortManifest.create(
+            project_dir=project_dir,
+            cohort_root=cohort_root,
+            project_name=project_name,
+            permissions=permissions,
+        )
+        manifest.write(project_dir)
+        manifest.ensure_working_memory_dir(project_dir)
+
+        # Register
+        registry = _load_projects_registry()
+        registry["projects"].append({
+            "name": project_name,
+            "path": str(project_dir),
+            "created_at": __import__("datetime").datetime.now().isoformat(),
+            "type": "linked",
+        })
+        _save_projects_registry(registry)
+
+        return JSONResponse({
+            "success": True,
+            "project": _scan_project({
+                "name": project_name,
+                "path": str(project_dir),
+                "type": "linked",
+            }),
+        })
+
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+def _decode_project_path(encoded: str) -> str:
+    """Decode a URL-safe base64-encoded project path (padding-tolerant)."""
+    import base64
+    # Re-add padding stripped by JS
+    padded = encoded + "=" * (-len(encoded) % 4)
+    return base64.urlsafe_b64decode(padded).decode("utf-8")
+
+
+async def update_project_permissions(request: Request) -> JSONResponse:
+    """PUT /api/projects/{project_path}/permissions -- update a project's .cohort permissions."""
+    encoded_path = request.path_params["project_path"]
+    try:
+        project_path = _decode_project_path(encoded_path)
+    except Exception:
+        return JSONResponse({"error": "Invalid project path encoding"}, status_code=400)
+
+    project_dir = Path(project_path)
+    if not (project_dir / ".cohort").exists():
+        return JSONResponse({"error": "No .cohort manifest found"}, status_code=404)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    profile_tools = {
+        "developer":  ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+        "readonly":   ["Read", "Glob", "Grep"],
+        "researcher": ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
+        "minimal":    [],
+    }
+
+    try:
+        from cohort.project_manifest import CohortManifest, ProjectPermissions
+        manifest = CohortManifest.load(project_dir)
+
+        profile = str(body.get("profile", manifest.permissions.profile)).strip()
+        deny_paths = body.get("deny_paths", manifest.permissions.deny_paths)
+        max_turns = max(1, min(50, int(body.get("max_turns", manifest.permissions.max_turns))))
+
+        from dataclasses import replace as _replace
+        manifest = _replace(manifest, permissions=ProjectPermissions(
+            profile=profile,
+            allow_paths=manifest.permissions.allow_paths,
+            deny_paths=[str(p).strip() for p in deny_paths if str(p).strip()],
+            allowed_tools=profile_tools.get(profile, manifest.permissions.allowed_tools),
+            max_turns=max_turns,
+        ))
+        manifest.write(project_dir)
+
+        return JSONResponse({"success": True, "permissions": manifest.permissions.to_dict()})
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def delete_project(request: Request) -> JSONResponse:
+    """DELETE /api/projects/{project_path} -- unregister a project (does NOT delete files)."""
+    encoded_path = request.path_params["project_path"]
+    try:
+        project_path = _decode_project_path(encoded_path)
+    except Exception:
+        return JSONResponse({"error": "Invalid project path encoding"}, status_code=400)
+
+    registry = _load_projects_registry()
+    before = len(registry["projects"])
+    registry["projects"] = [p for p in registry["projects"] if p.get("path") != project_path]
+    after = len(registry["projects"])
+
+    if before == after:
+        return JSONResponse({"error": "Project not found in registry"}, status_code=404)
+
+    _save_projects_registry(registry)
+    return JSONResponse({"success": True})
+
+
+async def open_project_vscode(request: Request) -> JSONResponse:
+    """POST /api/projects/open-vscode -- open a project directory in VS Code."""
+    import shutil
+    import subprocess as _sp
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    dir_path = str(body.get("dir", "")).strip()
+    if not dir_path:
+        return JSONResponse({"error": "dir is required"}, status_code=400)
+
+    project_dir = Path(dir_path)
+    if not project_dir.exists():
+        return JSONResponse({"error": f"Directory not found: {dir_path}"}, status_code=404)
+
+    code_cmd = shutil.which("code") or shutil.which("code.cmd")
+    if not code_cmd:
+        return JSONResponse({"error": "VS Code CLI not found on PATH"}, status_code=404)
+
+    try:
+        _sp.Popen([code_cmd, str(project_dir)], close_fds=True)
+        return JSONResponse({"success": True})
+    except OSError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+# =====================================================================
 # App factory
 # =====================================================================
 
@@ -5133,6 +5624,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/detect-claude", setup_detect_claude, methods=["POST"]),
         Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
         Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
+        Route("/api/setup/global-agents", setup_global_agents, methods=["POST"]),
         # Session endpoints (canonical)
         Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
         Route("/api/sessions/setup-parse", session_setup_parse, methods=["POST"]),
@@ -5216,6 +5708,13 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/benchmark/start", benchmark_start, methods=["POST"]),
         Route("/api/benchmark/runs/{run_id}/score", benchmark_score, methods=["POST"]),
         Route("/api/benchmark/runs/{run_id}/auto-score", benchmark_auto_score, methods=["POST"]),
+        # Project Manager
+        Route("/api/projects", list_projects, methods=["GET"]),
+        Route("/api/projects", create_project, methods=["POST"]),
+        Route("/api/projects/link", link_project, methods=["POST"]),
+        Route("/api/projects/open-vscode", open_project_vscode, methods=["POST"]),
+        Route("/api/projects/{project_path}", delete_project, methods=["DELETE"]),
+        Route("/api/projects/{project_path}/permissions", update_project_permissions, methods=["PUT"]),
         # Website Creator
         Route("/api/website/create", website_create, methods=["POST"]),
         Route("/api/website/worksheet", website_worksheet, methods=["GET"]),

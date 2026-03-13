@@ -669,6 +669,15 @@ const setupWizard = {
             if (timeoutInput) timeoutInput.value = settings.response_timeout || 300;
             if (forceClaudeInput) forceClaudeInput.checked = settings.force_to_claude_code || false;
 
+            // Populate default permissions from saved settings
+            const dp = settings.default_permissions || {};
+            const profileInput = $('#setup-perm-profile');
+            const denyInput = $('#setup-perm-deny');
+            const maxTurnsInput = $('#setup-perm-max-turns');
+            if (profileInput && dp.profile) profileInput.value = dp.profile;
+            if (denyInput && dp.deny_paths) denyInput.value = (dp.deny_paths || []).join(', ');
+            if (maxTurnsInput && dp.max_turns) maxTurnsInput.value = dp.max_turns;
+
             // Smartest mode status
             const smartestEl = $('#setup-smartest-status');
             if (smartestEl) {
@@ -728,12 +737,20 @@ const setupWizard = {
 
     _gatherClaudeFields() {
         const timeoutVal = parseInt(($('#setup-response-timeout') || {}).value) || 300;
+        const maxTurnsVal = parseInt(($('#setup-perm-max-turns') || {}).value) || 15;
+        const denyRaw = ($('#setup-perm-deny') || {}).value || '';
+        const denyPaths = denyRaw.split(',').map(s => s.trim()).filter(Boolean);
         return {
             claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
             agents_root: ($('#setup-agents-root') || {}).value || '',
             execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
             response_timeout: Math.max(30, Math.min(600, timeoutVal)),
             force_to_claude_code: ($('#setup-force-claude') || {}).checked || false,
+            default_permissions: {
+                profile: ($('#setup-perm-profile') || {}).value || 'developer',
+                deny_paths: denyPaths,
+                max_turns: Math.max(1, Math.min(50, maxTurnsVal)),
+            },
         };
     },
 
@@ -760,12 +777,25 @@ const setupWizard = {
             if (data.success) {
                 this.markDone(7);
                 showToast('Claude Code settings saved!', 'success');
+                // Make agents available globally across all Claude Code projects
+                this._linkGlobalAgents();
             } else {
                 showToast(data.error || 'Failed to save', 'error');
             }
         } catch (e) {
             showToast('Failed to save Claude settings', 'error');
         }
+    },
+
+    async _linkGlobalAgents() {
+        try {
+            const resp = await fetch('/api/setup/global-agents', { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                showToast('Agents available in all your projects!', 'success');
+            }
+            // Silently ignore failures -- non-blocking quality-of-life feature
+        } catch (e) { /* non-blocking */ }
     },
 
     async finish() {

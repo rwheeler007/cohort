@@ -47,6 +47,10 @@ function openSettings() {
             const forceClaudeToggle = document.getElementById('settings-force-claude-code');
             if (forceClaudeToggle) forceClaudeToggle.checked = !!data.force_to_claude_code;
 
+            // Global agents toggle
+            const globalAgentsToggle = document.getElementById('settings-global-agents');
+            if (globalAgentsToggle) globalAgentsToggle.checked = !!data.global_agents_linked;
+
             // Admin mode toggle
             state.adminMode = !!data.admin_mode;
             const adminToggle = document.getElementById('settings-admin-mode');
@@ -133,6 +137,8 @@ function saveSettings(e) {
     const adminToggle = document.getElementById('settings-admin-mode');
     const claudeToggle = document.getElementById('settings-claude-enabled');
     const forceClaudeCode = document.getElementById('settings-force-claude-code');
+    const globalAgentsToggle = document.getElementById('settings-global-agents');
+    const wantsGlobalAgents = globalAgentsToggle ? globalAgentsToggle.checked : false;
     const payload = {
         user_display_name: dom.settingsUserName ? dom.settingsUserName.value.trim() : '',
         user_display_role: dom.settingsUserRole ? dom.settingsUserRole.value.trim() : '',
@@ -144,6 +150,7 @@ function saveSettings(e) {
         execution_backend: dom.settingsExecBackend ? dom.settingsExecBackend.value : 'cli',
         admin_mode: adminToggle ? adminToggle.checked : false,
         force_to_claude_code: forceClaudeCode ? forceClaudeCode.checked : false,
+        global_agents_linked: wantsGlobalAgents,
     };
 
     // Only include API key if user typed a real value (not the masked placeholder)

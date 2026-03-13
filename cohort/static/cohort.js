@@ -1050,6 +1050,7 @@ function _toolLetterTag(toolId) {
         document_processor:          'D',
         health_monitor:              'H',
         llm_manager:                 'L',
+        project_manager:             'P',
     };
     return tags[toolId] || '?';
 }
@@ -1110,6 +1111,7 @@ const toolRenderers = {
     document_processor: renderDocProcessorPanel,
     health_monitor: renderHealthMonitorPanel,
     llm_manager: renderLLMManagerPanel,
+    project_manager: renderProjectManagerPanel,
 };
 
 function toolHeader(tool, statusHtml) {
@@ -4658,6 +4660,313 @@ async function deleteLLMModel(name) {
         showToast('Failed: ' + err.message, 'error');
     }
 }
+
+// =====================================================================
+// Project Manager tool panel
+// =====================================================================
+
+async function renderProjectManagerPanel(tool) {
+    let projects = [];
+    try {
+        const resp = await fetch('/api/projects');
+        const data = await resp.json();
+        projects = data.projects || [];
+    } catch {}
+
+    const settings = _load_settings_cache || {};
+    const defaultProfile = (settings.default_permissions || {}).profile || 'developer';
+
+    const headerStatus = projects.length
+        ? `<span class="tool-status-dot tool-status-dot--up"></span> ${projects.length} project${projects.length === 1 ? '' : 's'}`
+        : '<span class="tool-status-dot tool-status-dot--idle"></span> No projects';
+
+    const profileOptions = ['developer', 'readonly', 'researcher', 'minimal'];
+    const profileSelect = (id, selected) => profileOptions.map(p =>
+        `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`
+    ).join('');
+
+    // Project list rows
+    const projectRows = projects.map(p => {
+        const encodedPath = btoa(p.path).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        const statusDot = p.exists
+            ? (p.has_manifest ? 'up' : 'idle')
+            : 'down';
+        const statusLabel = p.exists
+            ? (p.has_manifest ? 'Linked' : 'No manifest')
+            : 'Missing';
+        const perms = p.permissions || {};
+        const profile = perms.profile || 'unknown';
+        const tools = (perms.allowed_tools || []).join(', ') || '--';
+        const deny = (perms.deny_paths || []).join(', ') || 'none';
+        const turns = perms.max_turns || '--';
+
+        return `
+            <div class="project-card" data-path="${escapeHtml(p.path)}">
+                <div class="project-card__header">
+                    <div>
+                        <strong>${escapeHtml(p.name)}</strong>
+                        <span class="tool-status-dot tool-status-dot--${statusDot}" style="margin-left:var(--space-1)"></span>
+                        <span style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin-left:var(--space-1)">${statusLabel}</span>
+                    </div>
+                    <div style="display:flex;gap:var(--space-1)">
+                        <button class="btn btn--small btn--secondary" onclick="openProjectVSCode('${escapeHtml(p.path)}')" title="Open in VS Code">[VS]</button>
+                        <button class="btn btn--small btn--secondary" onclick="toggleProjectPerms(this)" title="Edit permissions">[E]</button>
+                        <button class="btn btn--small btn--danger" onclick="removeProject('${encodedPath}')" title="Unregister">[X]</button>
+                    </div>
+                </div>
+                <p style="font-size:var(--font-size-xs);color:var(--color-text-secondary);margin:var(--space-1) 0 0">${escapeHtml(p.path)}</p>
+                <div style="display:flex;gap:var(--space-3);margin-top:var(--space-1);font-size:var(--font-size-xs);color:var(--color-text-secondary)">
+                    <span>Profile: <strong>${escapeHtml(profile)}</strong></span>
+                    <span>Turns: <strong>${turns}</strong></span>
+                    <span>Deny: ${escapeHtml(deny)}</span>
+                </div>
+                <div class="project-card__perms" style="display:none;margin-top:var(--space-2);padding-top:var(--space-2);border-top:1px solid var(--color-border)">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2)">
+                        <div>
+                            <label style="font-size:var(--font-size-xs)">Profile</label>
+                            <select class="filter-select" data-field="profile" style="width:100%">${profileSelect('', profile)}</select>
+                        </div>
+                        <div>
+                            <label style="font-size:var(--font-size-xs)">Max turns</label>
+                            <input type="number" class="ws-try-it__input" data-field="max_turns" value="${turns}" min="1" max="50" style="width:100%">
+                        </div>
+                    </div>
+                    <div style="margin-top:var(--space-1)">
+                        <label style="font-size:var(--font-size-xs)">Deny paths (comma-separated)</label>
+                        <input type="text" class="ws-try-it__input" data-field="deny_paths" value="${escapeHtml(deny === 'none' ? '' : deny)}" style="width:100%" placeholder="e.g. D:/, C:/Windows">
+                    </div>
+                    <button class="btn btn--small btn--primary" style="margin-top:var(--space-2)" onclick="saveProjectPerms(this, '${encodedPath}')">Save Permissions</button>
+                </div>
+            </div>`;
+    }).join('');
+
+    dom.toolPanelContent.innerHTML = `<div class="tool-dashboard">
+        ${toolHeader(tool, headerStatus)}
+
+        ${configSectionFull('Your Projects', `
+            <div id="project-list" style="display:flex;flex-direction:column;gap:var(--space-2)">
+                ${projectRows || '<div class="empty-state"><p class="empty-state__text">No projects registered yet</p><p class="empty-state__hint">Create a new project or link an existing directory below</p></div>'}
+            </div>
+        `)}
+
+        ${configSectionFull('New Project', `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2)">
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Project name</label>
+                    <input type="text" class="ws-try-it__input" id="pm-new-name" placeholder="my-project" style="width:100%">
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Parent directory</label>
+                    <input type="text" class="ws-try-it__input" id="pm-new-parent" placeholder="G:/" style="width:100%">
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Profile</label>
+                    <select class="filter-select" id="pm-new-profile" style="width:100%">${profileSelect('pm-new-profile', defaultProfile)}</select>
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Max turns</label>
+                    <input type="number" class="ws-try-it__input" id="pm-new-turns" value="15" min="1" max="50" style="width:100%">
+                </div>
+            </div>
+            <div style="margin-top:var(--space-2)">
+                <label style="font-size:var(--font-size-xs)">Deny paths (comma-separated)</label>
+                <input type="text" class="ws-try-it__input" id="pm-new-deny" placeholder="D:/, C:/Windows" style="width:100%">
+            </div>
+            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-2)">
+                <label style="font-size:var(--font-size-xs);display:flex;align-items:center;gap:var(--space-1)">
+                    <input type="checkbox" id="pm-new-git" checked> Init git
+                </label>
+            </div>
+            <button class="btn btn--primary" style="margin-top:var(--space-2)" id="pm-create-btn" onclick="createNewProject()">Create Project</button>
+            <span id="pm-create-status" style="font-size:var(--font-size-xs);margin-left:var(--space-2);color:var(--color-text-secondary)"></span>
+        `)}
+
+        ${configSectionFull('Link Existing Directory', `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2)">
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Directory path</label>
+                    <input type="text" class="ws-try-it__input" id="pm-link-dir" placeholder="G:/MyProject" style="width:100%">
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Name (optional override)</label>
+                    <input type="text" class="ws-try-it__input" id="pm-link-name" placeholder="(uses directory name)" style="width:100%">
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Profile</label>
+                    <select class="filter-select" id="pm-link-profile" style="width:100%">${profileSelect('pm-link-profile', defaultProfile)}</select>
+                </div>
+                <div>
+                    <label style="font-size:var(--font-size-xs)">Max turns</label>
+                    <input type="number" class="ws-try-it__input" id="pm-link-turns" value="15" min="1" max="50" style="width:100%">
+                </div>
+            </div>
+            <div style="margin-top:var(--space-2)">
+                <label style="font-size:var(--font-size-xs)">Deny paths (comma-separated)</label>
+                <input type="text" class="ws-try-it__input" id="pm-link-deny" placeholder="D:/, C:/Windows" style="width:100%">
+            </div>
+            <button class="btn btn--primary" style="margin-top:var(--space-2)" id="pm-link-btn" onclick="linkExistingProject()">Link Project</button>
+            <span id="pm-link-status" style="font-size:var(--font-size-xs);margin-left:var(--space-2);color:var(--color-text-secondary)"></span>
+        `)}
+    </div>`;
+}
+
+// Cache settings for default profile (lazy-loaded)
+let _load_settings_cache = null;
+(async () => {
+    try {
+        const r = await fetch('/api/settings');
+        _load_settings_cache = await r.json();
+    } catch {}
+})();
+
+function toggleProjectPerms(btn) {
+    const card = btn.closest('.project-card');
+    const permsDiv = card.querySelector('.project-card__perms');
+    permsDiv.style.display = permsDiv.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveProjectPerms(btn, encodedPath) {
+    const card = btn.closest('.project-card');
+    const profile = card.querySelector('[data-field="profile"]').value;
+    const maxTurns = parseInt(card.querySelector('[data-field="max_turns"]').value) || 15;
+    const denyRaw = card.querySelector('[data-field="deny_paths"]').value;
+    const denyPaths = denyRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+    try {
+        const resp = await fetch(`/api/projects/${encodedPath}/permissions`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profile, max_turns: maxTurns, deny_paths: denyPaths }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showToast('Permissions updated', 'success');
+            const tool = (state.tools || []).find(t => t.id === 'project_manager');
+            if (tool) renderProjectManagerPanel(tool);
+        } else {
+            showToast(data.error || 'Failed', 'error');
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function createNewProject() {
+    const name = ($('#pm-new-name') || {}).value?.trim();
+    const parent = ($('#pm-new-parent') || {}).value?.trim();
+    const profile = ($('#pm-new-profile') || {}).value || 'developer';
+    const turns = parseInt(($('#pm-new-turns') || {}).value) || 15;
+    const denyRaw = ($('#pm-new-deny') || {}).value || '';
+    const initGit = ($('#pm-new-git') || {}).checked !== false;
+    const statusEl = $('#pm-create-status');
+
+    if (!name || !parent) {
+        showToast('Name and parent directory are required', 'error');
+        return;
+    }
+
+    statusEl.textContent = 'Creating...';
+    try {
+        const resp = await fetch('/api/projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name, parent_dir: parent, profile,
+                max_turns: turns, init_git: initGit,
+                deny_paths: denyRaw.split(',').map(s => s.trim()).filter(Boolean),
+            }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showToast(`Project "${name}" created`, 'success');
+            statusEl.textContent = '';
+            const tool = (state.tools || []).find(t => t.id === 'project_manager');
+            if (tool) renderProjectManagerPanel(tool);
+        } else {
+            statusEl.textContent = '';
+            showToast(data.error || 'Failed', 'error');
+        }
+    } catch (err) {
+        statusEl.textContent = '';
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function linkExistingProject() {
+    const dir = ($('#pm-link-dir') || {}).value?.trim();
+    const name = ($('#pm-link-name') || {}).value?.trim() || '';
+    const profile = ($('#pm-link-profile') || {}).value || 'developer';
+    const turns = parseInt(($('#pm-link-turns') || {}).value) || 15;
+    const denyRaw = ($('#pm-link-deny') || {}).value || '';
+    const statusEl = $('#pm-link-status');
+
+    if (!dir) {
+        showToast('Directory path is required', 'error');
+        return;
+    }
+
+    statusEl.textContent = 'Linking...';
+    try {
+        const resp = await fetch('/api/projects/link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                dir, name, profile,
+                max_turns: turns,
+                deny_paths: denyRaw.split(',').map(s => s.trim()).filter(Boolean),
+            }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showToast(`Linked "${data.project.name}"`, 'success');
+            statusEl.textContent = '';
+            const tool = (state.tools || []).find(t => t.id === 'project_manager');
+            if (tool) renderProjectManagerPanel(tool);
+        } else {
+            statusEl.textContent = '';
+            showToast(data.error || 'Failed', 'error');
+        }
+    } catch (err) {
+        statusEl.textContent = '';
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function removeProject(encodedPath) {
+    if (!confirm('Unregister this project? (Files will NOT be deleted)')) return;
+    try {
+        const resp = await fetch(`/api/projects/${encodedPath}`, { method: 'DELETE' });
+        const data = await resp.json();
+        if (data.success) {
+            showToast('Project unregistered', 'success');
+            const tool = (state.tools || []).find(t => t.id === 'project_manager');
+            if (tool) renderProjectManagerPanel(tool);
+        } else {
+            showToast(data.error || 'Failed', 'error');
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+async function openProjectVSCode(dir) {
+    try {
+        const resp = await fetch('/api/projects/open-vscode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dir }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showToast('Opened in VS Code', 'success');
+        } else {
+            showToast(data.error || 'Failed', 'error');
+        }
+    } catch (err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
 
 // =====================================================================
 // Channel rendering

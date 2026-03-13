@@ -1,33 +1,42 @@
 {
   "tools": [
+    "web_search",
+    "llm_manager",
+    "health_monitor",
+    "document_processor",
     "comms_service",
     "intel_scheduler",
     "content_monitor_scheduler",
-    "web_search",
-    "health_monitor",
-    "llm_manager",
-    "document_processor",
-    "youtube_service"
+    "youtube_service",
+    "website_creator",
+    "content_projects",
+    "project_manager"
   ],
   "display_names": {
+    "web_search": "Web Search",
+    "llm_manager": "LLM Manager",
+    "health_monitor": "Health Monitor",
+    "document_processor": "Document Processor",
     "comms_service": "Communications",
     "intel_scheduler": "RSS Intelligence",
     "content_monitor_scheduler": "Content Monitor",
-    "web_search": "Web Search",
-    "health_monitor": "Health Monitor",
-    "llm_manager": "LLM Manager",
-    "document_processor": "Document Processor",
-    "youtube_service": "YouTube"
+    "youtube_service": "YouTube",
+    "website_creator": "Website Creator",
+    "content_projects": "Content Projects",
+    "project_manager": "Projects"
   },
   "descriptions": {
+    "web_search": "Search the web and fetch pages for research",
+    "llm_manager": "Local LLM inference management and model switching",
+    "health_monitor": "Service health checks and alerting",
+    "document_processor": "Document ingestion and processing pipeline",
     "comms_service": "Email drafts, social posts, and webhook notifications",
     "intel_scheduler": "RSS feed monitoring and tech intelligence gathering",
     "content_monitor_scheduler": "Automated content analysis and post drafting",
-    "web_search": "Search the web and fetch pages for research",
-    "health_monitor": "Service health checks and alerting",
-    "llm_manager": "Local LLM inference management and model switching",
-    "document_processor": "Document ingestion and processing pipeline",
-    "youtube_service": "YouTube content monitoring and analysis"
+    "youtube_service": "YouTube content monitoring and analysis",
+    "website_creator": "Generate full websites from YAML briefs or worksheets",
+    "content_projects": "Multi-project content strategy, scoring, and pipeline management",
+    "project_manager": "Create, link, and manage Cohort-connected projects"
   },
   "health_endpoints": {
     "comms_service": "http://localhost:5100/api/comms/status",

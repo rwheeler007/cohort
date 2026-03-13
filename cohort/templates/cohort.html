@@ -726,6 +726,13 @@
                                             <span>Force all responses through Claude Code <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
                                         </label>
                                     </div>
+                                    <div class="form-group" style="margin-top: 0.75rem;">
+                                        <label class="toggle-label" for="settings-global-agents" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                            <input type="checkbox" id="settings-global-agents" class="toggle-input">
+                                            <span class="toggle-switch"></span>
+                                            <span>Make agents available in all Claude Code projects <small style="opacity: 0.6;">(links ~/.claude/agents to Cohort)</small></span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1228,6 +1235,47 @@
                                 <span id="setup-claude-text">Not tested</span>
                             </div>
                         </div>
+
+                        <!-- Default Permissions for new projects -->
+                        <div class="setup-wizard__card" style="margin-top:var(--space-4)">
+                            <h4 style="margin-bottom:var(--space-1)">Default Agent Permissions</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-3)">
+                                When you run <code>cohort new</code> or <code>cohort link</code>, each project
+                                inherits these defaults. You can always override per-project.
+                            </p>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-perm-profile" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Default Tool Profile
+                                </label>
+                                <select class="form-input" id="setup-perm-profile">
+                                    <option value="developer">developer -- Read, Write, Edit, Bash, Glob, Grep (recommended)</option>
+                                    <option value="readonly">readonly -- Read, Glob, Grep only</option>
+                                    <option value="researcher">researcher -- Read + web search</option>
+                                    <option value="minimal">minimal -- no tools (pure text)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-perm-deny" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Deny Paths (agents must never edit these)
+                                </label>
+                                <input type="text" class="form-input form-input--mono" id="setup-perm-deny"
+                                       placeholder="D:/, /mnt/backup  (comma-separated, leave blank for none)">
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    Drive letters or directories agents are never allowed to modify, across all projects.
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="setup-perm-max-turns" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Max Agent Turns per Task
+                                </label>
+                                <input type="number" class="form-input" id="setup-perm-max-turns"
+                                       value="15" min="1" max="50" step="1" style="width:100px">
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    How many steps an agent can take before stopping (1-50).
+                                </span>
+                            </div>
+                        </div>
+
                         <button class="btn btn--primary" id="setup-claude-save-btn" style="margin-top:var(--space-3)">
                             Save Claude Settings
                         </button>

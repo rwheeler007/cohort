@@ -71,16 +71,7 @@
       "max_turns": 1
     }
   },
-  "agent_defaults": {
-    "core_developers": "minimal",
-    "infrastructure": "minimal",
-    "leadership": "minimal",
-    "marketing_content": "minimal",
-    "quality_security": "minimal",
-    "social_media": "minimal",
-    "specialists": "minimal",
-    "support": "minimal"
-  },
+  "agent_defaults": {},
   "mcp_servers": {
     "cohort": {
       "command": "python",
@@ -99,16 +90,7 @@
   },
   "denied_tools": [],
   "file_permissions": {
-    "defaults": {
-      "core_developers": [],
-      "infrastructure": [],
-      "leadership": [],
-      "marketing_content": [],
-      "quality_security": [],
-      "social_media": [],
-      "specialists": [],
-      "support": []
-    },
+    "defaults": {},
     "agent_overrides": {}
   }
 }

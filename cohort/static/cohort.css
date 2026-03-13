@@ -5017,6 +5017,25 @@ select.tool-config-card__input option {
     display: block;
 }
 
+/* Project cards */
+.project-card {
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+}
+
+.project-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project-card .btn--danger {
+    color: var(--color-error);
+    border-color: var(--color-error);
+}
+
 /* Countdown timer */
 .tool-countdown {
     font-size: var(--font-size-sm);
