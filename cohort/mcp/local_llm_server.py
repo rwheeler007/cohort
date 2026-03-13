@@ -53,7 +53,7 @@ class GenerateInput(BaseModel):
     model: str = Field(
         default="",
         description=(
-            "Model name (e.g. 'qwen3:8b', 'qwen3:30b-a3b'). "
+            "Model name (e.g. 'qwen3.5:9b', 'qwen3.5:35b-a3b'). "
             "Empty string = auto-select based on GPU hardware."
         ),
         max_length=100,
@@ -165,7 +165,7 @@ def local_llm_models(params: ListModelsInput) -> str:
 
     models = _client.list_models()
     if not models:
-        return "No models installed. Pull one with: ollama pull qwen3:8b"
+        return "No models installed. Pull one with: ollama pull qwen3.5:9b"
 
     try:
         from cohort.local.config import MODEL_DESCRIPTIONS, get_tier_for_model

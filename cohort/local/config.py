@@ -188,9 +188,8 @@ SMARTEST_CLAUDE_PROMPT = (
 
 ROUNDTABLE_MODEL_PREFERENCES: list[str] = [
     DEFAULT_MODEL,
-    "qwen3:30b-a3b", "qwen3:30b", "qwen2.5:32b",
-    "llama3.1:70b", "llama3.3:70b",
-    "qwen3:8b", "llama3.2:3b",
+    "qwen3.5:35b-a3b", "qwen3.5:4b",
+    "qwen3.5:2b",
 ]
 
 # Empty-response retry: if tokens_out exceeds this but visible content
@@ -206,7 +205,7 @@ def get_model_for_vram(vram_mb: int) -> str:
         vram_mb: Available VRAM in megabytes
 
     Returns:
-        Model name (e.g., "qwen3:8b")
+        Model name (e.g., "qwen3.5:9b")
     """
     for mapping in VRAM_TIER_MODELS:
         min_vram, max_vram = mapping["vram_range"]
@@ -221,7 +220,7 @@ def get_tier_for_model(model_name: str) -> int | None:
     """Get the tier number for a model name.
 
     Args:
-        model_name: Model name (e.g., "qwen3:8b")
+        model_name: Model name (e.g., "qwen3.5:9b")
 
     Returns:
         Tier number (1-4) or None if model not in mapping.

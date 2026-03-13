@@ -100,7 +100,7 @@ class OllamaClient:
         """List available models on the Ollama server.
 
         Returns:
-            List of model names (e.g., ["llama3.2:1b", "qwen3:8b"])
+            List of model names (e.g., ["qwen3.5:2b", "qwen3.5:9b"])
             Empty list if server is down or no models installed.
         """
         try:
@@ -128,7 +128,7 @@ class OllamaClient:
         """Generate text completion from Ollama model.
 
         Args:
-            model: Model name (e.g., "qwen3:8b")
+            model: Model name (e.g., "qwen3.5:9b")
             prompt: Input text (user message)
             temperature: Sampling temperature (0.0-1.0)
             system: Optional system prompt (separate from user prompt)
