@@ -32,7 +32,6 @@ cohort/secret_store.py
 cohort/templates/
 cohort/static/
 cohort/website_creator/
-cohort/website/
 
 # Runtime data (generated at startup)
 data/
