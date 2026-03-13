@@ -24,6 +24,7 @@ import pytest_asyncio
 from cohort.chat import ChatManager
 from cohort.data_layer import CohortDataLayer
 from cohort.registry import JsonFileStorage
+from cohort.task_store import TaskStore
 
 
 # =====================================================================
@@ -63,15 +64,23 @@ def sio_data_layer(sio_chat: ChatManager) -> CohortDataLayer:
 
 
 @pytest_asyncio.fixture
-async def sio_env(sio_data_layer: CohortDataLayer, sio_chat: ChatManager):
-    """Set up the socketio_events module globals and yield (sio, chat, data_layer).
+async def sio_env(
+    sio_data_layer: CohortDataLayer,
+    sio_chat: ChatManager,
+    data_dir: Path,
+):
+    """Set up the socketio_events module globals and yield (sio, chat, data_layer, mock_emit).
 
     Patches ``sio.emit`` with an AsyncMock so we can capture outbound
-    events without a live transport.  Restores module globals on teardown.
+    events without a live transport.  Also wires a TaskStore so that
+    dashboard event tests (assign_task, confirm_task, submit_review)
+    have a working persistence layer.  Restores module globals on teardown.
     """
-    from cohort.socketio_events import setup_socketio, sio
+    from cohort.socketio_events import setup_socketio, setup_task_store, sio
 
     setup_socketio(sio_data_layer, chat=sio_chat)
+    task_store = TaskStore(data_dir)
+    setup_task_store(task_store)
 
     mock_emit = AsyncMock()
     with patch.object(sio, "emit", mock_emit):
@@ -82,6 +91,7 @@ async def sio_env(sio_data_layer: CohortDataLayer, sio_chat: ChatManager):
     _mod._data_layer = None
     _mod._chat = None
     _mod._task_executor = None
+    _mod._task_store = None
     _mod._work_queue = None
 
 
@@ -120,13 +130,16 @@ class TestConnectionLifecycle:
         result = await join(SID)
 
         assert result == {"status": "ok"}
-        mock_emit.assert_called_once()
-        call_args = mock_emit.call_args
-        assert call_args[0][0] == "cohort:team_update"
-        payload = call_args[0][1]
+        # join emits team_update + optionally tasks_sync and schedules_update
+        team_calls = [
+            c for c in mock_emit.call_args_list
+            if c[0][0] == "cohort:team_update"
+        ]
+        assert len(team_calls) == 1
+        payload = team_calls[0][0][1]
         assert "agents" in payload
         assert "total_agents" in payload
-        assert call_args[1]["to"] == SID
+        assert team_calls[0][1]["to"] == SID
 
     async def test_join_without_data_layer_returns_error(self, sio_chat):
         """join returns error dict when data layer is not initialised."""
@@ -393,13 +406,14 @@ class TestDashboardEvents:
 
     async def test_submit_review_success(self, sio_env):
         """submit_review with valid data returns ok and emits review event."""
-        sio, _chat, dl, mock_emit = sio_env
+        sio, _chat, _dl, mock_emit = sio_env
+        import cohort.socketio_events as _mod
         from cohort.socketio_events import submit_review
 
-        # Create a task first so recording a review makes sense
-        task = dl.assign_task("python_developer", "Write tests", "high")
+        # Create a task via TaskStore, then mark complete so review is valid
+        task = _mod._task_store.create_task("python_developer", "Write tests", "high")
         task_id = task["task_id"]
-        dl.complete_task(task_id)
+        _mod._task_store.complete_task(task_id)
         mock_emit.reset_mock()
 
         data = {"task_id": task_id, "verdict": "approved", "notes": "Looks good"}
@@ -499,10 +513,11 @@ class TestDashboardEvents:
 
     async def test_confirm_task_success(self, sio_env):
         """confirm_task transitions task from briefing to assigned."""
-        sio, _chat, dl, mock_emit = sio_env
+        sio, _chat, _dl, mock_emit = sio_env
+        import cohort.socketio_events as _mod
         from cohort.socketio_events import confirm_task
 
-        task = dl.assign_task("python_developer", "Implement feature", "medium")
+        task = _mod._task_store.create_task("python_developer", "Implement feature", "medium")
         task_id = task["task_id"]
         mock_emit.reset_mock()
 

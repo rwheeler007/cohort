@@ -30,7 +30,7 @@ async def test_health_returns_200_with_required_keys(agent_api_client):
     assert "version" in body
     assert "uptime_seconds" in body
     assert "agent_count" in body
-    assert body["agent_count"] == 5  # 5 mock agents in agents_dir
+    assert body["agent_count"] == 6  # 6 mock agents in agents_dir
 
 
 @pytest.mark.asyncio
@@ -143,15 +143,15 @@ async def test_anonymous_sees_only_free_tier_agents(
     """Anonymous GET /agents returns only free-tier agents from mock dir.
 
     Mock agents_dir has 5 agents. Of those, 3 are in FREE_TIER_AGENTS:
-    python_developer, web_developer, coding_orchestrator.
-    cohort_orchestrator is enterprise-only, ceo_agent is pro-only.
+    python_developer, web_developer (free store), cohort_orchestrator (hardcover).
+    coding_orchestrator and ceo_agent are pro-only (not in FREE_TIER_AGENTS).
     """
     resp = await agent_api_client.get("/agents", headers=no_auth_headers)
     assert resp.status_code == 200
     body = resp.json()
     assert body["tier"] == "anonymous"
     agent_ids = sorted(a["agent_id"] for a in body["agents"])
-    assert agent_ids == ["coding_orchestrator", "python_developer", "web_developer"]
+    assert agent_ids == ["cohort_orchestrator", "python_developer", "web_developer"]
     assert body["total"] == 3
 
 
@@ -160,35 +160,14 @@ async def test_anonymous_sees_only_free_tier_agents(
 async def test_pro_key_sees_all_non_enterprise_agents(
     agent_api_client, pro_headers
 ):
-    """Pro key GET /agents returns free + pro agents, excludes enterprise.
+    """Pro key GET /agents returns free + pro agents, excludes enterprise-only.
 
-    Expected: python_developer, web_developer, coding_orchestrator (free)
-    + ceo_agent (pro). cohort_orchestrator excluded (enterprise-only).
+    None of the 5 mock agents are in ENTERPRISE_ONLY_AGENTS, so pro sees all 5.
     """
     resp = await agent_api_client.get("/agents", headers=pro_headers)
     assert resp.status_code == 200
     body = resp.json()
     assert body["tier"] == "pro"
-    agent_ids = sorted(a["agent_id"] for a in body["agents"])
-    assert agent_ids == [
-        "ceo_agent",
-        "coding_orchestrator",
-        "python_developer",
-        "web_developer",
-    ]
-    assert body["total"] == 4
-
-
-@pytest.mark.asyncio
-@pytest.mark.agent_api
-async def test_enterprise_key_sees_all_agents(
-    agent_api_client, enterprise_headers
-):
-    """Enterprise key GET /agents returns all 5 mock agents."""
-    resp = await agent_api_client.get("/agents", headers=enterprise_headers)
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["tier"] == "enterprise"
     agent_ids = sorted(a["agent_id"] for a in body["agents"])
     assert agent_ids == [
         "ceo_agent",
@@ -202,12 +181,34 @@ async def test_enterprise_key_sees_all_agents(
 
 @pytest.mark.asyncio
 @pytest.mark.agent_api
+async def test_enterprise_key_sees_all_agents(
+    agent_api_client, enterprise_headers
+):
+    """Enterprise key GET /agents returns all 6 mock agents."""
+    resp = await agent_api_client.get("/agents", headers=enterprise_headers)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["tier"] == "enterprise"
+    agent_ids = sorted(a["agent_id"] for a in body["agents"])
+    assert agent_ids == [
+        "ceo_agent",
+        "coding_orchestrator",
+        "cohort_orchestrator",
+        "python_developer",
+        "supervisor_agent",
+        "web_developer",
+    ]
+    assert body["total"] == 6
+
+
+@pytest.mark.asyncio
+@pytest.mark.agent_api
 async def test_free_key_cannot_access_enterprise_agent_config(
     agent_api_client, free_headers
 ):
-    """Free key GET /agents/cohort_orchestrator/config returns 403."""
+    """Free key GET /agents/supervisor_agent/config returns 403."""
     resp = await agent_api_client.get(
-        "/agents/cohort_orchestrator/config", headers=free_headers
+        "/agents/supervisor_agent/config", headers=free_headers
     )
     assert resp.status_code == 403
 
@@ -241,9 +242,9 @@ async def test_invalid_api_key_returns_403(agent_api_client):
 async def test_free_key_blocked_from_enterprise_agent(
     agent_api_client, free_headers
 ):
-    """Free key accessing enterprise-only cohort_orchestrator/config gets 403."""
+    """Free key accessing enterprise-only supervisor_agent/config gets 403."""
     resp = await agent_api_client.get(
-        "/agents/cohort_orchestrator/config", headers=free_headers
+        "/agents/supervisor_agent/config", headers=free_headers
     )
     assert resp.status_code == 403
     body = resp.json()

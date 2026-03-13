@@ -9,7 +9,6 @@
     "content_monitor_scheduler",
     "youtube_service",
     "website_creator",
-    "content_projects",
     "project_manager"
   ],
   "display_names": {
@@ -22,7 +21,6 @@
     "content_monitor_scheduler": "Content Monitor",
     "youtube_service": "YouTube",
     "website_creator": "Website Creator",
-    "content_projects": "Content Projects",
     "project_manager": "Projects"
   },
   "descriptions": {
@@ -35,7 +33,6 @@
     "content_monitor_scheduler": "Automated content analysis and post drafting",
     "youtube_service": "YouTube content monitoring and analysis",
     "website_creator": "Generate full websites from YAML briefs or worksheets",
-    "content_projects": "Multi-project content strategy, scoring, and pipeline management",
     "project_manager": "Create, link, and manage Cohort-connected projects"
   },
   "health_endpoints": {
