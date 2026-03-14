@@ -71,6 +71,7 @@ class TemplateRenderer:
 
         # Build shared template context from the brief (all dicts)
         context = brief.to_dict()
+        context["jsonld"] = self._build_jsonld(brief)
 
         # 1. Generate CSS from tokens
         self._render_css(brief, output_dir)
@@ -97,6 +98,9 @@ class TemplateRenderer:
 
         # 7. Generate robots.txt
         self._render_robots(brief, output_dir)
+
+        # 8. Generate 404 page
+        self._render_404(brief, output_dir)
 
         return output_dir
 
@@ -347,22 +351,28 @@ document.addEventListener("DOMContentLoaded", function () {{
         if not brief.seo.canonical_base:
             return
 
+        from datetime import date
+        today = date.today().isoformat()
         base = brief.seo.canonical_base.rstrip("/")
-        urls = []
+        lines = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ]
         for page in brief.pages:
-            slug = page.slug if isinstance(page, dict) is False else page.get("slug", "")
             if hasattr(page, "slug"):
                 slug = page.slug
             elif isinstance(page, dict):
                 slug = page.get("slug", "")
+            else:
+                slug = ""
             priority = "1.0" if slug == "index" else "0.8"
-            urls.append(f"  <url><loc>{base}/{slug}.html</loc><priority>{priority}</priority></url>")
-
-        sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        sitemap += "\n".join(urls) + "\n"
-        sitemap += "</urlset>\n"
-        (output_dir / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+            lines.append(f"  <url>")
+            lines.append(f"    <loc>{base}/{slug}.html</loc>")
+            lines.append(f"    <lastmod>{today}</lastmod>")
+            lines.append(f"    <priority>{priority}</priority>")
+            lines.append(f"  </url>")
+        lines.append("</urlset>")
+        (output_dir / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     def _render_robots(self, brief: SiteBrief, output_dir: Path) -> None:
         """Generate robots.txt."""
@@ -371,3 +381,81 @@ document.addEventListener("DOMContentLoaded", function () {{
             base = brief.seo.canonical_base.rstrip("/")
             lines.append(f"Sitemap: {base}/sitemap.xml")
         (output_dir / "robots.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def _render_404(self, brief: SiteBrief, output_dir: Path) -> None:
+        """Generate a branded 404 page for static hosts."""
+        import dataclasses
+        brand = dataclasses.asdict(brief.brand)
+        name = brief.product_name or "Site"
+        lang = brief.language or "en"
+        html = f"""\
+<!DOCTYPE html>
+<html lang="{lang}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | {name}</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+                {name}
+            </a>
+        </div>
+    </nav>
+    <main id="main" style="text-align:center; padding:6rem 1rem;">
+        <h1 class="responsive-h1">Page Not Found</h1>
+        <p class="responsive-p-large" style="max-width:40ch;">
+            The page you're looking for doesn't exist or has been moved.
+        </p>
+        <a href="index.html" class="btn-primary" style="margin-top:2rem;">Back to Home</a>
+    </main>
+</body>
+</html>
+"""
+        (output_dir / "404.html").write_text(html, encoding="utf-8")
+
+    @staticmethod
+    def _build_jsonld(brief: SiteBrief) -> str:
+        """Build JSON-LD structured data for the homepage.
+
+        Generates Organization schema for all sites, plus LocalBusiness
+        if address/phone are provided (service businesses, restaurants).
+        """
+        canonical = brief.seo.canonical_base.rstrip("/") if brief.seo.canonical_base else ""
+
+        org: dict = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": brief.product_name,
+        }
+        if brief.description:
+            org["description"] = brief.description
+        if canonical:
+            org["url"] = canonical
+        if brief.logo and brief.logo.startswith("http"):
+            org["logo"] = brief.logo
+        if brief.seo.og_image:
+            org["image"] = brief.seo.og_image
+        if brief.contact.email:
+            org["email"] = brief.contact.email
+        if brief.contact.phone:
+            org["telephone"] = brief.contact.phone
+
+        # Social profiles
+        same_as = [s.url for s in brief.contact.social_links if s.url]
+        if same_as:
+            org["sameAs"] = same_as
+
+        # Upgrade to LocalBusiness if we have a physical address
+        if brief.contact.address:
+            org["@type"] = "LocalBusiness"
+            org["address"] = {
+                "@type": "PostalAddress",
+                "streetAddress": brief.contact.address,
+            }
+
+        return json.dumps(org, indent=2)

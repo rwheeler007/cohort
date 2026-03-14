@@ -17,7 +17,8 @@
             <!-- Form -->
             <div class="card">
                 <h2 class="responsive-h2">Send a Message</h2>
-                <form action="{{ page.content.form_action | default('#') }}" method="POST">
+                {% set _form_action = page.content.form_action or contact.form_action or ('mailto:' ~ contact.email if contact.email else '#') %}
+                <form action="{{ _form_action }}" method="POST"{% if _form_action.startswith('mailto:') %} enctype="text/plain"{% endif %}>
                     {% for field in contact.form_fields %}
                     <div class="form-group">
                         <label for="field-{{ loop.index }}">{{ field.label }}{% if field.required %} *{% endif %}</label>

@@ -230,6 +230,7 @@ class WebsiteCreator:
 
     def _validate(self, output_dir: Path, brief: SiteBrief) -> list[str]:
         """Basic validation of generated site."""
+        import re
         issues = []
 
         # Check all expected pages exist
@@ -246,11 +247,31 @@ class WebsiteCreator:
         # Check for broken internal links
         for html_file in output_dir.glob("*.html"):
             content = html_file.read_text(encoding="utf-8")
-            import re
             for m in re.finditer(r'href="([^"#][^"]*\.html)"', content):
                 link = m.group(1)
                 if not link.startswith("http") and not (output_dir / link).exists():
                     issues.append(f"{html_file.name}: broken link to {link}")
+
+        # SEO checks
+        for html_file in output_dir.glob("*.html"):
+            content = html_file.read_text(encoding="utf-8")
+            name = html_file.name
+            if '<meta name="description"' not in content:
+                issues.append(f"{name}: missing meta description")
+            if not re.search(r'<title>.+</title>', content):
+                issues.append(f"{name}: missing or empty <title>")
+            h1_count = len(re.findall(r'<h1[\s>]', content))
+            if h1_count == 0:
+                issues.append(f"{name}: no <h1> tag")
+            elif h1_count > 1:
+                issues.append(f"{name}: multiple <h1> tags ({h1_count})")
+            for img_match in re.finditer(r'<img\b([^>]*)>', content):
+                if 'alt=' not in img_match.group(1):
+                    issues.append(f"{name}: <img> missing alt attribute")
+
+        # Check robots.txt exists
+        if not (output_dir / "robots.txt").exists():
+            issues.append("Missing robots.txt")
 
         return issues
 

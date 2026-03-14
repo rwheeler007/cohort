@@ -135,6 +135,7 @@ class ContactInfo:
     email: str = ""
     phone: str = ""
     address: str = ""
+    form_action: str = ""         # Form endpoint (Formspree URL, Netlify, etc.)
     form_fields: list[dict[str, str]] = field(default_factory=list)
     social_links: list[SocialLink] = field(default_factory=list)
 
@@ -148,6 +149,7 @@ class SEOConfig:
     og_image: str = ""
     canonical_base: str = ""      # e.g. "https://cohort.dev"
     twitter_handle: str = ""
+    ga_measurement_id: str = ""   # Google Analytics 4 (e.g. "G-XXXXXXXXXX")
 
 
 @dataclass
@@ -183,6 +185,7 @@ class SiteBrief:
     description: str = ""         # 1-2 sentence elevator pitch
     logo: str = ""                # Path to logo file
     favicon: str = ""
+    language: str = "en"          # BCP 47 language tag for <html lang>
 
     # --- Brand ---
     brand: BrandTokens = field(default_factory=BrandTokens)
@@ -252,8 +255,8 @@ class SiteBrief:
 
         # Simple scalar fields
         for key in ("product_name", "tagline", "description", "logo",
-                    "favicon", "footer_text", "built_with_cohort",
-                    "assets_dir", "status"):
+                    "favicon", "language", "footer_text",
+                    "built_with_cohort", "assets_dir", "status"):
             if key in data:
                 setattr(brief, key, data[key])
 
