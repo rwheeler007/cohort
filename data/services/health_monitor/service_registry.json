@@ -16,7 +16,7 @@
     "ollama": {
       "port": 11434,
       "host": "127.0.0.1",
-      "description": "Ollama LLM inference server",
+      "description": "Ollama LLM inference server (GPU 1 - pinned via CUDA_VISIBLE_DEVICES)",
       "health_endpoint": "/api/tags",
       "start_command": "ollama serve",
       "start_cwd": ".",

@@ -6,6 +6,7 @@ Zero pip dependencies. Localhost-only for security.
 from __future__ import annotations
 
 import json
+import os
 import time
 import urllib.request
 from dataclasses import dataclass
@@ -45,14 +46,15 @@ class OllamaClient:
 
     def __init__(
         self,
-        base_url: str = "http://127.0.0.1:11434",
+        base_url: str | None = None,
         timeout: int = 180,
         health_cache_seconds: int = 60,
     ):
         """Initialize Ollama client.
 
         Args:
-            base_url: Ollama server URL (localhost only for security)
+            base_url: Ollama server URL (localhost only for security).
+                      Defaults to OLLAMA_HOST env var or http://127.0.0.1:11434.
             timeout: Request timeout in seconds
             health_cache_seconds: Cache health check results for this long
 
@@ -60,6 +62,12 @@ class OllamaClient:
             base_url must target localhost only (127.0.0.1 or localhost).
             Client refuses to connect to external hosts.
         """
+        if base_url is None:
+            base_url = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434")
+            # OLLAMA_HOST may be bare host:port without scheme
+            if not base_url.startswith("http"):
+                base_url = f"http://{base_url}"
+
         # D9: Security - localhost only
         if not ("127.0.0.1" in base_url or "localhost" in base_url):
             raise ValueError(f"Ollama base_url must be localhost, got: {base_url}")

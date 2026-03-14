@@ -19,6 +19,7 @@ class GPUInfo:
     index: int = 0
     name: str = "Unknown"
     vram_mb: int = 0
+    vram_free_mb: int = 0
 
 
 @dataclass
@@ -31,6 +32,7 @@ class HardwareInfo:
     platform: str = "unknown"
     gpus: list[GPUInfo] = field(default_factory=list)  # All detected GPUs
     total_vram_mb: int = 0  # Sum across all GPUs
+    total_vram_free_mb: int = 0  # Sum of free VRAM across all GPUs
 
 
 def detect_hardware() -> HardwareInfo:
@@ -50,11 +52,11 @@ def detect_hardware() -> HardwareInfo:
     # Try NVIDIA GPU detection (Linux/Windows)
     if plat in ("linux", "windows"):
         try:
-            # Hardcoded command: nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+            # Hardcoded command: nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv,noheader
             result = subprocess.run(
                 [
                     "nvidia-smi",
-                    "--query-gpu=name,memory.total",
+                    "--query-gpu=name,memory.total,memory.free",
                     "--format=csv,noheader",
                 ],
                 capture_output=True,
@@ -74,9 +76,16 @@ def detect_hardware() -> HardwareInfo:
                             vram = int(vram_str)
                         except ValueError:
                             continue
-                        gpu = GPUInfo(index=idx, name=name, vram_mb=vram)
+                        vram_free = 0
+                        if len(parts) >= 3:
+                            try:
+                                vram_free = int(parts[2].strip().split()[0])
+                            except (ValueError, IndexError):
+                                pass
+                        gpu = GPUInfo(index=idx, name=name, vram_mb=vram, vram_free_mb=vram_free)
                         info.gpus.append(gpu)
                         info.total_vram_mb += vram
+                        info.total_vram_free_mb += vram_free
                         if vram > best_vram:
                             best_vram = vram
                             info.gpu_name = name

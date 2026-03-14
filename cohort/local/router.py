@@ -184,6 +184,11 @@ class LocalRouter:
             if hw_info.cpu_only:
                 return None
 
+            # Skip local inference if free VRAM is too low (avoid glacial CPU offload)
+            if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
+                logger.info("[!] Low free VRAM (%d MB), skipping local inference", hw_info.total_vram_free_mb)
+                return None
+
             # Select model based on VRAM
             model = get_model_for_vram(hw_info.vram_mb)
 
@@ -299,6 +304,11 @@ class LocalRouter:
 
             hw_info = self._detect_hardware()
             if hw_info.cpu_only:
+                return None
+
+            # Skip local inference if free VRAM is too low (avoid glacial CPU offload)
+            if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
+                logger.info("[!] Low free VRAM (%d MB), skipping local tool routing", hw_info.total_vram_free_mb)
                 return None
 
             model = get_model_for_vram(hw_info.vram_mb)
