@@ -61,10 +61,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "startupentry"; Description: "Start Cohort when Windows starts"; GroupDescription: "Startup:"
 
 [Files]
-; Embedded Python distribution
+; Embedded Python distribution (includes pip-installed site-packages)
 Source: "payload\python\*"; DestDir: "{app}\python"; Flags: ignoreversion recursesubdirs
-; Cohort package and dependencies (pre-installed into python\Lib\site-packages)
-Source: "payload\site-packages\*"; DestDir: "{app}\python\Lib\site-packages"; Flags: ignoreversion recursesubdirs
 ; Cohort agents directory
 Source: "payload\agents\*"; DestDir: "{app}\agents"; Flags: ignoreversion recursesubdirs
 ; Launcher batch file
@@ -101,30 +99,24 @@ Root: HKCU; Subkey: "Software\Classes\cohort\shell\open\command"; ValueType: str
 // =====================================================================
 
 var
-  SystemInfoPage: TOutputMsgWizardPage;
-
-// Check system requirements during install
-function CheckSystemRequirements(): String;
-var
-  RequiredRAM: Int64;
-  AvailableRAM: Int64;
-begin
-  Result := '';
-
-  // Check RAM (16GB minimum)
-  RequiredRAM := 16 * 1024 * 1024 * 1024;
-  // Note: GetPhysicallyInstalledSystemMemory is in KB on modern Windows
-  // We'll just show a warning, not block installation
-end;
+  InfoPage: TWizardPage;
+  InfoLabel: TNewStaticText;
 
 procedure InitializeWizard();
 begin
   // Add system info page after Welcome
-  SystemInfoPage := CreateOutputMsgPage(wpWelcome,
+  InfoPage := CreateCustomPage(wpWelcome,
     'System Check',
     'Checking your system for compatibility...');
 
-  SystemInfoPage.Msg.Caption :=
+  InfoLabel := TNewStaticText.Create(InfoPage);
+  InfoLabel.Parent := InfoPage.Surface;
+  InfoLabel.Left := 0;
+  InfoLabel.Top := 0;
+  InfoLabel.Width := InfoPage.SurfaceWidth;
+  InfoLabel.WordWrap := True;
+  InfoLabel.AutoSize := True;
+  InfoLabel.Caption :=
     'Cohort will now check your system:' + #13#10 + #13#10 +
     '  [*] Windows 10 or later: OK' + #13#10 +
     '  [*] Disk space will be checked by installer' + #13#10 + #13#10 +
