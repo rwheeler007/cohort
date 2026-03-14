@@ -17,7 +17,7 @@ FROM python:3.13-slim AS runtime
 
 LABEL maintainer="Ryan Wheeler"
 LABEL description="cohort -- Multi-agent orchestration with loop prevention and contribution scoring"
-LABEL license="MIT"
+LABEL license="Apache-2.0"
 LABEL org.opencontainers.image.source="https://github.com/rwheeler007/cohort"
 
 # Build arg: set to "claude" to install cohort[claude] extras
