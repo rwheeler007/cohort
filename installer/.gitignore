@@ -1,0 +1,11 @@
+# Build artifacts
+.cache/
+output/
+
+# Payload (built by build_installer.py, except the launcher bat)
+payload/python/
+payload/site-packages/
+payload/agents/
+
+# Assets (generated)
+assets/cohort.ico

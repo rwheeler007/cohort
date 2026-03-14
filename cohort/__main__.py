@@ -713,6 +713,24 @@ def main() -> None:
     export_parser.add_argument("--force", action="store_true", help="Overwrite existing files")
     export_parser.add_argument("--dry-run", action="store_true", help="Preview without writing")
 
+    # -- serve ------------------------------------------------------
+    serve_parser = sub.add_parser(
+        "serve",
+        help="Start the Cohort HTTP server (API + dashboard)",
+    )
+    serve_parser.add_argument("--host", default="0.0.0.0", help="Bind address (default: 0.0.0.0)")
+    serve_parser.add_argument("--port", type=int, default=5100, help="Port (default: 5100)")
+    serve_parser.add_argument("--data-dir", default="data", help="Data directory")
+
+    # -- launch -----------------------------------------------------
+    launch_parser = sub.add_parser(
+        "launch",
+        help="Start Cohort with system tray icon (Windows installer mode)",
+    )
+    launch_parser.add_argument("--port", type=int, default=5100, help="Port (default: 5100)")
+    launch_parser.add_argument("--no-browser", action="store_true", help="Don't open browser on startup")
+    launch_parser.add_argument("--force-setup", action="store_true", help="Force the setup wizard")
+
     args = parser.parse_args()
 
     if args.command == "setup":
@@ -737,6 +755,18 @@ def main() -> None:
         sys.exit(_cmd_say(args))
     elif args.command == "briefing":
         sys.exit(_cmd_briefing(args))
+    elif args.command == "serve":
+        from cohort.server import serve
+
+        serve(host=args.host, port=args.port, data_dir=args.data_dir)
+    elif args.command == "launch":
+        from cohort.launcher import launch
+
+        sys.exit(launch(
+            port=args.port,
+            no_browser=args.no_browser,
+            force_setup=args.force_setup,
+        ))
     else:
         parser.print_help()
         sys.exit(1)
