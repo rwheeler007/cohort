@@ -1,0 +1,29 @@
+{# Hero: Minimal. Large typography, no image, maximum whitespace.
+   Tags: minimal, creative
+   Variables: block.headline, block.subheadline, block.cta_primary_text, block.cta_primary_href,
+              block.cta_secondary_text, block.cta_secondary_href
+#}
+<section class="bg-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-28 sm:py-36 lg:py-44 text-center">
+    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight" style="font-family: var(--font-heading);">
+      {{ block.headline }}
+    </h1>
+    {% if block.subheadline %}
+    <p class="mt-8 text-xl text-muted max-w-xl mx-auto leading-relaxed">
+      {{ block.subheadline }}
+    </p>
+    {% endif %}
+    <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+      {% if block.cta_primary_text %}
+      <a href="{{ block.cta_primary_href | default('#') }}" class="btn-primary px-8 py-3 text-base font-semibold">
+        {{ block.cta_primary_text }}
+      </a>
+      {% endif %}
+      {% if block.cta_secondary_text %}
+      <a href="{{ block.cta_secondary_href | default('#') }}" class="text-primary font-semibold hover:underline text-base">
+        {{ block.cta_secondary_text }}
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>

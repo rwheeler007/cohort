@@ -1,0 +1,19 @@
+{# CTA Strip: Text + button only, lots of whitespace, no background color.
+   Tags: minimal, creative
+   Variables: block.heading, block.subheading, block.cta_text, block.cta_href
+#}
+<section class="bg-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
+    <h2 class="text-3xl sm:text-4xl font-bold" style="font-family: var(--font-heading);">{{ block.heading }}</h2>
+    {% if block.subheading %}
+    <p class="mt-4 text-lg text-muted max-w-xl mx-auto leading-relaxed">{{ block.subheading }}</p>
+    {% endif %}
+    {% if block.cta_text %}
+    <div class="mt-10">
+      <a href="{{ block.cta_href | default('#') }}" class="btn-primary inline-block px-8 py-3 text-base font-semibold">
+        {{ block.cta_text }}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>

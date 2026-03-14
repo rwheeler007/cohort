@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2B2D31">
+    <title>Cohort Simulator -- Experience AI Team Coordination</title>
+    <meta name="description" content="Watch Cohort's scoring engine decide who speaks, who stays silent, and when dormant agents re-engage. Make choices. See the difference.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="simulator.css">
+    <style>
+        body {
+            margin: 0;
+            background: #1E1F22;
+        }
+        .sim-page-header {
+            text-align: center;
+            padding: 2rem 1rem 0.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .sim-page-brand {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: #D97757;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        .sim-page-subtitle {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 0.5rem;
+        }
+        .sim-page-honesty {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.35);
+            max-width: 600px;
+            margin: 0.5rem auto 0;
+            line-height: 1.5;
+        }
+        .sim-page-footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+        }
+        .sim-page-footer a {
+            color: #D97757;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sim-page-header">
+        <a href="../index.html" class="sim-page-brand">COHORT</a>
+        <p class="sim-page-subtitle">Interactive Simulator</p>
+        <p class="sim-page-honesty">
+            These are pre-recorded conversations generated from Cohort's real scoring engine.
+            Your choices select different branches -- the scores, gating decisions, and agent
+            behavior are what Cohort actually produces. Nothing is faked.
+        </p>
+    </div>
+
+    <div id="simulator"></div>
+
+    <div class="sim-page-footer">
+        <p>Built with <a href="../index.html">Cohort</a> -- AI Team Coordination</p>
+        <p>4 agents. 2 choices. 4 outcomes. Same engine that runs in production.</p>
+    </div>
+
+    <script src="simulator.js"></script>
+</body>
+</html>

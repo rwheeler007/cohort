@@ -1,0 +1,56 @@
+{# Nav: Clean professional. Logo left, links center, CTA right. Mobile hamburger.
+   Tags: conventional, formal
+   Variables: block.product_name, block.logo, block.nav_items [{label, href}], block.cta_text, block.cta_href
+#}
+<nav class="relative bg-white border-b border-theme" aria-label="Main navigation">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      {# Logo / Brand #}
+      <div class="flex-shrink-0">
+        <a href="/" class="flex items-center gap-2">
+          {% if block.logo %}
+          <img src="{{ block.logo }}" alt="{{ block.product_name }}" class="h-8 w-auto">
+          {% else %}
+          <span class="text-xl font-bold text-primary" style="font-family: var(--font-heading);">{{ block.product_name }}</span>
+          {% endif %}
+        </a>
+      </div>
+
+      {# Desktop nav links #}
+      <div class="hidden md:flex items-center gap-8">
+        {% for item in block.nav_items %}
+        <a href="{{ item.href }}" class="text-sm font-medium text-gray-700 hover:text-primary transition-colors">{{ item.label }}</a>
+        {% endfor %}
+      </div>
+
+      {# Desktop CTA #}
+      {% if block.cta_text %}
+      <div class="hidden md:block">
+        <a href="{{ block.cta_href | default('#') }}" class="btn-primary inline-block px-5 py-2 text-sm font-semibold">{{ block.cta_text }}</a>
+      </div>
+      {% endif %}
+
+      {# Mobile hamburger #}
+      <div class="md:hidden">
+        <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-primary focus:outline-none focus:ring-2 focus:ring-inset" aria-expanded="false" aria-controls="mobile-menu" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+          <span class="sr-only">Open main menu</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# Mobile menu #}
+  <div id="mobile-menu" class="hidden md:hidden border-t border-theme">
+    <div class="px-4 py-3 space-y-2">
+      {% for item in block.nav_items %}
+      <a href="{{ item.href }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50 rounded-theme">{{ item.label }}</a>
+      {% endfor %}
+      {% if block.cta_text %}
+      <a href="{{ block.cta_href | default('#') }}" class="block mt-2 btn-primary text-center px-5 py-2 text-sm font-semibold">{{ block.cta_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

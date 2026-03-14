@@ -1,0 +1,58 @@
+{# Reservation: Elegant, minimal booking section with thin borders, serif-feeling.
+   Tags: formal, minimal
+   Variables: block.heading, block.description, block.booking_url, block.phone,
+              block.hours [{day, open, close}]
+#}
+<section class="py-16 sm:py-20 lg:py-24" style="background-color: var(--color-bg);">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="border border-theme rounded-theme p-8 sm:p-12 text-center">
+      {% if block.heading %}
+      <h2 class="text-3xl sm:text-4xl font-bold mb-4" style="font-family: var(--font-heading);">{{ block.heading }}</h2>
+      {% endif %}
+      {% if block.description %}
+      <p class="text-muted text-lg max-w-xl mx-auto mb-8 leading-relaxed">{{ block.description }}</p>
+      {% endif %}
+
+      {# Decorative rule #}
+      <div class="flex items-center justify-center gap-4 mb-8" aria-hidden="true">
+        <span class="block w-16 h-px bg-primary opacity-40"></span>
+        <span class="block w-2 h-2 rounded-full bg-primary opacity-40"></span>
+        <span class="block w-16 h-px bg-primary opacity-40"></span>
+      </div>
+
+      {% if block.hours %}
+      <table class="w-full max-w-sm mx-auto text-left mb-10">
+        <caption class="sr-only">Restaurant opening hours</caption>
+        <thead class="sr-only">
+          <tr><th>Day</th><th>Hours</th></tr>
+        </thead>
+        <tbody>
+          {% for row in block.hours %}
+          <tr class="{% if not loop.last %}border-b border-theme{% endif %}">
+            <td class="py-2.5 text-sm font-medium">{{ row.day }}</td>
+            <td class="py-2.5 text-sm text-muted text-right">
+              {% if row.open and row.close %}
+              {{ row.open }} &ndash; {{ row.close }}
+              {% else %}
+              Closed
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        {% if block.booking_url %}
+        <a href="{{ block.booking_url }}" class="btn-primary px-8 py-3 text-base font-semibold inline-block">Reserve a Table</a>
+        {% endif %}
+        {% if block.phone %}
+        <a href="tel:{{ block.phone }}" class="btn-secondary px-8 py-3 text-base font-semibold inline-block" aria-label="Call us at {{ block.phone }}">
+          {{ block.phone }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,972 @@
+# Website Creator -- Adaptive Taxonomy & Decision Engine
+# =====================================================
+# This is NOT a static config. It's a decision tree specification.
+# Each node is either a USER choice or an AI decision.
+# User choices feed a taste profile that adapts AI parameters downstream.
+#
+# Architecture:
+#   Decision Tree -> Taste Profile -> Adaptive Parameters -> Block Assembly
+#
+# The system gets smarter about the user with each interaction.
+# Early choices are broad (category, vibe). Later choices are refined
+# (specific variants, content tone) using accumulated signals.
+
+
+# ---------------------------------------------------------------------
+# DECISION ENGINE
+# ---------------------------------------------------------------------
+# Decisions are made in phases. Each phase narrows the solution space.
+# Within each phase, decisions can be:
+#   - user_choice: presented as A/B or A/B/C options with visual previews
+#   - ai_decision: made by the roundtable, informed by taste_profile
+#   - derived: calculated from previous decisions (no interaction needed)
+
+decision_phases:
+
+  # Phase 1: Category & Identity (user-driven, broad strokes)
+  phase_1_identity:
+    description: "Establish what the business IS and what it needs"
+    decisions:
+
+      - id: site_category
+        type: user_choice
+        prompt: "Which best describes your business?"
+        options_from: categories
+        display: card_select  # show 3 cards with icon + description
+        signals:
+          # What this choice tells us about downstream decisions
+          - sets: category
+          - sets: default_page_set
+          - sets: available_blocks
+          - biases: tone_direction
+
+      - id: business_name
+        type: user_input
+        prompt: "What's your business name?"
+        signals:
+          - sets: product_name
+          - feeds: headline_generation
+
+      - id: business_description
+        type: user_input
+        prompt: "Describe what you do in one sentence."
+        signals:
+          - feeds: roundtable_context
+          - feeds: seo_generation
+
+      - id: primary_action
+        type: user_choice
+        prompt: "What's the #1 thing you want visitors to do?"
+        options:
+          - id: call
+            label: "Call or message me"
+            signals: "cta_style: direct, include_booking: true"
+          - id: book
+            label: "Book an appointment / reservation"
+            signals: "cta_style: booking, include_booking: true"
+          - id: buy
+            label: "Buy or sign up"
+            signals: "cta_style: conversion, include_pricing: true"
+          - id: learn
+            label: "Learn more and explore"
+            signals: "cta_style: soft, content_depth: high"
+          - id: order
+            label: "Place an order"
+            signals: "cta_style: order, include_order_online: true"
+
+  # Phase 2: Aesthetic Direction (user-driven, A/B/C visual choices)
+  # Each choice updates the taste_profile which adapts AI parameters
+  phase_2_aesthetics:
+    description: "Discover the user's visual preferences through comparison"
+    adaptation: true  # later choices in this phase adapt based on earlier ones
+    decisions:
+
+      - id: vibe_check
+        type: user_choice
+        prompt: "Which of these feels more like your brand?"
+        display: side_by_side_preview  # render 2-3 mini previews
+        options_count: 3  # show 3 options
+        options_source: ai_generated  # roundtable generates 3 contrasting vibes
+        signals:
+          - updates: taste_profile.formality    # formal <-> casual
+          - updates: taste_profile.density      # spacious <-> dense
+          - updates: taste_profile.warmth       # cool <-> warm
+          - updates: taste_profile.creativity   # conventional <-> artistic
+
+      - id: color_direction
+        type: user_choice
+        prompt: "Which color palette speaks to you?"
+        display: palette_swatches
+        options_count: 3
+        options_source: filtered_palettes  # filtered by taste_profile.warmth
+        signals:
+          - sets: skin.palette_id
+          - updates: taste_profile.boldness
+
+      - id: typography_direction
+        type: user_choice
+        prompt: "Which text style fits your brand?"
+        display: font_preview  # render same headline in each pairing
+        options_count: 3
+        options_source: filtered_fonts  # filtered by taste_profile.formality
+        signals:
+          - sets: skin.font_pairing_id
+          - updates: taste_profile.creativity
+
+      - id: layout_preference
+        type: user_choice
+        prompt: "Which layout feels right for your homepage?"
+        display: wireframe_preview  # simplified block layout diagrams
+        options_count: 2
+        options_source: category_layouts  # from page_assemblies for their category
+        signals:
+          - sets: home_layout_variant
+          - updates: taste_profile.density
+
+  # Phase 3: AI-Driven Refinement (roundtable decides, informed by taste_profile)
+  # Temperature and constraint levels adapt based on accumulated signals
+  phase_3_refinement:
+    description: "AI makes detailed decisions using taste profile as guidance"
+    decisions:
+
+      - id: block_selection
+        type: ai_decision
+        description: "Select which optional blocks to include"
+        input: [category, taste_profile, primary_action]
+        output: included_blocks[]
+        # AI decides based on category defaults + taste signals
+
+      - id: block_variants
+        type: ai_decision
+        description: "Select design variant for each included block"
+        input: [included_blocks, taste_profile]
+        output: block_variant_map  # {block_id: variant_id}
+        # Creative users get more unusual variants
+        # Conservative users get proven layouts
+
+      - id: content_generation
+        type: ai_decision
+        description: "Generate headlines, descriptions, CTAs"
+        input: [business_name, business_description, taste_profile, primary_action]
+        output: content_map  # {headline, subheadline, cta_text, section_headings}
+        temperature_source: taste_profile.creativity
+        # Artistic taste -> higher temp, more creative copy
+        # Professional taste -> lower temp, conventional copy
+
+      - id: hero_image_direction
+        type: ai_decision
+        description: "Determine hero image style and source"
+        input: [category, taste_profile, scraped_images]
+        output: image_guidance  # style keywords for image selection/generation
+
+  # Phase 4: User Approval (final review before render)
+  phase_4_approval:
+    description: "Show assembled preview, let user adjust"
+    decisions:
+
+      - id: preview_approval
+        type: user_choice
+        prompt: "Here's your site preview. What would you like to adjust?"
+        display: full_preview
+        options:
+          - id: approve
+            label: "Looks great, generate it"
+          - id: adjust_colors
+            label: "Try different colors"
+            returns_to: phase_2_aesthetics.color_direction
+          - id: adjust_layout
+            label: "Try a different layout"
+            returns_to: phase_2_aesthetics.layout_preference
+          - id: adjust_content
+            label: "Change the text/headlines"
+            returns_to: phase_3_refinement.content_generation
+          - id: start_over
+            label: "Start fresh"
+            returns_to: phase_1_identity
+
+
+# ---------------------------------------------------------------------
+# TASTE PROFILE
+# ---------------------------------------------------------------------
+# Accumulated from user choices. Each dimension is a float from 0.0 to 1.0.
+# Updated incrementally -- early choices set rough position, later choices refine.
+
+taste_profile:
+  dimensions:
+    formality:
+      range: [0.0, 1.0]      # 0.0 = casual/playful, 1.0 = formal/corporate
+      default: 0.5
+      affects:
+        - font_pairing_filter
+        - content_tone
+        - spacing_scale
+
+    density:
+      range: [0.0, 1.0]      # 0.0 = spacious/minimal, 1.0 = content-rich/dense
+      default: 0.5
+      affects:
+        - blocks_per_page
+        - section_padding
+        - content_length
+
+    warmth:
+      range: [0.0, 1.0]      # 0.0 = cool/techy, 1.0 = warm/organic
+      default: 0.5
+      affects:
+        - palette_filter
+        - border_radius       # warm = more rounded
+        - image_style          # warm = natural photos, cool = illustrations/gradients
+
+    creativity:
+      range: [0.0, 1.0]      # 0.0 = conventional/safe, 1.0 = artistic/experimental
+      default: 0.3            # default conservative -- earned through choices
+      affects:
+        - ai_temperature       # maps directly to LLM temperature for content generation
+        - variant_pool         # creative = include unusual block variants
+        - layout_asymmetry     # creative = allow non-standard layouts
+        - font_pool            # creative = include display/decorative fonts
+
+    boldness:
+      range: [0.0, 1.0]      # 0.0 = subtle/muted, 1.0 = high-contrast/dramatic
+      default: 0.5
+      affects:
+        - color_saturation
+        - font_weight
+        - cta_prominence
+
+
+# ---------------------------------------------------------------------
+# PARAMETER ADAPTATION
+# ---------------------------------------------------------------------
+# How taste_profile dimensions map to concrete AI and rendering parameters.
+
+parameter_mapping:
+
+  ai_temperature:
+    description: "LLM temperature for content generation and roundtable decisions"
+    formula: "base_temp + (taste_profile.creativity * 0.4)"
+    # creativity 0.0 -> temp 0.15 (safe, predictable)
+    # creativity 0.5 -> temp 0.35 (balanced)
+    # creativity 1.0 -> temp 0.55 (experimental)
+    base: 0.15
+    max: 0.55
+
+  variant_pool_size:
+    description: "How many block variants the AI can choose from"
+    formula: "min_variants + (taste_profile.creativity * extra_variants)"
+    # creativity 0.0 -> only top 2 most conventional variants
+    # creativity 1.0 -> all available variants including experimental
+    min_variants: 2
+    extra_variants: 4
+
+  constraint_tightness:
+    description: "How strictly the roundtable must follow the prescribed block order"
+    formula: "1.0 - (taste_profile.creativity * 0.5)"
+    # creativity 0.0 -> 1.0 (strict, follow category assembly exactly)
+    # creativity 1.0 -> 0.5 (loose, AI can reorder/swap blocks)
+
+  content_temperature:
+    description: "Temperature specifically for headline/copy generation"
+    formula: "0.10 + (taste_profile.creativity * 0.5) + (taste_profile.boldness * 0.1)"
+    # Conservative professional -> 0.10 (safe copy)
+    # Creative bold -> 0.70 (punchy, unexpected copy)
+
+  border_radius:
+    description: "Global border radius in px"
+    formula: "taste_profile.warmth * 16"
+    # warmth 0.0 -> 0px (sharp, techy)
+    # warmth 0.5 -> 8px (balanced)
+    # warmth 1.0 -> 16px (soft, friendly)
+
+
+# ---------------------------------------------------------------------
+# BLOCK LIBRARY
+# ---------------------------------------------------------------------
+# Every block the system knows about.
+# variant_tags classify each variant so the AI can filter by taste_profile.
+
+blocks:
+
+  # --- UNIVERSAL BLOCKS ---
+
+  nav:
+    description: "Sticky navigation header with logo, menu links, and CTA button"
+    variables: [product_name, logo, nav_items, cta_text, cta_href]
+    variants:
+      - id: nav_clean
+        tags: [formal, minimal]
+        source: hyperui/headers/1
+      - id: nav_bold
+        tags: [bold, modern]
+        source: hyperui/headers/2
+      - id: nav_transparent
+        tags: [creative, minimal]
+        source: hyperui/headers/3
+      - id: nav_mega
+        tags: [dense, formal]
+        source: hyperui/headers/4
+
+  hero_banner:
+    description: "Full-width hero section"
+    variables: [headline, subheadline, hero_image, cta_primary_text, cta_primary_href, cta_secondary_text, cta_secondary_href]
+    variants:
+      - id: hero_centered
+        tags: [formal, conventional]
+        description: "Centered text, image below or behind"
+        source: hyperui/banners/1
+      - id: hero_split
+        tags: [modern, balanced]
+        description: "Text left, image right (50/50 split)"
+        source: awesome-landing-pages/AISales
+      - id: hero_image_bg
+        tags: [bold, warm]
+        description: "Full background image with text overlay"
+        source: awesome-landing-pages/Bistro
+      - id: hero_gradient
+        tags: [modern, creative]
+        description: "Gradient background with floating elements"
+        source: awesome-landing-pages/Navigator
+      - id: hero_minimal
+        tags: [minimal, creative]
+        description: "Large typography, no image, maximum whitespace"
+        source: awesome-landing-pages/Bella
+      - id: hero_video
+        tags: [bold, creative]
+        description: "Background video or video embed"
+        source: awesome-landing-pages/Traveler
+
+  features_grid:
+    description: "Grid of feature/service cards with icon, title, description"
+    variables: "section_headline, features[]"
+    variants:
+      - id: features_3col_cards
+        tags: [conventional, formal]
+        source: hyperui/feature-grids/1
+      - id: features_icon_left
+        tags: [minimal, modern]
+        source: hyperui/feature-grids/2
+      - id: features_colored_bg
+        tags: [bold, creative]
+        source: awesome-landing-pages/AISales
+      - id: features_bordered
+        tags: [formal, dense]
+        source: hyperui/feature-grids/3
+
+  testimonials:
+    description: "Customer/client quotes"
+    variables: "testimonials[]"
+    variants:
+      - id: testimonials_cards
+        tags: [conventional, formal]
+        source: hyperui/cards/1
+      - id: testimonials_carousel
+        tags: [modern, dense]
+        source: awesome-landing-pages/AISales
+      - id: testimonials_large_quote
+        tags: [minimal, warm]
+        description: "Single large quote, centered"
+      - id: testimonials_grid
+        tags: [bold, dense]
+        description: "2x2 or 3x1 grid of quote cards"
+
+  cta_strip:
+    description: "Full-width call-to-action section"
+    variables: [heading, subheading, cta_text, cta_href]
+    variants:
+      - id: cta_colored_bg
+        tags: [bold, conventional]
+        source: hyperui/ctas/1
+      - id: cta_with_image
+        tags: [warm, modern]
+        source: hyperui/ctas/2
+      - id: cta_minimal
+        tags: [minimal, creative]
+        description: "Text + button only, lots of whitespace"
+      - id: cta_gradient
+        tags: [bold, creative]
+        source: hyperui/ctas/3
+
+  stats_banner:
+    description: "Large numbers with labels (social proof metrics)"
+    variables: "stats[]"
+    variants:
+      - id: stats_4col
+        tags: [conventional, dense]
+        source: hyperui/stats/1
+      - id: stats_bordered
+        tags: [formal, modern]
+        source: hyperui/stats/2
+      - id: stats_animated
+        tags: [bold, creative]
+        source: awesome-landing-pages/ChatOrigin
+
+  faq_accordion:
+    description: "Expandable Q&A sections"
+    variables: "faqs[]"
+    variants:
+      - id: faq_simple
+        tags: [conventional, minimal]
+        source: hyperui/faqs/1
+      - id: faq_bordered
+        tags: [formal, modern]
+        source: hyperui/faqs/2
+      - id: faq_two_column
+        tags: [dense, modern]
+        source: hyperui/faqs/3
+
+  contact_form:
+    description: "Contact form with info sidebar"
+    variables: "form_fields[], email, phone, address, social_links[]"
+    variants:
+      - id: contact_split
+        tags: [conventional, formal]
+        description: "Form left, contact info right"
+        source: hyperui/contact-forms/1
+      - id: contact_centered
+        tags: [minimal, modern]
+        source: hyperui/contact-forms/2
+      - id: contact_with_map
+        tags: [warm, dense]
+        description: "Form + embedded map below"
+
+  footer:
+    description: "Multi-column footer"
+    variables: "product_name, tagline, footer_columns[], social_links[], copyright_text"
+    variants:
+      - id: footer_4col
+        tags: [conventional, dense]
+        source: hyperui/footers/1
+      - id: footer_newsletter
+        tags: [modern, bold]
+        source: hyperui/footers/2
+      - id: footer_minimal
+        tags: [minimal, creative]
+        source: hyperui/footers/3
+      - id: footer_centered
+        tags: [warm, minimal]
+        source: hyperui/footers/4
+      - id: footer_dark
+        tags: [bold, formal]
+        source: hyperui/footers/5
+
+  content_sections:
+    description: "Generic prose sections with headings and body text"
+    variables: "sections[]"
+    variants:
+      - id: content_standard
+        tags: [conventional]
+
+  blog_previews:
+    description: "Latest blog/article cards"
+    variables: "posts[]"
+    variants:
+      - id: blog_3col
+        tags: [conventional, dense]
+        source: hyperui/blog-cards/1
+      - id: blog_featured
+        tags: [modern, bold]
+        source: hyperui/blog-cards/2
+      - id: blog_minimal
+        tags: [minimal, creative]
+        source: hyperui/blog-cards/3
+
+  newsletter_signup:
+    description: "Email capture section"
+    variables: [heading, description, button_text]
+    variants:
+      - id: newsletter_inline
+        tags: [minimal, modern]
+        source: hyperui/newsletter/1
+      - id: newsletter_card
+        tags: [conventional, warm]
+        source: hyperui/newsletter/2
+
+  # --- SERVICE BUSINESS BLOCKS ---
+
+  top_info_strip:
+    description: "Thin bar showing hours, phone, email"
+    variables: [phone, email, hours_text, address]
+    categories: [service_business, restaurant]
+    variants:
+      - id: info_strip_dark
+        tags: [formal, bold]
+        source: awesome-landing-pages/Carwash
+      - id: info_strip_light
+        tags: [warm, minimal]
+
+  services_grid:
+    description: "Service cards with name, description, optional price, booking CTA"
+    variables: "services[]"
+    categories: [service_business]
+    variants:
+      - id: services_cards
+        tags: [conventional, formal]
+      - id: services_with_price
+        tags: [bold, dense]
+        source: awesome-landing-pages/Carwash
+      - id: services_icon_list
+        tags: [minimal, modern]
+
+  credentials_strip:
+    description: "Certifications, licenses, awards, badges"
+    variables: "credentials[]"
+    categories: [service_business]
+    variants:
+      - id: credentials_logo_row
+        tags: [formal, conventional]
+        source: awesome-landing-pages/Lawfire
+      - id: credentials_cards
+        tags: [modern, dense]
+
+  before_after_gallery:
+    description: "Side-by-side comparison of before/after photos"
+    variables: "projects[]"
+    categories: [service_business]
+    variants:
+      - id: gallery_slider
+        tags: [modern, creative]
+      - id: gallery_side_by_side
+        tags: [conventional, formal]
+
+  booking_widget:
+    description: "Appointment scheduling CTA section"
+    variables: [heading, description, booking_url, button_text, phone]
+    categories: [service_business, restaurant]
+    variants:
+      - id: booking_prominent
+        tags: [bold, warm]
+      - id: booking_inline
+        tags: [minimal, modern]
+
+  process_steps:
+    description: "Numbered timeline showing how-we-work process"
+    variables: "heading, steps[]"
+    categories: [service_business]
+    variants:
+      - id: steps_numbered_circles
+        tags: [conventional, formal]
+        source: hyperui/feature-grids/1
+      - id: steps_timeline
+        tags: [modern, creative]
+      - id: steps_cards
+        tags: [bold, dense]
+
+  # --- SAAS / DIGITAL PRODUCT BLOCKS ---
+
+  brand_trust_bar:
+    description: "Grayscale partner/client logos"
+    variables: "heading, logos[]"
+    categories: [saas_product]
+    variants:
+      - id: trust_grayscale_row
+        tags: [conventional, formal]
+        source: awesome-landing-pages/Navigator
+      - id: trust_scrolling
+        tags: [modern, creative]
+        source: awesome-landing-pages/Traveler
+
+  alternating_feature_image:
+    description: "Feature sections alternating text/image sides"
+    variables: "features[]"
+    categories: [saas_product]
+    variants:
+      - id: alt_features_standard
+        tags: [conventional, formal]
+      - id: alt_features_sticky
+        tags: [modern, creative]
+        description: "Image stays fixed while text scrolls"
+        source: awesome-landing-pages/Navigator
+
+  pricing_tiers:
+    description: "Pricing comparison cards with feature checklists"
+    variables: "tiers[]"
+    categories: [saas_product]
+    variants:
+      - id: pricing_3col
+        tags: [conventional, formal]
+        source: hyperui/pricing/1
+      - id: pricing_highlighted
+        tags: [bold, modern]
+        description: "Middle tier visually emphasized"
+      - id: pricing_toggle
+        tags: [modern, creative]
+        description: "Monthly/annual toggle switch"
+
+  product_demo:
+    description: "Product screenshot or video in device frame"
+    variables: [media_type, media_url, caption]
+    categories: [saas_product]
+    variants:
+      - id: demo_browser_frame
+        tags: [conventional, modern]
+      - id: demo_phone_frame
+        tags: [modern, creative]
+        source: awesome-landing-pages/Navigator
+
+  problem_statement:
+    description: "Pain point cards showing problems the product solves"
+    variables: "headline, pain_points[]"
+    categories: [saas_product]
+    variants:
+      - id: problem_cards
+        tags: [conventional, bold]
+      - id: problem_numbered
+        tags: [formal, modern]
+
+  solution_overview:
+    description: "How the product addresses the problems"
+    variables: "headline, features[]"
+    categories: [saas_product]
+    variants:
+      - id: solution_standard
+        tags: [conventional, formal]
+      - id: solution_visual
+        tags: [modern, creative]
+
+  # --- RESTAURANT / HOSPITALITY BLOCKS ---
+
+  menu_display:
+    description: "Food/drink menu with categories, items, prices"
+    variables: "categories[]"
+    categories: [restaurant]
+    variants:
+      - id: menu_classic
+        tags: [formal, warm]
+        description: "Traditional menu layout with dividers"
+        source: awesome-landing-pages/Bistro
+      - id: menu_cards
+        tags: [modern, dense]
+        description: "Card per item with optional photo"
+      - id: menu_minimal
+        tags: [minimal, creative]
+        description: "Clean list, no borders, typography-driven"
+
+  photo_gallery:
+    description: "Food/venue photography grid"
+    variables: "images[]"
+    categories: [restaurant]
+    variants:
+      - id: gallery_grid
+        tags: [conventional, dense]
+        source: awesome-landing-pages/Bistro
+      - id: gallery_masonry
+        tags: [creative, modern]
+
+  specials_showcase:
+    description: "Featured dishes or seasonal specials"
+    variables: "heading, specials[]"
+    categories: [restaurant]
+    variants:
+      - id: specials_hero_cards
+        tags: [bold, warm]
+      - id: specials_carousel
+        tags: [modern, creative]
+
+  reservation_cta:
+    description: "Reservation/booking section with phone, link, hours"
+    variables: "heading, booking_url, phone, hours[]"
+    categories: [restaurant]
+    variants:
+      - id: reservation_prominent
+        tags: [bold, warm]
+      - id: reservation_elegant
+        tags: [formal, minimal]
+
+  chef_about:
+    description: "Chef/owner story with photo"
+    variables: "name, title, photo, bio_paragraphs[]"
+    categories: [restaurant]
+    variants:
+      - id: chef_split
+        tags: [warm, conventional]
+        description: "Photo left, bio right"
+      - id: chef_centered
+        tags: [minimal, creative]
+
+  location_map:
+    description: "Map embed with address and directions"
+    variables: [address, map_embed_url, directions_text]
+    categories: [restaurant]
+    variants:
+      - id: map_full_width
+        tags: [conventional, dense]
+      - id: map_with_info
+        tags: [warm, formal]
+
+  order_online_cta:
+    description: "Delivery/takeout ordering links"
+    variables: "heading, platforms[], direct_order_url"
+    categories: [restaurant]
+    variants:
+      - id: order_buttons
+        tags: [bold, conventional]
+      - id: order_inline
+        tags: [minimal, modern]
+
+
+# ---------------------------------------------------------------------
+# CATEGORIES
+# ---------------------------------------------------------------------
+# Each category defines default pages and block assemblies.
+# These are DEFAULTS -- the decision engine can modify them
+# based on taste_profile.creativity and constraint_tightness.
+
+categories:
+
+  service_business:
+    label: "Service Business"
+    description: "I sell my expertise, time, or professional services"
+    icon: briefcase
+    examples: [plumber, electrician, lawyer, accountant, consultant, contractor, car wash, salon, gym, cleaning service, landscaper, dentist, veterinarian]
+
+    default_pages: [home, services, about, contact]
+
+    page_assemblies:
+      home:
+        required: [nav, hero_banner, services_grid, testimonials, cta_strip, footer]
+        optional: [top_info_strip, process_steps, stats_banner, credentials_strip, before_after_gallery]
+        max_blocks: 10
+      services:
+        required: [nav, hero_banner, services_grid, cta_strip, footer]
+        optional: [before_after_gallery, credentials_strip, process_steps]
+        max_blocks: 8
+      about:
+        required: [nav, hero_banner, content_sections, footer]
+        optional: [credentials_strip, testimonials, stats_banner]
+        max_blocks: 7
+      contact:
+        required: [nav, hero_banner, contact_form, footer]
+        optional: [booking_widget, faq_accordion, top_info_strip]
+        max_blocks: 7
+
+    skin_bias:
+      formality: 0.7
+      warmth: 0.4
+      creativity: 0.2
+      boldness: 0.4
+
+  saas_product:
+    label: "Software / Digital Product"
+    description: "I sell software, an app, or a digital platform"
+    icon: code
+    examples: [SaaS platform, mobile app, developer tool, analytics dashboard, automation tool, API service, browser extension, desktop software]
+
+    default_pages: [home, features, pricing, contact]
+
+    page_assemblies:
+      home:
+        required: [nav, hero_banner, features_grid, cta_strip, footer]
+        optional: [brand_trust_bar, alternating_feature_image, testimonials, stats_banner, pricing_tiers, product_demo]
+        max_blocks: 11
+      features:
+        required: [nav, hero_banner, features_grid, cta_strip, footer]
+        optional: [alternating_feature_image, product_demo, integration_logos]
+        max_blocks: 8
+      pricing:
+        required: [nav, hero_banner, pricing_tiers, cta_strip, footer]
+        optional: [faq_accordion, testimonials]
+        max_blocks: 7
+      contact:
+        required: [nav, hero_banner, contact_form, footer]
+        optional: [faq_accordion]
+        max_blocks: 6
+
+    optional_pages:
+      problem_solution:
+        required: [nav, hero_banner, problem_statement, solution_overview, cta_strip, footer]
+        optional: [testimonials]
+        max_blocks: 7
+      blog:
+        required: [nav, hero_banner, blog_previews, footer]
+        optional: [newsletter_signup]
+        max_blocks: 5
+
+    skin_bias:
+      formality: 0.5
+      warmth: 0.3
+      creativity: 0.4
+      boldness: 0.5
+
+  restaurant:
+    label: "Restaurant / Food & Drink"
+    description: "I serve food, drinks, or hospitality experiences"
+    icon: utensils
+    examples: [restaurant, cafe, bar, bakery, food truck, catering company, brewery, wine bar, pizza shop, juice bar]
+
+    default_pages: [home, menu, about, contact]
+
+    page_assemblies:
+      home:
+        required: [nav, hero_banner, menu_display, reservation_cta, footer]
+        optional: [top_info_strip, specials_showcase, photo_gallery, testimonials]
+        max_blocks: 9
+      menu:
+        required: [nav, hero_banner, menu_display, footer]
+        optional: [specials_showcase, order_online_cta]
+        max_blocks: 6
+      about:
+        required: [nav, hero_banner, content_sections, footer]
+        optional: [chef_about, photo_gallery]
+        max_blocks: 6
+      contact:
+        required: [nav, hero_banner, contact_form, footer]
+        optional: [top_info_strip, location_map, reservation_cta]
+        max_blocks: 7
+
+    skin_bias:
+      formality: 0.6
+      warmth: 0.8
+      creativity: 0.3
+      boldness: 0.4
+
+
+# ---------------------------------------------------------------------
+# TASTE PROFILE
+# ---------------------------------------------------------------------
+# Accumulated from user choices. 0.0 to 1.0 per dimension.
+
+taste_profile:
+  dimensions:
+
+    formality:
+      range: [0.0, 1.0]
+      description: "0 = casual/playful, 1 = formal/corporate"
+      default_from: category.skin_bias.formality
+      affects: [font_filter, content_tone, spacing_scale, variant_tag_filter]
+
+    density:
+      range: [0.0, 1.0]
+      description: "0 = spacious/minimal, 1 = content-rich/dense"
+      default: 0.5
+      affects: [blocks_per_page, section_padding, content_length, variant_tag_filter]
+
+    warmth:
+      range: [0.0, 1.0]
+      description: "0 = cool/techy, 1 = warm/organic"
+      default_from: category.skin_bias.warmth
+      affects: [palette_filter, border_radius, image_style, variant_tag_filter]
+
+    creativity:
+      range: [0.0, 1.0]
+      description: "0 = conventional/safe, 1 = artistic/experimental"
+      default_from: category.skin_bias.creativity
+      affects: [ai_temperature, variant_pool_size, layout_flexibility, font_pool_size]
+
+    boldness:
+      range: [0.0, 1.0]
+      description: "0 = subtle/muted, 1 = high-contrast/dramatic"
+      default_from: category.skin_bias.boldness
+      affects: [color_saturation, font_weight, cta_prominence, variant_tag_filter]
+
+
+# ---------------------------------------------------------------------
+# PARAMETER ADAPTATION
+# ---------------------------------------------------------------------
+
+parameter_mapping:
+
+  ai_temperature:
+    description: "LLM temperature for content generation"
+    formula: "0.15 + (creativity * 0.4)"
+    range: [0.15, 0.55]
+
+  variant_pool_size:
+    description: "How many variants per block the AI can choose from"
+    formula: "2 + round(creativity * 4)"
+    range: [2, 6]
+
+  constraint_tightness:
+    description: "How strictly block order must follow category assembly"
+    formula: "1.0 - (creativity * 0.5)"
+    range: [0.5, 1.0]
+
+  content_temperature:
+    description: "Temperature for headline/copy generation"
+    formula: "0.10 + (creativity * 0.5) + (boldness * 0.1)"
+    range: [0.10, 0.70]
+
+  border_radius:
+    description: "Global border radius in px"
+    formula: "round(warmth * 16)"
+    range: [0, 16]
+
+
+# ---------------------------------------------------------------------
+# SKIN PALETTES & FONTS
+# ---------------------------------------------------------------------
+
+skin:
+  palettes:
+    - id: ocean
+      primary: "#2563EB"
+      secondary: "#1E40AF"
+      accent: "#F59E0B"
+      tags: [cool, professional]
+
+    - id: forest
+      primary: "#059669"
+      secondary: "#047857"
+      accent: "#D97706"
+      tags: [warm, organic]
+
+    - id: slate
+      primary: "#475569"
+      secondary: "#334155"
+      accent: "#3B82F6"
+      tags: [cool, formal]
+
+    - id: burgundy
+      primary: "#991B1B"
+      secondary: "#7F1D1D"
+      accent: "#D4A574"
+      tags: [warm, bold]
+
+    - id: violet
+      primary: "#7C3AED"
+      secondary: "#6D28D9"
+      accent: "#F472B6"
+      tags: [cool, creative]
+
+    - id: midnight
+      primary: "#1E293B"
+      secondary: "#0F172A"
+      accent: "#38BDF8"
+      tags: [cool, bold]
+
+    - id: coral
+      primary: "#E11D48"
+      secondary: "#BE123C"
+      accent: "#FCD34D"
+      tags: [warm, bold]
+
+    - id: sage
+      primary: "#4D7C0F"
+      secondary: "#3F6212"
+      accent: "#FBBF24"
+      tags: [warm, organic]
+
+  font_pairings:
+    - id: clean
+      heading: Inter
+      body: Merriweather
+      tags: [formal, professional]
+
+    - id: modern
+      heading: Poppins
+      body: Lato
+      tags: [modern, friendly]
+
+    - id: editorial
+      heading: Playfair Display
+      body: Source Sans Pro
+      tags: [warm, elegant]
+
+    - id: bold
+      heading: Montserrat
+      body: Open Sans
+      tags: [bold, modern]
+
+    - id: minimal
+      heading: DM Sans
+      body: IBM Plex Serif
+      tags: [minimal, creative]

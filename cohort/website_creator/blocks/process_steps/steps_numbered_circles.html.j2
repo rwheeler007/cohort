@@ -1,0 +1,28 @@
+{# Process Steps: Numbered circles in a horizontal row with title and description.
+   Tags: conventional, formal
+   Variables: block.heading, block.steps [{number, title, description}]
+#}
+<section class="section-alt py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if block.heading %}
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold" style="font-family: var(--font-heading);">{{ block.heading }}</h2>
+    </div>
+    {% endif %}
+
+    <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ [block.steps | length, 4] | min }} gap-8 lg:gap-12 list-none p-0 m-0">
+      {% for step in block.steps %}
+      <li class="flex flex-col items-center text-center">
+        {# Numbered circle #}
+        <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary text-white text-xl font-bold mb-5 shrink-0" aria-hidden="true">
+          {{ step.number | default(loop.index) }}
+        </div>
+        <h3 class="text-lg font-semibold mb-2" style="font-family: var(--font-heading);">
+          <span class="sr-only">Step {{ step.number | default(loop.index) }}: </span>{{ step.title }}
+        </h3>
+        <p class="text-muted leading-relaxed">{{ step.description }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
