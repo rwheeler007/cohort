@@ -1,7 +1,50 @@
 {
   "agent_id": "web_developer",
   "known_paths": {},
-  "learned_facts": [],
+  "learned_facts": [
+    {
+      "fact": "CSS viewport units: svh (small viewport height) = 1% of viewport with browser UI fully expanded (smallest possible). lvh (large viewport height) = 1% with UI retracted. dvh (dynamic viewport height) = changes as UI shows/hides. vh = traditional, includes browser UI inconsistently. Use svh for safe minimum sizing.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "responsive_design",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Visually hidden / sr-only pattern: use position: absolute, clip/clip-path, overflow: hidden, and a tiny size (1px x 1px) to hide content visually while keeping it in the accessibility tree. display: none and visibility: hidden BOTH remove content from the accessibility tree. opacity: 0 keeps it in the tree but is not the correct sr-only technique.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "accessibility",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "CSS Cascade Layers priority: unlayered styles ALWAYS beat layered styles regardless of specificity. Even .btn (unlayered, specificity 0,1,0) beats .btn.primary (layered in @layer components, specificity 0,2,0). Layer order determines priority WITHIN layers. Unlayered is above all layers.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "css_architecture",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "NVDA screen reader announcements for form controls: announces group label (from aria-labelledby), group role, field label, input role (edit), required state (from aria-required), invalid state (from aria-invalid), and error message (from aria-errormessage). All attributes are announced, not just a subset.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "accessibility",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "ARIA combobox listbox announcements: when navigating options with arrow keys, screen readers announce the option text plus position (e.g., Widget C, 3 of 3). The role option is implicit and NOT separately announced for standard listbox options. Position info comes from the listbox children count.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "accessibility",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Conditional form section accessibility: when revealing a hidden section (removing hidden attribute), set aria-expanded=true on the triggering control but do NOT move focus. The users context should remain on the radio group/control. Moving focus is disorienting. Screen readers will discover the newly visible section when the user continues navigating.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "accessibility",
+      "date_added": "2026-03-13"
+    }
+  ],
   "active_tasks": [],
   "collaborators": {},
   "working_memory": [

@@ -7,11 +7,11 @@
     <meta name="description" content="Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
 
-    <link rel="canonical" href="https://cohort.dev/tools.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/tools.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/tools.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/tools.html">
     <meta property="og:title" content="Tools | COHORT">
     <meta property="og:description" content="Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more.">
 
@@ -25,6 +25,36 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .subpage-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-decoration: none;
+            display: block;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .subpage-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .subpage-card h3 { color: #fff; font-size: 0.95rem; margin: 0 0 0.35rem 0; }
+        .subpage-card p { color: #C8C8C8; font-size: 0.8rem; margin: 0; line-height: 1.5; }
+    </style>
 </head>
 <body>
     <!-- Skip to content -->
@@ -101,7 +131,7 @@ COHORT            </a>
 
         <div id="email-calendar" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[EC]</div>
-            <h3 class="responsive-h3">Email & Calendar</h3>
+            <h3 class="responsive-h3">Email & Calendar<span class="tier-badge tier-enterprise">Enterprise</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Send emails via Resend, manage Google Calendar events, and post to social media (Twitter, LinkedIn, Facebook, Threads). Every outbound message goes through a human approval gate before sending -- nothing leaves without your explicit OK.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
@@ -123,7 +153,7 @@ COHORT            </a>
 
         <div id="web-search" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[WS]</div>
-            <h3 class="responsive-h3">Web Search</h3>
+            <h3 class="responsive-h3">Web Search<span class="tier-badge tier-free">Free</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Two search paths: API-based (SerpAPI, Serper, Google) for high-quality structured results, and local DuckDuckGo for free unlimited search. Enable both, either, or neither. Agents automatically use whichever is available.</p>
 
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
@@ -140,7 +170,7 @@ COHORT            </a>
 
         <div id="youtube" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[YT]</div>
-            <h3 class="responsive-h3">YouTube</h3>
+            <h3 class="responsive-h3">YouTube<span class="tier-badge tier-enterprise">Enterprise</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Search YouTube videos by keyword, get detailed metadata (title, description, channel, view counts, duration), and auto-extract chapter timestamps from video descriptions. Agents use this for research, content analysis, and finding relevant tutorials.</p>
 
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
@@ -170,7 +200,7 @@ COHORT            </a>
 
         <div id="rss-news" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[RSS]</div>
-            <h3 class="responsive-h3">RSS & News Monitoring</h3>
+            <h3 class="responsive-h3">RSS & News Monitoring<span class="tier-badge tier-pro">Pro</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Automated tech intelligence pipeline. Monitors RSS feeds on a schedule, fetches new articles, scores them for relevance (0-10), and generates periodic briefings. Three stages: RSS Fetch, Analysis, and Weekly Digest.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
@@ -190,7 +220,7 @@ COHORT            </a>
 
         <div id="social-media" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[SM]</div>
-            <h3 class="responsive-h3">Social Media & Marketing</h3>
+            <h3 class="responsive-h3">Social Media & Marketing<span class="tier-badge tier-pro">Pro</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Content marketing automation with multi-project support. Create multiple projects (brands/products), each with its own content strategy -- target audiences, content pillars, relevance keywords, and brand voice. AI drafts posts from high-scoring content. You approve before anything goes live.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
@@ -214,7 +244,7 @@ COHORT            </a>
 
         <div id="document-processing" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[DOC]</div>
-            <h3 class="responsive-h3">Document Processing</h3>
+            <h3 class="responsive-h3">Document Processing<span class="tier-badge tier-free">Free</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Summarize and analyze documents using local AI. Three input methods: drag-and-drop files, paste a URL, or paste text directly. Four analysis modes: Summary, Outline, Key Points, and All.</p>
 
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
@@ -257,7 +287,7 @@ COHORT            </a>
 
         <div id="health-monitor" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[H]</div>
-            <h3 class="responsive-h3">System Health Monitor</h3>
+            <h3 class="responsive-h3">System Health Monitor<span class="tier-badge tier-free">Free</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Monitors all system services and lets you start, stop, and restart them from the dashboard. Click "Run All Checks" to scan every service, then use buttons to control individual services. Add new services by editing a YAML config file.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
@@ -282,7 +312,7 @@ COHORT            </a>
 
         <div id="llm-manager" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[LLM]</div>
-            <h3 class="responsive-h3">LLM Manager</h3>
+            <h3 class="responsive-h3">LLM Manager<span class="tier-badge tier-free">Free</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Manage local AI models via Ollama. View installed models, check GPU memory usage, pull new models, and remove ones you don't need. Shows real-time VRAM usage and which models are currently loaded in GPU memory.</p>
 
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
@@ -307,7 +337,7 @@ COHORT            </a>
 
         <div id="work-queue" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[Q]</div>
-            <h3 class="responsive-h3">Work Queue</h3>
+            <h3 class="responsive-h3">Work Queue<span class="tier-badge tier-free">Free</span></h3>
             <p class="responsive-p-body" style="margin-top: 0.5rem;">Priority-ordered task execution with single-active constraint. Tasks queue up, the highest-priority one runs, and results flow back to the requesting channel. No parallel execution surprises.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
@@ -327,22 +357,33 @@ COHORT            </a>
     </div>
 </section>
 
-<!-- Coming Soon: Website Creator -->
+<!-- Dive Deeper -->
 <section class="section-spacing">
-    <div class="container">
-        <h2 class="responsive-h2 text-center">Coming Soon</h2>
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Dive Deeper</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Detailed pages for each tool category.</p>
 
-        <div id="website-creator" style="max-width: 800px; margin: 2rem auto; scroll-margin-top: 5rem;">
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 2rem; border: 1px dashed #555;">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="font-size: 2rem;">[W]</div>
-                    <div>
-                        <h3 class="responsive-h3" style="margin: 0;">Website Creator</h3>
-                        <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 3px; padding: 0.15rem 0.5rem; color: #d29922; font-size: 0.7rem; font-weight: 600; margin-top: 0.25rem; display: inline-block;">COMING SOON</span>
-                    </div>
-                </div>
-                <p style="font-size: 0.9rem; color: #C8C8C8; line-height: 1.6; margin: 0;">A 7-stage pipeline that builds complete, responsive, SEO-optimized websites from a YAML brief. Scrapes your current site and competitors, runs dual agent roundtables (frontend + backend), then renders production HTML. This site was built by this pipeline.</p>
-            </div>
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <a href="mcp-tools.html" class="subpage-card">
+                <h3>MCP Tools<span class="tier-badge tier-free">Free</span></h3>
+                <p>31 tools for Claude Code integration. Channels, agents, tasks, discussions, search, briefings, web access.</p>
+            </a>
+            <a href="cli.html" class="subpage-card">
+                <h3>CLI<span class="tier-badge tier-free">Free</span></h3>
+                <p>6 commands: gate checks, speaker ranking, briefings, messaging, setup wizard, tutorial.</p>
+            </a>
+            <a href="marketing.html" class="subpage-card">
+                <h3>Content Pipeline<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>RSS monitoring, article scoring, AI-drafted posts, multi-platform publishing. Human approval on everything.</p>
+            </a>
+            <a href="website-creator.html" class="subpage-card">
+                <h3>Website Creator<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>7-stage pipeline from YAML brief to production site. Agent roundtables review every page. This site was built by it.</p>
+            </a>
+            <a href="project-integration.html" class="subpage-card">
+                <h3>Project Integration<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>Bring your agents to every project. .cohort manifest, scoped permissions, portable memory, automatic scaffolding.</p>
+            </a>
         </div>
     </div>
 </section>
@@ -353,7 +394,7 @@ COHORT            </a>
         <h2 class="responsive-h2" style="color: #fff;">Ready to Build?</h2>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Core tools ship with <code style="background: rgba(255,255,255,0.15); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Ecosystem tools available in full deployments.</p>
         <div class="button-group">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
             <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">How It Works</a>
         </div>
     </div>
@@ -371,20 +412,20 @@ COHORT            </a>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI | COHORT</title>
+    <meta name="description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, messaging, setup wizard, and interactive tutorial. All from the command line.">
+    <meta name="keywords" content="cohort CLI, command line, AI agent CLI, multi-agent orchestration, contribution scoring, executive briefing">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/cli.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/cli.html">
+    <meta property="og:title" content="CLI | COHORT">
+    <meta property="og:description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, messaging, setup wizard, and interactive tutorial.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CLI | COHORT">
+    <meta name="twitter:description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, and more.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .cmd-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .cmd-name {
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #D97757;
+        }
+        .cmd-desc {
+            font-size: 0.9rem;
+            color: #C8C8C8;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+        .cmd-usage {
+            background: #1a1d21;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #C8C8C8;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+        .cmd-usage .prompt { color: #3fb950; }
+        .cmd-usage .flag { color: #58a6ff; }
+        .cmd-usage .comment { color: #888; }
+        .cmd-flags {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .cmd-flags dt {
+            font-family: monospace;
+            color: #58a6ff;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .cmd-flags dd {
+            margin-left: 1.5rem;
+            color: #C8C8C8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">CLI</h1>
+        <p class="responsive-p-large">6 commands. Gate checks, speaker ranking, briefings, messaging, and an interactive setup wizard.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem;">Everything runs via <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">python -m cohort &lt;command&gt;</code></p>
+    </div>
+</section>
+
+<!-- At a Glance -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 700px; margin: 0 auto;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">6</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Commands</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">2</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Output Formats</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">JSON + text</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Dependencies</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">stdlib only (setup)</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Commands -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Commands</h2>
+
+        <!-- gate -->
+        <div class="cmd-card" id="gate">
+            <div><span class="cmd-name">cohort gate</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Should this agent respond? Runs the full contribution scoring engine and returns a SPEAK/SILENT decision with the score breakdown. Exit code 0 = speak, 1 = don't. Pipe into your orchestration scripts.</div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Check if the architect should respond</span></div>
+                <div><span class="prompt">$</span> python -m cohort gate <span class="flag">--agent</span> architect <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--agents</span> agents.json</div>
+                <div style="margin-top: 0.5rem; color: #888;">Agent:     architect</div>
+                <div style="color: #888;">Score:     0.73</div>
+                <div style="color: #888;">Threshold: 0.45 (ACTIVE)</div>
+                <div style="color: #3fb950;">Decision:  SPEAK</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>--agent</dt><dd>Agent ID to check (required)</dd>
+                <dt>--channel</dt><dd>Channel ID (required)</dd>
+                <dt>--file</dt><dd>Path to conversation .jsonl file (required)</dd>
+                <dt>--agents</dt><dd>Path to agents.json config (required)</dd>
+                <dt>--format</dt><dd>Output format: json | text (default: text)</dd>
+            </dl>
+        </div>
+
+        <!-- next-speaker -->
+        <div class="cmd-card" id="next-speaker">
+            <div><span class="cmd-name">cohort next-speaker</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Who should talk next? Ranks all agents by composite relevance score -- domain match, recency, phase detection, and stakeholder status. Returns the top N candidates.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort next-speaker <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--agents</span> agents.json <span class="flag">--top</span> 3</div>
+                <div style="margin-top: 0.5rem; color: #888;">Next speaker for channel 'review':</div>
+                <div style="color: #888;">  1. security_agent        score=0.82  phase=review  (domain=0.45, recency=0.20)</div>
+                <div style="color: #888;">  2. python_developer      score=0.71  phase=review  (domain=0.38, stakeholder=0.18)</div>
+                <div style="color: #888;">  3. qa_agent              score=0.64  phase=review  (domain=0.30, recency=0.15)</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>--top</dt><dd>Number of speakers to show (default: 3)</dd>
+                <dt>--format</dt><dd>json | text</dd>
+            </dl>
+        </div>
+
+        <!-- say -->
+        <div class="cmd-card" id="say">
+            <div><span class="cmd-name">cohort say</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Append a message to a conversation. Auto-creates the channel if it doesn't exist. Use this to script agent interactions or inject messages programmatically.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort say <span class="flag">--sender</span> architect <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--message</span> "Let's review the auth module"</div>
+                <div style="margin-top: 0.5rem; color: #3fb950;">[OK] msg_a1b2c3 -> #review</div>
+            </div>
+        </div>
+
+        <!-- briefing -->
+        <div class="cmd-card" id="briefing">
+            <div><span class="cmd-name">cohort briefing</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Generate or view executive briefings. Summarizes channel activity, task progress, agent performance, and blockers over a configurable time window. Posts to a briefing channel by default.</div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Generate a new briefing covering the last 24 hours</span></div>
+                <div><span class="prompt">$</span> python -m cohort briefing generate <span class="flag">--hours</span> 24</div>
+                <div style="margin-top: 0.75rem;"><span class="comment"># View the latest briefing as JSON</span></div>
+                <div><span class="prompt">$</span> python -m cohort briefing latest <span class="flag">--format</span> json</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>generate --hours N</dt><dd>Hours to cover (default: 24)</dd>
+                <dt>generate --no-post</dt><dd>Don't post to channel, just print</dd>
+                <dt>generate --data-dir</dt><dd>Data directory (default: data)</dd>
+                <dt>latest</dt><dd>Show the most recent briefing</dd>
+            </dl>
+        </div>
+
+        <!-- setup -->
+        <div class="cmd-card" id="setup">
+            <div><span class="cmd-name">cohort setup</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Interactive 8-step setup wizard. Detects your hardware (GPU, VRAM, platform), installs Ollama, pulls the right model for your GPU, configures the MCP server for Claude Code, and sets up content feeds. Uses only stdlib -- no extra pip dependencies.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort setup</div>
+                <div style="margin-top: 0.5rem; color: #888;">Step 1/8: Detecting hardware...</div>
+                <div style="color: #888;">  GPU: NVIDIA RTX 3080 (12 GB VRAM)</div>
+                <div style="color: #888;">  Recommended model: qwen3.5:9b (6.6 GB)</div>
+                <div style="color: #3fb950;">  [OK] Hardware detection complete</div>
+            </div>
+            <div style="margin-top: 0.75rem; font-size: 0.8rem; color: #888;">
+                VRAM-based model selection: 0-4 GB -> 2B model, 4-6 GB -> 4B, 6-10 GB -> 9B, 10+ GB -> 9B with headroom. CPU-only mode supported.
+            </div>
+        </div>
+
+        <!-- tutorial -->
+        <div class="cmd-card" id="tutorial">
+            <div><span class="cmd-name">cohort tutorial</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Interactive walkthrough of Cohort's scoring engine. Step through the gate check and contribution scoring algorithms with real examples. Learn how agents decide who speaks when.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort tutorial</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Scripting Example -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Scripting Example</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Combine CLI commands to build custom orchestration pipelines. The JSON output mode makes it easy to pipe into other tools.</p>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8; overflow-x: auto;">
+            <div style="color: #888;">#!/bin/bash</div>
+            <div style="color: #888;"># Auto-moderate: find who should speak, then gate-check them</div>
+            <div style="margin-top: 0.5rem;"><span style="color: #3fb950;">NEXT</span>=<span style="color: #d29922;">$(</span>python -m cohort next-speaker \</div>
+            <div style="padding-left: 2rem;">--channel review --file conv.jsonl \</div>
+            <div style="padding-left: 2rem;">--agents agents.json --top 1 --format json<span style="color: #d29922;">)</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #3fb950;">AGENT</span>=<span style="color: #d29922;">$(</span>echo "$NEXT" | jq -r '.[0].agent_id'<span style="color: #d29922;">)</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #bc8cff;">if</span> python -m cohort gate --agent "$AGENT" \</div>
+            <div style="padding-left: 2rem;">--channel review --file conv.jsonl --agents agents.json; <span style="color: #bc8cff;">then</span></div>
+            <div style="padding-left: 2rem;">echo <span style="color: #d29922;">"$AGENT should respond"</span></div>
+            <div><span style="color: #bc8cff;">fi</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">Get Started in 30 Seconds</h2>
+        <div style="background: #1a1d21; border-radius: 8px; padding: 1rem 1.5rem; display: inline-block; font-family: monospace; font-size: 0.9rem; color: #C8C8C8; margin: 1rem 0;">
+            <span style="color: #3fb950;">$</span> pip install cohort && python -m cohort setup
+        </div>
+        <div class="button-group" style="margin-top: 1rem;">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">View on GitHub</a>
+            <a href="mcp-tools.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">MCP Tools</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

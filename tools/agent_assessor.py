@@ -617,6 +617,21 @@ def main():
     if args.get("backend") == "llamacpp":
         BACKEND = "llamacpp"
         INFERENCE_URL = args.get("ollama_url") or DEFAULT_LLAMACPP_URL
+        # Resolve Ollama-style model tags to GGUF filenames via llm_router.yaml
+        _router_cfg = COHORT_ROOT.parent / "BOSS" / "config" / "llm_router.yaml"
+        if not _router_cfg.exists():
+            _router_cfg = Path("G:/BOSS/config/llm_router.yaml")
+        if _router_cfg.exists():
+            try:
+                import yaml
+                with open(_router_cfg) as _f:
+                    _cfg = yaml.safe_load(_f)
+                _aliases = _cfg.get("inference_backend", {}).get("model_aliases", {})
+                if MODEL in _aliases:
+                    print(f"  [llamacpp] Resolved model alias: {MODEL} -> {_aliases[MODEL]}")
+                    MODEL = _aliases[MODEL]
+            except Exception:
+                pass  # yaml not available or config unreadable; user must pass GGUF name
     elif args.get("ollama_url"):
         INFERENCE_URL = args["ollama_url"]
 

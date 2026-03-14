@@ -36,6 +36,62 @@
       "timestamp": "2026-02-21T00:00:00",
       "confidence": "high",
       "session_id": "ENRICH-20260221-BACKUP"
+    },
+    {
+      "fact": "80 Plus Gold PSU efficiency: requires minimum 90% efficiency at 50% load (peak efficiency point), 87% at 20% load, and 87% at 100% load for 115V systems. 80 Plus Platinum requires 92% at 50% load. Do not confuse Gold (90%) with Platinum (92%).",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "power_cooling",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Intel VT-x provides hardware-assisted CPU virtualization with separate privilege rings (VMX root/non-root modes) for guests. It does NOT provide memory encryption (that is AMD SEV/Intel TME), GPU passthrough (that requires VT-d/IOMMU), or network I/O virtualization (that is VT-c/SR-IOV).",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "virtualization",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Standard ATX motherboard dimensions: 305mm x 244mm. This is the LARGEST standard consumer form factor. E-ATX (up to 330mm wide) is extended/enthusiast, not standard consumer. Micro-ATX is 244mm x 244mm (square). Mini-ITX is 170mm x 170mm. When asked about 305mm x 244mm, the answer is ATX.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "form_factors",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "PCIe bandwidth per generation (unidirectional, x16): PCIe 3.0 = ~16 GB/s, PCIe 4.0 = ~32 GB/s, PCIe 5.0 = ~64 GB/s, PCIe 6.0 = ~128 GB/s. Each generation doubles. Per lane: PCIe 4.0 = ~2 GB/s/lane, so x4 NVMe = ~8 GB/s unidirectional. Always distinguish unidirectional vs bidirectional (bidirectional = 2x unidirectional).",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "cpu",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "DDR5 bandwidth calculation: DDR5-6000 = 6000 MT/s x 8 bytes (64-bit bus) = 48 GB/s per channel. Dual-channel = 96 GB/s total. Each DDR5 DIMM has two 32-bit sub-channels internally, but dual-channel refers to two DIMMs on separate memory channels. Do not double-count sub-channels with dual-channel.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "memory",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "VRAM estimation for LLM inference at FP16: Parameters (billions) x 2 GB for weights, plus 10-20% overhead for KV cache and activations. A 7B model needs ~14 GB for weights + ~2-3 GB overhead = ~16-17 GB total. The formula is NOT params x 0.5 or params x 4.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "gpu",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "GDDR6X achieves higher bandwidth than GDDR6 through PAM4 signaling (Pulse Amplitude Modulation with 4 levels), encoding 2 bits per signal transition instead of 1 (NRZ). It does NOT use a wider bus or higher voltage. RTX 4090 bandwidth: 384-bit bus x 21 Gbps = (384/8) x 21 = 1,008 GB/s.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "gpu",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Quad-channel memory configuration: requires exactly 4 DIMMs, one per channel, installed in the correct color-coded slots on a quad-channel motherboard. DIMMs must match capacity, speed, and rank. It is NOT 8 DIMMs with 4 matched pairs. Any 4 slots is wrong; must be the designated quad-channel slots.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "memory",
+      "date_added": "2026-03-13"
     }
   ],
   "known_paths": {}

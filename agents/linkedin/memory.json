@@ -36,6 +36,41 @@
       "timestamp": "2026-02-20T00:00:00",
       "confidence": "medium",
       "session_id": "ENRICH-20260220"
+    },
+    {
+      "fact": "LinkedIn See More truncation: posts are truncated at approximately 210 characters on desktop, requiring users to click See More. The first 2 lines must contain the hook. On mobile the truncation point may vary slightly but 210 characters is the standard threshold.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "content_strategy",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "LinkedIn Campaign Manager minimum audience size: 300 members is the minimum required to launch a campaign. This prevents hyper-targeting of small groups. The 300 threshold applies to all campaign types using audience targeting.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "linkedin_advertising",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "LinkedIn content classification algorithm: in the initial distribution phase, LinkedIn classifies posts into three categories: spam, low quality, or high quality. This classification happens before the post is shown to the broader network. High quality posts get wider initial distribution.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "linkedin_algorithm",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "LinkedIn native post scheduling: LinkedIn offers native scheduling via the clock icon in the post composer. This was added as a platform feature and does not require third-party tools or Campaign Manager. Users can schedule posts directly from the standard post creation interface.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "content_strategy",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "LinkedIn document carousel limits: maximum file size is 100 MB per document upload. Maximum pages per carousel is 300 pages. Effective carousels typically use 8-15 slides for engagement, but the platform supports up to 300.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "content_strategy",
+      "date_added": "2026-03-13"
     }
   ],
   "known_paths": {}

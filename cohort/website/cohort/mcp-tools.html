@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Tools | COHORT</title>
+    <meta name="description" content="31 MCP tools for Claude Code integration -- channels, agents, tasks, discussions, search, briefings, and web access. All included in the open source tier.">
+    <meta name="keywords" content="MCP tools, Claude Code, model context protocol, AI agent tools, multi-agent orchestration, cohort MCP server">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/mcp-tools.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/mcp-tools.html">
+    <meta property="og:title" content="MCP Tools | COHORT">
+    <meta property="og:description" content="31 MCP tools for Claude Code integration -- channels, agents, tasks, discussions, search, briefings, and web access.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MCP Tools | COHORT">
+    <meta name="twitter:description" content="31 MCP tools for Claude Code integration -- channels, agents, tasks, discussions, search, briefings, and web access.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .tool-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .tool-name {
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .tool-desc {
+            font-size: 0.85rem;
+            color: #C8C8C8;
+            margin-top: 0.35rem;
+            line-height: 1.5;
+        }
+        .tool-meta {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .tool-tag {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .tag-read { background: #1a2e1a; border: 1px solid #3fb950; color: #3fb950; }
+        .tag-write { background: #2e2e1a; border: 1px solid #d29922; color: #d29922; }
+        .tag-action { background: #2e1a2e; border: 1px solid #bc8cff; color: #bc8cff; }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .category-count {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">MCP Tools</h1>
+        <p class="responsive-p-large">31 tools. 7 categories. Full Claude Code integration via the Model Context Protocol.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem;">Every tool ships with <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Two modes: <strong>Full</strong> (HTTP to running Cohort server) and <strong>Lite</strong> (file-backed, standalone).</p>
+    </div>
+</section>
+
+<!-- At a Glance -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">31</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">MCP Tools</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">7</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Categories</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">2</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Operating Modes</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Full + Lite</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">All Tiers</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Open source, forever</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tier Legend -->
+<section style="padding: 0 1rem;">
+    <div class="container" style="max-width: 800px;">
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.85rem; color: #C8C8C8;">
+            <strong style="color: #fff;">Tier legend:</strong>
+            <span><span class="tier-badge tier-free">Free</span> Included in open source</span>
+            <span><span class="tier-badge tier-pro">Pro</span> Requires Pro subscription</span>
+            <span><span class="tier-badge tier-enterprise">Enterprise</span> Enterprise only</span>
+        </div>
+    </div>
+</section>
+
+<!-- Category 1: Channel Management -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Channel Management</h2>
+            <span class="category-count">6 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">read_channel</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Read recent messages from a channel with compact, token-optimized output. Supports limit and offset for pagination.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">post_message</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Post a message to a channel as any sender. Supports @mentions for agent routing.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">list_channels</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">List all channels with compact output -- name, topic, message count, and last activity.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_create_channel</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Create a new chat channel with optional member list and topic. Auto-generates unique ID.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">channel_summary</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Get a compact summary of recent channel activity -- who spoke, key topics, decision points.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">condense_channel</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Summarize old messages and archive originals. Keeps channels fast without losing history.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 2: Task Management -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Task Management</h2>
+            <span class="category-count">7 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">get_checklist</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Read the to-do checklist with optional filtering by priority, category, or assignee.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">update_checklist</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Add, complete, or remove tasks on the to-do checklist. Supports priority and category tagging.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_work_queue</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Read the sequential work queue -- priority-ordered tasks with single-active constraint.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_tasks</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Read agent tasks with lifecycle tracking. Filter by status: pending, active, complete.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_enqueue_item</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Add an item to the sequential work queue with priority, dependencies, and agent assignment.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_claim_next</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Claim the next available work item. Respects priority ordering and dependency chains.</div>
+            <div class="tool-meta"><span class="tool-tag tag-action">action</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_assign_task</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Assign a task to a specific agent via the work queue. Sets deliverables and acceptance criteria.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 3: Agent Management -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Agent Management</h2>
+            <span class="category-count">8 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_list_agents</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">List all agents with ID, role, status, and top skills. Optional flag to include hidden/inactive agents.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_agent</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Get full agent configuration by ID or alias. Returns personality, skills, domains, partners, and model params.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_agent_memory</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Read an agent's persistent memory -- working memory, learned facts, or both. Filter by section.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_create_agent</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Create a new agent with full directory structure, config, prompt, and memory. Specify role, personality, skills, and group.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_clean_memory</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Trim an agent's working memory, archiving old entries. Supports dry-run mode to preview changes.</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_add_fact</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Add a learned fact to an agent's persistent memory with topic, source, and confidence level (high/medium/low).</div>
+            <div class="tool-meta"><span class="tool-tag tag-write">write</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_route_task</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Route a task to the best-qualified agent. Scores all active agents against the task using triggers, capabilities, and skill levels.</div>
+            <div class="tool-meta"><span class="tool-tag tag-action">action</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_find_agents</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Find all agents qualified for a topic, ranked by capability match. Use for roundtable composition.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 4: Collaboration & Discussion -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Collaboration & Discussion</h2>
+            <span class="category-count">4 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_discussion</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Run a multi-agent discussion. Each agent responds in turn with separate LLM calls. Best for complex workflow hand-offs.</div>
+            <div class="tool-meta"><span class="tool-tag tag-action">action</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_compiled_discussion</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">All agent personas in a single LLM call -- ~90% token reduction vs separate calls. Best for 3-8 agent planning and review sessions.</div>
+            <div class="tool-meta"><span class="tool-tag tag-action">action</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_adopt_persona</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Load an agent's persona into the current conversation. Choose lightweight persona or full agent prompt.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_partnership_graph</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">View the partnership graph -- who consults whom and why. Shows consultation protocols between agents.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 5: Search & Retrieval -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Search & Retrieval</h2>
+            <span class="category-count">3 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_search_messages</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Full-text search across all channels by keyword. Optional channel filter. Returns matching messages with context.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_mentions</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Get messages where a specific agent was @mentioned. Configurable limit (1-100).</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_get_outputs</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Get completed task outputs awaiting human review. The handoff point between agent work and your approval.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 6: Briefing & Analysis -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Briefing & Analysis</h2>
+            <span class="category-count">1 tool</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">cohort_generate_briefing</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Generate an executive briefing for your Cohort deployment. Summarizes channel activity, task progress, agent performance, and blockers over a configurable time window.</div>
+            <div class="tool-meta"><span class="tool-tag tag-action">action</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category 7: Web Access -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <div class="category-header">
+            <h2 class="responsive-h2" style="margin: 0;">Web Access</h2>
+            <span class="category-count">2 tools</span>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">internal_web_search</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Search the web locally using DuckDuckGo. No API key, no cost, no rate limits. Runs entirely on your machine. Optional time range filter.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+
+        <div class="tool-card">
+            <div><span class="tool-name">internal_web_fetch</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="tool-desc">Fetch and render a web page locally using Playwright. Extracts readable text, metadata, and screenshots. No external API required.</div>
+            <div class="tool-meta"><span class="tool-tag tag-read">read-only</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- Setup -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Quick Setup</h2>
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.85rem; line-height: 2; color: #C8C8C8; margin-top: 1.5rem;">
+            <div style="color: #888;"># Install</div>
+            <div><span style="color: #3fb950;">$</span> pip install cohort</div>
+            <div style="margin-top: 1rem; color: #888;"># Add to Claude Code settings (~/.claude/settings.local.json)</div>
+            <div style="color: #d29922;">{</div>
+            <div style="padding-left: 1.5rem; color: #d29922;">"mcpServers": {</div>
+            <div style="padding-left: 3rem; color: #d29922;">"cohort": {</div>
+            <div style="padding-left: 4.5rem;">"command": <span style="color: #3fb950;">"python"</span>,</div>
+            <div style="padding-left: 4.5rem;">"args": <span style="color: #3fb950;">["-m", "cohort.mcp.server"]</span></div>
+            <div style="padding-left: 3rem; color: #d29922;">}</div>
+            <div style="padding-left: 1.5rem; color: #d29922;">}</div>
+            <div style="color: #d29922;">}</div>
+            <div style="margin-top: 1rem; color: #888;"># Or use the setup wizard</div>
+            <div><span style="color: #3fb950;">$</span> python -m cohort setup</div>
+        </div>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic; text-align: center;">Auto-detects between Full mode (HTTP to running Cohort server) and Lite mode (file-backed storage). No configuration needed.</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">31 Tools. Zero API Cost.</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Every MCP tool ships with <code style="background: rgba(255,255,255,0.15); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Open source, forever.</p>
+        <div class="button-group">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="tools.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Tools Overview</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

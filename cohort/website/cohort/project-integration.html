@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Integration | COHORT</title>
+    <meta name="description" content="Bring your Cohort agents to every project. The .cohort manifest links any directory to your agent team -- portable agents, scoped permissions, and automatic project scaffolding.">
+    <meta name="keywords" content="cohort integration, project scaffolding, portable AI agents, .cohort manifest, multi-project AI, agent permissions">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/project-integration.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/project-integration.html">
+    <meta property="og:title" content="Project Integration | COHORT">
+    <meta property="og:description" content="Bring your Cohort agents to every project. Portable agents, scoped permissions, automatic scaffolding.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Project Integration | COHORT">
+    <meta name="twitter:description" content="Portable agents. Scoped permissions. Automatic scaffolding.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .feature-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .feature-card h3 {
+            color: #fff;
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+        }
+        .feature-card p {
+            color: #C8C8C8;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">Project Integration</h1>
+        <span class="tier-badge tier-pro" style="margin-left: 0;">Pro</span>
+        <p class="responsive-p-large" style="margin-top: 1rem;">Bring your Cohort agents to every project. One manifest file links any directory to your full agent team.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem;">Portable agents. Scoped permissions. Automatic scaffolding. No copy-paste.</p>
+    </div>
+</section>
+
+<!-- The Problem -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">The Problem</h2>
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; border-left: 3px solid #f85149;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: #f85149; margin-bottom: 0.5rem;">Copy-paste agents</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.5;">Every new project means manually recreating agent configs, prompts, and memory. Your agents start from zero each time.</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; border-left: 3px solid #f85149;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: #f85149; margin-bottom: 0.5rem;">No permission boundaries</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.5;">Agents have full access to everything or nothing. No way to scope what they can see or modify per project.</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; border-left: 3px solid #f85149;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: #f85149; margin-bottom: 0.5rem;">Setup fatigue</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.5;">README templates, CI configs, directory structures, linting rules -- the same boilerplate every time before real work starts.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- The .cohort Manifest -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">The .cohort Manifest</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">One file in your project root connects it to your Cohort installation. Your agents, their memory, and your permissions travel with you.</p>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+            <div style="color: #888;"># .cohort (auto-generated)</div>
+            <div><span style="color: #58a6ff;">version:</span> <span style="color: #d29922;">"1.0"</span></div>
+            <div><span style="color: #58a6ff;">cohort_root:</span> <span style="color: #d29922;">"~/cohort"</span></div>
+            <div><span style="color: #58a6ff;">project_name:</span> <span style="color: #d29922;">"my-saas-app"</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">working_memory_path:</span> <span style="color: #d29922;">".cohort-memory/"</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">permissions:</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">profile:</span> <span style="color: #d29922;">"standard"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">allow_paths:</span></div>
+            <div style="padding-left: 3rem;"><span style="color: #d29922;">- "src/"</span></div>
+            <div style="padding-left: 3rem;"><span style="color: #d29922;">- "tests/"</span></div>
+            <div style="padding-left: 3rem;"><span style="color: #d29922;">- "docs/"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">deny_paths:</span></div>
+            <div style="padding-left: 3rem;"><span style="color: #d29922;">- ".env"</span></div>
+            <div style="padding-left: 3rem;"><span style="color: #d29922;">- "credentials/"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">allowed_tools:</span> <span style="color: #888;">[read, write, search, test]</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">max_turns:</span> <span style="color: #d29922;">25</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">How It Works</h2>
+
+        <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 0.85rem;">
+                <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">Link project</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">.cohort created</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">Agents available</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #bc8cff; font-weight: 600;">Scoped memory</span>
+            </div>
+        </div>
+
+        <div class="feature-card" style="margin-top: 1.5rem;">
+            <h3>1. Link or Create<span class="tier-badge tier-pro">Pro</span></h3>
+            <p>Point Cohort at any directory. The manifest resolves back to your Cohort installation so agents, skills, and personas are always available. No copying, no symlinking.</p>
+            <div style="background: #1a1d21; border-radius: 4px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
+                <span style="color: #888;"># Link an existing project</span><br>
+                <span style="color: #3fb950;">$</span> cohort link /path/to/my-project
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <h3>2. Scoped Permissions<span class="tier-badge tier-pro">Pro</span></h3>
+            <p>Each project defines what agents can access. Allow-list specific directories, deny sensitive paths like <code style="color: #d29922;">.env</code> and <code style="color: #d29922;">credentials/</code>. Set tool restrictions and max turn limits. Your agents can only touch what you allow.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>3. Project-Scoped Memory<span class="tier-badge tier-pro">Pro</span></h3>
+            <p>Each linked project gets its own <code style="color: #d29922;">.cohort-memory/</code> directory. Agents build context about <em>this</em> project -- architecture decisions, coding patterns, past reviews -- without polluting their global knowledge. Auto-gitignored.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>4. Scaffolding<span class="tier-badge tier-pro">Pro</span></h3>
+            <p>New projects get automated housekeeping: directory structure, CI config templates, linting rules, README scaffolding, and git initialization. Skip the boilerplate, start building.</p>
+        </div>
+    </div>
+</section>
+
+<!-- What Travels With You -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">What Travels With You</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Your Cohort installation is the source of truth. Every linked project points back to it.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                <h4 style="color: #3fb950; margin-bottom: 0.75rem; font-size: 0.9rem;">Shared (from Cohort root)</h4>
+                <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 2;">
+                    <div>Agent configs & personas</div>
+                    <div>Skills & slash commands</div>
+                    <div>MCP server & tools</div>
+                    <div>LLM router & models</div>
+                    <div>Global agent memory</div>
+                </div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                <h4 style="color: #58a6ff; margin-bottom: 0.75rem; font-size: 0.9rem;">Scoped (per project)</h4>
+                <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 2;">
+                    <div>Working memory</div>
+                    <div>File permissions</div>
+                    <div>Tool restrictions</div>
+                    <div>Turn limits</div>
+                    <div>Project-specific context</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Use Cases -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Use Cases</h2>
+        <div style="margin-top: 1.5rem;">
+            <div class="feature-card">
+                <h3 style="color: #D97757;">Multi-repo development</h3>
+                <p>Working across 5 repos? Link them all. Your security agent knows your auth patterns, your python dev remembers your coding style, your QA agent knows your test conventions -- regardless of which repo you're in.</p>
+            </div>
+            <div class="feature-card">
+                <h3 style="color: #D97757;">Client projects with boundaries</h3>
+                <p>Each client project gets strict permission scoping. Agents can't accidentally reference one client's code when working on another. Memory stays isolated per project.</p>
+            </div>
+            <div class="feature-card">
+                <h3 style="color: #D97757;">Rapid prototyping</h3>
+                <p>Spin up a new project directory, link it, and immediately have your full team available. No setup, no config, no boilerplate. Start building in seconds.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">Your Agents, Every Project</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Project Integration ships with Cohort Pro. Link unlimited projects to one Cohort installation.</p>
+        <div class="button-group">
+            <a href="pricing.html" class="btn-primary" style="background: var(--color-primary);">See Pricing</a>
+            <a href="tools.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Tools Overview</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

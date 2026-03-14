@@ -17,8 +17,7 @@ const NAV_ITEMS = [
         label: "How It Works", children: [
             { label: "Features", href: "features.html" },
             { label: "Use Cases", href: "use-cases.html" },
-            { label: "Conversations", href: "conversations.html" },
-            { label: "Content Pipeline", href: "marketing.html" }
+            { label: "Conversations", href: "conversations.html" }
         ]
     },
     { label: "Pricing", href: "pricing.html" },
@@ -29,7 +28,16 @@ const NAV_ITEMS = [
             { label: "Compare", href: "compare.html" }
         ]
     },
-    { label: "The Tools", href: "tools.html" },
+    {
+        label: "The Tools", children: [
+            { label: "Overview", href: "tools.html" },
+            { label: "MCP Tools", href: "mcp-tools.html" },
+            { label: "CLI", href: "cli.html" },
+            { label: "Content Pipeline", href: "marketing.html" },
+            { label: "Website Creator", href: "website-creator.html" },
+            { label: "Project Integration", href: "project-integration.html" }
+        ]
+    },
     {
         label: "The Team", children: [
             { label: "Meet the Agents", href: "team.html" },

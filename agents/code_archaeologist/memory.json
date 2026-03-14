@@ -36,6 +36,48 @@
       "timestamp": "2026-02-28T19:46:38.119377+00:00",
       "confidence": "high",
       "session_id": "TEMP-CONFIG-20260228"
+    },
+    {
+      "fact": "Python docstring conventions: Sphinx/reStructuredText style uses :param name: description for parameters. Google style uses Args: with indented parameters. NumPy style uses a Parameters section with dashed underlines. When asked about :param syntax, the answer is Sphinx/reST, NOT NumPy.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "documentation",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Martin Fowler technical debt quadrant: Deliberate Prudent = knowingly taking shortcuts with full understanding of tradeoffs (ship now, refactor later). Deliberate Reckless = knowingly cutting corners without caring. Inadvertent Prudent = learning after the fact that there was a better approach. Inadvertent Reckless = not knowing best practices.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "tech_debt",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Reaching definitions analysis: a definition d of variable v at point p reaches point q if there EXISTS A PATH from p to q along which d is NOT KILLED by another definition of v. The variable does NOT need to be used at q. The path does NOT need to be direct. Existence of any un-killed path is sufficient.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "flow_analysis",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Mermaid flowchart arrow syntax: --> is solid line with arrow (standard). --- is solid line without arrow. ==> is thick line with arrow. ---> is a LONGER solid line with arrow (extra dashes increase length, NOT change arrow type). For standard solid arrow from A to B, use A --> B.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "diagramming",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "CFG cyclomatic complexity: CC = E - N + 2P where E = edges, N = nodes, P = connected components (usually 1). Count edges carefully: each branch (if/else) adds 2 edges (true + false). Return/exit edges count. For a function with 2 branch points, typical CC = 3.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "flow_analysis",
+      "date_added": "2026-03-13"
+    },
+    {
+      "fact": "Live variable analysis: a variable is live at a point if there exists a path from that point to a USE of the variable without an intervening redefinition. After a for loop completes, the loop variable is dead if no subsequent code references it. Variables used only inside the loop body are dead after the loop exit.",
+      "source": "assessment_gap_fill",
+      "confidence": "high",
+      "topic": "flow_analysis",
+      "date_added": "2026-03-13"
     }
   ],
   "active_tasks": [],

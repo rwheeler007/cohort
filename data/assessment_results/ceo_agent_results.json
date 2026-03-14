@@ -9,8 +9,8 @@
   "score_pct": 96.0,
   "passed": true,
   "status": "complete",
-  "started_at": "2026-03-12T14:45:36",
-  "completed_at": "2026-03-12T14:53:54",
+  "started_at": "2026-03-13T18:40:56",
+  "completed_at": "2026-03-13T18:54:34",
   "by_difficulty": {
     "intermediate": {
       "correct": 20,
@@ -27,11 +27,11 @@
   },
   "by_category": {
     "decision_frameworks": {
-      "correct": 16,
+      "correct": 15,
       "total": 17
     },
     "strategic_planning": {
-      "correct": 13,
+      "correct": 14,
       "total": 14
     },
     "leadership": {
@@ -78,9 +78,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The RAPID framework is a decision-making model used to clarify roles and responsibilities within an organization. The acronym stands for:\n\n*   **R**ecommend: The person who gathers information and makes a recommendation to the decider.\n*   **A**gree: People whose input is sought before a decision is",
+      "agent_response": "The RAPID decision-making framework is an acronym where each letter stands for a specific role in the decision process:\n\n*   **R** = Recommend (Who recommends the decision?)\n*   **A** = Agree (Who must agree to the decision before it is made?)\n*   **P** = Perform (Who performs the action resulting f",
       "is_correct": true,
-      "elapsed_s": 2.4
+      "elapsed_s": 2.5
     },
     {
       "id": "CEO002",
@@ -90,9 +90,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The RAPID framework is a decision-making model where each letter stands for a specific role:\n*   **R** = Recommend (Who makes the recommendation?)\n*   **A** = Agree (Who must agree before the decision can be made?)\n*   **P** = Perform (Who executes the decision?)\n*   **I** = Input (Who provides inpu",
+      "agent_response": "The RAPID framework is a decision-making model where each letter stands for a specific role:\n*   **R** = Recommend (The person who gathers information and makes the recommendation).\n*   **A** = Agree (The person who has the final say on whether to accept or reject the recommendation. If they disagre",
       "is_correct": true,
-      "elapsed_s": 4.7
+      "elapsed_s": 5.3
     },
     {
       "id": "CEO003",
@@ -102,7 +102,7 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "In the Objectives and Key Results (OKR) framework, best practices generally recommend that a team should focus on a limited number of objectives to ensure alignment and execution. Having too many objectives can lead to dilution of effort and lack of focus.\n\nThe widely accepted standard, often cited ",
+      "agent_response": "In the Objectives and Key Results (OKR) framework, best practices generally suggest that teams should focus on a limited number of high-impact goals to ensure alignment and execution. Having too many objectives can lead to dilution of effort and lack of focus.\n\nMost standard OKR methodologies (such ",
       "is_correct": true,
       "elapsed_s": 3.1
     },
@@ -114,9 +114,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "The prioritization framework that specifically uses **Reach**, **Impact**, **Confidence**, and **Effort** as its four scoring dimensions is the **RICE** score.\n\n*   **R**each: How many people will be affected?\n*   **I**mpact: How much will each person be affected?\n*   **C**onfidence: How confident a",
+      "agent_response": "The prioritization framework that specifically uses **Reach**, **Impact**, **Confidence**, and **Effort** as its four scoring dimensions is the **RICE** scoring model.\n\n*   **R**each: How many people will be affected?\n*   **I**mpact: How much will each person be affected?\n*   **C**onfidence: How con",
       "is_correct": true,
-      "elapsed_s": 2.9
+      "elapsed_s": 3.0
     },
     {
       "id": "CEO005",
@@ -126,9 +126,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "In John Kotter's 8-step change management model, the process begins with creating a climate ready for change. The very first step is to **establish a sense of urgency**. Without a compelling reason for change, people will not be motivated to leave their comfort zones or support the initiative.\n\nThe ",
+      "agent_response": "In John Kotter's 8-Step Change Management Model, the process begins with creating a climate that is ready for change. The very first step is to **establish a sense of urgency**. Without a compelling reason to change, people will not be motivated to leave their comfort zones or support the transforma",
       "is_correct": true,
-      "elapsed_s": 2.2
+      "elapsed_s": 2.5
     },
     {
       "id": "CEO006",
@@ -138,7 +138,7 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "The SWOT analysis is a strategic planning tool used to evaluate the **S**trengths, **W**eaknesses, **O**pportunities, and **T**hreats of a business or project.\n\nTherefore, the 'S' stands for **Strengths**.\n\nANSWER: C",
+      "agent_response": "In a SWOT analysis, the acronym stands for:\n*   **S** - **Strengths**\n*   **W** - Weaknesses\n*   **O** - Opportunities\n*   **T** - Threats\n\nTherefore, the 'S' stands for Strengths.\n\nANSWER: C",
       "is_correct": true,
       "elapsed_s": 1.2
     },
@@ -150,9 +150,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "In standard risk management frameworks (such as ISO 31000 or NIST SP 800-30), the severity or magnitude of a risk is fundamentally determined by the likelihood of the event occurring and the consequence if it does occur.\n\nThe formula generally used is:\n$$ \\text{Risk} = \\text{Probability (Likelihood)",
+      "agent_response": "In standard risk management frameworks (such as ISO 31000 or NIST SP 800-30), risk severity (often referred to simply as **Risk**) is fundamentally defined by the combination of two factors:\n1.  **Likelihood (or Probability):** The chance that a specific threat event will occur.\n2.  **Impact (or Con",
       "is_correct": true,
-      "elapsed_s": 3.9
+      "elapsed_s": 4.2
     },
     {
       "id": "CEO008",
@@ -162,9 +162,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "The primary distinction between leading and lagging indicators lies in their temporal relationship to the outcome they measure.\n\n*   **Leading indicators** are forward-looking metrics that change *before* the business outcome occurs. They are used to predict future performance (e.g., number of sales",
+      "agent_response": "The primary distinction between leading and lagging indicators lies in their temporal relationship to the events they measure.\n\n*   **Leading indicators** are forward-looking metrics that change *before* the economy or business cycle changes. They provide an early warning signal of future trends (e.",
       "is_correct": true,
-      "elapsed_s": 3.6
+      "elapsed_s": 4.1
     },
     {
       "id": "CEO009",
@@ -174,9 +174,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "In the context of product strategy and development, **MVP** stands for **Minimum Viable Product**.\n\nThis concept, popularized by Eric Ries in *The Lean Startup*, refers to a version of a new product that includes the minimum set of features necessary to satisfy early customers and provide feedback f",
+      "agent_response": "In the context of product strategy and development, **MVP** stands for **Minimum Viable Product**.\n\nThis concept, popularized by Eric Ries in his book *The Lean Startup*, refers to a version of a new product that includes the minimum set of features necessary to satisfy early customers and provide f",
       "is_correct": true,
-      "elapsed_s": 2.3
+      "elapsed_s": 2.4
     },
     {
       "id": "CEO010",
@@ -186,9 +186,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "When delivering bad news to senior leadership, clarity, transparency, and solution-oriented thinking are paramount. Senior leaders value honesty and efficiency; burying the bad news (Option A) can erode trust if they realize the issue was hidden. Waiting for a complete solution before mentioning the",
+      "agent_response": "When delivering bad news to senior leadership, transparency, accountability, and solution-oriented thinking are paramount. Senior leaders expect directness and value their time; burying the news (Option A) can be perceived as deceptive or manipulative, eroding trust. Waiting for a complete solution ",
       "is_correct": true,
-      "elapsed_s": 2.6
+      "elapsed_s": 2.7
     },
     {
       "id": "CEO011",
@@ -198,9 +198,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "In the DACI framework (used for decision-making roles within an organization), the acronym stands for:\n\n*   **D** = Driver (the person responsible for driving the project forward)\n*   **A** = Approver (the person who has the final say on decisions)\n*   **C** = **Contributor** (people who provide inp",
+      "agent_response": "In the DACI framework (used for decision-making roles within an organization), the acronym stands for:\n\n*   **D** = Driver (The person who drives the project forward and makes the final decision).\n*   **A** = Approver (The person who has the authority to approve or reject the decision).\n*   **C** = ",
       "is_correct": true,
-      "elapsed_s": 2.0
+      "elapsed_s": 2.4
     },
     {
       "id": "CEO012",
@@ -212,7 +212,7 @@
       "agent_answer": "A",
       "agent_response": "The sunk cost fallacy is a cognitive bias where an individual or organization continues a behavior or invests in an idea despite clear evidence that it is unprofitable, simply because they have already invested resources (time, money, effort) into it. These past costs are \"sunk\" and cannot be recove",
       "is_correct": true,
-      "elapsed_s": 3.6
+      "elapsed_s": 4.1
     },
     {
       "id": "CEO013",
@@ -222,7 +222,7 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "The Balanced Scorecard (BSC) is a strategic planning and management system used to align business activities to the vision and strategy of the organization, improve internal and external communications, and monitor organizational performance against strategic goals.\n\nDeveloped by Robert Kaplan and D",
+      "agent_response": "The Balanced Scorecard (BSC) is a strategic planning and management system used to align business activities to the vision and strategy of the organization. Its primary purpose is to move beyond traditional financial measures by incorporating four key perspectives:\n\n1.  **Financial**: How do we look",
       "is_correct": true,
       "elapsed_s": 4.1
     },
@@ -234,9 +234,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "Jeff Bezos introduced the concepts of \"one-way doors\" and \"two-way doors\" to describe the nature of business decisions.\n\n*   **One-way doors** represent decisions that are irreversible or extremely difficult to reverse (e.g., entering a new market with a specific strategy, making a major acquisition",
+      "agent_response": "Jeff Bezos introduced the concepts of \"one-way doors\" and \"two-way doors\" in his leadership book, *The Working Backwards Handbook* (and discussed in various interviews like the one with The Wall Street Journal).\n\n*   **One-way doors** represent decisions that are irreversible or extremely difficult ",
       "is_correct": true,
-      "elapsed_s": 2.6
+      "elapsed_s": 3.0
     },
     {
       "id": "CEO015",
@@ -246,9 +246,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "The Theory of Constraints (TOC), developed by Eliyahu Goldratt, posits that any manageable system is limited in achieving more goal by at least one constraint. The core principle regarding bottleneck management is that the throughput of an entire system is determined by its single tightest constrain",
+      "agent_response": "The Theory of Constraints (TOC), developed by Eliyahu Goldratt, posits that any manageable system is limited in achieving more goal by at least one constraint. The core principle regarding bottleneck management is that the throughput of an entire system is determined not by the average capacity of i",
       "is_correct": true,
-      "elapsed_s": 3.6
+      "elapsed_s": 4.2
     },
     {
       "id": "CEO016",
@@ -258,9 +258,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The retrospective format that specifically asks the three questions \"What went well?\", \"What didn't go well?\", and \"What will we change?\" is known as **The Standard Retro** or the **WWW format**.\n\n*   **Start-Stop-Continue** asks: What should we start doing? What should we stop doing? What should we",
+      "agent_response": "The retrospective format that specifically asks the three questions \"What went well?\", \"What didn't go well?\", and \"What will we change?\" is known as the **Standard Retro** or the **WWW format**.\n\n*   **Start-Stop-Continue** asks: What should we start doing? What should we stop doing? What should we",
       "is_correct": true,
-      "elapsed_s": 2.1
+      "elapsed_s": 2.2
     },
     {
       "id": "CEO017",
@@ -270,9 +270,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "Product-market fit (PMF) is a critical concept in business and entrepreneurship, popularized by Marc Andreessen. It refers to the stage where a product satisfies a strong market demand.\n\nLet's analyze the options:\n*   **A)** Technical completeness is important but does not guarantee that customers w",
+      "agent_response": "Product-market fit (PMF) is a critical concept in business and entrepreneurship, popularized by Marc Andreessen. It refers to the stage where a product satisfies a strong market demand.\n\nLet's analyze the options:\n*   **A)** Technical completeness is a development milestone, not necessarily an indic",
       "is_correct": true,
-      "elapsed_s": 3.5
+      "elapsed_s": 4.0
     },
     {
       "id": "CEO018",
@@ -282,9 +282,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "The **pyramid principle**, popularized by management consultant Barbara Minto, is a method of structuring communication used primarily in executive reporting and business strategy. Its core tenet is that the most important message (the conclusion or recommendation) should be stated first. Following ",
+      "agent_response": "The **pyramid principle**, popularized by Barbara Minto of McKinsey & Company, is a method for structuring communication to ensure clarity and efficiency, particularly in executive reporting.\n\nIts core tenet is that the most important message (the conclusion or recommendation) should be stated first",
       "is_correct": true,
-      "elapsed_s": 3.0
+      "elapsed_s": 4.2
     },
     {
       "id": "CEO019",
@@ -294,9 +294,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "Psychological safety in a team context refers to a shared belief that the team is safe for interpersonal risk-taking. This concept, popularized by Google's Project Aristotle research, emphasizes an environment where members feel comfortable expressing their ideas, admitting mistakes, asking question",
+      "agent_response": "Psychological safety in a team context refers to a shared belief that the team is safe for interpersonal risk-taking. This concept, popularized by Google's Project Aristotle research, emphasizes that members feel comfortable being themselves, admitting mistakes, asking questions, and offering ideas ",
       "is_correct": true,
-      "elapsed_s": 3.1
+      "elapsed_s": 3.2
     },
     {
       "id": "CEO020",
@@ -308,7 +308,7 @@
       "agent_answer": "B",
       "agent_response": "Opportunity cost is a fundamental concept in economics and business decision-making. It refers to the potential benefits that an individual, investor, or business misses out on when choosing one alternative over another.\n\nLet's analyze the options:\n*   **A) The financial cost of a missed sales oppor",
       "is_correct": true,
-      "elapsed_s": 3.7
+      "elapsed_s": 4.1
     },
     {
       "id": "CEO021",
@@ -318,9 +318,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "In the RAPID decision-making framework, roles are defined as follows:\n*   **R (Decider):** The person who makes the final decision.\n*   **A (Approver):** Someone who must sign off on the decision (often synonymous with Approver in some variations, but distinct from Agree). *Correction*: In standard ",
+      "agent_response": "In the RAPID decision-making framework, roles are defined as follows:\n*   **R (Decider):** The person who makes the final decision.\n*   **A (Approver):** Someone who must agree to the decision before it is implemented (often synonymous with Approver in some variations, but distinct from Agree). *Cor",
       "is_correct": true,
-      "elapsed_s": 19.7
+      "elapsed_s": 30.2
     },
     {
       "id": "CEO022",
@@ -330,9 +330,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "A Key Result (KR) scoring 0.3 on a 0-1.0 scale indicates that the team achieved only 30% of the target they set for themselves. In the context of OKR methodology, this is generally considered a significant miss.\n\nHere is an analysis of the options:\n*   **Option A:** A low score suggests that either ",
+      "agent_response": "A Key Result (KR) scoring 0.3 on a 0-1.0 scale indicates that the team achieved only 30% of the target outcome. In the context of OKR methodology (popularized by Google and others), this is generally considered a significant miss, though not necessarily a total failure depending on the nature of the",
       "is_correct": true,
-      "elapsed_s": 4.6
+      "elapsed_s": 6.9
     },
     {
       "id": "CEO023",
@@ -342,9 +342,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "To determine the best set of supporting KPIs for decomposing Monthly Recurring Revenue (MRR) at a team level, we must look at how MRR is mathematically and operationally constructed in a SaaS business model.\n\nMRR is fundamentally driven by four key dynamics:\n1.  **New Business**: Revenue from new cu",
+      "agent_response": "To determine the best set of supporting KPIs for decomposing Monthly Recurring Revenue (MRR) at a team level, we must look at the fundamental drivers of revenue growth and contraction in a SaaS business model. MRR is not a monolithic metric; it is composed of four distinct components that different ",
       "is_correct": true,
-      "elapsed_s": 5.5
+      "elapsed_s": 6.2
     },
     {
       "id": "CEO024",
@@ -354,9 +354,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "In the MoSCoW prioritization method, the acronym stands for:\n*   **M** - Must have (Critical requirements)\n*   **S** - Should have (Important but not critical)\n*   **C** - Could have (Desirable but low priority)\n*   **W** - **Won't have this time** (Agreed to be excluded from the current scope, ofte",
+      "agent_response": "In the MoSCoW prioritization method, the acronym stands for:\n*   **M** - Must have (Critical requirements)\n*   **S** - Should have (Important but not critical)\n*   **C** - Could have (Desirable but low priority)\n*   **W** - **Won't have this time**\n\nThe significance of the 'W' category is that it ex",
       "is_correct": true,
-      "elapsed_s": 3.4
+      "elapsed_s": 4.0
     },
     {
       "id": "CEO025",
@@ -368,7 +368,7 @@
       "agent_answer": "D",
       "agent_response": "A pre-mortem is a proactive risk management technique used before a project or product launch. The core concept, popularized by Gary Klein, involves imagining that the project has already failed catastrophically. The team then works backward to determine what events or factors could have caused that",
       "is_correct": true,
-      "elapsed_s": 2.1
+      "elapsed_s": 2.5
     },
     {
       "id": "CEO026",
@@ -378,9 +378,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "A **Red Ocean** strategy refers to the existing market space where companies compete against each other for a share of the available demand. In this environment, boundaries are defined, and competition is fierce, often leading to a \"bloody\" struggle for market share with diminishing returns (hence t",
+      "agent_response": "A **Red Ocean** strategy refers to the existing market space where companies compete against each other for a share of the available demand. In these markets, boundaries are defined, and competition is fierce, often leading to a \"bloody\" struggle for market share with diminishing returns (hence the ",
       "is_correct": true,
-      "elapsed_s": 4.1
+      "elapsed_s": 5.0
     },
     {
       "id": "CEO027",
@@ -390,9 +390,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "According to the Theory of Constraints (TOC), developed by Eliyahu Goldratt, the core principle is that any system's performance is limited by at least one constraint (bottleneck). To improve the overall throughput of a system, you must first identify this specific constraint.\n\nIn the context of an ",
+      "agent_response": "According to the Theory of Constraints (TOC), the core principle is that every system has at least one constraint (bottleneck) that limits its overall performance. The methodology dictates that you must first **identify** this constraint before attempting to exploit it or subordinate everything else",
       "is_correct": true,
-      "elapsed_s": 5.6
+      "elapsed_s": 3.5
     },
     {
       "id": "CEO028",
@@ -402,9 +402,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "In capacity planning, consistently exceeding 85% utilization is generally considered a warning sign. While high utilization indicates efficiency, it leaves very little room for unplanned work (such as urgent bugs, client requests, or scope changes), innovation, code reviews, or handling unexpected d",
+      "agent_response": "In capacity planning, consistently exceeding 85% utilization is generally considered a warning sign rather than a success metric. High utilization rates leave little room for unexpected tasks, system outages, code reviews, or innovation. This environment often leads to increased stress, burnout, and",
       "is_correct": true,
-      "elapsed_s": 3.9
+      "elapsed_s": 3.8
     },
     {
       "id": "CEO029",
@@ -414,9 +414,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "B",
-      "agent_response": "Kotter's 8-Step Change Model is a widely used framework for managing organizational change. While all steps are critical, research and practical experience consistently highlight that **Step 1: Establishing a Sense of Urgency** is the most frequently skipped or inadequately executed step.\n\nHere is t",
+      "agent_response": "Kotter's 8-Step Change Model is a widely used framework for managing organizational change. While all steps are critical, research and practical experience in change management consistently highlight that **Step 1: Establishing a sense of urgency** is the most frequently skipped or inadequately exec",
       "is_correct": false,
-      "elapsed_s": 4.8
+      "elapsed_s": 5.1
     },
     {
       "id": "CEO030",
@@ -426,7 +426,7 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "In a leadership context, the distinction between accountability and blame is fundamental to building a healthy organizational culture.\n\n**Accountability** is inherently forward-looking. It involves taking ownership of one's actions, decisions, and results. When an individual or team is held accounta",
+      "agent_response": "In a leadership context, the distinction between accountability and blame is fundamental to building a healthy organizational culture.\n\n**Accountability** is inherently forward-looking. It involves taking ownership of one's actions, decisions, and outcomes, regardless of whether they are positive or",
       "is_correct": true,
       "elapsed_s": 4.7
     },
@@ -438,9 +438,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To determine whether a CEO should \"build\" or \"buy\" a critical capability, we must evaluate the strategic implications of each option against standard business frameworks (such as the Resource-Based View and Make-or-Buy analysis).\n\n1.  **Analyze Option A:** \"The capability is a core differentiator th",
+      "agent_response": "To determine which factor most strongly favors \"build\" (making the capability in-house) versus \"buy\" (outsourcing), we must evaluate the strategic implications of each option based on standard business strategy frameworks (such as the Resource-Based View or VRIO framework).\n\n1.  **Option A: The capa",
       "is_correct": true,
-      "elapsed_s": 6.4
+      "elapsed_s": 7.3
     },
     {
       "id": "CEO032",
@@ -452,7 +452,7 @@
       "agent_answer": "B",
       "agent_response": "Risk appetite and risk tolerance are distinct but related concepts in enterprise risk management.\n\n**Risk appetite** refers to the overall amount and type of risk an organization is willing to pursue or retain in pursuit of its strategic objectives. It is a high-level, broad statement usually define",
       "is_correct": true,
-      "elapsed_s": 4.7
+      "elapsed_s": 5.7
     },
     {
       "id": "CEO033",
@@ -462,9 +462,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "B",
-      "agent_response": "To determine the appropriate mitigation strategy for a risk categorized as \"high probability, low impact,\" let's analyze the standard risk management matrix and the options provided:\n\n1.  **Risk Profile**: The risk is likely to happen often (high probability) but the consequences are minor (low impa",
+      "agent_response": "To determine the appropriate mitigation strategy for a risk categorized as \"high probability, low impact,\" we must evaluate the standard risk management matrix and the cost-benefit analysis of each option.\n\n1.  **Analyze the Risk Profile**:\n    *   **High Probability**: The event is likely to happen",
       "is_correct": false,
-      "elapsed_s": 5.9
+      "elapsed_s": 15.6
     },
     {
       "id": "CEO034",
@@ -474,9 +474,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "In the context of risk management and finance, a \"black swan\" event is a term popularized by Nassim Nicholas Taleb. It describes an occurrence with three defining characteristics:\n\n1.  **Extreme Rarity**: The event is so unexpected that it lies outside the realm of normal expectations (it has never ",
+      "agent_response": "In risk management, a \"black swan\" event is a term popularized by Nassim Nicholas Taleb. It describes an occurrence with three defining characteristics:\n1.  **Extreme Rarity**: The event is so unexpected that it lies outside the realm of normal expectations (it has never happened before or was deeme",
       "is_correct": true,
-      "elapsed_s": 4.3
+      "elapsed_s": 4.5
     },
     {
       "id": "CEO035",
@@ -488,7 +488,7 @@
       "agent_answer": "C",
       "agent_response": "In a weighted scoring model (decision matrix), the core value lies in distinguishing between different criteria based on their relative importance to the decision maker. The weights assigned to each criterion reflect this strategic priority.\n\nIf all criteria are assigned equal weights (e.g., 10% eac",
       "is_correct": true,
-      "elapsed_s": 3.4
+      "elapsed_s": 3.9
     },
     {
       "id": "CEO036",
@@ -498,7 +498,7 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "To communicate a significant budget cut like 15% effectively to leadership using the **Pyramid Principle**, you must follow the core rule: **start with the main conclusion (the \"Governing Thought\")** and then support it with logical arguments and data in descending order of importance.\n\nHere is the ",
+      "agent_response": "To communicate a significant budget cut like 15% effectively to leadership using the **Pyramid Principle**, the structure must follow a \"top-down\" approach. This means starting with the most important conclusion (the main message) and then supporting it with key arguments, followed by detailed data.",
       "is_correct": true,
       "elapsed_s": 5.2
     },
@@ -510,9 +510,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "Executive 1:1 meetings are a critical tool for leadership to build trust, remove blockers, and support the professional growth of direct reports. Best practices in modern management (such as those advocated by leaders like Patrick Lencioni or in frameworks like Google's Project Oxygen) emphasize tha",
+      "agent_response": "Executive 1:1 meetings are a critical tool for leadership to support the growth, alignment, and well-being of direct reports. Best practices in modern management (such as those advocated by leaders like Julie Zhuo or in frameworks like Google's Project Oxygen) generally recommend the following struc",
       "is_correct": true,
-      "elapsed_s": 4.3
+      "elapsed_s": 5.7
     },
     {
       "id": "CEO038",
@@ -524,7 +524,7 @@
       "agent_answer": "C",
       "agent_response": "In servant leadership, the core philosophy is that the leader's main purpose is to serve the team. Unlike traditional command-and-control models where the leader dictates vision or makes all decisions (Options A and B), a servant leader focuses on the growth and well-being of the people they lead.\n\n",
       "is_correct": true,
-      "elapsed_s": 3.1
+      "elapsed_s": 2.3
     },
     {
       "id": "CEO039",
@@ -536,7 +536,7 @@
       "agent_answer": "D",
       "agent_response": "To determine the appropriate time to use a cost-benefit analysis versus a decision tree, we must look at the structural nature of the problems each method is designed to solve.\n\n1.  **Cost-Benefit Analysis (CBA):** This method involves listing all costs and benefits associated with a specific course",
       "is_correct": true,
-      "elapsed_s": 7.5
+      "elapsed_s": 8.5
     },
     {
       "id": "CEO040",
@@ -546,9 +546,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "The **Build-Measure-Learn** feedback loop is the core engine of the Lean Startup methodology, introduced by Eric Ries. Its purpose is to shorten product development cycles and rapidly learn if a new business model is viable.\n\nHere is the breakdown of the steps:\n1.  **Build**: Create the smallest pos",
+      "agent_response": "The 'build-measure-learn' feedback loop is the core engine of the Lean Startup methodology, introduced by Eric Ries. Its purpose is to shorten development cycles and reduce waste by validating hypotheses quickly with real customers.\n\n1.  **Build**: Create a Minimum Viable Product (MVP), which is the",
       "is_correct": true,
-      "elapsed_s": 4.8
+      "elapsed_s": 5.1
     },
     {
       "id": "CEO041",
@@ -558,9 +558,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The Net Promoter Score (NPS) is calculated by first determining the percentage of respondents who are Promoters and the percentage who are Detractors. Passives are included in the total count for calculating percentages but do not directly add or subtract from the score itself.\n\nThe formula is:\n$$ \\",
+      "agent_response": "The Net Promoter Score (NPS) is calculated by first determining the percentage of respondents who are \"Promoters\" (those who gave a score of 9 or 10) and the percentage of respondents who are \"Detractors\" (those who gave a score of 0 to 6). \"Passives\" (scores of 7 or 8) are not included in the calcu",
       "is_correct": true,
-      "elapsed_s": 2.5
+      "elapsed_s": 4.0
     },
     {
       "id": "CEO042",
@@ -570,9 +570,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "When a velocity chart shows a consistent decline in story points completed per sprint over multiple iterations, it indicates a systemic issue rather than a temporary fluctuation. In Agile and Scrum frameworks, velocity is a measure of the team's capacity based on their historical performance, but it",
+      "agent_response": "When a velocity chart shows a consistent decline in story points completed over multiple sprints, it indicates a systemic issue rather than a temporary fluctuation. In Agile and Scrum frameworks, velocity is a measure of the team's capacity based on their historical performance, but it relies heavil",
       "is_correct": true,
-      "elapsed_s": 6.7
+      "elapsed_s": 8.3
     },
     {
       "id": "CEO043",
@@ -582,9 +582,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "According to the Lean Startup methodology developed by Eric Ries, the decision to pivot or persevere is strictly data-driven and revolves around the concept of **validated learning**.\n\n1.  **Perseverance** is the correct course of action when experiments and metrics indicate that the team is moving ",
+      "agent_response": "According to the Lean Startup methodology developed by Eric Ries, the decision to pivot or persevere is strictly data-driven and revolves around the concept of **validated learning**.\n\n1.  **Perseverance** is appropriate when experiments and metrics indicate that the team is moving closer to **Produ",
       "is_correct": true,
-      "elapsed_s": 4.8
+      "elapsed_s": 5.9
     },
     {
       "id": "CEO044",
@@ -594,9 +594,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The key distinction between **Kaizen** (continuous improvement) and **innovation** lies in the nature, scale, and participants of the changes they drive.\n\n1.  **Kaizen**: This philosophy focuses on making small, incremental, and continuous improvements to processes. A core tenet of Kaizen is that ev",
+      "agent_response": "Kaizen (continuous improvement) and innovation are distinct concepts often discussed together in business strategy.\n\n*   **Kaizen** focuses on making small, incremental changes to processes. A core tenet of Kaizen is that these improvements should come from everyone in the organization, not just man",
       "is_correct": true,
-      "elapsed_s": 4.2
+      "elapsed_s": 5.5
     },
     {
       "id": "CEO045",
@@ -606,9 +606,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "In the Power/Interest grid used for stakeholder analysis, stakeholders are categorized into four quadrants based on their level of power (influence) and interest in the project:\n\n1.  **High Power, High Interest**: Manage closely (Option B).\n2.  **High Power, Low Interest**: Keep satisfied (Option A)",
+      "agent_response": "In the Power/Interest grid used for stakeholder analysis, stakeholders are categorized into four quadrants based on their level of power (influence) and interest in the project:\n\n1.  **High Power, High Interest**: Manage closely (Key Players).\n2.  **High Power, Low Interest**: Keep satisfied. These ",
       "is_correct": true,
-      "elapsed_s": 3.0
+      "elapsed_s": 4.2
     },
     {
       "id": "CEO046",
@@ -618,9 +618,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "**Analysis:**\n\nThe term \"Seagull Management\" is a well-known anti-pattern in management and leadership theory. It derives its name from the behavior of seagulls, which are often observed to fly into a group of birds (or fish), make a loud noise or splash, peck at something, and then immediately fly ",
+      "agent_response": "**Analysis:**\n\nThe term \"seagull management\" is a well-known anti-pattern in leadership and project management. It derives from the behavior of seagulls when they land on a ship's deck to eat food: they fly in, make a loud noise (squawk), poop on whatever they find (criticize or create mess), and th",
       "is_correct": true,
-      "elapsed_s": 4.2
+      "elapsed_s": 4.3
     },
     {
       "id": "CEO047",
@@ -630,9 +630,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "In the context of contingency planning and risk management (particularly within frameworks like ITIL or general business continuity):\n\n1.  **Contingency Plan**: This is a pre-defined plan designed to handle specific, known risks or scenarios that are likely to occur but are not part of the standard ",
+      "agent_response": "In the context of contingency planning and risk management (such as within ITIL or general project management frameworks), the distinction lies in the hierarchy of response strategies:\n\n1.  **Contingency Plan**: This is a pre-defined plan designed to handle a specific, known risk or threat if it occ",
       "is_correct": true,
-      "elapsed_s": 4.1
+      "elapsed_s": 5.3
     },
     {
       "id": "CEO048",
@@ -642,9 +642,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "When communicating a technical architecture decision to different audiences, it is crucial to tailor the message to their specific needs, interests, and level of technical expertise.\n\n1.  **Board of Directors**: Their primary focus is on business value, strategic alignment, financial implications, a",
+      "agent_response": "When communicating a technical architecture decision, the primary goal is to tailor the message to the specific needs, knowledge base, and concerns of the audience.\n\n1.  **Board of Directors**: Their focus is typically on strategic alignment, financial implications, risk management, and high-level t",
       "is_correct": true,
-      "elapsed_s": 5.9
+      "elapsed_s": 5.8
     },
     {
       "id": "CEO049",
@@ -654,9 +654,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "The RACI matrix (Responsible, Accountable, Consulted, Informed) is a communication and responsibility assignment chart used in project management. Its primary purpose is to clarify roles and responsibilities within a team or organization for specific tasks or deliverables.\n\nLet's analyze the options",
+      "agent_response": "The RACI matrix (Responsible, Accountable, Consulted, Informed) is a responsibility assignment matrix used to define roles and responsibilities for tasks or deliverables within a project.\n\n*   **Option A** correctly identifies the primary advantage: it explicitly defines four distinct roles for each",
       "is_correct": true,
-      "elapsed_s": 5.0
+      "elapsed_s": 4.9
     },
     {
       "id": "CEO050",
@@ -666,9 +666,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "In a RACI matrix (Responsible, Accountable, Consulted, Informed), the role of **Accountable** represents the person who is ultimately answerable for the correct completion of the task or deliverable. They have the final decision-making authority and own the outcome.\n\nA fundamental rule of the RACI f",
+      "agent_response": "In a RACI matrix (Responsible, Accountable, Consulted, Informed), the role of **Accountable** represents the person who is ultimately answerable for the correct completion of the task or deliverable. They have the authority to make decisions and sign off on the work.\n\nA fundamental rule of the RACI ",
       "is_correct": true,
-      "elapsed_s": 3.2
+      "elapsed_s": 4.7
     },
     {
       "id": "CEO051",
@@ -678,9 +678,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "When engineering capacity is consumed at 120%, the team is already over-allocated. This situation typically leads to burnout, decreased code quality, missed deadlines, and increased technical debt.\n\nLet's evaluate the options:\n*   **A) Ask the team to work harder/overtime:** This addresses the sympt",
+      "agent_response": "When engineering capacity is consumed at 120%, the team is already over-allocated. This situation typically leads to burnout, decreased code quality, missed deadlines, and high turnover.\n\n*   **Option A** (Overtime) addresses the symptom temporarily but exacerbates burnout and does not solve the roo",
       "is_correct": true,
-      "elapsed_s": 4.5
+      "elapsed_s": 4.6
     },
     {
       "id": "CEO052",
@@ -690,9 +690,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "As an executive, the most effective way to celebrate team wins is to balance public validation with private appreciation. Public recognition connects the specific victory to the broader strategic goals of the organization, reinforcing why the work matters and aligning individual efforts with company",
+      "agent_response": "As an executive, the most effective way to celebrate team wins is to balance public visibility with private appreciation. Public recognition connects the specific victory to the broader strategic goals of the organization, reinforcing the \"why\" behind the work and validating the team's contribution ",
       "is_correct": true,
-      "elapsed_s": 2.2
+      "elapsed_s": 3.3
     },
     {
       "id": "CEO053",
@@ -702,9 +702,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "When framing technical debt to non-technical stakeholders, the goal is to create a mental model that they can intuitively understand and accept as a strategic trade-off.\n\n*   **Option A** uses the financial analogy of borrowing money. In finance, you take on debt (borrow speed/resources) to achieve ",
+      "agent_response": "When framing technical debt to non-technical stakeholders, the most effective approach is to use an analogy that resonates with their existing business concepts.\n\n*   **Option A** draws a direct parallel between financial debt and technical debt. Just as taking out a loan allows a company to spend m",
       "is_correct": true,
-      "elapsed_s": 3.8
+      "elapsed_s": 4.9
     },
     {
       "id": "CEO054",
@@ -714,9 +714,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "When two senior leaders disagree on a strategic direction, the most effective approach for a CEO or executive is to act as a facilitator rather than an arbiter based on tenure or silence.\n\n*   **Option A** (Tenure) is flawed because experience does not guarantee that a specific strategic view is cor",
+      "agent_response": "When two senior leaders disagree on a strategic direction, the most effective approach is to move beyond positional arguments (who has more tenure) or avoiding the issue entirely. Instead, a leader must act as a facilitator to uncover the root causes of the disagreement. This involves understanding ",
       "is_correct": true,
-      "elapsed_s": 3.3
+      "elapsed_s": 2.1
     },
     {
       "id": "CEO055",
@@ -726,9 +726,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "A risk register is a dynamic document used by organizations to manage risks. Its core purpose is to provide a comprehensive and up-to-date record of all identified risks. This record typically includes critical details such as the likelihood (probability) of the risk occurring, the severity of its c",
+      "agent_response": "A risk register is a dynamic document used by organizations to manage risks throughout their lifecycle. Its core purpose is to provide a centralized repository where all identified risks are recorded and tracked over time.\n\nLet's evaluate the options:\n*   **Option A:** This describes the comprehensi",
       "is_correct": true,
-      "elapsed_s": 3.9
+      "elapsed_s": 4.2
     },
     {
       "id": "CEO056",
@@ -738,9 +738,9 @@
       "type": "standard",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "The ICE prioritization framework is a method used to evaluate and rank ideas or projects. The three dimensions stand for:\n\n1.  **Impact**: The potential positive effect the idea will have if executed successfully.\n2.  **Confidence**: How confident you are in your estimates of Impact, Ease, and Reach",
+      "agent_response": "The ICE prioritization framework is a scoring system used to evaluate and rank ideas or projects. It was popularized by Google Ventures (GV) and Nir Eyal. The three dimensions are:\n\n1.  **Impact**: How much will this idea move the needle? What is the potential positive effect on the business or user",
       "is_correct": true,
-      "elapsed_s": 1.6
+      "elapsed_s": 2.7
     },
     {
       "id": "CEO057",
@@ -750,9 +750,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "When communicating organizational changes, the most effective transparency principle is to build trust through honesty about the current state of knowledge. Withholding information or sharing only finalized details (Option A) can lead to rumors and increased anxiety if employees feel excluded from t",
+      "agent_response": "When communicating organizational changes, the most effective transparency principle is to build trust through honesty. Hiding uncertainty (Option A) often leads to rumors and higher anxiety. Delegating all communication solely to HR (Option B) can make teams feel disconnected from leadership's visi",
       "is_correct": true,
-      "elapsed_s": 2.4
+      "elapsed_s": 2.8
     },
     {
       "id": "CEO058",
@@ -762,9 +762,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "When setting quarterly OKRs (Objectives and Key Results), the fundamental principle of alignment is that team-level objectives must support and drive progress toward company-level objectives. However, they should not be mere copies (Option A) because teams operate in different domains with specific ",
+      "agent_response": "When setting quarterly OKRs (Objectives and Key Results), the fundamental principle is alignment. The goal is to ensure that every team's work directly contributes to the broader success of the organization.\n\n*   **Option A** is incorrect because copying company OKRs verbatim ignores the specific co",
       "is_correct": true,
-      "elapsed_s": 2.1
+      "elapsed_s": 4.1
     },
     {
       "id": "CEO059",
@@ -774,9 +774,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "In Scrum, a burndown chart tracks the remaining work against an ideal trend line. If the actual remaining work is consistently above the ideal trend line from Day 3 onward, it indicates that the team is falling behind schedule and will likely not complete all committed work by the end of the sprint.",
+      "agent_response": "In Scrum, the primary goal of a Sprint is to deliver a \"Done\" Increment. A burndown chart showing remaining work consistently above the ideal trend line indicates that the team is falling behind their commitment.\n\nLet's analyze the options based on Scrum principles:\n\n*   **Option B (Add more develop",
       "is_correct": true,
-      "elapsed_s": 4.7
+      "elapsed_s": 7.1
     },
     {
       "id": "CEO060",
@@ -788,7 +788,7 @@
       "agent_answer": "C",
       "agent_response": "The primary purpose of combining feature prioritization with customer segmentation is to move beyond a \"one-size-fits-all\" approach. By understanding the distinct needs, behaviors, and value propositions for different segments, product teams can decide where to allocate limited resources most effect",
       "is_correct": true,
-      "elapsed_s": 2.9
+      "elapsed_s": 3.7
     },
     {
       "id": "CEO061",
@@ -798,9 +798,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "An effective escalation protocol is a structured plan designed to ensure that issues are resolved efficiently and appropriately. To be comprehensive, it must define:\n\n1.  **Trigger conditions**: Specific events or thresholds (e.g., SLA breach, severity level) that initiate the escalation.\n2.  **Esca",
+      "agent_response": "An effective escalation protocol is a structured plan designed to manage incidents or issues that cannot be resolved at the initial level. To be functional, it must clearly outline:\n\n1.  **Trigger conditions**: Specific criteria that determine when an issue needs to be escalated (e.g., severity leve",
       "is_correct": true,
-      "elapsed_s": 2.9
+      "elapsed_s": 4.5
     },
     {
       "id": "CEO062",
@@ -810,9 +810,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "Monte Carlo simulation is a computational technique used extensively in risk management and project planning. Its core mechanism involves running a model thousands of times with different input values drawn from specified probability distributions (rather than single fixed numbers).\n\nHere is an anal",
+      "agent_response": "Monte Carlo simulation is a computational technique used extensively in risk management and project planning. Its core mechanism involves running a model thousands of times with different input values drawn from defined probability distributions (rather than single fixed numbers).\n\nHere is an analys",
       "is_correct": true,
-      "elapsed_s": 3.2
+      "elapsed_s": 4.0
     },
     {
       "id": "CEO063",
@@ -822,9 +822,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To distinguish between strategy and tactics, we must look at the fundamental definitions used in management and military theory (e.g., Sun Tzu, Clausewitz, and modern business frameworks).\n\n1.  **Strategy** is generally defined as the overall plan or approach to achieve a long-term goal. It answers ",
+      "agent_response": "To distinguish between strategy and tactics, we must look at their fundamental definitions within management and military theory.\n\n1.  **Strategy** is generally defined as the overall plan or approach to achieve a long-term goal. It answers the questions: \"What do we want to accomplish?\" (the object",
       "is_correct": true,
-      "elapsed_s": 6.2
+      "elapsed_s": 8.0
     },
     {
       "id": "CEO064",
@@ -834,9 +834,9 @@
       "type": "standard",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "The Balanced Scorecard (BSC) consists of four perspectives designed to provide a holistic view of an organization's performance. Let's analyze the question against each perspective:\n\n1.  **Financial Perspective**: Focuses on how shareholders view the company (e.g., profitability, revenue growth). It",
+      "agent_response": "The Balanced Scorecard (BSC) consists of four perspectives designed to provide a holistic view of an organization's performance. Let's analyze the question against each perspective:\n\n1.  **Financial Perspective**: Focuses on how shareholders view the company (e.g., profitability, revenue growth). Th",
       "is_correct": true,
-      "elapsed_s": 3.4
+      "elapsed_s": 4.3
     },
     {
       "id": "CEO065",
@@ -846,9 +846,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "In the RAPID decision-making framework (Recommend, Agree, Perform, Input, Decide), each role has a specific function to ensure efficient and clear accountability.\n\nThe **Input** role is responsible for providing information, data, or perspectives to help the decision-maker understand the context. Ho",
+      "agent_response": "In the RAPID decision-making model (Recommend, Agree, Perform, Input, Decide), each role has a specific function to ensure efficient and clear accountability.\n\n*   **Input** providers offer information and perspectives but do not have voting rights or final say.\n*   The primary purpose of limiting t",
       "is_correct": true,
-      "elapsed_s": 4.7
+      "elapsed_s": 5.7
     },
     {
       "id": "CEO066",
@@ -858,9 +858,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "The \"two-pizza rule\" is a well-known heuristic in software engineering and agile management, popularized by Amazon. It suggests that a team should be small enough to be fed with no more than two pizzas.\n\n*   **Option A** correctly identifies the core principle: keeping teams small (typically 5-10 pe",
+      "agent_response": "The \"two-pizza rule\" is a well-known heuristic in software engineering and product management, popularized by Amazon. It suggests that a team should be small enough that it can be fed with no more than two pizzas.\n\nThe primary goal of this rule is not about the literal amount of food, but rather to ",
       "is_correct": true,
-      "elapsed_s": 2.7
+      "elapsed_s": 4.5
     },
     {
       "id": "CEO067",
@@ -870,9 +870,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "In product strategy, the decision to invest in reducing technical debt versus building new features is driven by data and business impact rather than subjective feelings or arbitrary timelines.\n\n1.  **Option A (Engineers complain):** While valuable feedback, complaints alone are anecdotal. Without q",
+      "agent_response": "In product strategy, the decision to invest in reducing technical debt versus building new features is driven by data and business impact rather than subjective feelings or arbitrary timelines.\n\n1.  **Option A (Engineers complain):** While valuable feedback, complaints are subjective and can be addr",
       "is_correct": true,
-      "elapsed_s": 5.0
+      "elapsed_s": 5.8
     },
     {
       "id": "CEO068",
@@ -884,7 +884,7 @@
       "agent_answer": "B",
       "agent_response": "The recommended approach for status reporting differs significantly between a Board of Directors and an executive team due to their distinct roles, time horizons, and information needs.\n\n1.  **Board of Directors**: Their primary focus is on long-term strategy, governance, risk management, and high-l",
       "is_correct": true,
-      "elapsed_s": 4.5
+      "elapsed_s": 5.9
     },
     {
       "id": "CEO069",
@@ -894,9 +894,9 @@
       "type": "standard",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "In risk management, the severity of a risk is often determined by the combination of its probability and its impact. While a \"low\" probability suggests the event might not happen frequently, an impact rated as \"catastrophic\" means that if it does occur, the consequences would be devastating to the o",
+      "agent_response": "In risk management, the severity of a risk is determined by the combination of its probability and its impact. While a \"low\" probability suggests the event might not happen often, an impact rated as \"catastrophic\" means that if it does occur, the consequences would be devastating to the organization",
       "is_correct": true,
-      "elapsed_s": 5.9
+      "elapsed_s": 7.2
     },
     {
       "id": "CEO070",
@@ -906,9 +906,9 @@
       "type": "standard",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "The \"vision-mission-values\" alignment test is a strategic framework used to evaluate whether a proposed initiative is consistent with an organization's core identity and long-term goals.\n\n1.  **Vision**: Represents the future state the organization aspires to achieve. An initiative must advance this",
+      "agent_response": "The \"vision-mission-values\" (VMV) alignment test is a strategic framework used to evaluate whether a proposed initiative is consistent with an organization's core identity and long-term goals.\n\n1.  **Vision**: Represents the future state the organization wants to achieve. An initiative must advance ",
       "is_correct": true,
-      "elapsed_s": 3.9
+      "elapsed_s": 5.5
     },
     {
       "id": "CEO071",
@@ -918,9 +918,9 @@
       "type": "multi_step",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To determine the correct prioritization, we must first calculate the RICE score for each project using the standard formula:\n$$ \\text{RICE Score} = \\frac{\\text{Reach} \\times \\text{Impact} \\times \\text{Confidence}}{\\text{Effort}} $$\n\n**1. VP Engineering: Rewrite Authentication System**\n*   **Reach:**",
+      "agent_response": "To determine the correct prioritization, we must calculate the RICE score for each project using the standard formula:\n$$ \\text{RICE Score} = \\frac{\\text{Reach} \\times \\text{Impact} \\times \\text{Confidence}}{\\text{Effort}} $$\n\n**1. Calculate RICE Scores:**\n\n*   **VP Engineering (Auth Rewrite):**\n   ",
       "is_correct": true,
-      "elapsed_s": 6.1
+      "elapsed_s": 9.5
     },
     {
       "id": "CEO072",
@@ -930,9 +930,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To determine the correct next step, we must analyze the situation through the lens of John Kotter's 8-Step Change Model and the specific constraints provided in the scenario.\n\n**Scenario Analysis:**\n*   **Current State:** You are at Step 3 (Develop a Vision and Strategy).\n*   **Problem A:** The CEO ",
+      "agent_response": "To determine the correct course of action, we must analyze the situation through the lens of Kotter's 8-Step Change Model and the specific dynamics described.\n\n**Analysis of the Situation:**\n1.  **Current State:** You are at Step 3 (Develop a Vision and Strategy).\n2.  **Problems Identified:**\n    * ",
       "is_correct": true,
-      "elapsed_s": 8.3
+      "elapsed_s": 10.2
     },
     {
       "id": "CEO073",
@@ -942,9 +942,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "**Step 1: Assess current capacity state.**\n*   **Total Capacity:** 10 engineers (100%).\n*   **Current Commitments:** Consuming 85% of capacity.\n    *   Used: $10 \\times 0.85 = 8.5$ engineers.\n    *   Available: $10 - 8.5 = 1.5$ engineers (or 15% of total capacity).\n*   **New Demand A (Security):** R",
+      "agent_response": "**Step 1: Assess current capacity state.**\nThe platform team has a total capacity of 10 engineers. Currently, 85% is consumed by ongoing commitments ($10 \\times 0.85 = 8.5$ engineer-equivalents). This leaves $1.5$ engineer-equivalents (or 15%) of free capacity available for new work.\n\n**Step 2: Eval",
       "is_correct": true,
-      "elapsed_s": 10.5
+      "elapsed_s": 11.2
     },
     {
       "id": "CEO074",
@@ -954,9 +954,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "As the **Decide** role in a RAPID framework, my primary responsibility is to make the final decision after gathering input from Recommenders and Agree roles. However, the RAPID process emphasizes that \"Agree\" roles must be satisfied before a decision can be made; if they are not satisfied, the decis",
+      "agent_response": "As the Decide role in a RAPID framework, my primary responsibility is to make the final decision after gathering input from Recommenders and Agree roles. However, the \"Agree\" roles (CFO and General Counsel) have raised valid, substantive concerns that directly impact the feasibility and legality of ",
       "is_correct": true,
-      "elapsed_s": 6.7
+      "elapsed_s": 7.7
     },
     {
       "id": "CEO075",
@@ -966,9 +966,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "Step 1: Analyze the company-level scores.\n- KR1 (Market Share): Scored 0.6 (Underperformed relative to target).\n- KR2 (NPS): Scored 0.8 (Strong performance, indicating high product quality/customer satisfaction).\n- KR3 (Enterprise Launch): Scored 1.0 (Perfect execution).\n\nStep 2: Correlate team scor",
+      "agent_response": "Step 1: Analyze the company-level scores.\nThe Company Objective is to become the market leader. The Key Results (KRs) are:\n- KR1 (Market Share): Scored 0.6/1.0 (Underperformed). Target was 25%, current likely far below.\n- KR2 (NPS): Scored 0.8/1.0 (Strong performance). Indicates high product quality",
       "is_correct": true,
-      "elapsed_s": 5.9
+      "elapsed_s": 9.3
     },
     {
       "id": "CEO076",
@@ -978,9 +978,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To determine the optimal strategic path, we will perform a step-by-step Expected Value (EV) calculation for each scenario as requested.\n\n**Step 1: Calculate EV for each path**\n\nThe formula for Expected Value is:\n$$EV = \\sum (Probability_i \\times Outcome_i)$$\n\n*   **Path A: Pivot to enterprise**\n    ",
+      "agent_response": "To determine the optimal strategic path, we must calculate the Expected Value (EV) for each option using the formula: $EV = \\sum (Probability \\times Outcome)$.\n\n**Step 1: Calculate EV for each path**\n\n*   **Path A (Pivot to enterprise):**\n    *   Outcome 1: $10M with 60% probability ($0.6$)\n    *   ",
       "is_correct": true,
-      "elapsed_s": 9.2
+      "elapsed_s": 11.7
     },
     {
       "id": "CEO077",
@@ -990,9 +990,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "To determine the correct ranking, let's analyze the risks based on standard risk management principles where **Severity** (Impact) is often the primary driver for prioritization, especially when an impact is \"Catastrophic,\" regardless of its probability. A catastrophic event requires immediate mitig",
+      "agent_response": "To determine the correct ranking, let's analyze the risks based on standard risk management principles applied to a 3x3 matrix (Probability x Impact).\n\n**Step 1: Plot each risk on the matrix**\n*   **R1**: Probability = Medium, Impact = High. (Position: Center-Right)\n*   **R2**: Probability = Low, Im",
       "is_correct": true,
-      "elapsed_s": 15.0
+      "elapsed_s": 18.0
     },
     {
       "id": "CEO078",
@@ -1002,9 +1002,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "As the COO, my role is to balance operational efficiency (feature delivery/revenue) with long-term sustainability (system stability/velocity).\n\n**Step 1: Identify Underlying Interests**\n*   **CEO's Interest:** Continuous revenue generation, market responsiveness, and maintaining stakeholder confiden",
+      "agent_response": "As the COO, my role is to balance operational efficiency (feature delivery/revenue) with long-term sustainability (system stability/maintainability).\n\n**Step 1: Identify Underlying Interests**\n*   **CEO's Interest:** Continuous revenue generation, market responsiveness, and shareholder value. Stoppi",
       "is_correct": true,
-      "elapsed_s": 4.5
+      "elapsed_s": 7.2
     },
     {
       "id": "CEO079",
@@ -1014,9 +1014,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To determine the correct SO (Strength-Opportunity) strategy using the TOWS matrix approach, let's break down the logic step-by-step:\n\n**Step 1: Identify Strengths and Opportunities**\n*   **Strengths (Internal):**\n    *   Strong ML engineering team.\n    *   Proprietary dataset.\n*   **Opportunities (E",
+      "agent_response": "To determine the correct SO (Strength-Opportunity) strategy using the TOWS matrix approach, let's break down the reasoning step-by-step:\n\n**Step 1: Identify Strengths and Opportunities**\n*   **Strengths (Internal):**\n    *   Strong ML engineering team.\n    *   Proprietary dataset.\n*   **Opportunitie",
       "is_correct": true,
-      "elapsed_s": 6.6
+      "elapsed_s": 9.9
     },
     {
       "id": "CEO080",
@@ -1026,9 +1026,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To determine the optimal allocation, we must calculate the risk-adjusted expected return for each initiative and then evaluate which option aligns with a rational investment strategy that balances potential upside against probability of success.\n\n**Step 1: Calculate Risk-Adjusted Expected Return (Ex",
+      "agent_response": "To determine the optimal allocation, we must calculate the **Risk-Adjusted Expected Return (RAER)** for each initiative using the formula:\n$$ \\text{RAER} = \\text{Potential Return Ratio} \\times \\text{Confidence Probability} $$\n\n**Step 1: Calculate Risk-Adjusted Return for each initiative**\n\n*   **Ini",
       "is_correct": true,
-      "elapsed_s": 11.4
+      "elapsed_s": 14.3
     },
     {
       "id": "CEO081",
@@ -1038,9 +1038,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "To determine the correct priority and RICE scores, let's break down the calculation step-by-step based on the standard RICE formula: **RICE = Reach \u00d7 Impact \u00d7 Confidence / Effort**.\n\n**Given Data & Scoring Scale:**\n*   **Reach (Users):** Directly provided.\n*   **Impact Scale:** Low = 0.25, Medium = ",
+      "agent_response": "To determine the correct priority and RICE scores, let's break down the calculation step-by-step based on the standard RICE formula: **Reach \u00d7 Impact \u00d7 Confidence / Effort**.\n\n**Given Data & Scoring Scale:**\n*   **Scale:** Low = 0.25, Medium = 0.5, High = 1, Massive = 2, Extreme = 3.\n*   **Feature X",
       "is_correct": true,
-      "elapsed_s": 63.4
+      "elapsed_s": 47.3
     },
     {
       "id": "CEO082",
@@ -1050,9 +1050,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "**Step 1: Assess the probability of hitting each commitment.**\n\nThe simulation data provides a cumulative distribution function (CDF) for the product launch timeline:\n- $P(T \\le 8) = 0.10$ (10th percentile)\n- $P(T \\le 12) = 0.50$ (50th percentile / Median)\n- $P(T \\le 18) = 0.90$ (90th percentile)\n\nW",
+      "agent_response": "**Step 1: Assess the probability of hitting each commitment.**\n\nThe Monte Carlo simulation provides a distribution of possible timelines. We interpret the percentiles as follows:\n- **10th percentile (8 weeks):** There is a 10% chance the launch takes 8 weeks or less. Conversely, there is a 90% chanc",
       "is_correct": true,
-      "elapsed_s": 21.0
+      "elapsed_s": 22.0
     },
     {
       "id": "CEO083",
@@ -1062,9 +1062,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "**Step 1: Diagnose the OKR implementation failure.**\nThe organization is experiencing a classic \"comfort zone\" trap. The fact that 80% of teams scored their Key Results (KRs) at 1.0 (fully achieved) and no team set an OKR they weren't confident in achieving indicates a lack of stretch. In the OKR fr",
+      "agent_response": "**Step 1: Diagnose the OKR implementation failure.**\nThe organization is experiencing a classic \"OKR trap.\" The data shows two contradictory signals:\n1.  **High Scores:** 80% of teams scored their Key Results (KRs) at 1.0 (fully achieved).\n2.  **Low Perception:** Teams view OKRs as \"just relabeled K",
       "is_correct": true,
-      "elapsed_s": 7.7
+      "elapsed_s": 10.5
     },
     {
       "id": "CEO084",
@@ -1076,7 +1076,7 @@
       "agent_answer": "D",
       "agent_response": "To evaluate the make-vs-buy decision for the machine learning platform, we must follow the three-step reasoning process outlined in the prompt.\n\n**Step 1: Calculate 3-year Total Cost of Ownership (TCO)**\n\n*   **Build Option:**\n    *   Upfront cost: $500,000\n    *   Maintenance (3 years): $100,000/ye",
       "is_correct": true,
-      "elapsed_s": 9.9
+      "elapsed_s": 14.4
     },
     {
       "id": "CEO085",
@@ -1086,9 +1086,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "**Step 1: Identify the pattern in the contradictory signals.**\nThe Balanced Scorecard presents a classic \"short-term gain vs. long-term health\" dilemma.\n- **Financial (Revenue up 20%)**: This looks positive, but revenue is often a lagging indicator. It reflects sales made in the current period based",
+      "agent_response": "**Step 1: Identify the pattern in the contradictory signals.**\nThe data presents a classic \"short-term gain vs. long-term pain\" scenario. Financial performance (Revenue) and Internal Process efficiency (Deployment frequency) are showing strong growth. However, Customer satisfaction (NPS) and Employe",
       "is_correct": true,
-      "elapsed_s": 8.9
+      "elapsed_s": 10.9
     },
     {
       "id": "CEO086",
@@ -1098,9 +1098,9 @@
       "type": "multi_step",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To design an effective escalation protocol for a production incident management system, we must balance speed of response with appropriate authority levels and clear criteria for closing the loop (de-escalation). Let's analyze the options based on industry best practices (such as those from Google S",
+      "agent_response": "To design an effective escalation protocol for a production incident management system, we must balance speed of response with appropriate authority levels and clear criteria for closing the loop (de-escalation). Let's analyze the options based on industry best practices (such as ITIL or SRE methodo",
       "is_correct": true,
-      "elapsed_s": 9.6
+      "elapsed_s": 10.9
     },
     {
       "id": "CEO087",
@@ -1110,9 +1110,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "A",
-      "agent_response": "To solve this problem, we must follow the three steps outlined in the prompt: identify domain owners, assign roles respecting constraints, and verify conflicts.\n\n**Step 1: Identify natural domain owners (Drivers)**\n*   **Decision 1 (Pricing model change):** Pricing is directly tied to revenue, margi",
+      "agent_response": "To solve this problem, we must follow the three steps outlined in the prompt: identify domain owners, assign roles respecting constraints, and verify conflicts.\n\n**Step 1: Identify natural domain owners (Drivers)**\n*   **Decision 1 (Pricing model change):** Pricing is directly tied to revenue and fi",
       "is_correct": false,
-      "elapsed_s": 13.9
+      "elapsed_s": 19.9
     },
     {
       "id": "CEO088",
@@ -1122,9 +1122,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To address this multi-step reasoning problem, let's break down the data and logic step-by-step:\n\n**Step 1: Categorize each metric as leading or lagging.**\n*   **Feature adoption (40% vs. 60% target):** This is a **Lagging** indicator. It measures the result of past marketing and product efforts over",
+      "agent_response": "To determine the correct strategic response, let's break down the metrics and reasoning step-by-step as requested.\n\n**Step 1: Categorize each metric as leading or lagging.**\n*   **Feature adoption (40% vs 60% target):** This is a **Lagging** indicator. It measures the result of past marketing, produ",
       "is_correct": true,
-      "elapsed_s": 8.9
+      "elapsed_s": 13.3
     },
     {
       "id": "CEO089",
@@ -1133,10 +1133,10 @@
       "difficulty": "expert",
       "type": "multi_step",
       "correct_answer": "A",
-      "agent_answer": "D",
-      "agent_response": "### Step 1: Frame the Strategic Challenge\nAs CEO of a Series B startup, we face a classic \"growth vs. stability\" paradox. The board demands a 3x revenue increase (aggressive growth), but our engineering team can only sustainably deliver 2x feature output annually (linear scaling). Simultaneously, th",
-      "is_correct": false,
-      "elapsed_s": 8.0
+      "agent_answer": "A",
+      "agent_response": "### Step 1: Frame the Strategic Challenge\nAs CEO of a Series B startup, we face a classic \"growth vs. stability\" paradox. The board's expectation of **3x revenue** in three years implies a Compound Annual Growth Rate (CAGR) of roughly 45%. However, our engineering team can only deliver **2x feature ",
+      "is_correct": true,
+      "elapsed_s": 29.4
     },
     {
       "id": "CEO090",
@@ -1146,9 +1146,9 @@
       "type": "multi_step",
       "correct_answer": "C",
       "agent_answer": "C",
-      "agent_response": "**Step 1: Classify the risk type and impact dimensions.**\nThis scenario represents a **multi-dimensional existential risk**. It is not merely a competitive threat but a structural disruption affecting three critical pillars simultaneously:\n*   **Product/Infrastructure:** The competitor controls the ",
+      "agent_response": "**Step 1: Classify the risk type and impact dimensions.**\nThis scenario represents a **Black Swan event** characterized by high uncertainty and severe consequences. The risk is **existential** because it simultaneously threatens three critical pillars of the business:\n1.  **Product/Infrastructure:**",
       "is_correct": true,
-      "elapsed_s": 6.1
+      "elapsed_s": 8.7
     },
     {
       "id": "CEO091",
@@ -1158,9 +1158,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "**Step 1: Assess the Situational Factors**\n*   **Tight Deadline (6 weeks):** Requires rapid mobilization and efficient decision-making. Excessive bureaucracy or consensus-seeking for every minor issue will cause delays. However, total autonomy without structure can lead to misalignment on a complex ",
+      "agent_response": "**Step 1: Assess the situational factors**\n*   **Tight Deadline (6 weeks):** Requires rapid decision-making and execution without bureaucratic delays. Autonomy is needed to move fast, but alignment is critical early on.\n*   **High Ambiguity:** The path forward isn't clear yet. Teams need guidance an",
       "is_correct": true,
-      "elapsed_s": 8.2
+      "elapsed_s": 10.5
     },
     {
       "id": "CEO092",
@@ -1170,9 +1170,9 @@
       "type": "multi_step",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To determine the correct strategic move, we must analyze the data through the lens of **Customer Lifetime Value (LTV)**, **Acquisition Cost (CAC) efficiency**, and **Strategic Fit**. While the prompt asks us to \"calculate LTV/CAC-relevant metrics,\" specific CAC numbers are not provided. Therefore, w",
+      "agent_response": "To determine the most strategically valuable segment and the appropriate product strategy, we must analyze the data through the lens of Customer Lifetime Value (LTV), growth efficiency, and strategic fit.\n\n### Step 1: Calculate LTV/CAC-relevant metrics\n\nWhile exact CAC (Customer Acquisition Cost) is",
       "is_correct": true,
-      "elapsed_s": 13.9
+      "elapsed_s": 19.4
     },
     {
       "id": "CEO093",
@@ -1182,9 +1182,9 @@
       "type": "multi_step",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "Step 1: Frame the statistical question.\nThe core question is to determine the cumulative probability $P(X \\leq 20)$, where $X$ represents the project completion time. We are given that the distribution of the project timeline follows a normal distribution (implied by the instruction to apply the nor",
+      "agent_response": "**Step 1: Frame the statistical question.**\nThe core of the inquiry is to determine the cumulative probability $P(X \\leq 20)$, where $X$ represents the project completion time. We are given a distribution with a median (mean for normal distributions) $\\mu = 16$ weeks and a standard deviation $\\sigma",
       "is_correct": true,
-      "elapsed_s": 5.4
+      "elapsed_s": 8.0
     },
     {
       "id": "CEO094",
@@ -1194,9 +1194,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "**Step 1: Evaluate the data against pivot/persevere criteria.**\n*   **Product-Market Fit (PMF) Signal:** You have 200 paying customers. While below the target of 500, this indicates a viable business model exists. However, retention at 70% is below your target of 85%, suggesting churn issues or unme",
+      "agent_response": "**Step 1: Evaluate the data against pivot/persevere criteria.**\n*   **Product-Market Fit (PMF) Signal:** The presence of 200 paying customers is a positive signal, but falling short of the 500 target suggests growth friction. More critically, the retention rate is 70% vs. an 85% target. While not ca",
       "is_correct": true,
-      "elapsed_s": 6.7
+      "elapsed_s": 10.0
     },
     {
       "id": "CEO095",
@@ -1206,9 +1206,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "To design an effective feedback loop system for an engineering organization, we must evaluate the options based on three criteria: appropriate time scales (cadence), relevant metrics for each scale, and logical connections between loops to ensure continuous improvement.\n\n**Step 1: Analyze Option A (",
+      "agent_response": "To determine the correct feedback loop system for an engineering organization, we must evaluate which option provides a balanced, multi-scale approach covering individual, team, and organizational levels while ensuring continuous improvement through interconnected data.\n\n**Step 1: Analyze Option A**",
       "is_correct": true,
-      "elapsed_s": 8.5
+      "elapsed_s": 9.5
     },
     {
       "id": "CEO096",
@@ -1218,9 +1218,9 @@
       "type": "multi_step",
       "correct_answer": "B",
       "agent_answer": "B",
-      "agent_response": "### Step 1: Sequence the Communications\nA reorganization involving leadership changes requires a specific sequence to maintain trust, legal compliance, and operational stability.\n1.  **Private Notification to the Affected VP:** This must happen first. Ethically and legally, an employee cannot be bli",
+      "agent_response": "### Step 1: Sequence the Communications\n\nThe most effective sequence for a sensitive reorganization involving leadership changes is one that prioritizes empathy, preparation, and clarity.\n\n1.  **Private Conversation with the Affected VP:** Before any public announcement, the affected VP must be info",
       "is_correct": true,
-      "elapsed_s": 10.4
+      "elapsed_s": 14.5
     },
     {
       "id": "CEO097",
@@ -1230,9 +1230,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "To determine the correct risk appetite statement for a Series B startup with $10M ARR and 18 months of runway, we must balance the need for growth (requiring some financial risk) with the necessity of survival (requiring conservative operational and product stability).\n\n**Step 1: Analyze the Company",
+      "agent_response": "To determine the correct risk appetite statement for a Series B growth-stage startup with $10M ARR and 18 months of runway, we must balance the need for rapid growth (which requires some financial and product risk) with the existential threat of running out of cash (requiring strict financial discip",
       "is_correct": true,
-      "elapsed_s": 7.7
+      "elapsed_s": 13.0
     },
     {
       "id": "CEO098",
@@ -1242,9 +1242,9 @@
       "type": "multi_step",
       "correct_answer": "A",
       "agent_answer": "A",
-      "agent_response": "To determine the correct course of action, let's break down the scenario using the CEO agent persona, focusing on strategic prioritization and risk management.\n\n**Step 1: Analyze Team Consensus Weight (Prioritization)**\nThe core principle of a pre-mortem is to leverage the collective intelligence of",
+      "agent_response": "The user wants me to act as a `ceo_agent` and solve a multi-step reasoning problem regarding an AI product launch pre-mortem.\n\n**Step 1: Prioritize by team consensus weight.**\n- F5: 5 votes (Onboarding complexity)\n- F3: 4 votes (API dependency)\n- F1: 3 votes (Model drift)\n- F2: 2 votes (Competitor)\n",
       "is_correct": true,
-      "elapsed_s": 7.2
+      "elapsed_s": 6.4
     },
     {
       "id": "CEO099",
@@ -1253,10 +1253,10 @@
       "difficulty": "expert",
       "type": "multi_step",
       "correct_answer": "A",
-      "agent_answer": "A",
-      "agent_response": "To determine the optimal strategy, we must calculate the Expected Value (EV) for every decision node, working backwards from the terminal nodes to the root.\n\n**Constants & Costs:**\n*   Initial Investment (Enter Market X): $2M\n*   Status Quo Return: $4M (Certain)\n\n---\n\n### Step 1: Calculate Expected ",
-      "is_correct": true,
-      "elapsed_s": 63.5
+      "agent_answer": "B",
+      "agent_response": "To determine the optimal strategy, we must calculate the Expected Value (EV) for every decision node, working backwards from the terminal nodes to the root.\n\n**Constants & Costs:**\n*   **Entry Cost:** $2M (incurred immediately upon choosing \"Enter Market X\").\n*   **Stay in Current Market Return:** $",
+      "is_correct": false,
+      "elapsed_s": 74.7
     },
     {
       "id": "CEO100",
@@ -1266,9 +1266,9 @@
       "type": "multi_step",
       "correct_answer": "D",
       "agent_answer": "D",
-      "agent_response": "The scenario describes a classic organizational dysfunction where processes exist but do not yield results. Let's break it down step-by-step:\n\n**Step 1: Diagnose the systemic pattern.**\nThe symptoms\u2014plans that don't execute, false \"green\" status reports, uncompleted retro action items, and superfici",
+      "agent_response": "The scenario describes a classic case of \"organizational theater,\" where the organization prioritizes the appearance of productivity (meeting agendas, green status reports, completed action items) over actual value delivery and execution. This happens because there are no negative consequences for f",
       "is_correct": true,
-      "elapsed_s": 7.5
+      "elapsed_s": 5.7
     }
   ]
 }
