@@ -20,18 +20,8 @@ build/
 *secret*
 *.token
 
-# Proprietary web app (prevent accidental inclusion)
-cohort/server.py
-cohort/socketio_events.py
-cohort/agent_router.py
-cohort/data_layer.py
-cohort/agent_api.py
-cohort/agent_api_models.py
-cohort/oauth2_middleware.py
-cohort/secret_store.py
-cohort/templates/
-cohort/static/
-cohort/website_creator/
+# Runtime output (regenerated, not source)
+cohort/website_creator/output/
 
 # Runtime data (generated at startup)
 data/
