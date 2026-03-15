@@ -45,8 +45,8 @@ class LearnedFact:
     """A single piece of knowledge acquired by an agent."""
 
     fact: str
-    learned_from: str
-    timestamp: str
+    learned_from: str = ""
+    timestamp: str = ""
     confidence: str = "medium"  # "high" | "medium" | "low"
     session_id: str = ""
 
@@ -55,8 +55,14 @@ class LearnedFact:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> LearnedFact:
+        d = dict(data)
+        # Map alternative schema keys (training/education format)
+        if "learned_from" not in d and "source" in d:
+            d["learned_from"] = d.pop("source")
+        if "timestamp" not in d and "date_added" in d:
+            d["timestamp"] = d.pop("date_added")
         valid = {f.name for f in fields(cls)}
-        return cls(**{k: v for k, v in data.items() if k in valid})
+        return cls(**{k: v for k, v in d.items() if k in valid})
 
 
 # =====================================================================
