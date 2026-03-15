@@ -149,6 +149,13 @@ def run_service_checks() -> dict:
     state = _ensure_state()
     now = datetime.now().isoformat()
 
+    # Prune stale entries for services no longer in registry
+    valid_keys = {f"service:{k}" for k in registry}
+    stale_keys = [k for k in state["target_status"] if k.startswith("service:") and k not in valid_keys]
+    for sk in stale_keys:
+        del state["target_status"][sk]
+        state["last_alerts"].pop(sk, None)
+
     for key, entry in registry.items():
         if entry.get("snoozed"):
             state["target_status"][f"service:{key}"] = {
@@ -177,7 +184,7 @@ def run_service_checks() -> dict:
 
         status = "healthy" if ok else "down"
 
-        state["target_status"][f"service:{key}"] = {
+        entry_data = {
             "status": status,
             "ok": ok,
             "status_code": status_code,
@@ -191,6 +198,21 @@ def run_service_checks() -> dict:
             "self_hosted": entry.get("self_hosted", False),
             "snoozed": False,
         }
+
+        # Enrich Ollama with model count
+        if key == "ollama" and ok:
+            try:
+                import urllib.request
+                req = urllib.request.Request(f"http://{host}:{port}/api/tags", method="GET")
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    body = json.loads(resp.read().decode("utf-8"))
+                    models = body.get("models", [])
+                    entry_data["model_count"] = len(models)
+                    entry_data["models"] = [m.get("name", "") for m in models[:10]]
+            except Exception:
+                pass
+
+        state["target_status"][f"service:{key}"] = entry_data
 
         # Alert tracking
         alert_key = f"service:{key}"
@@ -601,7 +623,7 @@ def list_services() -> List[dict]:
         state_key = f"service:{key}"
         status_info = state.get("target_status", {}).get(state_key, {})
 
-        services.append({
+        svc_data = {
             "key": key,
             "description": entry.get("description", ""),
             "port": entry.get("port"),
@@ -614,5 +636,10 @@ def list_services() -> List[dict]:
             "self_hosted": entry.get("self_hosted", False),
             "snoozed": entry.get("snoozed", False),
             "controllable": bool(entry.get("start_command")) and not entry.get("self_hosted"),
-        })
+        }
+        # Include Ollama model info if available
+        if key == "ollama" and "model_count" in status_info:
+            svc_data["model_count"] = status_info["model_count"]
+            svc_data["models"] = status_info.get("models", [])
+        services.append(svc_data)
     return services

@@ -991,13 +991,15 @@ function renderSidebarTools() {
     const statuses = state.toolHealthCache || {};
     const upCount = tools.filter(t => statuses[t.id] === 'up').length;
     const downCount = tools.filter(t => statuses[t.id] === 'down').length;
-    const unknownCount = tools.length - upCount - downCount;
+    const needsSetupCount = tools.filter(t => statuses[t.id] === 'not_configured').length;
+    const unknownCount = tools.length - upCount - downCount - needsSetupCount;
 
     let summaryHtml = '';
     if (Object.keys(statuses).length > 0) {
         const parts = [];
         if (upCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-success)"></span>${upCount} up`);
         if (downCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-error)"></span>${downCount} down`);
+        if (needsSetupCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-warning)"></span>${needsSetupCount} needs setup`);
         if (unknownCount > 0) parts.push(`<span class="sidebar-tools-summary__pip" style="background:var(--color-text-muted)"></span>${unknownCount} pending`);
         summaryHtml = `<li class="sidebar-tools-summary">${parts.join(' ')}</li>`;
     }
@@ -2410,7 +2412,7 @@ async function renderYouTubePanel(tool) {
                 </div>
                 <div id="youtube-try-results" class="yt-try-it__results"></div>
             </div>
-        `) : configSectionFull('Video Search', `<div style="padding:var(--space-3);background:rgba(239,68,68,0.1);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-error)">YouTube service is offline. Check that it is running on port 8002.</div>`)}
+        `) : configSectionFull('Video Search', `<div style="padding:var(--space-3);background:rgba(250,166,26,0.15);border-radius:var(--radius-md);font-size:var(--font-size-sm);color:var(--color-warning)">YouTube API key not configured. Add it in Settings &gt; Permissions.</div>`)}
         ${configSection('Rate Limits',
             configNumber('Per Minute', 30, 1, 120, tid, 'rate_limit_per_min', 'req/min') +
             configNumber('Per Day', 1000, 1, 10000, tid, 'rate_limit_per_day', 'req/day') +
@@ -2442,14 +2444,18 @@ async function tryYouTubeSearch() {
             results.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No results found</p>';
         } else {
             results.innerHTML = `<div class="yt-results-grid">${data.results.map(r => {
-                const thumb = r.thumbnail || '';
-                const thumbHtml = thumb ? `<div class="yt-card__thumb"><img src="${escapeHtml(thumb)}" alt="" loading="lazy"><span class="yt-card__duration">${escapeHtml(r.duration || '')}</span></div>` : '';
+                const thumb = r.thumbnail_url || r.thumbnail || '';
+                const durSec = r.duration_seconds || 0;
+                const durStr = durSec > 0 ? `${Math.floor(durSec / 60)}:${String(durSec % 60).padStart(2, '0')}` : '';
+                const thumbHtml = thumb ? `<div class="yt-card__thumb"><img src="${escapeHtml(thumb)}" alt="" loading="lazy">${durStr ? `<span class="yt-card__duration">${escapeHtml(durStr)}</span>` : ''}</div>` : '';
+                const channel = r.channel_title || r.channel || '';
+                const views = r.view_count != null ? Number(r.view_count).toLocaleString() + ' views' : (r.views || '');
                 return `<div class="yt-card">
                     ${thumbHtml}
                     <div class="yt-card__info">
                         <a class="yt-card__title" href="${escapeHtml(r.url || '#')}" target="_blank">${escapeHtml(r.title || 'Untitled')}</a>
-                        <span class="yt-card__channel">${escapeHtml(r.channel || '')}</span>
-                        ${r.views ? `<span class="yt-card__views">${escapeHtml(r.views)}</span>` : ''}
+                        <span class="yt-card__channel">${escapeHtml(channel)}</span>
+                        ${views ? `<span class="yt-card__views">${escapeHtml(views)}</span>` : ''}
                     </div>
                 </div>`;
             }).join('')}</div>`;
@@ -4427,19 +4433,22 @@ async function renderHealthMonitorPanel(tool) {
     const tid = tool.id;
     window._currentTool = tool;
 
-    // Fetch services list and state in parallel
+    // Fetch services list, state, alerts, and tool readiness in parallel
     let services = [];
     let healthData = {};
     let alertData = {};
+    let toolReadiness = [];
     try {
-        const [svcResp, stateResp, alertResp] = await Promise.all([
+        const [svcResp, stateResp, alertResp, readinessResp] = await Promise.all([
             fetch('/api/health-monitor/services').then(r => r.json()).catch(() => ({ services: [] })),
             fetch('/api/health-monitor/state').then(r => r.json()).catch(() => ({})),
             fetch('/api/health-monitor/alerts').then(r => r.json()).catch(() => ({ alerts: [] })),
+            fetch('/api/tool-readiness/all').then(r => r.json()).catch(() => ({ tools: [] })),
         ]);
         services = svcResp.services || [];
         healthData = stateResp;
         alertData = alertResp;
+        toolReadiness = readinessResp.tools || [];
     } catch {}
 
     const lastAlerts = healthData.last_alerts || {};
@@ -4478,6 +4487,20 @@ async function renderHealthMonitorPanel(tool) {
             detail: alert.message || '',
         }));
 
+    // Build tool readiness rows
+    const readinessHtml = toolReadiness.length > 0
+        ? `<div class="health-readiness-grid">${toolReadiness.map(t => {
+            const dotCls = t.status === 'up' ? 'up' : t.status === 'down' ? 'down' : t.status === 'not_configured' ? 'not_configured' : 'unknown';
+            const label = t.status === 'up' ? 'Ready' : t.status === 'down' ? 'Down' : t.status === 'not_configured' ? 'Needs Setup' : 'Unknown';
+            return `<div class="health-readiness-row">
+                <span class="tool-status-item__dot tool-status-item__dot--${dotCls}"></span>
+                <span class="health-readiness-name">${escapeHtml(t.name)}</span>
+                <span class="health-readiness-label">${label}</span>
+                <span class="health-readiness-detail">${escapeHtml(t.detail || '')}</span>
+            </div>`;
+        }).join('')}</div>`
+        : '<p style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No tool readiness data available.</p>';
+
     const pausedBanner = paused ? '<div style="padding:var(--space-2) var(--space-3);background:rgba(250,166,26,0.15);border-radius:var(--radius-md);margin-bottom:var(--space-3);font-size:var(--font-size-sm);color:var(--color-warning)">[!] Health monitor is paused -- data may be stale</div>' : '';
 
     const lastChecked = healthData.last_checks?.services ? `Last check: ${timeAgo(healthData.last_checks.services)}` : 'Never checked';
@@ -4499,9 +4522,10 @@ async function renderHealthMonitorPanel(tool) {
             statCard('Total', totalCount)
         )}
         ${configSectionFull('Services (' + totalCount + ')', serviceRowsHtml)}
+        ${configSectionFull('Tool Readiness (' + toolReadiness.length + ')', readinessHtml)}
         ${configSectionFull('Recent Alerts (' + alertItems.length + ')', activityLog(alertItems, { emptyMsg: 'No active alerts' }))}
         ${configSection('Alert Settings',
-            configLearnMore('Alert Configuration', 'Services are configured in data/services/health_monitor/service_registry.yaml. Add new services there with port, health_endpoint, and start_command.')
+            configLearnMore('Alert Configuration', 'Services are configured in data/services/health_monitor/service_registry.json. Add new services there with port, health_endpoint, and start_command.')
         )}
     </div>`;
     showToolHelpChat(tid);

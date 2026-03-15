@@ -2615,6 +2615,7 @@ textarea.form-input {
 .sidebar-tool-icon--down { background-color: var(--color-error); }
 .sidebar-tool-icon--unknown { background-color: var(--color-text-muted); }
 .sidebar-tool-icon--degraded { background-color: var(--color-warning); }
+.sidebar-tool-icon--not_configured { background-color: var(--color-warning); }
 .sidebar-tool-icon--checking { background-color: var(--color-warning); animation: pulse 1.5s ease-in-out infinite; }
 
 .sidebar-tool-tag {
@@ -7473,6 +7474,39 @@ select.tool-config-card__input option {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
     font-style: italic;
+}
+
+/* Tool Readiness Grid */
+.health-readiness-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.health-readiness-row {
+    display: grid;
+    grid-template-columns: 20px 140px 80px 1fr;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-size-sm);
+}
+.health-readiness-row:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.02);
+}
+.health-readiness-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+.health-readiness-label {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+.health-readiness-detail {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* =====================================================================

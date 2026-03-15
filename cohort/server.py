@@ -2760,72 +2760,120 @@ def _load_tools_config() -> dict[str, Any]:
         return {}
 
 
-async def get_service_status(request: Request) -> JSONResponse:
-    """GET /api/service-status/{service_id} -- proxy health check to a service."""
+def _check_tool_readiness(service_id: str) -> dict[str, Any]:
+    """Check readiness of a sidebar tool using internal logic (no external HTTP proxying).
+
+    Returns dict with 'status' ('up', 'down', 'not_configured') and 'detail'.
+    """
     import urllib.request
 
-    service_id = request.path_params["service_id"]
-    tools_cfg = _load_tools_config()
-    endpoints = tools_cfg.get("health_endpoints", {})
-    url = endpoints.get(service_id)
+    # Built-in tools: always up if the server is running
+    BUILTIN_TOOLS = {
+        "document_processor", "website_creator", "project_manager",
+    }
+    if service_id in BUILTIN_TOOLS:
+        return {"status": "up", "detail": "Built-in feature"}
 
-    if not url:
-        return JSONResponse({"status": "unknown", "detail": "No health endpoint configured"})
+    if service_id in ("intel_scheduler", "content_monitor_scheduler"):
+        return {"status": "up", "detail": "Built-in scheduler"}
 
-    # Built-in Cohort features: a self-request would deadlock the event loop.
-    # If the server is serving this request, these features are up.
     if service_id == "health_monitor":
         from cohort.api import list_services
         svcs = list_services()
-        status = "up" if svcs else "unknown"
-        return JSONResponse({"status": status, "detail": {"services": len(svcs)}})
+        return {"status": "up" if svcs else "unknown", "detail": {"services": len(svcs)}}
 
-    if service_id in ("intel_scheduler", "content_monitor_scheduler"):
-        return JSONResponse({"status": "up", "detail": "Built-in scheduler"})
+    # LLM Manager: check Ollama health
+    if service_id == "llm_manager":
+        try:
+            req = urllib.request.Request("http://127.0.0.1:11434/api/tags", method="GET")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                if resp.status == 200:
+                    try:
+                        body = json.loads(resp.read().decode("utf-8"))
+                        model_count = len(body.get("models", []))
+                        return {"status": "up", "detail": f"Ollama responding ({model_count} models)"}
+                    except Exception:
+                        return {"status": "up", "detail": "Ollama responding"}
+        except Exception:
+            return {"status": "down", "detail": "Ollama not responding"}
 
-    # Only allow localhost URLs
-    if "127.0.0.1" not in url and "localhost" not in url:
-        return JSONResponse({"status": "unknown", "detail": "Non-localhost endpoint rejected"})
+    # Web Search: check if ddgs is importable or search API key configured
+    if service_id == "web_search":
+        ddgs_available = False
+        try:
+            import ddgs as _ddgs_mod  # noqa: F401
+            ddgs_available = True
+        except ImportError:
+            pass
+        if ddgs_available:
+            return {"status": "up", "detail": "DuckDuckGo available"}
+        # Check for SerpAPI/Serper keys
+        settings = _load_settings()
+        for svc in settings.get("service_keys", []):
+            if svc.get("type") in ("serpapi", "serper") and svc.get("key"):
+                return {"status": "up", "detail": f"{svc['type'].title()} API key configured"}
+        return {"status": "not_configured", "detail": "Install ddgs or add a search API key"}
 
-    try:
-        req = urllib.request.Request(url, method="GET")
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            status = "up" if resp.status == 200 else "down"
-            try:
-                body = json.loads(resp.read().decode("utf-8"))
-            except Exception:
-                body = {}
-            result = {"status": status, "detail": body}
+    # YouTube: check for YouTube API key
+    if service_id == "youtube_service":
+        settings = _load_settings()
+        for svc in settings.get("service_keys", []):
+            if svc.get("type") == "youtube" and svc.get("key"):
+                return {"status": "up", "detail": "YouTube API key configured"}
+        return {"status": "not_configured", "detail": "No YouTube API key configured"}
 
-            # Enrich comms_service with provider status
-            if service_id == "comms_service":
-                svc_status = status  # "up" or "down"
-                result["providers"] = {
-                    "email": {"name": "Resend", "status": svc_status},
-                    "calendar": {"name": "Google Calendar", "status": svc_status},
-                    "social": {
-                        "twitter": {"status": "not_configured"},
-                        "linkedin": {"status": "not_configured"},
-                        "facebook": {"status": "not_configured"},
-                        "threads": {"status": "not_configured"},
-                    },
-                }
+    # Comms Service: check if the Cohort-owned comms service is running
+    if service_id == "comms_service":
+        try:
+            req = urllib.request.Request("http://127.0.0.1:8001/health", method="GET")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                svc_status = "up" if resp.status == 200 else "down"
+        except Exception:
+            svc_status = "down"
+        # Check if Resend key is configured
+        settings = _load_settings()
+        has_resend = any(
+            svc.get("type") == "resend" and svc.get("key")
+            for svc in settings.get("service_keys", [])
+        )
+        result: dict[str, Any] = {"status": svc_status, "detail": "Service running" if svc_status == "up" else "Service offline"}
+        result["providers"] = {
+            "email": {"name": "Resend", "status": "configured" if has_resend else "not_configured"},
+            "calendar": {"name": "Google Calendar", "status": svc_status},
+            "social": {
+                "twitter": {"status": "not_configured"},
+                "linkedin": {"status": "not_configured"},
+                "facebook": {"status": "not_configured"},
+                "threads": {"status": "not_configured"},
+            },
+        }
+        return result
 
-            return JSONResponse(result)
-    except Exception:
-        result = {"status": "down", "detail": "Connection failed"}
-        if service_id == "comms_service":
-            result["providers"] = {
-                "email": {"name": "Resend", "status": "down"},
-                "calendar": {"name": "Google Calendar", "status": "down"},
-                "social": {
-                    "twitter": {"status": "not_configured"},
-                    "linkedin": {"status": "not_configured"},
-                    "facebook": {"status": "not_configured"},
-                    "threads": {"status": "not_configured"},
-                },
-            }
-        return JSONResponse(result)
+    return {"status": "unknown", "detail": "Unknown tool"}
+
+
+async def get_service_status(request: Request) -> JSONResponse:
+    """GET /api/service-status/{service_id} -- check tool readiness via internal logic."""
+    service_id = request.path_params["service_id"]
+    return JSONResponse(_check_tool_readiness(service_id))
+
+
+async def get_tool_readiness_all(request: Request) -> JSONResponse:
+    """GET /api/tool-readiness/all -- return readiness status for all sidebar tools."""
+    tools_cfg = _load_tools_config()
+    tool_ids = tools_cfg.get("tools", [])
+    display_names = tools_cfg.get("display_names", {})
+
+    tools = []
+    for tid in tool_ids:
+        result = _check_tool_readiness(tid)
+        tools.append({
+            "id": tid,
+            "name": display_names.get(tid, tid.replace("_", " ").title()),
+            "status": result.get("status", "unknown"),
+            "detail": result.get("detail", ""),
+        })
+    return JSONResponse({"tools": tools})
 
 
 async def get_tool_config(request: Request) -> JSONResponse:
@@ -2850,8 +2898,6 @@ async def get_tool_context(request: Request) -> JSONResponse:
     Returns tool knowledge (what_it_does, settings schema, FAQ) merged with
     live state (current config values, service health status).
     """
-    import urllib.request
-
     tool_id = request.path_params["tool_id"]
     tools_cfg = _load_tools_config()
     display_names = tools_cfg.get("display_names", {})
@@ -2862,16 +2908,9 @@ async def get_tool_context(request: Request) -> JSONResponse:
     all_values = _load_tool_config_values()
     live_values = all_values.get(tool_id, {})
 
-    # Live service status
-    health_url = tools_cfg.get("health_endpoints", {}).get(tool_id)
-    service_status = "unknown"
-    if health_url and ("127.0.0.1" in health_url or "localhost" in health_url):
-        try:
-            req = urllib.request.Request(health_url, method="GET")
-            with urllib.request.urlopen(req, timeout=3) as resp:
-                service_status = "up" if resp.status == 200 else "down"
-        except Exception:
-            service_status = "down"
+    # Live service status via internal readiness check
+    readiness = _check_tool_readiness(tool_id)
+    service_status = readiness.get("status", "unknown")
 
     return JSONResponse({
         "id": tool_id,
@@ -3744,8 +3783,8 @@ async def get_project_articles(request: Request) -> JSONResponse:
 
 
 async def web_search_test(request: Request) -> JSONResponse:
-    """POST /api/web-search/test -- proxy a test search to the web search service."""
-    import urllib.request
+    """POST /api/web-search/test -- search using inlined web search module."""
+    import asyncio
 
     try:
         body = await request.json()
@@ -3755,21 +3794,17 @@ async def web_search_test(request: Request) -> JSONResponse:
     query = body.get("query", "").strip()
     if not query:
         return JSONResponse({"error": "query is required"}, status_code=400)
-    limit = body.get("limit", 3)
+    limit = min(body.get("limit", 5), 25)
 
-    try:
-        payload = json.dumps({"query": query, "limit": limit}).encode("utf-8")
-        req = urllib.request.Request(
-            "http://127.0.0.1:8005/search",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return JSONResponse(data)
-    except Exception as exc:
-        return JSONResponse({"error": f"Web search service unavailable: {exc}"})
+    settings = _load_settings()
+    service_keys = settings.get("service_keys", [])
+
+    def _do_search():
+        from cohort.web_search import search
+        return search(query, num_results=limit, service_keys=service_keys)
+
+    result = await asyncio.get_event_loop().run_in_executor(None, _do_search)
+    return JSONResponse(result)
 
 
 async def web_search_local_test(request: Request) -> JSONResponse:
@@ -3811,8 +3846,8 @@ async def web_search_local_test(request: Request) -> JSONResponse:
 
 
 async def youtube_search_test(request: Request) -> JSONResponse:
-    """POST /api/youtube/test -- proxy a test search to the YouTube service."""
-    import urllib.request
+    """POST /api/youtube/test -- search YouTube using inlined module."""
+    import asyncio
 
     try:
         body = await request.json()
@@ -3824,19 +3859,85 @@ async def youtube_search_test(request: Request) -> JSONResponse:
         return JSONResponse({"error": "query is required"}, status_code=400)
     limit = body.get("limit", 3)
 
-    try:
-        payload = json.dumps({"query": query, "max_results": limit}).encode("utf-8")
-        req = urllib.request.Request(
-            "http://127.0.0.1:8002/search",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return JSONResponse(data)
-    except Exception as exc:
-        return JSONResponse({"error": f"YouTube service unavailable: {exc}"})
+    settings = _load_settings()
+    api_key = ""
+    for svc in settings.get("service_keys", []):
+        if svc.get("type") == "youtube" and svc.get("key"):
+            api_key = svc["key"]
+            break
+
+    if not api_key:
+        return JSONResponse({"error": "YouTube API key not configured. Add it in Settings > Permissions."})
+
+    def _do_search():
+        from cohort.youtube import search_videos
+        return search_videos(query, api_key, max_results=limit)
+
+    result = await asyncio.get_event_loop().run_in_executor(None, _do_search)
+    if "error" in result:
+        return JSONResponse(result, status_code=500 if "API error" in result.get("error", "") else 400)
+    return JSONResponse(result)
+
+
+async def web_search_query(request: Request) -> JSONResponse:
+    """GET /api/web-search/search -- search the web (inlined, no external service)."""
+    import asyncio
+
+    query = request.query_params.get("q", "").strip()
+    if not query:
+        return JSONResponse({"error": "q parameter is required"}, status_code=400)
+    num = min(int(request.query_params.get("num", "5")), 25)
+
+    settings = _load_settings()
+    service_keys = settings.get("service_keys", [])
+
+    def _do():
+        from cohort.web_search import search
+        return search(query, num_results=num, service_keys=service_keys)
+
+    result = await asyncio.get_event_loop().run_in_executor(None, _do)
+    return JSONResponse(result)
+
+
+async def youtube_video_detail(request: Request) -> JSONResponse:
+    """GET /api/youtube/video/{video_id} -- get video metadata (inlined)."""
+    import asyncio
+
+    video_id = request.path_params["video_id"]
+    settings = _load_settings()
+    api_key = ""
+    for svc in settings.get("service_keys", []):
+        if svc.get("type") == "youtube" and svc.get("key"):
+            api_key = svc["key"]
+            break
+    if not api_key:
+        return JSONResponse({"error": "YouTube API key not configured"}, status_code=400)
+
+    def _do():
+        from cohort.youtube import get_video
+        return get_video(video_id, api_key)
+
+    result = await asyncio.get_event_loop().run_in_executor(None, _do)
+    if "error" in result:
+        return JSONResponse(result, status_code=404 if "not found" in result.get("error", "").lower() else 500)
+    return JSONResponse(result)
+
+
+async def youtube_transcript(request: Request) -> JSONResponse:
+    """GET /api/youtube/transcript/{video_id} -- get video transcript (inlined)."""
+    import asyncio
+
+    video_id = request.path_params["video_id"]
+    language = request.query_params.get("language", "en")
+
+    def _do():
+        from cohort.youtube import get_transcript
+        return get_transcript(video_id, language=language)
+
+    result = await asyncio.get_event_loop().run_in_executor(None, _do)
+    if "error" in result:
+        return JSONResponse(result, status_code=404 if "not found" in result.get("error", "").lower() else 500)
+    return JSONResponse(result)
 
 
 def _claude_cli_request(prompt: str, timeout: int = 120) -> str:
@@ -5649,6 +5750,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/roundtable/channel/{channel_id}", get_channel_session, methods=["GET"]),
         # Tool dashboard endpoints
         Route("/api/service-status/{service_id}", get_service_status, methods=["GET"]),
+        Route("/api/tool-readiness/all", get_tool_readiness_all, methods=["GET"]),
         Route("/api/tool-context/{tool_id}", get_tool_context, methods=["GET"]),
         Route("/api/tool-config/{tool_id}/values", get_tool_config_values, methods=["GET"]),
         Route("/api/tool-config/{tool_id}/values", put_tool_config_value, methods=["PUT"]),
@@ -5690,7 +5792,10 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/content-projects/{project_id}/articles", get_project_articles, methods=["GET"]),
         Route("/api/web-search/test", web_search_test, methods=["POST"]),
         Route("/api/web-search/test-local", web_search_local_test, methods=["POST"]),
+        Route("/api/web-search/search", web_search_query, methods=["GET"]),
         Route("/api/youtube/test", youtube_search_test, methods=["POST"]),
+        Route("/api/youtube/video/{video_id}", youtube_video_detail, methods=["GET"]),
+        Route("/api/youtube/transcript/{video_id}", youtube_transcript, methods=["GET"]),
         Route("/api/doc-processor/summarize", doc_summarize, methods=["POST"]),
         Route("/api/doc-processor/process", doc_process_file, methods=["POST"]),
         Route("/api/doc-processor/fetch-url", doc_fetch_url, methods=["POST"]),

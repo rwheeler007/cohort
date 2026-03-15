@@ -35,9 +35,5 @@
     "website_creator": "Generate full websites from YAML briefs or worksheets",
     "project_manager": "Create, link, and manage Cohort-connected projects"
   },
-  "health_endpoints": {
-    "comms_service": "http://localhost:5100/api/comms/status",
-    "health_monitor": "http://localhost:5100/api/health-monitor/status",
-    "llm_manager": "http://localhost:5100/api/settings/test-connection"
-  }
+  "health_endpoints": {}
 }

@@ -29,27 +29,7 @@
       "description": "Email, calendar, and social media communications",
       "health_endpoint": "/health",
       "start_command": "python service.py",
-      "start_cwd": "tools/comms_service",
-      "startup_mode": "on_demand",
-      "snoozed": false
-    },
-    "web_search": {
-      "port": 8005,
-      "host": "127.0.0.1",
-      "description": "Web search API (SerpAPI, Serper, DuckDuckGo)",
-      "health_endpoint": "/health",
-      "start_command": "python service.py",
-      "start_cwd": "tools/web_search",
-      "startup_mode": "on_demand",
-      "snoozed": false
-    },
-    "youtube_service": {
-      "port": 8002,
-      "host": "127.0.0.1",
-      "description": "YouTube search, metadata, and chapters",
-      "health_endpoint": "/health",
-      "start_command": "python service.py",
-      "start_cwd": "tools/youtube_service",
+      "start_cwd": "services/comms_service",
       "startup_mode": "on_demand",
       "snoozed": false
     }
