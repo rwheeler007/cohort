@@ -8,7 +8,7 @@ from cohort.meeting import StakeholderStatus, should_agent_speak
 from cohort.orchestrator import Orchestrator, Session
 from cohort.registry import AgentProfile, JsonFileStorage, StorageBackend
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "AgentConfig",
