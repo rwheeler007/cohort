@@ -29,6 +29,7 @@ from cohort.api import (
     resolve_permissions, get_central_permissions, ResolvedPermissions,
 )
 from cohort.local.config import classify_confidence
+from cohort.agent_context import load_agent_context, load_user_profile_block
 
 logger = logging.getLogger(__name__)
 
@@ -806,10 +807,16 @@ def _invoke_smartest_pipeline(
         if not persona:
             persona = load_persona(agent_id) or f"You are the {agent_id} agent."
 
+        # Inject user profile into Phase 3 (Claude gets operator awareness)
+        _phase3_profile = load_user_profile_block()
+        _phase3_grounding = GROUNDING_RULES
+        if _phase3_profile:
+            _phase3_grounding = _phase3_profile + "\n" + GROUNDING_RULES
+
         claude_prompt = SMARTEST_CLAUDE_PROMPT.format(
             agent_id=agent_id,
             persona=persona,
-            grounding_rules=GROUNDING_RULES,
+            grounding_rules=_phase3_grounding,
             distilled_briefing=distilled,
             user_message=user_message,
         )
@@ -958,11 +965,23 @@ def _invoke_agent_sync(item: dict) -> None:
                     "=== END COLLABORATION ===\n\n"
                 )
 
+    # Load agent memory (learned facts, tasks, collaborators)
+    _agent_memory_block = load_agent_context(
+        agent_id, query=message_content, agent_store=_agent_store,
+    )
+
+    # Load user profile (core paragraph + adaptation rules + distilled traits)
+    _user_profile_block = load_user_profile_block(
+        conversation_context=channel_context + thread_context,
+    )
+
     # Construct prompts: one with tool awareness (Claude CLI), one without (local tools)
     _base_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
         f"Follow this agent prompt exactly:\n\n"
         f"---\n{agent_prompt}\n---\n\n"
+        f"{_user_profile_block}\n"
+        f"{_agent_memory_block}\n"
         f"{GROUNDING_RULES}\n"
         f"{_collab_section}"
     )
