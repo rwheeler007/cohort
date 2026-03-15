@@ -20,7 +20,7 @@
 ;
 
 #define MyAppName "Cohort"
-#define MyAppVersion "0.3.0"
+#define MyAppVersion "0.3.1"
 #define MyAppPublisher "Cohort"
 #define MyAppURL "https://github.com/rwheeler007/cohort"
 #define MyAppExeName "cohort-launch.bat"
