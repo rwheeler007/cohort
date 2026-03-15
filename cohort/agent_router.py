@@ -1066,9 +1066,14 @@ def _invoke_agent_sync(item: dict) -> None:
                 tool_schemas = build_tool_schemas(perms.allowed_tools)
                 if tool_schemas:
                     messages = [{"role": "user", "content": _local_prompt}]
+                    _resolved_file_perms = perms.file_permissions or []
 
                     def _tool_executor(name: str, args: dict) -> str:
-                        return execute_tool(name, args, agents_root=AGENTS_ROOT or Path.cwd())
+                        return execute_tool(
+                            name, args,
+                            agents_root=AGENTS_ROOT or Path.cwd(),
+                            file_permissions=_resolved_file_perms,
+                        )
 
                     route_result = router.route_with_tools(
                         messages=messages,

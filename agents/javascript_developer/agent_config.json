@@ -10,10 +10,29 @@
   "nickname": "JSDev",
   "color": "#F1C40F",
   "group": "Core Developers",
-  "aliases": ["javascript", "js", "typescript", "ts", "node", "react"],
+  "aliases": [
+    "javascript",
+    "js",
+    "typescript",
+    "ts",
+    "node",
+    "react"
+  ],
   "triggers": [
-    ".js", ".ts", ".tsx", "javascript", "typescript", "react", "vue",
-    "node", "npm", "next.js", "express", "vite", "webpack", "angular"
+    ".js",
+    ".ts",
+    ".tsx",
+    "javascript",
+    "typescript",
+    "react",
+    "vue",
+    "node",
+    "npm",
+    "next.js",
+    "express",
+    "vite",
+    "webpack",
+    "angular"
   ],
   "capabilities": [
     "React development (hooks, context, Server Components, Next.js, Remix)",
@@ -120,12 +139,18 @@
     ]
   },
   "tool_permissions": {
-    "profile": "developer",
-    "mcp_servers": ["cohort"]
+    "profile": "developer_safe",
+    "mcp_servers": [
+      "cohort"
+    ]
   },
   "environment": {
     "operating_system": "Cross-platform",
-    "required_tools": ["node", "npm", "typescript"],
+    "required_tools": [
+      "node",
+      "npm",
+      "typescript"
+    ],
     "constraints": [
       "No 'as any' casts -- define proper interfaces",
       "All useEffect hooks must return cleanup functions when subscribing",
@@ -140,7 +165,11 @@
     "Bundle size stays within project budget"
   ],
   "scoring_metadata": {
-    "complementary_agents": ["web_developer", "python_developer", "qa_agent"],
+    "complementary_agents": [
+      "web_developer",
+      "python_developer",
+      "qa_agent"
+    ],
     "phase_roles": {
       "DISCOVER": "medium",
       "PLAN": "high",
@@ -148,6 +177,10 @@
       "REVIEW": "high",
       "SHIP": "medium"
     },
-    "data_sources": ["frontend_codebase", "package_json", "bundle_analysis"]
+    "data_sources": [
+      "frontend_codebase",
+      "package_json",
+      "bundle_analysis"
+    ]
   }
 }

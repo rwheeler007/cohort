@@ -14,12 +14,24 @@
       "max_turns": 5
     },
     "developer": {
-      "description": "Full file editing and command execution",
+      "description": "Full file editing and command execution (includes Bash - opt-in only)",
       "allowed_tools": [
         "Read",
         "Write",
         "Edit",
         "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "permission_mode": "acceptEdits",
+      "max_turns": 15
+    },
+    "developer_safe": {
+      "description": "File editing without shell access (default for code agents)",
+      "allowed_tools": [
+        "Read",
+        "Write",
+        "Edit",
         "Glob",
         "Grep"
       ],
@@ -71,7 +83,17 @@
       "max_turns": 1
     }
   },
-  "agent_defaults": {},
+  "agent_defaults": {
+    "core_developers": "developer_safe",
+    "leadership": "readonly",
+    "quality_security": "readonly",
+    "marketing_content": "research_local",
+    "social_media": "research_local",
+    "specialists": "readonly",
+    "infrastructure": "readonly",
+    "support": "readonly",
+    "orchestrator": "readonly"
+  },
   "mcp_servers": {
     "cohort": {
       "command": "python",
@@ -90,7 +112,14 @@
   },
   "denied_tools": [],
   "file_permissions": {
-    "defaults": {},
+    "defaults": {
+      "_global": [
+        {
+          "path": "**/*",
+          "access": "none"
+        }
+      ]
+    },
     "agent_overrides": {}
   }
 }

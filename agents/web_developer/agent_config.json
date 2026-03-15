@@ -10,10 +10,27 @@
   "nickname": "WebDev",
   "color": "#E67E22",
   "group": "Core Developers",
-  "aliases": ["web", "frontend", "ui", "ux", "css"],
+  "aliases": [
+    "web",
+    "frontend",
+    "ui",
+    "ux",
+    "css"
+  ],
   "triggers": [
-    "css", "html", "tailwind", "responsive", "accessibility", "a11y",
-    "flexbox", "grid", "mobile", "ui", "ux", "design system", "wcag"
+    "css",
+    "html",
+    "tailwind",
+    "responsive",
+    "accessibility",
+    "a11y",
+    "flexbox",
+    "grid",
+    "mobile",
+    "ui",
+    "ux",
+    "design system",
+    "wcag"
   ],
   "capabilities": [
     "Semantic HTML5 and WCAG 2.1 AA/AAA accessibility",
@@ -115,12 +132,16 @@
     ]
   },
   "tool_permissions": {
-    "profile": "developer",
-    "mcp_servers": ["cohort"]
+    "profile": "developer_safe",
+    "mcp_servers": [
+      "cohort"
+    ]
   },
   "environment": {
     "operating_system": "Cross-platform",
-    "required_tools": ["browser_devtools"],
+    "required_tools": [
+      "browser_devtools"
+    ],
     "constraints": [
       "All interactive elements must be keyboard-navigable",
       "No focus outline removal without a visible replacement",
@@ -135,7 +156,10 @@
     "No div or span used as clickable elements -- use button or a"
   ],
   "scoring_metadata": {
-    "complementary_agents": ["javascript_developer", "qa_agent"],
+    "complementary_agents": [
+      "javascript_developer",
+      "qa_agent"
+    ],
     "phase_roles": {
       "DISCOVER": "medium",
       "PLAN": "high",
@@ -143,6 +167,10 @@
       "REVIEW": "high",
       "SHIP": "medium"
     },
-    "data_sources": ["frontend_codebase", "design_tokens", "accessibility_audit"]
+    "data_sources": [
+      "frontend_codebase",
+      "design_tokens",
+      "accessibility_audit"
+    ]
   }
 }

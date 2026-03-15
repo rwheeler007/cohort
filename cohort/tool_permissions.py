@@ -226,6 +226,8 @@ def resolve_permissions(
         file_rules = list(file_perms_agent_overrides[agent_id])
     elif agent_group_key and agent_group_key in file_perms_defaults:
         file_rules = list(file_perms_defaults[agent_group_key])
+    elif "_global" in file_perms_defaults:
+        file_rules = list(file_perms_defaults["_global"])
     else:
         file_rules = []
 

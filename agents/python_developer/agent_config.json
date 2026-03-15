@@ -10,10 +10,25 @@
   "nickname": "PyDev",
   "color": "#3498DB",
   "group": "Core Developers",
-  "aliases": ["python", "py", "pd"],
+  "aliases": [
+    "python",
+    "py",
+    "pd"
+  ],
   "triggers": [
-    ".py", "python", "django", "flask", "fastapi", "pandas", "pytest",
-    "asyncio", "sqlalchemy", "pip", "poetry", "backend", "api"
+    ".py",
+    "python",
+    "django",
+    "flask",
+    "fastapi",
+    "pandas",
+    "pytest",
+    "asyncio",
+    "sqlalchemy",
+    "pip",
+    "poetry",
+    "backend",
+    "api"
   ],
   "capabilities": [
     "Backend API design and implementation (Django, Flask, FastAPI)",
@@ -120,12 +135,19 @@
     ]
   },
   "tool_permissions": {
-    "profile": "developer",
-    "mcp_servers": ["cohort", "local_llm"]
+    "profile": "developer_safe",
+    "mcp_servers": [
+      "cohort",
+      "local_llm"
+    ]
   },
   "environment": {
     "operating_system": "Cross-platform",
-    "required_tools": ["python3", "pip", "pytest"],
+    "required_tools": [
+      "python3",
+      "pip",
+      "pytest"
+    ],
     "constraints": [
       "No hardcoded paths -- use config or environment variables",
       "All public functions must have type hints",
@@ -140,7 +162,11 @@
     "Specific exception types caught -- no bare except clauses"
   ],
   "scoring_metadata": {
-    "complementary_agents": ["security_agent", "qa_agent", "database_developer"],
+    "complementary_agents": [
+      "security_agent",
+      "qa_agent",
+      "database_developer"
+    ],
     "phase_roles": {
       "DISCOVER": "medium",
       "PLAN": "high",
@@ -148,6 +174,10 @@
       "REVIEW": "high",
       "SHIP": "medium"
     },
-    "data_sources": ["backend_codebase", "test_results", "api_specs"]
+    "data_sources": [
+      "backend_codebase",
+      "test_results",
+      "api_specs"
+    ]
   }
 }

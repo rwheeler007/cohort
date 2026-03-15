@@ -453,10 +453,56 @@ def build_tool_schemas(allowed_tools: list[str]) -> list[dict[str, Any]]:
     return schemas
 
 
+def _check_file_permission(
+    name: str,
+    arguments: dict[str, Any],
+    file_permissions: list[dict[str, str]],
+) -> str | None:
+    """Check file permissions before executing a file-touching tool.
+
+    Returns an error string if access is denied, or None if allowed.
+    """
+    if not file_permissions:
+        return None
+
+    from cohort.tool_permissions import resolve_file_access
+
+    # Tools that read files
+    _READ_TOOLS = {"Read", "Glob", "Grep"}
+    # Tools that write files
+    _WRITE_TOOLS = {"Write", "Edit"}
+
+    if name not in _READ_TOOLS and name not in _WRITE_TOOLS:
+        return None  # Non-file tools (e.g., Bash) are not gated here
+
+    # Extract the target path from arguments
+    target = arguments.get("file_path") or arguments.get("path") or arguments.get("pattern", "")
+    if not target:
+        return None  # Let the executor handle missing args
+
+    access = resolve_file_access(target, file_permissions)
+
+    if access == "none":
+        return (
+            f"[!] Permission denied: {name} on '{target}'. "
+            f"This path is not in the allowed file list. "
+            f"The operator can enable access in Settings > Tool Permissions."
+        )
+    if access == "read" and name in _WRITE_TOOLS:
+        return (
+            f"[!] Permission denied: {name} on '{target}'. "
+            f"This path is read-only. "
+            f"The operator can change access in Settings > Tool Permissions."
+        )
+
+    return None
+
+
 def execute_tool(
     name: str,
     arguments: dict[str, Any],
     agents_root: Path,
+    file_permissions: list[dict[str, str]] | None = None,
 ) -> str:
     """Execute a tool by name and return the result as a string.
 
@@ -468,10 +514,20 @@ def execute_tool(
         name: Tool name (e.g., "Read", "Bash")
         arguments: Tool arguments dict from the model's tool_call
         agents_root: Project root for path validation
+        file_permissions: Resolved file permission rules (deny-all default).
+            If provided, file-touching tools are gated before execution.
 
     Returns:
         Tool result as a string (may be an error message).
     """
+    # File permission gate
+    if file_permissions:
+        denial = _check_file_permission(name, arguments, file_permissions)
+        if denial:
+            logger.info("[!] File permission denied: %s on %s",
+                        name, arguments.get("file_path") or arguments.get("path", ""))
+            return denial
+
     executor = _TOOL_EXECUTORS.get(name)
     if executor is None:
         return f"Error: unknown tool '{name}'. Available: {', '.join(_TOOL_EXECUTORS.keys())}"
