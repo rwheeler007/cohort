@@ -2,6 +2,24 @@
 
 All notable changes to Cohort will be documented in this file.
 
+## [0.3.1] - 2026-03-15
+
+Agent memory injection and operator profile support.
+
+### Added
+
+- **Agent memory in prompts** -- Learned facts are now contextually scored against the current message and injected into every agent response. Agents use their accumulated knowledge, not just the current conversation.
+- **Operator Working Style** -- Behavioral profile system that teaches agents how you think and work, not just what you've said. Core identity block ships with every prompt; on-demand distillation extracts the traits relevant to the current conversation. Built collaboratively with the user, never silently observed.
+- **Adaptation rules** -- Machine-readable directives (response length, confirmation preferences, feedback style) that agents follow as hard contracts, not suggestions.
+- **Profile distillation** -- Local LLM extracts the 2-4 most relevant behavioral traits per interaction from an unlimited-length profile. Pre-computed in parallel with prompt assembly for zero added latency.
+- New `cohort/agent_context.py` module with contextual fact scoring (term overlap + recency boost + confidence weighting)
+
+### Changed
+
+- All three response modes (Smart, Smarter, Smartest) now include agent memory and operator profile in prompts
+- Smartest Phase 3 (Claude) receives operator profile in grounding rules for behavioral awareness
+- Version bumped to 0.3.1
+
 ## [0.3.0] - 2026-03-11
 
 Open-core release. Apache 2.0 license. First public GitHub release.
