@@ -32,6 +32,13 @@
       "start_cwd": "services/comms_service",
       "startup_mode": "on_demand",
       "snoozed": false
+    },
+    "mcp_server": {
+      "description": "Model Context Protocol server (agent tool integration)",
+      "health_check_module": "cohort.mcp.server",
+      "startup_mode": "persistent",
+      "self_hosted": true,
+      "snoozed": false
     }
   }
 }
