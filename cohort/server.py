@@ -1552,13 +1552,24 @@ async def get_settings(request: Request) -> JSONResponse:
     claude_cmd = settings.get("claude_cmd", "")
     claude_connected = bool(claude_cmd and Path(claude_cmd).exists())
 
-    # Check if Claude CLI is available for Smartest mode
+    # Check if Smartest mode is available (cloud API or dev-mode CLI)
     smartest_available = False
     try:
-        from cohort.agent_router import check_claude_cli_available
-        smartest_available = check_claude_cli_available()
+        from cohort.local.cloud import check_cloud_available
+        from cohort.agent_router import check_claude_cli_available, _dev_mode
+        smartest_available = (
+            check_cloud_available(settings)
+            or (_dev_mode and check_claude_cli_available())
+        )
     except ImportError:
         pass
+
+    # Mask cloud API key
+    cloud_api_key = settings.get("cloud_api_key", "")
+    if cloud_api_key:
+        cloud_key_masked = "sk-..." + cloud_api_key[-4:] if len(cloud_api_key) > 8 else "sk-...(set)"
+    else:
+        cloud_key_masked = ""
 
     return JSONResponse({
         "api_key_masked": masked,
@@ -1570,7 +1581,12 @@ async def get_settings(request: Request) -> JSONResponse:
         "claude_code_connected": claude_connected,
         "smartest_available": smartest_available,
         "admin_mode": settings.get("admin_mode", False),
+        "dev_mode": settings.get("dev_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
+        "cloud_provider": settings.get("cloud_provider", ""),
+        "cloud_api_key_masked": cloud_key_masked,
+        "cloud_model": settings.get("cloud_model", ""),
+        "cloud_base_url": settings.get("cloud_base_url", ""),
         "global_agents_linked": settings.get("global_agents_linked", False),
         "user_display_name": settings.get("user_display_name", ""),
         "user_display_role": settings.get("user_display_role", ""),
@@ -1612,6 +1628,17 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["admin_mode"] = bool(body["admin_mode"])
     if "force_to_claude_code" in body:
         settings["force_to_claude_code"] = bool(body["force_to_claude_code"])
+    if "dev_mode" in body:
+        settings["dev_mode"] = bool(body["dev_mode"])
+    if "cloud_provider" in body:
+        if body["cloud_provider"] in ("", "anthropic", "openai"):
+            settings["cloud_provider"] = body["cloud_provider"]
+    if "cloud_api_key" in body:
+        settings["cloud_api_key"] = body["cloud_api_key"]
+    if "cloud_model" in body:
+        settings["cloud_model"] = str(body["cloud_model"]).strip()[:80]
+    if "cloud_base_url" in body:
+        settings["cloud_base_url"] = str(body["cloud_base_url"]).strip()[:200]
     if "global_agents_linked" in body:
         want = bool(body["global_agents_linked"])
         settings["global_agents_linked"] = want

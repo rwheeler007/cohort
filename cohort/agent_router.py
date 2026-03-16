@@ -170,7 +170,14 @@ CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 # Force all agent responses through Claude Code (bypass local Ollama)
 _force_claude_code: bool = False
 
-# Cache Claude CLI availability for Smartest mode
+# Dev mode: enables CLI subprocess path for internal testing.
+# When False (default for distribution), only cloud API path is available.
+_dev_mode: bool = False
+
+# Cached cloud settings (updated via apply_settings)
+_cloud_settings: dict = {}
+
+# Cache Claude CLI availability for dev mode
 _claude_cli_available: bool | None = None  # None = not checked yet
 
 
@@ -418,11 +425,15 @@ def apply_settings(settings: dict) -> None:
 
     Called on startup and whenever the user saves settings from the UI.
     """
-    global CLAUDE_CMD, RESPONSE_TIMEOUT, AGENTS_ROOT, _force_claude_code  # noqa: PLW0603
+    global CLAUDE_CMD, RESPONSE_TIMEOUT, AGENTS_ROOT, _force_claude_code, _dev_mode, _cloud_settings  # noqa: PLW0603
 
     if "force_to_claude_code" in settings:
         _force_claude_code = bool(settings["force_to_claude_code"])
         logger.info("[OK] Force Claude Code: %s", _force_claude_code)
+
+    if "dev_mode" in settings:
+        _dev_mode = bool(settings["dev_mode"])
+        logger.info("[OK] Dev mode: %s", _dev_mode)
 
     if settings.get("claude_cmd"):
         CLAUDE_CMD = settings["claude_cmd"]
@@ -440,6 +451,13 @@ def apply_settings(settings: dict) -> None:
         if new_root.exists():
             AGENTS_ROOT = new_root
             logger.info("[OK] AGENTS_ROOT updated: %s", AGENTS_ROOT)
+
+    # Cloud backend settings (for Smartest tier in distribution mode)
+    for key in ("cloud_provider", "cloud_api_key", "cloud_model", "cloud_base_url"):
+        if key in settings:
+            _cloud_settings[key] = settings[key]
+    if _cloud_settings.get("cloud_provider"):
+        logger.info("[OK] Cloud provider: %s", _cloud_settings["cloud_provider"])
 
 
 # =====================================================================
@@ -794,7 +812,7 @@ def _invoke_smartest_pipeline(
         logger.exception("[X] Smartest Phase 2 exception for %s", agent_id)
         distilled = qwen_draft[:2000]
 
-    # Phase 3: Claude CLI
+    # Phase 3: Cloud API (distribution) or CLI subprocess (dev mode)
     try:
         from cohort.api import SMARTEST_CLAUDE_PROMPT
 
@@ -807,12 +825,28 @@ def _invoke_smartest_pipeline(
         if not persona:
             persona = load_persona(agent_id) or f"You are the {agent_id} agent."
 
-        # Inject user profile into Phase 3 (Claude gets operator awareness)
+        # Inject user profile into Phase 3
         _phase3_profile = load_user_profile_block()
         _phase3_grounding = GROUNDING_RULES
         if _phase3_profile:
             _phase3_grounding = _phase3_profile + "\n" + GROUNDING_RULES
 
+        # Build the system prompt and user message for Phase 3
+        system_prompt = (
+            f"You are responding as the {agent_id} agent.\n\n"
+            f"Follow this persona exactly:\n---\n{persona}\n---\n\n"
+            f"{_phase3_grounding}"
+        )
+        phase3_user_message = (
+            "A local AI model has analyzed the conversation and produced this briefing:\n\n"
+            f"--- ANALYSIS BRIEFING ---\n{distilled}\n--- END BRIEFING ---\n\n"
+            "Now respond to the user's message. Use the briefing as your research/context, "
+            "but write your response in your own voice. Do not reference the briefing or "
+            "the local model's analysis.\n\n"
+            f"User message:\n{user_message}"
+        )
+
+        # Also build the flat prompt for CLI fallback (dev mode)
         claude_prompt = SMARTEST_CLAUDE_PROMPT.format(
             agent_id=agent_id,
             persona=persona,
@@ -821,49 +855,70 @@ def _invoke_smartest_pipeline(
             user_message=user_message,
         )
 
-        # Strip CLAUDECODE env vars
-        env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
-        # Inject permitted service credentials
-        env.update(_load_agent_credentials(agent_id))
+        response_text = None
+        actual_tokens_in = 0
+        actual_tokens_out = 0
+        phase3_model = "cloud"
 
-        cli_cmd = [CLAUDE_CMD, "-p", "-"]
-        if sys.platform == "win32":
-            cli_cmd = ["cmd", "/c"] + cli_cmd
+        # Try cloud API first (distribution path)
+        from cohort.local.cloud import get_cloud_backend
+        cloud = get_cloud_backend(_cloud_settings)
+        if cloud is not None:
+            try:
+                cr = cloud.complete(system_prompt, phase3_user_message)
+                response_text = cr.text.strip()
+                actual_tokens_in = cr.tokens_in
+                actual_tokens_out = cr.tokens_out
+                phase3_model = cr.model
+                logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
+            except Exception:
+                logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
-        result = subprocess.run(
-            cli_cmd,
-            input=claude_prompt,
-            capture_output=True,
-            text=True,
-            cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
-            timeout=RESPONSE_TIMEOUT,
-            shell=False,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-        )
+        # Dev mode fallback: CLI subprocess (not available in distribution)
+        if not response_text and _dev_mode and check_claude_cli_available():
+            logger.info("[>>] Smartest Phase 3 dev-mode CLI fallback for %s", agent_id)
+            env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+            env.update(_load_agent_credentials(agent_id))
+
+            cli_cmd = [CLAUDE_CMD, "-p", "-"]
+            if sys.platform == "win32":
+                cli_cmd = ["cmd", "/c"] + cli_cmd
+
+            result = subprocess.run(
+                cli_cmd,
+                input=claude_prompt,
+                capture_output=True,
+                text=True,
+                cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                timeout=RESPONSE_TIMEOUT,
+                shell=False,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                response_text = result.stdout.strip()
+                actual_tokens_in = len(claude_prompt) // 4  # estimated
+                actual_tokens_out = len(response_text) // 4
+                phase3_model = "claude_code"
+                logger.info("[OK] Smartest Phase 3 (dev CLI): %s", agent_id)
 
         elapsed = round(time.monotonic() - t0, 1)
 
-        if result.returncode == 0 and result.stdout.strip():
-            response_text = result.stdout.strip()
-            est_claude_in = len(claude_prompt) // 4
-            est_claude_out = len(response_text) // 4
+        if response_text:
             metadata = {
                 "tier": 6,
-                "model": f"{phase1_result.model}+claude",
+                "model": f"{phase1_result.model}+{phase3_model}",
                 "pipeline": "smartest",
                 "confidence": "high",
                 "elapsed_seconds": elapsed,
-                "tokens_in": phase1_result.tokens_in + est_claude_in,
-                "tokens_out": phase1_result.tokens_out + est_claude_out,
+                "tokens_in": phase1_result.tokens_in + actual_tokens_in,
+                "tokens_out": phase1_result.tokens_out + actual_tokens_out,
             }
             logger.info("[OK] Smartest Phase 3: %s (%.1fs total)", agent_id, elapsed)
             return response_text, metadata
 
-        # Claude CLI failed -- return Qwen draft
-        logger.warning("[!] Smartest Phase 3 failed for %s (rc=%d), returning Qwen draft",
-                       agent_id, result.returncode)
+        logger.warning("[!] Smartest Phase 3 failed for %s, returning Qwen draft", agent_id)
     except subprocess.TimeoutExpired:
         logger.error("[X] Smartest Phase 3 timeout for %s", agent_id)
     except Exception:
@@ -1033,9 +1088,14 @@ def _invoke_agent_sync(item: dict) -> None:
     if _force_claude_code:
         logger.info("[>>] Force Claude Code enabled, skipping local router for %s", agent_id)
 
-    # Smartest pipeline: Qwen reasoning -> distill -> Claude CLI
+    # Smartest pipeline: Qwen reasoning -> distill -> Cloud API (or CLI in dev mode)
     elif response_mode == "smartest":
-        if check_claude_cli_available():
+        from cohort.local.cloud import check_cloud_available
+        _smartest_available = (
+            check_cloud_available(_cloud_settings)
+            or (_dev_mode and check_claude_cli_available())
+        )
+        if _smartest_available:
             response_content, response_metadata = _invoke_smartest_pipeline(
                 agent_id=agent_id,
                 user_message=message_content,
@@ -1049,7 +1109,8 @@ def _invoke_agent_sync(item: dict) -> None:
                                agent_id)
                 response_mode = "smarter"  # Degrade for fallback below
         else:
-            logger.warning("[!] Claude CLI unavailable, falling back to smarter for %s", agent_id)
+            logger.warning("[!] No cloud API or dev CLI available, falling back to smarter for %s",
+                           agent_id)
             response_mode = "smarter"
 
     # Standard local routing (smart / smarter modes)
@@ -1122,107 +1183,133 @@ def _invoke_agent_sync(item: dict) -> None:
             # Local routing failed -- fall through to Claude CLI
             logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)
 
-    # Fallback to Claude CLI if local routing failed or returned None
+    # Fallback: cloud API (distribution) or CLI subprocess (dev mode)
     if not response_content:
-        logger.info("[>>] Invoking Claude CLI for %s in #%s", agent_id, channel_id)
+        logger.info("[>>] Invoking cloud/CLI fallback for %s in #%s", agent_id, channel_id)
         cli_t0 = time.monotonic()
         mcp_config_path: Path | None = None
 
-        try:
-            # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
-            # when the server is launched from within a Claude Code session.
-            env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
-            # Inject permitted service credentials into agent environment
-            env.update(_load_agent_credentials(agent_id))
-
-            if perms and perms.allowed_tools:
-                # Tool-enabled invocation (follows BOSS code queue worker pattern)
-                cli_cmd = [CLAUDE_CMD, "-p"]
-
-                if perms.permission_mode:
-                    cli_cmd.extend(["--permission-mode", perms.permission_mode])
-
-                cli_cmd.extend(["--allowedTools", ",".join(perms.allowed_tools)])
-                cli_cmd.extend(["--max-turns", str(perms.max_turns)])
-                cli_cmd.extend(["--output-format", "text"])
-
-                # MCP server config (temporary file)
-                if perms.mcp_servers:
-                    mcp_config_path = _write_mcp_config(perms.mcp_servers)
-                    if mcp_config_path:
-                        cli_cmd.extend(["--mcp-config", str(mcp_config_path)])
-
-                cli_cmd.append("-")  # read from stdin
-
-                # Windows: use cmd /c for .cmd files (proven BOSS pattern)
-                if sys.platform == "win32":
-                    cli_cmd = ["cmd", "/c"] + cli_cmd
-
-                logger.info("[>>] Tool-enabled CLI: %s (profile=%s, tools=%s)",
-                            agent_id, perms.profile_name, ",".join(perms.allowed_tools))
-
-                result = subprocess.run(
-                    cli_cmd,
-                    input=full_prompt,
-                    capture_output=True,
-                    text=True,
-                    cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
-                    timeout=RESPONSE_TIMEOUT,
-                    shell=False,
-                    encoding="utf-8",
-                    errors="replace",
-                    env=env,
+        # Try cloud API first (distribution path)
+        from cohort.local.cloud import get_cloud_backend
+        cloud = get_cloud_backend(_cloud_settings)
+        if cloud is not None:
+            try:
+                # Split prompt into system/user for cloud API
+                cr = cloud.complete(
+                    system_prompt="You are a helpful AI assistant.",
+                    user_message=full_prompt,
                 )
-            else:
-                # No tools -- simple CLI path
-                cli_cmd = [CLAUDE_CMD, "-p", "-"]
-                if sys.platform == "win32":
-                    cli_cmd = ["cmd", "/c"] + cli_cmd
+                if cr.text.strip():
+                    response_content = cr.text.strip()
+                    response_metadata = {
+                        "tier": 5,
+                        "model": cr.model,
+                        "confidence": "high",
+                        "elapsed_seconds": cr.elapsed_seconds,
+                        "tokens_in": cr.tokens_in,
+                        "tokens_out": cr.tokens_out,
+                    }
+                    logger.info("[OK] Cloud fallback for %s (%s, %d/%d tok)",
+                                agent_id, cr.model, cr.tokens_in, cr.tokens_out)
+            except Exception:
+                logger.exception("[!] Cloud fallback failed for %s", agent_id)
 
-                result = subprocess.run(
-                    cli_cmd,
-                    input=full_prompt,
-                    capture_output=True,
-                    text=True,
-                    cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
-                    timeout=RESPONSE_TIMEOUT,
-                    shell=False,
-                    encoding="utf-8",
-                    errors="replace",
-                    env=env,
-                )
+        # Dev mode: CLI subprocess fallback (not available in distribution)
+        if not response_content and _dev_mode:
+            try:
+                # Strip CLAUDECODE env vars so Claude CLI doesn't refuse to start
+                # when the server is launched from within a Claude Code session.
+                env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+                # Inject permitted service credentials into agent environment
+                env.update(_load_agent_credentials(agent_id))
 
-            response_content = result.stdout.strip()
-            if result.returncode != 0 and not response_content:
-                response_content = f"[Error] Agent {agent_id} failed: {result.stderr.strip()[:200]}"
-                logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
-            else:
-                cli_elapsed = round(time.monotonic() - cli_t0, 1)
-                # Estimate tokens from char counts (Claude CLI doesn't expose usage)
-                est_in = len(full_prompt) // 4
-                est_out = len(response_content) // 4 if response_content else 0
-                response_metadata = {
-                    "tier": 5,
-                    "model": "claude_code",
-                    "confidence": "high",
-                    "elapsed_seconds": cli_elapsed,
-                    "tokens_in": est_in,
-                    "tokens_out": est_out,
-                }
+                if perms and perms.allowed_tools:
+                    # Tool-enabled invocation (follows BOSS code queue worker pattern)
+                    cli_cmd = [CLAUDE_CMD, "-p"]
 
-        except subprocess.TimeoutExpired:
-            response_content = f"[Timeout] Agent {agent_id} response timed out after {RESPONSE_TIMEOUT}s"
-            logger.error("[X] Claude CLI timeout for %s", agent_id)
-        except Exception as exc:
-            response_content = f"[Error] Agent {agent_id} invocation failed: {exc}"
-            logger.exception("[X] Claude CLI exception for %s", agent_id)
-        finally:
-            # Clean up temporary MCP config file
-            if mcp_config_path and mcp_config_path.exists():
-                try:
-                    mcp_config_path.unlink()
-                except OSError:
-                    pass
+                    if perms.permission_mode:
+                        cli_cmd.extend(["--permission-mode", perms.permission_mode])
+
+                    cli_cmd.extend(["--allowedTools", ",".join(perms.allowed_tools)])
+                    cli_cmd.extend(["--max-turns", str(perms.max_turns)])
+                    cli_cmd.extend(["--output-format", "text"])
+
+                    # MCP server config (temporary file)
+                    if perms.mcp_servers:
+                        mcp_config_path = _write_mcp_config(perms.mcp_servers)
+                        if mcp_config_path:
+                            cli_cmd.extend(["--mcp-config", str(mcp_config_path)])
+
+                    cli_cmd.append("-")  # read from stdin
+
+                    # Windows: use cmd /c for .cmd files (proven BOSS pattern)
+                    if sys.platform == "win32":
+                        cli_cmd = ["cmd", "/c"] + cli_cmd
+
+                    logger.info("[>>] Dev-mode tool-enabled CLI: %s (profile=%s, tools=%s)",
+                                agent_id, perms.profile_name, ",".join(perms.allowed_tools))
+
+                    result = subprocess.run(
+                        cli_cmd,
+                        input=full_prompt,
+                        capture_output=True,
+                        text=True,
+                        cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                        timeout=RESPONSE_TIMEOUT,
+                        shell=False,
+                        encoding="utf-8",
+                        errors="replace",
+                        env=env,
+                    )
+                else:
+                    # No tools -- simple CLI path
+                    cli_cmd = [CLAUDE_CMD, "-p", "-"]
+                    if sys.platform == "win32":
+                        cli_cmd = ["cmd", "/c"] + cli_cmd
+
+                    result = subprocess.run(
+                        cli_cmd,
+                        input=full_prompt,
+                        capture_output=True,
+                        text=True,
+                        cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                        timeout=RESPONSE_TIMEOUT,
+                        shell=False,
+                        encoding="utf-8",
+                        errors="replace",
+                        env=env,
+                    )
+
+                response_content = result.stdout.strip()
+                if result.returncode != 0 and not response_content:
+                    response_content = f"[Error] Agent {agent_id} failed: {result.stderr.strip()[:200]}"
+                    logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
+                else:
+                    cli_elapsed = round(time.monotonic() - cli_t0, 1)
+                    est_in = len(full_prompt) // 4
+                    est_out = len(response_content) // 4 if response_content else 0
+                    response_metadata = {
+                        "tier": 5,
+                        "model": "claude_code",
+                        "confidence": "high",
+                        "elapsed_seconds": cli_elapsed,
+                        "tokens_in": est_in,
+                        "tokens_out": est_out,
+                    }
+
+            except subprocess.TimeoutExpired:
+                response_content = f"[Timeout] Agent {agent_id} response timed out after {RESPONSE_TIMEOUT}s"
+                logger.error("[X] Claude CLI timeout for %s", agent_id)
+            except Exception as exc:
+                response_content = f"[Error] Agent {agent_id} invocation failed: {exc}"
+                logger.exception("[X] Claude CLI exception for %s", agent_id)
+            finally:
+                # Clean up temporary MCP config file
+                if mcp_config_path and mcp_config_path.exists():
+                    try:
+                        mcp_config_path.unlink()
+                    except OSError:
+                        pass
 
     # Stop typing indicator
     _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})

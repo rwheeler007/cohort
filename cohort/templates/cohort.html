@@ -742,6 +742,48 @@
                                 <button type="button" class="btn btn--secondary" id="settings-rerun-setup">Re-run Setup Wizard</button>
                             </div>
 
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Cloud Provider</h3>
+                                <p class="settings-section__desc">Configure a cloud API for the Smartest [S++] response tier. Your key is stored locally and charges go directly to your provider.</p>
+                                <div class="form-group">
+                                    <label for="settings-cloud-provider">Provider</label>
+                                    <select class="form-input" id="settings-cloud-provider">
+                                        <option value="">None (local only)</option>
+                                        <option value="anthropic">Anthropic</option>
+                                        <option value="openai">OpenAI</option>
+                                    </select>
+                                </div>
+                                <div id="settings-cloud-fields" style="display:none">
+                                    <div class="form-group">
+                                        <label for="settings-cloud-api-key">API Key</label>
+                                        <div style="display:flex;gap:0.5rem">
+                                            <input type="password" class="form-input form-input--mono" id="settings-cloud-api-key" placeholder="sk-...">
+                                            <button type="button" class="btn btn--icon" id="toggleCloudKeyVis" title="Show/hide key">[.]</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-cloud-model">Model <span class="text-muted" style="font-weight:normal">(optional override)</span></label>
+                                        <input type="text" class="form-input" id="settings-cloud-model" placeholder="Leave blank for default">
+                                        <span class="form-hint">Anthropic default: claude-sonnet-4-20250514 | OpenAI default: gpt-4o</span>
+                                    </div>
+                                    <div class="form-group" id="settings-cloud-base-url-group" style="display:none">
+                                        <label for="settings-cloud-base-url">Base URL <span class="text-muted" style="font-weight:normal">(OpenAI-compatible endpoints)</span></label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-cloud-base-url" placeholder="https://api.example.com/v1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Development Mode</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-dev-mode">
+                                        <input type="checkbox" id="settings-dev-mode" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <p class="settings-section__desc">Enables Claude CLI subprocess paths for internal testing. Leave off for production use.</p>
+                            </div>
+
                             <div class="form-actions">
                                 <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
                                 <button type="submit" class="btn btn--primary">Save Settings</button>
@@ -1154,11 +1196,10 @@
 
                 <!-- Step 7: Claude Code Connection (Optional) -->
                 <div class="setup-wizard__step" data-step="7" style="display:none">
-                    <h3>Connect Claude Code (Optional)</h3>
+                    <h3>Cloud & Advanced Setup (Optional)</h3>
                     <p class="text-muted">
-                        Claude Code is an AI coding assistant by Anthropic. Connecting it
-                        lets your agents use advanced reasoning and code generation.
-                        You can skip this if you only want local AI.
+                        Add a cloud API provider for the Smartest [S++] response tier,
+                        or skip this to use only free local AI.
                     </p>
                     <div class="setup-wizard__card" id="setup-claude-result">
                         <div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>
@@ -1200,7 +1241,7 @@
                                     How long to wait for agent responses (30-600s)
                                 </span>
                             </div>
-                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                            <div class="form-group" style="margin-bottom:var(--space-3)" id="setup-force-claude-group">
                                 <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
                                     <input type="checkbox" id="setup-force-claude" style="width:auto">
                                     Force all responses through Claude Code
@@ -1208,6 +1249,52 @@
                                 <span class="text-muted" style="font-size:var(--font-size-xs)">
                                     Bypass local Ollama models and route everything through Claude CLI
                                 </span>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
+                                    <input type="checkbox" id="setup-dev-mode" style="width:auto">
+                                    Development Mode
+                                </label>
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    Enables Claude CLI subprocess paths for internal testing. Leave off for production.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Cloud Provider -->
+                        <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                            <h4 style="margin-bottom:var(--space-2)">Cloud Provider</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                Bring your own API key for the Smartest tier. Charges go directly to your provider.
+                            </p>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-cloud-provider" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Provider
+                                </label>
+                                <select class="form-input" id="setup-cloud-provider">
+                                    <option value="">None (local only)</option>
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="openai">OpenAI</option>
+                                </select>
+                            </div>
+                            <div id="setup-cloud-fields" style="display:none">
+                                <div class="form-group" style="margin-bottom:var(--space-3)">
+                                    <label for="setup-cloud-api-key" class="text-muted" style="font-size:var(--font-size-sm)">
+                                        API Key
+                                    </label>
+                                    <input type="password" class="form-input form-input--mono" id="setup-cloud-api-key"
+                                           placeholder="sk-...">
+                                </div>
+                                <div class="form-group" style="margin-bottom:var(--space-3)">
+                                    <label for="setup-cloud-model" class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Model (optional override)
+                                    </label>
+                                    <input type="text" class="form-input" id="setup-cloud-model"
+                                           placeholder="Leave blank for default">
+                                    <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                        Anthropic default: claude-sonnet-4-20250514 | OpenAI default: gpt-4o
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -1223,7 +1310,7 @@
                                 <span class="text-muted"><strong>[S+] Smarter</strong></span>
                                 <span>Local with thinking enabled -- default (free)</span>
                                 <span class="text-muted"><strong>[S++] Smartest</strong></span>
-                                <span>Local reasoning + Claude refinement (requires Claude CLI)</span>
+                                <span>Local reasoning + cloud refinement (requires Cloud API key)</span>
                             </div>
                             <div id="setup-smartest-status" style="margin-top:var(--space-2)"></div>
                         </div>

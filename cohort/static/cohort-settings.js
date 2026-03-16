@@ -56,6 +56,22 @@ function openSettings() {
             const adminToggle = document.getElementById('settings-admin-mode');
             if (adminToggle) adminToggle.checked = state.adminMode;
 
+            // Cloud provider fields
+            const cloudProvider = document.getElementById('settings-cloud-provider');
+            const cloudApiKey = document.getElementById('settings-cloud-api-key');
+            const cloudModel = document.getElementById('settings-cloud-model');
+            const cloudBaseUrl = document.getElementById('settings-cloud-base-url');
+            if (cloudProvider) cloudProvider.value = data.cloud_provider || '';
+            if (cloudApiKey) cloudApiKey.value = data.cloud_api_key_masked || '';
+            if (cloudModel) cloudModel.value = data.cloud_model || '';
+            if (cloudBaseUrl) cloudBaseUrl.value = data.cloud_base_url || '';
+            toggleCloudFields(data.cloud_provider || '');
+
+            // Dev mode toggle
+            const devToggle = document.getElementById('settings-dev-mode');
+            if (devToggle) devToggle.checked = !!data.dev_mode;
+            toggleDevModeVisibility(!!data.dev_mode);
+
             // Show connection status
             updateSettingsConnectionStatus(data.claude_code_connected ? 'ok' : 'unknown',
                 data.claude_code_connected ? 'Claude CLI found' : 'Not tested');
@@ -139,6 +155,10 @@ function saveSettings(e) {
     const forceClaudeCode = document.getElementById('settings-force-claude-code');
     const globalAgentsToggle = document.getElementById('settings-global-agents');
     const wantsGlobalAgents = globalAgentsToggle ? globalAgentsToggle.checked : false;
+    const devModeToggle = document.getElementById('settings-dev-mode');
+    const cloudProviderEl = document.getElementById('settings-cloud-provider');
+    const cloudModelEl = document.getElementById('settings-cloud-model');
+    const cloudBaseUrlEl = document.getElementById('settings-cloud-base-url');
     const payload = {
         user_display_name: dom.settingsUserName ? dom.settingsUserName.value.trim() : '',
         user_display_role: dom.settingsUserRole ? dom.settingsUserRole.value.trim() : '',
@@ -151,12 +171,23 @@ function saveSettings(e) {
         admin_mode: adminToggle ? adminToggle.checked : false,
         force_to_claude_code: forceClaudeCode ? forceClaudeCode.checked : false,
         global_agents_linked: wantsGlobalAgents,
+        dev_mode: devModeToggle ? devModeToggle.checked : false,
+        cloud_provider: cloudProviderEl ? cloudProviderEl.value : '',
+        cloud_model: cloudModelEl ? cloudModelEl.value.trim() : '',
+        cloud_base_url: cloudBaseUrlEl ? cloudBaseUrlEl.value.trim() : '',
     };
 
     // Only include API key if user typed a real value (not the masked placeholder)
     const apiKeyVal = dom.settingsApiKey ? dom.settingsApiKey.value.trim() : '';
     if (apiKeyVal && !apiKeyVal.startsWith('sk-...')) {
         payload.api_key = apiKeyVal;
+    }
+
+    // Only include cloud API key if changed (not masked)
+    const cloudKeyEl = document.getElementById('settings-cloud-api-key');
+    const cloudKeyVal = cloudKeyEl ? cloudKeyEl.value.trim() : '';
+    if (cloudKeyVal && !cloudKeyVal.startsWith('sk-...')) {
+        payload.cloud_api_key = cloudKeyVal;
     }
 
     fetch('/api/settings', {
@@ -219,3 +250,52 @@ function toggleApiKeyVisibility() {
         dom.toggleApiKeyVis.textContent = isPassword ? '[.]' : '[*]';
     }
 }
+
+function toggleCloudFields(provider) {
+    const fieldsContainer = document.getElementById('settings-cloud-fields');
+    const baseUrlGroup = document.getElementById('settings-cloud-base-url-group');
+    if (fieldsContainer) fieldsContainer.style.display = provider ? '' : 'none';
+    if (baseUrlGroup) baseUrlGroup.style.display = provider === 'openai' ? '' : 'none';
+}
+
+function toggleCloudKeyVisibility() {
+    const keyInput = document.getElementById('settings-cloud-api-key');
+    const btn = document.getElementById('toggleCloudKeyVis');
+    if (!keyInput) return;
+    const isPassword = keyInput.type === 'password';
+    keyInput.type = isPassword ? 'text' : 'password';
+    if (btn) btn.textContent = isPassword ? '[.]' : '[*]';
+}
+
+function toggleDevModeVisibility(enabled) {
+    // Show/hide "Force Claude Code" toggle -- only relevant in dev mode
+    const forceClaudeGroup = document.getElementById('settings-force-claude-code');
+    if (forceClaudeGroup) {
+        const section = forceClaudeGroup.closest('.settings-section__body, .form-group');
+        // Walk up to the toggle-label parent to hide the whole row
+        const row = forceClaudeGroup.closest('label.toggle-label');
+        if (row && row.parentElement) {
+            row.parentElement.style.display = enabled ? '' : 'none';
+        }
+    }
+}
+
+// Wire up event listeners after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const cloudProviderSelect = document.getElementById('settings-cloud-provider');
+    if (cloudProviderSelect) {
+        cloudProviderSelect.addEventListener('change', function() {
+            toggleCloudFields(this.value);
+        });
+    }
+    const devModeToggle = document.getElementById('settings-dev-mode');
+    if (devModeToggle) {
+        devModeToggle.addEventListener('change', function() {
+            toggleDevModeVisibility(this.checked);
+        });
+    }
+    const cloudKeyToggle = document.getElementById('toggleCloudKeyVis');
+    if (cloudKeyToggle) {
+        cloudKeyToggle.addEventListener('click', toggleCloudKeyVisibility);
+    }
+});

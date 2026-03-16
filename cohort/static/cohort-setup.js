@@ -678,19 +678,50 @@ const setupWizard = {
             if (denyInput && dp.deny_paths) denyInput.value = (dp.deny_paths || []).join(', ');
             if (maxTurnsInput && dp.max_turns) maxTurnsInput.value = dp.max_turns;
 
+            // Cloud provider fields
+            const cloudProviderEl = $('#setup-cloud-provider');
+            const cloudApiKeyEl = $('#setup-cloud-api-key');
+            const cloudModelEl = $('#setup-cloud-model');
+            const cloudFieldsEl = $('#setup-cloud-fields');
+            if (cloudProviderEl && settings.cloud_provider) cloudProviderEl.value = settings.cloud_provider;
+            if (cloudApiKeyEl && settings.cloud_api_key_masked) cloudApiKeyEl.value = settings.cloud_api_key_masked;
+            if (cloudModelEl && settings.cloud_model) cloudModelEl.value = settings.cloud_model;
+            // Show/hide cloud fields based on provider
+            if (cloudFieldsEl) cloudFieldsEl.style.display = settings.cloud_provider ? '' : 'none';
+
+            // Dev mode
+            const devModeEl = $('#setup-dev-mode');
+            if (devModeEl) devModeEl.checked = settings.dev_mode || false;
+            // Show/hide force-claude based on dev mode
+            const forceClaudeGroup = $('#setup-force-claude-group');
+            if (forceClaudeGroup) forceClaudeGroup.style.display = settings.dev_mode ? '' : 'none';
+
+            // Wire up cloud provider toggle
+            if (cloudProviderEl) {
+                cloudProviderEl.addEventListener('change', function() {
+                    if (cloudFieldsEl) cloudFieldsEl.style.display = this.value ? '' : 'none';
+                });
+            }
+            // Wire up dev mode toggle
+            if (devModeEl) {
+                devModeEl.addEventListener('change', function() {
+                    if (forceClaudeGroup) forceClaudeGroup.style.display = this.checked ? '' : 'none';
+                });
+            }
+
             // Smartest mode status
             const smartestEl = $('#setup-smartest-status');
             if (smartestEl) {
-                if (settings.smartest_available) {
+                if (settings.smartest_available && settings.cloud_provider) {
                     smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
-                        + '[OK] Smartest mode available -- Claude CLI detected and working</div>';
-                } else if (data.found) {
-                    smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">'
-                        + '[!] Claude CLI found but Smartest mode could not be verified. '
-                        + 'Save settings and test the connection to enable it.</div>';
+                        + '[OK] Smartest mode available -- Cloud API configured</div>';
+                } else if (settings.smartest_available) {
+                    smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
+                        + '[OK] Smartest mode available -- Dev mode CLI</div>';
                 } else {
                     smartestEl.innerHTML = '<div class="text-muted" style="font-size:var(--font-size-sm)">'
-                        + 'Smartest mode requires Claude CLI. Install it to unlock [S++] responses.</div>';
+                        + 'Smartest mode requires a Cloud API key (or Dev Mode with Claude CLI). '
+                        + 'Configure a provider above to unlock [S++] responses.</div>';
                 }
             }
 
@@ -740,18 +771,25 @@ const setupWizard = {
         const maxTurnsVal = parseInt(($('#setup-perm-max-turns') || {}).value) || 15;
         const denyRaw = ($('#setup-perm-deny') || {}).value || '';
         const denyPaths = denyRaw.split(',').map(s => s.trim()).filter(Boolean);
-        return {
+        const payload = {
             claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
             agents_root: ($('#setup-agents-root') || {}).value || '',
             execution_backend: ($('#setup-exec-backend') || {}).value || 'cli',
             response_timeout: Math.max(30, Math.min(600, timeoutVal)),
             force_to_claude_code: ($('#setup-force-claude') || {}).checked || false,
+            dev_mode: ($('#setup-dev-mode') || {}).checked || false,
+            cloud_provider: ($('#setup-cloud-provider') || {}).value || '',
+            cloud_model: (($('#setup-cloud-model') || {}).value || '').trim(),
             default_permissions: {
                 profile: ($('#setup-perm-profile') || {}).value || 'developer',
                 deny_paths: denyPaths,
                 max_turns: Math.max(1, Math.min(50, maxTurnsVal)),
             },
         };
+        // Only include cloud API key if a value was entered
+        const cloudKey = (($('#setup-cloud-api-key') || {}).value || '').trim();
+        if (cloudKey) payload.cloud_api_key = cloudKey;
+        return payload;
     },
 
     async _saveClaudeFieldsQuiet() {
