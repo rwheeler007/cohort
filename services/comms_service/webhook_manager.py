@@ -1,21 +1,27 @@
 """
-Webhook Manager for BOSS Communications Service.
+Webhook Manager for Cohort Communications Service.
 
-Handles notification routing to SMACK chat (via SocketIO) and custom
-webhook endpoints (via HTTP POST). All notifications are logged to
-daily JSON files for auditing.
+Handles notification routing to custom webhook endpoints (via HTTP POST)
+and optionally to SMACK chat (via SocketIO) when enabled. All
+notifications are logged to daily JSON files for auditing.
 
 IMPORTANT: No Unicode emojis - Windows cp1252 encoding only.
 """
 
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import httpx
-import socketio
+
+try:
+    import socketio
+    _SOCKETIO_AVAILABLE = True
+except ImportError:
+    _SOCKETIO_AVAILABLE = False
 
 from models import (
     NotificationPriority,
@@ -28,15 +34,16 @@ logger = logging.getLogger("comms_service.webhook_manager")
 
 
 class WebhookManager:
-    """Routes notifications to SMACK channels and custom webhooks.
+    """Routes notifications to custom webhooks and optionally SMACK.
 
-    Includes a persistent queue for SMACK notifications that could not be
-    delivered because SMACK was offline.  Queued messages are automatically
-    flushed when a SMACK connection is (re-)established.
+    SMACK integration is disabled by default. Set the environment variable
+    ``USE_SMACK=1`` to enable SocketIO-based SMACK notification routing.
+    When disabled, SMACK channel targets are silently skipped (logged only).
     """
 
-    SMACK_URL = "http://localhost:5000"
+    SMACK_URL = os.getenv("SMACK_URL", "http://localhost:5000")
     MAX_QUEUE_SIZE = 200  # Cap to prevent unbounded growth
+    USE_SMACK = os.getenv("USE_SMACK", "0") == "1" and _SOCKETIO_AVAILABLE
 
     def __init__(self, config_path: Path, log_path: Path) -> None:
         self.config_path = Path(config_path)
@@ -120,10 +127,13 @@ class WebhookManager:
     def send_smack(self, channel: str, title: str, message: str, priority: str) -> bool:
         """Send a persistent message to a SMACK channel via send_message event.
 
-        Connects lazily on first use.  If SMACK is unreachable the message
-        is persisted to a queue file and will be replayed automatically the
-        next time a SMACK connection succeeds.
+        Disabled by default. Set USE_SMACK=1 environment variable to enable.
+        When disabled, messages are logged but not delivered.
         """
+        if not self.USE_SMACK:
+            logger.debug("[*] SMACK disabled -- skipping notification to #%s", channel)
+            return False
+
         # Format as markdown message with title header
         content = f"**{title}**\n\n{message}"
 
@@ -151,6 +161,8 @@ class WebhookManager:
 
     def _ensure_smack_connection(self) -> None:
         """Connect to the SMACK SocketIO server if not already connected."""
+        if not self.USE_SMACK:
+            return
         if self._sio_connected:
             return
 

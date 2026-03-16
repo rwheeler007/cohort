@@ -28,8 +28,8 @@ import httpx
 from dotenv import load_dotenv
 
 # Paths
-BOSS_ROOT = Path(__file__).parent.parent.parent
-CONFIG_PATH = BOSS_ROOT / "data" / "comms_service" / "config"
+COHORT_ROOT = Path(__file__).parent.parent.parent
+CONFIG_PATH = COHORT_ROOT / "data" / "comms_service" / "config"
 TOKENS_PATH = CONFIG_PATH / "social_tokens.json"
 
 # OAuth redirect URI (local server)

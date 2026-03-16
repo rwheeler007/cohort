@@ -3146,10 +3146,14 @@ async def health_monitor_start(request: Request) -> JSONResponse:
     import asyncio
     from cohort.api import start_service
     service_key = request.path_params["service_key"]
-    loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, start_service, service_key)
-    status_code = 200 if result.get("success") else 400
-    return JSONResponse(result, status_code=status_code)
+    try:
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, start_service, service_key)
+        status_code = 200 if result.get("success") else 400
+        return JSONResponse(result, status_code=status_code)
+    except Exception as e:
+        logger.warning("[!] start_service(%s) failed: %s", service_key, e)
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
 async def health_monitor_restart(request: Request) -> JSONResponse:
@@ -3157,10 +3161,14 @@ async def health_monitor_restart(request: Request) -> JSONResponse:
     import asyncio
     from cohort.api import restart_service
     service_key = request.path_params["service_key"]
-    loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, restart_service, service_key)
-    status_code = 200 if result.get("success") else 400
-    return JSONResponse(result, status_code=status_code)
+    try:
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, restart_service, service_key)
+        status_code = 200 if result.get("success") else 400
+        return JSONResponse(result, status_code=status_code)
+    except Exception as e:
+        logger.warning("[!] restart_service(%s) failed: %s", service_key, e)
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
 async def get_scheduler_recent_runs(request: Request) -> JSONResponse:

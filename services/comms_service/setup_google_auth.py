@@ -21,9 +21,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 # Paths
-BOSS_ROOT = Path(__file__).parent.parent.parent
-CREDENTIALS_PATH = BOSS_ROOT / "data" / "comms_service" / "config" / "google_credentials.json"
-TOKEN_PATH = BOSS_ROOT / "data" / "comms_service" / "config" / "google_tokens.json"
+COHORT_ROOT = Path(__file__).parent.parent.parent
+CREDENTIALS_PATH = COHORT_ROOT / "data" / "comms_service" / "config" / "google_credentials.json"
+TOKEN_PATH = COHORT_ROOT / "data" / "comms_service" / "config" / "google_tokens.json"
 
 # Scopes - read/write calendar events
 SCOPES = ["https://www.googleapis.com/auth/calendar"]

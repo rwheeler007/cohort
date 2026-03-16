@@ -1,5 +1,5 @@
 """
-BOSS Communications Service - FastAPI Application.
+Cohort Communications Service - FastAPI Application.
 
 Main entry point for the communications service running on port 8001.
 Provides email draft management, calendar event drafting, notification
@@ -12,7 +12,6 @@ Use [OK], [!], [X], [*], [>>] for status indicators.
 import logging
 import os
 import sys
-import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -32,12 +31,7 @@ COMMS_DIR = Path(__file__).resolve().parent
 if str(COMMS_DIR) not in sys.path:
     sys.path.insert(0, str(COMMS_DIR))
 
-BOSS_ROOT = COMMS_DIR.parent.parent  # d:\Projects\...\BOSS
-
-# Add agents/BOSS_agent to path for scheduler imports
-_AGENTS_DIR = str(BOSS_ROOT / "agents" / "BOSS_agent")
-if _AGENTS_DIR not in sys.path:
-    sys.path.insert(0, _AGENTS_DIR)
+COHORT_ROOT = COMMS_DIR.parent.parent  # G:\cohort
 
 # ---------------------------------------------------------------------------
 # Local module imports (all live in the same directory)
@@ -92,9 +86,9 @@ logger = logging.getLogger("comms_service")
 # Data paths
 # ---------------------------------------------------------------------------
 
-EMAIL_DRAFTS_PATH = BOSS_ROOT / "data" / "comms_service" / "email_drafts"
-WEBHOOK_CONFIG_PATH = BOSS_ROOT / "data" / "comms_service" / "config" / "webhook_config.json"
-WEBHOOK_LOG_PATH = BOSS_ROOT / "data" / "comms_service" / "webhook_logs"
+EMAIL_DRAFTS_PATH = COHORT_ROOT / "data" / "comms_service" / "email_drafts"
+WEBHOOK_CONFIG_PATH = COHORT_ROOT / "data" / "comms_service" / "config" / "webhook_config.json"
+WEBHOOK_LOG_PATH = COHORT_ROOT / "data" / "comms_service" / "webhook_logs"
 
 # ---------------------------------------------------------------------------
 # Service instances (initialised during lifespan startup)
@@ -110,11 +104,6 @@ email_router: EmailRouter
 
 STARTUP_TIME: float = 0.0
 
-# Scheduler daemon state (started in lifespan)
-_intel_scheduler = None
-_intel_thread: Optional[threading.Thread] = None
-_content_monitor = None
-_content_monitor_thread: Optional[threading.Thread] = None
 
 # ---------------------------------------------------------------------------
 # Lifespan (replaces deprecated on_event("startup") / on_event("shutdown"))
@@ -131,66 +120,22 @@ async def lifespan(application: FastAPI):
     STARTUP_TIME = time.time()
 
     draft_manager = EmailDraftManager(base_path=EMAIL_DRAFTS_PATH)
-    calendar_manager = CalendarManager(base_path=BOSS_ROOT)
-    social_manager = SocialMediaManager(base_path=BOSS_ROOT)
+    calendar_manager = CalendarManager(base_path=COHORT_ROOT)
+    social_manager = SocialMediaManager(base_path=COHORT_ROOT)
     rate_limiter = RateLimiter()
     webhook_manager = WebhookManager(
         config_path=WEBHOOK_CONFIG_PATH,
         log_path=WEBHOOK_LOG_PATH,
     )
-    email_receiver = EmailReceiver(data_dir=str(BOSS_ROOT / "data" / "comms_service"))
-    email_router = EmailRouter(config_path=str(BOSS_ROOT / "config" / "email_routing_rules.yaml"))
+    email_receiver = EmailReceiver(data_dir=str(COHORT_ROOT / "data" / "comms_service"))
+    email_router = EmailRouter(config_path=str(COHORT_ROOT / "config" / "email_routing_rules.yaml"))
 
-    # ------------------------------------------------------------------
-    # Start scheduler daemon threads
-    # ------------------------------------------------------------------
-    global _intel_scheduler, _intel_thread, _content_monitor, _content_monitor_thread
-
-    try:
-        from intel_scheduler import IntelScheduler
-        _intel_scheduler = IntelScheduler()
-        _intel_thread = threading.Thread(
-            target=_intel_scheduler.run_daemon,
-            daemon=True,
-            name="intel-scheduler-daemon",
-        )
-        _intel_thread.start()
-        logger.info("[OK] Intel Scheduler daemon started")
-    except Exception as exc:
-        logger.warning("[!] Intel Scheduler failed to start: %s", exc)
-
-    try:
-        from content_monitor_scheduler import ContentMonitorScheduler
-        _content_monitor = ContentMonitorScheduler()
-        _content_monitor_thread = threading.Thread(
-            target=_content_monitor.run_daemon,
-            daemon=True,
-            name="content-monitor-daemon",
-        )
-        _content_monitor_thread.start()
-        logger.info("[OK] Content Monitor daemon started")
-    except Exception as exc:
-        logger.warning("[!] Content Monitor failed to start: %s", exc)
-
-    logger.info("[OK] BOSS Communications Service started on port 8001")
+    logger.info("[OK] Cohort Communications Service started on port 8001")
 
     yield  # --- server is running ---
 
-    # ------------------------------------------------------------------
-    # Shutdown scheduler daemons
-    # ------------------------------------------------------------------
-    for name, inst, thread in [
-        ("Intel Scheduler", _intel_scheduler, _intel_thread),
-        ("Content Monitor", _content_monitor, _content_monitor_thread),
-    ]:
-        if inst and hasattr(inst, "_shutdown_event"):
-            inst._shutdown_event.set()
-        if thread and thread.is_alive():
-            thread.join(timeout=5)
-            logger.info("[OK] %s daemon stopped", name)
-
     webhook_manager.disconnect_smack()
-    logger.info("[OK] BOSS Communications Service shut down")
+    logger.info("[OK] Cohort Communications Service shut down")
 
 
 # ---------------------------------------------------------------------------
@@ -198,14 +143,14 @@ async def lifespan(application: FastAPI):
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
-    title="BOSS Communications Service",
+    title="Cohort Communications Service",
     description="Email draft management, calendar integration, and notification routing.",
     version="1.0.0",
     lifespan=lifespan,
 )
 
 # CORS middleware - configurable origins (security hardening)
-ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5000').split(',')
+ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5100').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -240,22 +185,6 @@ async def health_check() -> HealthResponse:
 
     queue_status = webhook_manager.get_queue_status()
 
-    # Scheduler daemon status
-    scheduler_status = {}
-    for name, inst, thread in [
-        ("intel_scheduler", _intel_scheduler, _intel_thread),
-        ("content_monitor", _content_monitor, _content_monitor_thread),
-    ]:
-        if inst is None:
-            scheduler_status[name] = {"status": "not_loaded"}
-        else:
-            last_runs = inst.state.get("last_runs", {})
-            scheduler_status[name] = {
-                "status": "running" if thread and thread.is_alive() else "stopped",
-                "paused": inst.state.get("paused", False),
-                "last_runs": last_runs,
-            }
-
     return HealthResponse(
         status="ok",
         service="comms_service",
@@ -265,7 +194,7 @@ async def health_check() -> HealthResponse:
         pending_events=pending_events,
         pending_posts=pending_posts,
         smack_queue=queue_status["queued_count"],
-        schedulers=scheduler_status,
+        schedulers={},
     )
 
 
@@ -783,7 +712,7 @@ async def receive_email_webhook(webhook_data: Dict):
                 message=f"From: {email.from_address}\nSubject: {email.subject}\nPriority: {routing_decision.priority.value}\n\nReasoning: {routing_decision.reasoning}",
                 priority="warning" if routing_decision.priority.value in ["high", "urgent"] else "info",
                 agent_id="email_receiver",
-                channels=[f"smack:general"]
+                channels=["webhook:default"]
             )
 
         return {
@@ -861,7 +790,7 @@ async def reroute_email(email_id: str, agent_id: str):
             message=f"Email {email_id} manually rerouted\nFrom: {email.from_address}\nSubject: {email.subject}",
             priority="info",
             agent_id="email_receiver",
-            channels=["smack:general"]
+            channels=["webhook:default"]
         )
         return {"detail": f"Email rerouted to {agent_id}"}
     else:
@@ -1052,7 +981,7 @@ if __name__ == "__main__":
     import uvicorn
 
     load_dotenv()
-    logger.info("[>>] Starting BOSS Communications Service...")
+    logger.info("[>>] Starting Cohort Communications Service...")
     uvicorn.run(
         "service:app",
         host="0.0.0.0",

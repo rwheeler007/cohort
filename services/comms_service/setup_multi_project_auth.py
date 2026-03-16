@@ -27,14 +27,14 @@ sys.path.insert(0, str(COMMS_DIR))
 
 from project_settings import ProjectSettingsManager
 
-BOSS_ROOT = COMMS_DIR.parent.parent
+COHORT_ROOT = COMMS_DIR.parent.parent
 
 
 def setup_calendar(project_id: str):
     """Setup Google Calendar OAuth for a project."""
     print(f"[>>] Setting up Google Calendar for project: {project_id}")
 
-    project_settings = ProjectSettingsManager(BOSS_ROOT)
+    project_settings = ProjectSettingsManager(COHORT_ROOT)
     project = project_settings.get_project(project_id)
 
     if not project:
@@ -101,7 +101,7 @@ def setup_social(project_id: str, platform: str):
     """Setup social media OAuth for a project and platform."""
     print(f"[>>] Setting up {platform} for project: {project_id}")
 
-    project_settings = ProjectSettingsManager(BOSS_ROOT)
+    project_settings = ProjectSettingsManager(COHORT_ROOT)
     project = project_settings.get_project(project_id)
 
     if not project:
@@ -143,7 +143,7 @@ def setup_social(project_id: str, platform: str):
 
 def list_projects():
     """List all projects and their configuration status."""
-    project_settings = ProjectSettingsManager(BOSS_ROOT)
+    project_settings = ProjectSettingsManager(COHORT_ROOT)
     projects = project_settings.list_projects()
 
     print("\n[*] Configured Projects:")
