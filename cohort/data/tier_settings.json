@@ -1,0 +1,14 @@
+{
+  "smart": {
+    "primary": "local",
+    "fallback": null
+  },
+  "smarter": {
+    "primary": "local",
+    "fallback": "smart"
+  },
+  "smartest": {
+    "primary": "qwen3.5:35b-a3b",
+    "fallback": "cloud_api"
+  }
+}

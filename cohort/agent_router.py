@@ -812,7 +812,8 @@ def _invoke_smartest_pipeline(
         logger.exception("[X] Smartest Phase 2 exception for %s", agent_id)
         distilled = qwen_draft[:2000]
 
-    # Phase 3: Cloud API (distribution) or CLI subprocess (dev mode)
+    # Phase 3: Local 35B -> Cloud API -> CLI subprocess (dev mode)
+    # Configurable via tier_settings.json: primary + fallback
     try:
         from cohort.api import SMARTEST_CLAUDE_PROMPT
 
@@ -860,19 +861,53 @@ def _invoke_smartest_pipeline(
         actual_tokens_out = 0
         phase3_model = "cloud"
 
-        # Try cloud API first (distribution path)
-        from cohort.local.cloud import get_cloud_backend
-        cloud = get_cloud_backend(_cloud_settings)
-        if cloud is not None:
+        # Read tier settings to determine Phase 3 model order
+        from cohort.local.config import get_smartest_model, get_smartest_fallback
+        smartest_primary = get_smartest_model()
+        smartest_fallback = get_smartest_fallback()
+
+        # Try local 35B model first (if configured as primary)
+        if smartest_primary not in ("cloud_api", "local") and not response_text:
             try:
-                cr = cloud.complete(system_prompt, phase3_user_message)
-                response_text = cr.text.strip()
-                actual_tokens_in = cr.tokens_in
-                actual_tokens_out = cr.tokens_out
-                phase3_model = cr.model
-                logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
+                from cohort.api import LocalRouter
+                _p3_router = LocalRouter()
+                if _p3_router._ensure_client():
+                    _p3_prompt = f"{system_prompt}\n\n{phase3_user_message}"
+                    _p3_result = _p3_router._client.generate(
+                        model=smartest_primary,
+                        prompt=_p3_prompt,
+                        temperature=0.3,
+                        think=True,
+                        keep_alive="0",
+                        options={"num_predict": 8192},
+                    )
+                    if _p3_result is not None and _p3_result.text.strip():
+                        response_text = _p3_result.text.strip()
+                        actual_tokens_in = _p3_result.tokens_in
+                        actual_tokens_out = _p3_result.tokens_out
+                        phase3_model = smartest_primary
+                        logger.info("[OK] Smartest Phase 3 (local/%s): %s", smartest_primary, agent_id)
             except Exception:
-                logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
+                logger.exception("[!] Smartest Phase 3 local %s failed for %s", smartest_primary, agent_id)
+
+        # Try cloud API (if configured as primary or fallback, and not yet resolved)
+        _try_cloud = (
+            not response_text
+            and (smartest_primary == "cloud_api" or smartest_fallback == "cloud_api")
+        )
+        if _try_cloud:
+            from cohort.local.cloud import get_cloud_backend
+            cloud = get_cloud_backend(_cloud_settings)
+            if cloud is not None:
+                try:
+                    cr = cloud.complete(system_prompt, phase3_user_message)
+                    response_text = cr.text.strip()
+                    actual_tokens_in = cr.tokens_in
+                    actual_tokens_out = cr.tokens_out
+                    phase3_model = cr.model
+                    logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
+                except Exception:
+                    logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
         # Dev mode fallback: CLI subprocess (not available in distribution)
         if not response_text and _dev_mode and check_claude_cli_available():

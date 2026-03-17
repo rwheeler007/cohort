@@ -2,12 +2,21 @@
 
 Hardcoded VRAM-tier model mapping, task-specific temperatures,
 and response mode presets (smart/smarter/smartest).
+
+Model tier settings are user-configurable via tier_settings.json.
+Each tier (smart/smarter/smartest) has a primary and fallback model.
 Zero external dependencies -- pure Python data structures.
 """
 
 from __future__ import annotations
 
+import json
+import logging
+import os
+from pathlib import Path
 from typing import Literal, TypedDict
+
+logger = logging.getLogger(__name__)
 
 
 class ModelMapping(TypedDict):
@@ -196,6 +205,88 @@ ROUNDTABLE_MODEL_PREFERENCES: list[str] = [
 # is shorter than MIN_CONTENT_CHARS, the model spent all tokens thinking.
 THINKING_DRAIN_TOKEN_THRESHOLD = 200
 MIN_CONTENT_CHARS = 20
+
+
+# =====================================================================
+# Configurable Model Tier Settings
+# =====================================================================
+# Each tier can be independently configured with a primary model and
+# fallback. "cloud_api" as a model name routes to the user's cloud
+# API key (Anthropic/OpenAI). Settings persist to tier_settings.json.
+
+TIER_SETTINGS_PATH = Path(__file__).parent.parent / "data" / "tier_settings.json"
+
+DEFAULT_TIER_SETTINGS: dict[str, dict[str, str | None]] = {
+    "smart": {
+        "primary": "local",       # Uses VRAM-detected model, no thinking
+        "fallback": None,
+    },
+    "smarter": {
+        "primary": "local",       # Uses VRAM-detected model, thinking on
+        "fallback": "smart",      # Degrade to smart on failure
+    },
+    "smartest": {
+        "primary": "qwen3.5:35b-a3b",  # Local 35B MoE escalation model
+        "fallback": "cloud_api",        # Cloud API if 35B unavailable
+    },
+}
+
+
+def get_tier_settings() -> dict[str, dict[str, str | None]]:
+    """Load tier settings from disk, falling back to defaults.
+
+    Returns:
+        Dict with keys "smart", "smarter", "smartest", each containing
+        "primary" and "fallback" model identifiers.
+    """
+    settings = dict(DEFAULT_TIER_SETTINGS)
+    try:
+        if TIER_SETTINGS_PATH.is_file():
+            with open(TIER_SETTINGS_PATH) as f:
+                user_settings = json.load(f)
+            # Merge: user settings override defaults per-tier
+            for tier in ("smart", "smarter", "smartest"):
+                if tier in user_settings:
+                    settings[tier] = {**settings[tier], **user_settings[tier]}
+    except Exception as e:
+        logger.warning("Failed to load tier settings: %s (using defaults)", e)
+    return settings
+
+
+def save_tier_settings(settings: dict[str, dict[str, str | None]]) -> bool:
+    """Save tier settings to disk.
+
+    Returns:
+        True if saved successfully.
+    """
+    try:
+        TIER_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(TIER_SETTINGS_PATH, "w") as f:
+            json.dump(settings, f, indent=2)
+        return True
+    except Exception as e:
+        logger.warning("Failed to save tier settings: %s", e)
+        return False
+
+
+def get_smartest_model() -> str:
+    """Get the configured primary model for the Smartest tier.
+
+    Returns:
+        Model name (e.g., "qwen3.5:35b-a3b"), "cloud_api", or "local".
+    """
+    settings = get_tier_settings()
+    return settings.get("smartest", {}).get("primary", "qwen3.5:35b-a3b")
+
+
+def get_smartest_fallback() -> str | None:
+    """Get the configured fallback for the Smartest tier.
+
+    Returns:
+        "cloud_api", "smarter", model name, or None.
+    """
+    settings = get_tier_settings()
+    return settings.get("smartest", {}).get("fallback", "cloud_api")
 
 
 def get_model_for_vram(vram_mb: int) -> str:
