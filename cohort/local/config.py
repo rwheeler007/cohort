@@ -216,30 +216,93 @@ MIN_CONTENT_CHARS = 20
 
 TIER_SETTINGS_PATH = Path(__file__).parent.parent / "data" / "tier_settings.json"
 
-DEFAULT_TIER_SETTINGS: dict[str, dict[str, str | None]] = {
-    "smart": {
-        "primary": "local",       # Uses VRAM-detected model, no thinking
-        "fallback": None,
+# VRAM-aware default tier models.
+# Tiers slide to smaller models based on available GPU memory.
+# The "smartest" tier always uses the next model up from the "smarter" tier
+# when possible (e.g., 9b for smartest when 4b is the default model).
+#
+# Users can override any tier via tier_settings.json or the settings UI.
+
+VRAM_TIER_DEFAULTS: list[dict[str, Any]] = [
+    {   # <4GB
+        "vram_range": (0, 4096),
+        "smart": "qwen3.5:2b",
+        "smarter": "qwen3.5:2b",
+        "smartest": "qwen3.5:2b",
     },
-    "smarter": {
-        "primary": "local",       # Uses VRAM-detected model, thinking on
-        "fallback": "smart",      # Degrade to smart on failure
+    {   # 4-6GB
+        "vram_range": (4096, 6144),
+        "smart": "qwen3.5:2b",
+        "smarter": "qwen3.5:4b",
+        "smartest": "qwen3.5:4b",
     },
-    "smartest": {
-        "primary": "qwen3.5:35b-a3b",  # Local 35B MoE escalation model
-        "fallback": "cloud_api",        # Cloud API if 35B unavailable
+    {   # 6-10GB
+        "vram_range": (6144, 10240),
+        "smart": "qwen3.5:4b",
+        "smarter": "qwen3.5:4b",
+        "smartest": "qwen3.5:9b",
     },
-}
+    {   # 10-12GB (single GPU)
+        "vram_range": (10240, 20000),
+        "smart": "qwen3.5:9b",
+        "smarter": "qwen3.5:9b",
+        "smartest": "qwen3.5:9b",
+    },
+    {   # 20GB+ (dual GPU or large single)
+        "vram_range": (20000, 999999),
+        "smart": "qwen3.5:9b",
+        "smarter": "qwen3.5:9b",
+        "smartest": "qwen3.5:35b-a3b",
+    },
+]
+
+
+def _get_vram_tier_defaults(vram_mb: int | None = None) -> dict[str, dict[str, str | None]]:
+    """Get default tier models based on available VRAM.
+
+    Auto-detects VRAM if not provided. Returns a tier settings dict
+    with appropriate models for the hardware.
+    """
+    if vram_mb is None:
+        try:
+            from cohort.local.detect import detect_hardware
+            hw = detect_hardware()
+            vram_mb = hw.total_vram_mb if hasattr(hw, "total_vram_mb") else hw.vram_mb
+        except Exception:
+            vram_mb = 0
+
+    # Find matching VRAM tier
+    tier_models = VRAM_TIER_DEFAULTS[0]  # fallback to smallest
+    for entry in VRAM_TIER_DEFAULTS:
+        min_v, max_v = entry["vram_range"]
+        if min_v <= vram_mb < max_v:
+            tier_models = entry
+            break
+
+    return {
+        "smart": {
+            "primary": tier_models["smart"],
+            "fallback": None,
+        },
+        "smarter": {
+            "primary": tier_models["smarter"],
+            "fallback": "smart",
+        },
+        "smartest": {
+            "primary": tier_models["smartest"],
+            "fallback": "cloud_api",
+        },
+    }
 
 
 def get_tier_settings() -> dict[str, dict[str, str | None]]:
-    """Load tier settings from disk, falling back to defaults.
+    """Load tier settings from disk, falling back to VRAM-aware defaults.
 
     Returns:
         Dict with keys "smart", "smarter", "smartest", each containing
         "primary" and "fallback" model identifiers.
     """
-    settings = dict(DEFAULT_TIER_SETTINGS)
+    defaults = _get_vram_tier_defaults()
     try:
         if TIER_SETTINGS_PATH.is_file():
             with open(TIER_SETTINGS_PATH) as f:
@@ -247,10 +310,14 @@ def get_tier_settings() -> dict[str, dict[str, str | None]]:
             # Merge: user settings override defaults per-tier
             for tier in ("smart", "smarter", "smartest"):
                 if tier in user_settings:
-                    settings[tier] = {**settings[tier], **user_settings[tier]}
+                    user_tier = user_settings[tier]
+                    # Only override if user explicitly set a value (not empty/null)
+                    for key in ("primary", "fallback"):
+                        if user_tier.get(key):
+                            defaults[tier][key] = user_tier[key]
     except Exception as e:
-        logger.warning("Failed to load tier settings: %s (using defaults)", e)
-    return settings
+        logger.warning("Failed to load tier settings: %s (using VRAM defaults)", e)
+    return defaults
 
 
 def save_tier_settings(settings: dict[str, dict[str, str | None]]) -> bool:
@@ -272,11 +339,14 @@ def save_tier_settings(settings: dict[str, dict[str, str | None]]) -> bool:
 def get_smartest_model() -> str:
     """Get the configured primary model for the Smartest tier.
 
+    VRAM-aware: returns the best model the hardware can run.
+    On 8GB GPU, returns qwen3.5:9b instead of 35b-a3b.
+
     Returns:
-        Model name (e.g., "qwen3.5:35b-a3b"), "cloud_api", or "local".
+        Model name (e.g., "qwen3.5:35b-a3b", "qwen3.5:9b").
     """
     settings = get_tier_settings()
-    return settings.get("smartest", {}).get("primary", "qwen3.5:35b-a3b")
+    return settings.get("smartest", {}).get("primary", "qwen3.5:9b")
 
 
 def get_smartest_fallback() -> str | None:
@@ -287,6 +357,19 @@ def get_smartest_fallback() -> str | None:
     """
     settings = get_tier_settings()
     return settings.get("smartest", {}).get("fallback", "cloud_api")
+
+
+def get_tier_model(tier: str) -> str:
+    """Get the configured primary model for any tier.
+
+    Args:
+        tier: "smart", "smarter", or "smartest"
+
+    Returns:
+        Model name appropriate for the detected hardware.
+    """
+    settings = get_tier_settings()
+    return settings.get(tier, {}).get("primary", DEFAULT_MODEL)
 
 
 def get_model_for_vram(vram_mb: int) -> str:
