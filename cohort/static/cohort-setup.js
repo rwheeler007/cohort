@@ -2,7 +2,7 @@
  * Cohort - Setup Wizard Module
  *
  * 7-step onboarding: hardware detection, Ollama, model download,
- * verification, content pipeline, MCP server, Claude Code connection.
+ * verification, content pipeline, MCP server, cloud connection.
  *
  * Dependencies (from cohort.js globals):
  *   state, dom, $, escapeHtml(), showToast(), switchPanel()
@@ -531,7 +531,7 @@ const setupWizard = {
                 statusHtml += '<div class="setup-wizard__status setup-wizard__status--warn">'
                     + '[!] Missing packages: ' + escapeHtml(data.missing.join(', ')) + '</div>'
                     + '<p class="text-muted" style="margin-top:var(--space-2)">'
-                    + 'Install them with: <code>pip install cohort[claude]</code></p>';
+                    + 'Install them with: <code>pip install cohort[mcp]</code></p>';
             }
 
             // Ollama check
@@ -556,7 +556,7 @@ const setupWizard = {
             // Already configured?
             if (data.mcp_configured) {
                 statusHtml += '<div class="setup-wizard__status setup-wizard__status--ok" style="margin-top:var(--space-2)">'
-                    + '[OK] MCP config already written to .claude/settings.local.json</div>';
+                    + '[OK] MCP config already written</div>';
                 this.markDone(6);
             }
 
@@ -602,7 +602,7 @@ const setupWizard = {
             const data = await resp.json();
             if (data.success) {
                 this.markDone(6);
-                showToast('MCP config written! Claude Code will detect it automatically.', 'success');
+                showToast('MCP config written! Your MCP client will detect it automatically.', 'success');
                 if (writeBtn) {
                     writeBtn.textContent = 'Re-write MCP Config';
                     writeBtn.disabled = false;
@@ -623,11 +623,11 @@ const setupWizard = {
         }
     },
 
-    // -- Step 7: Claude Code Connection --
+    // -- Step 7: Cloud & Advanced Setup --
     async runStep7() {
         const resultEl = $('#setup-claude-result');
         const configEl = $('#setup-claude-config');
-        resultEl.innerHTML = '<div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>';
+        resultEl.innerHTML = '<div class="setup-wizard__loading">[*] Checking cloud setup...</div>';
         resultEl.style.display = '';
         configEl.style.display = 'none';
 
@@ -643,17 +643,16 @@ const setupWizard = {
 
             if (data.found) {
                 resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
-                    + '[OK] Found Claude CLI!</div>'
+                    + '[OK] CLI backend detected</div>'
                     + '<div class="setup-wizard__info-grid">'
                     + '<span class="text-muted">Path:</span><span>' + escapeHtml(data.claude_path) + '</span>'
                     + (data.version ? '<span class="text-muted">Version:</span><span>' + escapeHtml(data.version) + '</span>' : '')
                     + '</div>';
             } else {
-                resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">'
-                    + '[!] Claude CLI not found on your system.</div>'
+                resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--info">'
+                    + '[i] No CLI backend found -- this is fine for most users.</div>'
                     + '<p class="text-muted" style="margin-top:var(--space-2)">'
-                    + 'Install it from <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">'
-                    + 'docs.anthropic.com</a>, or skip this step and configure it later in Settings.</p>';
+                    + 'Configure a Cloud API provider below for Smartest [S++] responses, or skip this step entirely.</p>';
             }
 
             // Pre-populate fields from detection or existing settings
@@ -720,7 +719,7 @@ const setupWizard = {
                         + '[OK] Smartest mode available -- Dev mode CLI</div>';
                 } else {
                     smartestEl.innerHTML = '<div class="text-muted" style="font-size:var(--font-size-sm)">'
-                        + 'Smartest mode requires a Cloud API key (or Dev Mode with Claude CLI). '
+                        + 'Smartest mode requires a Cloud API key (or Dev Mode with a CLI backend). '
                         + 'Configure a provider above to unlock [S++] responses.</div>';
                 }
             }
@@ -728,7 +727,7 @@ const setupWizard = {
             configEl.style.display = '';
         } catch (e) {
             resultEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--err">'
-                + '[X] Could not check for Claude CLI.</div>';
+                + '[X] Could not check cloud setup.</div>';
             configEl.style.display = '';
         }
     },
@@ -814,14 +813,14 @@ const setupWizard = {
             const data = await resp.json();
             if (data.success) {
                 this.markDone(7);
-                showToast('Claude Code settings saved!', 'success');
-                // Make agents available globally across all Claude Code projects
+                showToast('Settings saved!', 'success');
+                // Make agents available globally
                 this._linkGlobalAgents();
             } else {
                 showToast(data.error || 'Failed to save', 'error');
             }
         } catch (e) {
-            showToast('Failed to save Claude settings', 'error');
+            showToast('Failed to save settings', 'error');
         }
     },
 

@@ -55,13 +55,13 @@ If you get an answer back, everything is working. Congratulations -- you're runn
 
 ## Step 5: MCP Server Setup (Optional)
 
-The Cohort MCP (Model Context Protocol) server lets Claude Code use your local AI model as a tool -- draft code, transform data, and more, all running on your machine for free.
+The Cohort MCP (Model Context Protocol) server lets any MCP-compatible client use your local AI model as a tool -- draft code, transform data, and more, all running on your machine for free.
 
-**This step is optional.** Your local setup works fully without MCP. This only matters if you plan to use Claude Code with your local model.
+**This step is optional.** Your local setup works fully without MCP. This only matters if you plan to use an MCP client with your local model.
 
 ### What you need
 
-- **fastmcp** and **mcp** Python packages. Install them with: `pip install cohort[claude]`
+- **fastmcp** and **mcp** Python packages. Install them with: `pip install cohort[mcp]`
 - **Ollama running** with a model pulled (completed in steps 2-4)
 
 ### How it works
@@ -86,11 +86,11 @@ The MCP server config looks like this:
 }
 ```
 
-This goes in your project's `.claude/settings.local.json`. Claude Code reads it automatically on startup.
+This goes in your MCP client's configuration file (e.g., `.claude/settings.local.json` for Claude Code, or equivalent for other clients).
 
 ### Troubleshooting
 
-- **"Missing packages"** -- Run `pip install cohort[claude]` to install fastmcp and mcp.
+- **"Missing packages"** -- Run `pip install cohort[mcp]` to install fastmcp and mcp.
 - **"Ollama not responding"** -- Make sure Ollama is running. Start it with `ollama serve`.
 - **Model not found** -- Pull it with `ollama pull <model_name>`.
 

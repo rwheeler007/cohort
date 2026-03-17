@@ -810,8 +810,8 @@ const TOOL_DESCRIPTIONS = {
     Bash: 'Execute shell commands',
     Glob: 'Find files by pattern',
     Grep: 'Search file contents',
-    WebSearch: 'Search the web (Claude CLI only)',
-    WebFetch: 'Fetch web page content (Claude CLI only)',
+    WebSearch: 'Search the web (cloud API)',
+    WebFetch: 'Fetch web page content (cloud API)',
     InternalWebSearch: 'Search the web locally via DuckDuckGo (free)',
     InternalWebFetch: 'Fetch web pages locally via Playwright (free)',
 };

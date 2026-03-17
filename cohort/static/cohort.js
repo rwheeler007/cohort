@@ -31,7 +31,7 @@ const state = {
 
     // Response mode: per-channel toggle (Smarter is default)
     responseModeChannels: {},  // channel_id -> "smart" | "smarter" | "smartest"
-    smartestAvailable: false,  // Set to true when Claude CLI is detected
+    smartestAvailable: false,  // Set to true when cloud API is configured
 
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
@@ -3737,7 +3737,7 @@ async function renderDocProcessorPanel(tool) {
                 <label class="doc-engine-radio" title="Use local Ollama model">
                     <input type="radio" name="doc-engine" value="ollama" checked onchange="_onDocEngineChange()"> Ollama
                 </label>
-                <label class="doc-engine-radio doc-engine-radio--smart" title="Use Claude Code CLI (cloud)">
+                <label class="doc-engine-radio doc-engine-radio--smart" title="Use cloud API">
                     <input type="radio" name="doc-engine" value="smart" onchange="_onDocEngineChange()"> Smart
                 </label>
             </div>
@@ -4042,7 +4042,7 @@ async function _processDocText(text) {
     const mode = _getDocMode();
     const engine = _getDocEngine();
     const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
-    const engineLabel = engine === 'smart' ? 'Claude' : 'local AI model';
+    const engineLabel = engine === 'smart' ? 'cloud API' : 'local AI model';
 
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
 
@@ -4125,7 +4125,7 @@ async function _processDocUrl(url) {
     const mode = _getDocMode();
     const engine = _getDocEngine();
     const selectedModel = (document.getElementById('doc-model-select') || {}).value || '';
-    const engineLabel = engine === 'smart' ? 'Claude' : 'local AI model';
+    const engineLabel = engine === 'smart' ? 'cloud API' : 'local AI model';
 
     if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
 
@@ -5167,7 +5167,7 @@ function toggleResponseMode() {
     const toasts = {
         smart: 'Smart mode -- fast responses, no thinking',
         smarter: 'Smarter mode -- thinking enabled, full reasoning',
-        smartest: 'Smartest mode -- Qwen reasoning + Claude polish',
+        smartest: 'Smartest mode -- local reasoning + cloud polish',
     };
     showToast(toasts[next], 'info');
 }
@@ -5186,7 +5186,7 @@ function _updateResponseModeBtn() {
     } else if (mode === 'smartest') {
         btn.classList.add('smartest');
         btn.textContent = '[S++]';
-        btn.title = 'Smartest mode (Qwen + Claude) -- click for Smart';
+        btn.title = 'Smartest mode (local + cloud) -- click for Smart';
     } else {
         // smarter (default)
         btn.textContent = '[S+]';

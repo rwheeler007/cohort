@@ -74,7 +74,7 @@ function openSettings() {
 
             // Show connection status
             updateSettingsConnectionStatus(data.claude_code_connected ? 'ok' : 'unknown',
-                data.claude_code_connected ? 'Claude CLI found' : 'Not tested');
+                data.claude_code_connected ? 'Connected' : 'Not tested');
         })
         .catch(() => {
             // Fields stay empty if server can't be reached
@@ -268,7 +268,7 @@ function toggleCloudKeyVisibility() {
 }
 
 function toggleDevModeVisibility(enabled) {
-    // Show/hide "Force Claude Code" toggle -- only relevant in dev mode
+    // Show/hide "Force cloud API" toggle -- only relevant in dev mode
     const forceClaudeGroup = document.getElementById('settings-force-claude-code');
     if (forceClaudeGroup) {
         const section = forceClaudeGroup.closest('.settings-section__body, .form-group');

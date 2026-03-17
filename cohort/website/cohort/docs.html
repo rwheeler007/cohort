@@ -112,8 +112,8 @@ pip install cohort
 <span style="color: #888;"># REST API + Socket.IO dashboard</span>
 pip install cohort[server]
 
-<span style="color: #888;"># MCP bridge for Claude Code</span>
-pip install cohort[claude]
+<span style="color: #888;"># MCP tools (optional)</span>
+pip install cohort[mcp]
 
 <span style="color: #888;"># Agent-as-a-service HTTP API</span>
 pip install cohort[agent-api]
@@ -270,7 +270,7 @@ orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</
             </div>
 
             <!-- MCP -->
-            <p class="responsive-p-body" style="margin-top: 1.5rem;"><strong>MCP Integration</strong> -- Use Cohort from Claude Code via the MCP bridge:</p>
+            <p class="responsive-p-body" style="margin-top: 1.5rem;"><strong>MCP Integration</strong> -- Use Cohort from any MCP-compatible client:</p>
             <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
 <pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Start MCP server</span>
 python -m cohort.mcp.server

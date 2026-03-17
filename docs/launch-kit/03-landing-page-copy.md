@@ -169,7 +169,7 @@ Code is written, reviewed, tested, and security-audited. Marketing copy is draft
 ```
 pip install cohort              # Core (zero deps)
 pip install cohort[server]      # HTTP + Socket.IO dashboard
-pip install cohort[claude]      # Claude Code MCP bridge
+pip install cohort[mcp]         # MCP tools
 ```
 
 ---

@@ -473,7 +473,7 @@ class TestStepMcpSetup:
 
         assert result is True
         captured = capsys.readouterr()
-        assert "pip install cohort[claude]" in captured.out
+        assert "pip install cohort[mcp]" in captured.out
         assert "Missing packages" in captured.out
 
     def test_happy_path_user_declines_write(self, capsys):

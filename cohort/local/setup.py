@@ -903,7 +903,7 @@ def _step_mcp_setup(model: str) -> bool:
         print()
         print("  Install them with:")
         print()
-        print("    pip install cohort[claude]")
+        print("    pip install cohort[mcp]")
         print()
         print("  This adds the MCP server capability. You can run")
         print("  'cohort setup' again after installing to configure it.")

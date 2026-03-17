@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        INSTALL_EXTRAS: server,claude
+        INSTALL_EXTRAS: server,mcp
     command: ["python", "-m", "cohort", "serve", "--host", "0.0.0.0", "--port", "5000"]
     ports:
       - "5000:5000"

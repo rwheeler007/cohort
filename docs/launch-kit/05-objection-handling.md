@@ -101,7 +101,7 @@ For sales conversations, community questions, HN comments, and support interacti
 > Zero dependencies in the core means zero supply chain risk and zero version conflicts. The HTTP server, Claude integration, and dashboard are optional extras with their own dependencies. You install exactly what you need.
 
 **Response (detailed):**
-> The core library -- orchestration, scoring, chat management, protocols -- is pure Python stdlib. That's intentional: it means Cohort never conflicts with your existing dependencies, works in air-gapped environments, and has minimal attack surface. Want the web dashboard? `pip install cohort[server]` adds Starlette and Socket.IO. Want Claude Code integration? `pip install cohort[claude]` adds the MCP bridge. You opt into complexity. The core stays clean.
+> The core library -- orchestration, scoring, chat management, protocols -- is pure Python stdlib. That's intentional: it means Cohort never conflicts with your existing dependencies, works in air-gapped environments, and has minimal attack surface. Want the web dashboard? `pip install cohort[server]` adds Starlette and Socket.IO. Want MCP integration? `pip install cohort[mcp]` adds the MCP bridge. You opt into complexity. The core stays clean.
 
 ---
 

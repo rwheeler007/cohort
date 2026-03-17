@@ -20,7 +20,7 @@ LABEL description="cohort -- Multi-agent orchestration with loop prevention and 
 LABEL license="Apache-2.0"
 LABEL org.opencontainers.image.source="https://github.com/rwheeler007/cohort"
 
-# Build arg: set to "claude" to install cohort[claude] extras
+# Build arg: set to "mcp" to install cohort[mcp] extras
 ARG INSTALL_EXTRAS=""
 
 # Non-root user

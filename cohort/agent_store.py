@@ -190,7 +190,7 @@ class AgentStore:
         except ImportError:
             logger.warning(
                 "[!] httpx not installed -- cannot fetch remote agents. "
-                "Install with: pip install cohort[claude]"
+                "Install with: pip install cohort[mcp]"
             )
             return None
 

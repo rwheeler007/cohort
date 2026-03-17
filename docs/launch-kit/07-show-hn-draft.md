@@ -70,7 +70,7 @@ Happy to answer questions about the scoring algorithm, loop prevention mechanics
 > Those are pipeline frameworks -- they define what agents do and in what order. Cohort manages the conversation dynamics: who should speak next, whether they're repeating themselves, and when the topic has shifted enough to bring in new experts. They're complementary -- you could use Cohort's scoring layer inside a CrewAI pipeline.
 
 ### "Zero dependencies means you reimplemented everything?"
-> The core is orchestration logic -- scoring, loop detection, chat management, protocols. Pure algorithms on Python data structures. The web dashboard (`cohort[server]`) adds Starlette + Socket.IO. Claude integration (`cohort[claude]`) adds the MCP bridge. You opt into deps when you need them.
+> The core is orchestration logic -- scoring, loop detection, chat management, protocols. Pure algorithms on Python data structures. The web dashboard (`cohort[server]`) adds Starlette + Socket.IO. MCP integration (`cohort[mcp]`) adds the protocol bridge. You opt into deps when you need them.
 
 ### "How does this compare to Microsoft Agent Framework / OpenAI Agents SDK?"
 > Microsoft Agent Framework (AutoGen + Semantic Kernel merger) is enterprise-focused with A2A/MCP/AG-UI protocols -- heavy and Azure-oriented. OpenAI Agents SDK is good plumbing (handoffs, agent-as-tool) but has no contribution scoring or loop prevention. Cohort is the coordination layer neither provides: who should speak, are they repeating, has the topic shifted.

@@ -680,7 +680,7 @@
                         <div class="settings-panel" data-settings-panel="connections">
                             <div class="settings-section">
                                 <div class="settings-section__header">
-                                    <h3 class="settings-section__title">Claude Code Connection</h3>
+                                    <h3 class="settings-section__title">Cloud Connection</h3>
                                     <label class="toggle-label toggle-label--inline" for="settings-claude-enabled">
                                         <input type="checkbox" id="settings-claude-enabled" class="toggle-input">
                                         <span class="toggle-switch"></span>
@@ -688,13 +688,12 @@
                                 </div>
                                 <div class="settings-section__body" id="claude-connection-body">
                                     <p class="settings-section__desc">
-                                        Connect to a running Claude Code CLI backend for agent responses.
-                                        The CLI must be running and accessible on this machine.
+                                        Configure cloud API and execution settings for agent responses.
                                     </p>
                                     <div class="form-group">
-                                        <label for="settings-claude-cmd">Claude CLI Path</label>
+                                        <label for="settings-claude-cmd">CLI Path (dev mode)</label>
                                         <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
-                                               placeholder="C:/Users/.../npm/claude.cmd">
+                                               placeholder="Path to CLI binary">
                                     </div>
                                     <div class="form-group">
                                         <label for="settings-agents-root">Agents Root Directory</label>
@@ -709,9 +708,9 @@
                                     <div class="form-group">
                                         <label for="settings-exec-backend">Task Execution Backend</label>
                                         <select class="form-input" id="settings-exec-backend">
-                                            <option value="cli">Claude CLI (subprocess)</option>
-                                            <option value="api">Anthropic API (direct)</option>
                                             <option value="chat">Chat-routed (@mention)</option>
+                                            <option value="api">Cloud API (direct)</option>
+                                            <option value="cli">CLI subprocess (dev mode)</option>
                                         </select>
                                     </div>
                                     <div class="settings-connection-status" id="settings-connection-status">
@@ -723,14 +722,14 @@
                                         <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
                                             <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
                                             <span class="toggle-switch"></span>
-                                            <span>Force all responses through Claude Code <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
+                                            <span>Force all responses through cloud API <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
                                         </label>
                                     </div>
                                     <div class="form-group" style="margin-top: 0.75rem;">
                                         <label class="toggle-label" for="settings-global-agents" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
                                             <input type="checkbox" id="settings-global-agents" class="toggle-input">
                                             <span class="toggle-switch"></span>
-                                            <span>Make agents available in all Claude Code projects <small style="opacity: 0.6;">(links ~/.claude/agents to Cohort)</small></span>
+                                            <span>Make agents available globally <small style="opacity: 0.6;">(links agent personas for external tools)</small></span>
                                         </label>
                                     </div>
                                 </div>
@@ -781,7 +780,7 @@
                                         <span class="toggle-switch"></span>
                                     </label>
                                 </div>
-                                <p class="settings-section__desc">Enables Claude CLI subprocess paths for internal testing. Leave off for production use.</p>
+                                <p class="settings-section__desc">Enables CLI subprocess paths for internal testing. Leave off for production use.</p>
                             </div>
 
                             <div class="form-actions">
@@ -1066,7 +1065,7 @@
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="7">
                     <span class="setup-step__indicator" id="step-ind-7">7</span>
-                    <span class="setup-step__label">Claude</span>
+                    <span class="setup-step__label">Cloud</span>
                 </button>
             </nav>
 
@@ -1172,7 +1171,7 @@
                 <div class="setup-wizard__step" data-step="6" style="display:none">
                     <h3>MCP Server Setup (Optional)</h3>
                     <p class="text-muted">
-                        The Cohort MCP server lets Claude Code use your local AI model
+                        The Cohort MCP server lets any MCP-compatible client use your local AI model
                         as a tool -- draft code, transform data, and more, all running
                         on your machine for free.
                     </p>
@@ -1181,10 +1180,10 @@
                     </div>
                     <div id="setup-mcp-config" style="display:none">
                         <div class="setup-wizard__card" id="setup-mcp-snippet" style="display:none">
-                            <h4 style="margin-bottom:var(--space-2)">Claude Code Config</h4>
+                            <h4 style="margin-bottom:var(--space-2)">MCP Client Config</h4>
                             <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
-                                This will be written to <code>.claude/settings.local.json</code>
-                                so Claude Code auto-discovers your local MCP server.
+                                This config snippet can be added to your MCP client's settings
+                                so it auto-discovers your local MCP server.
                             </p>
                             <pre class="setup-wizard__code-block" id="setup-mcp-snippet-code"></pre>
                         </div>
@@ -1194,7 +1193,7 @@
                     </div>
                 </div>
 
-                <!-- Step 7: Claude Code Connection (Optional) -->
+                <!-- Step 7: Cloud & Advanced Setup (Optional) -->
                 <div class="setup-wizard__step" data-step="7" style="display:none">
                     <h3>Cloud & Advanced Setup (Optional)</h3>
                     <p class="text-muted">
@@ -1202,16 +1201,16 @@
                         or skip this to use only free local AI.
                     </p>
                     <div class="setup-wizard__card" id="setup-claude-result">
-                        <div class="setup-wizard__loading">[*] Looking for Claude CLI...</div>
+                        <div class="setup-wizard__loading">[*] Checking cloud setup...</div>
                     </div>
                     <div id="setup-claude-config" style="display:none">
                         <div class="setup-wizard__card">
                             <div class="form-group" style="margin-bottom:var(--space-3)">
                                 <label for="setup-claude-cmd" class="text-muted" style="font-size:var(--font-size-sm)">
-                                    Claude CLI Path
+                                    CLI Path (dev mode)
                                 </label>
                                 <input type="text" class="form-input form-input--mono" id="setup-claude-cmd"
-                                       placeholder="C:/Users/.../npm/claude.cmd">
+                                       placeholder="Path to CLI binary">
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3)">
                                 <label for="setup-agents-root" class="text-muted" style="font-size:var(--font-size-sm)">
@@ -1225,9 +1224,9 @@
                                     Execution Backend
                                 </label>
                                 <select class="form-input" id="setup-exec-backend">
-                                    <option value="cli">Claude CLI (subprocess)</option>
-                                    <option value="api">Anthropic API (direct)</option>
                                     <option value="chat">Chat-routed (@mention)</option>
+                                    <option value="api">Cloud API (direct)</option>
+                                    <option value="cli">CLI subprocess (dev mode)</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3)">
@@ -1244,10 +1243,10 @@
                             <div class="form-group" style="margin-bottom:var(--space-3)" id="setup-force-claude-group">
                                 <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
                                     <input type="checkbox" id="setup-force-claude" style="width:auto">
-                                    Force all responses through Claude Code
+                                    Force all responses through cloud API
                                 </label>
                                 <span class="text-muted" style="font-size:var(--font-size-xs)">
-                                    Bypass local Ollama models and route everything through Claude CLI
+                                    Bypass local Ollama models and route everything through cloud API
                                 </span>
                             </div>
                             <div class="form-group" style="margin-bottom:var(--space-3)">
@@ -1256,7 +1255,7 @@
                                     Development Mode
                                 </label>
                                 <span class="text-muted" style="font-size:var(--font-size-xs)">
-                                    Enables Claude CLI subprocess paths for internal testing. Leave off for production.
+                                    Enables CLI subprocess paths for internal testing. Leave off for production.
                                 </span>
                             </div>
                         </div>
@@ -1364,7 +1363,7 @@
                         </div>
 
                         <button class="btn btn--primary" id="setup-claude-save-btn" style="margin-top:var(--space-3)">
-                            Save Claude Settings
+                            Save Settings
                         </button>
                     </div>
                 </div>

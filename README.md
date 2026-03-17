@@ -37,7 +37,7 @@ Every multi-agent framework lets agents talk. Cohort decides **who should talk, 
 
 ```bash
 pip install cohort              # zero-dep core library
-pip install cohort[claude]      # adds MCP tools for Claude Code
+pip install cohort[mcp]         # adds MCP tools
 pip install cohort[all]         # everything including dev tools
 ```
 
