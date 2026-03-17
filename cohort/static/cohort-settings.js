@@ -72,6 +72,16 @@ function openSettings() {
             if (devToggle) devToggle.checked = !!data.dev_mode;
             toggleDevModeVisibility(!!data.dev_mode);
 
+            // Model tier settings
+            const tiers = data.tier_settings || {};
+            for (const tier of ['smart', 'smarter', 'smartest']) {
+                const cfg = tiers[tier] || {};
+                const primaryEl = document.getElementById(`settings-tier-${tier}-primary`);
+                const fallbackEl = document.getElementById(`settings-tier-${tier}-fallback`);
+                if (primaryEl) primaryEl.value = cfg.primary || '';
+                if (fallbackEl) fallbackEl.value = cfg.fallback || '';
+            }
+
             // Show connection status
             updateSettingsConnectionStatus(data.claude_code_connected ? 'ok' : 'unknown',
                 data.claude_code_connected ? 'Connected' : 'Not tested');
@@ -176,6 +186,18 @@ function saveSettings(e) {
         cloud_model: cloudModelEl ? cloudModelEl.value.trim() : '',
         cloud_base_url: cloudBaseUrlEl ? cloudBaseUrlEl.value.trim() : '',
     };
+
+    // Model tier settings
+    const tierSettings = {};
+    for (const tier of ['smart', 'smarter', 'smartest']) {
+        const primaryEl = document.getElementById(`settings-tier-${tier}-primary`);
+        const fallbackEl = document.getElementById(`settings-tier-${tier}-fallback`);
+        tierSettings[tier] = {
+            primary: primaryEl ? primaryEl.value.trim() || null : null,
+            fallback: fallbackEl ? fallbackEl.value.trim() || null : null,
+        };
+    }
+    payload.tier_settings = tierSettings;
 
     // Only include API key if user typed a real value (not the masked placeholder)
     const apiKeyVal = dom.settingsApiKey ? dom.settingsApiKey.value.trim() : '';

@@ -622,6 +622,7 @@
                 <nav class="settings-tabs">
                     <button class="settings-tab active" data-settings-tab="general" onclick="switchSettingsTab('general')">General</button>
                     <button class="settings-tab" data-settings-tab="connections" onclick="switchSettingsTab('connections')">Connections</button>
+                    <button class="settings-tab" data-settings-tab="model-tiers" onclick="switchSettingsTab('model-tiers')">Model Tiers</button>
                     <button class="settings-tab" data-settings-tab="data" onclick="switchSettingsTab('data')">Data</button>
                 </nav>
 
@@ -785,6 +786,72 @@
 
                             <div class="form-actions">
                                 <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Model Tiers Tab === -->
+                        <div class="settings-panel" data-settings-panel="model-tiers">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Response Tier Models</h3>
+                                <p class="settings-section__desc">
+                                    Configure which model handles each response tier. "local" uses the auto-detected model for your GPU.
+                                    Enter a specific model name (e.g., qwen3.5:35b-a3b) or "cloud_api" to use your cloud provider.
+                                </p>
+
+                                <!-- Smart Tier -->
+                                <div class="form-group" style="margin-top: 16px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smart <span style="font-weight: normal; color: var(--color-text-muted);">-- Fast, no thinking</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <input type="text" class="form-input" id="settings-tier-smart-primary" placeholder="local" />
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <input type="text" class="form-input" id="settings-tier-smart-fallback" placeholder="none" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Smarter Tier -->
+                                <div class="form-group" style="margin-top: 12px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smarter <span style="font-weight: normal; color: var(--color-text-muted);">-- Thinking enabled (default)</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <input type="text" class="form-input" id="settings-tier-smarter-primary" placeholder="local" />
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <input type="text" class="form-input" id="settings-tier-smarter-fallback" placeholder="smart" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Smartest Tier -->
+                                <div class="form-group" style="margin-top: 12px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest <span style="font-weight: normal; color: var(--color-text-muted);">-- Local 35B or cloud API</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <input type="text" class="form-input" id="settings-tier-smartest-primary" placeholder="qwen3.5:35b-a3b" />
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <input type="text" class="form-input" id="settings-tier-smartest-fallback" placeholder="cloud_api" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="settings-section__desc" style="margin-top: 12px; font-size: 11px;">
+                                    Values: "local" (auto-detect), "cloud_api" (uses your API key above), or a model name like "qwen3.5:9b", "qwen3.5:35b-a3b".
+                                    Fallback is used when the primary model is unavailable.
+                                </p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" onclick="closeSettings()">Cancel</button>
                                 <button type="submit" class="btn btn--primary">Save Settings</button>
                             </div>
                         </div>

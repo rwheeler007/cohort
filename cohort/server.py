@@ -109,6 +109,29 @@ def _save_settings(settings: dict[str, Any]) -> None:
         logger.warning("Failed to save settings.json: %s", exc)
 
 
+def _load_tier_settings() -> dict[str, Any]:
+    """Load model tier settings from cohort/data/tier_settings.json."""
+    try:
+        from cohort.local.config import get_tier_settings
+        return get_tier_settings()
+    except Exception:
+        return {
+            "smart": {"primary": "local", "fallback": None},
+            "smarter": {"primary": "local", "fallback": "smart"},
+            "smartest": {"primary": "qwen3.5:35b-a3b", "fallback": "cloud_api"},
+        }
+
+
+def _save_tier_settings(tier_settings: dict[str, Any]) -> bool:
+    """Save model tier settings to cohort/data/tier_settings.json."""
+    try:
+        from cohort.local.config import save_tier_settings
+        return save_tier_settings(tier_settings)
+    except Exception as exc:
+        logger.warning("Failed to save tier settings: %s", exc)
+        return False
+
+
 def _apply_global_agent_links(enable: bool) -> None:
     """Create or remove ~/.claude/agents and ~/.claude/skills junctions/symlinks.
 
@@ -1591,6 +1614,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "user_display_name": settings.get("user_display_name", ""),
         "user_display_role": settings.get("user_display_role", ""),
         "user_display_avatar": settings.get("user_display_avatar", ""),
+        "tier_settings": _load_tier_settings(),
         "default_permissions": settings.get("default_permissions", {
             "profile": "developer",
             "deny_paths": [],
@@ -1674,6 +1698,10 @@ async def post_settings(request: Request) -> JSONResponse:
                 }.get(profile, ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]),
                 "max_turns": max(1, min(50, int(dp.get("max_turns", 15)))),
             }
+
+    # Save tier settings separately (own file, not in settings.json)
+    if "tier_settings" in body and isinstance(body["tier_settings"], dict):
+        _save_tier_settings(body["tier_settings"])
 
     _save_settings(settings)
 
