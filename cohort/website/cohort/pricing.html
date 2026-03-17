@@ -59,7 +59,7 @@ COHORT            </a>
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
         <h1 class="responsive-h1">Simple, Transparent Pricing</h1>
-        <p class="responsive-p-large">5 agents ship with the package. The Agent Store unlocks your full team.</p>
+        <p class="responsive-p-large">5 agents ship with the package. The Agent Store unlocks your full team. All three response tiers -- including the 35B model -- run locally at zero cost.</p>
     </div>
 </section>
 
@@ -108,7 +108,7 @@ COHORT            </a>
                     <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> New agents as they ship to the Store</li>
                     <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #d29922; font-weight: 700;">[...]</span> Website Creator pipeline <span style="font-size: 0.75rem; color: #d29922;">(coming soon)</span></li>
                     <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #d29922; font-weight: 700;">[...]</span> Content pipeline (RSS to publish) <span style="font-size: 0.75rem; color: #d29922;">(coming soon)</span></li>
-                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #d29922; font-weight: 700;">[...]</span> Cloud model fallback (Claude, GPT) <span style="font-size: 0.75rem; color: #d29922;">(coming soon)</span></li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #3fb950; font-weight: 700;">[OK]</span> Cloud API override (Claude, GPT -- your key)</li>
                     <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #D97757; font-weight: 700;">[+]</span> Priority email support</li>
                 </ul>
                 <a href="https://github.com/cohort-dev/cohort" class="btn-primary" style="width: 100%;">Star on GitHub</a>
@@ -138,6 +138,33 @@ COHORT            </a>
                 <a href="contact.html" class="btn-primary" style="width: 100%;">Contact Us</a>
             </div>
 
+        </div>
+    </div>
+</section>
+
+<!-- Local-First Advantage -->
+<section class="section-spacing" style="background: #fff; border-top: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">The Smartest Tier Is Free</h2>
+        <p class="responsive-p-body text-center">Most multi-agent platforms charge per token for their most capable model. Cohort's Smartest tier runs the 35B MoE model locally on dual-GPU systems -- 124 tok/s, no API key, no per-token cost. On a single RTX 3080 12GB, Smartest uses the full 9B model with extended thinking enabled. Cloud API is available as an optional override for users who want it, but it is never required.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem;">
+            <div style="text-align: center; padding: 1.5rem; background: #FAFAF8; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Smart [S]</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">local, no thinking</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #F5E6DE; border-radius: 8px; border: 1px solid #e5c9bb;">
+                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Smarter [S+]</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">local, thinking on</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #FAFAF8; border-radius: 8px; border: 2px solid var(--color-primary);">
+                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Smartest [S++]</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">local 35B MoE or 9B (thinking)</div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.35rem;">cloud API available as override</div>
+            </div>
         </div>
     </div>
 </section>
@@ -253,10 +280,16 @@ COHORT            </a>
                         <td style="padding: 0.6rem 1rem; text-align: center; color: #d29922; font-weight: 600;">Coming soon</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #f3f4f6;">
-                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Cloud model fallback</td>
-                        <td style="padding: 0.6rem 1rem; text-align: center; color: #ccc;">--</td>
-                        <td style="padding: 0.6rem 1rem; text-align: center; color: #d29922; font-weight: 600;">Coming soon</td>
-                        <td style="padding: 0.6rem 1rem; text-align: center; color: #d29922; font-weight: 600;">Coming soon</td>
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Smart / Smarter / Smartest tiers</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 500;">Cloud API override (your key)</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: #3fb950; font-weight: 700;">[OK]</td>
                     </tr>
                     <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
                         <td style="padding: 0.6rem 1rem; font-weight: 500;">Agent Factory</td>
@@ -328,7 +361,7 @@ COHORT            </a>
 
             <div style="margin-bottom: 2rem;">
                 <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">Can I use cloud models instead of local ones?</h3>
-                <p class="responsive-p-body" style="max-width: none;">On the Pro and Enterprise tiers, yes. Cohort supports cloud model fallback to Claude, GPT, and other providers as an escalation path. The open source tier runs entirely on local models -- you supply the GPU, Cohort supplies the orchestration.</p>
+                <p class="responsive-p-body" style="max-width: none;">Yes, on all tiers. Cohort's Smartest tier runs locally by default (35B MoE on dual-GPU, 9B on single-GPU), but you can override any tier to use Claude, GPT, or any OpenAI-compatible API by adding your own API key in Settings. Built-in token budget limits prevent surprise bills.</p>
             </div>
 
             <div style="margin-bottom: 2rem;">

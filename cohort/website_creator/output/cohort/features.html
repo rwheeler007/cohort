@@ -183,22 +183,105 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
             <!-- Real benchmark numbers -->
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">31</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">104</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">tokens/sec generation</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">qwen3.5:9b on RTX 3080</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">qwen3.5:9b on RTX 3080 Ti 12GB</div>
                 </div>
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">95.8%</div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">97.2%</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">assessment pass rate</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">1,399 questions, 14 agents</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">2,400 questions, 24 agents</div>
                 </div>
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
                     <div style="font-size: 2rem; font-weight: 700; color: #D97757;">$0</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">API costs</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">all local inference</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">all three tiers run locally</div>
                 </div>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Benchmarked on consumer hardware: RTX 3080 12GB, running llama.cpp with qwen3.5:9b (Q4_K_M). No cloud GPUs, no API keys.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Benchmarked on consumer hardware: RTX 3080 Ti 12GB, running llama.cpp with qwen3.5:9b (Q4_K_M). No cloud GPUs, no API keys.</p>
+        </div>
+
+        <div id="response-tiers" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[T]</div>
+            <h3 class="responsive-h3">Response Tiers</h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Three inference tiers -- Smart, Smarter, and Smartest -- let you match model depth to task complexity. Cohort auto-detects your GPU VRAM at startup and assigns the right model to each tier. No manual configuration.</p>
+            <p class="responsive-p-body">Smart uses a lean model with no thinking tokens for fast, low-cost tasks. Smarter enables extended thinking for deeper reasoning on the same hardware. Smartest escalates to the largest model available -- the 35B MoE on dual-GPU systems, a larger dense model on single-GPU. Users can override any tier's primary or fallback model in Settings.</p>
+
+            <div style="overflow-x: auto; margin-top: 1.5rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e5e7eb;">
+                            <th style="text-align: left; padding: 0.6rem 0.75rem; font-weight: 600;">Tier</th>
+                            <th style="text-align: left; padding: 0.6rem 0.75rem; font-weight: 600;">Best For</th>
+                            <th style="text-align: center; padding: 0.6rem 0.75rem; font-weight: 600;">10-12GB GPU Default</th>
+                            <th style="text-align: center; padding: 0.6rem 0.75rem; font-weight: 600;">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 0.6rem 0.75rem; font-weight: 700;">[S] Smart</td>
+                            <td style="padding: 0.6rem 0.75rem; font-size: 0.82rem; color: #555;">Short answers, quick lookups, summaries</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-size: 0.82rem;">qwen3.5:9b</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 700; color: #3fb950;">Free</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                            <td style="padding: 0.6rem 0.75rem; font-weight: 700; color: var(--color-primary);">[S+] Smarter</td>
+                            <td style="padding: 0.6rem 0.75rem; font-size: 0.82rem; color: #555;">Multi-step reasoning, code review, analysis</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-size: 0.82rem; color: var(--color-primary);">qwen3.5:9b (thinking)</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 700; color: #3fb950;">Free</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 0.6rem 0.75rem; font-weight: 700;">[S++] Smartest</td>
+                            <td style="padding: 0.6rem 0.75rem; font-size: 0.82rem; color: #555;">Architecture decisions, complex debugging, long-form drafts</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-size: 0.82rem;">qwen3.5:9b (thinking)</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 700; color: #3fb950;">Free</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.6rem 0.75rem; font-weight: 700; color: #888;">[S++] Smartest</td>
+                            <td style="padding: 0.6rem 0.75rem; font-size: 0.82rem; color: #555;">Same tasks, cloud model quality</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-size: 0.82rem; color: #888;">Cloud API (your key)</td>
+                            <td style="padding: 0.6rem 0.75rem; text-align: center; font-weight: 700; color: #888;">Per-token</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Smartest on 24GB+ dual-GPU systems uses the qwen3.5:35b-a3b MoE model at 124 tok/s -- fully local, zero per-token cost. Cloud API is an optional override, not a requirement.</p>
+        </div>
+
+        <div id="safeguards" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[G]</div>
+            <h3 class="responsive-h3">Spending Safeguards</h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Multi-agent systems can burn through tokens fast. Cohort ships with built-in spending controls that prevent runaway usage -- no configuration required to get sane defaults. All limits are adjustable in Settings > Model Tiers.</p>
+
+            <div class="mobile-stack" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Daily token limit</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-primary);">500K</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">tokens/day default. Over-budget requests degrade gracefully to the local model -- no error, no surprise cloud bill.</div>
+                </div>
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Monthly token limit</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-primary);">10M</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">tokens/month default. Budget queries existing message metadata -- zero new infrastructure.</div>
+                </div>
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Escalation rate limit</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-primary);">30/hr</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">calls/hour cap for large model escalations. Prevents runaway workflows from consuming the GPU.</div>
+                </div>
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Thinking drain detection</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">Auto-retries without thinking tokens if the model wastes its budget. Catches degenerate reasoning loops.</div>
+                </div>
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Agent loop prevention</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">5 responses/minute cap per agent, conversation depth limit of 5. Prevents recursive agent loops.</div>
+                </div>
+                <div style="background: #FAFAF8; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem;">Graceful degradation</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 0.25rem;">Over-budget requests fall back to the local model automatically. No error shown. Cloud limits never cause a failure.</div>
+                </div>
+            </div>
         </div>
 
         <div id="protocols" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
@@ -290,7 +373,7 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">See It In Action</h2>
         <div class="button-group">
-            <a href="https://github.com/rwheeler007/cohort" class="btn-primary">Get Started</a>
+            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">Get Started</a>
             <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
@@ -308,20 +391,20 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

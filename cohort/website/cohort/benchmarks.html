@@ -513,6 +513,114 @@ COHORT            </a>
     </div>
 </section>
 
+<!-- Inference Performance -->
+<section id="inference-performance" class="section-spacing" style="background: #F5E6DE;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Inference Performance</h2>
+        <p class="responsive-p-body text-center">Benchmarked on consumer GPUs using llama.cpp with qwen3.5:9b (Q4_K_M). No cloud GPUs. No API keys. These are the numbers you'll see on your hardware.</p>
+
+        <div class="bench-hero-stats" style="margin-top: 2rem;">
+            <div class="bench-hero-stat">
+                <span class="bench-hero-number">104</span>
+                <span class="bench-hero-label">tok/s on RTX 3080 Ti</span>
+            </div>
+            <div class="bench-hero-stat">
+                <span class="bench-hero-number">99</span>
+                <span class="bench-hero-label">tok/s on RTX 3080</span>
+            </div>
+            <div class="bench-hero-stat">
+                <span class="bench-hero-number">124</span>
+                <span class="bench-hero-label">tok/s on dual GPU (35B)</span>
+            </div>
+            <div class="bench-hero-stat">
+                <span class="bench-hero-number">262K</span>
+                <span class="bench-hero-label">context on single 12GB GPU</span>
+            </div>
+        </div>
+
+        <!-- GPU tier table -->
+        <div style="overflow-x: auto; margin-top: 2.5rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                        <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 600;">GPU VRAM</th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">Smart [S]</th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600; color: var(--color-primary);">Smarter [S+]</th>
+                        <th style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">Smartest [S++]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: rgba(255,255,255,0.6);">
+                        <td style="padding: 0.65rem 1rem; font-weight: 600;">24GB+ (dual 12GB)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:9b</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; color: var(--color-primary);">qwen3.5:9b (thinking)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:35b-a3b (MoE)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.65rem 1rem; font-weight: 600;">10-12GB</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:9b</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; color: var(--color-primary);">qwen3.5:9b (thinking)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:9b (thinking)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: rgba(255,255,255,0.6);">
+                        <td style="padding: 0.65rem 1rem; font-weight: 600;">6-10GB</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:4b</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; color: var(--color-primary);">qwen3.5:4b (thinking)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:9b</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.65rem 1rem; font-weight: 600;">4-6GB</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:2b</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; color: var(--color-primary);">qwen3.5:4b (thinking)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:4b</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.65rem 1rem; font-weight: 600;">&lt;4GB</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:2b</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem; color: var(--color-primary);">qwen3.5:2b (thinking)</td>
+                        <td style="padding: 0.65rem 1rem; text-align: center; font-size: 0.85rem;">qwen3.5:2b</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size: 0.8rem; color: #555; margin-top: 0.5rem; font-style: italic;">Tier assignments are auto-detected at startup. Override any tier's model in Settings > Model Tiers.</p>
+
+        <!-- Context and KV cache findings -->
+        <div class="mobile-stack" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; color: #C8C8C8;">
+                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Context Capacity</div>
+                <div style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #58a6ff;">262K tokens</span>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 0.15rem;">full context, single RTX 3080 12GB</div>
+                </div>
+                <div>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #3fb950;">40K tokens</span>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 0.15rem;">interactive speed (under 50ms/token)</div>
+                </div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; color: #C8C8C8;">
+                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">KV Cache Placement</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.4rem; font-weight: 700; color: #3fb950;">99</div>
+                        <div style="font-size: 0.75rem; color: #888;">tok/s (GPU cache)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.4rem; font-weight: 700; color: #f85149;">34</div>
+                        <div style="font-size: 0.75rem; color: #888;">tok/s (RAM cache)</div>
+                    </div>
+                </div>
+                <div style="font-size: 0.78rem; color: #888;">KV cache on system RAM is 3x slower. Cohort ships defaults that keep the cache on GPU -- no configuration required.</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem;">
+            <div style="font-weight: 600; margin-bottom: 0.4rem;">On-Demand Escalation Server (dual-GPU)</div>
+            <p class="responsive-p-body" style="margin: 0; max-width: none;">On dual-GPU systems, the 35B model starts on a separate port, serves the Smartest request, and auto-stops after 30 seconds idle. The primary 9B server is never interrupted. Single-GPU users get automatic CPU offload with no configuration.</p>
+        </div>
+    </div>
+</section>
+
 <!-- Category Deep-Dives -->
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container">
