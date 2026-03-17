@@ -82,6 +82,27 @@ function openSettings() {
                 if (fallbackEl) fallbackEl.value = cfg.fallback || '';
             }
 
+            // Token usage display
+            const usage = data.token_usage || {};
+            const todayUsage = usage.today || {};
+            const monthUsage = usage.month || {};
+            const limits = usage.limits || {};
+            const fmt = (n) => n != null ? n.toLocaleString() : '--';
+            const todayEl = document.getElementById('usage-today-tokens');
+            const monthEl = document.getElementById('usage-month-tokens');
+            const msgsEl = document.getElementById('usage-today-messages');
+            if (todayEl) todayEl.textContent = `${fmt(todayUsage.tokens_total)} tokens` + (limits.daily_token_limit ? ` / ${fmt(limits.daily_token_limit)}` : '');
+            if (monthEl) monthEl.textContent = `${fmt(monthUsage.tokens_total)} tokens` + (limits.monthly_token_limit ? ` / ${fmt(limits.monthly_token_limit)}` : '');
+            if (msgsEl) msgsEl.textContent = fmt(todayUsage.messages);
+
+            // Budget limit inputs
+            const budgetDaily = document.getElementById('settings-budget-daily');
+            const budgetMonthly = document.getElementById('settings-budget-monthly');
+            const budgetEsc = document.getElementById('settings-budget-escalation');
+            if (budgetDaily) budgetDaily.value = limits.daily_token_limit || '';
+            if (budgetMonthly) budgetMonthly.value = limits.monthly_token_limit || '';
+            if (budgetEsc) budgetEsc.value = limits.escalation_per_hour || '';
+
             // Show connection status
             updateSettingsConnectionStatus(data.claude_code_connected ? 'ok' : 'unknown',
                 data.claude_code_connected ? 'Connected' : 'Not tested');
@@ -197,6 +218,15 @@ function saveSettings(e) {
             fallback: fallbackEl ? fallbackEl.value.trim() || null : null,
         };
     }
+    // Budget limits
+    const budgetDaily = document.getElementById('settings-budget-daily');
+    const budgetMonthly = document.getElementById('settings-budget-monthly');
+    const budgetEsc = document.getElementById('settings-budget-escalation');
+    tierSettings.budget = {
+        daily_token_limit: budgetDaily ? parseInt(budgetDaily.value, 10) || 0 : 0,
+        monthly_token_limit: budgetMonthly ? parseInt(budgetMonthly.value, 10) || 0 : 0,
+        escalation_per_hour: budgetEsc ? parseInt(budgetEsc.value, 10) || 0 : 0,
+    };
     payload.tier_settings = tierSettings;
 
     // Only include API key if user typed a real value (not the masked placeholder)

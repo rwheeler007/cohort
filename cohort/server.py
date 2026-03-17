@@ -132,6 +132,25 @@ def _save_tier_settings(tier_settings: dict[str, Any]) -> bool:
         return False
 
 
+def _get_token_usage_summary() -> dict[str, Any]:
+    """Get token usage summary for the settings UI."""
+    try:
+        from cohort.local.config import get_budget_limits
+        limits = get_budget_limits()
+        storage = getattr(_chat, "_storage", None) if _chat else None
+        if storage is not None and hasattr(storage, "get_token_usage"):
+            today = storage.get_token_usage("today")
+            month = storage.get_token_usage("month")
+            return {
+                "today": today,
+                "month": month,
+                "limits": limits,
+            }
+    except Exception:
+        pass
+    return {"today": {}, "month": {}, "limits": {}}
+
+
 def _apply_global_agent_links(enable: bool) -> None:
     """Create or remove ~/.claude/agents and ~/.claude/skills junctions/symlinks.
 
@@ -1615,6 +1634,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "user_display_role": settings.get("user_display_role", ""),
         "user_display_avatar": settings.get("user_display_avatar", ""),
         "tier_settings": _load_tier_settings(),
+        "token_usage": _get_token_usage_summary(),
         "default_permissions": settings.get("default_permissions", {
             "profile": "developer",
             "deny_paths": [],
@@ -1701,7 +1721,12 @@ async def post_settings(request: Request) -> JSONResponse:
 
     # Save tier settings separately (own file, not in settings.json)
     if "tier_settings" in body and isinstance(body["tier_settings"], dict):
-        _save_tier_settings(body["tier_settings"])
+        tier_data = body["tier_settings"]
+        # Budget limits are nested under tier_settings.budget
+        if "budget" in tier_data:
+            # Merge budget into the existing tier settings file
+            pass  # budget is saved as part of tier_settings below
+        _save_tier_settings(tier_data)
 
     _save_settings(settings)
 
@@ -2104,7 +2129,7 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
 # =====================================================================
 
 # Canonical list of tools that can be toggled from the dashboard.
-_ALL_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch", "InternalWebFetch", "InternalWebSearch"]
+_ALL_TOOLS = ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "WebSearch", "WebFetch", "InternalWebFetch", "InternalWebSearch", "BrowserBrowse", "BrowserInteract", "BrowserAdvanced"]
 
 
 def _tool_permissions_path() -> Path:
@@ -2261,6 +2286,12 @@ async def get_internal_web_status(request: Request) -> JSONResponse:
         status["ddgs"] = True
     except ImportError:
         pass
+
+    # Browser backend status
+    status["browser_backend"] = False
+    if status["playwright"]:
+        status["browser_backend"] = True
+        status["browser_backend_type"] = "PlaywrightDirect"
 
     # Available if either capability works
     status["available"] = status["playwright"] or status["ddgs"]

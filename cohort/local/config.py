@@ -372,6 +372,42 @@ def get_tier_model(tier: str) -> str:
     return settings.get(tier, {}).get("primary", DEFAULT_MODEL)
 
 
+# =====================================================================
+# Token Budget Defaults
+# =====================================================================
+# Cloud API spending limits. Applied per-day and per-month.
+# 0 = unlimited. Users can override in tier_settings.json.
+
+DEFAULT_DAILY_TOKEN_LIMIT = 500_000    # ~$1-2/day on Claude
+DEFAULT_MONTHLY_TOKEN_LIMIT = 10_000_000  # ~$20-40/month on Claude
+DEFAULT_ESCALATION_PER_HOUR = 30       # 35B local: max calls per hour (GPU time)
+
+
+def get_budget_limits() -> dict[str, int]:
+    """Get token budget limits from tier settings.
+
+    Returns:
+        {"daily_token_limit": N, "monthly_token_limit": N, "escalation_per_hour": N}
+    """
+    try:
+        if TIER_SETTINGS_PATH.is_file():
+            with open(TIER_SETTINGS_PATH) as f:
+                data = json.load(f)
+            budget = data.get("budget", {})
+            return {
+                "daily_token_limit": budget.get("daily_token_limit", DEFAULT_DAILY_TOKEN_LIMIT),
+                "monthly_token_limit": budget.get("monthly_token_limit", DEFAULT_MONTHLY_TOKEN_LIMIT),
+                "escalation_per_hour": budget.get("escalation_per_hour", DEFAULT_ESCALATION_PER_HOUR),
+            }
+    except Exception:
+        pass
+    return {
+        "daily_token_limit": DEFAULT_DAILY_TOKEN_LIMIT,
+        "monthly_token_limit": DEFAULT_MONTHLY_TOKEN_LIMIT,
+        "escalation_per_hour": DEFAULT_ESCALATION_PER_HOUR,
+    }
+
+
 def get_model_for_vram(vram_mb: int) -> str:
     """Get recommended model for available VRAM.
 

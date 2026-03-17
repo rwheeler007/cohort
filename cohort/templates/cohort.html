@@ -850,6 +850,39 @@
                                 </p>
                             </div>
 
+                            <!-- Token Usage & Budget -->
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Token Usage &amp; Budget</h3>
+
+                                <div id="token-usage-display" style="margin: 8px 0 16px; padding: 10px; border-radius: 6px; background: var(--color-bg-secondary, #1e1e2e); font-size: 12px; line-height: 1.8;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">Today:</span>
+                                        <span id="usage-today-tokens" style="color: var(--color-text);">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">This month:</span>
+                                        <span id="usage-month-tokens" style="color: var(--color-text);">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">Messages today:</span>
+                                        <span id="usage-today-messages" style="color: var(--color-text);">--</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 11px;">Daily token limit (0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-daily" placeholder="500000" min="0" step="50000" />
+                                </div>
+                                <div class="form-group" style="margin-top: 8px;">
+                                    <label class="form-label" style="font-size: 11px;">Monthly token limit (0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-monthly" placeholder="10000000" min="0" step="500000" />
+                                </div>
+                                <div class="form-group" style="margin-top: 8px;">
+                                    <label class="form-label" style="font-size: 11px;">Escalation calls per hour (35B local model, 0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-escalation" placeholder="30" min="0" step="5" />
+                                </div>
+                            </div>
+
                             <div class="form-actions">
                                 <button type="button" class="btn btn--secondary" onclick="closeSettings()">Cancel</button>
                                 <button type="submit" class="btn btn--primary">Save Settings</button>

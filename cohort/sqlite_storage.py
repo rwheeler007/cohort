@@ -348,3 +348,90 @@ class SqliteStorage:
         meta = json.loads(row["metadata"]) if row["metadata"] else {}
         meta["id"] = row["id"]
         return meta
+
+    # -- token usage queries -----------------------------------------------
+
+    def get_token_usage(
+        self,
+        period: str = "today",
+        pipeline: str | None = None,
+    ) -> dict[str, int]:
+        """Query accumulated token usage from message metadata.
+
+        Args:
+            period: "today", "month", or "all"
+            pipeline: Filter by pipeline type (e.g., "smartest", "local"). None = all.
+
+        Returns:
+            {"messages": N, "tokens_in": N, "tokens_out": N, "tokens_total": N}
+        """
+        conditions = [
+            "sender != 'user'",
+            "sender != 'system'",
+            "json_extract(metadata, '$.tokens_in') IS NOT NULL",
+        ]
+        params: list[Any] = []
+
+        if period == "today":
+            conditions.append("date(timestamp) = date('now')")
+        elif period == "month":
+            conditions.append("strftime('%Y-%m', timestamp) = strftime('%Y-%m', 'now')")
+
+        if pipeline:
+            conditions.append("json_extract(metadata, '$.pipeline') = ?")
+            params.append(pipeline)
+
+        where = " AND ".join(conditions)
+        query = f"""
+            SELECT
+                COUNT(*) as msg_count,
+                COALESCE(SUM(CAST(json_extract(metadata, '$.tokens_in') AS INTEGER)), 0) as total_in,
+                COALESCE(SUM(CAST(json_extract(metadata, '$.tokens_out') AS INTEGER)), 0) as total_out
+            FROM messages
+            WHERE {where}
+        """
+
+        with self._connect() as conn:
+            row = conn.execute(query, params).fetchone()
+
+        total_in = row["total_in"] if row else 0
+        total_out = row["total_out"] if row else 0
+        return {
+            "messages": row["msg_count"] if row else 0,
+            "tokens_in": total_in,
+            "tokens_out": total_out,
+            "tokens_total": total_in + total_out,
+        }
+
+    def check_token_budget(
+        self,
+        daily_limit: int = 500_000,
+        monthly_limit: int = 10_000_000,
+        pipeline: str | None = None,
+    ) -> tuple[bool, int, str]:
+        """Check if token budget allows another API call.
+
+        Args:
+            daily_limit: Max tokens (in+out) per day. 0 = unlimited.
+            monthly_limit: Max tokens (in+out) per month. 0 = unlimited.
+            pipeline: Filter by pipeline type. None = all pipelines.
+
+        Returns:
+            (allowed, remaining_today, reason)
+        """
+        if daily_limit <= 0 and monthly_limit <= 0:
+            return True, 999_999, "Budget tracking disabled"
+
+        today = self.get_token_usage("today", pipeline)
+        today_total = today["tokens_total"]
+
+        if daily_limit > 0 and today_total >= daily_limit:
+            return False, 0, f"Daily token limit reached ({today_total:,}/{daily_limit:,})"
+
+        if monthly_limit > 0:
+            month = self.get_token_usage("month", pipeline)
+            if month["tokens_total"] >= monthly_limit:
+                return False, 0, f"Monthly token limit reached ({month['tokens_total']:,}/{monthly_limit:,})"
+
+        remaining = daily_limit - today_total if daily_limit > 0 else 999_999
+        return True, remaining, "OK"

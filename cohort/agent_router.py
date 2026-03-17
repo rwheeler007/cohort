@@ -365,8 +365,37 @@ class _RouterState:
     # Conversation depth: message_id -> depth
     conversation_depth: dict[str, int] = field(default_factory=dict)
 
+    # Escalation rate limiter: [epoch timestamps] of 35B calls
+    escalation_calls: list[float] = field(default_factory=list)
+
 
 _state = _RouterState()
+
+
+def _check_escalation_rate() -> tuple[bool, str]:
+    """Check if the 35B escalation model can be called (hourly rate limit).
+
+    Returns:
+        (allowed, reason)
+    """
+    from cohort.local.config import get_budget_limits
+    limits = get_budget_limits()
+    max_per_hour = limits.get("escalation_per_hour", 30)
+    if max_per_hour <= 0:
+        return True, "Escalation rate limiting disabled"
+
+    now = time.time()
+    cutoff = now - 3600
+    _state.escalation_calls = [t for t in _state.escalation_calls if t > cutoff]
+
+    if len(_state.escalation_calls) >= max_per_hour:
+        return False, f"Escalation rate limit ({len(_state.escalation_calls)}/{max_per_hour} per hour)"
+    return True, "OK"
+
+
+def _record_escalation_call() -> None:
+    """Record a 35B escalation call for rate limiting."""
+    _state.escalation_calls.append(time.time())
 
 # =====================================================================
 # References to Cohort subsystems (set during setup)
@@ -868,10 +897,13 @@ def _invoke_smartest_pipeline(
 
         # Try local 35B model first (if configured as primary)
         if smartest_primary not in ("cloud_api", "local") and not response_text:
+            _esc_allowed, _esc_reason = _check_escalation_rate()
+            if not _esc_allowed:
+                logger.warning("[!] %s -- skipping local escalation for %s", _esc_reason, agent_id)
             try:
                 from cohort.api import LocalRouter
                 _p3_router = LocalRouter()
-                if _p3_router._ensure_client():
+                if _esc_allowed and _p3_router._ensure_client():
                     _p3_prompt = f"{system_prompt}\n\n{phase3_user_message}"
                     _p3_result = _p3_router._client.generate(
                         model=smartest_primary,
@@ -886,6 +918,7 @@ def _invoke_smartest_pipeline(
                         actual_tokens_in = _p3_result.tokens_in
                         actual_tokens_out = _p3_result.tokens_out
                         phase3_model = smartest_primary
+                        _record_escalation_call()
                         logger.info("[OK] Smartest Phase 3 (local/%s): %s", smartest_primary, agent_id)
             except Exception:
                 logger.exception("[!] Smartest Phase 3 local %s failed for %s", smartest_primary, agent_id)
@@ -896,18 +929,36 @@ def _invoke_smartest_pipeline(
             and (smartest_primary == "cloud_api" or smartest_fallback == "cloud_api")
         )
         if _try_cloud:
-            from cohort.local.cloud import get_cloud_backend
-            cloud = get_cloud_backend(_cloud_settings)
-            if cloud is not None:
+            # Budget check: query accumulated token spend before allowing cloud call
+            _cloud_allowed = True
+            if _chat is not None and hasattr(_chat, "check_token_budget"):
                 try:
-                    cr = cloud.complete(system_prompt, phase3_user_message)
-                    response_text = cr.text.strip()
-                    actual_tokens_in = cr.tokens_in
-                    actual_tokens_out = cr.tokens_out
-                    phase3_model = cr.model
-                    logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
+                    from cohort.local.config import get_budget_limits
+                    _limits = get_budget_limits()
+                    _cloud_allowed, _remaining, _budget_reason = _chat.check_token_budget(
+                        daily_limit=_limits["daily_token_limit"],
+                        monthly_limit=_limits["monthly_token_limit"],
+                    )
+                    if not _cloud_allowed:
+                        logger.warning("[!] Cloud API budget exceeded for %s: %s", agent_id, _budget_reason)
                 except Exception:
-                    logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
+                    pass  # Budget check failure should not block the call
+
+            if not _cloud_allowed:
+                logger.info("[*] Skipping cloud API (budget limit) -- will use Qwen draft for %s", agent_id)
+            else:
+                from cohort.local.cloud import get_cloud_backend
+                cloud = get_cloud_backend(_cloud_settings)
+                if cloud is not None:
+                    try:
+                        cr = cloud.complete(system_prompt, phase3_user_message)
+                        response_text = cr.text.strip()
+                        actual_tokens_in = cr.tokens_in
+                        actual_tokens_out = cr.tokens_out
+                        phase3_model = cr.model
+                        logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
+                    except Exception:
+                        logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
         # Dev mode fallback: CLI subprocess (not available in distribution)
         if not response_text and _dev_mode and check_claude_cli_available():
