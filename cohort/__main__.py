@@ -596,6 +596,70 @@ def _cmd_export_personas(args: argparse.Namespace) -> int:
 
 
 # =====================================================================
+# cohort codegen
+# =====================================================================
+
+def _cmd_codegen(args: argparse.Namespace) -> int:
+    """Run the code generation pipeline."""
+    from cohort.codegen import CodegenTask, generate
+
+    # Build task from CLI args
+    task = CodegenTask(
+        description=args.description,
+        target_files=[f.strip() for f in args.files.split(",")],
+        task_type=args.type,
+        project_root=str(Path(args.project_root).resolve()) if args.project_root else str(Path.cwd()),
+        context_files=[f.strip() for f in args.context.split(",")] if args.context else [],
+        response_mode=args.mode,
+    )
+
+    print(f"[>>] Codegen: {task.task_type} {len(task.target_files)} file(s)")
+    print(f"    Mode: {task.response_mode}")
+    print(f"    Root: {task.project_root}")
+    print()
+
+    result = generate(
+        task,
+        run_e2e=not args.no_e2e,
+        skip_verify=args.skip_verify,
+    )
+
+    if result.success:
+        print(f"[OK] Generation succeeded ({result.elapsed_seconds:.1f}s)")
+        print(f"    Model: {result.model}")
+        print(f"    Changes: {len(result.changes)} file(s)")
+        if result.verification.results:
+            print(f"    Verification: {result.verification.summary}")
+        print()
+
+        for change in result.changes:
+            lines = change.content.count("\n") + 1
+            print(f"    {change.mode.upper():6s} {change.path} ({lines} lines)")
+
+        if not args.dry_run:
+            print()
+            written = result.apply()
+            print(f"[OK] Applied {len(written)} file(s) to disk")
+        else:
+            print()
+            print("[*] Dry run -- changes not applied")
+
+        if args.format == "json":
+            print(result.to_json())
+
+        return 0
+    else:
+        print(f"[X] Generation failed: {result.error}")
+        if result.verification.results:
+            for vr in result.verification.results:
+                status = "[OK]" if vr.passed else "[X]"
+                print(f"    {status} {vr.name}: {vr.message[:120]}")
+        if args.format == "json":
+            print(result.to_json())
+        return 1
+
+
+# =====================================================================
 # Main entry point
 # =====================================================================
 
@@ -713,6 +777,51 @@ def main() -> None:
     export_parser.add_argument("--force", action="store_true", help="Overwrite existing files")
     export_parser.add_argument("--dry-run", action="store_true", help="Preview without writing")
 
+    # -- codegen ----------------------------------------------------
+    codegen_parser = sub.add_parser(
+        "codegen",
+        help="Generate or modify code with LLM + verification pipeline",
+    )
+    codegen_parser.add_argument(
+        "description", help="Natural language description of the task"
+    )
+    codegen_parser.add_argument(
+        "--files", required=True,
+        help="Comma-separated target file paths (relative to project root)",
+    )
+    codegen_parser.add_argument(
+        "--type", choices=["create", "modify"], default="modify",
+        help="Task type: create new files or modify existing (default: modify)",
+    )
+    codegen_parser.add_argument(
+        "--project-root", default=None,
+        help="Project root directory (default: current directory)",
+    )
+    codegen_parser.add_argument(
+        "--context", default="",
+        help="Comma-separated context file paths for additional LLM context",
+    )
+    codegen_parser.add_argument(
+        "--mode", choices=["smart", "smarter", "smartest"], default="smarter",
+        help="Inference tier (default: smarter)",
+    )
+    codegen_parser.add_argument(
+        "--no-e2e", action="store_true",
+        help="Skip E2E tests in verification",
+    )
+    codegen_parser.add_argument(
+        "--skip-verify", action="store_true",
+        help="Skip all verification (debug only)",
+    )
+    codegen_parser.add_argument(
+        "--dry-run", action="store_true",
+        help="Generate and verify but don't write changes to disk",
+    )
+    codegen_parser.add_argument(
+        "--format", choices=["json", "text"], default="text",
+        help="Output format (default: text)",
+    )
+
     # -- serve ------------------------------------------------------
     serve_parser = sub.add_parser(
         "serve",
@@ -730,6 +839,14 @@ def main() -> None:
     launch_parser.add_argument("--port", type=int, default=5100, help="Port (default: 5100)")
     launch_parser.add_argument("--no-browser", action="store_true", help="Don't open browser on startup")
     launch_parser.add_argument("--force-setup", action="store_true", help="Force the setup wizard")
+
+    # -- new CLI modules (cohort/cli/) ----------------------------------
+    from cohort.cli import agents_cmd, channels_cmd, queue_cmd, health_cmd
+    from cohort.cli import discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd
+
+    for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
+                discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd):
+        mod.register(sub)
 
     args = parser.parse_args()
 
@@ -755,6 +872,8 @@ def main() -> None:
         sys.exit(_cmd_say(args))
     elif args.command == "briefing":
         sys.exit(_cmd_briefing(args))
+    elif args.command == "codegen":
+        sys.exit(_cmd_codegen(args))
     elif args.command == "serve":
         from cohort.server import serve
 
@@ -767,6 +886,25 @@ def main() -> None:
             no_browser=args.no_browser,
             force_setup=args.force_setup,
         ))
+
+    # -- new CLI modules ------------------------------------------------
+    elif args.command in ("agents", "agent"):
+        sys.exit(agents_cmd.handle(args))
+    elif args.command in ("channels", "channel"):
+        sys.exit(channels_cmd.handle(args))
+    elif args.command == "queue":
+        sys.exit(queue_cmd.handle(args))
+    elif args.command in ("health", "status", "doctor"):
+        sys.exit(health_cmd.handle(args))
+    elif args.command == "discuss":
+        sys.exit(discuss_cmd.handle(args))
+    elif args.command in ("memory", "teach"):
+        sys.exit(memory_cmd.handle(args))
+    elif args.command in ("tasks", "task"):
+        sys.exit(tasks_cmd.handle(args))
+    elif args.command == "hardware":
+        sys.exit(hardware_cmd.handle(args))
+
     else:
         parser.print_help()
         sys.exit(1)
