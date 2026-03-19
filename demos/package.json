@@ -1,0 +1,18 @@
+{
+  "name": "cohort-demos",
+  "private": true,
+  "description": "Playwright-automated demo recordings for Cohort install methods",
+  "scripts": {
+    "demo:all": "npx playwright test",
+    "demo:web": "npx playwright test specs/web-ui-demo.spec.ts",
+    "demo:vscode": "npx playwright test specs/vscode-demo.spec.ts",
+    "demo:docker": "npx playwright test specs/docker-demo.spec.ts",
+    "demo:cli": "python helpers/cli_demo.py",
+    "record:all": "python run_all_demos.py",
+    "screenshots": "npx playwright test --project=web-ui --update-snapshots"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "typescript": "^5.5.0"
+  }
+}
