@@ -39,6 +39,11 @@ test.describe("Docker - Zero to Conversation", () => {
     // If wizard appears, walk through it quickly
     const wizard = page.locator("#setup-wizard");
     if (await wizard.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      // Trigger step 1 (show() doesn't auto-run it)
+      await page.evaluate(() => {
+        if (typeof setupWizard !== "undefined") setupWizard.runStep1();
+      });
+
       // Speed-run the wizard — just click through
       for (const step of [1, 2, 3, 4]) {
         await waitForSetupStep(page, step);
@@ -118,11 +123,11 @@ test.describe("Docker - Zero to Conversation", () => {
     // ---------------------------------------------------------------
     // First message (faster typing for Docker demo — it's the short one)
     // ---------------------------------------------------------------
-    // Short "hello world" prompt — fast response, visually confirms inference is live
+    // Short "hello world" prompt — @mention triggers agent routing for a response
     await typeInContentEditable(
       page,
       "#message-input",
-      "Hello! Can you introduce yourself in one sentence?",
+      "@python_developer Hello! Can you introduce yourself in one sentence?",
       { delay: 40, jitter: 20 }
     );
 

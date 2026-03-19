@@ -7,8 +7,19 @@ import * as os from "os";
 // Paths
 // ---------------------------------------------------------------------------
 
-/** Cohort settings file that controls first-run detection */
+/** Cohort settings file that controls first-run detection.
+ *  Priority: COHORT_DATA_DIR env var > g:/cohort/data (dev) > %LOCALAPPDATA%/Cohort/data */
 function getSettingsPath(): string {
+  // Check env var first
+  if (process.env.COHORT_DATA_DIR) {
+    return path.join(process.env.COHORT_DATA_DIR, "settings.json");
+  }
+  // Dev repo path (where `cohort serve` runs from g:/cohort)
+  const devPath = path.resolve("g:/cohort/data/settings.json");
+  if (fs.existsSync(devPath)) {
+    return devPath;
+  }
+  // Standard install paths
   if (process.platform === "win32") {
     return path.join(
       process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local"),
@@ -39,18 +50,22 @@ export interface ResetOptions {
 /**
  * Reset Cohort to first-run state.
  *
- * - Backs up and removes settings.json so wizard triggers
+ * - Backs up settings.json and sets setup_completed=false so wizard triggers
  * - Clears demo channels (leaves real data alone)
  * - Optionally resets VS Code extension settings
  */
 export async function resetToFirstRun(opts: ResetOptions = {}): Promise<void> {
   const settingsPath = getSettingsPath();
 
-  // Back up existing settings
+  // Back up existing settings, then flip setup_completed to false
   if (fs.existsSync(settingsPath)) {
     const backup = settingsPath + ".demo-backup";
     fs.copyFileSync(settingsPath, backup);
-    fs.unlinkSync(settingsPath);
+
+    // Modify in-place: set setup_completed = false
+    const settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
+    settings.setup_completed = false;
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
   }
 
   // Reset VS Code extension settings if requested
@@ -59,7 +74,9 @@ export async function resetToFirstRun(opts: ResetOptions = {}): Promise<void> {
     if (fs.existsSync(vsPath)) {
       const backup = vsPath + ".demo-backup";
       fs.copyFileSync(vsPath, backup);
-      fs.unlinkSync(vsPath);
+      const vsSettings = JSON.parse(fs.readFileSync(vsPath, "utf-8"));
+      vsSettings.setup_completed = false;
+      fs.writeFileSync(vsPath, JSON.stringify(vsSettings, null, 2));
     }
   }
 
@@ -246,28 +263,27 @@ export async function waitForSetupStep(
 
 /**
  * Wait for an agent response to appear in the chat.
- * Looks for a new message from any agent (not the user).
+ * Counts total .message divs in #messages-list — when a new one appears
+ * after we sent ours, that's the agent's reply.
  */
 export async function waitForAgentResponse(
   page: Page,
   timeoutMs: number = 60_000
 ): Promise<void> {
-  // Agent messages have a different class than user messages
-  const initialCount = await page.locator(".message--agent, .message--assistant, .message:not(.message--user)").count();
+  // Count current messages (includes the one we just sent)
+  const initialCount = await page.locator("#messages-list .message").count();
 
   await page.waitForFunction(
     (prevCount) => {
-      const msgs = document.querySelectorAll(
-        ".message--agent, .message--assistant, .message:not(.message--user)"
-      );
+      const msgs = document.querySelectorAll("#messages-list .message");
       return msgs.length > prevCount;
     },
     initialCount,
     { timeout: timeoutMs }
   );
 
-  // Let the response fully render
-  await page.waitForTimeout(1000);
+  // Let the response fully render (streaming may still be in progress)
+  await page.waitForTimeout(2000);
 }
 
 /**

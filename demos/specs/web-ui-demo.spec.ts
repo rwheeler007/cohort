@@ -62,18 +62,23 @@ test.describe("Web UI - Zero to Conversation", () => {
     timer.mark("wizard_shown");
 
     // ---------------------------------------------------------------
-    // Step 1: Hardware Detection (auto-runs)
+    // Step 1: Hardware Detection
     // ---------------------------------------------------------------
     await waitForSetupStep(page, 1);
 
-    // Wait for hardware detection to complete (loading spinner disappears)
+    // Trigger hardware detection (show() doesn't auto-run step logic)
+    await page.evaluate(() => {
+      if (typeof setupWizard !== "undefined") setupWizard.runStep1();
+    });
+
+    // Wait for hardware detection to complete ([OK] replaces loading spinner)
     await page.waitForFunction(
       () => {
         const el = document.getElementById("setup-hw-result");
-        return el && !el.textContent?.includes("Detecting");
+        return el && (el.textContent?.includes("[OK]") || el.textContent?.includes("[X]"));
       },
       null,
-      { timeout: 15_000 }
+      { timeout: 30_000 }
     );
     await page.waitForTimeout(600);
     await snap(page, "hardware-detected", 2);
@@ -88,14 +93,14 @@ test.describe("Web UI - Zero to Conversation", () => {
     // ---------------------------------------------------------------
     await waitForSetupStep(page, 2);
 
-    // Wait for Ollama check to complete
+    // Wait for Ollama check to complete ([OK] or error replaces loading)
     await page.waitForFunction(
       () => {
         const el = document.getElementById("setup-ollama-result");
-        return el && !el.textContent?.includes("Checking");
+        return el && (el.textContent?.includes("[OK]") || el.textContent?.includes("[X]") || el.textContent?.includes("model"));
       },
       null,
-      { timeout: 15_000 }
+      { timeout: 30_000 }
     );
     await page.waitForTimeout(600);
     await snap(page, "ollama-found", 3);
@@ -243,8 +248,9 @@ test.describe("Web UI - Zero to Conversation", () => {
     // ---------------------------------------------------------------
     // Short prompt = short response. This is the "hello world" of agent chat:
     // proves inference works, agent has personality, pipeline is live.
+    // @mention triggers agent routing so we actually get a response.
     const firstMessage =
-      "Hello! Can you introduce yourself in one sentence?";
+      "@python_developer Hello! Can you introduce yourself in one sentence?";
 
     await typeInContentEditable(page, "#message-input", firstMessage, {
       delay: 55,

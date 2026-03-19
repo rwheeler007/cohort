@@ -60,13 +60,19 @@ test.describe("VS Code Extension - Zero to Conversation", () => {
     // Step 1: Hardware Detection
     // ---------------------------------------------------------------
     await waitForSetupStep(page, 1);
+
+    // Trigger hardware detection (show() doesn't auto-run step logic)
+    await page.evaluate(() => {
+      if (typeof setupWizard !== "undefined") setupWizard.runStep1();
+    });
+
     await page.waitForFunction(
       () => {
         const el = document.getElementById("setup-hw-result");
-        return el && !el.textContent?.includes("Detecting");
+        return el && (el.textContent?.includes("[OK]") || el.textContent?.includes("[X]"));
       },
       null,
-      { timeout: 15_000 }
+      { timeout: 30_000 }
     );
     await page.waitForTimeout(500);
     await snap(page, "vsc-hardware", 2);
@@ -81,10 +87,10 @@ test.describe("VS Code Extension - Zero to Conversation", () => {
     await page.waitForFunction(
       () => {
         const el = document.getElementById("setup-ollama-result");
-        return el && !el.textContent?.includes("Checking");
+        return el && (el.textContent?.includes("[OK]") || el.textContent?.includes("[X]") || el.textContent?.includes("model"));
       },
       null,
-      { timeout: 15_000 }
+      { timeout: 30_000 }
     );
     await page.waitForTimeout(500);
     await snap(page, "vsc-ollama", 3);
@@ -194,8 +200,8 @@ test.describe("VS Code Extension - Zero to Conversation", () => {
     // ---------------------------------------------------------------
     // First message
     // ---------------------------------------------------------------
-    // Short "hello world" prompt — proves pipeline works, gets a fast 1-2 sentence reply
-    const msg = "Hello! Can you introduce yourself in one sentence?";
+    // Short "hello world" prompt — @mention triggers agent routing for a response
+    const msg = "@python_developer Hello! Can you introduce yourself in one sentence?";
 
     await typeInContentEditable(page, "#message-input", msg, {
       delay: 50,

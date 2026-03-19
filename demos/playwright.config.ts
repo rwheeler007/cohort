@@ -14,7 +14,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./specs",
   outputDir: "./recordings/artifacts",
-  timeout: 120_000,
+  timeout: 180_000,
   expect: { timeout: 30_000 },
 
   /* Run specs serially — each one records a video */
