@@ -26,3 +26,5 @@ cohort/website_creator/output/
 # Runtime data (generated at startup)
 data/
 *.db
+demos/node_modules/
+demos/recordings/
