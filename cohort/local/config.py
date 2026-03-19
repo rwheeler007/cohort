@@ -506,3 +506,69 @@ def classify_confidence(
                 return "guarded"
 
     return "high"
+
+
+# =====================================================================
+# Conversation Learning Configuration
+# =====================================================================
+# Post-response fact extraction: local Qwen extracts durable knowledge
+# from agent conversations. Runs async (daemon thread) after response
+# is delivered -- never blocks chat.
+
+LEARNING_ENABLED = True
+
+LEARNING_EXTRACTION_PARAMS: dict = {
+    "think": False,
+    "num_predict": 2048,
+    "keep_alive": "2m",
+    "temperature": 0.15,        # Very deterministic extraction
+}
+
+LEARNING_MIN_RESPONSE_LENGTH = 80       # Skip very short responses entirely
+LEARNING_GATE_THRESHOLD = 200           # Response length for gate consideration
+LEARNING_DEDUP_THRESHOLD = 0.80         # Term overlap to consider duplicate
+LEARNING_MAX_FACTS_PER_AGENT = 200      # Cap per agent (drop oldest low-conf)
+LEARNING_PROFILE_EVOLVE_DAYS = 7        # Min days between profile re-distillation
+LEARNING_PROFILE_MIN_NEW_PREFS = 10     # Min new preference facts before evolving
+
+# Agents that should never trigger extraction (orchestrators, system)
+LEARNING_SKIP_AGENTS: set[str] = {
+    "system", "cohort_orchestrator", "orchestrator",
+}
+
+LEARNING_EXTRACTION_PROMPT = (
+    "Extract durable facts from this conversation that would be useful in "
+    "future conversations with this user. Only extract facts that represent "
+    "lasting knowledge, not ephemeral details.\n\n"
+    "Categories:\n"
+    "- domain_fact: Technical knowledge, concepts, how things work\n"
+    "- procedure: Step-by-step processes, workflows, commands\n"
+    "- preference: User's stated preferences about communication or approach\n"
+    "- correction: User redirecting the agent (implies a rule for the future)\n"
+    "- tool_usage: Specific tool configurations, settings, or patterns\n\n"
+    "Corrections are when the user redirects: 'no, I meant...', 'don't do X', "
+    "'shorter please'. Store the RULE, not the specific instance.\n"
+    "Example: User says 'shorter please' -> "
+    'fact: "User prefers concise responses", category: "preference"\n\n'
+    "Output a JSON array. Each item: "
+    '{{"fact": "...", "confidence": "high|medium|low", '
+    '"category": "domain_fact|procedure|preference|correction|tool_usage"}}\n\n'
+    "If nothing is worth extracting, output: []\n\n"
+    "User: {message}\n"
+    "Agent ({agent_id}): {response}\n"
+)
+
+LEARNING_PROFILE_DISTILL_PROMPT = (
+    "Based on these user preference and correction observations, build a "
+    "communication profile for this user. Output valid JSON only.\n\n"
+    '{{"core_paragraph": "One paragraph summarizing who this user is and how '
+    'they prefer to communicate",'
+    ' "adaptation_rules": {{'
+    ' "response_length": "minimal|short|medium|detailed",'
+    ' "summarize_back": true or false,'
+    ' "confirm_decisions": true or false,'
+    ' "praise_before_feedback": true or false,'
+    ' "options_per_question": 1 to 5,'
+    ' "custom_rules": ["list of specific rules from observations"]}}}}\n\n'
+    "Observations:\n{observations}\n"
+)

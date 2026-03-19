@@ -960,7 +960,7 @@ def _invoke_smartest_pipeline(
                     except Exception:
                         logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
-        # Dev mode fallback: CLI subprocess (not available in distribution)
+        # Dev mode: CLI subprocess with response harvesting (internal testing)
         if not response_text and _dev_mode and check_claude_cli_available():
             logger.info("[>>] Smartest Phase 3 dev-mode CLI fallback for %s", agent_id)
             env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
@@ -988,6 +988,58 @@ def _invoke_smartest_pipeline(
                 actual_tokens_out = len(response_text) // 4
                 phase3_model = "claude_code"
                 logger.info("[OK] Smartest Phase 3 (dev CLI): %s", agent_id)
+
+        # Handoff mode: open in Claude Code, user takes over (no response harvesting)
+        if not response_text and not _dev_mode and check_claude_cli_available():
+            logger.info("[>>] Smartest Phase 3 Claude Code handoff for %s", agent_id)
+            env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
+            env.update(_load_agent_credentials(agent_id))
+
+            cli_cmd = [CLAUDE_CMD, "-p", "-", "--output-format", "json"]
+            if sys.platform == "win32":
+                cli_cmd = ["cmd", "/c"] + cli_cmd
+
+            try:
+                result = subprocess.run(
+                    cli_cmd,
+                    input=claude_prompt,
+                    capture_output=True,
+                    text=True,
+                    cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
+                    timeout=RESPONSE_TIMEOUT,
+                    shell=False,
+                    encoding="utf-8",
+                    errors="replace",
+                    env=env,
+                )
+                session_id = ""
+                if result.returncode == 0 and result.stdout.strip():
+                    try:
+                        cli_json = json.loads(result.stdout)
+                        session_id = cli_json.get("session_id", "")
+                    except (json.JSONDecodeError, TypeError):
+                        logger.warning("[!] Could not parse Claude Code JSON output")
+
+                elapsed = round(time.monotonic() - t0, 1)
+                handoff_metadata = {
+                    "tier": 6,
+                    "model": f"{phase1_result.model}+claude_code",
+                    "pipeline": "smartest-handoff",
+                    "confidence": "high",
+                    "elapsed_seconds": elapsed,
+                    "tokens_in": phase1_result.tokens_in + (len(claude_prompt) // 4),
+                    "tokens_out": phase1_result.tokens_out,
+                    "claude_code_handoff": {
+                        "session_id": session_id,
+                        "status": "handed_off",
+                    },
+                }
+                logger.info("[OK] Smartest Phase 3 (handoff): %s session=%s", agent_id, session_id)
+                return None, handoff_metadata
+            except subprocess.TimeoutExpired:
+                logger.error("[X] Claude Code handoff timeout for %s", agent_id)
+            except Exception:
+                logger.exception("[X] Claude Code handoff failed for %s", agent_id)
 
         elapsed = round(time.monotonic() - t0, 1)
 
@@ -1180,6 +1232,7 @@ def _invoke_agent_sync(item: dict) -> None:
         _smartest_available = (
             check_cloud_available(_cloud_settings)
             or (_dev_mode and check_claude_cli_available())
+            or check_claude_cli_available()  # Handoff mode (no harvest)
         )
         if _smartest_available:
             response_content, response_metadata = _invoke_smartest_pipeline(
@@ -1190,6 +1243,17 @@ def _invoke_agent_sync(item: dict) -> None:
             )
             if response_content:
                 logger.info("[OK] Smartest pipeline handled %s in #%s", agent_id, channel_id)
+            elif response_metadata and response_metadata.get("pipeline") == "smartest-handoff":
+                # Handoff to Claude Code -- no response text, but that's intentional
+                _handoff = response_metadata.get("claude_code_handoff", {})
+                _session_id = _handoff.get("session_id", "")
+                response_content = (
+                    f"Opened in Claude Code. "
+                    f"Session: `{_session_id}`" if _session_id
+                    else "Opened in Claude Code."
+                )
+                logger.info("[OK] Smartest handoff for %s in #%s (session=%s)",
+                            agent_id, channel_id, _session_id)
             else:
                 logger.warning("[!] Smartest pipeline failed for %s, falling back to smarter",
                                agent_id)
@@ -1436,6 +1500,13 @@ def _invoke_agent_sync(item: dict) -> None:
             ))
         except Exception:
             logger.debug("[!] Failed to record working memory for %s", agent_id)
+
+    # Learn from conversation (async, non-blocking)
+    try:
+        from cohort.learning import maybe_learn_async
+        maybe_learn_async(agent_id, channel_id, message_content, response_content, _agent_store)
+    except Exception:
+        pass  # Never break chat for learning failures
 
     # Track conversation depth
     _set_conversation_depth(response_msg.id, thread_id)

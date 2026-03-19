@@ -1594,7 +1594,7 @@ async def get_settings(request: Request) -> JSONResponse:
     claude_cmd = settings.get("claude_cmd", "")
     claude_connected = bool(claude_cmd and Path(claude_cmd).exists())
 
-    # Check if Smartest mode is available (cloud API or dev-mode CLI)
+    # Check if Smartest mode is available (cloud API, dev-mode CLI, or CLI handoff)
     smartest_available = False
     try:
         from cohort.local.cloud import check_cloud_available
@@ -1602,6 +1602,7 @@ async def get_settings(request: Request) -> JSONResponse:
         smartest_available = (
             check_cloud_available(settings)
             or (_dev_mode and check_claude_cli_available())
+            or check_claude_cli_available()  # Handoff mode (no harvest)
         )
     except ImportError:
         pass
@@ -1778,6 +1779,81 @@ async def test_connection(request: Request) -> JSONResponse:
         return JSONResponse({"success": False, "error": "CLI timed out (10s)"})
     except Exception as exc:
         return JSONResponse({"success": False, "error": str(exc)})
+
+
+# =====================================================================
+# User Profile endpoints
+# =====================================================================
+
+async def get_profile(request: Request) -> JSONResponse:
+    """GET /api/settings/profile -- return user profile or defaults."""
+    from cohort.learning import load_profile
+
+    profile = load_profile()
+    if profile is None:
+        # Return empty defaults so UI can show the form
+        settings = _load_settings()
+        profile = {
+            "version": "1.0",
+            "core_paragraph": "",
+            "adaptation_rules": {
+                "response_length": "medium",
+                "summarize_back": True,
+                "confirm_decisions": True,
+                "praise_before_feedback": True,
+                "options_per_question": 3,
+                "custom_rules": [],
+            },
+            "display_name": settings.get("user_display_name", ""),
+            "display_role": settings.get("user_display_role", ""),
+            "exists": False,
+        }
+    else:
+        profile["exists"] = True
+
+    return JSONResponse(profile)
+
+
+async def put_profile(request: Request) -> JSONResponse:
+    """PUT /api/settings/profile -- create or update user profile."""
+    from cohort.learning import bootstrap_profile, load_profile
+
+    body = await request.json()
+    core_paragraph = body.get("core_paragraph", "").strip()
+    adaptation_rules = body.get("adaptation_rules")
+
+    settings = _load_settings()
+    display_name = body.get("display_name", settings.get("user_display_name", "User"))
+    display_role = body.get("display_role", settings.get("user_display_role", ""))
+
+    # Create or update
+    existing = load_profile()
+    if existing is None:
+        profile = bootstrap_profile(display_name, display_role, core_paragraph)
+    else:
+        import json as _json
+        from datetime import datetime as _dt
+        from pathlib import Path as _P
+
+        if core_paragraph:
+            existing["core_paragraph"] = core_paragraph
+        if adaptation_rules and isinstance(adaptation_rules, dict):
+            if "adaptation_rules" not in existing:
+                existing["adaptation_rules"] = {}
+            existing["adaptation_rules"].update(adaptation_rules)
+        existing["last_updated"] = _dt.now().isoformat()
+        profile_path = _P.home() / ".cohort" / "profile.json"
+        profile_path.write_text(_json.dumps(existing, indent=2), encoding="utf-8")
+        profile = existing
+
+        # Reset cached profile path
+        try:
+            import cohort.agent_context as ac
+            ac._DEFAULT_PROFILE_PATH = None  # noqa: SLF001
+        except Exception:
+            pass
+
+    return JSONResponse({"success": True, "profile": profile})
 
 
 # =====================================================================
@@ -5772,6 +5848,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/settings", get_settings, methods=["GET"]),
         Route("/api/settings", post_settings, methods=["POST"]),
         Route("/api/settings/test-connection", test_connection, methods=["POST"]),
+        Route("/api/settings/profile", get_profile, methods=["GET"]),
+        Route("/api/settings/profile", put_profile, methods=["PUT"]),
         Route("/api/permissions", get_permissions, methods=["GET"]),
         Route("/api/permissions", post_permissions, methods=["POST"]),
         Route("/api/service-keys/test", test_service_key, methods=["POST"]),

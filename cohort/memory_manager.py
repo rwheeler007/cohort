@@ -80,6 +80,23 @@ class MemoryManager:
         memory.learned_facts.append(fact)
         self._store.save_memory(agent_id, memory)
 
+    def update_fact_timestamp(
+        self, agent_id: str, fact_index: int, new_timestamp: str
+    ) -> None:
+        """Freshen an existing fact's timestamp (dedup detected a near-duplicate).
+
+        Args:
+            agent_id: Agent whose memory to update.
+            fact_index: Index into learned_facts list.
+            new_timestamp: ISO timestamp to set.
+        """
+        memory = self._store.load_memory(agent_id)
+        if memory is None:
+            return
+        if 0 <= fact_index < len(memory.learned_facts):
+            memory.learned_facts[fact_index].timestamp = new_timestamp
+            self._store.save_memory(agent_id, memory)
+
     # =====================================================================
     # Collaborator tracking
     # =====================================================================
