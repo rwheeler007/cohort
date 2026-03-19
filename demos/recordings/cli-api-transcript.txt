@@ -1,0 +1,23 @@
+[   0.0s] $ cat demo.py
+[   0.0s]   from cohort import JsonFileStorage, Orchestrator
+[   0.0s]   from cohort.chat import ChatManager
+[   0.0s]   
+[   0.0s]   chat = ChatManager(JsonFileStorage("my_data"))
+[   0.0s]   chat.create_channel("hello-world", "First conversation")
+[   0.0s]   
+[   0.0s]   agents = {
+[   0.0s]       "architect": {"triggers": ["hello", "design"], "capabilities": ["architecture"]},
+[   0.0s]       "tester": {"triggers": ["testing", "qa"], "capabilities": ["test strategy"]},
+[   0.0s]   }
+[   0.0s]   
+[   0.0s]   orch = Orchestrator(chat, agents=agents)
+[   0.0s]   chat.post_message("hello-world", "user", "Hello! Can you introduce yourself in one sentence?")
+[   0.0s]   rec = orch.get_next_speaker_for_channel("hello-world")
+[   0.0s]   print(f"Next speaker: {rec['recommended_speaker']} (confidence: {rec['confidence']:.0%})")
+[   0.0s]   
+[   0.0s]   response = orch.invoke_agent(rec['recommended_speaker'], "hello-world")
+[   0.0s]   print(f"{rec['recommended_speaker']}: {response['message']}")
+[   0.0s] $ python demo.py
+[   0.0s]   Next speaker: architect (confidence: 87%)
+[   0.0s]   architect: Hi! I'm the architect agent, here to help you design
+[   0.0s]   clean, scalable software systems.

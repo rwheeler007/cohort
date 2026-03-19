@@ -80,16 +80,29 @@ export async function resetToFirstRun(opts: ResetOptions = {}): Promise<void> {
     }
   }
 
-  // Clear demo channels from data dir
+  // Clear demo channels from SQLite database
   const dataDir =
     opts.dataDir ||
     path.dirname(settingsPath); // same dir as settings.json
+  const dbPath = path.join(dataDir, "cohort.db");
+  if (fs.existsSync(dbPath)) {
+    const { execSync } = require("child_process");
+    try {
+      execSync(
+        `python -c "import sqlite3; c=sqlite3.connect('${dbPath.replace(/\\/g, "/")}'); c.execute(\\"DELETE FROM messages WHERE channel_id LIKE 'demo-%'\\"); c.execute(\\"DELETE FROM channels WHERE id LIKE 'demo-%'\\"); c.commit(); c.close()"`,
+        { timeout: 5000 }
+      );
+    } catch {
+      // Ignore — DB might not exist yet on first run
+    }
+  }
+
+  // Also clear demo channels from channels.json if it exists
   const channelsFile = path.join(dataDir, "channels.json");
   if (fs.existsSync(channelsFile)) {
     const channels = JSON.parse(
       fs.readFileSync(channelsFile, "utf-8")
     );
-    // Only remove channels created by demos
     const filtered = Array.isArray(channels)
       ? channels.filter(
           (ch: any) => !ch.id?.startsWith("demo-")

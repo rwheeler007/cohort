@@ -1,0 +1,13 @@
+[   0.0s] $ pip install cohort[claude]
+[   0.0s]   Successfully installed cohort-0.3.8
+[   0.0s] $ cohort setup --mcp-only
+[   0.0s]   [OK] MCP config written to ~/.claude/settings.local.json
+[   0.0s] # Restart Claude Code / Cursor
+[   0.0s] # Type: "Hello! Can you introduce yourself in one sentence?"
+[   0.0s]   
+[   0.0s]   You: Hello! Can you introduce yourself in one sentence?
+[   0.0s]   
+[   0.0s]   architect (via Cohort MCP): I'm your architecture agent,
+[   0.0s]   ready to help design robust, scalable software systems.
+[   0.0s]   
+[   0.0s]   [Cohort] Response scored 0.87 confidence | 104 tok/s local inference

@@ -20,15 +20,17 @@ export default defineConfig({
   /* Run specs serially — each one records a video */
   fullyParallel: false,
   workers: 1,
+  /* Keep all artifacts (videos, traces) even on success */
+  preserveOutput: "always",
 
   use: {
     baseURL: process.env.COHORT_URL || "http://127.0.0.1:5100",
     /* Slow enough to look human on camera */
     launchOptions: { slowMo: 80 },
-    /* Record everything */
+    /* Record everything — always retain for final takes */
     video: { mode: "on", size: { width: 1920, height: 1080 } },
     screenshot: "on",
-    trace: "retain-on-failure",
+    trace: "on",
     /* Viewport */
     viewport: { width: 1920, height: 1080 },
   },

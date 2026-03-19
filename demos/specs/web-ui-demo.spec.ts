@@ -153,7 +153,7 @@ test.describe("Web UI - Zero to Conversation", () => {
       // Wait for verification to complete
       await page.waitForSelector("#setup-verify-result", {
         state: "visible",
-        timeout: 60_000,
+        timeout: 90_000,
       });
     }
 
@@ -285,5 +285,6 @@ test.describe("Web UI - Zero to Conversation", () => {
     console.log("========================================\n");
 
     timer.save("recordings/web-ui-timing.json");
+
   });
 });

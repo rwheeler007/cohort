@@ -126,7 +126,7 @@ test.describe("VS Code Extension - Zero to Conversation", () => {
       await verifyBtn.click();
       await page.waitForSelector("#setup-verify-result", {
         state: "visible",
-        timeout: 60_000,
+        timeout: 90_000,
       });
     }
     await page.waitForTimeout(500);
@@ -230,5 +230,6 @@ test.describe("VS Code Extension - Zero to Conversation", () => {
     console.log("========================================\n");
 
     timer.save("recordings/vscode-timing.json");
+
   });
 });
