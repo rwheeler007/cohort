@@ -35,7 +35,8 @@ const NAV_ITEMS = [
             { label: "CLI", href: "cli.html" },
             { label: "Content Pipeline", href: "marketing.html" },
             { label: "Website Creator", href: "website-creator.html" },
-            { label: "Project Integration", href: "project-integration.html" }
+            { label: "Project Integration", href: "project-integration.html" },
+            { label: "VS Code Extension", href: "vscode.html" }
         ]
     },
     {
