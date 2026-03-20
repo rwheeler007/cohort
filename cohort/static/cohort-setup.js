@@ -81,6 +81,15 @@ const setupWizard = {
         }
 
         // Step 5: Import Preferences buttons
+        const promptBtn = $('#setup-import-prompt-btn');
+        if (promptBtn) promptBtn.onclick = () => this.showProfilePrompt();
+
+        const copyPromptBtn = $('#setup-import-copy-prompt');
+        if (copyPromptBtn) copyPromptBtn.onclick = () => this.copyProfilePrompt();
+
+        const pasteBtn = $('#setup-import-paste-btn');
+        if (pasteBtn) pasteBtn.onclick = () => this.parseProfilePaste();
+
         const chatgptBtn = $('#setup-import-chatgpt-btn');
         const chatgptFile = $('#setup-import-chatgpt-file');
         if (chatgptBtn && chatgptFile) {
@@ -90,6 +99,13 @@ const setupWizard = {
 
         const claudeImportBtn = $('#setup-import-claude-btn');
         if (claudeImportBtn) claudeImportBtn.onclick = () => this.importClaudeMemory();
+
+        const configBtn = $('#setup-import-config-btn');
+        const configFiles = $('#setup-import-config-files');
+        if (configBtn && configFiles) {
+            configBtn.onclick = () => configFiles.click();
+            configFiles.onchange = (e) => this.onConfigFilesSelected(e);
+        }
 
         const selectAllBtn = $('#setup-import-select-all');
         const selectNoneBtn = $('#setup-import-select-none');
@@ -106,6 +122,7 @@ const setupWizard = {
         if (discardBtn) discardBtn.onclick = () => {
             this.importFacts = [];
             $('#setup-import-preview').style.display = 'none';
+            $('#setup-import-sources').style.display = '';
             this.markDone(5);
         };
 
@@ -409,8 +426,110 @@ const setupWizard = {
         // Reset UI state on entry
         $('#setup-import-sources').style.display = '';
         $('#setup-import-chatgpt-picker').style.display = 'none';
+        $('#setup-import-prompt-flow').style.display = 'none';
         $('#setup-import-preview').style.display = 'none';
         $('#setup-import-progress').style.display = 'none';
+    },
+
+    // -- Profile Prompt Flow --
+    async showProfilePrompt() {
+        try {
+            const resp = await fetch('/api/setup/import-profile-prompt');
+            const data = await resp.json();
+
+            const promptEl = $('#setup-import-prompt-text');
+            promptEl.textContent = data.prompt;
+
+            $('#setup-import-sources').style.display = 'none';
+            $('#setup-import-prompt-flow').style.display = '';
+        } catch (e) {
+            showToast('Failed to load prompt: ' + e.message, 'error');
+        }
+    },
+
+    async copyProfilePrompt() {
+        const text = $('#setup-import-prompt-text').textContent;
+        try {
+            await navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard!', 'success');
+        } catch (e) {
+            // Fallback: select the text
+            const range = document.createRange();
+            range.selectNodeContents($('#setup-import-prompt-text'));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            showToast('Select and copy manually (Ctrl+C)', 'info');
+        }
+    },
+
+    async parseProfilePaste() {
+        const text = ($('#setup-import-paste-area') || {}).value || '';
+        if (!text.trim()) {
+            showToast('Paste the AI response first', 'error');
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/setup/import-profile-paste', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text }),
+            });
+
+            if (!resp.ok) throw new Error('Parse failed');
+            const result = await resp.json();
+
+            if (!result.facts || !result.facts.length) {
+                showToast('No preferences found in the pasted text. Try a different AI or paste more detail.', 'error');
+                return;
+            }
+
+            this.importFacts = result.facts;
+            $('#setup-import-prompt-flow').style.display = 'none';
+            this.renderFactsPreview(this.importFacts);
+        } catch (e) {
+            showToast('Parse failed: ' + e.message, 'error');
+        }
+    },
+
+    // -- Config File Flow --
+    async onConfigFilesSelected(event) {
+        const files = event.target.files;
+        if (!files || !files.length) return;
+
+        const fileContents = {};
+        for (const file of files) {
+            try {
+                fileContents[file.name] = await file.text();
+            } catch (e) { /* skip unreadable */ }
+        }
+
+        if (!Object.keys(fileContents).length) {
+            showToast('Could not read any files', 'error');
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/setup/import-config-files', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ files: fileContents }),
+            });
+
+            if (!resp.ok) throw new Error('Parse failed');
+            const result = await resp.json();
+
+            if (!result.facts || !result.facts.length) {
+                showToast('No preferences found in those config files.', 'error');
+                return;
+            }
+
+            this.importFacts = result.facts;
+            $('#setup-import-sources').style.display = 'none';
+            this.renderFactsPreview(this.importFacts);
+        } catch (e) {
+            showToast('Config parsing failed: ' + e.message, 'error');
+        }
     },
 
     async onChatGPTFileSelected(event) {

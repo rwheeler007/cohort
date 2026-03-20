@@ -435,6 +435,347 @@ def detect_claude_dir() -> dict[str, Any]:
 
 
 # =====================================================================
+# Regex-Based Fallback Extraction (no model needed)
+# =====================================================================
+
+# Patterns that indicate user preferences in conversation text
+_PREF_PATTERNS: list[tuple[re.Pattern, str]] = [
+    # "I prefer X over Y" / "I prefer X"
+    (re.compile(r"(?:i|I)\s+prefer\s+(.+?)(?:\s+over\s+.+)?[.\n]", re.IGNORECASE), "preference"),
+    # "I always/never use X"
+    (re.compile(r"(?:i|I)\s+(always|never)\s+use\s+(.+?)[.\n]", re.IGNORECASE), "tool_usage"),
+    # "I use X instead of Y" / "I use X"
+    (re.compile(r"(?:i|I)\s+use\s+(\S+(?:\s+\S+)?)\s+(?:instead\s+of|rather\s+than|not)\s+(.+?)[.\n]", re.IGNORECASE), "tool_usage"),
+    # "don't/do not X" as instructions
+    (re.compile(r"(?:please\s+)?(?:don'?t|do\s+not)\s+(.+?)[.\n]", re.IGNORECASE), "correction"),
+    # "always X" as instructions
+    (re.compile(r"(?:please\s+)?always\s+(.+?)[.\n]", re.IGNORECASE), "correction"),
+    # "keep responses/answers X"
+    (re.compile(r"keep\s+(?:your\s+)?(?:responses?|answers?)\s+(.+?)[.\n]", re.IGNORECASE), "preference"),
+    # "I like X" style
+    (re.compile(r"(?:i|I)\s+(?:like|want|need)\s+(.+?)[.\n]", re.IGNORECASE), "preference"),
+]
+
+
+def extract_facts_regex(conversations: list[dict], selected_ids: set[str]) -> list[dict[str, str]]:
+    """Extract preference facts using regex patterns only (no model).
+
+    Fallback for when no local model is available. Catches obvious
+    preference statements like "I prefer X", "always use Y", "don't do Z".
+    Less thorough than Qwen but zero dependencies.
+    """
+    all_facts: list[dict[str, str]] = []
+    seen: set[str] = set()
+
+    conv_map = {c["id"]: c for c in conversations if isinstance(c, dict) and c.get("id") in selected_ids}
+
+    for conv_id in selected_ids:
+        conv = conv_map.get(conv_id)
+        if not conv:
+            continue
+
+        messages = flatten_conversation(conv)
+        title = conv.get("title", "Untitled")
+
+        # Only scan user messages (preferences come from the user)
+        user_texts = [m["content"] for m in messages if m["role"] == "user"]
+        full_text = "\n".join(user_texts)
+
+        for pattern, category in _PREF_PATTERNS:
+            for match in pattern.finditer(full_text):
+                # Build the fact from the full match
+                raw = match.group(0).strip().rstrip(".")
+                # Normalize: "I prefer X over Y" -> "User prefers X over Y"
+                fact = re.sub(r"^(?:i|I)\s+", "User ", raw)
+                fact = re.sub(r"^(?:please\s+)?", "", fact, flags=re.IGNORECASE)
+
+                # Capitalize and clean
+                fact = fact[0].upper() + fact[1:] if fact else fact
+                if not fact or len(fact) < 10:
+                    continue
+
+                key = fact.lower().strip()
+                if key in seen:
+                    continue
+                seen.add(key)
+
+                all_facts.append({
+                    "fact": fact,
+                    "confidence": "medium",
+                    "category": category,
+                    "source": f"chatgpt:{title}",
+                })
+
+    return all_facts
+
+
+# =====================================================================
+# Copy-Paste Prompt Generator
+# =====================================================================
+
+PROFILE_PROMPT = '''I'm setting up a new AI assistant tool called Cohort and I want it to know \
+my preferences from the start. Can you help me create a preference profile based on what you \
+know about how I work?
+
+Please answer each section based on our conversation history. If you're not sure about \
+something, skip it. Output as a simple list — one preference per line.
+
+**Communication Style:**
+- How long do I like responses? (minimal / short / medium / detailed)
+- Do I prefer bullet points or prose?
+- Am I direct or do I like context first?
+
+**Technical Preferences** (if applicable):
+- What programming languages do I use most?
+- What tools, frameworks, or libraries do I prefer?
+- Any tools I've said I avoid or dislike?
+- Editor, terminal, OS preferences?
+- Testing, linting, formatting preferences?
+
+**Work Style:**
+- Do I like options presented or just the best answer?
+- Do I prefer step-by-step guidance or high-level direction?
+- Anything I've asked you to always do or never do?
+
+**Anything else** you've noticed about my preferences that would help another AI work with me?
+
+Format each preference as a single clear sentence starting with "User prefers..." or \
+"User uses..." or "Always..." or "Never..." — one per line, nothing else.'''
+
+
+def get_profile_prompt() -> str:
+    """Return the prompt users should paste into their existing AI."""
+    return PROFILE_PROMPT
+
+
+def parse_profile_paste(text: str) -> list[dict[str, str]]:
+    """Parse the output from the profile prompt (pasted back by user).
+
+    Expects one preference per line, optionally with bullet markers.
+    Returns facts ready for the preview/commit flow.
+    """
+    facts: list[dict[str, str]] = []
+    seen: set[str] = set()
+
+    for line in text.strip().split("\n"):
+        line = line.strip()
+        if not line:
+            continue
+
+        # Strip bullet markers, numbers, dashes
+        cleaned = re.sub(r"^[-*\d.)\s]+", "", line).strip()
+
+        # Skip headers and meta-text
+        if cleaned.startswith(("**", "##", "Communication", "Technical", "Work Style",
+                               "Anything else", "Format each", "Here", "Based on")):
+            continue
+
+        if len(cleaned) < 10:
+            continue
+
+        # Determine category
+        lower = cleaned.lower()
+        if any(kw in lower for kw in ("use ", "uses ", "editor", "framework", "library",
+                                       "tool", "language", "terminal")):
+            category = "tool_usage"
+        elif any(kw in lower for kw in ("never", "don't", "avoid", "stop")):
+            category = "correction"
+        elif any(kw in lower for kw in ("always", "must", "require")):
+            category = "procedure"
+        else:
+            category = "preference"
+
+        key = cleaned.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+
+        facts.append({
+            "fact": cleaned,
+            "confidence": "high",
+            "category": category,
+            "source": "profile_prompt",
+        })
+
+    return facts
+
+
+# =====================================================================
+# Config File Preference Extraction (no model needed)
+# =====================================================================
+
+def extract_from_config_files(file_contents: dict[str, str]) -> list[dict[str, str]]:
+    """Extract preferences from project config files.
+
+    Supports: pyproject.toml, .editorconfig, .prettierrc, tsconfig.json,
+    .eslintrc, package.json (partial), .vscode/settings.json.
+
+    Args:
+        file_contents: {filename: content_string} dict.
+
+    Returns:
+        List of preference facts.
+    """
+    facts: list[dict[str, str]] = []
+    seen: set[str] = set()
+
+    def _add(fact: str, category: str = "tool_usage") -> None:
+        key = fact.lower()
+        if key not in seen and len(fact) >= 10:
+            seen.add(key)
+            facts.append({"fact": fact, "confidence": "high",
+                          "category": category, "source": "config_file"})
+
+    for filename, content in file_contents.items():
+        fname = filename.lower()
+
+        if fname == "pyproject.toml" or fname.endswith("/pyproject.toml"):
+            _parse_pyproject(content, _add)
+
+        elif fname == ".editorconfig" or fname.endswith("/.editorconfig"):
+            _parse_editorconfig(content, _add)
+
+        elif fname == "package.json" or fname.endswith("/package.json"):
+            _parse_package_json(content, _add)
+
+        elif fname == "tsconfig.json" or fname.endswith("/tsconfig.json"):
+            _add("User uses TypeScript")
+
+        elif fname in (".prettierrc", ".prettierrc.json") or fname.endswith(("/.prettierrc", "/.prettierrc.json")):
+            _parse_prettierrc(content, _add)
+
+    return facts
+
+
+def _parse_pyproject(content: str, add: Any) -> None:
+    """Extract preferences from pyproject.toml."""
+    # Build system
+    if "[tool.poetry]" in content:
+        add("User uses Poetry for Python dependency management")
+    elif "[build-system]" in content and "hatchling" in content:
+        add("User uses Hatch for Python project management")
+    elif "[build-system]" in content and "setuptools" in content:
+        add("User uses setuptools for Python packaging")
+
+    # Linting / formatting
+    if "[tool.ruff]" in content:
+        add("User uses ruff for Python linting and formatting")
+    if "[tool.black]" in content:
+        add("User uses Black for Python code formatting")
+    if "[tool.isort]" in content:
+        add("User uses isort for Python import sorting")
+    if "[tool.mypy]" in content:
+        add("User uses mypy for Python type checking")
+    if "[tool.pyright]" in content:
+        add("User uses Pyright for Python type checking")
+
+    # Testing
+    if "[tool.pytest" in content:
+        add("User uses pytest for Python testing")
+
+    # Line length
+    line_match = re.search(r"line[_-]length\s*=\s*(\d+)", content)
+    if line_match:
+        add(f"User prefers {line_match.group(1)} character line length")
+
+    # Python version
+    ver_match = re.search(r"python_requires\s*=\s*[\"']>=?(\d+\.\d+)", content)
+    if ver_match:
+        add(f"User targets Python {ver_match.group(1)}+")
+    ver_match2 = re.search(r"requires-python\s*=\s*[\"']>=?(\d+\.\d+)", content)
+    if ver_match2:
+        add(f"User targets Python {ver_match2.group(1)}+")
+
+
+def _parse_editorconfig(content: str, add: Any) -> None:
+    """Extract preferences from .editorconfig."""
+    if "indent_style = space" in content.lower():
+        size_match = re.search(r"indent_size\s*=\s*(\d+)", content)
+        size = size_match.group(1) if size_match else "4"
+        add(f"User prefers {size}-space indentation")
+    elif "indent_style = tab" in content.lower():
+        add("User prefers tab indentation")
+
+    if "trim_trailing_whitespace = true" in content.lower():
+        add("User trims trailing whitespace")
+
+    if "insert_final_newline = true" in content.lower():
+        add("User requires final newline in files")
+
+
+def _parse_package_json(content: str, add: Any) -> None:
+    """Extract preferences from package.json."""
+    try:
+        pkg = json.loads(content)
+    except json.JSONDecodeError:
+        return
+
+    deps = {}
+    deps.update(pkg.get("dependencies", {}))
+    deps.update(pkg.get("devDependencies", {}))
+
+    # Frameworks
+    if "react" in deps:
+        add("User uses React")
+    if "vue" in deps:
+        add("User uses Vue.js")
+    if "next" in deps:
+        add("User uses Next.js")
+    if "svelte" in deps or "@sveltejs/kit" in deps:
+        add("User uses Svelte")
+
+    # Testing
+    if "vitest" in deps:
+        add("User uses Vitest for JavaScript testing")
+    elif "jest" in deps:
+        add("User uses Jest for JavaScript testing")
+
+    # Linting
+    if "eslint" in deps:
+        add("User uses ESLint for JavaScript linting")
+    if "prettier" in deps:
+        add("User uses Prettier for code formatting")
+    if "biome" in deps or "@biomejs/biome" in deps:
+        add("User uses Biome for JavaScript linting and formatting")
+
+    # Runtime
+    if "typescript" in deps:
+        add("User uses TypeScript")
+
+    # Package manager (from packageManager field)
+    pm = pkg.get("packageManager", "")
+    if "pnpm" in pm:
+        add("User uses pnpm as JavaScript package manager")
+    elif "yarn" in pm:
+        add("User uses Yarn as JavaScript package manager")
+    elif "bun" in pm:
+        add("User uses Bun as JavaScript runtime and package manager")
+
+
+def _parse_prettierrc(content: str, add: Any) -> None:
+    """Extract preferences from .prettierrc."""
+    try:
+        cfg = json.loads(content)
+    except json.JSONDecodeError:
+        return
+
+    if cfg.get("semi") is False:
+        add("User prefers no semicolons in JavaScript", "preference")
+    elif cfg.get("semi") is True:
+        add("User prefers semicolons in JavaScript", "preference")
+
+    if cfg.get("singleQuote"):
+        add("User prefers single quotes in JavaScript", "preference")
+
+    tw = cfg.get("tabWidth")
+    if tw:
+        add(f"User prefers {tw}-space indentation in JavaScript", "preference")
+
+    if cfg.get("useTabs"):
+        add("User prefers tabs in JavaScript", "preference")
+
+
+# =====================================================================
 # Shared Extraction Engine
 # =====================================================================
 

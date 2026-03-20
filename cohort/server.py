@@ -3068,8 +3068,11 @@ async def setup_import_chatgpt_titles(request: Request) -> JSONResponse:
 
 
 async def setup_import_chatgpt_extract(request: Request) -> JSONResponse:
-    """POST /api/setup/import-chatgpt-extract -- extract facts from selected conversations."""
-    from cohort.import_seed import extract_from_chatgpt
+    """POST /api/setup/import-chatgpt-extract -- extract facts from selected conversations.
+
+    Falls back to regex-based extraction if no local model is available.
+    """
+    from cohort.import_seed import extract_facts_regex, extract_from_chatgpt
     from cohort.local.config import DEFAULT_MODEL
     from cohort.local.ollama import OllamaClient
 
@@ -3084,16 +3087,18 @@ async def setup_import_chatgpt_extract(request: Request) -> JSONResponse:
     if not conversations or not selected_ids:
         return JSONResponse({"error": "No conversations or IDs provided"}, status_code=400)
 
+    # Try model-based extraction first, fall back to regex
+    method = "model"
     client = OllamaClient(timeout=120)
-    if not client.health_check():
-        return JSONResponse({"error": "Ollama not available"}, status_code=503)
+    if client.health_check():
+        facts = await asyncio.to_thread(
+            extract_from_chatgpt, conversations, selected_ids, client, DEFAULT_MODEL
+        )
+    else:
+        method = "regex"
+        facts = extract_facts_regex(conversations, selected_ids)
 
-    # Run extraction (may take a while for many conversations)
-    facts = await asyncio.to_thread(
-        extract_from_chatgpt, conversations, selected_ids, client, DEFAULT_MODEL
-    )
-
-    return JSONResponse({"facts": facts, "count": len(facts)})
+    return JSONResponse({"facts": facts, "count": len(facts), "method": method})
 
 
 async def setup_import_claude_detect(request: Request) -> JSONResponse:
@@ -3111,6 +3116,46 @@ async def setup_import_claude_detect(request: Request) -> JSONResponse:
         "facts": facts,
         "count": len(facts),
     })
+
+
+async def setup_import_profile_prompt(request: Request) -> JSONResponse:
+    """GET /api/setup/import-profile-prompt -- return the prompt users paste into their AI."""
+    from cohort.import_seed import get_profile_prompt
+    return JSONResponse({"prompt": get_profile_prompt()})
+
+
+async def setup_import_profile_paste(request: Request) -> JSONResponse:
+    """POST /api/setup/import-profile-paste -- parse pasted profile prompt output."""
+    from cohort.import_seed import parse_profile_paste
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    text = body.get("text", "")
+    if not text.strip():
+        return JSONResponse({"error": "No text provided"}, status_code=400)
+
+    facts = parse_profile_paste(text)
+    return JSONResponse({"facts": facts, "count": len(facts)})
+
+
+async def setup_import_config_files(request: Request) -> JSONResponse:
+    """POST /api/setup/import-config-files -- extract preferences from config files."""
+    from cohort.import_seed import extract_from_config_files
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    files = body.get("files", {})
+    if not files:
+        return JSONResponse({"error": "No files provided"}, status_code=400)
+
+    facts = extract_from_config_files(files)
+    return JSONResponse({"facts": facts, "count": len(facts)})
 
 
 async def setup_import_commit(request: Request) -> JSONResponse:
@@ -6171,6 +6216,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/import-chatgpt-titles", setup_import_chatgpt_titles, methods=["POST"]),
         Route("/api/setup/import-chatgpt-extract", setup_import_chatgpt_extract, methods=["POST"]),
         Route("/api/setup/import-claude-detect", setup_import_claude_detect, methods=["POST"]),
+        Route("/api/setup/import-profile-prompt", setup_import_profile_prompt, methods=["GET"]),
+        Route("/api/setup/import-profile-paste", setup_import_profile_paste, methods=["POST"]),
+        Route("/api/setup/import-config-files", setup_import_config_files, methods=["POST"]),
         Route("/api/setup/import-commit", setup_import_commit, methods=["POST"]),
         # Session endpoints (canonical)
         Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
