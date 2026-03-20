@@ -558,6 +558,40 @@ LEARNING_EXTRACTION_PROMPT = (
     "Agent ({agent_id}): {response}\n"
 )
 
+# =====================================================================
+# Preference Import Configuration (ChatGPT / Claude Code seed)
+# =====================================================================
+# One-time batch import of user preferences from external sources.
+# Runs during setup wizard Step 5. Uses same Qwen model as learning.
+
+IMPORT_BATCH_SIZE = 5               # Message pairs per extraction call
+IMPORT_MAX_CONVERSATIONS = 200      # Max conversations to show in picker
+
+IMPORT_EXTRACTION_PARAMS: dict = {
+    "think": False,
+    "num_predict": 2048,
+    "keep_alive": "2m",
+    "temperature": 0.15,
+}
+
+IMPORT_EXTRACTION_PROMPT = (
+    "Extract durable USER PREFERENCES from these conversation excerpts. "
+    "Focus on what the user wants, how they like to work, their tools, "
+    "communication style, and technical choices. Ignore ephemeral questions "
+    "and one-off requests.\n\n"
+    "Categories:\n"
+    "- preference: Communication style, response format, general approach\n"
+    "- tool_usage: Specific tools, libraries, frameworks, languages the user prefers\n"
+    "- correction: Rules the user has stated (always/never/don't)\n"
+    "- procedure: Workflows or processes the user follows\n\n"
+    "Output a JSON array. Each item: "
+    '{{"fact": "...", "confidence": "high|medium|low", '
+    '"category": "preference|tool_usage|correction|procedure"}}\n\n'
+    "If nothing preference-related found, output: []\n\n"
+    "--- CONVERSATIONS ---\n{text}\n--- END ---\n"
+)
+
+
 LEARNING_PROFILE_DISTILL_PROMPT = (
     "Based on these user preference and correction observations, build a "
     "communication profile for this user. Output valid JSON only.\n\n"

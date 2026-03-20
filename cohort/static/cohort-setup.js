@@ -14,9 +14,11 @@
 
 const setupWizard = {
     currentStep: 1,
-    totalSteps: 7,
+    totalSteps: 8,
     stepsDone: new Set(),
     hwData: null,
+    importChatgptData: null,  // Raw conversations.json for import
+    importFacts: [],          // Extracted facts pending approval
     ollamaData: null,
     topicsData: null,
     categoriesData: null,
@@ -78,7 +80,36 @@ const setupWizard = {
             kwInput.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); this.addCustomKeyword(); } };
         }
 
-        // Step 6: MCP Server buttons
+        // Step 5: Import Preferences buttons
+        const chatgptBtn = $('#setup-import-chatgpt-btn');
+        const chatgptFile = $('#setup-import-chatgpt-file');
+        if (chatgptBtn && chatgptFile) {
+            chatgptBtn.onclick = () => chatgptFile.click();
+            chatgptFile.onchange = (e) => this.onChatGPTFileSelected(e);
+        }
+
+        const claudeImportBtn = $('#setup-import-claude-btn');
+        if (claudeImportBtn) claudeImportBtn.onclick = () => this.importClaudeMemory();
+
+        const selectAllBtn = $('#setup-import-select-all');
+        const selectNoneBtn = $('#setup-import-select-none');
+        if (selectAllBtn) selectAllBtn.onclick = () => this.toggleAllConversations(true);
+        if (selectNoneBtn) selectNoneBtn.onclick = () => this.toggleAllConversations(false);
+
+        const extractBtn = $('#setup-import-chatgpt-extract-btn');
+        if (extractBtn) extractBtn.onclick = () => this.extractChatGPTFacts();
+
+        const saveImportBtn = $('#setup-import-save-btn');
+        if (saveImportBtn) saveImportBtn.onclick = () => this.saveImportedFacts();
+
+        const discardBtn = $('#setup-import-discard-btn');
+        if (discardBtn) discardBtn.onclick = () => {
+            this.importFacts = [];
+            $('#setup-import-preview').style.display = 'none';
+            this.markDone(5);
+        };
+
+        // Step 7: MCP Server buttons
         const mcpWriteBtn = $('#setup-mcp-write-btn');
         if (mcpWriteBtn) mcpWriteBtn.onclick = () => this.writeMcpConfig();
 
@@ -148,9 +179,10 @@ const setupWizard = {
             else if (next === 2) this.runStep2();
             else if (next === 3) this.runStep3();
             else if (next === 4) this.runStep4Auto();
-            else if (next === 5) this.runStep5();
-            else if (next === 6) this.runStep6();
-            else if (next === 7) this.runStep7();
+            else if (next === 5) this.runStep5Import();
+            else if (next === 6) this.runStep5();
+            else if (next === 7) this.runStep6();
+            else if (next === 8) this.runStep7();
         }
     },
 
@@ -372,7 +404,202 @@ const setupWizard = {
         }
     },
 
-    // -- Step 5: Content Pipeline --
+    // -- Step 5: Import Preferences --
+    async runStep5Import() {
+        // Reset UI state on entry
+        $('#setup-import-sources').style.display = '';
+        $('#setup-import-chatgpt-picker').style.display = 'none';
+        $('#setup-import-preview').style.display = 'none';
+        $('#setup-import-progress').style.display = 'none';
+    },
+
+    async onChatGPTFileSelected(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+
+            // conversations.json is an array of conversation objects
+            const conversations = Array.isArray(data) ? data : [data];
+            this.importChatgptData = conversations;
+
+            // Send to server for title parsing
+            const resp = await fetch('/api/setup/import-chatgpt-titles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ conversations }),
+            });
+
+            if (!resp.ok) throw new Error('Server error');
+            const result = await resp.json();
+
+            this.renderConversationPicker(result.titles);
+            $('#setup-import-sources').style.display = 'none';
+            $('#setup-import-chatgpt-picker').style.display = '';
+        } catch (e) {
+            showToast('Failed to parse file: ' + e.message, 'error');
+        }
+    },
+
+    renderConversationPicker(titles) {
+        const listEl = $('#setup-import-chatgpt-list');
+        listEl.innerHTML = '';
+
+        for (const conv of titles) {
+            const item = document.createElement('label');
+            item.className = 'setup-wizard__import-item';
+
+            const date = conv.create_time
+                ? new Date(conv.create_time * 1000).toLocaleDateString()
+                : '';
+
+            item.innerHTML = `
+                <input type="checkbox" checked data-conv-id="${escapeHtml(conv.id)}">
+                <span class="setup-wizard__import-item-title">${escapeHtml(conv.title)}</span>
+                <span class="setup-wizard__import-item-meta">${conv.message_count} msgs ${date ? '| ' + date : ''}</span>
+            `;
+            listEl.appendChild(item);
+        }
+    },
+
+    toggleAllConversations(checked) {
+        const list = $('#setup-import-chatgpt-list');
+        list.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = checked);
+    },
+
+    async extractChatGPTFacts() {
+        const list = $('#setup-import-chatgpt-list');
+        const selectedIds = [];
+        list.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            selectedIds.push(cb.dataset.convId);
+        });
+
+        if (!selectedIds.length) {
+            showToast('No conversations selected', 'error');
+            return;
+        }
+
+        $('#setup-import-chatgpt-picker').style.display = 'none';
+        $('#setup-import-progress').style.display = '';
+
+        try {
+            const resp = await fetch('/api/setup/import-chatgpt-extract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversations: this.importChatgptData,
+                    selected_ids: selectedIds,
+                }),
+            });
+
+            if (!resp.ok) throw new Error('Extraction failed');
+            const result = await resp.json();
+
+            this.importFacts = result.facts || [];
+            this.renderFactsPreview(this.importFacts);
+        } catch (e) {
+            showToast('Extraction failed: ' + e.message, 'error');
+            $('#setup-import-progress').style.display = 'none';
+            $('#setup-import-sources').style.display = '';
+        }
+    },
+
+    async importClaudeMemory() {
+        const statusEl = $('#setup-import-claude-status');
+        statusEl.style.display = '';
+        statusEl.innerHTML = '<div class="setup-wizard__loading">[*] Scanning Claude Code directory...</div>';
+
+        try {
+            const resp = await fetch('/api/setup/import-claude-detect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!resp.ok) throw new Error('Detection failed');
+            const result = await resp.json();
+
+            if (!result.exists) {
+                statusEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">[!] No ~/.claude/ directory found</div>';
+                return;
+            }
+
+            if (!result.facts || !result.facts.length) {
+                statusEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--warn">[!] Found ~/.claude/ but no preference data</div>';
+                return;
+            }
+
+            statusEl.innerHTML = `<div class="setup-wizard__status setup-wizard__status--ok">[OK] Found ${result.count} preference(s) from ${result.memory_files} memory file(s)</div>`;
+
+            this.importFacts = result.facts;
+            $('#setup-import-sources').style.display = 'none';
+            this.renderFactsPreview(this.importFacts);
+        } catch (e) {
+            statusEl.innerHTML = `<div class="setup-wizard__status setup-wizard__status--err">[X] ${escapeHtml(e.message)}</div>`;
+        }
+    },
+
+    renderFactsPreview(facts) {
+        $('#setup-import-progress').style.display = 'none';
+        $('#setup-import-preview').style.display = '';
+        $('#setup-import-result').style.display = 'none';
+
+        const listEl = $('#setup-import-facts-list');
+        listEl.innerHTML = '';
+
+        for (let i = 0; i < facts.length; i++) {
+            const f = facts[i];
+            const item = document.createElement('label');
+            item.className = 'setup-wizard__import-item';
+
+            const badge = f.category === 'preference' ? 'pref'
+                : f.category === 'tool_usage' ? 'tool'
+                : f.category === 'correction' ? 'rule'
+                : f.category || 'fact';
+
+            item.innerHTML = `
+                <input type="checkbox" checked data-fact-idx="${i}">
+                <span class="setup-wizard__import-item-title">${escapeHtml(f.fact)}</span>
+                <span class="setup-wizard__import-item-meta">${badge}</span>
+            `;
+            listEl.appendChild(item);
+        }
+    },
+
+    async saveImportedFacts() {
+        const listEl = $('#setup-import-facts-list');
+        const selected = [];
+        listEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            const idx = parseInt(cb.dataset.factIdx);
+            if (this.importFacts[idx]) selected.push(this.importFacts[idx]);
+        });
+
+        if (!selected.length) {
+            showToast('No facts selected', 'error');
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/setup/import-commit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ facts: selected }),
+            });
+
+            if (!resp.ok) throw new Error('Save failed');
+            const result = await resp.json();
+
+            const resultEl = $('#setup-import-result');
+            resultEl.style.display = '';
+            resultEl.innerHTML = `<div class="setup-wizard__status setup-wizard__status--ok">[OK] Saved ${result.stored} preference(s)</div>`;
+            this.markDone(5);
+        } catch (e) {
+            showToast('Failed to save: ' + e.message, 'error');
+        }
+    },
+
+    // -- Step 6: Content Pipeline --
     async runStep5() {
         const gridEl = $('#setup-topic-grid');
         if (this.topicsData) {
@@ -844,7 +1071,7 @@ const setupWizard = {
 
     async finish() {
         // If no feeds selected, still mark setup complete
-        if (!this.stepsDone.has(5)) {
+        if (!this.stepsDone.has(6)) {
             try {
                 await fetch('/api/setup/save-config', {
                     method: 'POST',

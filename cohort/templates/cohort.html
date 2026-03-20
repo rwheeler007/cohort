@@ -1155,16 +1155,21 @@
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="5">
                     <span class="setup-step__indicator" id="step-ind-5">5</span>
-                    <span class="setup-step__label">Content</span>
+                    <span class="setup-step__label">Import</span>
                 </button>
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="6">
                     <span class="setup-step__indicator" id="step-ind-6">6</span>
-                    <span class="setup-step__label">MCP</span>
+                    <span class="setup-step__label">Content</span>
                 </button>
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="7">
                     <span class="setup-step__indicator" id="step-ind-7">7</span>
+                    <span class="setup-step__label">MCP</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="8">
+                    <span class="setup-step__indicator" id="step-ind-8">8</span>
                     <span class="setup-step__label">Cloud</span>
                 </button>
             </nav>
@@ -1233,8 +1238,83 @@
                     </div>
                 </div>
 
-                <!-- Step 5: Content Pipeline -->
+                <!-- Step 5: Import Preferences -->
                 <div class="setup-wizard__step" data-step="5" style="display:none">
+                    <h3>Import Your Preferences (Optional)</h3>
+                    <p class="text-muted">
+                        Already use ChatGPT or Claude Code? Import your preferences so
+                        Cohort feels familiar from the start. Everything stays on your machine.
+                    </p>
+
+                    <!-- Source cards -->
+                    <div class="setup-wizard__import-sources" id="setup-import-sources">
+                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-chatgpt-card">
+                            <h4>ChatGPT Export</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm)">
+                                Upload your <code>conversations.json</code> from
+                                ChatGPT's data export. You pick which conversations to scan.
+                            </p>
+                            <input type="file" id="setup-import-chatgpt-file" accept=".json"
+                                   style="display:none">
+                            <button class="btn btn--secondary" id="setup-import-chatgpt-btn">
+                                Choose File
+                            </button>
+                        </div>
+
+                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-claude-card">
+                            <h4>Claude Code Memory</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm)">
+                                Auto-detect preferences from your Claude Code setup
+                                (<code>~/.claude/</code>).
+                            </p>
+                            <button class="btn btn--secondary" id="setup-import-claude-btn">
+                                Scan Claude Code
+                            </button>
+                            <div id="setup-import-claude-status" style="display:none;margin-top:var(--space-2)"></div>
+                        </div>
+                    </div>
+
+                    <!-- ChatGPT conversation picker (hidden until file loaded) -->
+                    <div id="setup-import-chatgpt-picker" style="display:none;margin-top:var(--space-4)">
+                        <h4>Select Conversations to Scan</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Only selected conversations will be analyzed. Nothing leaves your machine.
+                        </p>
+                        <div style="margin-bottom:var(--space-2);display:flex;gap:var(--space-2)">
+                            <button class="btn btn--secondary btn--sm" id="setup-import-select-all">Select All</button>
+                            <button class="btn btn--secondary btn--sm" id="setup-import-select-none">Select None</button>
+                        </div>
+                        <div id="setup-import-chatgpt-list" class="setup-wizard__import-list"></div>
+                        <button class="btn btn--primary" id="setup-import-chatgpt-extract-btn"
+                                style="margin-top:var(--space-3)">
+                            Extract Preferences
+                        </button>
+                    </div>
+
+                    <!-- Extraction progress -->
+                    <div id="setup-import-progress" style="display:none;margin-top:var(--space-3)">
+                        <div class="setup-wizard__loading" id="setup-import-progress-text">
+                            [*] Extracting preferences... this may take a minute.
+                        </div>
+                    </div>
+
+                    <!-- Facts preview (hidden until extraction done) -->
+                    <div id="setup-import-preview" style="display:none;margin-top:var(--space-4)">
+                        <h4>Extracted Preferences</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Review and uncheck anything you don't want Cohort to remember.
+                        </p>
+                        <div id="setup-import-facts-list" class="setup-wizard__import-list"></div>
+                        <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3)">
+                            <button class="btn btn--primary" id="setup-import-save-btn">Save Selected</button>
+                            <button class="btn btn--secondary" id="setup-import-discard-btn">Discard All</button>
+                        </div>
+                        <div id="setup-import-result" style="display:none;margin-top:var(--space-2)"></div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Content Pipeline -->
+                <div class="setup-wizard__step" data-step="6" style="display:none">
                     <h3>Set Up Your Content Pipeline (Optional)</h3>
                     <p class="text-muted">
                         Your Marketing and Content Strategy agents can monitor RSS feeds
@@ -1267,8 +1347,8 @@
                     </div>
                 </div>
 
-                <!-- Step 6: MCP Server Setup (Optional) -->
-                <div class="setup-wizard__step" data-step="6" style="display:none">
+                <!-- Step 7: MCP Server Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="7" style="display:none">
                     <h3>MCP Server Setup (Optional)</h3>
                     <p class="text-muted">
                         The Cohort MCP server lets any MCP-compatible client use your local AI model
@@ -1293,8 +1373,8 @@
                     </div>
                 </div>
 
-                <!-- Step 7: Cloud & Advanced Setup (Optional) -->
-                <div class="setup-wizard__step" data-step="7" style="display:none">
+                <!-- Step 8: Cloud & Advanced Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="8" style="display:none">
                     <h3>Cloud & Advanced Setup (Optional)</h3>
                     <p class="text-muted">
                         Add a cloud API provider for the Smartest [S++] response tier,

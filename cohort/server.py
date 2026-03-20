@@ -679,10 +679,15 @@ def _broadcast_work_queue() -> None:
 
 
 async def channel_poll(request: Request) -> JSONResponse:
-    """GET /api/channel/poll -- return next pending agent request."""
+    """GET /api/channel/poll -- return next pending agent request.
+
+    Accepts optional ``channel_id`` query param to scope to one channel.
+    Without it, returns the next pending request from any channel (backward compat).
+    """
     from cohort.channel_bridge import poll_next_request
 
-    pending = poll_next_request()
+    channel_id = request.query_params.get("channel_id")
+    pending = poll_next_request(channel_id=channel_id)
     if pending is None:
         return JSONResponse({"request": None, "reason": "queue_empty"})
     return JSONResponse({"request": pending})
@@ -772,6 +777,7 @@ async def channel_heartbeat(request: Request) -> JSONResponse:
     update_heartbeat(
         session_id=body.get("session_id", "unknown"),
         pid=body.get("pid"),
+        channel_id=body.get("channel_id"),
     )
     return JSONResponse({"ok": True})
 
@@ -780,7 +786,38 @@ async def channel_status(request: Request) -> JSONResponse:
     """GET /api/channel/status -- return channel session health."""
     from cohort.channel_bridge import get_session_status
 
-    return JSONResponse(get_session_status())
+    channel_id = request.query_params.get("channel_id")
+    return JSONResponse(get_session_status(channel_id=channel_id))
+
+
+async def channel_register(request: Request) -> JSONResponse:
+    """POST /api/channel/register -- register a session for a specific channel.
+
+    Enforces the configurable session limit.  Returns 429 if at capacity.
+    """
+    from cohort.channel_bridge import register_channel_session
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    channel_id = body.get("channel_id", "")
+    if not channel_id:
+        return JSONResponse({"error": "channel_id required"}, status_code=400)
+
+    session_id = body.get("session_id", "unknown")
+    pid = body.get("pid")
+    result = register_channel_session(channel_id, session_id, pid)
+    status_code = 200 if result["ok"] else 429
+    return JSONResponse(result, status_code=status_code)
+
+
+async def channel_sessions_list(request: Request) -> JSONResponse:
+    """GET /api/channel/sessions -- list all active channel sessions."""
+    from cohort.channel_bridge import get_all_sessions_status
+
+    return JSONResponse(get_all_sessions_status())
 
 
 # =====================================================================
@@ -1748,6 +1785,9 @@ async def get_settings(request: Request) -> JSONResponse:
         "dev_mode": settings.get("dev_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
         "channel_mode": settings.get("channel_mode", False),
+        "channel_session_limit": settings.get("channel_session_limit", 5),
+        "channel_session_warn": settings.get("channel_session_warn", 3),
+        "channel_session_default": settings.get("channel_session_default", 1),
         "cloud_provider": settings.get("cloud_provider", ""),
         "cloud_api_key_masked": cloud_key_masked,
         "cloud_model": settings.get("cloud_model", ""),
@@ -1799,6 +1839,18 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["dev_mode"] = bool(body["dev_mode"])
     if "channel_mode" in body:
         settings["channel_mode"] = bool(body["channel_mode"])
+    if "channel_session_limit" in body:
+        val = int(body["channel_session_limit"])
+        if 1 <= val <= 50:
+            settings["channel_session_limit"] = val
+    if "channel_session_warn" in body:
+        val = int(body["channel_session_warn"])
+        if 1 <= val <= 50:
+            settings["channel_session_warn"] = val
+    if "channel_session_default" in body:
+        val = int(body["channel_session_default"])
+        if 0 <= val <= 10:
+            settings["channel_session_default"] = val
     if "cloud_provider" in body:
         if body["cloud_provider"] in ("", "anthropic", "openai"):
             settings["cloud_provider"] = body["cloud_provider"]
@@ -2991,6 +3043,91 @@ async def setup_detect_claude(request: Request) -> JSONResponse:
         "existing_agents_root": settings.get("agents_root", ""),
         "platform": __import__("platform").system().lower(),
     })
+
+
+# =====================================================================
+# Setup: Preference Import (ChatGPT / Claude Code)
+# =====================================================================
+
+
+async def setup_import_chatgpt_titles(request: Request) -> JSONResponse:
+    """POST /api/setup/import-chatgpt-titles -- parse conversations.json, return titles."""
+    from cohort.import_seed import parse_chatgpt_titles
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    conversations = body.get("conversations", [])
+    if not isinstance(conversations, list) or not conversations:
+        return JSONResponse({"error": "No conversations found"}, status_code=400)
+
+    titles = parse_chatgpt_titles(conversations)
+    return JSONResponse({"titles": titles, "total": len(titles)})
+
+
+async def setup_import_chatgpt_extract(request: Request) -> JSONResponse:
+    """POST /api/setup/import-chatgpt-extract -- extract facts from selected conversations."""
+    from cohort.import_seed import extract_from_chatgpt
+    from cohort.local.config import DEFAULT_MODEL
+    from cohort.local.ollama import OllamaClient
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    conversations = body.get("conversations", [])
+    selected_ids = set(body.get("selected_ids", []))
+
+    if not conversations or not selected_ids:
+        return JSONResponse({"error": "No conversations or IDs provided"}, status_code=400)
+
+    client = OllamaClient(timeout=120)
+    if not client.health_check():
+        return JSONResponse({"error": "Ollama not available"}, status_code=503)
+
+    # Run extraction (may take a while for many conversations)
+    facts = await asyncio.to_thread(
+        extract_from_chatgpt, conversations, selected_ids, client, DEFAULT_MODEL
+    )
+
+    return JSONResponse({"facts": facts, "count": len(facts)})
+
+
+async def setup_import_claude_detect(request: Request) -> JSONResponse:
+    """POST /api/setup/import-claude-detect -- check for ~/.claude/ and parse memories."""
+    from cohort.import_seed import detect_claude_dir, parse_claude_memory
+
+    info = detect_claude_dir()
+    facts: list[dict] = []
+
+    if info["exists"]:
+        facts = parse_claude_memory()
+
+    return JSONResponse({
+        **info,
+        "facts": facts,
+        "count": len(facts),
+    })
+
+
+async def setup_import_commit(request: Request) -> JSONResponse:
+    """POST /api/setup/import-commit -- save approved facts to agent memories."""
+    from cohort.import_seed import commit_facts
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+
+    facts = body.get("facts", [])
+    if not facts:
+        return JSONResponse({"stored": 0})
+
+    stored = commit_facts(facts, _agent_store)
+    return JSONResponse({"stored": stored})
 
 
 # =====================================================================
@@ -5996,6 +6133,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
+        Route("/api/channel/register", channel_register, methods=["POST"]),
+        Route("/api/channel/sessions", channel_sessions_list, methods=["GET"]),
         Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),
         Route("/api/channel/{request_id}/respond", channel_respond, methods=["POST"]),
         Route("/api/channel/{request_id}/error", channel_error, methods=["POST"]),
@@ -6029,6 +6168,10 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
         Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
         Route("/api/setup/global-agents", setup_global_agents, methods=["POST"]),
+        Route("/api/setup/import-chatgpt-titles", setup_import_chatgpt_titles, methods=["POST"]),
+        Route("/api/setup/import-chatgpt-extract", setup_import_chatgpt_extract, methods=["POST"]),
+        Route("/api/setup/import-claude-detect", setup_import_claude_detect, methods=["POST"]),
+        Route("/api/setup/import-commit", setup_import_commit, methods=["POST"]),
         # Session endpoints (canonical)
         Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
         Route("/api/sessions/setup-parse", session_setup_parse, methods=["POST"]),

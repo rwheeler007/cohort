@@ -3850,6 +3850,67 @@ textarea.form-input {
     margin: 0;
 }
 
+/* Import preference cards */
+.setup-wizard__import-sources {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.setup-wizard__import-card {
+    flex: 1;
+    cursor: default;
+    transition: border-color 0.15s;
+}
+
+.setup-wizard__import-card:hover {
+    border-color: var(--color-accent);
+}
+
+/* Scrollable checklist for conversation titles / facts */
+.setup-wizard__import-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    background-color: var(--color-bg-primary);
+}
+
+.setup-wizard__import-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-sm);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.setup-wizard__import-item:last-child {
+    border-bottom: none;
+}
+
+.setup-wizard__import-item input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.setup-wizard__import-item-title {
+    flex: 1;
+}
+
+.setup-wizard__import-item-meta {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .setup-wizard__import-sources {
+        flex-direction: column;
+    }
+}
+
 /* =============================================================================
    Tool Dashboard Panel
    ============================================================================= */
