@@ -485,6 +485,8 @@ def apply_settings(settings: dict) -> None:
             limit=settings.get("channel_session_limit", 5),
             warn=settings.get("channel_session_warn", 3),
             default=settings.get("channel_session_default", 1),
+            idle_timeout=settings.get("channel_idle_timeout", 600),
+            auto_launch=settings.get("channel_auto_launch", False),
         )
     except ImportError:
         pass

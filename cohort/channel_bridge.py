@@ -64,11 +64,24 @@ CLAIMED_STALE_TIMEOUT_S = 60  # Auto-fail claimed requests if session dies
 _session_limit: int = 5    # Hard cap -- refuse new sessions beyond this
 _session_warn: int = 3     # Warning threshold
 _session_default: int = 1  # Sessions to launch on startup (0 = on-demand)
+_idle_timeout_s: int = 600  # 10 minutes -- kill sessions with no activity
+_auto_launch: bool = False  # Auto-launch sessions on demand (opt-in)
 
 _GLOBAL_KEY = "__global__"  # Backward compat key for unscoped sessions
 
 # Chat manager reference for hydration (set via set_chat_ref)
 _chat_ref: Any = None
+
+# Launch queue: channels waiting for a session to be spawned
+# (VS Code extension or CLI polls this to know what to launch)
+_launch_queue: deque = deque(maxlen=20)
+_launch_queue_lock = threading.Lock()
+
+# Track last activity per channel (for idle reaper)
+_channel_last_activity: Dict[str, float] = {}
+
+# Reaper thread state
+_reaper_started: bool = False
 
 
 def set_chat_ref(chat: Any) -> None:
@@ -88,16 +101,25 @@ def apply_channel_settings(
     limit: int = 5,
     warn: int = 3,
     default: int = 1,
+    idle_timeout: int = 600,
+    auto_launch: bool = False,
 ) -> None:
     """Update session threshold settings.  Called from agent_router.apply_settings()."""
-    global _session_limit, _session_warn, _session_default  # noqa: PLW0603
+    global _session_limit, _session_warn, _session_default, _idle_timeout_s, _auto_launch  # noqa: PLW0603
     _session_limit = max(1, limit)
     _session_warn = max(1, warn)
     _session_default = max(0, default)
+    _idle_timeout_s = max(60, idle_timeout)  # Minimum 1 minute
+    _auto_launch = bool(auto_launch)
     logger.info(
-        "[OK] Channel session thresholds: limit=%d, warn=%d, default=%d",
+        "[OK] Channel session thresholds: limit=%d, warn=%d, default=%d, "
+        "idle_timeout=%ds, auto_launch=%s",
         _session_limit, _session_warn, _session_default,
+        _idle_timeout_s, _auto_launch,
     )
+
+    # Start the reaper thread on first settings load
+    _start_reaper()
 
 
 # =====================================================================
@@ -243,6 +265,13 @@ def enqueue_channel_request(
         _channel_queues[channel_id].append(request)
         _channel_cv.notify_all()
 
+    # Track activity for idle reaper
+    touch_channel_activity(channel_id)
+
+    # Auto-launch: if no session exists for this channel, queue a launch
+    if _auto_launch and not channel_mode_active(channel_id=channel_id):
+        request_session(channel_id)
+
     logger.info(
         "[>>] Channel request enqueued: %s for %s in #%s",
         request_id, agent_id, channel_id,
@@ -373,6 +402,9 @@ def claim_request(request_id: str, session_id: str = "unknown") -> Optional[Dict
         req["status"] = "claimed"
         req["claimed_at"] = time.time()
         req["claimed_by"] = session_id
+
+    # Track activity for idle reaper
+    touch_channel_activity(req["channel_id"])
 
     logger.info("[>>] Channel request claimed: %s by %s", request_id, session_id)
     return {
@@ -576,7 +608,10 @@ def get_all_sessions_status() -> Dict[str, Any]:
             "limit": _session_limit,
             "warn": _session_warn,
             "default": _session_default,
+            "idle_timeout": _idle_timeout_s,
+            "auto_launch": _auto_launch,
         },
+        "launch_queue": get_launch_queue(),
     }
 
 
@@ -633,3 +668,242 @@ def _run_hydration(channel_id: str) -> None:
         hydrate_channel_context(_chat_ref, channel_id)
     except Exception:
         logger.exception("[X] Hydration failed for #%s", channel_id)
+
+
+# =====================================================================
+# Phase 3: Smart session scheduling
+# =====================================================================
+
+def request_session(channel_id: str) -> Dict[str, Any]:
+    """Request a session for a channel.  Used by auto-launch.
+
+    If auto-launch is enabled and we're under the session limit, adds the
+    channel to the launch queue so the VS Code extension or CLI can pick it
+    up and spawn a ``claude`` process.
+
+    If at the session limit, attempts priority eviction of the least-active
+    idle session.
+
+    Returns ``{queued: True, ...}`` if a launch was queued, or
+    ``{queued: False, reason: ...}`` if not.
+    """
+    if not _auto_launch:
+        return {"queued": False, "reason": "auto_launch_disabled"}
+
+    # Already have a healthy session for this channel?
+    if channel_mode_active(channel_id=channel_id):
+        return {"queued": False, "reason": "session_exists"}
+
+    # Already in the launch queue?
+    with _launch_queue_lock:
+        if any(item["channel_id"] == channel_id for item in _launch_queue):
+            return {"queued": False, "reason": "already_queued"}
+
+    with _channel_lock:
+        _prune_stale_sessions()
+        active = _count_healthy_sessions()
+
+        if active >= _session_limit:
+            # Try priority eviction
+            evicted = _try_evict_idle_session()
+            if not evicted:
+                return {
+                    "queued": False,
+                    "reason": "at_limit_no_idle",
+                    "limit": _session_limit,
+                    "active": active,
+                }
+            logger.info(
+                "[*] Evicted idle session from #%s to make room for #%s",
+                evicted, channel_id,
+            )
+
+    # Add to launch queue
+    with _launch_queue_lock:
+        _launch_queue.append({
+            "channel_id": channel_id,
+            "requested_at": time.time(),
+        })
+
+    logger.info("[>>] Session launch queued for #%s", channel_id)
+    return {"queued": True, "channel_id": channel_id}
+
+
+def poll_launch_queue() -> Optional[Dict[str, Any]]:
+    """Return the next channel needing a session, or None.
+
+    Called by the VS Code extension or CLI to discover channels that need
+    sessions launched.  Non-destructive peek -- use :func:`ack_launch` to
+    remove from queue after spawning.
+    """
+    with _launch_queue_lock:
+        for item in _launch_queue:
+            # Skip if a session appeared since queuing (e.g., manual launch)
+            if not channel_mode_active(channel_id=item["channel_id"]):
+                return item
+    return None
+
+
+def ack_launch(channel_id: str) -> bool:
+    """Acknowledge that a session was launched for a channel.
+
+    Removes the channel from the launch queue.  Returns True if found.
+    """
+    with _launch_queue_lock:
+        for i, item in enumerate(_launch_queue):
+            if item["channel_id"] == channel_id:
+                del _launch_queue[i]
+                logger.info("[OK] Launch acknowledged for #%s", channel_id)
+                return True
+    return False
+
+
+def get_launch_queue() -> list:
+    """Return the current launch queue (for debugging/status)."""
+    with _launch_queue_lock:
+        return list(_launch_queue)
+
+
+def touch_channel_activity(channel_id: str) -> None:
+    """Record activity on a channel (for idle reaper scoring)."""
+    _channel_last_activity[channel_id] = time.time()
+
+
+def _try_evict_idle_session() -> Optional[str]:
+    """Evict the least-active idle session.  Must be called under _channel_lock.
+
+    Returns the evicted channel_id, or None if no session is idle.
+
+    Scoring: channels with the oldest last_activity AND no pending requests
+    are evicted first.
+    """
+    now = time.time()
+    candidates: list[tuple[str, float]] = []  # (channel_id, score)
+
+    for channel_id, ch_sessions in _channel_sessions.items():
+        if channel_id == _GLOBAL_KEY:
+            continue  # Never evict global session
+
+        # Check if this channel has pending requests (busy = don't evict)
+        queue = _channel_queues.get(channel_id, deque())
+        has_pending = any(r["status"] == "pending" for r in queue)
+        if has_pending:
+            continue
+
+        # Check if any session is healthy
+        has_healthy = any(
+            (now - info.get("last_heartbeat", 0)) < HEARTBEAT_TIMEOUT_S
+            for info in ch_sessions.values()
+        )
+        if not has_healthy:
+            continue  # Already dead, will be pruned
+
+        # Score: lower = better candidate for eviction
+        last_activity = _channel_last_activity.get(channel_id, 0)
+        idle_seconds = now - last_activity if last_activity else now
+        candidates.append((channel_id, idle_seconds))
+
+    if not candidates:
+        return None
+
+    # Evict the channel idle the longest
+    candidates.sort(key=lambda x: x[1], reverse=True)
+    evict_channel = candidates[0][0]
+
+    # Kill sessions for the evicted channel
+    ch_sessions = _channel_sessions.get(evict_channel, {})
+    for session_id, info in list(ch_sessions.items()):
+        pid = info.get("pid")
+        if pid:
+            try:
+                import os
+                os.kill(pid, 15)  # SIGTERM
+            except (ProcessLookupError, PermissionError, OSError):
+                pass
+        del ch_sessions[session_id]
+
+    if not ch_sessions:
+        _channel_sessions.pop(evict_channel, None)
+
+    return evict_channel
+
+
+# =====================================================================
+# Idle session reaper
+# =====================================================================
+
+def _start_reaper() -> None:
+    """Start the idle session reaper thread (once)."""
+    global _reaper_started  # noqa: PLW0603
+    if _reaper_started:
+        return
+    _reaper_started = True
+    t = threading.Thread(
+        target=_reaper_loop,
+        daemon=True,
+        name="session-reaper",
+    )
+    t.start()
+    logger.info("[OK] Session idle reaper started (timeout=%ds)", _idle_timeout_s)
+
+
+def _reaper_loop() -> None:
+    """Background thread that kills idle sessions."""
+    while True:
+        try:
+            time.sleep(60)  # Check every minute
+            _reap_idle_sessions()
+        except Exception:
+            logger.exception("[X] Reaper error")
+
+
+def _reap_idle_sessions() -> None:
+    """Kill sessions that have been idle beyond the timeout."""
+    now = time.time()
+    reaped: list[str] = []
+
+    with _channel_lock:
+        for channel_id in list(_channel_sessions):
+            if channel_id == _GLOBAL_KEY:
+                continue
+
+            ch_sessions = _channel_sessions[channel_id]
+            if not ch_sessions:
+                continue
+
+            # Check last activity
+            last_activity = _channel_last_activity.get(channel_id, 0)
+            if last_activity == 0:
+                continue  # Never had activity, skip (just registered)
+
+            idle_seconds = now - last_activity
+            if idle_seconds < _idle_timeout_s:
+                continue
+
+            # Check if there are pending requests (don't reap busy channels)
+            queue = _channel_queues.get(channel_id, deque())
+            has_pending = any(r["status"] in ("pending", "claimed") for r in queue)
+            if has_pending:
+                continue
+
+            # Reap: kill all sessions for this channel
+            for session_id, info in list(ch_sessions.items()):
+                pid = info.get("pid")
+                if pid:
+                    try:
+                        import os
+                        os.kill(pid, 15)  # SIGTERM
+                    except (ProcessLookupError, PermissionError, OSError):
+                        pass
+                del ch_sessions[session_id]
+
+            if not ch_sessions:
+                _channel_sessions.pop(channel_id, None)
+
+            reaped.append(channel_id)
+
+    for ch_id in reaped:
+        logger.info(
+            "[*] Reaped idle session for #%s (idle %.0fs, timeout %ds)",
+            ch_id, now - _channel_last_activity.get(ch_id, 0), _idle_timeout_s,
+        )

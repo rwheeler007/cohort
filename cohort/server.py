@@ -849,6 +849,27 @@ async def channel_hydration_status(request: Request) -> JSONResponse:
     return JSONResponse({"channels": result, "total_cached": len(result)})
 
 
+async def channel_launch_queue_poll(request: Request) -> JSONResponse:
+    """GET /api/channel/launch-queue -- peek at next channel needing a session."""
+    from cohort.channel_bridge import poll_launch_queue
+
+    item = poll_launch_queue()
+    if item is None:
+        return JSONResponse({"pending": None})
+    return JSONResponse({"pending": item})
+
+
+async def channel_launch_queue_ack(request: Request) -> JSONResponse:
+    """POST /api/channel/launch-queue/{channel_id}/ack -- acknowledge a launch."""
+    from cohort.channel_bridge import ack_launch
+
+    channel_id = request.path_params.get("channel_id", "")
+    if not channel_id:
+        return JSONResponse({"error": "channel_id required"}, status_code=400)
+    found = ack_launch(channel_id)
+    return JSONResponse({"ok": found})
+
+
 # =====================================================================
 # Schedule endpoints
 # =====================================================================
@@ -1817,6 +1838,8 @@ async def get_settings(request: Request) -> JSONResponse:
         "channel_session_limit": settings.get("channel_session_limit", 5),
         "channel_session_warn": settings.get("channel_session_warn", 3),
         "channel_session_default": settings.get("channel_session_default", 1),
+        "channel_idle_timeout": settings.get("channel_idle_timeout", 600),
+        "channel_auto_launch": settings.get("channel_auto_launch", False),
         "cloud_provider": settings.get("cloud_provider", ""),
         "cloud_api_key_masked": cloud_key_masked,
         "cloud_model": settings.get("cloud_model", ""),
@@ -1880,6 +1903,12 @@ async def post_settings(request: Request) -> JSONResponse:
         val = int(body["channel_session_default"])
         if 0 <= val <= 10:
             settings["channel_session_default"] = val
+    if "channel_idle_timeout" in body:
+        val = int(body["channel_idle_timeout"])
+        if 60 <= val <= 3600:
+            settings["channel_idle_timeout"] = val
+    if "channel_auto_launch" in body:
+        settings["channel_auto_launch"] = bool(body["channel_auto_launch"])
     if "cloud_provider" in body:
         if body["cloud_provider"] in ("", "anthropic", "openai"):
             settings["cloud_provider"] = body["cloud_provider"]
@@ -6210,6 +6239,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/register", channel_register, methods=["POST"]),
         Route("/api/channel/sessions", channel_sessions_list, methods=["GET"]),
         Route("/api/channel/hydration", channel_hydration_status, methods=["GET"]),
+        Route("/api/channel/launch-queue", channel_launch_queue_poll, methods=["GET"]),
+        Route("/api/channel/launch-queue/{channel_id}/ack", channel_launch_queue_ack, methods=["POST"]),
         Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),
         Route("/api/channel/{request_id}/respond", channel_respond, methods=["POST"]),
         Route("/api/channel/{request_id}/error", channel_error, methods=["POST"]),
