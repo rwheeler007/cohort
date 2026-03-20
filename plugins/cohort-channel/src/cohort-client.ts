@@ -107,6 +107,32 @@ export class CohortClient {
   }
 
   /**
+   * Post a message to a Cohort channel as a specific agent.
+   * Used for multi-round roundtable responses where Claude drives
+   * the discussion and posts each agent's contribution independently.
+   */
+  async postMessage(
+    channel: string,
+    sender: string,
+    message: string,
+    threadId?: string,
+  ): Promise<{ success: boolean; message_id?: string }> {
+    const body: Record<string, unknown> = { channel, sender, message };
+    if (threadId) body.thread_id = threadId;
+
+    const res = await fetch(`${this.baseUrl}/api/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Post failed (${res.status}): ${text}`);
+    }
+    return (await res.json()) as { success: boolean; message_id?: string };
+  }
+
+  /**
    * Send heartbeat. Best-effort.
    */
   async heartbeat(): Promise<void> {

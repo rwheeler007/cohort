@@ -1417,8 +1417,15 @@ def _invoke_agent_sync(item: dict) -> None:
 
                     logger.info("[>>] Channel mode for %s in #%s", agent_id, channel_id)
                     ch_t0 = time.monotonic()
+                    # Channel session already has conversation history in
+                    # its context window -- strip channel context to avoid
+                    # double-loading (saves ~2-15K tokens per request).
+                    _channel_prompt = _base_prompt + (
+                        f"Now respond to this message in #{channel_id}:\n"
+                        f"{message_content}"
+                    )
                     request_id = enqueue_channel_request(
-                        prompt=full_prompt,
+                        prompt=_channel_prompt,
                         agent_id=agent_id,
                         channel_id=channel_id,
                         thread_id=thread_id,
@@ -1631,6 +1638,128 @@ def _invoke_agent_sync(item: dict) -> None:
 
 
 # =====================================================================
+# Multi-agent roundtable via channel session
+# =====================================================================
+
+def _route_roundtable_to_channel(
+    message: Any,
+    mentions: list[str],
+    *,
+    response_mode: str = "smarter",
+) -> None:
+    """Bundle 3+ agent mentions into a single channel roundtable request.
+
+    Instead of queuing N independent agent requests, we send ONE request
+    to the Claude channel session with all agent personas loaded.  Claude
+    orchestrates the multi-round discussion internally and posts each
+    agent's response back via the ``cohort_post`` MCP tool.
+
+    The channel session's system prompt contains roundtable orchestration
+    patterns (round structure, cross-pollination, convergence, synthesis).
+    """
+    from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+
+    channel_id = getattr(message, "channel_id", "")
+    message_content = getattr(message, "content", "")
+
+    # Resolve and load personas for each mentioned agent
+    agent_personas: list[tuple[str, str]] = []  # (agent_id, persona_text)
+    for mention in mentions:
+        mention_lower = mention.lower()
+        if mention_lower in HUMAN_USERS or mention_lower == "claude":
+            continue
+
+        resolved = resolve_agent_id(mention)
+        if not resolved:
+            continue
+
+        # Load persona (lightweight) or full prompt
+        persona: str | None = None
+        if _agent_store is not None:
+            config = _agent_store.get(resolved)
+            if config and config.persona_text:
+                persona = config.persona_text
+        if not persona:
+            persona = load_persona(resolved)
+        if not persona:
+            prompt_path = get_agent_prompt_path(resolved)
+            if prompt_path:
+                try:
+                    persona = prompt_path.read_text(encoding="utf-8")[:2000]
+                except Exception:
+                    continue
+        if persona:
+            agent_personas.append((resolved, persona))
+
+    if len(agent_personas) < 2:
+        logger.warning("[!] Roundtable needs 2+ agents, falling back to individual routing")
+        # Fall through to normal routing handled by caller
+        return
+
+    # Build the roundtable prompt
+    agent_list = ", ".join(aid for aid, _ in agent_personas)
+    logger.info("[>>] Channel roundtable: %s in #%s", agent_list, channel_id)
+
+    persona_blocks = []
+    for agent_id, persona in agent_personas:
+        persona_blocks.append(
+            f"=== {agent_id} ===\n{persona}\n=== END {agent_id} ==="
+        )
+
+    roundtable_prompt = (
+        f"# Roundtable Discussion in #{channel_id}\n\n"
+        f"You are orchestrating a multi-agent roundtable discussion.\n"
+        f"The following agents are participating:\n\n"
+        + "\n\n".join(persona_blocks)
+        + f"\n\n## The Seed Message\n\n{message_content}\n\n"
+        f"## Instructions\n\n"
+        f"Run a multi-round collaborative discussion following your roundtable "
+        f"orchestration training. For EACH agent response, call `cohort_post` "
+        f"with the agent's ID as sender and #{channel_id} as channel.\n\n"
+        f"Structure:\n"
+        f"- Round 1: Each agent gives their initial position (150-200 words)\n"
+        f"- Round 2: Agents respond to each other -- build on, challenge, or extend (100-150 words)\n"
+        f"- Round 3: Convergence -- final positions incorporating insights (80-120 words)\n"
+        f"- Synthesis: Post as 'system' with consensus, tensions, recommendations, action items\n\n"
+        f"Post each response as a separate `cohort_post` call so they appear as "
+        f"individual messages in the chat. Do NOT batch them.\n\n"
+        f"After posting all messages, call `cohort_respond` to signal completion."
+    )
+
+    # Emit typing indicator for first agent
+    _emit_sync("user_typing", {
+        "sender": agent_personas[0][0],
+        "typing": True,
+        "channel_id": channel_id,
+    })
+
+    def _run_roundtable() -> None:
+        try:
+            t0 = time.monotonic()
+            request_id = enqueue_channel_request(
+                prompt=roundtable_prompt,
+                agent_id="roundtable",
+                channel_id=channel_id,
+                response_mode=response_mode,
+            )
+            # Long timeout -- roundtable produces many messages
+            content, meta = await_channel_response(
+                request_id, timeout=max(RESPONSE_TIMEOUT * 3, 600),
+            )
+            elapsed = round(time.monotonic() - t0, 1)
+            logger.info(
+                "[OK] Channel roundtable complete in #%s (%.1fs, %d agents)",
+                channel_id, elapsed, len(agent_personas),
+            )
+        except Exception:
+            logger.exception("[X] Channel roundtable failed in #%s", channel_id)
+
+    # Run in background thread (same pattern as queue processor)
+    thread = threading.Thread(target=_run_roundtable, daemon=True)
+    thread.start()
+
+
+# =====================================================================
 # Entry point (called from socketio_events.py)
 # =====================================================================
 
@@ -1652,6 +1781,16 @@ def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "s
         depth = _get_conversation_depth(message.thread_id)
         if depth >= MAX_CONVERSATION_DEPTH:
             logger.warning("[!] Max depth reached, not routing mentions")
+            return
+
+    # Multi-agent roundtable: if 3+ agents mentioned and channel session is
+    # alive, bundle into a single roundtable request.  Claude orchestrates
+    # the multi-round discussion internally and posts each agent's response
+    # via cohort_post.
+    if len(mentions) >= 3 and _channel_mode_enabled:
+        from cohort.channel_bridge import channel_mode_active
+        if channel_mode_active():
+            _route_roundtable_to_channel(message, mentions, response_mode=response_mode)
             return
 
     sender = getattr(message, "sender", "")

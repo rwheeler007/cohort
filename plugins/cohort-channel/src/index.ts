@@ -116,6 +116,36 @@ mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "cohort_post",
+      description:
+        "Post a message to a Cohort channel as a specific agent. Use this " +
+        "during multi-round roundtable discussions to post each agent's " +
+        "contribution as a separate message. This lets you drive collaborative " +
+        "discussions with multiple rounds without waiting for Cohort to prompt you.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          channel: {
+            type: "string",
+            description: "The channel ID to post to (e.g., 'rt-think-skill-design')",
+          },
+          sender: {
+            type: "string",
+            description: "The agent ID to post as (e.g., 'python_developer')",
+          },
+          content: {
+            type: "string",
+            description: "The message content (in the agent's voice)",
+          },
+          thread_id: {
+            type: "string",
+            description: "Optional thread ID to post as a reply",
+          },
+        },
+        required: ["channel", "sender", "content"],
+      },
+    },
+    {
       name: "cohort_error",
       description:
         "Report that you cannot complete the request. Call this if the " +
@@ -171,6 +201,36 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
             {
               type: "text",
               text: `Failed to deliver response: ${(e as Error).message}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+
+    case "cohort_post": {
+      const channel = (args as { channel: string }).channel;
+      const sender = (args as { sender: string }).sender;
+      const postContent = (args as { content: string }).content;
+      const threadId = (args as { thread_id?: string }).thread_id;
+
+      try {
+        const result = await client.postMessage(channel, sender, postContent, threadId);
+        log("INFO", `Posted as ${sender} to #${channel} (msg=${result.message_id})`);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Posted as ${sender} to #${channel}. Message ID: ${result.message_id}`,
+            },
+          ],
+        };
+      } catch (e) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Failed to post: ${(e as Error).message}`,
             },
           ],
           isError: true,

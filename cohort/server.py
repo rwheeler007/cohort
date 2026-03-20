@@ -371,12 +371,16 @@ async def send_message(request: Request) -> JSONResponse:
         )
 
         # Route @mentions to agent response pipeline
+        # Skip routing for agent-sent messages (roundtable posts, etc.)
+        # to prevent re-triggering loops.  Only human messages trigger agents.
         response_mode = body.get("response_mode", "smarter")
         if response_mode not in ("smart", "smarter", "smartest"):
             response_mode = "smarter"
 
+        from cohort.agent_router import resolve_agent_id
+        is_agent_sender = resolve_agent_id(sender) is not None
         mentions = msg.metadata.get("mentions", [])
-        if mentions:
+        if mentions and not is_agent_sender:
             from cohort.agent_router import route_mentions
             route_mentions(msg, mentions, response_mode=response_mode)
 
