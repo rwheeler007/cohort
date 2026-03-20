@@ -1,0 +1,17 @@
+{
+  "name": "cohort-e2e-tests",
+  "private": true,
+  "description": "Playwright E2E tests for Cohort",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:import": "npx playwright test --grep @import",
+    "test:chat": "npx playwright test --grep @chat",
+    "test:channels": "npx playwright test --grep @channels",
+    "test:settings": "npx playwright test --grep @settings"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -41,6 +41,8 @@ FILE_TAG_MAP: dict[str, list[str]] = {
     "cohort/static/": ["smoke"],
     "cohort/templates/": ["smoke"],
     "cohort/socketio_events.py": ["chat"],
+    "cohort/import_seed.py": ["import"],
+    "cohort/static/cohort-setup.js": ["import", "settings"],
 }
 
 

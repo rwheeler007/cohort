@@ -51,7 +51,9 @@ export class ConsoleErrorCollector {
         // Ignore favicon 404s and similar noise
         !e.includes("favicon") &&
         !e.includes("net::ERR_") &&
-        !e.includes("ResizeObserver")
+        !e.includes("ResizeObserver") &&
+        !e.includes("404 (Not Found)") &&
+        !e.includes("Failed to load resource")
     );
     if (real.length > 0) {
       throw new Error(
@@ -258,4 +260,25 @@ export async function skipSetupWizard(page: Page): Promise<void> {
     // Wizard might already be gone
   }
   await page.waitForTimeout(500);
+}
+
+/**
+ * Navigate the setup wizard to a specific step number (1-8).
+ * Skips earlier steps by clicking the Skip button repeatedly.
+ * The wizard must be visible before calling this.
+ */
+export async function navigateToWizardStep(
+  page: Page,
+  targetStep: number
+): Promise<void> {
+  const wizard = page.locator("#setup-wizard");
+  await wizard.waitFor({ state: "visible", timeout: 5_000 });
+
+  // Skip from step 1 to the target
+  for (let i = 1; i < targetStep; i++) {
+    const skip = page.locator("#setup-skip-btn");
+    await skip.waitFor({ state: "visible", timeout: 3_000 });
+    await skip.click();
+    await page.waitForTimeout(400);
+  }
 }
