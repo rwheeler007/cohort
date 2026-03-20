@@ -2233,6 +2233,342 @@ async def internal_web_fetch(params: InternalWebFetchInput) -> str:
 
 
 # =====================================================================
+# Tool: browser automation (dispatcher pattern)
+# =====================================================================
+
+# Lazy-loaded browser backend singleton
+_browser_backend = None
+
+
+def _get_browser_backend():
+    """Lazy-init the browser backend."""
+    global _browser_backend
+    if _browser_backend is None:
+        from cohort.mcp.browser_backend import get_browser_backend
+        _browser_backend = get_browser_backend()
+    return _browser_backend
+
+
+# --- Action catalog for the dispatcher ---
+
+_BROWSER_ACTION_CATALOG = """
+BROWSE (read-only):
+  navigate(url, wait_until="domcontentloaded") - Go to a URL
+  navigate_back() - Go back to previous page
+  snapshot() - Get accessibility tree of current page
+  screenshot(full_page=false) - Take screenshot, returns file path
+  get_text() - Extract visible text content from page
+  console_messages() - Get browser console output
+  network_requests() - List network requests since page load
+  tabs_list() - List open tabs
+  wait_for(text="", selector="", timeout_ms=5000) - Wait for content
+  verify_text_visible(text) - Check if text is visible
+  verify_element_visible(selector) - Check if element is visible
+  close_page() - Close browser context for this agent
+
+INTERACT (requires browser_interact permission):
+  click(selector) - Click an element
+  fill(selector, value) - Fill a form field
+  type_text(selector, text) - Type text character by character
+  press_key(key) - Press keyboard key (e.g. "Enter", "Tab")
+  select_option(selector, value) - Select dropdown option
+  hover(selector) - Hover over element
+  drag(source, target) - Drag element to target
+  file_upload(selector, paths) - Upload files
+  handle_dialog(action, prompt_text="") - Handle alert/confirm/prompt
+  mouse_click_xy(x, y, button="left") - Click at coordinates
+  mouse_move_xy(x, y) - Move mouse to coordinates
+  mouse_drag_xy(start_x, start_y, end_x, end_y) - Drag between points
+  mouse_wheel(delta_x, delta_y) - Scroll
+  resize(width, height) - Resize viewport
+  tab_new(url="") - Open new tab
+  tab_select(tab_id) - Switch to tab
+  tab_close(tab_id) - Close tab
+
+ADVANCED (requires browser_advanced permission):
+  evaluate(expression) - Run JavaScript on page
+  cookie_list() - List cookies
+  cookie_set(name, value, domain="", path="/") - Set cookie
+  cookie_delete(name) - Delete cookie
+  cookie_clear() - Clear all cookies
+  storage_get(key, storage_type="local") - Get localStorage/sessionStorage
+  storage_set(key, value, storage_type="local") - Set storage item
+  storage_delete(key, storage_type="local") - Delete storage item
+  storage_clear(storage_type="local") - Clear storage
+  storage_list(storage_type="local") - List storage items
+  route_set(url_pattern, response_body, status=200) - Mock network
+  route_list() - List active mocks
+  route_remove(url_pattern) - Remove mock
+  pdf_save(path) - Save page as PDF
+"""
+
+
+class BrowserActionInput(BaseModel):
+    """Input for the browser action dispatcher."""
+
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    action: str = Field(
+        ...,
+        description=(
+            "Browser action to perform. See tool description for full catalog. "
+            "Examples: 'navigate', 'click', 'snapshot', 'fill', 'evaluate'."
+        ),
+        min_length=1,
+        max_length=50,
+    )
+    agent_id: str = Field(
+        default="default",
+        description="Agent identity for browser context isolation. Each agent_id gets its own cookies, storage, and tabs.",
+        max_length=100,
+    )
+    url: str = Field(
+        default="",
+        description="URL for navigate/tab_new actions.",
+        max_length=4096,
+    )
+    selector: str = Field(
+        default="",
+        description="CSS selector or text selector for click/fill/hover/etc.",
+        max_length=500,
+    )
+    value: str = Field(
+        default="",
+        description="Value for fill/select_option/cookie_set/storage_set.",
+        max_length=50000,
+    )
+    text: str = Field(
+        default="",
+        description="Text for type_text/wait_for/verify_text_visible.",
+        max_length=50000,
+    )
+    key: str = Field(
+        default="",
+        description="Key for press_key/storage_get/storage_set/storage_delete/cookie_delete.",
+        max_length=200,
+    )
+    expression: str = Field(
+        default="",
+        description="JavaScript expression for evaluate action.",
+        max_length=50000,
+    )
+    x: float = Field(default=0, description="X coordinate for mouse actions.")
+    y: float = Field(default=0, description="Y coordinate for mouse actions.")
+    end_x: float = Field(default=0, description="End X for mouse_drag_xy.")
+    end_y: float = Field(default=0, description="End Y for mouse_drag_xy.")
+    width: int = Field(default=0, description="Width for resize.", ge=0, le=7680)
+    height: int = Field(default=0, description="Height for resize.", ge=0, le=4320)
+    full_page: bool = Field(default=False, description="Full page screenshot.")
+    button: str = Field(default="left", description="Mouse button: left/right/middle.")
+    tab_id: str = Field(default="", description="Tab identifier for tab actions.", max_length=50)
+    timeout_ms: int = Field(default=5000, description="Timeout in ms for wait_for.", ge=0, le=60000)
+    path: str = Field(default="", description="File path for pdf_save/screenshot.", max_length=500)
+    paths: List[str] = Field(default_factory=list, description="File paths for file_upload.")
+    wait_until: str = Field(default="domcontentloaded", description="Wait strategy for navigate.", max_length=30)
+    storage_type: str = Field(default="local", description="'local' or 'session' for storage actions.", max_length=10)
+    source: str = Field(default="", description="Source selector for drag.", max_length=500)
+    target: str = Field(default="", description="Target selector for drag.", max_length=500)
+    dialog_action: str = Field(default="accept", description="'accept' or 'dismiss' for handle_dialog.", max_length=10)
+    prompt_text: str = Field(default="", description="Text for dialog prompt input.", max_length=1000)
+    url_pattern: str = Field(default="", description="URL pattern for route_set/route_remove.", max_length=500)
+    response_body: str = Field(default="", description="Response body for route_set.", max_length=50000)
+    status: int = Field(default=200, description="HTTP status for route_set.", ge=100, le=599)
+    content_type: str = Field(default="text/plain", description="Content type for route_set.", max_length=100)
+    name: str = Field(default="", description="Cookie name for cookie_set.", max_length=200)
+    domain: str = Field(default="", description="Cookie domain.", max_length=200)
+
+
+@mcp.tool(
+    name="browser_action",
+    annotations={
+        "title": "Browser Automation",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": True,
+    },
+)
+async def browser_action(params: BrowserActionInput) -> str:
+    """Automate a headless browser via Playwright. Each agent_id gets isolated browser state.
+
+    Actions are grouped by permission tier:
+    - BROWSE: navigate, snapshot, screenshot, get_text, console_messages, etc.
+    - INTERACT: click, fill, type_text, press_key, hover, drag, mouse_*, resize, etc.
+    - ADVANCED: evaluate (JS), cookies, storage, network mocking, pdf_save.
+
+    Use action="help" to see the full action catalog.
+    """
+    from cohort.mcp.browser_backend import check_browser_permission
+
+    action = params.action.lower().strip()
+
+    # Help action -- return catalog
+    if action == "help":
+        return _BROWSER_ACTION_CATALOG
+
+    backend = _get_browser_backend()
+
+    # Check availability
+    if not await backend.is_available():
+        try:
+            await backend.start()
+        except Exception as exc:
+            return f"Error: Browser backend unavailable: {exc}"
+
+    # Dispatch to backend method
+    aid = params.agent_id
+
+    try:
+        if action == "navigate":
+            result = await backend.navigate(aid, params.url, wait_until=params.wait_until)
+        elif action == "navigate_back":
+            result = await backend.navigate_back(aid)
+        elif action == "close_page":
+            result = await backend.close_page(aid)
+        elif action == "snapshot":
+            result = await backend.snapshot(aid)
+        elif action == "screenshot":
+            result = await backend.screenshot(aid, full_page=params.full_page)
+        elif action == "get_text":
+            result = await backend.get_text(aid)
+        elif action == "console_messages":
+            result = await backend.console_messages(aid)
+        elif action == "network_requests":
+            result = await backend.network_requests(aid)
+        elif action == "click":
+            result = await backend.click(aid, params.selector)
+        elif action == "fill":
+            result = await backend.fill(aid, params.selector, params.value)
+        elif action == "type_text":
+            result = await backend.type_text(aid, params.selector, params.text)
+        elif action == "press_key":
+            result = await backend.press_key(aid, params.key)
+        elif action == "select_option":
+            result = await backend.select_option(aid, params.selector, params.value)
+        elif action == "hover":
+            result = await backend.hover(aid, params.selector)
+        elif action == "drag":
+            result = await backend.drag(aid, params.source, params.target)
+        elif action == "file_upload":
+            result = await backend.file_upload(aid, params.selector, params.paths)
+        elif action == "handle_dialog":
+            result = await backend.handle_dialog(aid, params.dialog_action, prompt_text=params.prompt_text)
+        elif action == "mouse_click_xy":
+            result = await backend.mouse_click_xy(aid, params.x, params.y, button=params.button)
+        elif action == "mouse_move_xy":
+            result = await backend.mouse_move_xy(aid, params.x, params.y)
+        elif action == "mouse_drag_xy":
+            result = await backend.mouse_drag_xy(aid, params.x, params.y, params.end_x, params.end_y)
+        elif action == "mouse_wheel":
+            result = await backend.mouse_wheel(aid, params.x, params.y)
+        elif action == "resize":
+            result = await backend.resize(aid, params.width, params.height)
+        elif action == "evaluate":
+            result = await backend.evaluate(aid, params.expression)
+        elif action == "cookie_list":
+            result = await backend.cookie_list(aid)
+        elif action == "cookie_set":
+            kwargs: dict = {}
+            if params.domain:
+                kwargs["domain"] = params.domain
+            result = await backend.cookie_set(aid, params.name, params.value, **kwargs)
+        elif action == "cookie_delete":
+            result = await backend.cookie_delete(aid, params.name)
+        elif action == "cookie_clear":
+            result = await backend.cookie_clear(aid)
+        elif action == "storage_get":
+            result = await backend.storage_get(aid, params.key, storage_type=params.storage_type)
+        elif action == "storage_set":
+            result = await backend.storage_set(aid, params.key, params.value, storage_type=params.storage_type)
+        elif action == "storage_delete":
+            result = await backend.storage_delete(aid, params.key, storage_type=params.storage_type)
+        elif action == "storage_clear":
+            result = await backend.storage_clear(aid, storage_type=params.storage_type)
+        elif action == "storage_list":
+            result = await backend.storage_list(aid, storage_type=params.storage_type)
+        elif action == "route_set":
+            result = await backend.route_set(
+                aid, params.url_pattern, params.response_body,
+                status=params.status, content_type=params.content_type,
+            )
+        elif action == "route_list":
+            result = await backend.route_list(aid)
+        elif action == "route_remove":
+            result = await backend.route_remove(aid, params.url_pattern)
+        elif action == "tabs_list":
+            result = await backend.tabs_list(aid)
+        elif action == "tab_new":
+            result = await backend.tab_new(aid, url=params.url)
+        elif action == "tab_select":
+            result = await backend.tab_select(aid, params.tab_id)
+        elif action == "tab_close":
+            result = await backend.tab_close(aid, params.tab_id)
+        elif action == "wait_for":
+            result = await backend.wait_for(aid, text=params.text, selector=params.selector, timeout_ms=params.timeout_ms)
+        elif action == "pdf_save":
+            result = await backend.pdf_save(aid, params.path)
+        elif action == "verify_text_visible":
+            result = await backend.verify_text_visible(aid, params.text)
+        elif action == "verify_element_visible":
+            result = await backend.verify_element_visible(aid, params.selector)
+        else:
+            return f"Error: Unknown browser action '{action}'. Use action='help' for catalog."
+
+        output = result.to_str()
+        if len(output) > CHARACTER_LIMIT:
+            output = output[:CHARACTER_LIMIT] + "\n\n*[truncated]*"
+        return output
+
+    except Exception as exc:
+        return f"Error: Browser action '{action}' failed: {exc}"
+
+
+class BrowserStatusInput(BaseModel):
+    """Input for checking browser backend status."""
+    model_config = ConfigDict(extra="forbid")
+
+
+@mcp.tool(
+    name="browser_status",
+    annotations={
+        "title": "Browser Status",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def browser_status(params: BrowserStatusInput) -> str:
+    """Check browser automation backend availability and active sessions."""
+    lines = ["Browser Backend Status:"]
+
+    # Check Playwright availability
+    try:
+        import playwright  # noqa: F401
+        lines.append("  Playwright: installed")
+    except ImportError:
+        lines.append("  Playwright: NOT installed")
+        return "\n".join(lines)
+
+    backend = _get_browser_backend()
+    available = await backend.is_available()
+    lines.append(f"  Backend: {'running' if available else 'not started (starts on first use)'}")
+    lines.append(f"  Type: PlaywrightDirectBackend")
+    lines.append(f"  Max contexts: {backend._max_contexts}")
+    lines.append(f"  Allow local network: {backend._allow_local}")
+
+    if backend._agents:
+        lines.append(f"  Active sessions: {len(backend._agents)}")
+        for aid, state in backend._agents.items():
+            tab_count = sum(1 for p in state.pages.values() if not p.is_closed())
+            lines.append(f"    - {aid}: {tab_count} tab(s)")
+    else:
+        lines.append("  Active sessions: 0")
+
+    return "\n".join(lines)
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

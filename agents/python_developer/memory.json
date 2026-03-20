@@ -1,7 +1,57 @@
 {
   "agent_id": "python_developer",
   "known_paths": {},
-  "learned_facts": [],
+  "learned_facts": [
+    {
+      "fact": "User prefers using pathlib over os.path for file path handling.",
+      "learned_from": "conversation:learning-test-6",
+      "timestamp": "2026-03-19T18:50:21.573682",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User prefers responses to be under 3 sentences.",
+      "learned_from": "conversation:learning-test-6",
+      "timestamp": "2026-03-19T18:50:21.573682",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User always uses structlog for logging and never the stdlib logging module.",
+      "learned_from": "conversation:learning-test-6",
+      "timestamp": "2026-03-19T18:50:21.573682",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User prefers using Poetry with pyproject.toml for dependency management instead of requirements.txt.",
+      "learned_from": "conversation:learning-test-6",
+      "timestamp": "2026-03-19T18:50:54.849564",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User requires type hints on all function signatures in Python code.",
+      "learned_from": "conversation:learning-test-6",
+      "timestamp": "2026-03-19T18:51:28.790263",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User prefers using pytest with fixtures over unittest for testing.",
+      "learned_from": "conversation:learning-final-test",
+      "timestamp": "2026-03-19T19:39:11.937114",
+      "confidence": "high",
+      "session_id": ""
+    },
+    {
+      "fact": "User prefers dataclasses over namedtuples for defining data structures.",
+      "learned_from": "conversation:learning-final-test",
+      "timestamp": "2026-03-19T19:39:11.937114",
+      "confidence": "high",
+      "session_id": ""
+    }
+  ],
   "active_tasks": [],
   "collaborators": {},
   "working_memory": [
@@ -160,6 +210,288 @@
       "channel": "#oauth2-security-review",
       "input": "@security_agent, @python_developer\n\nReceived. I'm updating my test strategy to incorporate your additions immediately.\n\n**1. Clock Skew & Multi-Audience**\nI'll add specific cases for server time drift (±5 mins tolerance) and multi-audience logic. I need to verify that the `aud` validation rejects tokens where *any* audience is malicious, not just the matching one. This is a critical gap if the allow-list logic isn't strict.\n\n**2. Rate Limiting Headers**\nI'll check that 429 responses include the ",
       "response": "@security_agent, @qa_agent\n\nI've reviewed the current implementation against our security review plan. There are several gaps we need to address before QA can safely test:\n\n## 🔴 Critical Issues Found\n\n### 1. Multi-Audience Token Support (Line 225)\n```python\nif aud != self.token_config.audience:\n    self._raise_error(\"invalid_token\")\n```\n**Problem:** This is strict single-audience matching. Per OAuth2 spec and our security review, we need to support multi-audience tokens where *at least one* audi"
+    },
+    {
+      "timestamp": "2026-03-14T14:57:30.950735",
+      "channel": "sim-compat-security",
+      "input": "@python_developer What is 2+2? One sentence.",
+      "response": "2+2 equals 4."
+    },
+    {
+      "timestamp": "2026-03-14T14:59:04.820437",
+      "channel": "test-debug",
+      "input": "@python_developer hello",
+      "response": "Hello! 👋 Ready to help with Python development tasks.\n\nWhat can I assist you with today? Whether it's:\n- Building APIs (FastAPI/Flask/Django)\n- Data processing scripts\n- ML/AI integration\n- CLI tools or automation\n- Code reviews or refactoring\n\nJust let me know what you need!"
+    },
+    {
+      "timestamp": "2026-03-14T15:05:18.493259",
+      "channel": "sim-test-nosession",
+      "input": "We need to add pagination to our /users REST API endpoint. @python_developer @qa_agent @security_agent what are your thoughts?",
+      "response": "I'll add pagination to our /users endpoint. Here's my approach:\n\n## Technical Implementation\n\n**Query Parameters:**\n```python\n@router.get(\"/users\", response_model=PaginatedUserList)\nasync def get_users(\n    page: int = Query(default=1, ge=1),\n    limit: int = Query(default=20, ge=1, le=100),\n):\n    ...\n```\n\n**Response Model:**\n```python\nclass PaginatedUserList(BaseModel):\n    items: List[User]\n    total: int\n    page: int\n    limit: int\n    pages: int\n    has_next: bool\n    has_prev: bool\n```\n\n#"
+    },
+    {
+      "timestamp": "2026-03-14T15:14:11.104719",
+      "channel": "sim-test-hello2",
+      "input": "@python_developer What is 2+2?",
+      "response": "@python_developer is a Python developer agent, but 2+2 = **4** 🐍\n\nThat's basic arithmetic, not even requiring Python! 😄"
+    },
+    {
+      "timestamp": "2026-03-19T09:53:32.648192",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer who writes readable, explicit code with tests, preferring the standard library and following PEP 8."
+    },
+    {
+      "timestamp": "2026-03-19T09:55:00.296073",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer who writes readable, explicit code with tests, preferring the standard library and following PEP 8."
+    },
+    {
+      "timestamp": "2026-03-19T09:55:35.243476",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer who writes readable, explicit code with tests, preferring the standard library and following PEP 8."
+    },
+    {
+      "timestamp": "2026-03-19T11:52:22.095229",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer who writes readable, explicit code with tests, preferring the standard library and following PEP 8."
+    },
+    {
+      "timestamp": "2026-03-19T11:54:41.388677",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm python_developer, a senior Python engineer who writes readable, testable code using the standard library first and pytest for coverage."
+    },
+    {
+      "timestamp": "2026-03-19T11:56:51.520921",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer agent specializing in backend APIs, data processing, ML/AI, and automation—writing clean, testable code with type hints and pytest."
+    },
+    {
+      "timestamp": "2026-03-19T11:58:27.554780",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent in Cohort, here to build robust, testable Python code with PEP 8 compliance and type hints."
+    },
+    {
+      "timestamp": "2026-03-19T11:59:20.543682",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent in Cohort, here to build robust, testable Python code with PEP 8 compliance and type hints."
+    },
+    {
+      "timestamp": "2026-03-19T12:02:36.583524",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer who builds robust, testable, and maintainable applications across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T12:06:07.353779",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent here to build robust, testable Python code with type hints, proper error handling, and a preference for the standard library."
+    },
+    {
+      "timestamp": "2026-03-19T12:09:41.309429",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python Developer Agent specializing in building robust, efficient, and maintainable Python applications across backend, data processing, ML/AI, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T12:13:15.985681",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent here to build robust, testable Python code across backend APIs, data processing, ML/AI, and automation."
+    },
+    {
+      "timestamp": "2026-03-19T12:35:37.845628",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer focused on building robust, testable, and maintainable Python applications across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T12:36:15.741711",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer focused on building robust, testable, and maintainable Python applications across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T12:38:08.602908",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer Agent in Cohort, here to build robust, testable Python applications with clean code and proper type hints."
+    },
+    {
+      "timestamp": "2026-03-19T12:39:17.449929",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent here to build robust, type-hinted, testable Python code across backend APIs, data processing, ML/AI, and automation."
+    },
+    {
+      "timestamp": "2026-03-19T12:39:42.377587",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent here to build robust, type-hinted, testable Python code across backend APIs, data processing, ML/AI, and automation."
+    },
+    {
+      "timestamp": "2026-03-19T12:46:39.649664",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer who builds robust, testable, and maintainable applications across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T13:44:36.750491",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python developer agent specializing in backend APIs, data processing, ML/AI, and automation—writing clean, testable code with the standard library first."
+    },
+    {
+      "timestamp": "2026-03-19T13:48:46.576015",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python Developer Agent specializing in building robust, efficient Python applications with a focus on readability, tests, and standard library first."
+    },
+    {
+      "timestamp": "2026-03-19T13:50:55.121227",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm a Python Developer Agent that builds robust, testable applications using the standard library first, with PEP 8 compliance and type hints."
+    },
+    {
+      "timestamp": "2026-03-19T13:55:47.795124",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the Python Developer agent here to build robust, testable Python applications with clean code, type hints, and pytest coverage."
+    },
+    {
+      "timestamp": "2026-03-19T13:57:01.179573",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer who builds robust, testable, and maintainable code across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T13:57:25.085518",
+      "channel": "demo-first-chat",
+      "input": "@python_developer Hello! Can you introduce yourself in one sentence?",
+      "response": "I'm the python_developer agent in Cohort, a senior Python engineer who builds robust, testable, and maintainable code across backend, data, ML, and automation domains."
+    },
+    {
+      "timestamp": "2026-03-19T18:39:37.724943",
+      "channel": "learning-test",
+      "input": "@python_developer How do Python decorators work? Can you explain the difference between @staticmethod and @classmethod with examples?",
+      "response": "# Python Decorators Explained\n\n## How Decorators Work\n\nDecorators are a powerful Python feature that allows you to modify or enhance functions without changing their original code. They work through **function wrapping**:\n\n```python\ndef my_decorator(func):\n    \"\"\"Wrapper function that receives the original function\"\"\"\n    def wrapper(*args, **kwargs):\n        \"\"\"Code that runs before and after the original function\"\"\"\n        print(\"Before function call\")\n        result = func(*args, **kwargs)  "
+    },
+    {
+      "timestamp": "2026-03-19T18:40:03.417786",
+      "channel": "learning-test",
+      "input": "@python_developer What is the best way to handle database connection pooling in Python? I am using PostgreSQL with asyncpg.",
+      "response": "# Database Connection Pooling with asyncpg\n\nFor PostgreSQL with `asyncpg`, the **best practice** is to use **`asyncpg.pool`** (built-in connection pooling) rather than managing connections manually.\n\n## Recommended Approach: `asyncpg.pool`\n\n```python\nimport asyncio\nimport asyncpg\n\n# Create a connection pool\npool = await asyncpg.create_pool(\n    host='localhost',\n    port=5432,\n    user='your_user',\n    password='your_password',\n    database='your_database',\n    min_size=5,          # Minimum con"
+    },
+    {
+      "timestamp": "2026-03-19T18:40:36.179799",
+      "channel": "learning-test",
+      "input": "@python_developer Explain how Python garbage collection works, especially reference counting vs the generational collector.",
+      "response": "# Python Garbage Collection: Reference Counting vs Generational Collector\n\nPython uses a **hybrid garbage collection strategy** combining **reference counting** (primary) with a **generational collector** (secondary) to handle reference cycles.\n\n## 1. Reference Counting (Primary Mechanism)\n\n**How it works:**\n- Every Python object maintains a **reference count** (number of references pointing to it)\n- When the count reaches **0**, the object is **immediately deallocated**\n- This is deterministic "
+    },
+    {
+      "timestamp": "2026-03-19T18:42:40.348619",
+      "channel": "learning-test-2",
+      "input": "@python_developer I prefer using pathlib over os.path for all file operations. Also please keep your responses short and to the point.",
+      "response": "Understood. I'll use `pathlib` for all file operations and keep responses concise."
+    },
+    {
+      "timestamp": "2026-03-19T18:43:08.373147",
+      "channel": "learning-test-2",
+      "input": "@python_developer What are the key differences between threading and asyncio in Python? When should I use each one?",
+      "response": "**Threading vs Asyncio**\n\n| Feature | Threading | Asyncio |\n| :--- | :--- | :--- |\n| **Concurrency Model** | True parallelism (multiple OS threads). | Single-threaded, cooperative multitasking. |\n| **Blocking** | Can block the whole thread (e.g., I/O). | Non-blocking I/O via `await`. |\n| **GIL Impact** | Threads share GIL; CPU-bound tasks don't scale well. | No GIL contention; ideal for I/O-bound tasks. |\n| **Overhead** | Higher (thread creation, context switching). | Lower (coroutines, event lo"
+    },
+    {
+      "timestamp": "2026-03-19T18:43:30.573926",
+      "channel": "learning-test-2",
+      "input": "@python_developer No, don't use print statements for debugging. I always use the logging module with structured logging via structlog.",
+      "response": "Understood. I'll use `logging` with `structlog` for all debugging and avoid `print` statements."
+    },
+    {
+      "timestamp": "2026-03-19T18:45:02.623912",
+      "channel": "learning-test-3",
+      "input": "@python_developer I prefer using pathlib over os.path. Keep responses under 3 sentences please.",
+      "response": "Understood—I'll use `pathlib` for all file path operations going forward. I'll keep my responses concise and under three sentences as requested."
+    },
+    {
+      "timestamp": "2026-03-19T18:46:34.892152",
+      "channel": "learning-test-4",
+      "input": "@python_developer What are the key design patterns I should use when building a Python REST API with FastAPI? Give me a comprehensive overview with examples.",
+      "response": "# Key Design Patterns for FastAPI REST APIs\n\nHere's a comprehensive overview of essential design patterns for building robust FastAPI applications:\n\n## 1. **Dependency Injection Pattern**\n\nFastAPI's built-in dependency system is its most powerful feature.\n\n```python\nfrom fastapi import Depends, HTTPException, status\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\nfrom typing import Optional\n\n# Database session dependency\nasync def get_db() -> AsyncSession:\n    \"\"\"Ge"
+    },
+    {
+      "timestamp": "2026-03-19T18:49:00.836119",
+      "channel": "learning-test-5",
+      "input": "@python_developer I prefer using pathlib over os.path. Stop giving me such long explanations - keep it under 3 sentences. I use structlog for all my logging, not the stdlib logging module.",
+      "response": "Understood. I'll use `pathlib` and `structlog` going forward."
+    },
+    {
+      "timestamp": "2026-03-19T18:50:19.656787",
+      "channel": "learning-test-6",
+      "input": "@python_developer I prefer using pathlib over os.path. Stop giving me long explanations - keep it under 3 sentences. I always use structlog for logging, never the stdlib logging module.",
+      "response": "Understood. I'll use `pathlib` for paths and `structlog` for logging going forward."
+    },
+    {
+      "timestamp": "2026-03-19T18:50:53.862186",
+      "channel": "learning-test-6",
+      "input": "@python_developer No, don't suggest using requirements.txt. I always use poetry with pyproject.toml for dependency management.",
+      "response": "Understood. I'll use `pyproject.toml` with Poetry for dependency management going forward."
+    },
+    {
+      "timestamp": "2026-03-19T18:51:11.708831",
+      "channel": "learning-test-6",
+      "input": "@python_developer How does Python's asyncio event loop handle concurrent I/O operations under the hood?",
+      "response": "Python's asyncio event loop uses a single-threaded, cooperative model where concurrent I/O is handled via `select`, `poll`, or `epoll` (on Unix) or `IOCP` (on Windows) to monitor file descriptors for readiness. When an I/O operation completes, the loop wakes up and schedules the corresponding coroutine to resume execution, all without blocking the thread."
+    },
+    {
+      "timestamp": "2026-03-19T18:51:27.894863",
+      "channel": "learning-test-6",
+      "input": "@python_developer I prefer type hints on all function signatures. Never give me code without proper type annotations.",
+      "response": "Understood. I'll ensure all code includes proper type hints on function signatures going forward."
+    },
+    {
+      "timestamp": "2026-03-19T19:39:10.547213",
+      "channel": "learning-final-test",
+      "input": "@python_developer I always use pytest with fixtures, never unittest. Also I prefer dataclasses over namedtuples.",
+      "response": "That's a solid stance, and it aligns well with modern Python best practices.\n\n**On pytest vs unittest:**\n- **pytest** is generally preferred for its simplicity, powerful fixtures, and excellent plugin ecosystem.\n- **Fixtures** allow for clean setup/teardown logic and dependency injection.\n- **unittest** is fine for legacy codebases, but pytest is usually the better choice for new projects.\n\n**On dataclasses vs namedtuples:**\n- **dataclasses** are more flexible (can have methods, default values, "
+    },
+    {
+      "timestamp": "2026-03-19T19:39:33.984220",
+      "channel": "learning-final-test",
+      "input": "@python_developer How does Python resolve method resolution order (MRO) with multiple inheritance?",
+      "response": "Python resolves Method Resolution Order (MRO) using the **C3 Linearization Algorithm**. This algorithm ensures a consistent and predictable order for method lookup in classes with multiple inheritance.\n\nHere's how it works:\n\n### Key Principles of C3 Linearization:\n1. **Depth-First Traversal**: The algorithm traverses the class hierarchy in a depth-first manner.\n2. **Monotonicity**: A class always appears before its parent classes in the MRO.\n3. **Consistency**: The MRO must be consistent with th"
+    },
+    {
+      "timestamp": "2026-03-20T05:56:03.644680",
+      "channel": "general",
+      "input": "@python_developer hello, can you introduce yourself briefly?",
+      "response": "Hello! I am the Python Developer agent. I help with Python code, debugging, and best practices."
+    },
+    {
+      "timestamp": "2026-03-20T06:28:22.813053",
+      "channel": "learning-final-test",
+      "input": "@python_developer  This is just a test message to see if the new Claude Channels plugin works What's 10 + 6",
+      "response": "[Error] Agent python_developer failed: Error: Invalid MCP configuration:\nMCP config file not found: G:\\cohort\\-"
+    },
+    {
+      "timestamp": "2026-03-20T06:29:16.424294",
+      "channel": "learning-final-test",
+      "input": "@python_developer  This is just a test message to see if the new Claude Channels plugin works What's 10 + 6",
+      "response": "[Error] Agent python_developer failed: Error: Invalid MCP configuration:\nMCP config file not found: G:\\cohort\\-"
+    },
+    {
+      "timestamp": "2026-03-20T06:38:17.954010",
+      "channel": "learning-final-test",
+      "input": "@python_developer  This is just a test message to see if the new Claude Channels plugin works What's 10 + 6",
+      "response": "Looks like the plugin is working! 🎉\n\nAnd the answer: **10 + 6 = 16**\n\n```python\n>>> 10 + 6\n16\n```\n\nSimple arithmetic, no imports required. 😄"
     }
   ],
   "learning_history": [],

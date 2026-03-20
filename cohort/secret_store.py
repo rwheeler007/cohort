@@ -79,6 +79,50 @@ def is_encoded(value: Any) -> bool:
 # Helpers for settings.json migration
 # ---------------------------------------------------------------------------
 
+def _encrypt_extra(extra: Any) -> Any:
+    """Encrypt the ``extra`` field of a service key entry.
+
+    The extra field is a JSON string containing provider-specific credentials
+    (e.g. ``{"secret_access_key": "...", "region": "us-east-1"}``).  We
+    encrypt the *entire* JSON string as one blob so that all sub-fields
+    (including client_secret, bearer_token, etc.) are protected at rest.
+
+    Accepts and returns:
+      - Empty string ``""`` -> unchanged
+      - Plain JSON string   -> ``{"_enc": "<base64>"}``
+      - Already encoded     -> unchanged
+    """
+    if not extra:
+        return extra
+    if is_encoded(extra):
+        return extra
+    if isinstance(extra, str):
+        return encode_secret(extra)
+    # dict -- shouldn't happen (should be JSON string), but encode it
+    if isinstance(extra, dict):
+        return encode_secret(json.dumps(extra))
+    return extra
+
+
+def _decrypt_extra(extra: Any) -> str:
+    """Decrypt the ``extra`` field back to a JSON string.
+
+    Returns:
+      - Empty string if empty/missing
+      - Plain JSON string (legacy or newly decoded)
+    """
+    if not extra:
+        return ""
+    if is_encoded(extra):
+        return decode_secret(extra)
+    if isinstance(extra, str):
+        return extra  # Legacy plaintext -- will be re-encrypted on next save
+    if isinstance(extra, dict):
+        # Might be a raw dict (shouldn't happen), serialize it
+        return json.dumps(extra)
+    return ""
+
+
 def encrypt_settings_secrets(settings: dict[str, Any]) -> dict[str, Any]:
     """Encrypt all known secret fields in a settings dict (in-place).
 
@@ -86,6 +130,7 @@ def encrypt_settings_secrets(settings: dict[str, Any]) -> dict[str, Any]:
       - ``settings["api_key"]`` (Anthropic API key)
       - ``settings["cloud_api_key"]`` (cloud provider key for Smartest mode)
       - ``settings["service_keys"][*]["key"]`` (service credentials)
+      - ``settings["service_keys"][*]["extra"]`` (provider-specific secrets)
     """
     # Main API key
     api_key = settings.get("api_key", "")
@@ -102,6 +147,10 @@ def encrypt_settings_secrets(settings: dict[str, Any]) -> dict[str, Any]:
         key_val = svc.get("key", "")
         if isinstance(key_val, str) and key_val:
             svc["key"] = encode_secret(key_val)
+        # Extra field (may contain client_secret, bearer_token, etc.)
+        extra_val = svc.get("extra", "")
+        if extra_val:
+            svc["extra"] = _encrypt_extra(extra_val)
 
     return settings
 
@@ -120,5 +169,7 @@ def decrypt_settings_secrets(settings: dict[str, Any]) -> dict[str, Any]:
     # Service keys
     for svc in settings.get("service_keys", []):
         svc["key"] = decode_secret(svc.get("key", ""))
+        # Extra field
+        svc["extra"] = _decrypt_extra(svc.get("extra", ""))
 
     return settings

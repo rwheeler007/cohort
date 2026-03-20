@@ -205,7 +205,17 @@ def search(
                 continue
             if svc_type in ("serpapi", "serper", "google"):
                 try:
-                    google_cx = svc.get("extra", {}).get("cx") if svc_type == "google" else None
+                    google_cx = None
+                    if svc_type == "google":
+                        extra_raw = svc.get("extra", "")
+                        if extra_raw and isinstance(extra_raw, str):
+                            try:
+                                extra_obj = __import__("json").loads(extra_raw)
+                                google_cx = extra_obj.get("cx") if isinstance(extra_obj, dict) else None
+                            except (ValueError, TypeError):
+                                pass
+                        elif isinstance(extra_raw, dict):
+                            google_cx = extra_raw.get("cx")
                     results = _search_external(query, num_results, svc_type, key, google_cx)
                     elapsed = (datetime.now() - start).total_seconds() * 1000
                     return {

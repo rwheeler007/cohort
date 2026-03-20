@@ -1074,6 +1074,78 @@ body {
 }
 
 /* =============================================================================
+   Claude Code Handoff Card
+   ============================================================================= */
+
+.claude-code-handoff-card {
+    margin-top: var(--space-3);
+    background-color: var(--color-bg-primary);
+    border: 1px solid #7c4dff;
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+}
+
+.claude-code-handoff-card__header {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: #7c4dff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-2);
+}
+
+.claude-code-handoff-card__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.claude-code-handoff-card__field {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.claude-code-handoff-card__field strong {
+    color: var(--color-text-primary);
+}
+
+.claude-code-handoff-card__field code,
+.claude-code-handoff-card__session {
+    background: var(--color-bg-hover);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.claude-code-handoff-card__actions {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: flex-end;
+}
+
+.handoff-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+.handoff-status--handed_off {
+    background-color: rgba(124, 77, 255, 0.1);
+    color: #7c4dff;
+}
+
+.handoff-pipeline {
+    background-color: rgba(124, 77, 255, 0.15) !important;
+    color: #7c4dff !important;
+}
+
+/* =============================================================================
    Output Cards (Output Review)
    ============================================================================= */
 

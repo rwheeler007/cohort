@@ -31,7 +31,7 @@ const state = {
 
     // Response mode: per-channel toggle (Smarter is default)
     responseModeChannels: {},  // channel_id -> "smart" | "smarter" | "smartest"
-    smartestAvailable: false,  // Set to true when cloud API is configured
+    smartestAvailable: false,  // Set to true when cloud API or Claude Code CLI is available
 
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
@@ -598,6 +598,35 @@ function renderMessages() {
                 </div>`;
         }
 
+        // Detect Claude Code handoff cards
+        let handoffCard = '';
+        if (message.metadata && message.metadata.claude_code_handoff) {
+            const handoff = message.metadata.claude_code_handoff;
+            const sessionId = escapeHtml(handoff.session_id || '');
+            const sessionDisplay = sessionId
+                ? `<code class="claude-code-handoff-card__session">${sessionId}</code>`
+                : '<em>unavailable</em>';
+            const copyBtn = sessionId
+                ? `<button class="btn btn--secondary btn--small" onclick="navigator.clipboard.writeText('${sessionId}').then(() => this.textContent = 'Copied!')">Copy Session ID</button>`
+                : '';
+            const resumeHint = sessionId
+                ? `<div class="claude-code-handoff-card__field"><strong>Resume:</strong> <code>claude --resume ${sessionId}</code></div>`
+                : '';
+
+            handoffCard = `
+                <div class="claude-code-handoff-card">
+                    <div class="claude-code-handoff-card__header">Opened in Claude Code</div>
+                    <div class="claude-code-handoff-card__fields">
+                        <div class="claude-code-handoff-card__field"><strong>Session:</strong> ${sessionDisplay}</div>
+                        ${resumeHint}
+                        <div class="claude-code-handoff-card__field"><strong>Status:</strong> <span class="handoff-status handoff-status--${escapeHtml(handoff.status || 'handed_off')}">${escapeHtml(handoff.status || 'handed_off')}</span></div>
+                    </div>
+                    <div class="claude-code-handoff-card__actions">
+                        ${copyBtn}
+                    </div>
+                </div>`;
+        }
+
         // Model info badge
         let modelBadge = '';
         if (message.metadata) {
@@ -611,8 +640,13 @@ function renderMessages() {
                 const elapsedStr = elapsed != null ? ` ${elapsed}s` : '';
                 const pipelineLabel = pipeline === 'smartest' ? ' [S++]'
                     : pipeline === 'smartest-degraded' ? ' [S++ degraded]'
+                    : pipeline === 'smartest-handoff' ? ' [S++ handoff]'
                     : '';
-                modelBadge = `<span class="message__model-badge${pipeline === 'smartest' ? ' smartest-pipeline' : pipeline === 'smartest-degraded' ? ' degraded-pipeline' : ''}" title="Tier ${tier || '?'} - ${model}${elapsedStr}${pipeline ? ' | pipeline: ' + pipeline : ''}">${tierLabel} ${modelShort}${elapsedStr}${pipelineLabel}</span>`;
+                const pipelineClass = pipeline === 'smartest' ? ' smartest-pipeline'
+                    : pipeline === 'smartest-degraded' ? ' degraded-pipeline'
+                    : pipeline === 'smartest-handoff' ? ' handoff-pipeline'
+                    : '';
+                modelBadge = `<span class="message__model-badge${pipelineClass}" title="Tier ${tier || '?'} - ${model}${elapsedStr}${pipeline ? ' | pipeline: ' + pipeline : ''}">${tierLabel} ${modelShort}${elapsedStr}${pipelineLabel}</span>`;
             }
         }
 
@@ -653,6 +687,7 @@ function renderMessages() {
                     <div class="message__body">${formatMessageContent(confirmationCard ? message.content.replace(/---TASK_CONFIRMED---\s*\n[\s\S]*?\n\s*---END_CONFIRMED---/, '').trim() : message.content)}</div>
                     ${confirmationCard}
                     ${roundtableCard}
+                    ${handoffCard}
                     ${actionsHtml}
                 </div>
             </div>

@@ -714,13 +714,20 @@ const setupWizard = {
                 if (settings.smartest_available && settings.cloud_provider) {
                     smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
                         + '[OK] Smartest mode available -- Cloud API configured</div>';
-                } else if (settings.smartest_available) {
+                } else if (settings.smartest_available && settings.dev_mode) {
                     smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
                         + '[OK] Smartest mode available -- Dev mode CLI</div>';
+                } else if (settings.smartest_available && data.found) {
+                    smartestEl.innerHTML = '<div class="setup-wizard__status setup-wizard__status--ok">'
+                        + '[OK] Smartest mode available -- Claude Code handoff'
+                        + '</div>'
+                        + '<div class="text-muted" style="font-size:var(--font-size-xs);margin-top:var(--space-1)">'
+                        + 'Qwen handles reasoning locally, then hands off to Claude Code for execution. '
+                        + 'You drive the session -- no API key needed.</div>';
                 } else {
                     smartestEl.innerHTML = '<div class="text-muted" style="font-size:var(--font-size-sm)">'
-                        + 'Smartest mode requires a Cloud API key (or Dev Mode with a CLI backend). '
-                        + 'Configure a provider above to unlock [S++] responses.</div>';
+                        + 'Smartest mode requires a Cloud API key or Claude Code CLI. '
+                        + 'Configure a provider above or set the CLI path to unlock [S++] responses.</div>';
                 }
             }
 

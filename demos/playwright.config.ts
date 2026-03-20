@@ -64,6 +64,17 @@ export default defineConfig({
       },
       testMatch: "docker-demo.spec.ts",
     },
+    {
+      name: "cli",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1920, height: 1080 },
+        video: { mode: "on", size: { width: 1920, height: 1080 } },
+        /* No slowMo needed -- the HTML page handles its own timing */
+        launchOptions: { slowMo: 0 },
+      },
+      testMatch: "cli-demo.spec.ts",
+    },
   ],
 
   /* Web server — start Cohort if not already running */

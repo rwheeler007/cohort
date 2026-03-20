@@ -39,11 +39,16 @@ def _normalize_query(query: str) -> list[str]:
 
 
 def _score_text(text: str, terms: list[str]) -> float:
-    """Score text against query terms. Returns 0.0-1.0 based on term overlap."""
+    """Score text against query terms. Returns 0.0-1.0 based on term overlap.
+
+    Uses word-boundary matching to prevent spurious substring hits
+    (e.g., query term 'our' matching 'Courses').
+    """
     if not text or not terms:
         return 0.0
-    text_lower = text.lower()
-    matched = sum(1 for t in terms if t in text_lower)
+    # Split into word tokens for boundary-aware matching
+    text_words = set(re.findall(r"[a-z0-9_]+", text.lower()))
+    matched = sum(1 for t in terms if t in text_words)
     return matched / len(terms)
 
 
@@ -64,37 +69,73 @@ def _recency_boost(timestamp_str: str | None, max_boost: float = 0.2) -> float:
         return 0.0
 
 
+def _is_headline_only(fact: dict[str, Any]) -> bool:
+    """Detect shallow temporal facts that are just article headlines.
+
+    These have no actionable content -- just a title and source attribution.
+    They dilute the context when padded into the prompt.
+    """
+    text = fact.get("fact", "")
+    source = fact.get("learned_from", "")
+    # Temporal injector headlines: short text with "(via domain.com)" suffix
+    if "temporal_facts_injector" in source:
+        # Real temporal facts have explanatory content (100+ chars typical).
+        # Headlines are just titles: usually < 120 chars.
+        if len(text) < 150 and ("(via " in text or text.startswith("[")):
+            return True
+    return False
+
+
 def _select_facts(
     facts: list[dict[str, Any]],
     query: str,
 ) -> list[dict[str, Any]]:
     """Select the most relevant learned facts for the current query.
 
-    Uses term-overlap scoring + recency boost + confidence boost.
-    Falls back to most recent facts if scoring produces fewer than 5 hits.
+    Uses term-overlap scoring + recency/confidence boosts.
+    Confidence and recency only boost facts that have baseline relevance
+    (at least one query term match). This prevents headline-only temporal
+    facts from scoring above zero purely on recency + high confidence.
+
+    Falls back to most recent *substantive* facts if scoring produces
+    fewer than 3 hits.
     """
     terms = _normalize_query(query)
     if not terms:
-        return facts[-MAX_FACTS:]
+        # No query -- return most recent substantive facts
+        substantive = [f for f in facts if not _is_headline_only(f)]
+        return (substantive or facts)[-MAX_FACTS:]
 
     scored = []
     for fact in facts:
         fact_text = fact.get("fact", "")
         base = _score_text(fact_text, terms)
-        conf_boost = {"high": 0.1, "medium": 0.0, "low": -0.05}.get(
-            fact.get("confidence", "medium"), 0.0
-        )
-        rec = _recency_boost(fact.get("timestamp"))
-        scored.append((min(1.0, base + conf_boost + rec), fact))
+
+        # Only apply boosts when there's baseline relevance (term overlap > 0)
+        if base > 0.0:
+            conf_boost = {"high": 0.1, "medium": 0.0, "low": -0.05}.get(
+                fact.get("confidence", "medium"), 0.0
+            )
+            rec = _recency_boost(fact.get("timestamp"))
+            score = min(1.0, base + conf_boost + rec)
+        else:
+            score = 0.0
+
+        scored.append((score, fact))
 
     scored.sort(key=lambda x: x[0], reverse=True)
-    top = [f for s, f in scored[:MAX_FACTS] if s > 0.0]
+    # Filter out headline-only facts from scored results
+    top = [f for s, f in scored[:MAX_FACTS * 2] if s > 0.0 and not _is_headline_only(f)]
+    top = top[:MAX_FACTS]
 
-    # Pad with most recent if fewer than 5 scored hits
-    if len(top) < 5:
+    # Pad with most recent substantive facts if fewer than 3 scored hits
+    if len(top) < 3:
         scored_ids = {id(f) for f in top}
-        recency_pad = [f for f in reversed(facts) if id(f) not in scored_ids]
-        top += recency_pad[: MAX_FACTS - len(top)]
+        substantive_pad = [
+            f for f in reversed(facts)
+            if id(f) not in scored_ids and not _is_headline_only(f)
+        ]
+        top += substantive_pad[: MAX_FACTS - len(top)]
 
     return top
 

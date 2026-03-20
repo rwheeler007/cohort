@@ -1,0 +1,22 @@
+{
+  "api-redesign": {
+    "id": "api-redesign",
+    "name": "api-redesign",
+    "description": "api-redesign",
+    "created_at": "2026-03-14T18:09:02.360941",
+    "members": [],
+    "is_private": false,
+    "topic": "",
+    "pinned_messages": [],
+    "is_archived": false,
+    "archived_at": null,
+    "archived_by": null,
+    "is_locked": false,
+    "locked_by": null,
+    "locked_at": null,
+    "mode": "chat",
+    "meeting_context": null,
+    "shared_plan": null,
+    "metadata": {}
+  }
+}

@@ -154,6 +154,11 @@ class AgentMemory:
         if not data:
             return cls(agent_id="unknown")
         d = dict(data)
+        # Schema migration: BOSS memory uses agent_name, Cohort uses agent_id
+        if "agent_id" not in d and "agent_name" in d:
+            d["agent_id"] = d.pop("agent_name")
+        elif "agent_id" not in d:
+            d["agent_id"] = "unknown"
         d["learned_facts"] = [
             LearnedFact.from_dict(f) for f in d.get("learned_facts", [])
         ]

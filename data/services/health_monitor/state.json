@@ -5,8 +5,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 412.1,
-      "last_checked": "2026-03-11T15:25:58.272238",
+      "response_ms": 358.5,
+      "last_checked": "2026-03-16T16:59:22.184631",
       "url": "http://127.0.0.1:5100/health",
       "description": "Cohort multi-agent team server (Starlette)",
       "port": 5100,
@@ -19,22 +19,35 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 410.5,
-      "last_checked": "2026-03-11T15:25:58.272238",
+      "response_ms": 271.6,
+      "last_checked": "2026-03-16T16:59:22.184631",
       "url": "http://127.0.0.1:11434/api/tags",
       "description": "Ollama LLM inference server (GPU 1 - pinned via CUDA_VISIBLE_DEVICES)",
       "port": 11434,
       "start_command": "ollama serve",
       "startup_mode": "persistent",
       "self_hosted": false,
-      "snoozed": false
+      "snoozed": false,
+      "model_count": 12,
+      "models": [
+        "qwen3.5:2b",
+        "qwen3.5:9b",
+        "huihui_ai/qwen3-abliterated:14b",
+        "qwen3.5:35b-a3b",
+        "qwen3-coder:30b",
+        "qwen3-vl:30b-a3b",
+        "qwen3:30b-a3b",
+        "gemma3:1b",
+        "gemma3:12b",
+        "llama3.2:1b"
+      ]
     },
     "service:comms_service": {
-      "status": "unknown",
-      "ok": false,
-      "status_code": 0,
-      "response_ms": 0,
-      "last_checked": "2026-03-11T15:25:58.272238",
+      "status": "healthy",
+      "ok": true,
+      "status_code": 200,
+      "response_ms": 283.0,
+      "last_checked": "2026-03-16T16:59:22.184631",
       "url": "http://127.0.0.1:8001/health",
       "description": "Email, calendar, and social media communications",
       "port": 8001,
@@ -42,11 +55,25 @@
       "startup_mode": "on_demand",
       "self_hosted": false,
       "snoozed": false
+    },
+    "service:mcp_server": {
+      "status": "healthy",
+      "ok": true,
+      "status_code": 0,
+      "response_ms": 0,
+      "last_checked": "2026-03-16T16:59:22.184631",
+      "url": "python -m cohort.mcp.server",
+      "description": "Model Context Protocol server (agent tool integration)",
+      "port": null,
+      "start_command": null,
+      "startup_mode": "persistent",
+      "self_hosted": true,
+      "snoozed": false
     }
   },
   "last_alerts": {},
   "last_checks": {
-    "services": "2026-03-11T15:25:58.272238"
+    "services": "2026-03-16T16:59:22.184631"
   },
-  "last_updated": "2026-03-15T00:00:00.000000"
+  "last_updated": "2026-03-16T16:59:24.173312"
 }

@@ -89,7 +89,7 @@ COHORT            </a>
             </a>
             <a href="#cli" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
                 <div style="font-weight: 600; color: #f85149; margin-bottom: 0.25rem;">CLI Reference</div>
-                <div style="font-size: 0.85rem;">serve, say, gate, next-speaker</div>
+                <div style="font-size: 0.85rem;">40 commands across 11 categories</div>
             </a>
         </div>
     </div>
@@ -319,32 +319,66 @@ condense_channel   <span style="color: #888;"># Archive + summarize old messages
         <div id="cli" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[CLI]</div>
             <h2 class="responsive-h2">CLI Reference</h2>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Cohort works without a server. Use CLI commands for file-based scoring, polyglot integration, and quick experiments.</p>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">40 commands across 11 categories. Most work without a server (file-backed storage). Every command supports <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">--json</code> for scripting.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">CLI commands</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Start HTTP server with dashboard</span>
-python -m cohort serve --host 0.0.0.0 --port 5100 --data-dir data
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Agents &amp; Routing</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># List all agents, grouped by type</span>
+python -m cohort agents list --verbose
 
-<span style="color: #888;"># Post a message (file-based, no server)</span>
-python -m cohort say --sender architect --channel review \
-    --file conv.jsonl --message <span style="color: #3fb950;">"We need pagination"</span>
+<span style="color: #888;"># Show full agent detail (skills, partnerships, pitfalls)</span>
+python -m cohort agent python_developer
+python -m cohort agent python_developer --prompt  <span style="color: #888;"># full system prompt</span>
 
-<span style="color: #888;"># Should this agent speak? (exit 0 = yes, 1 = no)</span>
-python -m cohort gate --agent developer --channel review \
-    --file conv.jsonl --agents agents.json --format json
+<span style="color: #888;"># Find the best agent for a task</span>
+python -m cohort route <span style="color: #3fb950;">"fix auth bug in the API"</span> --json
 
-<span style="color: #888;"># Who should speak next? (ranked list with scores)</span>
-python -m cohort next-speaker --channel review \
-    --file conv.jsonl --agents agents.json --top 3
+<span style="color: #888;"># Show agent partnership graph</span>
+python -m cohort graph
 
-<span style="color: #888;"># Generate executive briefing</span>
-python -m cohort briefing generate --hours 24 --format json
-
-<span style="color: #888;"># Interactive setup (Ollama + models + feeds)</span>
-python -m cohort setup</pre>
+<span style="color: #888;"># Create a new agent from scratch</span>
+python -m cohort agents create --name <span style="color: #3fb950;">"Data Analyst"</span> --role <span style="color: #3fb950;">"Analyzes data"</span> --type specialist</pre>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">The gate and next-speaker commands work with JSONL files, making Cohort a drop-in scoring engine for agents written in any language -- Python, Node, Go, Bash scripts.</p>
+
+            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Channels &amp; Messages</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># List channels, read messages, search</span>
+python -m cohort channels list
+python -m cohort channel read code-review --limit 20
+python -m cohort channel search <span style="color: #3fb950;">"authentication"</span>
+python -m cohort channel post general <span style="color: #3fb950;">"Deploying v2.1"</span></pre>
+            </div>
+
+            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Work Queue &amp; Tasks</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Full queue lifecycle</span>
+python -m cohort queue add <span style="color: #3fb950;">"Fix auth regression"</span> -p high -a python_developer
+python -m cohort queue claim
+python -m cohort queue complete a1b2c3d4 --result <span style="color: #3fb950;">"Fixed in abc123"</span>
+
+<span style="color: #888;"># Recurring schedules</span>
+python -m cohort schedule create -a qa_agent -d <span style="color: #3fb950;">"Run tests"</span> -t interval -e 3600</pre>
+            </div>
+
+            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">System &amp; Configuration</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># System dashboard, diagnostics, hardware</span>
+python -m cohort status
+python -m cohort doctor
+python -m cohort hardware
+
+<span style="color: #888;"># Manage API keys (20 providers, encoded at rest)</span>
+python -m cohort secret providers
+python -m cohort secret set service:anthropic sk-ant-...
+python -m cohort secret set service:aws AKIA... --extra '{"secret_access_key": "...", "region": "us-east-1"}'
+
+<span style="color: #888;"># Search, web fetch, YouTube transcripts</span>
+python -m cohort search <span style="color: #3fb950;">"python best practices"</span>
+python -m cohort web fetch https://example.com
+python -m cohort youtube transcript dQw4w9WgXcQ</pre>
+            </div>
+
+            <p style="font-size: 0.85rem; color: #888; margin-top: 0.75rem;">See <a href="cli.html" style="color: #D97757;">full CLI reference</a> for all 40 commands with examples and flag documentation.</p>
         </div>
 
     </div>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cohort CLI Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1b26; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; overflow: hidden; }
+.terminal {
+    width: 1920px; height: 1080px;
+    display: flex; flex-direction: column;
+}
+.titlebar {
+    background: #16161e;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #292e42;
+}
+.dot { width: 14px; height: 14px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.titlebar-text { flex: 1; text-align: center; color: #565f89; font-size: 14px; }
+.content {
+    flex: 1; padding: 24px 28px; overflow: hidden;
+    font-size: 16px; line-height: 1.7; color: #a9b1d6;
+}
+.line { white-space: pre; min-height: 1.7em; }
+.prompt { color: #9ece6a; }
+.cmd { color: #c0caf5; }
+.flag { color: #7aa2f7; }
+.comment { color: #565f89; }
+.ok { color: #9ece6a; }
+.err { color: #f7768e; }
+.dim { color: #565f89; }
+.accent { color: #ff9e64; }
+.info { color: #7aa2f7; }
+.cursor {
+    display: inline-block; width: 9px; height: 18px;
+    background: #c0caf5; vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="terminal">
+    <div class="titlebar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="titlebar-text">Terminal -- cohort</span>
+    </div>
+    <div class="content" id="output"></div>
+</div>
+
+<script>
+// CLI demo script -- each entry is either a typed command or instant output
+const SCRIPT = [
+    // Install
+    { type: "cmd", text: "pip install cohort", delay: 1200 },
+    { type: "out", lines: [
+        '<span class="dim">Collecting cohort</span>',
+        '<span class="dim">  Downloading cohort-0.3.8-py3-none-any.whl (142 kB)</span>',
+        '<span class="ok">Successfully installed cohort-0.3.8</span>',
+    ], delay: 800 },
+    { type: "pause", ms: 600 },
+
+    // Version check
+    { type: "cmd", text: "python -m cohort --version", delay: 800 },
+    { type: "out", lines: ['cohort 0.3.8'], delay: 400 },
+    { type: "pause", ms: 400 },
+
+    // Setup
+    { type: "cmd", text: "python -m cohort setup", delay: 1000 },
+    { type: "out", lines: [''], delay: 200 },
+    { type: "out", lines: ['<span class="dim">Step 1/8: Detecting hardware...</span>'], delay: 600 },
+    { type: "out", lines: [
+        '  GPU: NVIDIA RTX 3080 (12 GB VRAM)',
+        '  Recommended model: qwen3.5:9b (6.6 GB)',
+        '  <span class="ok">[OK]</span> Hardware detection complete',
+    ], delay: 500 },
+    { type: "pause", ms: 300 },
+    { type: "out", lines: ['<span class="dim">Step 2/8: Checking Ollama...</span>'], delay: 500 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> Ollama found at /usr/local/bin/ollama'], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 3/8: Selecting model...</span>'], delay: 500 },
+    { type: "out", lines: [
+        '  VRAM: 12 GB -> qwen3.5:9b (6.6 GB, 262K context)',
+        '  <span class="ok">[OK]</span> Model selected',
+    ], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 4/8: Pulling model...</span>'], delay: 500 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> qwen3.5:9b ready'], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 5/8: Verifying inference...</span>'], delay: 800 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> Model responding (92 tok/s)'], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 6/8: Configuring content feeds...</span>'], delay: 500 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> 25 topics across 6 categories'], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 7/8: Registering MCP server...</span>'], delay: 500 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> Claude Code integration ready'], delay: 400 },
+    { type: "pause", ms: 200 },
+    { type: "out", lines: ['<span class="dim">Step 8/8: Finalizing...</span>'], delay: 500 },
+    { type: "out", lines: ['  <span class="ok">[OK]</span> Setup complete. Run: python -m cohort serve'], delay: 500 },
+    { type: "pause", ms: 800 },
+    { type: "out", lines: [''], delay: 100 },
+
+    // Start server
+    { type: "cmd", text: "python -m cohort serve &", delay: 1000 },
+    { type: "out", lines: [
+        '<span class="ok">[OK]</span> Cohort running at <span class="info">http://localhost:5100</span>',
+    ], delay: 600 },
+    { type: "pause", ms: 600 },
+
+    // Create a project
+    { type: "cmd", text: "python -m cohort new my-first-project", delay: 1200 },
+    { type: "out", lines: [
+        '<span class="dim">Creating project \'my-first-project\'...</span>',
+        '  Permission profile: <span class="accent">developer</span>',
+        '  Tools: Read, Write, Edit, Bash, Glob, Grep, WebSearch',
+        '  <span class="ok">[OK]</span> Project ready at ./my-first-project',
+    ], delay: 600 },
+    { type: "pause", ms: 600 },
+
+    // Send a message
+    { type: "cmd", text: 'python -m cohort say --channel general --message "Hello! What can you help me with?"', delay: 1500 },
+    { type: "out", lines: ['<span class="ok">[OK]</span> msg_7f2a1b -> #general'], delay: 400 },
+    { type: "pause", ms: 400 },
+
+    // Check next speaker
+    { type: "cmd", text: "python -m cohort next-speaker --channel general --top 3", delay: 1200 },
+    { type: "out", lines: [
+        '<span class="dim">Next speaker for channel \'general\':</span>',
+        '  1. <span class="accent">python_developer</span>    score=0.84  phase=discover  (domain=0.42, recency=0.22)',
+        '  2. <span class="accent">web_developer</span>       score=0.71  phase=discover  (domain=0.38, stakeholder=0.18)',
+        '  3. <span class="accent">security_agent</span>      score=0.65  phase=discover  (domain=0.30, recency=0.15)',
+    ], delay: 500 },
+    { type: "pause", ms: 600 },
+
+    // Gate check
+    { type: "cmd", text: "python -m cohort gate --agent python_developer --channel general", delay: 1200 },
+    { type: "out", lines: [
+        '  Agent:     python_developer',
+        '  Score:     <span class="accent">0.84</span>',
+        '  Threshold: 0.45 (ACTIVE)',
+        '  Decision:  <span class="ok">SPEAK</span>',
+    ], delay: 500 },
+    { type: "pause", ms: 600 },
+
+    // Briefing
+    { type: "cmd", text: "python -m cohort briefing generate --hours 24", delay: 1200 },
+    { type: "out", lines: [
+        '<span class="dim">Generating briefing for last 24 hours...</span>',
+        '  Channels active: 3',
+        '  Messages: 47',
+        '  Agents participated: 8',
+        '  <span class="ok">[OK]</span> Briefing posted to #daily-briefing',
+    ], delay: 600 },
+    { type: "pause", ms: 800 },
+
+    // Final prompt
+    { type: "out", lines: [''], delay: 100 },
+    { type: "cursor", delay: 3000 },
+];
+
+const output = document.getElementById('output');
+let lineEls = [];
+
+function addLine(html) {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.innerHTML = html || '&nbsp;';
+    output.appendChild(div);
+    lineEls.push(div);
+    // Auto-scroll
+    output.scrollTop = output.scrollHeight;
+    return div;
+}
+
+async function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
+async function typeCommand(text, delay) {
+    const line = addLine('<span class="prompt">$ </span><span class="cmd" id="typing"></span><span class="cursor"></span>');
+    const typing = line.querySelector('#typing');
+    typing.removeAttribute('id');
+    const cursor = line.querySelector('.cursor');
+
+    for (let i = 0; i < text.length; i++) {
+        typing.textContent += text[i];
+        const charDelay = 45 + Math.random() * 35;
+        await sleep(charDelay);
+    }
+
+    // Remove cursor after typing
+    await sleep(200);
+    cursor.remove();
+    await sleep(delay);
+}
+
+async function showOutput(lines, delay) {
+    for (const line of lines) {
+        addLine(line);
+        await sleep(80);
+    }
+    await sleep(delay);
+}
+
+async function run() {
+    // Initial blank line
+    await sleep(800);
+
+    for (const entry of SCRIPT) {
+        if (entry.type === 'cmd') {
+            await typeCommand(entry.text, entry.delay);
+        } else if (entry.type === 'out') {
+            await showOutput(entry.lines, entry.delay);
+        } else if (entry.type === 'pause') {
+            await sleep(entry.ms);
+        } else if (entry.type === 'cursor') {
+            addLine('<span class="prompt">$ </span><span class="cursor"></span>');
+            await sleep(entry.delay);
+        }
+    }
+
+    // Signal completion for Playwright
+    document.body.setAttribute('data-demo-complete', 'true');
+}
+
+// Start on load (or wait for Playwright signal)
+if (window.__DEMO_START) {
+    run();
+} else {
+    window.addEventListener('load', () => setTimeout(run, 500));
+}
+</script>
+</body>
+</html>

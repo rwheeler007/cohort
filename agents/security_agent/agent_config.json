@@ -10,10 +10,24 @@
   "nickname": "SecAgent",
   "color": "#E74C3C",
   "group": "Specialists",
-  "aliases": ["security", "sec", "audit"],
+  "aliases": [
+    "security",
+    "sec",
+    "audit"
+  ],
   "triggers": [
-    "security", "vulnerability", "owasp", "injection", "xss", "csrf",
-    "auth", "authentication", "secrets", "audit", "penetration", "cve"
+    "security",
+    "vulnerability",
+    "owasp",
+    "injection",
+    "xss",
+    "csrf",
+    "auth",
+    "authentication",
+    "secrets",
+    "audit",
+    "penetration",
+    "cve"
   ],
   "capabilities": [
     "OWASP Top 10 / API Security Top 10 vulnerability detection",
@@ -110,11 +124,16 @@
   },
   "tool_permissions": {
     "profile": "readonly",
-    "mcp_servers": ["cohort"]
+    "mcp_servers": [
+      "cohort"
+    ]
   },
   "environment": {
     "operating_system": "Cross-platform",
-    "required_tools": ["pip-audit", "npm-audit"],
+    "required_tools": [
+      "pip-audit",
+      "npm-audit"
+    ],
     "constraints": [
       "Focus on exploitable vulnerabilities with real attack vectors",
       "Prioritize by business impact -- admin endpoints before cosmetic issues",
@@ -129,7 +148,11 @@
     "Severity ratings align with actual exploitability"
   ],
   "scoring_metadata": {
-    "complementary_agents": ["python_developer", "qa_agent", "devops_agent"],
+    "complementary_agents": [
+      "python_developer",
+      "qa_agent",
+      "devops_agent"
+    ],
     "phase_roles": {
       "DISCOVER": "high",
       "PLAN": "medium",
@@ -137,6 +160,10 @@
       "REVIEW": "high",
       "SHIP": "high"
     },
-    "data_sources": ["security_audit_reports", "dependency_scan", "secrets_scan"]
+    "data_sources": [
+      "security_audit_reports",
+      "dependency_scan",
+      "secrets_scan"
+    ]
   }
 }

@@ -1,0 +1,77 @@
+{
+  "architect": {
+    "triggers": [
+      "api",
+      "design",
+      "architecture",
+      "endpoint",
+      "schema",
+      "rest"
+    ],
+    "capabilities": [
+      "backend architecture",
+      "REST API design",
+      "system design"
+    ],
+    "domain_expertise": [
+      "microservices",
+      "api gateway"
+    ]
+  },
+  "developer": {
+    "triggers": [
+      "implement",
+      "code",
+      "python",
+      "module",
+      "function",
+      "build"
+    ],
+    "capabilities": [
+      "python backend",
+      "fastapi",
+      "sqlalchemy"
+    ],
+    "domain_expertise": [
+      "python",
+      "web frameworks"
+    ]
+  },
+  "tester": {
+    "triggers": [
+      "test",
+      "qa",
+      "validation",
+      "coverage",
+      "edge",
+      "regression"
+    ],
+    "capabilities": [
+      "test strategy",
+      "integration testing",
+      "load testing"
+    ],
+    "domain_expertise": [
+      "pytest",
+      "test automation"
+    ]
+  },
+  "researcher": {
+    "triggers": [
+      "research",
+      "investigate",
+      "existing",
+      "history",
+      "prior",
+      "similar"
+    ],
+    "capabilities": [
+      "code archaeology",
+      "prior art research"
+    ],
+    "domain_expertise": [
+      "documentation",
+      "historical analysis"
+    ]
+  }
+}

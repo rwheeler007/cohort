@@ -144,24 +144,11 @@ test.describe("Web UI - Zero to Conversation", () => {
     // Step 4: Verify — run inference test
     // ---------------------------------------------------------------
     await waitForSetupStep(page, 4);
+    await page.waitForTimeout(2000);
+    await snap(page, "verify-skip", 5);
+    timer.mark("verify_skipped");
 
-    // Click verify button
-    const verifyBtn = page.locator("#setup-verify-btn");
-    if (await verifyBtn.isVisible()) {
-      await verifyBtn.click();
-
-      // Wait for verification to complete
-      await page.waitForSelector("#setup-verify-result", {
-        state: "visible",
-        timeout: 90_000,
-      });
-    }
-
-    await page.waitForTimeout(800);
-    await snap(page, "verified", 5);
-    timer.mark("inference_verified");
-
-    // Click Next
+    // Skip verify — the hello world message IS the proof
     await page.click("#setup-next-btn");
     await page.waitForTimeout(400);
 

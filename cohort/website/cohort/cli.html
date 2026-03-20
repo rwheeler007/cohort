@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLI | COHORT</title>
-    <meta name="description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, messaging, setup wizard, and interactive tutorial. All from the command line.">
+    <meta name="description" content="Cohort CLI -- 40 commands covering agents, channels, work queues, briefings, search, scheduling, secrets, and more. All from the command line.">
     <meta name="keywords" content="cohort CLI, command line, AI agent CLI, multi-agent orchestration, contribution scoring, executive briefing">
 
     <link rel="canonical" href="https://rwheeler007.github.io/cohort/cli.html">
@@ -13,12 +13,12 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rwheeler007.github.io/cohort/cli.html">
     <meta property="og:title" content="CLI | COHORT">
-    <meta property="og:description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, messaging, setup wizard, and interactive tutorial.">
+    <meta property="og:description" content="Cohort CLI -- 40 commands for multi-agent orchestration, all from the terminal.">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CLI | COHORT">
-    <meta name="twitter:description" content="Cohort CLI -- gate checks, speaker ranking, executive briefings, and more.">
+    <meta name="twitter:description" content="Cohort CLI -- 40 commands for multi-agent orchestration.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +37,8 @@
             margin-left: 0.5rem;
         }
         .tier-free { background: #3fb950; color: #fff; }
-        .tier-pro { background: var(--color-primary); color: #fff; }
-        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .tier-ollama { background: #58a6ff; color: #fff; }
+        .tier-api { background: #d29922; color: #fff; }
         .cmd-card {
             background: #2D2D2D;
             border-radius: 8px;
@@ -86,6 +86,45 @@
             margin-left: 1.5rem;
             color: #C8C8C8;
         }
+        .category-heading {
+            font-family: var(--font-heading);
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #D97757;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3a3a3a;
+        }
+        .cmd-sub {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #58a6ff;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.35rem;
+            background: rgba(88,166,255,0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+        }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+        .toc-item {
+            background: #2D2D2D;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #C8C8C8;
+            font-size: 0.85rem;
+            transition: background 0.15s;
+        }
+        .toc-item:hover { background: #383838; }
+        .toc-item .toc-cmd { font-family: monospace; color: #D97757; font-weight: 600; }
+        .toc-item .toc-count { font-size: 0.75rem; color: #888; }
     </style>
 </head>
 <body>
@@ -111,7 +150,7 @@ COHORT            </a>
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
         <h1 class="responsive-h1">CLI</h1>
-        <p class="responsive-p-large">6 commands. Gate checks, speaker ranking, briefings, messaging, and an interactive setup wizard.</p>
+        <p class="responsive-p-large">40 commands. Agents, channels, work queues, briefings, search, scheduling, secrets, and more -- all from the terminal.</p>
         <p class="responsive-p-body" style="margin-top: 0.5rem;">Everything runs via <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">python -m cohort &lt;command&gt;</code></p>
     </div>
 </section>
@@ -119,140 +158,503 @@ COHORT            </a>
 <!-- At a Glance -->
 <section class="section-spacing">
     <div class="container">
-        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 700px; margin: 0 auto;">
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 900px; margin: 0 auto;">
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">6</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">40</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Commands</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">2</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">11</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Categories</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">2</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Output Formats</div>
                 <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">JSON + text</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">0</div>
-                <div style="font-size: 0.85rem; color: #C8C8C8;">Dependencies</div>
-                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">stdlib only (setup)</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #d29922;">20</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">API Providers</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">managed via CLI</div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Table of Contents -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Command Categories</h2>
+        <div class="toc-grid" style="margin-top: 1.5rem;">
+            <a href="#cat-agents" class="toc-item"><span class="toc-cmd">agents / agent</span><br><span class="toc-count">list, show, create, prompt</span></a>
+            <a href="#cat-channels" class="toc-item"><span class="toc-cmd">channels / channel</span><br><span class="toc-count">list, read, create, post, search, archive</span></a>
+            <a href="#cat-queue" class="toc-item"><span class="toc-cmd">queue</span><br><span class="toc-count">list, add, claim, complete, fail, cancel</span></a>
+            <a href="#cat-tasks" class="toc-item"><span class="toc-cmd">tasks / task</span><br><span class="toc-count">list, show, schedules</span></a>
+            <a href="#cat-system" class="toc-item"><span class="toc-cmd">health / status / doctor</span><br><span class="toc-count">system diagnostics, hardware</span></a>
+            <a href="#cat-intelligence" class="toc-item"><span class="toc-cmd">briefing / intel</span><br><span class="toc-count">reports, RSS feeds, articles</span></a>
+            <a href="#cat-routing" class="toc-item"><span class="toc-cmd">route / graph</span><br><span class="toc-count">agent matching, partnerships</span></a>
+            <a href="#cat-memory" class="toc-item"><span class="toc-cmd">memory / teach</span><br><span class="toc-count">facts, stats, clean</span></a>
+            <a href="#cat-search" class="toc-item"><span class="toc-cmd">search / web / youtube</span><br><span class="toc-count">DuckDuckGo, fetch, transcripts</span></a>
+            <a href="#cat-config" class="toc-item"><span class="toc-cmd">secret / profile / tools</span><br><span class="toc-count">20 providers, permissions</span></a>
+            <a href="#cat-infra" class="toc-item"><span class="toc-cmd">serve / setup / codegen</span><br><span class="toc-count">server, wizard, LLM codegen</span></a>
         </div>
     </div>
 </section>
 
 <!-- Commands -->
-<section class="section-spacing" style="background: #FAFAF8;">
+<section class="section-spacing">
     <div class="container" style="max-width: 800px;">
-        <h2 class="responsive-h2 text-center">Commands</h2>
 
-        <!-- gate -->
-        <div class="cmd-card" id="gate">
-            <div><span class="cmd-name">cohort gate</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Should this agent respond? Runs the full contribution scoring engine and returns a SPEAK/SILENT decision with the score breakdown. Exit code 0 = speak, 1 = don't. Pipe into your orchestration scripts.</div>
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-agents">Agents</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card" id="agents-list">
+            <div><span class="cmd-name">cohort agents list</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">List all agents, grouped by type (specialist, orchestrator, supervisor, infrastructure). Shows agent ID, role, and active status.</div>
             <div class="cmd-usage">
-                <div><span class="comment"># Check if the architect should respond</span></div>
-                <div><span class="prompt">$</span> python -m cohort gate <span class="flag">--agent</span> architect <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--agents</span> agents.json</div>
-                <div style="margin-top: 0.5rem; color: #888;">Agent:     architect</div>
-                <div style="color: #888;">Score:     0.73</div>
-                <div style="color: #888;">Threshold: 0.45 (ACTIVE)</div>
-                <div style="color: #3fb950;">Decision:  SPEAK</div>
+                <div><span class="prompt">$</span> python -m cohort agents list <span class="flag">--verbose</span></div>
+                <div style="margin-top: 0.5rem; color: #888;">  SPECIALIST (18)</div>
+                <div style="color: #888;">  --------------------------------------------------</div>
+                <div style="color: #888;">  [*] python_developer           Senior Python Software Engineer</div>
+                <div style="color: #888;">  [*] security_agent             Code &amp; Infrastructure Security Engineer</div>
             </div>
             <dl class="cmd-flags">
-                <dt>--agent</dt><dd>Agent ID to check (required)</dd>
-                <dt>--channel</dt><dd>Channel ID (required)</dd>
-                <dt>--file</dt><dd>Path to conversation .jsonl file (required)</dd>
-                <dt>--agents</dt><dd>Path to agents.json config (required)</dd>
-                <dt>--format</dt><dd>Output format: json | text (default: text)</dd>
+                <dt>--verbose, -v</dt><dd>Show capabilities for each agent</dd>
+                <dt>--all</dt><dd>Include hidden agents</dd>
+                <dt>--json</dt><dd>Output as JSON (pipe to jq)</dd>
             </dl>
         </div>
 
-        <!-- next-speaker -->
-        <div class="cmd-card" id="next-speaker">
-            <div><span class="cmd-name">cohort next-speaker</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Who should talk next? Ranks all agents by composite relevance score -- domain match, recency, phase detection, and stakeholder status. Returns the top N candidates.</div>
+        <div class="cmd-card" id="agent-show">
+            <div><span class="cmd-name">cohort agent &lt;name&gt;</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Show full details for a single agent: role, personality, capabilities, domain expertise, skill levels, partnerships, and common pitfalls.</div>
             <div class="cmd-usage">
-                <div><span class="prompt">$</span> python -m cohort next-speaker <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--agents</span> agents.json <span class="flag">--top</span> 3</div>
-                <div style="margin-top: 0.5rem; color: #888;">Next speaker for channel 'review':</div>
-                <div style="color: #888;">  1. security_agent        score=0.82  phase=review  (domain=0.45, recency=0.20)</div>
-                <div style="color: #888;">  2. python_developer      score=0.71  phase=review  (domain=0.38, stakeholder=0.18)</div>
-                <div style="color: #888;">  3. qa_agent              score=0.64  phase=review  (domain=0.30, recency=0.15)</div>
+                <div><span class="prompt">$</span> python -m cohort agent python_developer</div>
+                <div style="margin-top: 0.5rem; color: #888;">  Skill Levels:</div>
+                <div style="color: #888;">    [#########.]  9/10  python_backend</div>
+                <div style="color: #888;">    [#########.]  9/10  api_design</div>
+                <div style="color: #888;">    [########..]  8/10  async_programming</div>
             </div>
             <dl class="cmd-flags">
-                <dt>--top</dt><dd>Number of speakers to show (default: 3)</dd>
-                <dt>--format</dt><dd>json | text</dd>
+                <dt>--prompt</dt><dd>Show the full system prompt (markdown)</dd>
+                <dt>--json</dt><dd>Output as JSON</dd>
             </dl>
         </div>
 
-        <!-- say -->
-        <div class="cmd-card" id="say">
-            <div><span class="cmd-name">cohort say</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Append a message to a conversation. Auto-creates the channel if it doesn't exist. Use this to script agent interactions or inject messages programmatically.</div>
+        <div class="cmd-card" id="agents-create">
+            <div><span class="cmd-name">cohort agents create</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Scaffold a new agent with config, prompt, and memory files. Generates a complete agent directory ready for use.</div>
             <div class="cmd-usage">
-                <div><span class="prompt">$</span> python -m cohort say <span class="flag">--sender</span> architect <span class="flag">--channel</span> review <span class="flag">--file</span> conv.jsonl <span class="flag">--message</span> "Let's review the auth module"</div>
-                <div style="margin-top: 0.5rem; color: #3fb950;">[OK] msg_a1b2c3 -> #review</div>
+                <div><span class="prompt">$</span> python -m cohort agents create <span class="flag">--name</span> "Data Analyst" <span class="flag">--role</span> "Analyzes data patterns" \</div>
+                <div style="padding-left: 2rem;"><span class="flag">--type</span> specialist <span class="flag">--capabilities</span> "SQL,visualization,pandas"</div>
+                <div style="margin-top: 0.5rem; color: #3fb950;">  [OK] Created agent: data_analyst</div>
             </div>
         </div>
 
-        <!-- briefing -->
-        <div class="cmd-card" id="briefing">
-            <div><span class="cmd-name">cohort briefing</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Generate or view executive briefings. Summarizes channel activity, task progress, agent performance, and blockers over a configurable time window. Posts to a briefing channel by default.</div>
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-channels">Channels</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card" id="channels-list">
+            <div><span class="cmd-name">cohort channels list</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">List all channels with member count and description. File-backed -- no server required.</div>
             <div class="cmd-usage">
-                <div><span class="comment"># Generate a new briefing covering the last 24 hours</span></div>
+                <div><span class="prompt">$</span> python -m cohort channels list</div>
+                <div style="margin-top: 0.5rem; color: #888;">  #code-review        5 members  Architecture discussions</div>
+                <div style="color: #888;">  #daily-standup      8 members  Morning sync</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>--all</dt><dd>Include archived channels</dd>
+            </dl>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort channel</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Channel operations: read messages, create channels, post messages, search across channels, and archive old channels.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">read</span>
+                <span class="cmd-sub">create</span>
+                <span class="cmd-sub">post</span>
+                <span class="cmd-sub">search</span>
+                <span class="cmd-sub">archive</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Read the last 20 messages</span></div>
+                <div><span class="prompt">$</span> python -m cohort channel read code-review <span class="flag">--limit</span> 20</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Search across all channels</span></div>
+                <div><span class="prompt">$</span> python -m cohort channel search "authentication" <span class="flag">--json</span></div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Post a message</span></div>
+                <div><span class="prompt">$</span> python -m cohort channel post general "Deploying v2.1 now" <span class="flag">--sender</span> user</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-queue">Work Queue</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort queue</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Full work queue lifecycle. File-backed FIFO with priority ordering. Add tasks, claim them for processing, mark as completed or failed, and cancel. No server required.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">list</span>
+                <span class="cmd-sub">show</span>
+                <span class="cmd-sub">add</span>
+                <span class="cmd-sub">active</span>
+                <span class="cmd-sub">claim</span>
+                <span class="cmd-sub">complete</span>
+                <span class="cmd-sub">fail</span>
+                <span class="cmd-sub">cancel</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Add a high-priority task</span></div>
+                <div><span class="prompt">$</span> python -m cohort queue add "Fix auth regression" <span class="flag">-p</span> high <span class="flag">-a</span> python_developer</div>
+                <div style="color: #3fb950;">  [OK] Queued: a1b2c3d4 (high) Fix auth regression</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Claim the next item</span></div>
+                <div><span class="prompt">$</span> python -m cohort queue claim</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Mark it done</span></div>
+                <div><span class="prompt">$</span> python -m cohort queue complete a1b2c3d4 <span class="flag">--result</span> "Fixed in commit abc123"</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-tasks">Tasks &amp; Scheduling</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort tasks / cohort task</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">List task instances and view details. Tasks are created by the scheduler or work queue and tracked through their lifecycle (briefing, executing, completed, failed).</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort tasks list <span class="flag">--status</span> executing</div>
+                <div><span class="prompt">$</span> python -m cohort task a1b2c3d4 <span class="flag">--json</span></div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort schedule</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Manage recurring task schedules. Create cron-based or interval schedules, toggle them on/off, and delete them. Supports up to 50 active schedules with a 5-minute minimum interval.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">list</span>
+                <span class="cmd-sub">show</span>
+                <span class="cmd-sub">create</span>
+                <span class="cmd-sub">toggle</span>
+                <span class="cmd-sub">delete</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort schedule create <span class="flag">-a</span> qa_agent <span class="flag">-d</span> "Run unit tests" <span class="flag">-t</span> interval <span class="flag">-e</span> 3600</div>
+                <div style="color: #3fb950;">  [OK] Created schedule: a1b2c3d4</div>
+                <div style="color: #888;">       interval 3600 -> qa_agent</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-system">System &amp; Diagnostics</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort status</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Single-command system dashboard. Shows server status, Ollama connectivity, agent count, channel count, and queue depth.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort status</div>
+                <div style="margin-top: 0.5rem; color: #888;">  Server:    [OK] running on :5100</div>
+                <div style="color: #888;">  Ollama:    [OK] reachable (12 models)</div>
+                <div style="color: #888;">  Agents:    23 total, 23 active</div>
+                <div style="color: #888;">  Channels:  5</div>
+                <div style="color: #888;">  Queue:     2 queued, 1 active</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort doctor</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Run 6 diagnostic checks: Python version, agents directory, data dir writable, Ollama reachable, server running, and Git available. Fix issues before they become problems.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort doctor</div>
+                <div style="margin-top: 0.5rem; color: #3fb950;">  [OK] Python >= 3.10  -- 3.13.2</div>
+                <div style="color: #3fb950;">  [OK] Agents directory  -- 23 configs found</div>
+                <div style="color: #3fb950;">  [OK] Ollama reachable  -- 12 models available</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort hardware</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Detect GPUs, VRAM, and platform info. Shows per-GPU VRAM usage bars so you know exactly what's available for inference.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort hardware</div>
+                <div style="margin-top: 0.5rem; color: #888;">  GPUs (2):</div>
+                <div style="color: #888;">    [0] NVIDIA GeForce RTX 3080</div>
+                <div style="color: #888;">        VRAM: [##########..........] 6,400MB / 12,288MB (52% used)</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort health</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Check registered service health. Quick pass/fail for each service endpoint.</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-intelligence">Intelligence &amp; Briefings</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort briefing</span><span class="tier-badge tier-ollama">Ollama</span></div>
+            <div class="cmd-desc">Generate or view executive briefings. Summarizes channel activity, task progress, and blockers over a configurable time window.</div>
+            <div class="cmd-usage">
                 <div><span class="prompt">$</span> python -m cohort briefing generate <span class="flag">--hours</span> 24</div>
-                <div style="margin-top: 0.75rem;"><span class="comment"># View the latest briefing as JSON</span></div>
                 <div><span class="prompt">$</span> python -m cohort briefing latest <span class="flag">--format</span> json</div>
             </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort briefings</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Browse past briefing reports. List recent briefings with dates and time ranges, or find the latest HTML report.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">list</span>
+                <span class="cmd-sub">html</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort briefings list <span class="flag">--limit</span> 5</div>
+                <div style="margin-top: 0.5rem; color: #888;">  2026-03-10T20:14  2026-03-09 to 2026-03-10  id: briefing</div>
+                <div style="color: #888;">  2026-03-10T19:52  2026-03-09 to 2026-03-10  id: briefing</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort intel</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">RSS feed ingestion and article browsing. Fetch feeds manually, browse top-scored articles, or see recent articles sorted by date.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">fetch</span>
+                <span class="cmd-sub">top</span>
+                <span class="cmd-sub">recent</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort intel top <span class="flag">--limit</span> 10 <span class="flag">--min-score</span> 7</div>
+                <div style="margin-top: 0.5rem; color: #888;">  [##########]  10  Building LLM-powered CLI tools</div>
+                <div style="color: #888;">           Hacker News (best)  2026-03-10</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-routing">Agent Routing</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort route</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Find the best agent for a task. Scores all agents by trigger match, capability overlap, and domain expertise. Returns ranked results with match percentages.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort route "fix authentication bug in the API"</div>
+                <div style="margin-top: 0.5rem; color: #888;">  1. [########............]  41%  python_developer</div>
+                <div style="color: #888;">     Senior Python Software Engineer</div>
+                <div style="color: #888;">  2. [#####...............]  25%  security_agent</div>
+            </div>
             <dl class="cmd-flags">
-                <dt>generate --hours N</dt><dd>Hours to cover (default: 24)</dd>
-                <dt>generate --no-post</dt><dd>Don't post to channel, just print</dd>
-                <dt>generate --data-dir</dt><dd>Data directory (default: data)</dd>
-                <dt>latest</dt><dd>Show the most recent briefing</dd>
+                <dt>--type</dt><dd>Prefer a specific agent type (specialist, orchestrator, etc.)</dd>
+                <dt>--limit</dt><dd>Max results (default: 5)</dd>
             </dl>
         </div>
 
-        <!-- setup -->
-        <div class="cmd-card" id="setup">
-            <div><span class="cmd-name">cohort setup</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Interactive 8-step setup wizard. Detects your hardware (GPU, VRAM, platform), installs Ollama, pulls the right model for your GPU, configures the MCP server for external clients, and sets up content feeds. Uses only stdlib -- no extra pip dependencies.</div>
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort graph</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Visualize the full agent partnership graph. Shows who collaborates with whom and the nature of each partnership (security review, test strategy, API contracts).</div>
             <div class="cmd-usage">
-                <div><span class="prompt">$</span> python -m cohort setup</div>
-                <div style="margin-top: 0.5rem; color: #888;">Step 1/8: Detecting hardware...</div>
-                <div style="color: #888;">  GPU: NVIDIA RTX 3080 (12 GB VRAM)</div>
-                <div style="color: #888;">  Recommended model: qwen3.5:9b (6.6 GB)</div>
-                <div style="color: #3fb950;">  [OK] Hardware detection complete</div>
-            </div>
-            <div style="margin-top: 0.75rem; font-size: 0.8rem; color: #888;">
-                VRAM-based model selection: 0-4 GB -> 2B model, 4-6 GB -> 4B, 6-10 GB -> 9B, 10+ GB -> 9B with headroom. CPU-only mode supported.
+                <div><span class="prompt">$</span> python -m cohort graph</div>
+                <div style="margin-top: 0.5rem; color: #888;">  python_developer</div>
+                <div style="color: #888;">    -> security_agent             (Security reviewer for all code changes)</div>
+                <div style="color: #888;">    -> qa_agent                   (Test strategy partner)</div>
+                <div style="color: #888;">    -> javascript_developer       (API contract peer)</div>
             </div>
         </div>
 
-        <!-- tutorial -->
-        <div class="cmd-card" id="tutorial">
-            <div><span class="cmd-name">cohort tutorial</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Interactive walkthrough of Cohort's scoring engine. Step through the gate check and contribution scoring algorithms with real examples. Learn how agents decide who speaks when.</div>
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort partnerships</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Show required consultations for a specific agent before task execution (security reviews, QA sign-offs, architecture checks).</div>
             <div class="cmd-usage">
-                <div><span class="prompt">$</span> python -m cohort tutorial</div>
+                <div><span class="prompt">$</span> python -m cohort partnerships python_developer <span class="flag">--task</span> "build REST API"</div>
             </div>
         </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-memory">Agent Memory</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort memory</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">View an agent's learned facts, memory statistics, or trim working memory. Learned facts are never deleted -- only working memory is trimmed.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">facts</span>
+                <span class="cmd-sub">stats</span>
+                <span class="cmd-sub">clean</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort memory python_developer stats</div>
+                <div style="margin-top: 0.5rem; color: #888;">  Learned facts:    12</div>
+                <div style="color: #888;">  Working memory:   54</div>
+                <div style="margin-top: 0.5rem;"><span class="prompt">$</span> python -m cohort memory python_developer clean <span class="flag">--keep</span> 10 <span class="flag">--dry-run</span></div>
+                <div style="color: #888;">  [DRY RUN] Working memory removed: 44, kept: 10</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort teach</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Add a learned fact to an agent's memory. Facts persist across sessions and inform the agent's future responses.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort teach python_developer "Always use connection pooling for concurrent DB access" <span class="flag">-c</span> high</div>
+                <div style="color: #3fb950;">  [OK] Taught python_developer: Always use connection pooling...</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-search">Search &amp; Web</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort search</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Search the web via DuckDuckGo. No API key required. Falls back to Google Custom Search, SerpAPI, or Serper if configured.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort search "python CLI best practices" <span class="flag">-n</span> 5</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort web fetch</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Fetch a URL and extract readable text (HTML tags stripped). Useful for piping web content into other tools.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort web fetch https://example.com <span class="flag">--limit</span> 500</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>--raw</dt><dd>Show raw HTML instead of extracted text</dd>
+                <dt>--limit</dt><dd>Max characters (default: 2000)</dd>
+            </dl>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort youtube</span><span class="tier-badge tier-free">Free*</span></div>
+            <div class="cmd-desc">YouTube tools. Transcript extraction is free (no API key). Video search requires a Google API key.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">transcript</span>
+                <span class="cmd-sub">languages</span>
+                <span class="cmd-sub">search</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Free -- no API key needed</span></div>
+                <div><span class="prompt">$</span> python -m cohort youtube transcript dQw4w9WgXcQ <span class="flag">--language</span> en</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Requires Google API key</span></div>
+                <div><span class="prompt">$</span> python -m cohort youtube search "pytorch tutorials" <span class="flag">-n</span> 10</div>
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #888;">* Transcript extraction uses youtube-transcript-api (pip install youtube-transcript-api). Does not consume YouTube API quota.</div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-config">Configuration &amp; Secrets</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort secret</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Manage API keys for 20 providers. Keys are XOR-encoded at rest. Multi-field credentials (AWS access key + secret, Twitter key + bearer token) supported via <code>--extra</code> JSON.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">list</span>
+                <span class="cmd-sub">set</span>
+                <span class="cmd-sub">remove</span>
+                <span class="cmd-sub">providers</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># See all 20 supported providers and their fields</span></div>
+                <div><span class="prompt">$</span> python -m cohort secret providers</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Set a simple API key</span></div>
+                <div><span class="prompt">$</span> python -m cohort secret set service:anthropic sk-ant-...</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Set multi-field credentials</span></div>
+                <div><span class="prompt">$</span> python -m cohort secret set service:aws AKIA... <span class="flag">--extra</span> '{"secret_access_key": "...", "region": "us-east-1"}'</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort profile</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Manage your user profile. Set your name, avatar, role, and other fields that get injected into agent context.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">show</span>
+                <span class="cmd-sub">set</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort profile set name "Ryan Wheeler"</div>
+                <div><span class="prompt">$</span> python -m cohort profile set role "Senior Engineer"</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort tools permissions</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Inspect tool permissions for agents. Shows which tools each agent can access, their permission profile, and MCP server count.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort tools permissions</div>
+                <div style="margin-top: 0.5rem; color: #888;">  python_developer           [developer_safe]  Read, Write, Edit, Glob, Grep</div>
+                <div style="color: #888;">  security_agent             [readonly      ]  Read, Glob, Grep</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-infra">Infrastructure</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort serve</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Start the HTTP server with the web dashboard. Required for real-time features (Socket.IO, @mention routing). Most CLI commands work without it.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort serve <span class="flag">--host</span> 0.0.0.0 <span class="flag">--port</span> 5100</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort setup</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Interactive 8-step setup wizard. Detects hardware, installs Ollama, pulls the right model for your GPU, configures MCP, and sets up content feeds. Stdlib only.</div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort codegen</span><span class="tier-badge tier-ollama">Ollama</span></div>
+            <div class="cmd-desc">Generate or modify code with LLM + verification pipeline. Supports smart/smarter/smartest inference tiers. Dry-run mode available.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort codegen "Add pagination to the users endpoint" \</div>
+                <div style="padding-left: 2rem;"><span class="flag">--files</span> src/api/users.py <span class="flag">--mode</span> smarter <span class="flag">--dry-run</span></div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort discuss</span><span class="tier-badge tier-ollama">Ollama</span></div>
+            <div class="cmd-desc">Run a multi-agent roundtable discussion. Loads agent personas into a single LLM call for ~90% token reduction vs. N separate calls.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort discuss "Should we add caching?" <span class="flag">-a</span> python_developer,security_agent,qa_agent <span class="flag">-r</span> 2</div>
+            </div>
+        </div>
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort website create</span><span class="tier-badge tier-ollama">Ollama</span></div>
+            <div class="cmd-desc">Generate a static website. Runs dual roundtables (frontend + backend design), generates a unified spec, and renders via Jinja2 with link validation.</div>
+            <div class="cmd-usage">
+                <div><span class="prompt">$</span> python -m cohort website create <span class="flag">--name</span> "Power Plumbing" <span class="flag">--description</span> "Portland plumber since 1979"</div>
+            </div>
+        </div>
+
+        <div class="cmd-card" style="margin-bottom: 0;">
+            <div><span class="cmd-name">cohort migrate to-sqlite</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Migrate from JSON file storage to SQLite. Deduplicates, verifies row counts, and renames originals to .bak.</div>
+        </div>
+
     </div>
 </section>
 
 <!-- Scripting Example -->
-<section class="section-spacing">
+<section class="section-spacing" style="background: #FAFAF8;">
     <div class="container" style="max-width: 800px;">
         <h2 class="responsive-h2 text-center">Scripting Example</h2>
-        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Combine CLI commands to build custom orchestration pipelines. The JSON output mode makes it easy to pipe into other tools.</p>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Every command supports <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">--json</code> for easy piping. Combine commands to build custom orchestration pipelines.</p>
 
         <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8; overflow-x: auto;">
             <div style="color: #888;">#!/bin/bash</div>
-            <div style="color: #888;"># Auto-moderate: find who should speak, then gate-check them</div>
-            <div style="margin-top: 0.5rem;"><span style="color: #3fb950;">NEXT</span>=<span style="color: #d29922;">$(</span>python -m cohort next-speaker \</div>
-            <div style="padding-left: 2rem;">--channel review --file conv.jsonl \</div>
-            <div style="padding-left: 2rem;">--agents agents.json --top 1 --format json<span style="color: #d29922;">)</span></div>
-            <div style="margin-top: 0.5rem;"><span style="color: #3fb950;">AGENT</span>=<span style="color: #d29922;">$(</span>echo "$NEXT" | jq -r '.[0].agent_id'<span style="color: #d29922;">)</span></div>
-            <div style="margin-top: 0.5rem;"><span style="color: #bc8cff;">if</span> python -m cohort gate --agent "$AGENT" \</div>
-            <div style="padding-left: 2rem;">--channel review --file conv.jsonl --agents agents.json; <span style="color: #bc8cff;">then</span></div>
-            <div style="padding-left: 2rem;">echo <span style="color: #d29922;">"$AGENT should respond"</span></div>
-            <div><span style="color: #bc8cff;">fi</span></div>
+            <div style="color: #888;"># Find the best agent, add task to queue, notify channel</div>
+            <div style="margin-top: 0.5rem;"><span style="color: #3fb950;">TASK</span>=<span style="color: #d29922;">"Fix auth regression in /api/login"</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #888;"># Find the best agent</span></div>
+            <div><span style="color: #3fb950;">AGENT</span>=<span style="color: #d29922;">$(</span>python -m cohort route "$TASK" --json | jq -r '.[0].agent_id'<span style="color: #d29922;">)</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: #888;"># Queue it</span></div>
+            <div>python -m cohort queue add "$TASK" -p high -a "$AGENT"</div>
+            <div style="margin-top: 0.5rem;"><span style="color: #888;"># Post to channel</span></div>
+            <div>python -m cohort channel post general "Queued: $TASK -> $AGENT" --sender bot</div>
         </div>
     </div>
 </section>

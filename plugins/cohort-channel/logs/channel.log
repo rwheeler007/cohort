@@ -1,0 +1,4 @@
+2026-03-20T12:33:53.839Z [INFO] Session cohort-wq-1774010033833 connected. Log: G:\cohort\plugins\cohort-channel\logs\channel.log
+2026-03-20T12:33:53.840Z [INFO] Polling http://localhost:5100 every 5000ms
+2026-03-20T12:36:34.225Z [INFO] Request found: ch_4d8799ea
+2026-03-20T12:36:34.226Z [INFO] Claimed ch_4d8799ea (agent=python_developer, mode=smarter)

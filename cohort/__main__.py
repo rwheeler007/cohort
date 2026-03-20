@@ -843,9 +843,15 @@ def main() -> None:
     # -- new CLI modules (cohort/cli/) ----------------------------------
     from cohort.cli import agents_cmd, channels_cmd, queue_cmd, health_cmd
     from cohort.cli import discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd
+    from cohort.cli import route_cmd, search_cmd, schedule_cmd, secret_cmd
+    from cohort.cli import youtube_cmd, website_cmd, migrate_cmd
+    from cohort.cli import briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd
 
     for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
-                discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd):
+                discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd,
+                route_cmd, search_cmd, schedule_cmd, secret_cmd,
+                youtube_cmd, website_cmd, migrate_cmd,
+                briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd):
         mod.register(sub)
 
     args = parser.parse_args()
@@ -904,6 +910,30 @@ def main() -> None:
         sys.exit(tasks_cmd.handle(args))
     elif args.command == "hardware":
         sys.exit(hardware_cmd.handle(args))
+    elif args.command in ("route", "partnerships", "graph"):
+        sys.exit(route_cmd.handle(args))
+    elif args.command == "search":
+        sys.exit(search_cmd.handle(args))
+    elif args.command == "schedule":
+        sys.exit(schedule_cmd.handle(args))
+    elif args.command == "secret":
+        sys.exit(secret_cmd.handle(args))
+    elif args.command == "youtube":
+        sys.exit(youtube_cmd.handle(args))
+    elif args.command == "website":
+        sys.exit(website_cmd.handle(args))
+    elif args.command == "migrate":
+        sys.exit(migrate_cmd.handle(args))
+    elif args.command == "briefings":
+        sys.exit(briefing_cmd.handle(args))
+    elif args.command == "intel":
+        sys.exit(intel_cmd.handle(args))
+    elif args.command == "tools":
+        sys.exit(tools_cmd.handle(args))
+    elif args.command == "profile":
+        sys.exit(profile_cmd.handle(args))
+    elif args.command == "web":
+        sys.exit(web_cmd.handle(args))
 
     else:
         parser.print_help()

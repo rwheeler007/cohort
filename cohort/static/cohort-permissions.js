@@ -304,6 +304,7 @@ function renderServiceKeys() {
                             const parts = [];
                             parts.push(data.playwright ? 'Fetch: OK' : 'Fetch: missing');
                             parts.push(data.ddgs ? 'Search: OK' : 'Search: missing');
+                            parts.push(data.browser_backend ? 'Browser: OK' : 'Browser: N/A');
                             keyEl.textContent = parts.join(' | ');
                         }
                         // Re-render Agent Access grid now that has_key is resolved
@@ -814,6 +815,17 @@ const TOOL_DESCRIPTIONS = {
     WebFetch: 'Fetch web page content (cloud API)',
     InternalWebSearch: 'Search the web locally via DuckDuckGo (free)',
     InternalWebFetch: 'Fetch web pages locally via Playwright (free)',
+    BrowserBrowse: 'Browse: navigate, read pages, screenshots, accessibility snapshots (free, local)',
+    BrowserInteract: 'Interact: click, fill forms, type, drag, mouse control, resize (free, local)',
+    BrowserAdvanced: 'Full Control: JS eval, cookies, storage, network mocking, PDF export (free, local)',
+};
+
+// Browser tools are tiered: Advanced includes Interact includes Browse
+const BROWSER_TIER_TOOLS = ['BrowserBrowse', 'BrowserInteract', 'BrowserAdvanced'];
+const BROWSER_TIER_HIERARCHY = {
+    BrowserAdvanced: ['BrowserBrowse', 'BrowserInteract', 'BrowserAdvanced'],
+    BrowserInteract: ['BrowserBrowse', 'BrowserInteract'],
+    BrowserBrowse: ['BrowserBrowse'],
 };
 
 let toolPermsState = {
@@ -866,19 +878,58 @@ function renderToolPermsModal(agentId, data) {
     const deniedGlobally = new Set(data.denied_tools || []);
 
     if (dom.toolPermsGrid) {
-        dom.toolPermsGrid.innerHTML = allTools.map(tool => {
+        const standardTools = allTools.filter(t => !BROWSER_TIER_TOOLS.includes(t));
+        const browserTools = allTools.filter(t => BROWSER_TIER_TOOLS.includes(t));
+
+        const renderTool = (tool) => {
             const checked = agentTools.has(tool) ? 'checked' : '';
             const denied = deniedGlobally.has(tool);
             const desc = TOOL_DESCRIPTIONS[tool] || '';
             const disabledAttr = denied ? 'disabled' : '';
             const deniedNote = denied ? ' <span class="tool-perms__denied-tag">(globally denied)</span>' : '';
+            // Friendly names for browser tiers
+            const displayName = {
+                BrowserBrowse: 'Browse',
+                BrowserInteract: 'Interact',
+                BrowserAdvanced: 'Full Control',
+            }[tool] || tool;
 
             return `<label class="tool-perms__tool${denied ? ' tool-perms__tool--denied' : ''}">
                 <input type="checkbox" class="tool-perms__check" data-tool="${escapeHtml(tool)}" ${checked} ${disabledAttr}>
-                <span class="tool-perms__tool-name">${escapeHtml(tool)}</span>
+                <span class="tool-perms__tool-name">${escapeHtml(displayName)}</span>
                 <span class="tool-perms__tool-desc">${escapeHtml(desc)}${deniedNote}</span>
             </label>`;
-        }).join('');
+        };
+
+        let html = standardTools.map(renderTool).join('');
+        if (browserTools.length > 0) {
+            html += `<div class="tool-perms__section-header" style="margin-top: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--clr-border); font-size: var(--font-size-sm); font-weight: 600; color: var(--clr-text-secondary);">Browser Automation (Playwright)</div>`;
+            html += browserTools.map(renderTool).join('');
+        }
+        dom.toolPermsGrid.innerHTML = html;
+
+        // Browser tier hierarchy: checking a higher tier auto-checks lower tiers
+        dom.toolPermsGrid.querySelectorAll('.tool-perms__check').forEach(cb => {
+            if (BROWSER_TIER_TOOLS.includes(cb.dataset.tool)) {
+                cb.addEventListener('change', () => {
+                    const tool = cb.dataset.tool;
+                    if (cb.checked && BROWSER_TIER_HIERARCHY[tool]) {
+                        // Auto-check all lower tiers
+                        BROWSER_TIER_HIERARCHY[tool].forEach(t => {
+                            const el = dom.toolPermsGrid.querySelector(`[data-tool="${t}"]`);
+                            if (el && !el.disabled) el.checked = true;
+                        });
+                    } else if (!cb.checked) {
+                        // Unchecking a lower tier unchecks higher tiers
+                        const idx = BROWSER_TIER_TOOLS.indexOf(tool);
+                        for (let i = idx + 1; i < BROWSER_TIER_TOOLS.length; i++) {
+                            const el = dom.toolPermsGrid.querySelector(`[data-tool="${BROWSER_TIER_TOOLS[i]}"]`);
+                            if (el) el.checked = false;
+                        }
+                    }
+                });
+            }
+        });
     }
 
     if (dom.toolPermsOverrideNote) {

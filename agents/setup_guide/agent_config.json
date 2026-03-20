@@ -10,12 +10,28 @@
   "nickname": "Setup Guide",
   "color": "#27AE60",
   "group": "Infrastructure",
-  "aliases": ["setup", "guide", "onboard"],
+  "aliases": [
+    "setup",
+    "guide",
+    "onboard"
+  ],
   "triggers": [
-    "setup", "install", "onboard", "getting started", "first time",
-    "ollama", "gpu", "hardware", "new user", "help me start",
-    "mcp", "mcp server", "local_llm",
-    "claude code", "claude cli", "connect claude"
+    "setup",
+    "install",
+    "onboard",
+    "getting started",
+    "first time",
+    "ollama",
+    "gpu",
+    "hardware",
+    "new user",
+    "help me start",
+    "mcp",
+    "mcp server",
+    "local_llm",
+    "claude code",
+    "claude cli",
+    "connect claude"
   ],
   "capabilities": [
     "Hardware detection walkthrough (GPU, VRAM, CPU-only mode)",
@@ -152,7 +168,9 @@
     }
   },
   "scoring_metadata": {
-    "complementary_agents": ["hardware_agent"],
+    "complementary_agents": [
+      "hardware_agent"
+    ],
     "phase_roles": {
       "DISCOVER": "high",
       "PLAN": "low",
@@ -160,7 +178,10 @@
       "REVIEW": "low",
       "SHIP": "low"
     },
-    "data_sources": ["hardware_detection", "ollama_status"]
+    "data_sources": [
+      "hardware_detection",
+      "ollama_status"
+    ]
   },
   "external_services": {
     "web_search": {

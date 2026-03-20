@@ -10,10 +10,24 @@
   "nickname": "QA",
   "color": "#27AE60",
   "group": "Specialists",
-  "aliases": ["qa", "test", "quality", "testing"],
+  "aliases": [
+    "qa",
+    "test",
+    "quality",
+    "testing"
+  ],
   "triggers": [
-    "test", "qa", "quality", "bug", "regression", "coverage",
-    "edge case", "boundary", "e2e", "integration test", "release"
+    "test",
+    "qa",
+    "quality",
+    "bug",
+    "regression",
+    "coverage",
+    "edge case",
+    "boundary",
+    "e2e",
+    "integration test",
+    "release"
   ],
   "capabilities": [
     "Test strategy and test plan creation (functional, regression, integration, E2E)",
@@ -34,7 +48,7 @@
   ],
   "agent_type": "specialist",
   "model_params": {
-    "temperature": 0.20
+    "temperature": 0.2
   },
   "education": {
     "specialty": "Quality Assurance & Test Engineering",
@@ -131,7 +145,11 @@
     "Security-focused test cases included for auth and input handling"
   ],
   "scoring_metadata": {
-    "complementary_agents": ["python_developer", "security_agent", "web_developer"],
+    "complementary_agents": [
+      "python_developer",
+      "security_agent",
+      "web_developer"
+    ],
     "phase_roles": {
       "DISCOVER": "medium",
       "PLAN": "high",
@@ -139,6 +157,10 @@
       "REVIEW": "high",
       "SHIP": "high"
     },
-    "data_sources": ["test_results", "coverage_reports", "bug_tracker"]
+    "data_sources": [
+      "test_results",
+      "coverage_reports",
+      "bug_tracker"
+    ]
   }
 }

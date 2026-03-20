@@ -72,6 +72,25 @@ class LiteBackend:
         )
 
         self._checklist_path = Path(checklist_path) if checklist_path else None
+        self._router_ready = False
+
+    def _ensure_router(self) -> bool:
+        """Lazily initialise the agent router (once)."""
+        if self._router_ready:
+            return True
+        try:
+            from cohort.agent_router import setup_agent_router
+            setup_agent_router(
+                chat=self._chat,
+                sio=None,  # no Socket.IO in lite mode; file watcher picks up changes
+                agents_root=self._agents_dir,
+                store=self._agent_store,
+            )
+            self._router_ready = True
+            return True
+        except Exception as exc:
+            logger.debug("[!] lite backend: agent router init failed - %s", exc)
+            return False
 
     # -- channels -----------------------------------------------------------
 
@@ -116,6 +135,7 @@ class LiteBackend:
 
     async def post_message(
         self, channel: str, sender: str, message: str,
+        metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         try:
             # Auto-create channel if it doesn't exist
@@ -123,7 +143,18 @@ class LiteBackend:
                 self._chat.create_channel(name=channel, description=channel)
             msg = self._chat.post_message(
                 channel_id=channel, sender=sender, content=message,
+                metadata=metadata,
             )
+
+            # Route @mentions to agent response pipeline
+            mentions = getattr(msg, "metadata", {}).get("mentions", [])
+            if mentions and self._ensure_router():
+                response_mode = (metadata or {}).get("response_mode", "smarter")
+                if response_mode not in ("smart", "smarter", "smartest"):
+                    response_mode = "smarter"
+                from cohort.agent_router import route_mentions
+                route_mentions(msg, mentions, response_mode=response_mode)
+
             return {"success": True, "message_id": msg.id}
         except Exception as exc:
             logger.debug("[!] lite backend: post_message error - %s", exc)

@@ -64,13 +64,24 @@ def _should_extract(message: str, response: str, agent_id: str) -> bool:
     if agent_id.lower() in LEARNING_SKIP_AGENTS:
         return False
 
-    # Always skip very short responses (acknowledgments, yes/no)
-    if len(response) < LEARNING_MIN_RESPONSE_LENGTH:
-        return False
-
     # Always skip error responses
     if response.lstrip().startswith(("[Error]", "[Timeout]", "Error:")):
         return False
+
+    # Check for user preferences/corrections in the message —
+    # these are valuable even when the agent response is short ("Got it")
+    msg_lower = message.lower()
+    _PREF_MARKERS = ("prefer", "don't", "do not", "stop ", "always ", "never ",
+                     "instead", "shorter", "longer", "keep it", "i use ", "i want ")
+    has_preference = any(m in msg_lower for m in _PREF_MARKERS)
+
+    # Short responses are OK if the user stated preferences
+    if len(response) < LEARNING_MIN_RESPONSE_LENGTH and not has_preference:
+        return False
+
+    # Preference messages always pass the gate
+    if has_preference:
+        return True
 
     signals = 0
 
@@ -143,16 +154,19 @@ def _extract_facts(
 
 def _parse_facts_json(text: str) -> list[dict[str, str]]:
     """Parse JSON facts from model output. Handles malformed JSON gracefully."""
+    # Strip markdown code fences (```json ... ```)
+    cleaned = re.sub(r"```(?:json)?\s*", "", text).strip()
+
     # Try direct parse first
     try:
-        data = json.loads(text)
+        data = json.loads(cleaned)
         if isinstance(data, list):
             return _validate_facts(data)
     except json.JSONDecodeError:
         pass
 
     # Try extracting JSON array from surrounding text
-    match = re.search(r"\[.*\]", text, re.DOTALL)
+    match = re.search(r"\[.*\]", cleaned, re.DOTALL)
     if match:
         try:
             data = json.loads(match.group())
