@@ -1,0 +1,14 @@
+{
+  "name": "cohort-channel",
+  "version": "0.1.0",
+  "description": "Claude Code Channel plugin for Cohort agent response integration",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

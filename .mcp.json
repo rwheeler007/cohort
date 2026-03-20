@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "cohort-wq": {
+      "command": "bun",
+      "args": ["./plugins/cohort-channel/src/index.ts"],
+      "env": {
+        "COHORT_BASE_URL": "http://localhost:5100",
+        "POLL_INTERVAL": "5000"
+      }
+    }
+  }
+}

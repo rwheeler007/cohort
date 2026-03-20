@@ -89,6 +89,8 @@ _SERVICE_ENV_MAP: dict[str, dict[str, str]] = {
         "TWITTER_API_SECRET": "TWITTER_API_SECRET",
         "TWITTER_BEARER_TOKEN": "TWITTER_BEARER_TOKEN",
     },
+    "serpapi":      {"key": "SERPAPI_API_KEY"},
+    "serper":       {"key": "SERPER_API_KEY"},
     "reddit":       {
         "key": "REDDIT_CLIENT_ID",
         "REDDIT_CLIENT_SECRET": "REDDIT_CLIENT_SECRET",
@@ -173,6 +175,10 @@ _force_claude_code: bool = False
 # Dev mode: enables CLI subprocess path for internal testing.
 # When False (default for distribution), only cloud API path is available.
 _dev_mode: bool = False
+
+# Channel mode: use persistent Claude Code session via MCP Channels
+# instead of spawning ephemeral CLI subprocesses.
+_channel_mode_enabled: bool = False
 
 # Cached cloud settings (updated via apply_settings)
 _cloud_settings: dict = {}
@@ -454,7 +460,7 @@ def apply_settings(settings: dict) -> None:
 
     Called on startup and whenever the user saves settings from the UI.
     """
-    global CLAUDE_CMD, RESPONSE_TIMEOUT, AGENTS_ROOT, _force_claude_code, _dev_mode, _cloud_settings  # noqa: PLW0603
+    global CLAUDE_CMD, RESPONSE_TIMEOUT, AGENTS_ROOT, _force_claude_code, _dev_mode, _channel_mode_enabled, _cloud_settings  # noqa: PLW0603
 
     if "force_to_claude_code" in settings:
         _force_claude_code = bool(settings["force_to_claude_code"])
@@ -463,6 +469,10 @@ def apply_settings(settings: dict) -> None:
     if "dev_mode" in settings:
         _dev_mode = bool(settings["dev_mode"])
         logger.info("[OK] Dev mode: %s", _dev_mode)
+
+    if "channel_mode" in settings:
+        _channel_mode_enabled = bool(settings["channel_mode"])
+        logger.info("[OK] Channel mode: %s", _channel_mode_enabled)
 
     if settings.get("claude_cmd"):
         CLAUDE_CMD = settings["claude_cmd"]
@@ -960,6 +970,35 @@ def _invoke_smartest_pipeline(
                     except Exception:
                         logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
+        # Channel mode: persistent Claude Code session via MCP Channels
+        if not response_text and _channel_mode_enabled:
+            from cohort.channel_bridge import channel_mode_active
+            if channel_mode_active():
+                try:
+                    from cohort.channel_bridge import (
+                        enqueue_channel_request,
+                        await_channel_response,
+                    )
+
+                    logger.info("[>>] Smartest Phase 3 (channel): %s", agent_id)
+                    request_id = enqueue_channel_request(
+                        prompt=claude_prompt,
+                        agent_id=agent_id,
+                        channel_id="smartest",
+                        response_mode="smartest",
+                    )
+                    ch_content, ch_meta = await_channel_response(
+                        request_id, timeout=RESPONSE_TIMEOUT,
+                    )
+                    if ch_content:
+                        response_text = ch_content
+                        actual_tokens_in = len(claude_prompt) // 4
+                        actual_tokens_out = len(response_text) // 4
+                        phase3_model = "claude_code_channel"
+                        logger.info("[OK] Smartest Phase 3 (channel): %s", agent_id)
+                except Exception:
+                    logger.exception("[!] Smartest Phase 3 channel failed for %s", agent_id)
+
         # Dev mode: CLI subprocess with response harvesting (internal testing)
         if not response_text and _dev_mode and check_claude_cli_available():
             logger.info("[>>] Smartest Phase 3 dev-mode CLI fallback for %s", agent_id)
@@ -1229,8 +1268,10 @@ def _invoke_agent_sync(item: dict) -> None:
     # Smartest pipeline: Qwen reasoning -> distill -> Cloud API (or CLI in dev mode)
     elif response_mode == "smartest":
         from cohort.local.cloud import check_cloud_available
+        from cohort.channel_bridge import channel_mode_active as _ch_active
         _smartest_available = (
             check_cloud_available(_cloud_settings)
+            or (_channel_mode_enabled and _ch_active())
             or (_dev_mode and check_claude_cli_available())
             or check_claude_cli_available()  # Handoff mode (no harvest)
         )
@@ -1363,6 +1404,47 @@ def _invoke_agent_sync(item: dict) -> None:
                                 agent_id, cr.model, cr.tokens_in, cr.tokens_out)
             except Exception:
                 logger.exception("[!] Cloud fallback failed for %s", agent_id)
+
+        # Channel mode: persistent Claude Code session via MCP Channels
+        if not response_content and _channel_mode_enabled:
+            from cohort.channel_bridge import channel_mode_active
+            if channel_mode_active():
+                try:
+                    from cohort.channel_bridge import (
+                        enqueue_channel_request,
+                        await_channel_response,
+                    )
+
+                    logger.info("[>>] Channel mode for %s in #%s", agent_id, channel_id)
+                    ch_t0 = time.monotonic()
+                    request_id = enqueue_channel_request(
+                        prompt=full_prompt,
+                        agent_id=agent_id,
+                        channel_id=channel_id,
+                        thread_id=thread_id,
+                        response_mode=response_mode,
+                    )
+                    ch_content, ch_meta = await_channel_response(
+                        request_id, timeout=RESPONSE_TIMEOUT,
+                    )
+                    if ch_content:
+                        response_content = ch_content
+                        ch_elapsed = round(time.monotonic() - ch_t0, 1)
+                        response_metadata = ch_meta or {}
+                        response_metadata.setdefault("elapsed_seconds", ch_elapsed)
+                        logger.info(
+                            "[OK] Channel response for %s in #%s (%.1fs)",
+                            agent_id, channel_id, ch_elapsed,
+                        )
+                    else:
+                        logger.warning(
+                            "[!] Channel mode returned empty for %s: %s",
+                            agent_id, ch_meta.get("error", "unknown"),
+                        )
+                except Exception:
+                    logger.exception("[!] Channel mode failed for %s", agent_id)
+            else:
+                logger.debug("[*] Channel session not active, skipping for %s", agent_id)
 
         # Dev mode: CLI subprocess fallback (not available in distribution)
         if not response_content and _dev_mode:

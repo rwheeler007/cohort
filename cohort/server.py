@@ -665,6 +665,121 @@ def _broadcast_work_queue() -> None:
 
 
 # =====================================================================
+# Channel endpoints -- Claude Code Channels integration
+#
+# These endpoints let a Claude Code Channel plugin drive agent responses
+# externally.  The plugin polls for pending requests, claims them (gets
+# the full prompt), then delivers a response back.  All prompt construction,
+# context enrichment, and response posting stay in agent_router.py.
+# =====================================================================
+
+
+async def channel_poll(request: Request) -> JSONResponse:
+    """GET /api/channel/poll -- return next pending agent request."""
+    from cohort.channel_bridge import poll_next_request
+
+    pending = poll_next_request()
+    if pending is None:
+        return JSONResponse({"request": None, "reason": "queue_empty"})
+    return JSONResponse({"request": pending})
+
+
+async def channel_claim(request: Request) -> JSONResponse:
+    """POST /api/channel/{request_id}/claim -- claim request, get prompt."""
+    from cohort.channel_bridge import claim_request
+
+    request_id = request.path_params.get("request_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    session_id = body.get("session_id", "unknown")
+    result = claim_request(request_id, session_id=session_id)
+    if result is None:
+        return JSONResponse(
+            {"error": f"Request '{request_id}' not found or already claimed"},
+            status_code=404,
+        )
+
+    return JSONResponse(result)
+
+
+async def channel_respond(request: Request) -> JSONResponse:
+    """POST /api/channel/{request_id}/respond -- deliver agent response.
+
+    Accepts ``{content: str}``.  Posts the response to the Cohort channel,
+    emits Socket.IO events, records working memory, and triggers learning --
+    the same post-response pipeline as the synchronous agent path.
+    """
+    from cohort.channel_bridge import deliver_response
+
+    request_id = request.path_params.get("request_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    content = body.get("content", "").strip()
+    if not content:
+        return JSONResponse({"error": "Empty response content"}, status_code=400)
+
+    metadata = body.get("metadata")  # Optional: plugin can send timing/token info
+    ok = deliver_response(request_id, content, metadata=metadata)
+    if not ok:
+        return JSONResponse(
+            {"error": f"Request '{request_id}' not found or not claimed"},
+            status_code=404,
+        )
+
+    return JSONResponse({"ok": True})
+
+
+async def channel_error(request: Request) -> JSONResponse:
+    """POST /api/channel/{request_id}/error -- report request failure."""
+    from cohort.channel_bridge import deliver_error
+
+    request_id = request.path_params.get("request_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    error_msg = body.get("error", "Unknown channel error")
+    ok = deliver_error(request_id, error_msg)
+    if not ok:
+        return JSONResponse(
+            {"error": f"Request '{request_id}' not found or not claimed"},
+            status_code=404,
+        )
+
+    return JSONResponse({"ok": True})
+
+
+async def channel_heartbeat(request: Request) -> JSONResponse:
+    """POST /api/channel/heartbeat -- register/update session heartbeat."""
+    from cohort.channel_bridge import update_heartbeat
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    update_heartbeat(
+        session_id=body.get("session_id", "unknown"),
+        pid=body.get("pid"),
+    )
+    return JSONResponse({"ok": True})
+
+
+async def channel_status(request: Request) -> JSONResponse:
+    """GET /api/channel/status -- return channel session health."""
+    from cohort.channel_bridge import get_session_status
+
+    return JSONResponse(get_session_status())
+
+
+# =====================================================================
 # Schedule endpoints
 # =====================================================================
 
@@ -1598,9 +1713,11 @@ async def get_settings(request: Request) -> JSONResponse:
     smartest_available = False
     try:
         from cohort.local.cloud import check_cloud_available
-        from cohort.agent_router import check_claude_cli_available, _dev_mode
+        from cohort.agent_router import check_claude_cli_available, _dev_mode, _channel_mode_enabled
+        from cohort.channel_bridge import channel_mode_active
         smartest_available = (
             check_cloud_available(settings)
+            or (_channel_mode_enabled and channel_mode_active())
             or (_dev_mode and check_claude_cli_available())
             or check_claude_cli_available()  # Handoff mode (no harvest)
         )
@@ -1626,6 +1743,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "admin_mode": settings.get("admin_mode", False),
         "dev_mode": settings.get("dev_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
+        "channel_mode": settings.get("channel_mode", False),
         "cloud_provider": settings.get("cloud_provider", ""),
         "cloud_api_key_masked": cloud_key_masked,
         "cloud_model": settings.get("cloud_model", ""),
@@ -1675,6 +1793,8 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["force_to_claude_code"] = bool(body["force_to_claude_code"])
     if "dev_mode" in body:
         settings["dev_mode"] = bool(body["dev_mode"])
+    if "channel_mode" in body:
+        settings["channel_mode"] = bool(body["channel_mode"])
     if "cloud_provider" in body:
         if body["cloud_provider"] in ("", "anthropic", "openai"):
             settings["cloud_provider"] = body["cloud_provider"]
@@ -5868,6 +5988,13 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/work-queue/claim", claim_work_item, methods=["POST"]),
         Route("/api/work-queue/{item_id}", get_work_item, methods=["GET"]),
         Route("/api/work-queue/{item_id}", update_work_item, methods=["PATCH"]),
+        # Channel (Claude Code Channels integration)
+        Route("/api/channel/poll", channel_poll, methods=["GET"]),
+        Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
+        Route("/api/channel/status", channel_status, methods=["GET"]),
+        Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),
+        Route("/api/channel/{request_id}/respond", channel_respond, methods=["POST"]),
+        Route("/api/channel/{request_id}/error", channel_error, methods=["POST"]),
         # Schedules
         Route("/api/schedules", get_schedules, methods=["GET"]),
         Route("/api/schedules", create_schedule_endpoint, methods=["POST"]),

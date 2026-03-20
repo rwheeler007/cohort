@@ -98,6 +98,7 @@ from cohort.executive_briefing import ExecutiveBriefing
 from cohort.intel_fetcher import IntelFetcher
 from cohort.content_analyzer import score_article
 from cohort.health_monitor import (
+    configure_health_monitor,
     list_services,
     get_state,
     run_service_checks,
