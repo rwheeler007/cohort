@@ -846,12 +846,18 @@ def main() -> None:
     from cohort.cli import route_cmd, search_cmd, schedule_cmd, secret_cmd
     from cohort.cli import youtube_cmd, website_cmd, migrate_cmd
     from cohort.cli import briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd
+    from cohort.cli import sessions_cmd, model_cmd, config_cmd
+    from cohort.cli import benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd
+    from cohort.cli import test_cmd
 
     for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
                 discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd,
                 route_cmd, search_cmd, schedule_cmd, secret_cmd,
                 youtube_cmd, website_cmd, migrate_cmd,
-                briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd):
+                briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd,
+                sessions_cmd, model_cmd, config_cmd,
+                benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd,
+                test_cmd):
         mod.register(sub)
 
     args = parser.parse_args()
@@ -934,6 +940,22 @@ def main() -> None:
         sys.exit(profile_cmd.handle(args))
     elif args.command == "web":
         sys.exit(web_cmd.handle(args))
+    elif args.command == "sessions":
+        sys.exit(sessions_cmd.handle(args))
+    elif args.command == "model":
+        sys.exit(model_cmd.handle(args))
+    elif args.command == "config":
+        sys.exit(config_cmd.handle(args))
+    elif args.command == "benchmark":
+        sys.exit(benchmark_cmd.handle(args))
+    elif args.command == "learn":
+        sys.exit(learn_cmd.handle(args))
+    elif args.command == "analyze":
+        sys.exit(analyze_cmd.handle(args))
+    elif args.command == "meet":
+        sys.exit(meet_cmd.handle(args))
+    elif args.command == "test":
+        sys.exit(test_cmd.handle(args))
 
     else:
         parser.print_help()
