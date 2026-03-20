@@ -6,22 +6,45 @@
  * Heartbeat is best-effort (no retry).
  */
 
-import type { PollResponse, ClaimResponse, ChannelConfig } from "./types.js";
+import type { PollResponse, ClaimResponse, ChannelConfig, RegisterResponse } from "./types.js";
 
 export class CohortClient {
   private baseUrl: string;
   private sessionId: string;
+  private channelId: string | undefined;
 
   constructor(config: ChannelConfig) {
     this.baseUrl = config.cohort_base_url;
     this.sessionId = config.session_id;
+    this.channelId = config.channel_id;
+  }
+
+  /**
+   * Register this session for a specific channel.
+   * Enforces the server-side session limit.
+   */
+  async register(): Promise<RegisterResponse> {
+    const res = await fetch(`${this.baseUrl}/api/channel/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        channel_id: this.channelId,
+        session_id: this.sessionId,
+        pid: process.pid,
+      }),
+    });
+    return (await res.json()) as RegisterResponse;
   }
 
   /**
    * Poll for the next pending agent request. No side effects.
+   * If channelId is set, only polls for that channel's requests.
    */
   async poll(): Promise<PollResponse> {
-    const res = await fetch(`${this.baseUrl}/api/channel/poll`);
+    const url = this.channelId
+      ? `${this.baseUrl}/api/channel/poll?channel_id=${encodeURIComponent(this.channelId)}`
+      : `${this.baseUrl}/api/channel/poll`;
+    const res = await fetch(url);
     if (!res.ok) {
       throw new Error(`Poll failed: ${res.status} ${res.statusText}`);
     }
@@ -133,17 +156,20 @@ export class CohortClient {
   }
 
   /**
-   * Send heartbeat. Best-effort.
+   * Send heartbeat. Best-effort. Includes channel_id if scoped.
    */
   async heartbeat(): Promise<void> {
     try {
+      const body: Record<string, unknown> = {
+        session_id: this.sessionId,
+        pid: process.pid,
+      };
+      if (this.channelId) body.channel_id = this.channelId;
+
       await fetch(`${this.baseUrl}/api/channel/heartbeat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: this.sessionId,
-          pid: process.pid,
-        }),
+        body: JSON.stringify(body),
       });
     } catch {
       // Best-effort

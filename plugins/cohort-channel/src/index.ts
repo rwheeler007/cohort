@@ -10,12 +10,16 @@
  * All prompt construction, context enrichment, memory injection, and response
  * posting stay server-side in Cohort. This plugin is intentionally thin.
  *
- * Usage:
+ * Usage (global -- polls all channels, backward compat):
  *   claude --dangerously-load-development-channels server:cohort-wq
+ *
+ * Usage (scoped -- polls only one channel):
+ *   CHANNEL_ID=general claude --dangerously-load-development-channels server:cohort-ch-general
  *
  * Environment:
  *   COHORT_BASE_URL  -- Cohort server URL (default: http://localhost:5100)
  *   POLL_INTERVAL    -- Poll interval in ms (default: 5000)
+ *   CHANNEL_ID       -- Scope to a specific Cohort channel (optional)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -48,11 +52,16 @@ function log(level: string, msg: string): void {
 // Configuration
 // ---------------------------------------------------------------------------
 
+const channelId = process.env.CHANNEL_ID;
+
 const config: ChannelConfig = {
   cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
   poll_interval_ms: parseInt(process.env.POLL_INTERVAL ?? "5000", 10),
   heartbeat_interval_ms: 10_000,
-  session_id: `cohort-wq-${Date.now()}`,
+  session_id: channelId
+    ? `cohort-ch-${channelId}-${Date.now()}`
+    : `cohort-wq-${Date.now()}`,
+  channel_id: channelId,
 };
 
 const client = new CohortClient(config);
@@ -65,27 +74,37 @@ let currentRequestClaimedAt: number | null = null;
 // MCP Server
 // ---------------------------------------------------------------------------
 
+const serverName = channelId ? `cohort-ch-${channelId}` : "cohort-wq";
+
+const instructions = [
+  "You are an AI agent in the Cohort team chat system.",
+  ...(channelId
+    ? [`You are scoped to channel #${channelId}. Only respond to requests for this channel.`]
+    : []),
+  `When you receive a prompt via <channel source="${serverName}">, respond to`,
+  "the conversation following the persona and instructions in the prompt.",
+  "",
+  "Workflow for each request:",
+  "1. Read the prompt carefully -- it contains the agent persona, grounding",
+  "   rules, channel context, and the user's message",
+  "2. Respond as the specified agent, in character",
+  "3. Call cohort_respond with your response text",
+  "4. If you cannot respond, call cohort_error with a description",
+  "",
+  "After responding, wait -- the next request will arrive automatically.",
+  "",
+  "When working with tool results, write down any important information you might need later",
+  "in your response, as the original tool result may be cleared later.",
+].join("\n");
+
 const mcp = new Server(
-  { name: "cohort-wq", version: "0.1.0" },
+  { name: serverName, version: "0.2.0" },
   {
     capabilities: {
       experimental: { "claude/channel": {} },
       tools: {},
     },
-    instructions: [
-      "You are an AI agent in the Cohort team chat system.",
-      "When you receive a prompt via <channel source=\"cohort-wq\">, respond to",
-      "the conversation following the persona and instructions in the prompt.",
-      "",
-      "Workflow for each request:",
-      "1. Read the prompt carefully -- it contains the agent persona, grounding",
-      "   rules, channel context, and the user's message",
-      "2. Respond as the specified agent, in character",
-      "3. Call cohort_respond with your response text",
-      "4. If you cannot respond, call cohort_error with a description",
-      "",
-      "After responding, wait -- the next request will arrive automatically.",
-    ].join("\n"),
+    instructions,
   }
 );
 
@@ -353,6 +372,22 @@ async function main(): Promise<void> {
 
   log("INFO", `Session ${config.session_id} connected. Log: ${LOG_FILE}`);
 
+  // Register with Cohort if scoped to a specific channel
+  if (config.channel_id) {
+    const regResult = await client.register();
+    if (!regResult.ok) {
+      log(
+        "FATAL",
+        `Registration rejected: ${regResult.error} (limit=${regResult.limit}, active=${regResult.active})`
+      );
+      process.exit(1);
+    }
+    if (regResult.warn) {
+      log("WARN", `Session count at warning threshold (${regResult.active}/${regResult.limit})`);
+    }
+    log("INFO", `Registered for channel: ${config.channel_id}`);
+  }
+
   // Start background loops (non-blocking)
   pollLoop().catch((e) =>
     log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
@@ -361,7 +396,8 @@ async function main(): Promise<void> {
     log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
   );
 
-  log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms`);
+  const scope = config.channel_id ? `#${config.channel_id}` : "all channels";
+  log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (scope: ${scope})`);
 }
 
 main().catch((e) => {

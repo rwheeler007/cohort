@@ -820,6 +820,35 @@ async def channel_sessions_list(request: Request) -> JSONResponse:
     return JSONResponse(get_all_sessions_status())
 
 
+async def channel_hydration_status(request: Request) -> JSONResponse:
+    """GET /api/channel/hydration -- check context hydration cache status."""
+    import time as _time
+    from cohort.context_hydration import _hydration_cache
+
+    channel_id = request.query_params.get("channel_id", "")
+    if channel_id:
+        entry = _hydration_cache.get(channel_id)
+        if entry:
+            return JSONResponse({
+                "channel_id": channel_id,
+                "cached": True,
+                "tier": entry["tier"],
+                "chars": len(entry["text"]),
+                "age_seconds": round(_time.time() - entry["created_at"], 1),
+            })
+        return JSONResponse({"channel_id": channel_id, "cached": False})
+
+    # No channel_id: return all cached channels
+    result = {}
+    for cid, entry in _hydration_cache.items():
+        result[cid] = {
+            "tier": entry["tier"],
+            "chars": len(entry["text"]),
+            "age_seconds": round(_time.time() - entry["created_at"], 1),
+        }
+    return JSONResponse({"channels": result, "total_cached": len(result)})
+
+
 # =====================================================================
 # Schedule endpoints
 # =====================================================================
@@ -6180,6 +6209,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/status", channel_status, methods=["GET"]),
         Route("/api/channel/register", channel_register, methods=["POST"]),
         Route("/api/channel/sessions", channel_sessions_list, methods=["GET"]),
+        Route("/api/channel/hydration", channel_hydration_status, methods=["GET"]),
         Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),
         Route("/api/channel/{request_id}/respond", channel_respond, methods=["POST"]),
         Route("/api/channel/{request_id}/error", channel_error, methods=["POST"]),

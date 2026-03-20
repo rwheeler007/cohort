@@ -849,6 +849,8 @@ def main() -> None:
     from cohort.cli import sessions_cmd, model_cmd, config_cmd
     from cohort.cli import benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd
     from cohort.cli import test_cmd
+    from cohort.cli import service_cmd, cloud_cmd, context_cmd, import_cmd, assess_cmd
+    from cohort.cli import hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd
 
     for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
                 discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd,
@@ -857,7 +859,9 @@ def main() -> None:
                 briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd,
                 sessions_cmd, model_cmd, config_cmd,
                 benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd,
-                test_cmd):
+                test_cmd,
+                service_cmd, cloud_cmd, context_cmd, import_cmd, assess_cmd,
+                hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd):
         mod.register(sub)
 
     args = parser.parse_args()
@@ -956,6 +960,24 @@ def main() -> None:
         sys.exit(meet_cmd.handle(args))
     elif args.command == "test":
         sys.exit(test_cmd.handle(args))
+    elif args.command == "service":
+        sys.exit(service_cmd.handle(args))
+    elif args.command == "cloud":
+        sys.exit(cloud_cmd.handle(args))
+    elif args.command == "context":
+        sys.exit(context_cmd.handle(args))
+    elif args.command == "import":
+        sys.exit(import_cmd.handle(args))
+    elif args.command == "assess":
+        sys.exit(assess_cmd.handle(args))
+    elif args.command == "hydrate":
+        sys.exit(hydrate_cmd.handle(args))
+    elif args.command == "quiz":
+        sys.exit(quiz_cmd.handle(args))
+    elif args.command == "inject":
+        sys.exit(inject_cmd.handle(args))
+    elif args.command == "overnight":
+        sys.exit(overnight_cmd.handle(args))
 
     else:
         parser.print_help()
