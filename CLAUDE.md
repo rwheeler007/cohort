@@ -36,6 +36,35 @@ settings["setup_completed"] = False  # NEVER DO THIS
 Windows console uses cp1252 -- Unicode emojis cause `UnicodeEncodeError`.
 Use ASCII markers: `[OK]` `[X]` `[!]` `[*]` `[>>]` `[...]`
 
+### Post-Implementation E2E Verification
+
+After completing a code task that touches UI-facing code (server routes, templates, static JS/CSS, setup wizard), run the E2E test suite as a second verification layer:
+
+```bash
+# Run all E2E tests
+python -m cohort test e2e
+
+# Run only tests relevant to what changed
+python -m cohort test e2e --tag smoke       # core health
+python -m cohort test e2e --tag import      # import preferences wizard
+python -m cohort test e2e --tag chat        # message/agent interaction
+python -m cohort test e2e --tag channels    # channel CRUD
+python -m cohort test e2e --tag settings    # settings modal
+
+# Run a specific spec
+python -m cohort test e2e --spec import-preferences
+
+# List available specs
+python -m cohort test list
+
+# Run unit + E2E together
+python -m cohort test all
+```
+
+Unit tests (pytest) pass when backend logic is correct. E2E tests catch **wiring bugs** -- routes not hooked up, WebSocket events misspelled, DOM not updating. **Both layers must pass before a task is considered complete.**
+
+E2E tests auto-create an isolated Cohort server on port 5199 with a temp data directory. Production data is never touched.
+
 ---
 
 ## Key Locations
@@ -45,7 +74,11 @@ Use ASCII markers: `[OK]` `[X]` `[!]` `[*]` `[>>]` `[...]`
 | Package source | `cohort/` |
 | Agents | `agents/` |
 | Agent personas | `agents/{name}/agent_persona.md`, `cohort/personas/` |
-| Tests | `tests/` |
+| Tests (unit) | `tests/` |
+| Tests (E2E specs) | `tests/e2e/specs/` |
+| Tests (E2E helpers) | `tests/e2e/helpers/test-utils.ts` |
+| Test CLI | `cohort/cli/test_cmd.py` |
+| Codegen module | `cohort/codegen/` |
 | Demo specs | `demos/specs/` |
 | Demo helpers | `demos/helpers/` |
 | MCP server | `cohort/mcp/server.py` |
