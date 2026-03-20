@@ -26,6 +26,23 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { CohortClient } from "./cohort-client.js";
 import type { ChannelConfig } from "./types.js";
+import { appendFileSync, mkdirSync } from "fs";
+import { join, dirname } from "path";
+
+// ---------------------------------------------------------------------------
+// Dual logger: stderr (Claude Code captures) + file (we can tail)
+// ---------------------------------------------------------------------------
+
+const LOG_DIR = join(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1")), "..", "logs");
+try { mkdirSync(LOG_DIR, { recursive: true }); } catch { /* exists */ }
+const LOG_FILE = join(LOG_DIR, "channel.log");
+
+function log(level: string, msg: string): void {
+  const ts = new Date().toISOString();
+  const line = `${ts} [${level}] ${msg}`;
+  console.error(line);
+  try { appendFileSync(LOG_FILE, line + "\n"); } catch { /* best-effort */ }
+}
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -202,15 +219,20 @@ async function pollLoop(): Promise<void> {
       }
 
       const pollResult = await client.poll();
-      consecutiveFailures = 0; // Reset on success
+      if (consecutiveFailures > 0) {
+        log("INFO", "Connection restored after " + consecutiveFailures + " failures");
+      }
+      consecutiveFailures = 0;
 
       if (pollResult.request) {
         const requestId = pollResult.request.id;
+        log("INFO", `Request found: ${requestId}`);
 
         // Claim the request (get the full prompt)
         const claim = await client.claim(requestId);
         currentRequestId = claim.id;
         currentRequestClaimedAt = Date.now();
+        log("INFO", `Claimed ${claim.id} (agent=${claim.agent_id}, mode=${claim.response_mode})`);
 
         // Push the prompt into the Claude Code session
         await mcp.notification({
@@ -229,15 +251,10 @@ async function pollLoop(): Promise<void> {
     } catch (e) {
       consecutiveFailures++;
       const msg = (e as Error).message;
-      console.error(
-        `[cohort-wq] Poll error (attempt ${consecutiveFailures}): ${msg}`
-      );
+      log("ERR", `Poll error (attempt ${consecutiveFailures}): ${msg}`);
 
       if (consecutiveFailures === 3) {
-        console.error(
-          "[cohort-wq] [!] Cohort server unreachable for 3 consecutive polls. " +
-            "Backing off. Will resume when connection restores."
-        );
+        log("WARN", "Cohort server unreachable for 3 consecutive polls. Backing off.");
       }
 
       // Exponential backoff: 5s, 10s, 20s, capped at 30s
@@ -274,20 +291,20 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await mcp.connect(transport);
 
+  log("INFO", `Session ${config.session_id} connected. Log: ${LOG_FILE}`);
+
   // Start background loops (non-blocking)
   pollLoop().catch((e) =>
-    console.error(`[cohort-wq] Poll loop crashed: ${(e as Error).message}`)
+    log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
   );
   heartbeatLoop().catch((e) =>
-    console.error(
-      `[cohort-wq] Heartbeat loop crashed: ${(e as Error).message}`
-    )
+    log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
   );
 
-  console.error("[cohort-wq] Channel plugin started. Polling for requests...");
+  log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms`);
 }
 
 main().catch((e) => {
-  console.error(`[cohort-wq] Fatal: ${(e as Error).message}`);
+  log("FATAL", (e as Error).message);
   process.exit(1);
 });

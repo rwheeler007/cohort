@@ -37,7 +37,8 @@ cd /d G:\cohort
 
 claude --dangerously-load-development-channels server:cohort-wq ^
        --permission-mode acceptEdits ^
+       --allowedTools "mcp__cohort-wq__cohort_respond,mcp__cohort-wq__cohort_error" ^
        --model %MODEL% ^
-       -p "You are an agent in the Cohort team chat system. Wait for requests from the cohort-wq channel and respond in character as the specified agent."
+       --system-prompt "You are an agent in the Cohort team chat system. Wait for requests from the cohort-wq channel and respond in character as the specified agent."
 
 endlocal
