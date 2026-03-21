@@ -2,7 +2,7 @@ import { test, expect, Page } from "@playwright/test";
 import { ConsoleErrorCollector } from "../helpers/test-utils";
 
 /**
- * Import Preferences (Setup Step 5) -- wizard import flow tests.
+ * Import Preferences -- standalone modal tests.
  *
  * Tests the ChatGPT file upload, Claude Code detection, conversation picker,
  * facts preview, save/discard, and UI state transitions.
@@ -16,35 +16,56 @@ import { ConsoleErrorCollector } from "../helpers/test-utils";
 
 // -- Helpers -----------------------------------------------------------------
 
-/** Navigate wizard to Step 5 (Import) by skipping steps 1-4. */
-async function navigateToImportStep(page: Page): Promise<void> {
+/** Open the import preferences modal directly. */
+async function openImportModal(page: Page): Promise<void> {
+  // Wait for the page to fully initialize
+  await page.waitForTimeout(3_000);
+
+  // Dismiss wizard if visible (skip through all steps)
   const wizard = page.locator("#setup-wizard");
-  await wizard.waitFor({ state: "visible", timeout: 15_000 });
-
-  // Wait for Step 1 to fully render (proves setupWizard.init() + show() completed)
-  await page.waitForSelector('.setup-wizard__step[data-step="1"]', {
-    state: "visible",
-    timeout: 15_000,
-  });
-  await page.waitForTimeout(2_000);
-
-  // Skip through steps 1-4 to reach step 5, with generous delays
-  for (let step = 1; step <= 4; step++) {
-    await page.waitForSelector(`.setup-wizard__step[data-step="${step}"]`, {
-      state: "visible",
-      timeout: 10_000,
-    });
-    await page.waitForTimeout(1_000);
-    await page.click("#setup-skip-btn");
-    await page.waitForTimeout(1_500);
+  if (await wizard.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    for (let i = 0; i < 12; i++) {
+      const skipBtn = page.locator("#setup-skip-btn");
+      const finishBtn = page.locator("#setup-finish-btn");
+      if (await finishBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+        await finishBtn.click();
+        break;
+      } else if (await skipBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+        await skipBtn.click();
+      }
+      await page.waitForTimeout(1_000);
+    }
+    await page.waitForTimeout(2_000);
   }
 
-  // Verify Step 5 body is visible
-  await page.waitForSelector('.setup-wizard__step[data-step="5"]', {
-    state: "visible",
-    timeout: 10_000,
+  // Open the import modal directly on the element
+  const modal = page.locator("#import-modal");
+  await modal.evaluate((el) => {
+    el.hidden = false;
+    el.removeAttribute("hidden");
+    el.style.display = "flex";
   });
-  await page.waitForTimeout(1_000);
+
+  // Reset sub-panels to initial state (sources visible, rest hidden)
+  const panelIds = [
+    "setup-import-sources", "setup-import-prompt-flow",
+    "setup-import-chatgpt-picker", "setup-import-progress",
+    "setup-import-preview",
+  ];
+  for (const id of panelIds) {
+    const panel = page.locator(`#${id}`);
+    if (await panel.count() > 0) {
+      await panel.evaluate((el, showId) => {
+        el.style.display = showId === "setup-import-sources" ? "" : "none";
+      }, id);
+    }
+  }
+  await page.waitForTimeout(500);
+
+  // Verify modal content is visible (check inner content, not the fixed overlay)
+  await expect(page.locator("#import-modal .import-modal")).toBeVisible({
+    timeout: 5_000,
+  });
 }
 
 /** Build a minimal valid ChatGPT conversations.json payload. */
@@ -86,9 +107,6 @@ function makeChatGPTConversations(count: number = 3): object[] {
 /**
  * Render a conversation picker into the DOM by calling the titles API
  * and building the list HTML directly.
- *
- * Note: setupWizard is a `const` (not on `window`), so we can't reference
- * it from page.evaluate. Instead we manipulate the DOM directly.
  */
 async function showConversationPicker(
   page: Page,
@@ -132,7 +150,6 @@ async function showConversationPicker(
 
 /**
  * Inject mock facts into the preview panel via direct DOM manipulation.
- * No reference to setupWizard needed.
  */
 async function injectMockFacts(page: Page): Promise<void> {
   await page.evaluate(() => {
@@ -189,7 +206,7 @@ test.describe("@import Import Preferences - Source Selection", () => {
     errors = new ConsoleErrorCollector();
     errors.attach(page);
     await page.goto("/");
-    await navigateToImportStep(page);
+    await openImportModal(page);
   });
 
   test.afterEach(() => {
@@ -223,7 +240,7 @@ test.describe("@import Import Preferences - ChatGPT Upload Flow", () => {
     errors = new ConsoleErrorCollector();
     errors.attach(page);
     await page.goto("/");
-    await navigateToImportStep(page);
+    await openImportModal(page);
   });
 
   test.afterEach(() => {
@@ -295,7 +312,7 @@ test.describe("@import Import Preferences - Claude Code Detection", () => {
     errors = new ConsoleErrorCollector();
     errors.attach(page);
     await page.goto("/");
-    await navigateToImportStep(page);
+    await openImportModal(page);
   });
 
   test.afterEach(() => {
@@ -374,7 +391,7 @@ test.describe("@import Import Preferences - Facts Preview & Commit", () => {
     errors = new ConsoleErrorCollector();
     errors.attach(page);
     await page.goto("/");
-    await navigateToImportStep(page);
+    await openImportModal(page);
   });
 
   test.afterEach(() => {
@@ -451,8 +468,8 @@ test.describe("@import Import Preferences - Facts Preview & Commit", () => {
     await page.locator("#setup-import-discard-btn").click();
     await page.waitForTimeout(1_000);
 
-    // Preview should be hidden after discard
-    await expect(page.locator("#setup-import-preview")).toBeHidden();
+    // Modal should be hidden after discard (discard closes modal)
+    await expect(page.locator("#import-modal")).toBeHidden();
   });
 
   test("commit API returns stored count", async ({ page }) => {

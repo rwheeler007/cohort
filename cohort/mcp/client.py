@@ -68,7 +68,7 @@ class CohortClient:
     Parameters
     ----------
     base_url:
-        Base URL of the chat server (default ``http://127.0.0.1:5000``).
+        Base URL of the chat server (default ``http://127.0.0.1:5100``).
     checklist_path:
         Optional filesystem path to a to-do checklist JSON file.
     """

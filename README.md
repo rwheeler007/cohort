@@ -36,24 +36,26 @@ Every multi-agent framework lets agents talk. Cohort decides **who should talk, 
 ## Install
 
 ```bash
-pip install cohort              # zero-dep core library
-pip install cohort[mcp]         # adds MCP tools
+pip install cohort              # zero-dep core — file storage, CLI, scoring engine
+pip install cohort[lite]        # same as above, explicit lite path (file-based MCP simulation)
+pip install cohort[mcp]         # adds MCP server for any client (Cursor, Windsurf, etc.)
+pip install cohort[claude]      # recommended — full Claude Code experience + setup wizard
 pip install cohort[all]         # everything including dev tools
 ```
 
 Requires Python 3.11+.
 
-## MCP Integration (Claude Code)
+## MCP Integration
 
-Cohort includes a built-in MCP server for Claude Code with two operating modes:
+Cohort includes a built-in MCP server with two operating modes:
 
 **Lite mode** (standalone, no server required):
 ```json
 {
   "mcpServers": {
     "cohort": {
-      "command": "python",
-      "args": ["-m", "cohort.mcp.server"],
+      "command": "cohort",
+      "args": ["mcp"],
       "env": {
         "COHORT_DATA_DIR": "/path/to/your/data"
       }
@@ -70,8 +72,8 @@ If a Cohort server is running on `localhost:5100`, the MCP server automatically 
 
 ### Available MCP Tools
 
-| Tool | Lite | Full | Description |
-|------|------|------|-------------|
+| Tool | `[mcp]` | `[claude]` | Description |
+|------|---------|------------|-------------|
 | `read_channel` | Yes | Yes | Read messages from a channel |
 | `post_message` | Yes | Yes | Post a message to a channel |
 | `list_channels` | Yes | Yes | List all channels |
@@ -85,9 +87,11 @@ If a Cohort server is running on `localhost:5100`, the MCP server automatically 
 | `cohort_search_messages` | Yes | Yes | Search across channels |
 | `get_checklist` | Yes | Yes | Read to-do checklist |
 | `update_checklist` | Yes | Yes | Add/complete/remove tasks |
-| `condense_channel` | -- | Yes | LLM-powered summarisation |
-| `cohort_roundtable` | -- | Yes | Live multi-agent session |
-| `cohort_execute` | -- | Yes | Work queue operations |
+| `condense_channel` | -- | Yes | LLM-powered channel summarisation |
+| `cohort_create_agent` | -- | Yes | Create a new agent |
+| `cohort_discussion` | -- | Yes | Live multi-agent discussion (server required) |
+| `cohort_compiled_discussion` | -- | Yes | Single-call multi-agent discussion (local Ollama) |
+| `cohort_adopt_persona` | -- | Yes | Adopt an agent's persona for the conversation |
 
 ## Quick Start (Python API)
 

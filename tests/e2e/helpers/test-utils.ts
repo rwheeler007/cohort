@@ -231,35 +231,45 @@ export async function skipSetupWizard(page: Page): Promise<void> {
   // Wait briefly for wizard -- it may not appear if already dismissed
   try {
     await wizard.waitFor({ state: "visible", timeout: 5_000 });
-  } catch {
-    return; // No wizard, nothing to skip
-  }
 
-  // Click through all steps using Skip/Next/Finish buttons
-  const maxSteps = 10; // Server has 7 steps, VS Code has 9; safety margin for both
-  for (let i = 0; i < maxSteps; i++) {
-    const finish = page.locator("#setup-finish-btn");
-    const skip = page.locator("#setup-skip-btn");
-    const next = page.locator("#setup-next-btn");
+    // Click through all steps using Skip/Next/Finish buttons
+    const maxSteps = 12; // Server has 8 steps, VS Code has 9; safety margin for both
+    for (let i = 0; i < maxSteps; i++) {
+      const finish = page.locator("#setup-finish-btn");
+      const skip = page.locator("#setup-skip-btn");
+      const next = page.locator("#setup-next-btn");
 
-    if (await finish.isVisible()) {
-      await finish.click();
-      break;
-    } else if (await skip.isVisible()) {
-      await skip.click();
-    } else if (await next.isVisible()) {
-      await next.click();
+      if (await finish.isVisible()) {
+        await finish.click();
+        break;
+      } else if (await skip.isVisible()) {
+        await skip.click();
+      } else if (await next.isVisible()) {
+        await next.click();
+      }
+      await page.waitForTimeout(1_000);
     }
-    await page.waitForTimeout(300);
+
+    // Wait for wizard to close
+    try {
+      await wizard.waitFor({ state: "hidden", timeout: 5_000 });
+    } catch {
+      // Wizard might already be gone
+    }
+  } catch {
+    // No wizard visible -- already completed
   }
 
-  // Wait for wizard to close
+  // Dismiss welcome banner if it appears (overlays the message input).
+  // Banner shows after an async API call, so wait for it regardless of wizard state.
+  const dismissBtn = page.locator("#welcome-dismiss-btn");
   try {
-    await wizard.waitFor({ state: "hidden", timeout: 5_000 });
+    await dismissBtn.waitFor({ state: "visible", timeout: 5_000 });
+    await dismissBtn.click();
+    await page.waitForTimeout(500);
   } catch {
-    // Wizard might already be gone
+    // No banner, nothing to dismiss
   }
-  await page.waitForTimeout(500);
 }
 
 // =====================================================================
