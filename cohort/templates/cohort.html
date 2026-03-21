@@ -1566,6 +1566,49 @@
                     Help Cohort understand how you work. Pick any source below.
                     Everything stays on your machine.
                 </p>
+
+                <!-- Data Security Notice -->
+                <details class="import-security-notice" style="margin-bottom:var(--space-3)">
+                    <summary class="import-security-notice__toggle">
+                        How your preferences are stored and used
+                    </summary>
+                    <div class="import-security-notice__body">
+                        <p><strong>Where it lives.</strong>
+                        Your preferences are stored locally on this machine in agent
+                        memory files. They are not uploaded to any cloud service by Cohort
+                        itself.</p>
+
+                        <p><strong>What sees it.</strong>
+                        Your preferences are injected into agent prompts so they can
+                        personalize responses. Any tool, plugin, or integration you grant
+                        access to your Cohort agents may be able to read this context --
+                        including MCP servers, channel plugins, and external communication
+                        bridges (Slack, Telegram, Discord, etc.).</p>
+
+                        <p><strong>What that means.</strong>
+                        If you connect Cohort to external platforms, your preference data
+                        becomes part of the prompt context that those platforms process.
+                        Cohort cannot control how external services handle prompt content.
+                        Open communication channels are also subject to prompt injection --
+                        external messages could attempt to extract or manipulate the
+                        information in your agent's context.</p>
+
+                        <p><strong>What you control.</strong>
+                        You choose what to import. The preview step lets you review and
+                        uncheck any preference before it's saved. If you use external
+                        integrations and want to limit exposure, keep preferences general
+                        (tool choices, communication style) rather than personal or
+                        sensitive. You can delete imported preferences at any time from
+                        agent memory files.</p>
+
+                        <p><strong>Bottom line.</strong>
+                        Within Cohort's local system, your data is as secure as your
+                        machine. The moment you grant external tools or channels access
+                        to your agents, your preferences travel with the prompt -- and
+                        your permission settings determine who can see them.</p>
+                    </div>
+                </details>
+
                 <div class="setup-wizard__import-sources" id="setup-import-sources">
                     <div class="setup-wizard__card setup-wizard__import-card">
                         <h4>Ask Your AI</h4>
