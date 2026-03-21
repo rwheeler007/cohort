@@ -1,0 +1,120 @@
+{# Gallery / Portfolio Page -- showcase work with image grid #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Gallery Hero -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{% if page.content.headline %}{{ page.content.headline }}{% else %}Our Work{% endif %}</h1>
+        <p class="responsive-p-large">{% if page.content.subheadline %}{{ page.content.subheadline }}{% else %}Browse our recent projects.{% endif %}</p>
+    </div>
+</section>
+
+{% if page.content.categories %}
+<!-- Filter Tabs -->
+<section style="padding: 2rem 0 0;">
+    <div class="container text-center">
+        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+            <button class="gallery-filter active" data-filter="all" style="padding: 0.5rem 1.25rem; border-radius: 2rem; border: 2px solid var(--color-primary); background: var(--color-primary); color: #fff; cursor: pointer; font-weight: 600; font-size: 0.9rem;">All</button>
+            {% for cat in page.content.categories %}
+            <button class="gallery-filter" data-filter="{{ cat | lower | replace(' ', '-') }}" style="padding: 0.5rem 1.25rem; border-radius: 2rem; border: 2px solid var(--color-primary); background: transparent; color: var(--color-primary); cursor: pointer; font-weight: 600; font-size: 0.9rem;">{{ cat }}</button>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Grid -->
+<section class="section-spacing">
+    <div class="container">
+        {% if page.content.projects %}
+        <div class="grid-3" style="gap: 1.5rem;" id="gallery-grid">
+            {% for project in page.content.projects %}
+            <div class="card gallery-item" data-category="{{ project.category | default('') | lower | replace(' ', '-') }}" style="overflow: hidden; padding: 0;">
+                {% if project.image %}
+                <img src="{{ project.image }}" alt="{{ project.title }}" style="width: 100%; height: 220px; object-fit: cover;" loading="lazy">
+                {% else %}
+                <div style="width: 100%; height: 220px; background: linear-gradient(135deg, {{ brand.primary_color }}22, {{ brand.accent_color }}); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 2rem; opacity: 0.3; font-weight: 700;">{{ project.title[:2] | upper }}</span>
+                </div>
+                {% endif %}
+                <div style="padding: 1.25rem;">
+                    <h3 class="responsive-h3" style="margin-bottom: 0.5rem;">{{ project.title }}</h3>
+                    {% if project.description %}
+                    <p class="responsive-p-body" style="font-size: 0.9rem; opacity: 0.8;">{{ project.description }}</p>
+                    {% endif %}
+                    {% if project.tags %}
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+                        {% for tag in project.tags %}
+                        <span style="font-size: 0.75rem; padding: 0.2rem 0.6rem; background: {{ brand.accent_color }}; border-radius: 1rem; color: {{ brand.primary_color }}; font-weight: 500;">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center" style="padding: 3rem;">
+            <p class="responsive-p-large" style="opacity: 0.6;">Project gallery coming soon.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if testimonials %}
+<!-- Client Feedback -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h2 class="responsive-h2">What Our Clients Say</h2>
+        <div class="grid-2" style="margin-top: 2rem;">
+            {% for t in testimonials[:4] %}
+            <div class="testimonial">
+                <blockquote>"{{ t.quote }}"</blockquote>
+                <cite>{{ t.name }}{% if t.title %}, {{ t.title }}{% endif %}</cite>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{% if page.content.cta_heading %}{{ page.content.cta_heading }}{% else %}Ready to Start Your Project?{% endif %}</h2>
+        <div class="button-group">
+            <a href="{{ page.content.cta_href | default('contact.html') }}" class="btn-primary">{{ page.content.cta_text | default('Get in Touch') }}</a>
+        </div>
+    </div>
+</section>
+
+{% if page.content.categories %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var filters = document.querySelectorAll(".gallery-filter");
+    var items = document.querySelectorAll(".gallery-item");
+    filters.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            filters.forEach(function (b) {
+                b.style.background = "transparent";
+                b.style.color = "var(--color-primary)";
+                b.classList.remove("active");
+            });
+            btn.style.background = "var(--color-primary)";
+            btn.style.color = "#fff";
+            btn.classList.add("active");
+            var filter = btn.getAttribute("data-filter");
+            items.forEach(function (item) {
+                if (filter === "all" || item.getAttribute("data-category") === filter) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

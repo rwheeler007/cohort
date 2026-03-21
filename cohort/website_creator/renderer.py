@@ -27,6 +27,12 @@ TEMPLATE_MAP = {
     "legal": "content.html.j2",
     "docs": "content.html.j2",
     "documentation": "content.html.j2",
+    "gallery": "gallery.html.j2",
+    "portfolio": "gallery.html.j2",      # alias
+    "reviews": "reviews.html.j2",
+    "testimonials": "reviews.html.j2",    # alias
+    "team": "team.html.j2",
+    "faq": "faq.html.j2",
     "benchmarks": "benchmarks.html.j2",
     "marketing": "marketing.html.j2",
     "ai-perspective": "ai-perspective.html.j2",

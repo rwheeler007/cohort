@@ -1,0 +1,31 @@
+{# CTA: Split layout -- text left, image right. Adapted from HyperUI (MIT).
+   Tags: professional, modern, image-forward
+   Variables: block.heading, block.subheading, block.cta_text, block.cta_href, block.image
+#}
+<section class="section-alt overflow-hidden" style="display: grid; grid-template-columns: 1fr 1fr;">
+  <div style="padding: 3rem 2rem; display: flex; align-items: center;">
+    <div style="max-width: 32rem; margin: 0 auto;">
+      <h2 style="font-size: 1.75rem; font-weight: 700; font-family: var(--font-heading); color: var(--color-text); line-height: 1.2;">
+        {{ block.heading | default('Ready to get started?') }}
+      </h2>
+
+      {% if block.subheading %}
+      <p style="margin-top: 1rem; color: var(--color-text); opacity: 0.7; line-height: 1.7;">
+        {{ block.subheading }}
+      </p>
+      {% endif %}
+
+      <div style="margin-top: 2rem;">
+        <a href="{{ block.cta_href | default('#') }}" class="btn-primary" style="display: inline-block; padding: 0.75rem 3rem;">
+          {{ block.cta_text | default('Get Started') }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if block.image %}
+  <img src="{{ block.image }}" alt="" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+  {% else %}
+  <div style="width: 100%; min-height: 300px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));"></div>
+  {% endif %}
+</section>

@@ -1,0 +1,40 @@
+{# CTA: Dual side-by-side cards -- primary color card + image grid. Adapted from HyperUI (MIT).
+   Tags: bold, visual, high-impact
+   Variables: block.heading, block.subheading, block.cta_text, block.cta_href, block.image, block.image_2
+#}
+<section style="padding: 2rem 0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="background: var(--color-primary); padding: 3rem; border-radius: var(--radius); color: #fff; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+        <h2 style="font-size: 1.75rem; font-weight: 700; font-family: var(--font-heading); color: #fff;">
+          {{ block.heading | default('Ready to get started?') }}
+        </h2>
+
+        {% if block.subheading %}
+        <p style="margin-top: 1rem; color: rgba(255,255,255,0.85); line-height: 1.7;">
+          {{ block.subheading }}
+        </p>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+          <a href="{{ block.cta_href | default('#') }}" style="display: inline-block; padding: 0.75rem 3rem; border: 2px solid #fff; border-radius: var(--radius); color: #fff; font-weight: 600; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='#fff';this.style.color='var(--color-primary)'" onmouseout="this.style.background='transparent';this.style.color='#fff'">
+            {{ block.cta_text | default('Get Started') }}
+          </a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        {% if block.image %}
+        <img src="{{ block.image }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius);" loading="lazy">
+        {% else %}
+        <div style="width: 100%; background: var(--color-accent); border-radius: var(--radius);"></div>
+        {% endif %}
+        {% if block.image_2 %}
+        <img src="{{ block.image_2 }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius);" loading="lazy">
+        {% else %}
+        <div style="width: 100%; background: var(--color-secondary); border-radius: var(--radius); opacity: 0.3;"></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
