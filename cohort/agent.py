@@ -141,6 +141,7 @@ class AgentMemory:
     working_memory: list[WorkingMemoryEntry] = field(default_factory=list)
     learning_history: list[dict[str, Any]] = field(default_factory=list)
     archive_history: list[dict[str, Any]] = field(default_factory=list)
+    active_decisions: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)

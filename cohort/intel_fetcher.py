@@ -260,6 +260,70 @@ class IntelFetcher:
         config = self.get_config()
         return config.get("feeds", [])
 
+    def _save_config(self, config: dict[str, Any]) -> None:
+        """Save feed configuration."""
+        self._config_path.parent.mkdir(parents=True, exist_ok=True)
+        self._config_path.write_text(
+            json.dumps(config, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+    def add_feed(self, url: str, name: str, category: str = "general") -> bool:
+        """Add an RSS feed.  Returns True if added (False if duplicate URL)."""
+        config = self.get_config()
+        feeds = config.get("feeds", [])
+        # Deduplicate by URL
+        if any(f.get("url") == url for f in feeds):
+            return False
+        feeds.append({"url": url, "name": name, "category": category})
+        config["feeds"] = feeds
+        self._save_config(config)
+        return True
+
+    def remove_feed(self, url: str) -> bool:
+        """Remove an RSS feed by URL.  Returns True if found and removed."""
+        config = self.get_config()
+        feeds = config.get("feeds", [])
+        before = len(feeds)
+        feeds = [f for f in feeds if f.get("url") != url]
+        if len(feeds) == before:
+            return False
+        config["feeds"] = feeds
+        self._save_config(config)
+        return True
+
+    def get_article_stats(self) -> dict[str, Any]:
+        """Return article database statistics."""
+        articles = self._load_db()
+        if not articles:
+            return {"total": 0, "sources": {}, "oldest": None, "newest": None}
+        sources: dict[str, int] = {}
+        for a in articles:
+            src = a.get("source", "unknown")
+            sources[src] = sources.get(src, 0) + 1
+        dates = [a.get("fetched_at", "") for a in articles if a.get("fetched_at")]
+        return {
+            "total": len(articles),
+            "sources": dict(sorted(sources.items(), key=lambda x: -x[1])),
+            "oldest": min(dates)[:10] if dates else None,
+            "newest": max(dates)[:10] if dates else None,
+        }
+
+    def prune_articles(self, max_age_days: int = 30, keep_max: int = 500) -> dict[str, int]:
+        """Prune old articles.  Returns {"removed": N, "kept": N}."""
+        articles = self._load_db()
+        before = len(articles)
+        cutoff = (
+            datetime.now(timezone.utc) - timedelta(days=max_age_days)
+        ).isoformat()
+        articles = [a for a in articles if a.get("fetched_at", "") >= cutoff]
+        # Enforce max
+        if len(articles) > keep_max:
+            articles.sort(key=lambda a: a.get("fetched_at", ""), reverse=True)
+            articles = articles[:keep_max]
+        self._save_db(articles)
+        return {"removed": before - len(articles), "kept": len(articles)}
+
     # =================================================================
     # Database
     # =================================================================
