@@ -17,6 +17,10 @@ from pathlib import Path
 from typing import Any
 
 from cohort.agent import LearnedFact
+
+# Profile location (same as learning.py)
+_PROFILE_PATH = Path.home() / ".cohort" / "profile.json"
+
 from cohort.local.config import (
     DEFAULT_MODEL,
     IMPORT_BATCH_SIZE,
@@ -910,4 +914,139 @@ def commit_facts(
             if agent is agents[0]:
                 unique_stored += 1
 
+    # Immediately distill profile from imported facts (bypass age check)
+    if unique_stored > 0:
+        _distill_profile_from_import(facts, agent_store)
+
     return unique_stored
+
+
+def _distill_profile_from_import(
+    facts: list[dict[str, str]],
+    agent_store: Any,
+) -> None:
+    """Build/update user profile immediately from imported facts.
+
+    Unlike the learning system's _maybe_evolve_profile (which waits 7 days),
+    this runs right after import so the user gets personalized adaptation
+    rules from their first conversation.
+
+    If no local model is available, builds the profile from facts directly
+    using heuristics instead of Qwen distillation.
+    """
+    from cohort.learning import bootstrap_profile, load_profile
+
+    # Collect preference-like facts
+    pref_facts = [f["fact"] for f in facts if f.get("category") in (
+        "preference", "correction", "tool_usage", "procedure",
+    )]
+    if not pref_facts:
+        return
+
+    # Try model-based distillation first
+    try:
+        from cohort.local.config import LEARNING_PROFILE_DISTILL_PROMPT
+        from cohort.local.ollama import OllamaClient
+
+        client = OllamaClient(timeout=60)
+        if client.health_check():
+            observations = "\n".join(f"- {f}" for f in pref_facts[:50])
+            prompt = LEARNING_PROFILE_DISTILL_PROMPT.format(observations=observations)
+
+            result = client.generate(
+                model=DEFAULT_MODEL,
+                prompt=prompt,
+                temperature=0.15,
+                think=False,
+                keep_alive="2m",
+                options={"num_predict": 2048},
+            )
+
+            if result and result.text.strip():
+                _apply_distilled_profile(result.text.strip())
+                return
+    except Exception:
+        pass
+
+    # Fallback: heuristic profile from facts (no model needed)
+    _build_heuristic_profile(pref_facts)
+
+
+def _apply_distilled_profile(model_output: str) -> None:
+    """Apply Qwen-distilled profile JSON to ~/.cohort/profile.json."""
+    from cohort.learning import load_profile
+
+    try:
+        new_profile = json.loads(model_output)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", model_output, re.DOTALL)
+        if not match:
+            return
+        try:
+            new_profile = json.loads(match.group())
+        except json.JSONDecodeError:
+            return
+
+    profile = load_profile() or {
+        "version": "1.0",
+        "core_paragraph": "",
+        "adaptation_rules": {},
+    }
+
+    if "core_paragraph" in new_profile:
+        profile["core_paragraph"] = new_profile["core_paragraph"]
+    if "adaptation_rules" in new_profile and isinstance(new_profile["adaptation_rules"], dict):
+        if "adaptation_rules" not in profile:
+            profile["adaptation_rules"] = {}
+        profile["adaptation_rules"].update(new_profile["adaptation_rules"])
+
+    profile["last_updated"] = datetime.now().isoformat()
+    profile["version"] = "1.0"
+
+    _PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _PROFILE_PATH.write_text(json.dumps(profile, indent=2), encoding="utf-8")
+    logger.info("[OK] Distilled user profile from import (%s)", _PROFILE_PATH)
+
+
+def _build_heuristic_profile(pref_facts: list[str]) -> None:
+    """Build a basic profile from facts using heuristics (no model)."""
+    from cohort.learning import load_profile
+
+    profile = load_profile() or {
+        "version": "1.0",
+        "core_paragraph": "",
+        "adaptation_rules": {},
+    }
+
+    rules = profile.get("adaptation_rules", {})
+
+    # Scan facts for communication preferences
+    for fact in pref_facts:
+        lower = fact.lower()
+        if any(kw in lower for kw in ("concise", "short", "brief", "under 3", "minimal")):
+            rules["response_length"] = "short"
+        elif any(kw in lower for kw in ("detailed", "thorough", "comprehensive")):
+            rules["response_length"] = "detailed"
+
+        if "bullet" in lower:
+            rules.setdefault("custom_rules", [])
+            if "User prefers bullet points" not in rules["custom_rules"]:
+                rules["custom_rules"].append("User prefers bullet points")
+
+        if any(kw in lower for kw in ("direct", "no filler", "straight to")):
+            rules["summarize_back"] = False
+
+    # Build core paragraph from tool/language facts
+    tools = [f for f in pref_facts if any(kw in f.lower() for kw in (
+        "uses ", "prefers ", "python", "javascript", "typescript",
+    ))]
+    if tools:
+        profile["core_paragraph"] = "User preferences: " + "; ".join(tools[:8]) + "."
+
+    profile["adaptation_rules"] = rules
+    profile["last_updated"] = datetime.now().isoformat()
+    profile["version"] = "1.0"
+
+    _PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _PROFILE_PATH.write_text(json.dumps(profile, indent=2), encoding="utf-8")
+    logger.info("[OK] Built heuristic profile from import (%s)", _PROFILE_PATH)

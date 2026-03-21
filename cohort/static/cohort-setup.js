@@ -603,20 +603,41 @@ const setupWizard = {
         $('#setup-import-chatgpt-picker').style.display = 'none';
         $('#setup-import-progress').style.display = '';
 
+        const progressEl = $('#setup-import-progress-text');
+        const allFacts = [];
+        const batchSize = 5; // Process 5 conversations per API call
+        let processed = 0;
+
         try {
-            const resp = await fetch('/api/setup/import-chatgpt-extract', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    conversations: this.importChatgptData,
-                    selected_ids: selectedIds,
-                }),
+            for (let i = 0; i < selectedIds.length; i += batchSize) {
+                const batch = selectedIds.slice(i, i + batchSize);
+                processed += batch.length;
+                progressEl.textContent = `[*] Processing conversations ${processed} of ${selectedIds.length}...`;
+
+                const resp = await fetch('/api/setup/import-chatgpt-extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        conversations: this.importChatgptData,
+                        selected_ids: batch,
+                    }),
+                });
+
+                if (!resp.ok) throw new Error('Extraction failed');
+                const result = await resp.json();
+
+                if (result.facts) allFacts.push(...result.facts);
+            }
+
+            // Dedup across batches
+            const seen = new Set();
+            this.importFacts = allFacts.filter(f => {
+                const key = f.fact.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
             });
 
-            if (!resp.ok) throw new Error('Extraction failed');
-            const result = await resp.json();
-
-            this.importFacts = result.facts || [];
             this.renderFactsPreview(this.importFacts);
         } catch (e) {
             showToast('Extraction failed: ' + e.message, 'error');
