@@ -91,6 +91,33 @@ E2E tests auto-create an isolated Cohort server on port 5199 with a temp data di
 | CI/CD | `.github/workflows/ci.yml` |
 | QA playbook | `QA_PLAYBOOK.md` |
 
+## Claude Code Native Skills
+
+Defined in `.claude/skills/<name>/SKILL.md`. Execute directly in Claude Code sessions.
+
+### /health - System Health Check
+
+- `/health` or `/health all` - Cohort server (:5100) + Ollama (:11434) status
+- `/health server` - Cohort server only
+- `/health ollama` - Ollama model count
+- `/health doctor` - Full diagnostics (Python, Git, data dir, agents)
+
+### /tiers - Response Tier Manager
+
+- `/tiers` or `/tiers show` - Current smart/smarter/smartest model assignments
+- `/tiers set <tier> <model>` - Override a tier's model (writes `data/tier_settings.json`)
+- `/tiers budget` - Show token budget limits
+- `/tiers reset` - Clear overrides, revert to VRAM defaults
+
+### /preheat - Model Warmup
+
+- `/preheat` or `/preheat all` - Warm up the primary model via Ollama
+- `/preheat <model_name>` - Warm up a specific model
+
+All write operations are audit-logged to `data/skill_audit.jsonl`.
+
+---
+
 ## Architecture Notes
 
 - **Pip-installable** with optional extras: `cohort[all]`, `cohort[e2e]`, `cohort[dev]`
