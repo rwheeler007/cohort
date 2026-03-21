@@ -14,7 +14,7 @@
 
 const setupWizard = {
     currentStep: 1,
-    totalSteps: 7,
+    totalSteps: 8,
     stepsDone: new Set(),
     hwData: null,
     ollamaData: null,
@@ -89,6 +89,10 @@ const setupWizard = {
         const claudeSaveBtn = $('#setup-claude-save-btn');
         if (claudeSaveBtn) claudeSaveBtn.onclick = () => this.saveClaudeSettings();
 
+        // Step 8: Security buttons
+        const securitySaveBtn = $('#setup-security-save-btn');
+        if (securitySaveBtn) securitySaveBtn.onclick = () => this.saveSecuritySettings();
+
         // Re-run button in settings
         if (dom.setupRerunBtn) {
             dom.setupRerunBtn.onclick = () => {
@@ -151,6 +155,7 @@ const setupWizard = {
             else if (next === 5) this.runStep5();
             else if (next === 6) this.runStep6();
             else if (next === 7) this.runStep7();
+            else if (next === 8) this.runStep8_Security();
         }
     },
 
@@ -669,15 +674,6 @@ const setupWizard = {
             if (timeoutInput) timeoutInput.value = settings.response_timeout || 300;
             if (forceClaudeInput) forceClaudeInput.checked = settings.force_to_claude_code || false;
 
-            // Populate default permissions from saved settings
-            const dp = settings.default_permissions || {};
-            const profileInput = $('#setup-perm-profile');
-            const denyInput = $('#setup-perm-deny');
-            const maxTurnsInput = $('#setup-perm-max-turns');
-            if (profileInput && dp.profile) profileInput.value = dp.profile;
-            if (denyInput && dp.deny_paths) denyInput.value = (dp.deny_paths || []).join(', ');
-            if (maxTurnsInput && dp.max_turns) maxTurnsInput.value = dp.max_turns;
-
             // Cloud provider fields
             const cloudProviderEl = $('#setup-cloud-provider');
             const cloudApiKeyEl = $('#setup-cloud-api-key');
@@ -775,9 +771,6 @@ const setupWizard = {
 
     _gatherClaudeFields() {
         const timeoutVal = parseInt(($('#setup-response-timeout') || {}).value) || 300;
-        const maxTurnsVal = parseInt(($('#setup-perm-max-turns') || {}).value) || 15;
-        const denyRaw = ($('#setup-perm-deny') || {}).value || '';
-        const denyPaths = denyRaw.split(',').map(s => s.trim()).filter(Boolean);
         const payload = {
             claude_cmd: ($('#setup-claude-cmd') || {}).value || '',
             agents_root: ($('#setup-agents-root') || {}).value || '',
@@ -787,11 +780,6 @@ const setupWizard = {
             dev_mode: ($('#setup-dev-mode') || {}).checked || false,
             cloud_provider: ($('#setup-cloud-provider') || {}).value || '',
             cloud_model: (($('#setup-cloud-model') || {}).value || '').trim(),
-            default_permissions: {
-                profile: ($('#setup-perm-profile') || {}).value || 'developer',
-                deny_paths: denyPaths,
-                max_turns: Math.max(1, Math.min(50, maxTurnsVal)),
-            },
         };
         // Only include cloud API key if a value was entered
         const cloudKey = (($('#setup-cloud-api-key') || {}).value || '').trim();
@@ -843,7 +831,77 @@ const setupWizard = {
         } catch (e) { /* non-blocking */ }
     },
 
+    runStep8_Security() {
+        // Pre-populate from existing settings if available
+        const settings = state.settings || {};
+        const perms = settings.default_permissions || {};
+        const profile = perms.profile || 'readonly';
+        const maxTurns = perms.max_turns || 15;
+        const denyPaths = (perms.deny_paths || []).join('\n');
+
+        const radios = document.querySelectorAll('input[name="setup-security-profile"]');
+        radios.forEach(r => { r.checked = (r.value === profile); });
+
+        const turnsSlider = $('#setup-max-turns');
+        const turnsLabel = $('#setup-max-turns-label');
+        if (turnsSlider) { turnsSlider.value = maxTurns; }
+        if (turnsLabel) { turnsLabel.textContent = maxTurns; }
+
+        const denyInput = $('#setup-deny-paths');
+        if (denyInput) { denyInput.value = denyPaths; }
+    },
+
+    async saveSecuritySettings() {
+        const selected = document.querySelector('input[name="setup-security-profile"]:checked');
+        const profile = selected ? selected.value : 'readonly';
+        const maxTurns = parseInt(($('#setup-max-turns') || {}).value) || 15;
+        const denyRaw = ($('#setup-deny-paths') || {}).value || '';
+        const denyPaths = denyRaw.split('\n').map(p => p.trim()).filter(Boolean);
+
+        const payload = {
+            default_permissions: {
+                profile: profile,
+                deny_paths: denyPaths,
+                max_turns: maxTurns,
+            },
+        };
+
+        try {
+            const resp = await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await resp.json();
+            if (data.success !== false) {
+                this.markDone(8);
+                showToast('Security settings saved!', 'success');
+            } else {
+                showToast(data.error || 'Failed to save', 'error');
+            }
+        } catch (e) {
+            showToast('Failed to save security settings', 'error');
+        }
+    },
+
     async finish() {
+        // If security step was skipped, apply readonly as secure default
+        if (!this.stepsDone.has(8)) {
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        default_permissions: {
+                            profile: 'readonly',
+                            deny_paths: [],
+                            max_turns: 15,
+                        },
+                    }),
+                });
+            } catch (e) { /* ignore */ }
+        }
+
         // If no feeds selected, still mark setup complete
         if (!this.stepsDone.has(5)) {
             try {

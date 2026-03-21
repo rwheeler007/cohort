@@ -236,7 +236,7 @@ export async function skipSetupWizard(page: Page): Promise<void> {
   }
 
   // Click through all steps using Skip/Next/Finish buttons
-  const maxSteps = 8;
+  const maxSteps = 10; // Server has 7 steps, VS Code has 9; safety margin for both
   for (let i = 0; i < maxSteps; i++) {
     const finish = page.locator("#setup-finish-btn");
     const skip = page.locator("#setup-skip-btn");
@@ -261,6 +261,56 @@ export async function skipSetupWizard(page: Page): Promise<void> {
   }
   await page.waitForTimeout(500);
 }
+
+// =====================================================================
+// Panel Navigation
+// =====================================================================
+
+/**
+ * Switch to a main panel via sidebar nav button.
+ */
+export async function switchToPanel(
+  page: Page,
+  panelName: "team" | "tasks" | "output"
+): Promise<void> {
+  await page.click(`button[data-panel="${panelName}"]`);
+  await page.waitForTimeout(300);
+}
+
+/**
+ * Assert a panel is the visible/active one.
+ */
+export async function expectPanelActive(
+  page: Page,
+  panelId: string
+): Promise<void> {
+  await expect(page.locator(`#${panelId}`)).toBeVisible({ timeout: 5_000 });
+}
+
+/**
+ * Open the Assign Task modal (navigates to tasks panel first).
+ */
+export async function openAssignTaskModal(page: Page): Promise<void> {
+  await switchToPanel(page, "tasks");
+  await page.click("#assign-task-btn");
+  await page.waitForSelector("#assign-task-modal:not([hidden])", {
+    timeout: 5_000,
+  });
+}
+
+/**
+ * Open the Permissions modal.
+ */
+export async function openPermissions(page: Page): Promise<void> {
+  await page.click("#permissions-btn");
+  await page.waitForSelector("#permissions-modal:not([hidden])", {
+    timeout: 5_000,
+  });
+}
+
+// =====================================================================
+// Setup Helpers
+// =====================================================================
 
 /**
  * Navigate the setup wizard to a specific step number (1-8).

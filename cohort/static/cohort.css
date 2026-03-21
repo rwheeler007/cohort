@@ -8201,3 +8201,34 @@ select.tool-config-card__input option {
     color: var(--color-text-muted);
 }
 
+/* Setup Wizard: Security Profile Cards */
+.setup-security__profiles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.setup-security__profile-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+.setup-security__profile-option input[type="radio"] {
+    margin-top: 0.4rem;
+    width: auto;
+}
+.setup-security__profile-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border, #333);
+    border-radius: 4px;
+    transition: border-color 0.15s;
+}
+.setup-security__profile-option input[type="radio"]:checked ~ .setup-security__profile-card {
+    border-color: var(--color-primary, #007acc);
+    background: var(--color-bg-hover, #2a2d2e);
+}
+
