@@ -149,6 +149,9 @@
                 <button class="btn btn--icon" id="settings-btn" aria-label="Settings" title="Settings">
                     [S]
                 </button>
+                <a class="btn btn--icon" href="https://github.com/rwheeler007/cohort/issues" target="_blank" rel="noopener" aria-label="Report Issue" title="Report Issue">
+                    [?]
+                </a>
             </div>
         </aside>
 
@@ -795,8 +798,7 @@
                             <div class="settings-section">
                                 <h3 class="settings-section__title">Response Tier Models</h3>
                                 <p class="settings-section__desc">
-                                    Configure which model handles each response tier. "local" uses the auto-detected model for your GPU.
-                                    Enter a specific model name (e.g., qwen3.5:35b-a3b) or "cloud_api" to use your cloud provider.
+                                    Configure which model handles each response tier. Dropdowns show installed models.
                                 </p>
 
                                 <!-- Smart Tier -->
@@ -805,11 +807,17 @@
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Primary</label>
-                                            <input type="text" class="form-input" id="settings-tier-smart-primary" placeholder="local" />
+                                            <select class="form-input" id="settings-tier-smart-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Fallback</label>
-                                            <input type="text" class="form-input" id="settings-tier-smart-fallback" placeholder="none" />
+                                            <select class="form-input" id="settings-tier-smart-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -820,32 +828,44 @@
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Primary</label>
-                                            <input type="text" class="form-input" id="settings-tier-smarter-primary" placeholder="local" />
+                                            <select class="form-input" id="settings-tier-smarter-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Fallback</label>
-                                            <input type="text" class="form-input" id="settings-tier-smarter-fallback" placeholder="smart" />
+                                            <select class="form-input" id="settings-tier-smarter-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Smartest Tier -->
                                 <div class="form-group" style="margin-top: 12px;">
-                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest <span style="font-weight: normal; color: var(--color-text-muted);">-- Local 35B or cloud API</span></label>
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest <span style="font-weight: normal; color: var(--color-text-muted);">-- Large local model or cloud</span></label>
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Primary</label>
-                                            <input type="text" class="form-input" id="settings-tier-smartest-primary" placeholder="qwen3.5:35b-a3b" />
+                                            <select class="form-input" id="settings-tier-smartest-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Fallback</label>
-                                            <input type="text" class="form-input" id="settings-tier-smartest-fallback" placeholder="cloud_api" />
+                                            <select class="form-input" id="settings-tier-smartest-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
 
                                 <p class="settings-section__desc" style="margin-top: 12px; font-size: 11px;">
-                                    Values: "local" (auto-detect), "cloud_api" (uses your API key above), or a model name like "qwen3.5:9b", "qwen3.5:35b-a3b".
+                                    "Local (auto-detect)" picks the best model for your GPU. "Cloud API" uses your configured provider above.
                                     Fallback is used when the primary model is unavailable.
                                 </p>
                             </div>

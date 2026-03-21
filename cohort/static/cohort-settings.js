@@ -72,15 +72,9 @@ function openSettings() {
             if (devToggle) devToggle.checked = !!data.dev_mode;
             toggleDevModeVisibility(!!data.dev_mode);
 
-            // Model tier settings
-            const tiers = data.tier_settings || {};
-            for (const tier of ['smart', 'smarter', 'smartest']) {
-                const cfg = tiers[tier] || {};
-                const primaryEl = document.getElementById(`settings-tier-${tier}-primary`);
-                const fallbackEl = document.getElementById(`settings-tier-${tier}-fallback`);
-                if (primaryEl) primaryEl.value = cfg.primary || '';
-                if (fallbackEl) fallbackEl.value = cfg.fallback || '';
-            }
+            // Model tier settings -- store for after model list populates dropdowns
+            state._pendingTierSettings = data.tier_settings || {};
+            fetchTierModelOptions(state._pendingTierSettings);
 
             // Token usage display
             const usage = data.token_usage || {};
@@ -113,6 +107,61 @@ function openSettings() {
 
     if (dom.settingsModal) dom.settingsModal.hidden = false;
     switchSettingsTab('general');
+}
+
+/**
+ * Fetch installed models from /api/llm/models and populate tier dropdowns.
+ * Preserves the static options (auto-detect, cloud_api, none) and appends
+ * real model names so users pick from a validated list.
+ */
+function fetchTierModelOptions(tierSettings) {
+    fetch('/api/llm/models')
+        .then(r => r.json())
+        .then(data => {
+            const models = (data.models || []).sort((a, b) => {
+                // Sort by size descending (largest first)
+                return (b.size_bytes || 0) - (a.size_bytes || 0);
+            });
+
+            for (const tier of ['smart', 'smarter', 'smartest']) {
+                const primaryEl = document.getElementById(`settings-tier-${tier}-primary`);
+                const fallbackEl = document.getElementById(`settings-tier-${tier}-fallback`);
+
+                for (const sel of [primaryEl, fallbackEl]) {
+                    if (!sel) continue;
+                    // Remove any previously added model options (keep static ones)
+                    const staticValues = new Set(['', 'cloud_api']);
+                    for (let i = sel.options.length - 1; i >= 0; i--) {
+                        if (!staticValues.has(sel.options[i].value)) {
+                            sel.remove(i);
+                        }
+                    }
+                    // Add installed models
+                    for (const m of models) {
+                        const opt = document.createElement('option');
+                        opt.value = m.name;
+                        opt.textContent = `${m.name} (${m.size || m.parameter_size || '?'})`;
+                        sel.appendChild(opt);
+                    }
+                }
+
+                // Restore saved values
+                const cfg = (tierSettings || {})[tier] || {};
+                if (primaryEl) primaryEl.value = cfg.primary || '';
+                if (fallbackEl) fallbackEl.value = cfg.fallback || '';
+            }
+        })
+        .catch(err => {
+            console.warn('Could not fetch model list for tier dropdowns:', err);
+            // Fall back: just set saved values on the static options
+            for (const tier of ['smart', 'smarter', 'smartest']) {
+                const cfg = (tierSettings || {})[tier] || {};
+                const primaryEl = document.getElementById(`settings-tier-${tier}-primary`);
+                const fallbackEl = document.getElementById(`settings-tier-${tier}-fallback`);
+                if (primaryEl) primaryEl.value = cfg.primary || '';
+                if (fallbackEl) fallbackEl.value = cfg.fallback || '';
+            }
+        });
 }
 
 function loadDeletedChannels() {
