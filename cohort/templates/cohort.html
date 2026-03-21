@@ -1166,6 +1166,11 @@
                     <span class="setup-step__indicator" id="step-ind-7">7</span>
                     <span class="setup-step__label">Cloud</span>
                 </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="8">
+                    <span class="setup-step__indicator" id="step-ind-8">8</span>
+                    <span class="setup-step__label">Security</span>
+                </button>
             </nav>
 
             <!-- Step Bodies -->
@@ -1421,50 +1426,99 @@
                             </div>
                         </div>
 
-                        <!-- Default Permissions for new projects -->
-                        <div class="setup-wizard__card" style="margin-top:var(--space-4)">
-                            <h4 style="margin-bottom:var(--space-1)">Default Agent Permissions</h4>
-                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-3)">
-                                When you run <code>cohort new</code> or <code>cohort link</code>, each project
-                                inherits these defaults. You can always override per-project.
-                            </p>
-                            <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label for="setup-perm-profile" class="text-muted" style="font-size:var(--font-size-sm)">
-                                    Default Tool Profile
-                                </label>
-                                <select class="form-input" id="setup-perm-profile">
-                                    <option value="developer">developer -- Read, Write, Edit, Bash, Glob, Grep (recommended)</option>
-                                    <option value="readonly">readonly -- Read, Glob, Grep only</option>
-                                    <option value="researcher">researcher -- Read + web search</option>
-                                    <option value="minimal">minimal -- no tools (pure text)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="margin-bottom:var(--space-3)">
-                                <label for="setup-perm-deny" class="text-muted" style="font-size:var(--font-size-sm)">
-                                    Deny Paths (agents must never edit these)
-                                </label>
-                                <input type="text" class="form-input form-input--mono" id="setup-perm-deny"
-                                       placeholder="D:/, /mnt/backup  (comma-separated, leave blank for none)">
-                                <span class="text-muted" style="font-size:var(--font-size-xs)">
-                                    Drive letters or directories agents are never allowed to modify, across all projects.
-                                </span>
-                            </div>
-                            <div class="form-group">
-                                <label for="setup-perm-max-turns" class="text-muted" style="font-size:var(--font-size-sm)">
-                                    Max Agent Turns per Task
-                                </label>
-                                <input type="number" class="form-input" id="setup-perm-max-turns"
-                                       value="15" min="1" max="50" step="1" style="width:100px">
-                                <span class="text-muted" style="font-size:var(--font-size-xs)">
-                                    How many steps an agent can take before stopping (1-50).
-                                </span>
-                            </div>
-                        </div>
-
                         <button class="btn btn--primary" id="setup-claude-save-btn" style="margin-top:var(--space-3)">
                             Save Settings
                         </button>
                     </div>
+                </div>
+
+                <!-- Step 8: Security Defaults -->
+                <div class="setup-wizard__step" data-step="8" style="display:none">
+                    <h3>Security Defaults</h3>
+                    <p class="text-muted">
+                        Choose how much access your AI agents get by default. You can always
+                        change individual agent permissions later in the Permissions panel.
+                    </p>
+
+                    <div class="setup-wizard__card">
+                        <h4 style="margin-bottom:var(--space-2)">Default Permission Profile</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-3)">
+                            This controls what tools agents can use unless you override them individually.
+                            Start restrictive -- you can always grant more access later.
+                        </p>
+
+                        <div class="setup-security__profiles" id="setup-security-profiles">
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="readonly" checked>
+                                <div class="setup-security__profile-card">
+                                    <strong>Read Only</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Agents can read files and search but cannot modify anything.
+                                        Safest default. Tools: Read, Glob, Grep
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="researcher">
+                                <div class="setup-security__profile-card">
+                                    <strong>Researcher</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Read-only plus web search and web fetch for research tasks.
+                                        Tools: Read, Glob, Grep, WebSearch, WebFetch
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="developer">
+                                <div class="setup-security__profile-card">
+                                    <strong>Developer</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Full access to read, write, edit files, and run commands.
+                                        Use this if you trust your agents to modify code.
+                                        Tools: Read, Write, Edit, Bash, Glob, Grep
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="minimal">
+                                <div class="setup-security__profile-card">
+                                    <strong>Locked Down</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        No tools enabled. Agents can only chat -- all tool access
+                                        must be granted individually per agent.
+                                    </span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                        <h4 style="margin-bottom:var(--space-2)">Agent Turn Limit</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Maximum number of tool calls an agent can make per response.
+                            Lower values prevent runaway loops. Higher values allow complex tasks.
+                        </p>
+                        <div style="display:flex;align-items:center;gap:var(--space-2)">
+                            <input type="range" id="setup-max-turns" min="1" max="50" value="15"
+                                   style="flex:1" oninput="document.getElementById('setup-max-turns-label').textContent=this.value">
+                            <span id="setup-max-turns-label" style="min-width:2em;text-align:right">15</span>
+                        </div>
+                    </div>
+
+                    <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                        <h4 style="margin-bottom:var(--space-2)">Off-Limits Paths</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Paths that agents should never access, even with Developer permissions.
+                            Use glob syntax. One path per line.
+                        </p>
+                        <textarea class="form-input form-input--mono" id="setup-deny-paths" rows="3"
+                                  placeholder="C:/Users/*/Documents/private/**&#10;**/.env&#10;**/credentials*"
+                                  style="font-size:var(--font-size-sm)"></textarea>
+                    </div>
+
+                    <button class="btn btn--primary" id="setup-security-save-btn" style="margin-top:var(--space-3)">
+                        Save Security Settings
+                    </button>
                 </div>
             </div>
 

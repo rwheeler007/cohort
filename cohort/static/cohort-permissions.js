@@ -36,74 +36,113 @@ const SERVICE_TYPES = {
 
 // Per-service-type field schemas.
 // Fields with key === 'key' map to the main credential; others go into extra JSON.
+// Validation fields: pattern (regex), minLength, maxLength, required, hint
 const SERVICE_SCHEMAS = {
-    anthropic:    [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-ant-...' }],
-    youtube:      [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...' }],
-    github:       [{ key: 'key', label: 'Token', type: 'password', placeholder: 'ghp_...' }],
-    openai:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-...' }],
-    cloudflare:   [{ key: 'key', label: 'API Token', type: 'password', placeholder: '' }],
-    resend:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 're_...' }],
-    slack:        [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://hooks.slack.com/...' }],
-    discord:      [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://discord.com/api/webhooks/...' }],
+    anthropic:    [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-ant-api03-...',
+        required: true, pattern: /^sk-ant-/, minLength: 40,
+        hint: 'Starts with sk-ant-, typically 100+ characters' }],
+    youtube:      [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...',
+        required: true, pattern: /^AIza/, minLength: 39, maxLength: 39,
+        hint: 'Starts with AIza, exactly 39 characters' }],
+    github:       [{ key: 'key', label: 'Personal Access Token', type: 'password', placeholder: 'ghp_xxxx...',
+        required: true, pattern: /^(ghp_|github_pat_|gho_|ghu_|ghs_|ghr_)/, minLength: 30,
+        hint: 'Starts with ghp_, github_pat_, gho_, ghu_, ghs_, or ghr_' }],
+    openai:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 'sk-...',
+        required: true, pattern: /^sk-/, minLength: 20,
+        hint: 'Starts with sk-, typically 50+ characters' }],
+    cloudflare:   [{ key: 'key', label: 'API Token', type: 'password', placeholder: '',
+        required: true, minLength: 20,
+        hint: '40-character alphanumeric token' }],
+    resend:       [{ key: 'key', label: 'API Key', type: 'password', placeholder: 're_...',
+        required: true, pattern: /^re_/, minLength: 10,
+        hint: 'Starts with re_' }],
+    slack:        [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://hooks.slack.com/services/...',
+        required: true, pattern: /^https:\/\/hooks\.slack\.com\//, minLength: 40,
+        hint: 'Full webhook URL starting with https://hooks.slack.com/' }],
+    discord:      [{ key: 'key', label: 'Webhook URL', type: 'password', placeholder: 'https://discord.com/api/webhooks/...',
+        required: true, pattern: /^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//, minLength: 50,
+        hint: 'Full webhook URL starting with https://discord.com/api/webhooks/' }],
     email_smtp:   [
-        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password' },
-        { key: 'SMTP_HOST', label: 'SMTP Host', type: 'text', placeholder: 'smtp.gmail.com' },
-        { key: 'SMTP_PORT', label: 'SMTP Port', type: 'text', placeholder: '587' },
-        { key: 'SMTP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com' },
+        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password',
+            required: true, minLength: 1, hint: 'App-specific password (not your login password)' },
+        { key: 'SMTP_HOST', label: 'SMTP Host', type: 'text', placeholder: 'smtp.gmail.com',
+            required: true, pattern: /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, hint: 'e.g. smtp.gmail.com, smtp.office365.com' },
+        { key: 'SMTP_PORT', label: 'SMTP Port', type: 'text', placeholder: '587',
+            required: true, pattern: /^(25|465|587|2525)$/, hint: '587 (TLS), 465 (SSL), or 25 (unencrypted)' },
+        { key: 'SMTP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com',
+            required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, hint: 'Your email address' },
     ],
     email_imap:   [
-        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password' },
-        { key: 'IMAP_HOST', label: 'IMAP Host', type: 'text', placeholder: 'imap.gmail.com' },
-        { key: 'IMAP_PORT', label: 'IMAP Port', type: 'text', placeholder: '993' },
-        { key: 'IMAP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com' },
+        { key: 'key', label: 'Password', type: 'password', placeholder: 'App password',
+            required: true, minLength: 1, hint: 'App-specific password (not your login password)' },
+        { key: 'IMAP_HOST', label: 'IMAP Host', type: 'text', placeholder: 'imap.gmail.com',
+            required: true, pattern: /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, hint: 'e.g. imap.gmail.com, outlook.office365.com' },
+        { key: 'IMAP_PORT', label: 'IMAP Port', type: 'text', placeholder: '993',
+            required: true, pattern: /^(143|993)$/, hint: '993 (SSL) or 143 (unencrypted)' },
+        { key: 'IMAP_USER', label: 'Username/Email', type: 'text', placeholder: 'you@gmail.com',
+            required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, hint: 'Your email address' },
     ],
     aws:          [
-        { key: 'key', label: 'Access Key ID', type: 'password', placeholder: 'AKIA...' },
-        { key: 'AWS_SECRET_ACCESS_KEY', label: 'Secret Access Key', type: 'password', placeholder: '' },
-        { key: 'AWS_DEFAULT_REGION', label: 'Default Region', type: 'text', placeholder: 'us-east-1' },
+        { key: 'key', label: 'Access Key ID', type: 'password', placeholder: 'AKIAIOSFODNN7EXAMPLE',
+            required: true, pattern: /^AKIA[0-9A-Z]{16}$/, minLength: 20, maxLength: 20,
+            hint: 'Starts with AKIA, exactly 20 characters' },
+        { key: 'AWS_SECRET_ACCESS_KEY', label: 'Secret Access Key', type: 'password', placeholder: '',
+            required: true, minLength: 40, maxLength: 40,
+            hint: '40-character secret key' },
+        { key: 'AWS_DEFAULT_REGION', label: 'Default Region', type: 'text', placeholder: 'us-east-1',
+            required: false, pattern: /^[a-z]{2}-[a-z]+-\d$/,
+            hint: 'e.g. us-east-1, eu-west-2, ap-southeast-1' },
     ],
     google:       [
-        { key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...' },
-        { key: 'GOOGLE_APPLICATION_CREDENTIALS', label: 'Service Account JSON Path', type: 'text', placeholder: '/path/to/service-account.json' },
+        { key: 'key', label: 'API Key', type: 'password', placeholder: 'AIza...',
+            required: true, pattern: /^AIza/, minLength: 39, maxLength: 39,
+            hint: 'Starts with AIza, exactly 39 characters' },
+        { key: 'GOOGLE_APPLICATION_CREDENTIALS', label: 'Service Account JSON Path', type: 'text', placeholder: '/path/to/service-account.json',
+            required: false, pattern: /\.json$/,
+            hint: 'Path to .json service account file (optional if using API key only)' },
     ],
     linkedin:     [
-        { key: 'key', label: 'Client ID', type: 'password', placeholder: '' },
-        { key: 'LINKEDIN_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '' },
+        { key: 'key', label: 'Client ID', type: 'password', placeholder: '',
+            required: true, minLength: 10, hint: 'OAuth 2.0 Client ID from LinkedIn Developer Portal' },
+        { key: 'LINKEDIN_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '',
+            required: true, minLength: 10, hint: 'OAuth 2.0 Client Secret' },
     ],
     twitter:      [
-        { key: 'key', label: 'API Key', type: 'password', placeholder: '' },
-        { key: 'TWITTER_API_SECRET', label: 'API Secret', type: 'password', placeholder: '' },
-        { key: 'TWITTER_BEARER_TOKEN', label: 'Bearer Token', type: 'password', placeholder: '' },
+        { key: 'key', label: 'API Key', type: 'password', placeholder: '',
+            required: true, minLength: 20, hint: 'API Key (Consumer Key) from Twitter Developer Portal' },
+        { key: 'TWITTER_API_SECRET', label: 'API Secret', type: 'password', placeholder: '',
+            required: true, minLength: 20, hint: 'API Secret (Consumer Secret)' },
+        { key: 'TWITTER_BEARER_TOKEN', label: 'Bearer Token', type: 'password', placeholder: '',
+            required: true, pattern: /^AAAA/, minLength: 50,
+            hint: 'Starts with AAAA, used for app-only authentication' },
     ],
     reddit:       [
-        { key: 'key', label: 'Client ID', type: 'password', placeholder: '' },
-        { key: 'REDDIT_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '' },
+        { key: 'key', label: 'Client ID', type: 'password', placeholder: '',
+            required: true, minLength: 10, hint: 'OAuth Client ID from Reddit app preferences' },
+        { key: 'REDDIT_CLIENT_SECRET', label: 'Client Secret', type: 'password', placeholder: '',
+            required: true, minLength: 10, hint: 'OAuth Client Secret' },
     ],
     webhook:      [
-        { key: 'key', label: 'API Key', type: 'password', placeholder: '' },
-        { key: 'WEBHOOK_URL', label: 'Webhook URL', type: 'text', placeholder: 'https://...' },
+        { key: 'key', label: 'API Key', type: 'password', placeholder: '',
+            required: false, hint: 'API key or token for authentication (if needed)' },
+        { key: 'WEBHOOK_URL', label: 'Webhook URL', type: 'text', placeholder: 'https://...',
+            required: true, pattern: /^https?:\/\//, hint: 'Full URL including https://' },
     ],
-    rss:          [{ key: 'key', label: 'API Key (optional)', type: 'password', placeholder: '' }],
+    rss:          [{ key: 'key', label: 'API Key (optional)', type: 'password', placeholder: '',
+        required: false, hint: 'Only needed for premium RSS services' }],
     custom:       [
-        { key: 'key', label: 'API Key / Token', type: 'password', placeholder: '' },
+        { key: 'key', label: 'API Key / Token', type: 'password', placeholder: '',
+            required: false, hint: 'Paste your credential here' },
     ],
 };
 
 // Default services to pre-populate when no services exist yet.
-// These are the common integrations most teams will need -- users just fill in keys.
+// Only core services that most deployments actually need.
 const DEFAULT_SERVICE_PRESETS = [
     { type: 'anthropic',    name: 'Anthropic API' },
     { type: 'github',       name: 'GitHub API' },
     { type: 'internal_web', name: 'Internal Web Accessor' },
-    { type: 'youtube',      name: 'YouTube Data API' },
-    { type: 'linkedin',     name: 'LinkedIn API' },
-    { type: 'google',       name: 'Google Cloud API' },
     { type: 'openai',       name: 'OpenAI API' },
-    { type: 'cloudflare',   name: 'Cloudflare API' },
-    { type: 'twitter',      name: 'Twitter/X API' },
-    { type: 'reddit',       name: 'Reddit API' },
-    { type: 'slack',        name: 'Slack Webhook' },
-    { type: 'discord',      name: 'Discord Webhook' },
 ];
 
 // Map common .env variable names to service types.
@@ -262,91 +301,123 @@ function switchPermTab(tabName) {
 // Service Keys tab
 // =====================================================================
 
+function _renderServiceCard(svc, idx) {
+    const meta = SERVICE_TYPES[svc.type] || SERVICE_TYPES.custom;
+    const displayName = svc.name || meta.name;
+    const isLocal = meta.local || false;
+
+    let statusClass, statusText, keyDisplay;
+    if (isLocal) {
+        statusClass = 'checking';
+        statusText = 'Checking...';
+        keyDisplay = '(local service -- no key needed)';
+    } else {
+        statusClass = svc.has_key ? 'active' : 'missing';
+        statusText = svc.has_key ? 'Configured' : 'No key';
+        keyDisplay = svc.key_masked || '(not set)';
+    }
+
+    const editBtn = isLocal
+        ? ''
+        : `<button class="btn btn--small btn--secondary" onclick="editServiceKey(${idx})" title="Edit key">Edit</button>`;
+
+    const testBtn = (svc.has_key || isLocal)
+        ? `<button class="btn btn--small btn--test" onclick="testServiceKey(${idx})" title="Test connection" data-test-idx="${idx}">Test</button>`
+        : '';
+
+    return `
+        <div class="service-key-card" data-service-idx="${idx}">
+            <div class="service-key-card__icon" style="background-color: ${meta.color}">${meta.icon}</div>
+            <div class="service-key-card__info">
+                <div class="service-key-card__name">${escapeHtml(displayName)}</div>
+                <div class="service-key-card__key">${escapeHtml(keyDisplay)}</div>
+            </div>
+            <span class="service-key-card__status service-key-card__status--${statusClass}">${statusText}</span>
+            <div class="service-key-card__actions">
+                ${testBtn}
+                ${editBtn}
+                <button class="btn btn--small btn--danger" onclick="removeServiceKey(${idx})" title="Remove">&times;</button>
+            </div>
+        </div>`;
+}
+
 function renderServiceKeys() {
     if (!dom.serviceKeysList) return;
 
     if (permState.services.length === 0) {
-        dom.serviceKeysList.innerHTML = '<div class="perm-empty">No services configured yet.<br>Add a service to get started.</div>';
+        dom.serviceKeysList.innerHTML = '<div class="perm-empty">No services configured yet.<br>Add a service or drop a .env file to get started.</div>';
         return;
     }
 
-    dom.serviceKeysList.innerHTML = permState.services.map((svc, idx) => {
-        const meta = SERVICE_TYPES[svc.type] || SERVICE_TYPES.custom;
-        const displayName = svc.name || meta.name;
-        const isLocal = meta.local || false;
-
-        let statusClass, statusText, keyDisplay;
-        if (isLocal) {
-            // Local services don't need API keys -- show availability status
-            const checkId = `local-status-${idx}`;
-            statusClass = 'checking';
-            statusText = 'Checking...';
-            keyDisplay = '(local service -- no key needed)';
-            // Async status check for local services
-            if (svc.type === 'internal_web') {
-                fetch('/api/internal-web/status')
-                    .then(r => r.json())
-                    .then(data => {
-                        const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
-                        const keyEl = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__key`);
-                        if (el) {
-                            if (data.available) {
-                                el.className = 'service-key-card__status service-key-card__status--active';
-                                el.textContent = 'Available';
-                                svc.has_key = true;  // mark as "configured" for Agent Access grid
-                            } else {
-                                el.className = 'service-key-card__status service-key-card__status--missing';
-                                el.textContent = 'Unavailable';
-                                svc.has_key = false;
-                            }
-                        }
-                        if (keyEl) {
-                            const parts = [];
-                            parts.push(data.playwright ? 'Fetch: OK' : 'Fetch: missing');
-                            parts.push(data.ddgs ? 'Search: OK' : 'Search: missing');
-                            parts.push(data.browser_backend ? 'Browser: OK' : 'Browser: N/A');
-                            keyEl.textContent = parts.join(' | ');
-                        }
-                        // Re-render Agent Access grid now that has_key is resolved
-                        renderPermGrid();
-                    })
-                    .catch(() => {
-                        const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
-                        if (el) {
-                            el.className = 'service-key-card__status service-key-card__status--missing';
-                            el.textContent = 'Error';
-                        }
-                    });
-            }
+    // Sort: configured + local first, then unconfigured
+    const configured = [];
+    const unconfigured = [];
+    permState.services.forEach((svc, idx) => {
+        const isLocal = (SERVICE_TYPES[svc.type] || {}).local || false;
+        if (svc.has_key || isLocal) {
+            configured.push({ svc, idx });
         } else {
-            statusClass = svc.has_key ? 'active' : 'missing';
-            statusText = svc.has_key ? 'Configured' : 'No key';
-            keyDisplay = svc.key_masked || '(not set)';
+            unconfigured.push({ svc, idx });
         }
+    });
 
-        const editBtn = isLocal
-            ? ''
-            : `<button class="btn btn--small btn--secondary" onclick="editServiceKey(${idx})" title="Edit key">Edit</button>`;
+    let html = '';
 
-        const testBtn = (svc.has_key || isLocal)
-            ? `<button class="btn btn--small btn--test" onclick="testServiceKey(${idx})" title="Test connection" data-test-idx="${idx}">Test</button>`
-            : '';
+    // Configured services
+    if (configured.length > 0) {
+        html += configured.map(({ svc, idx }) => _renderServiceCard(svc, idx)).join('');
+    }
 
-        return `
-            <div class="service-key-card" data-service-idx="${idx}">
-                <div class="service-key-card__icon" style="background-color: ${meta.color}">${meta.icon}</div>
-                <div class="service-key-card__info">
-                    <div class="service-key-card__name">${escapeHtml(displayName)}</div>
-                    <div class="service-key-card__key">${escapeHtml(keyDisplay)}</div>
-                </div>
-                <span class="service-key-card__status service-key-card__status--${statusClass}">${statusText}</span>
-                <div class="service-key-card__actions">
-                    ${testBtn}
-                    ${editBtn}
-                    <button class="btn btn--small btn--danger" onclick="removeServiceKey(${idx})" title="Remove">&times;</button>
-                </div>
-            </div>`;
-    }).join('');
+    // Unconfigured services in a collapsible section
+    if (unconfigured.length > 0) {
+        html += `<details class="svc-unconfigured-section">
+            <summary class="svc-unconfigured-toggle">${unconfigured.length} unconfigured service${unconfigured.length !== 1 ? 's' : ''} -- click to expand</summary>
+            <div class="svc-unconfigured-list">
+                ${unconfigured.map(({ svc, idx }) => _renderServiceCard(svc, idx)).join('')}
+            </div>
+        </details>`;
+    }
+
+    dom.serviceKeysList.innerHTML = html;
+
+    // Async status checks for local services (after DOM is rendered)
+    configured.forEach(({ svc, idx }) => {
+        const isLocal = (SERVICE_TYPES[svc.type] || {}).local || false;
+        if (isLocal && svc.type === 'internal_web') {
+            fetch('/api/internal-web/status')
+                .then(r => r.json())
+                .then(data => {
+                    const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
+                    const keyEl = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__key`);
+                    if (el) {
+                        if (data.available) {
+                            el.className = 'service-key-card__status service-key-card__status--active';
+                            el.textContent = 'Available';
+                            svc.has_key = true;
+                        } else {
+                            el.className = 'service-key-card__status service-key-card__status--missing';
+                            el.textContent = 'Unavailable';
+                            svc.has_key = false;
+                        }
+                    }
+                    if (keyEl) {
+                        const parts = [];
+                        parts.push(data.playwright ? 'Fetch: OK' : 'Fetch: missing');
+                        parts.push(data.ddgs ? 'Search: OK' : 'Search: missing');
+                        parts.push(data.browser_backend ? 'Browser: OK' : 'Browser: N/A');
+                        keyEl.textContent = parts.join(' | ');
+                    }
+                    renderPermGrid();
+                })
+                .catch(() => {
+                    const el = document.querySelector(`[data-service-idx="${idx}"] .service-key-card__status`);
+                    if (el) {
+                        el.className = 'service-key-card__status service-key-card__status--missing';
+                        el.textContent = 'Error';
+                    }
+                });
+        }
+    });
 }
 
 function renderPermGrid() {
@@ -532,6 +603,51 @@ function initEnvDropZone() {
     panel.addEventListener('drop', handleEnvDrop);
 }
 
+function validateField(input, fieldDef) {
+    // Validate a single field and update its visual state.
+    // Returns true if valid (or empty + not required).
+    const val = input.value.trim();
+    const indicator = input.parentElement.querySelector('.svc-field-indicator');
+    const hintEl = input.closest('.form-group').querySelector('.svc-field-hint');
+
+    // Empty field handling
+    if (!val) {
+        input.classList.remove('form-input--valid', 'form-input--invalid');
+        if (indicator) indicator.className = 'svc-field-indicator';
+        if (hintEl && fieldDef.hint) {
+            hintEl.textContent = fieldDef.required ? '* Required -- ' + fieldDef.hint : fieldDef.hint;
+            hintEl.className = 'svc-field-hint';
+        }
+        return !fieldDef.required;
+    }
+
+    const errors = [];
+
+    if (fieldDef.minLength && val.length < fieldDef.minLength) {
+        errors.push('Too short (need ' + fieldDef.minLength + '+ chars, have ' + val.length + ')');
+    }
+    if (fieldDef.maxLength && val.length > fieldDef.maxLength) {
+        errors.push('Too long (max ' + fieldDef.maxLength + ' chars, have ' + val.length + ')');
+    }
+    if (fieldDef.pattern && !fieldDef.pattern.test(val)) {
+        errors.push('Format mismatch -- ' + (fieldDef.hint || 'check the expected format'));
+    }
+
+    const isValid = errors.length === 0;
+    input.classList.toggle('form-input--valid', isValid);
+    input.classList.toggle('form-input--invalid', !isValid);
+    if (indicator) {
+        indicator.className = 'svc-field-indicator ' + (isValid ? 'svc-field-indicator--valid' : 'svc-field-indicator--invalid');
+        indicator.textContent = isValid ? '[OK]' : '[X]';
+    }
+    if (hintEl) {
+        hintEl.textContent = isValid ? fieldDef.hint || '' : errors[0];
+        hintEl.className = 'svc-field-hint' + (isValid ? '' : ' svc-field-hint--error');
+    }
+
+    return isValid;
+}
+
 function renderServiceFields(serviceType, existingValues) {
     // Render dynamic form fields based on SERVICE_SCHEMAS for the given type.
     // existingValues: { key: '...', extra_field: '...' } for pre-populating on edit.
@@ -550,9 +666,16 @@ function renderServiceFields(serviceType, existingValues) {
         const group = document.createElement('div');
         group.className = 'form-group';
 
+        // Label with required badge
         const label = document.createElement('label');
-        label.textContent = fieldDef.label;
         label.setAttribute('for', 'svc-field-' + fieldDef.key);
+        label.textContent = fieldDef.label;
+        if (fieldDef.required) {
+            const reqBadge = document.createElement('span');
+            reqBadge.className = 'svc-field-required';
+            reqBadge.textContent = '*';
+            label.appendChild(reqBadge);
+        }
         group.appendChild(label);
 
         if (fieldDef.type === 'password') {
@@ -568,6 +691,10 @@ function renderServiceFields(serviceType, existingValues) {
             input.autocomplete = 'off';
             if (values[fieldDef.key] !== undefined) input.value = values[fieldDef.key];
 
+            // Validation indicator
+            const indicator = document.createElement('span');
+            indicator.className = 'svc-field-indicator';
+
             const toggleBtn = document.createElement('button');
             toggleBtn.type = 'button';
             toggleBtn.className = 'btn btn--icon settings-toggle-vis';
@@ -576,10 +703,17 @@ function renderServiceFields(serviceType, existingValues) {
                 input.type = input.type === 'password' ? 'text' : 'password';
             });
 
+            // Live validation on input
+            input.addEventListener('input', () => validateField(input, fieldDef));
+
             wrapper.appendChild(input);
+            wrapper.appendChild(indicator);
             wrapper.appendChild(toggleBtn);
             group.appendChild(wrapper);
         } else {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'settings-secret-field';
+
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'form-input';
@@ -587,7 +721,23 @@ function renderServiceFields(serviceType, existingValues) {
             input.dataset.fieldKey = fieldDef.key;
             input.placeholder = fieldDef.placeholder || '';
             if (values[fieldDef.key] !== undefined) input.value = values[fieldDef.key];
-            group.appendChild(input);
+
+            const indicator = document.createElement('span');
+            indicator.className = 'svc-field-indicator';
+
+            input.addEventListener('input', () => validateField(input, fieldDef));
+
+            wrapper.appendChild(input);
+            wrapper.appendChild(indicator);
+            group.appendChild(wrapper);
+        }
+
+        // Hint text below the field
+        if (fieldDef.hint || fieldDef.required) {
+            const hint = document.createElement('div');
+            hint.className = 'svc-field-hint';
+            hint.textContent = fieldDef.required ? '* Required -- ' + (fieldDef.hint || '') : fieldDef.hint;
+            group.appendChild(hint);
         }
 
         container.appendChild(group);
@@ -638,6 +788,25 @@ function submitAddService(e) {
     const meta = SERVICE_TYPES[type] || SERVICE_TYPES.custom;
     const customName = (dom.serviceCustomName && dom.serviceCustomName.value.trim()) || '';
     const name = (type === 'custom' || type === 'webhook') && customName ? customName : meta.name;
+
+    // Run validation on all fields before submitting
+    const schema = SERVICE_SCHEMAS[type] || SERVICE_SCHEMAS.custom;
+    const container = dom.serviceDynamicFields;
+    let hasErrors = false;
+    if (container) {
+        schema.forEach((fieldDef) => {
+            const input = container.querySelector('#svc-field-' + fieldDef.key.replace(/[^a-zA-Z0-9_-]/g, ''));
+            if (input) {
+                const valid = validateField(input, fieldDef);
+                if (!valid && fieldDef.required && input.value.trim()) hasErrors = true;
+            }
+        });
+    }
+    if (hasErrors) {
+        showToast('Some fields have format issues -- check the hints below each field', 'error');
+        return;
+    }
+
     const collected = collectServiceFields();
     const key = collected.key;
     const extra = collected.extra;

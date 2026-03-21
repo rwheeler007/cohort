@@ -3407,6 +3407,47 @@ textarea.form-input {
     font-weight: 700;
 }
 
+/* Unconfigured services collapsible section */
+.svc-unconfigured-section {
+    margin-top: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.svc-unconfigured-toggle {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.svc-unconfigured-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.svc-unconfigured-toggle::before {
+    content: '+ ';
+    font-weight: 700;
+}
+
+details[open] > .svc-unconfigured-toggle::before {
+    content: '- ';
+}
+
+.svc-unconfigured-list {
+    padding: 0 var(--space-2) var(--space-2);
+}
+
+.svc-unconfigured-list .service-key-card {
+    opacity: 0.7;
+}
+
+.svc-unconfigured-list .service-key-card:hover {
+    opacity: 1;
+}
+
 /* Permissions grid (agent x service matrix) */
 .perm-grid-wrapper {
     overflow-x: auto;
