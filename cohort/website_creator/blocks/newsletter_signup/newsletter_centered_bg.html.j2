@@ -1,0 +1,40 @@
+{# Newsletter: Centered heading on tinted background with inline email form.
+   Adapted from HyperUI newsletter-signup/2 (MIT).
+   Tags: prominent, tinted-bg, centered
+   Variables: block.heading, block.description, block.button_text, block.form_action
+#}
+<section style="background: var(--color-accent);">
+  <div style="max-width: 72rem; margin: 0 auto; padding: 3rem 1rem;">
+    <div style="text-align: center; max-width: 40rem; margin: 0 auto;">
+      {% if block.heading %}
+      <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 600; color: var(--color-text);">{{ block.heading }}</h2>
+      {% endif %}
+      {% if block.description %}
+      <p style="margin-top: 1rem; color: var(--color-text); opacity: 0.7; line-height: 1.7;">{{ block.description }}</p>
+      {% endif %}
+    </div>
+
+    <form action="{{ block.form_action | default('#') }}" method="POST" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
+      <label for="newsletter-centered-email" class="sr-only">Email</label>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <input
+          type="email"
+          id="newsletter-centered-email"
+          name="email"
+          required
+          placeholder="Enter your email"
+          style="height: 3rem; width: 100%; border-radius: var(--radius); border: 1px solid #d1d5db; padding: 0 1rem; font-size: 0.9rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
+        >
+        <button type="submit" class="btn-primary" style="height: 3rem; padding: 0 2rem; font-size: 0.875rem; font-weight: 600; white-space: nowrap;">
+          {{ block.button_text | default('Sign Up') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+<style>
+@media (min-width: 640px) {
+  form > div { flex-direction: row !important; align-items: center; }
+  form input { flex: 1; }
+}
+</style>

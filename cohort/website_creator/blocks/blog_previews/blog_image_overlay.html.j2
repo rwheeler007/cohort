@@ -1,0 +1,43 @@
+{# Blog Previews: Full-bleed image with gradient overlay. Text sits on top of the image.
+   Tags: dramatic, visual
+   Variables: block.posts [{image, date, title, excerpt, href}]
+#}
+<section class="section-spacing py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for post in block.posts %}
+      <article class="relative overflow-hidden rounded-lg shadow-sm transition hover:shadow-lg">
+        {% if post.image %}
+        <img
+          src="{{ post.image }}"
+          alt="{{ post.title }}"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+        {% endif %}
+
+        <div class="relative pt-32 sm:pt-48 lg:pt-64"
+             style="background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.25));">
+          <div class="p-4 sm:p-6">
+            {% if post.date %}
+            <time class="block text-xs text-white/90">{{ post.date }}</time>
+            {% endif %}
+
+            <a href="{{ post.href | default('#') }}">
+              <h3 class="mt-0.5 text-lg text-white" style="font-family: var(--font-heading);">
+                {{ post.title }}
+              </h3>
+            </a>
+
+            {% if post.excerpt %}
+            <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-white/95">
+              {{ post.excerpt }}
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

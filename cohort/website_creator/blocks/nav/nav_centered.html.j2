@@ -1,0 +1,70 @@
+{# Nav: Centered layout with dual CTA buttons. Logo left, nav center, Login + Register right.
+   Tags: balanced, standard
+   Variables: block.product_name, block.logo, block.nav_items [{label, href}], block.cta_text, block.cta_href, block.secondary_cta_text, block.secondary_cta_href
+#}
+<header style="background: var(--color-bg);">
+  <div class="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+    {# Logo / Brand #}
+    <a href="/" class="block" style="color: var(--color-primary);">
+      <span class="sr-only">Home</span>
+      {% if block.logo %}
+      <img src="{{ block.logo }}" alt="{{ block.product_name }}" class="h-8 w-auto">
+      {% else %}
+      <span class="text-xl font-bold" style="font-family: var(--font-heading); color: var(--color-primary);">{{ block.product_name }}</span>
+      {% endif %}
+    </a>
+
+    <div class="flex flex-1 items-center justify-end md:justify-between">
+      {# Desktop nav links #}
+      <nav aria-label="Global" class="hidden md:block">
+        <ul class="flex items-center gap-6 text-sm">
+          {% for item in block.nav_items %}
+          <li>
+            <a class="transition" style="color: var(--color-muted);" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'" href="{{ item.href }}">{{ item.label }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <div class="flex items-center gap-4">
+        {# CTA buttons #}
+        <div class="sm:flex sm:gap-4">
+          {% if block.cta_text %}
+          <a href="{{ block.cta_href | default('#') }}" class="btn-primary block rounded-md px-5 py-2.5 text-sm font-medium text-white shadow-sm transition">
+            {{ block.cta_text }}
+          </a>
+          {% endif %}
+
+          {% if block.secondary_cta_text %}
+          <a href="{{ block.secondary_cta_href | default('#') }}" class="hidden rounded-md px-5 py-2.5 text-sm font-medium transition sm:block" style="background: var(--color-accent); color: var(--color-primary);">
+            {{ block.secondary_cta_text }}
+          </a>
+          {% endif %}
+        </div>
+
+        {# Mobile hamburger #}
+        <button class="block rounded-sm p-2.5 transition md:hidden" style="background: var(--color-accent); color: var(--color-muted);" aria-controls="nav-centered-mobile" onclick="document.getElementById('nav-centered-mobile').classList.toggle('hidden')">
+          <span class="sr-only">Toggle menu</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# Mobile menu #}
+  <div id="nav-centered-mobile" class="hidden md:hidden" style="border-top: 1px solid var(--color-border);">
+    <div class="px-4 py-3 space-y-2">
+      {% for item in block.nav_items %}
+      <a href="{{ item.href }}" class="block px-3 py-2 text-base font-medium rounded-theme transition" style="color: var(--color-muted);">{{ item.label }}</a>
+      {% endfor %}
+      {% if block.cta_text %}
+      <a href="{{ block.cta_href | default('#') }}" class="block mt-2 btn-primary text-center px-5 py-2.5 text-sm font-medium rounded-md">{{ block.cta_text }}</a>
+      {% endif %}
+      {% if block.secondary_cta_text %}
+      <a href="{{ block.secondary_cta_href | default('#') }}" class="block text-center px-5 py-2.5 text-sm font-medium rounded-md" style="background: var(--color-accent); color: var(--color-primary);">{{ block.secondary_cta_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</header>

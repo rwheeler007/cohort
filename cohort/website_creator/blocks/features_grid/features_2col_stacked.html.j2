@@ -1,0 +1,49 @@
+{# Features: 2-column layout with heading left, stacked features right -- icon-left rows.
+   Adapted from HyperUI feature-grids/2 (MIT).
+   Tags: modern, split, professional
+   Variables: block.section_headline, block.section_description,
+              block.features [{icon, title, description}]
+#}
+<section class="section-spacing">
+  <div style="max-width: 72rem; margin: 0 auto; padding: 0 1rem;">
+    <div style="display: grid; grid-template-columns: 1fr; gap: 2.5rem;">
+      {# Left column: heading #}
+      <div>
+        {% if block.section_headline %}
+        <h2 style="font-family: var(--font-heading); font-size: 1.875rem; font-weight: 700; color: var(--color-text); line-height: 1.2;">{{ block.section_headline }}</h2>
+        {% endif %}
+        {% if block.section_description %}
+        <p style="margin-top: 1rem; font-size: 1.1rem; color: var(--color-text); opacity: 0.7; line-height: 1.7;">{{ block.section_description }}</p>
+        {% endif %}
+      </div>
+
+      {# Right column: features list #}
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for feature in block.features %}
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+          <div style="flex-shrink: 0; padding: 0.75rem; border-radius: var(--radius); background: var(--color-accent);">
+            {% if feature.icon %}
+            <img src="{{ feature.icon }}" alt="" aria-hidden="true" style="width: 1.5rem; height: 1.5rem;">
+            {% else %}
+            <svg style="width: 1.5rem; height: 1.5rem; color: var(--color-text); opacity: 0.7;" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            {% endif %}
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; color: var(--color-text);">{{ feature.title }}</h3>
+            {% if feature.description %}
+            <p style="margin-top: 0.25rem; color: var(--color-text); opacity: 0.7; line-height: 1.6;">{{ feature.description }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+@media (min-width: 768px) {
+  .section-spacing > div > div:first-child { grid-template-columns: 1fr 1fr; }
+}
+</style>
