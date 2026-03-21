@@ -95,6 +95,11 @@ const instructions = [
   "",
   "When working with tool results, write down any important information you might need later",
   "in your response, as the original tool result may be cleared later.",
+  "",
+  "Available CLI skills (invoke via slash command if relevant to the task):",
+  "  /health - System health check (Cohort server, Ollama, diagnostics)",
+  "  /tiers - View/set smart/smarter/smartest model tier assignments",
+  "  /preheat - Warm up Ollama models before first inference",
 ].join("\n");
 
 const mcp = new Server(
