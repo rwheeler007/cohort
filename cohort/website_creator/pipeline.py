@@ -288,12 +288,31 @@ def main():
         print("       python -m cohort.website_creator.pipeline --demo")
         print("       python -m cohort.website_creator.pipeline --graduate <project> <dest>")
         print("       python -m cohort.website_creator.pipeline --preview <site_brief.yaml>")
+        print("       python -m cohort.website_creator.pipeline --deploy <output_dir> [--project-name <name>]")
         sys.exit(1)
 
     output_base = Path(__file__).parent / "output"
     creator = WebsiteCreator(output_base=output_base)
 
-    if sys.argv[1] == "--graduate":
+    if sys.argv[1] == "--deploy":
+        # Deploy a generated site to Cloudflare Pages
+        if len(sys.argv) < 3:
+            print("Usage: --deploy <output_dir> [--project-name <name>]")
+            sys.exit(1)
+        from cohort.website_creator.deploy import deploy_to_cloudflare_pages
+        project_name = None
+        if "--project-name" in sys.argv:
+            idx = sys.argv.index("--project-name")
+            if idx + 1 < len(sys.argv):
+                project_name = sys.argv[idx + 1]
+        result = deploy_to_cloudflare_pages(Path(sys.argv[2]), project_name=project_name)
+        if result["status"] == "success":
+            print(f"\n[OK] Deployed: {result.get('url', 'check dashboard')}")
+        else:
+            print(f"\n[X] Failed: {result.get('error', 'unknown')}")
+            sys.exit(1)
+
+    elif sys.argv[1] == "--graduate":
         if len(sys.argv) < 4:
             print("Usage: --graduate <project_name> <destination_dir>")
             sys.exit(1)

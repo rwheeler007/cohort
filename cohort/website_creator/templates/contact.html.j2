@@ -1,6 +1,10 @@
 {# Contact Page -- derived from ChillGuard contact.html #}
 {% extends "base.html.j2" %}
 
+{% block body_scripts %}
+<script src="form-handler.js"></script>
+{% endblock %}
+
 {% block content %}
 <!-- Contact Hero -->
 <section class="section-spacing" style="background: {{ brand.accent_color }};">

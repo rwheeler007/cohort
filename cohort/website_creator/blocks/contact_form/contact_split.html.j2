@@ -9,7 +9,7 @@
       {# Form #}
       <div>
         <h2 class="text-3xl font-bold mb-8" style="font-family: var(--font-heading);">Get in Touch</h2>
-        <form action="{{ block.form_action | default('mailto:' ~ block.email if block.email else '#') }}" method="POST"{% if not block.form_action and block.email %} enctype="text/plain"{% endif %} class="space-y-6">
+        <form action="{{ block.form_action | default('mailto:' ~ block.email if block.email else '#') }}" method="POST"{% if not block.form_action and block.email %} enctype="text/plain"{% endif %}{% if block.form_action %} data-form-handler="{{ block.form_action }}"{% endif %} class="space-y-6">
           {% for field in block.form_fields %}
           <div>
             <label for="field-{{ field.name }}" class="block text-sm font-medium text-gray-700 mb-1">

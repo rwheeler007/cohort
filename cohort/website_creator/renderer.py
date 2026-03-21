@@ -93,13 +93,16 @@ class TemplateRenderer:
                     shutil.rmtree(assets_dst)
                 shutil.copytree(assets_src, assets_dst)
 
-        # 6. Generate sitemap.xml
+        # 6. Generate form-handler.js (for contact forms)
+        self._render_form_handler(brief, output_dir)
+
+        # 7. Generate sitemap.xml
         self._render_sitemap(brief, output_dir)
 
-        # 7. Generate robots.txt
+        # 8. Generate robots.txt
         self._render_robots(brief, output_dir)
 
-        # 8. Generate 404 page
+        # 9. Generate 404 page
         self._render_404(brief, output_dir)
 
         return output_dir
@@ -345,6 +348,26 @@ document.addEventListener("DOMContentLoaded", function () {{
 }});
 """
         (output_dir / "footer.js").write_text(js, encoding="utf-8")
+
+    def _render_form_handler(self, brief: SiteBrief, output_dir: Path) -> None:
+        """Generate form-handler.js if the site has a contact form."""
+        # Only emit if there's a form_action configured (not mailto)
+        has_form = bool(
+            brief.contact.form_action
+            and not brief.contact.form_action.startswith("mailto:")
+        )
+        # Also check if any page uses the contact template
+        if not has_form:
+            for page in brief.pages:
+                tpl = page.template if hasattr(page, "template") else page.get("template", "")
+                if tpl == "contact":
+                    has_form = True
+                    break
+
+        if has_form:
+            from cohort.website_creator.form_handler import generate_form_handler_js
+            js = generate_form_handler_js()
+            (output_dir / "form-handler.js").write_text(js, encoding="utf-8")
 
     def _render_sitemap(self, brief: SiteBrief, output_dir: Path) -> None:
         """Generate a simple sitemap.xml."""
