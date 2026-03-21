@@ -6668,6 +6668,13 @@ function connectSocket() {
             if (!data.setup_completed) {
                 setupWizard.show();
             }
+            // Init import preferences (standalone modal + welcome banner)
+            if (typeof importPrefs !== 'undefined') {
+                importPrefs.init();
+                if (data.setup_completed) {
+                    importPrefs.maybeShowBanner();
+                }
+            }
         } catch (e) { /* setup endpoints not available -- skip */ }
 
         // Deep-links from external pages (executive briefing, etc.)

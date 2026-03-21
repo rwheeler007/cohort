@@ -929,7 +929,6 @@
                     <p class="settings-section__desc">
                         Add API keys and credentials for external services.
                         Agents can only use services they have been granted access to.
-                        Common services are pre-populated below -- click Edit to add your key, or remove any you don't need.
                     </p>
                     <div id="service-keys-list">
                         <!-- Populated by JS -->
@@ -1155,21 +1154,16 @@
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="5">
                     <span class="setup-step__indicator" id="step-ind-5">5</span>
-                    <span class="setup-step__label">Import</span>
+                    <span class="setup-step__label">Content</span>
                 </button>
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="6">
                     <span class="setup-step__indicator" id="step-ind-6">6</span>
-                    <span class="setup-step__label">Content</span>
+                    <span class="setup-step__label">MCP</span>
                 </button>
                 <div class="setup-step__connector"></div>
                 <button class="setup-step" data-setup-step="7">
                     <span class="setup-step__indicator" id="step-ind-7">7</span>
-                    <span class="setup-step__label">MCP</span>
-                </button>
-                <div class="setup-step__connector"></div>
-                <button class="setup-step" data-setup-step="8">
-                    <span class="setup-step__indicator" id="step-ind-8">8</span>
                     <span class="setup-step__label">Cloud</span>
                 </button>
             </nav>
@@ -1238,148 +1232,8 @@
                     </div>
                 </div>
 
-                <!-- Step 5: Import Preferences -->
+                <!-- Step 5: Content Pipeline -->
                 <div class="setup-wizard__step" data-step="5" style="display:none">
-                    <h3>Import Your Preferences (Optional)</h3>
-                    <p class="text-muted">
-                        Help Cohort understand how you work from the start.
-                        Pick any source below -- or skip and let Cohort learn as you chat.
-                        Everything stays on your machine.
-                    </p>
-
-                    <!-- Source cards -->
-                    <div class="setup-wizard__import-sources" id="setup-import-sources">
-                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-prompt-card">
-                            <h4>Ask Your AI</h4>
-                            <p class="text-muted" style="font-size:var(--font-size-sm)">
-                                Copy a prompt, paste it into ChatGPT, Claude, or any AI you
-                                already use. It will describe your preferences -- paste the
-                                result back here.
-                            </p>
-                            <p class="text-muted" style="font-size:var(--font-size-xs);margin-top:var(--space-1)">
-                                Best for: everyone. Works with any AI. No files needed.
-                            </p>
-                            <button class="btn btn--secondary" id="setup-import-prompt-btn">
-                                Get the Prompt
-                            </button>
-                        </div>
-
-                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-chatgpt-card">
-                            <h4>ChatGPT Export</h4>
-                            <p class="text-muted" style="font-size:var(--font-size-sm)">
-                                Upload <code>conversations.json</code> from your ChatGPT data
-                                export. You choose which conversations to scan.
-                            </p>
-                            <p class="text-muted" style="font-size:var(--font-size-xs);margin-top:var(--space-1)">
-                                How to get it: ChatGPT &rarr; Settings &rarr; Data controls &rarr;
-                                Export data. You'll get an email with a ZIP -- the file is inside.
-                            </p>
-                            <input type="file" id="setup-import-chatgpt-file" accept=".json"
-                                   style="display:none">
-                            <button class="btn btn--secondary" id="setup-import-chatgpt-btn">
-                                Choose File
-                            </button>
-                        </div>
-
-                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-claude-card">
-                            <h4>Claude Code Memory</h4>
-                            <p class="text-muted" style="font-size:var(--font-size-sm)">
-                                Auto-detect preferences from your Claude Code setup.
-                                Works best if you've used Claude Code's memory feature
-                                on a few projects.
-                            </p>
-                            <p class="text-muted" style="font-size:var(--font-size-xs);margin-top:var(--space-1)">
-                                Scans <code>~/.claude/projects/*/memory/</code> for
-                                preference and feedback entries.
-                            </p>
-                            <button class="btn btn--secondary" id="setup-import-claude-btn">
-                                Scan Claude Code
-                            </button>
-                            <div id="setup-import-claude-status" style="display:none;margin-top:var(--space-2)"></div>
-                        </div>
-
-                        <div class="setup-wizard__card setup-wizard__import-card" id="setup-import-config-card">
-                            <h4>Project Config Files</h4>
-                            <p class="text-muted" style="font-size:var(--font-size-sm)">
-                                Drop config files from a project you work on --
-                                <code>pyproject.toml</code>, <code>package.json</code>,
-                                <code>.editorconfig</code>, <code>.prettierrc</code>.
-                                We'll read your tool preferences directly.
-                            </p>
-                            <p class="text-muted" style="font-size:var(--font-size-xs);margin-top:var(--space-1)">
-                                No AI needed. Your config files already describe how you work.
-                            </p>
-                            <input type="file" id="setup-import-config-files" multiple
-                                   accept=".toml,.json,.editorconfig,.prettierrc,.eslintrc,.yaml,.yml"
-                                   style="display:none">
-                            <button class="btn btn--secondary" id="setup-import-config-btn">
-                                Choose Files
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Prompt copy/paste flow (hidden until "Get the Prompt" clicked) -->
-                    <div id="setup-import-prompt-flow" style="display:none;margin-top:var(--space-4)">
-                        <h4>Step 1: Copy this prompt</h4>
-                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
-                            Paste it into ChatGPT, Claude, or whichever AI knows you best.
-                        </p>
-                        <pre class="setup-wizard__code-block" id="setup-import-prompt-text"
-                             style="max-height:200px;overflow-y:auto;white-space:pre-wrap;cursor:pointer"
-                             title="Click to copy"></pre>
-                        <button class="btn btn--secondary btn--sm" id="setup-import-copy-prompt"
-                                style="margin-top:var(--space-2)">Copy to Clipboard</button>
-
-                        <h4 style="margin-top:var(--space-4)">Step 2: Paste the response here</h4>
-                        <textarea class="form-input" id="setup-import-paste-area" rows="8"
-                                  placeholder="Paste the AI's response here..."></textarea>
-                        <button class="btn btn--primary" id="setup-import-paste-btn"
-                                style="margin-top:var(--space-2)">
-                            Parse Preferences
-                        </button>
-                    </div>
-
-                    <!-- ChatGPT conversation picker (hidden until file loaded) -->
-                    <div id="setup-import-chatgpt-picker" style="display:none;margin-top:var(--space-4)">
-                        <h4>Select Conversations to Scan</h4>
-                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
-                            Only selected conversations will be analyzed. Nothing leaves your machine.
-                        </p>
-                        <div style="margin-bottom:var(--space-2);display:flex;gap:var(--space-2)">
-                            <button class="btn btn--secondary btn--sm" id="setup-import-select-all">Select All</button>
-                            <button class="btn btn--secondary btn--sm" id="setup-import-select-none">Select None</button>
-                        </div>
-                        <div id="setup-import-chatgpt-list" class="setup-wizard__import-list"></div>
-                        <button class="btn btn--primary" id="setup-import-chatgpt-extract-btn"
-                                style="margin-top:var(--space-3)">
-                            Extract Preferences
-                        </button>
-                    </div>
-
-                    <!-- Extraction progress -->
-                    <div id="setup-import-progress" style="display:none;margin-top:var(--space-3)">
-                        <div class="setup-wizard__loading" id="setup-import-progress-text">
-                            [*] Extracting preferences... this may take a minute.
-                        </div>
-                    </div>
-
-                    <!-- Facts preview (shared by all import sources) -->
-                    <div id="setup-import-preview" style="display:none;margin-top:var(--space-4)">
-                        <h4>Extracted Preferences</h4>
-                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
-                            Review and uncheck anything you don't want Cohort to remember.
-                        </p>
-                        <div id="setup-import-facts-list" class="setup-wizard__import-list"></div>
-                        <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3)">
-                            <button class="btn btn--primary" id="setup-import-save-btn">Save Selected</button>
-                            <button class="btn btn--secondary" id="setup-import-discard-btn">Discard All</button>
-                        </div>
-                        <div id="setup-import-result" style="display:none;margin-top:var(--space-2)"></div>
-                    </div>
-                </div>
-
-                <!-- Step 6: Content Pipeline -->
-                <div class="setup-wizard__step" data-step="6" style="display:none">
                     <h3>Set Up Your Content Pipeline (Optional)</h3>
                     <p class="text-muted">
                         Your Marketing and Content Strategy agents can monitor RSS feeds
@@ -1412,8 +1266,8 @@
                     </div>
                 </div>
 
-                <!-- Step 7: MCP Server Setup (Optional) -->
-                <div class="setup-wizard__step" data-step="7" style="display:none">
+                <!-- Step 6: MCP Server Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="6" style="display:none">
                     <h3>MCP Server Setup (Optional)</h3>
                     <p class="text-muted">
                         The Cohort MCP server lets any MCP-compatible client use your local AI model
@@ -1438,8 +1292,8 @@
                     </div>
                 </div>
 
-                <!-- Step 8: Cloud & Advanced Setup (Optional) -->
-                <div class="setup-wizard__step" data-step="8" style="display:none">
+                <!-- Step 7: Cloud & Advanced Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="7" style="display:none">
                     <h3>Cloud & Advanced Setup (Optional)</h3>
                     <p class="text-muted">
                         Add a cloud API provider for the Smartest [S++] response tier,
@@ -1626,6 +1480,91 @@
     </div>
 
     <!-- Toast Notification Container -->
+    <!-- Import Preferences Modal (standalone) -->
+    <div class="modal-overlay" id="import-modal" hidden>
+        <div class="modal import-modal">
+            <div class="modal__header">
+                <h2>Import Preferences</h2>
+                <button class="btn btn--icon modal__close" id="import-modal-close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p class="text-muted" style="margin-bottom:var(--space-3)">
+                    Help Cohort understand how you work. Pick any source below.
+                    Everything stays on your machine.
+                </p>
+                <div class="setup-wizard__import-sources" id="setup-import-sources">
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Ask Your AI</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Copy a prompt, paste it into any AI you use. Paste the result back.</p>
+                        <button class="btn btn--secondary" id="setup-import-prompt-btn">Get the Prompt</button>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>ChatGPT Export</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Upload <code>conversations.json</code> from ChatGPT data export.</p>
+                        <input type="file" id="setup-import-chatgpt-file" accept=".json" style="display:none">
+                        <button class="btn btn--secondary" id="setup-import-chatgpt-btn">Choose File</button>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Claude Code Memory</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Auto-detect from <code>~/.claude/</code>.</p>
+                        <button class="btn btn--secondary" id="setup-import-claude-btn">Scan Claude Code</button>
+                        <div id="setup-import-claude-status" style="display:none;margin-top:var(--space-2)"></div>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Project Config Files</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Drop <code>pyproject.toml</code>, <code>package.json</code>, etc.</p>
+                        <input type="file" id="setup-import-config-files" multiple accept=".toml,.json,.editorconfig,.prettierrc,.eslintrc,.yaml,.yml" style="display:none">
+                        <button class="btn btn--secondary" id="setup-import-config-btn">Choose Files</button>
+                    </div>
+                </div>
+                <div id="setup-import-prompt-flow" style="display:none;margin-top:var(--space-4)">
+                    <h4>Step 1: Copy this prompt</h4>
+                    <pre class="setup-wizard__code-block" id="setup-import-prompt-text" style="max-height:200px;overflow-y:auto;white-space:pre-wrap"></pre>
+                    <button class="btn btn--secondary btn--sm" id="setup-import-copy-prompt" style="margin-top:var(--space-2)">Copy to Clipboard</button>
+                    <h4 style="margin-top:var(--space-4)">Step 2: Paste the response here</h4>
+                    <textarea class="form-input" id="setup-import-paste-area" rows="8" placeholder="Paste the AI's response here..."></textarea>
+                    <button class="btn btn--primary" id="setup-import-paste-btn" style="margin-top:var(--space-2)">Parse Preferences</button>
+                </div>
+                <div id="setup-import-chatgpt-picker" style="display:none;margin-top:var(--space-4)">
+                    <h4>Select Conversations to Scan</h4>
+                    <div style="margin-bottom:var(--space-2);display:flex;gap:var(--space-2)">
+                        <button class="btn btn--secondary btn--sm" id="setup-import-select-all">Select All</button>
+                        <button class="btn btn--secondary btn--sm" id="setup-import-select-none">Select None</button>
+                    </div>
+                    <div id="setup-import-chatgpt-list" class="setup-wizard__import-list"></div>
+                    <button class="btn btn--primary" id="setup-import-chatgpt-extract-btn" style="margin-top:var(--space-3)">Extract Preferences</button>
+                </div>
+                <div id="setup-import-progress" style="display:none;margin-top:var(--space-3)">
+                    <div class="setup-wizard__loading" id="setup-import-progress-text">[*] Extracting preferences...</div>
+                </div>
+                <div id="setup-import-preview" style="display:none;margin-top:var(--space-4)">
+                    <h4>Extracted Preferences</h4>
+                    <div id="setup-import-facts-list" class="setup-wizard__import-list"></div>
+                    <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3)">
+                        <button class="btn btn--primary" id="setup-import-save-btn">Save Selected</button>
+                        <button class="btn btn--secondary" id="setup-import-discard-btn">Discard All</button>
+                    </div>
+                    <div id="setup-import-result" style="display:none;margin-top:var(--space-2)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-conversation welcome banner -->
+    <div class="welcome-banner" id="welcome-banner" hidden>
+        <div class="welcome-banner__content">
+            <p class="welcome-banner__text">
+                <strong>Welcome to Cohort!</strong>
+                Not sure where to start? Import preferences from a tool you already use
+                so your agents feel familiar from the first message.
+            </p>
+            <div class="welcome-banner__actions">
+                <button class="btn btn--primary btn--sm" id="welcome-import-btn">Import Preferences</button>
+                <button class="btn btn--secondary btn--sm" id="welcome-dismiss-btn">Just start chatting</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
     <!-- Scripts -->

@@ -3361,6 +3361,52 @@ textarea.form-input {
     border-color: rgba(240, 71, 71, 0.4) !important;
 }
 
+/* Service field validation states */
+.form-input--valid {
+    border-color: var(--color-success) !important;
+}
+
+.form-input--invalid {
+    border-color: var(--color-error) !important;
+}
+
+.svc-field-indicator {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.svc-field-indicator--valid {
+    color: var(--color-success);
+    opacity: 1;
+}
+
+.svc-field-indicator--invalid {
+    color: var(--color-error);
+    opacity: 1;
+}
+
+.svc-field-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.svc-field-hint--error {
+    color: var(--color-error);
+}
+
+.svc-field-required {
+    color: var(--color-error);
+    margin-left: 2px;
+    font-weight: 700;
+}
+
 /* Permissions grid (agent x service matrix) */
 .perm-grid-wrapper {
     overflow-x: auto;
@@ -3909,6 +3955,52 @@ textarea.form-input {
     .setup-wizard__import-sources {
         flex-direction: column;
     }
+}
+
+/* Import modal */
+.import-modal {
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Welcome banner */
+.welcome-banner {
+    position: fixed;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    animation: bannerSlideUp 0.3s ease-out;
+}
+
+@keyframes bannerSlideUp {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.welcome-banner__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.welcome-banner__text {
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+.welcome-banner__actions {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: flex-end;
 }
 
 /* =============================================================================
