@@ -23,6 +23,21 @@ Every multi-agent framework lets agents talk. Cohort decides **who should talk, 
 
 **Extracted from production.** These patterns weren't designed from theory -- they were extracted from a system running 60+ agents, then packaged clean with 785+ tests.
 
+## Claude Code Channels Integration
+
+Cohort was the first third-party integration with [Claude Code Channels](https://docs.anthropic.com/en/docs/claude-code/channels) -- Anthropic's protocol for persistent, event-driven agent sessions.
+
+```
+03:00 AM MT  --  Anthropic ships Claude Code Channels (research preview)
+06:03 AM MT  --  Cohort integration committed. Agent pipeline operational.
+06:45 AM MT  --  Working checkpoint. CLI module, agent enrichment, context hydration.
+07:11 AM MT  --  First multi-round agent roundtable via Channels.
+```
+
+Channels give Cohort agents persistent sessions with automatic context hydration, idle reaping, and priority-based eviction. Agents respond to events -- CI results, chat messages, monitoring alerts -- even when you're not at the terminal.
+
+This is what Cohort is built for: when a new protocol drops, the orchestration layer is already there. You just plug it in.
+
 ## Features
 
 - **Zero dependencies** -- `pip install cohort` pulls nothing
