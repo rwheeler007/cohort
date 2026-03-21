@@ -851,6 +851,7 @@ def main() -> None:
     from cohort.cli import test_cmd
     from cohort.cli import service_cmd, cloud_cmd, context_cmd, import_cmd, assess_cmd
     from cohort.cli import hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd
+    from cohort.cli import scan_cmd
 
     for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
                 discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd,
@@ -861,7 +862,8 @@ def main() -> None:
                 benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd,
                 test_cmd,
                 service_cmd, cloud_cmd, context_cmd, import_cmd, assess_cmd,
-                hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd):
+                hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd,
+                scan_cmd):
         mod.register(sub)
 
     args = parser.parse_args()
@@ -978,6 +980,8 @@ def main() -> None:
         sys.exit(inject_cmd.handle(args))
     elif args.command == "overnight":
         sys.exit(overnight_cmd.handle(args))
+    elif args.command in ("scan", "lookup", "register"):
+        sys.exit(scan_cmd.handle(args))
 
     else:
         parser.print_help()
