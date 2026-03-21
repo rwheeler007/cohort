@@ -103,6 +103,7 @@ const instructions = [
   "  /queue - View work queue items and status",
   "  /settings - View/update runtime config (model, timeout, backend)",
   "  /rate - Check escalation budget and cloud API availability",
+  "  /decisions - View/manage agent decisions across all agents",
 ].join("\n");
 
 const mcp = new Server(

@@ -30,3 +30,6 @@ demos/node_modules/
 demos/recordings/
 plugins/*/node_modules/
 plugins/*/bun.lock
+tests/e2e/node_modules/
+tests/e2e/test-results/
+plugins/cohort-channel/logs/
