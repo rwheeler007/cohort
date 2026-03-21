@@ -13,7 +13,7 @@ View and manage active decisions tracked in agent memory. Decisions are multi-da
 
 ## Storage
 
-Decisions live inside each agent's memory file: `G:/cohort/agents/<agent_id>/memory.json`
+Decisions live inside each agent's memory file: `agents/<agent_id>/memory.json`
 
 The `active_decisions` key holds an array:
 ```json
@@ -44,7 +44,7 @@ Parse `$ARGUMENTS` to determine the action. Default (no args) = `open` (show all
 ### `/decisions` or `/decisions open` - All open decisions across all agents
 
 **Steps:**
-1. Glob for `G:/cohort/agents/*/memory.json`
+1. Glob for `agents/*/memory.json`
 2. Read each file, extract `active_decisions` array (skip if key missing or empty)
 3. Filter to `status: "open"` or `status: "timed"`
 4. Sort by priority (high > medium > low), then by opened date (oldest first)
@@ -64,9 +64,9 @@ If no open decisions: `No open decisions across any agents.`
 ### `/decisions list <agent>` - All decisions for one agent
 
 **Steps:**
-1. Read `G:/cohort/agents/<agent>/memory.json`
-   - Accept partial/shorthand matches: `co` -> `cohort_orchestrator`, `pd` -> `python_developer`, `cs` -> `content_strategy_agent`, `sec` -> `security_agent`, `qa` -> `qa_agent`, `mk` -> `marketing_agent`, `wd` -> `web_developer`, `jd` -> `javascript_developer`, `doc` -> `documentation_agent`, `db` -> `database_developer`
-   - For ambiguous matches (e.g., `co` could match `cohort_orchestrator` or `coding_orchestrator`), prefer the first alphabetically and note the ambiguity
+1. Read `agents/<agent>/memory.json`
+   - Accept shorthand matches (see Output Constraints for full map)
+   - For inputs not in the shorthand map, match by substring against agent directory names
 2. Extract `active_decisions`
 3. Display all (any status), grouped by status:
 
@@ -137,20 +137,20 @@ Notes:
 
 ## Audit Logging
 
-**Every write operation (add, close) MUST be audit-logged.** After modifying an agent's memory.json, append a JSONL entry to `G:/cohort/data/skill_audit.jsonl` via Bash:
+**Every write operation (add, close) MUST be audit-logged.** After modifying an agent's memory.json, append a JSONL entry to `data/skill_audit.jsonl` via Bash:
 
 For `add`:
 ```bash
-echo '{"timestamp":"<ISO8601_UTC>","skill":"decisions","action":"add","agent":"<agent_id>","decision_id":"<id>","priority":"<pri>","scope":"<scope>","requester":"claude_code"}' >> G:/cohort/data/skill_audit.jsonl
+echo '{"timestamp":"<ISO8601_UTC>","skill":"decisions","action":"add","agent":"<agent_id>","decision_id":"<id>","priority":"<pri>","scope":"<scope>","requester":"claude_code"}' >> data/skill_audit.jsonl
 ```
 
 For `close`:
 ```bash
-echo '{"timestamp":"<ISO8601_UTC>","skill":"decisions","action":"close","agent":"<agent_id>","decision_id":"<id>","resolution":"<text>","requester":"claude_code"}' >> G:/cohort/data/skill_audit.jsonl
+echo '{"timestamp":"<ISO8601_UTC>","skill":"decisions","action":"close","agent":"<agent_id>","decision_id":"<id>","resolution":"<text>","requester":"claude_code"}' >> data/skill_audit.jsonl
 ```
 
 ## Output Constraints
 
 - Use ASCII only. No Unicode emojis. Use `[OK]`, `[X]`, `[!]`, `[OPEN]`, `[CLOSED]`, `[TIMED]`, `[DEFERRED]` for status.
 - Keep list view compact. Full detail only in `show` command.
-- Agent name shorthand mapping: co->cohort_orchestrator, pd->python_developer, cs->content_strategy_agent, sec->security_agent, qa->qa_agent, mk->marketing_agent, wd->web_developer, jd->javascript_developer, doc->documentation_agent, db->database_developer. For others, match by substring.
+- Agent name shorthand mapping: `an`->analytics_agent, `bd`->brand_design_agent, `ca`->code_archaeologist, `camp`->campaign_orchestrator, `co`->cohort_orchestrator, `cod`->coding_orchestrator, `cs`->content_strategy_agent, `db`->database_developer, `doc`->documentation_agent, `em`->email_agent, `hw`->hardware_agent, `jd`->javascript_developer, `li`->linkedin, `mk`->marketing_agent, `mp`->media_production_agent, `pd`->python_developer, `qa`->qa_agent, `rd`->reddit, `sec`->security_agent, `sg`->setup_guide, `sup`->supervisor_agent, `sys`->system_coder, `wd`->web_developer. For others, match by substring.
