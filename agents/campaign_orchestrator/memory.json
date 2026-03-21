@@ -1,6 +1,10 @@
 {
   "agent_id": "campaign_orchestrator",
-  "working_memory": [],
+  "known_paths": {},
   "learned_facts": [],
-  "known_paths": {}
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }

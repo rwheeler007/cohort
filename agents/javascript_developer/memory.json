@@ -1,70 +1,74 @@
 {
   "agent_id": "javascript_developer",
-  "working_memory": [],
+  "known_paths": [],
   "learned_facts": [
     {
       "fact": "Array.prototype.flatMap: maps each element through a function then flattens the result one level. flatMap(x => condition ? [x, x*10] : []) filters AND transforms in one pass. The result is a flat array, NOT nested arrays. Example: [1,2,3,4,5].flatMap(x => x%2===0 ? [x, x*10] : []) = [2, 20, 4, 40].",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "core_javascript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Generator spread operator behavior: [...generator()] collects all yielded values but EXCLUDES the return value. yield produces {value, done: false}, return produces {value, done: true}. Spread/for-of stop at done: true and do not include that value. So function* gen() { yield 1; yield 2; return 3; } [...gen()] = [1, 2] NOT [1, 2, 3].",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "core_javascript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "WeakMap with null key: wm.has(null) throws TypeError because WeakMap keys must be objects or registered symbols. After setting obj = null, calling wm.has(obj) checks for null as key, which is invalid. The original object-key entry may be garbage collected, but the TypeError happens first.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "core_javascript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Object.defineProperty with writable: false in sloppy mode: assignment silently fails (no error thrown). In strict mode it throws TypeError. With enumerable: false, the property exists but is excluded from Object.keys(), for...in, and JSON.stringify(). So obj.x = 100 on a non-writable property in sloppy mode: value unchanged, no error.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "core_javascript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "TypeScript DeepPartial<T>: type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] }; This recursively makes ALL properties at EVERY depth optional. It is NOT just top-level optional, and it does NOT make properties required or nullable.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "typescript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Node.js event loop execution order: 1) Synchronous code runs first. 2) process.nextTick queue drains (before any I/O or timers). 3) Microtask queue (Promises). 4) Timer phase (setTimeout/setInterval). 5) I/O callbacks. 6) Check phase (setImmediate). Within an I/O callback, process.nextTick runs before setImmediate scheduled from that callback.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "nodejs",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "TypeScript IsNever and IsAny patterns: IsNever<T> = [T] extends [never] ? true : false -- wrapping in tuple prevents distribution over empty union. Without tuple, never extends never returns never, not true. IsAny<T> = 0 extends (1 & T) ? true : false -- 1 & any = any, and 0 extends any = true. 1 & unknown = 1, and 0 extends 1 = false. So IsAny<unknown> = false.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "typescript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "React Suspense with nested boundaries: when a component inside an outer Suspense boundary suspends, the ENTIRE outer boundary shows its fallback, hiding everything inside it including nested Suspense boundaries. Inner components that resolve while the outer is still suspended remain hidden. Only when the outer boundary resolves do all children appear together.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "react",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "TypeScript UnionToIntersection: exploits contravariant type inference. Putting union members in function parameter position (contravariant) causes infer to produce an intersection. Result for function unions is an overloaded function type (intersection of all signatures), NOT a function taking the intersection of parameter types.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "typescript",
-      "date_added": "2026-03-13"
+      "session_id": ""
     }
   ],
-  "known_paths": []
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }

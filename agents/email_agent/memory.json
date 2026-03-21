@@ -1,6 +1,6 @@
 {
   "agent_id": "email_agent",
-  "working_memory": [],
+  "known_paths": {},
   "learned_facts": [
     {
       "fact": "Subject lines perform best at 6-10 words; personalizing the subject line increases open rates by approximately 20%; avoid spam triggers such as ALL CAPS, multiple exclamation marks, and words like 'free'; A/B test subject lines with a 10% sample before sending to the full list",
@@ -38,5 +38,9 @@
       "session_id": "ENRICH-20260220"
     }
   ],
-  "known_paths": {}
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }

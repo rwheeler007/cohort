@@ -1,91 +1,46 @@
 {
   "agent_id": "brand_design_agent",
-  "working_memory": [],
+  "known_paths": {},
   "learned_facts": [
     {
-      "fact": "Color Theory in UI & Graphic Design: Practical Guide. We feel color before we see it. This guide explains how color theory works in UI and branding—from ...",
-      "source": "https://blog.tubikstudio.com/color-theory-brief-guide-for-designers/",
-      "source_title": "Color Theory: Brief Guide For Designers - Tubik Blog",
+      "fact": "Color Theory in UI & Graphic Design: Practical Guide. We feel color before we see it. This guide explains how color theory works in UI and branding\u2014from\u00a0...",
       "learned_from": "training_pipeline",
       "timestamp": "2026-02-28T14:26:38.669668",
-      "topic": "AI-assisted logo generation (DALL-E 3, Midjourney, Stable Diffusion)",
       "confidence": "high",
-      "session_id": "CURR-20260228-142638",
-      "spaced_repetition": {
-        "interval_days": 1,
-        "ease_factor": 2.5,
-        "repetitions": 0,
-        "next_review": "2026-03-01T14:26:38.669671",
-        "last_quality": null
-      },
-      "verified_at": "2026-02-28T14:28:30.799998"
+      "session_id": "CURR-20260228-142638"
     },
     {
-      "fact": "Introduction of color and textiles and how they are incorporated into an interior environment. Emphasis on color theory, color psychology, color trends and ...",
-      "source": "https://catalog.tri-c.edu/course-descriptions/intd/intd.pdf",
-      "source_title": "Interior Design (INTD) - Cuyahoga Community College Catalog",
+      "fact": "Introduction of color and textiles and how they are incorporated into an interior environment. Emphasis on color theory, color psychology, color trends and\u00a0...",
       "learned_from": "training_pipeline",
       "timestamp": "2026-02-28T14:26:38.670344",
-      "topic": "AI-assisted logo generation (DALL-E 3, Midjourney, Stable Diffusion)",
       "confidence": "high",
-      "session_id": "CURR-20260228-142638",
-      "spaced_repetition": {
-        "interval_days": 1,
-        "ease_factor": 2.5,
-        "repetitions": 0,
-        "next_review": "2026-03-01T14:26:38.670348",
-        "last_quality": null
-      },
-      "verified_at": "2026-02-28T14:28:30.800008"
+      "session_id": "CURR-20260228-142638"
     },
     {
       "fact": "It took me quite some time to realize relatively simple things",
-      "source": "https://community.openai.com/t/collection-of-dall-e-3-prompting-tips-issues-and-bugs/889278",
       "learned_from": "web_research",
       "timestamp": "2026-02-28T14:26:38.670537",
       "confidence": "high",
-      "session_id": "CURR-20260228-142638",
-      "spaced_repetition": {
-        "interval_days": 1,
-        "ease_factor": 2.5,
-        "repetitions": 0,
-        "next_review": "2026-03-01T14:26:38.670540",
-        "last_quality": null
-      },
-      "verified_at": "2026-02-28T14:28:30.800011"
+      "session_id": "CURR-20260228-142638"
     },
     {
       "fact": "Menu Blogs Blogs Trusted by business builders worldwide, the HubSpot Blogs are your number-one source for education and inspiration",
-      "source": "https://blog.hubspot.com/the-hustle/psychology-of-color",
       "learned_from": "web_research",
       "timestamp": "2026-02-28T14:26:38.671948",
       "confidence": "high",
-      "session_id": "CURR-20260228-142638",
-      "spaced_repetition": {
-        "interval_days": 1,
-        "ease_factor": 2.5,
-        "repetitions": 0,
-        "next_review": "2026-03-01T14:26:38.671951",
-        "last_quality": null
-      },
-      "verified_at": "2026-02-28T14:28:30.800013"
+      "session_id": "CURR-20260228-142638"
     },
     {
-      "fact": "This guide explains how color theory works in UI and branding—from emotional clarity to visual strategy",
-      "source": "https://blog.tubikstudio.com/color-theory-brief-guide-for-designers/",
+      "fact": "This guide explains how color theory works in UI and branding\u2014from emotional clarity to visual strategy",
       "learned_from": "web_research",
       "timestamp": "2026-02-28T14:26:38.672332",
       "confidence": "high",
-      "session_id": "CURR-20260228-142638",
-      "spaced_repetition": {
-        "interval_days": 1,
-        "ease_factor": 2.5,
-        "repetitions": 0,
-        "next_review": "2026-03-01T14:26:38.672333",
-        "last_quality": null
-      },
-      "verified_at": "2026-02-28T14:28:30.800014"
+      "session_id": "CURR-20260228-142638"
     }
   ],
-  "known_paths": {}
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }

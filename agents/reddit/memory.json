@@ -1,6 +1,6 @@
 {
   "agent_id": "reddit",
-  "working_memory": [],
+  "known_paths": {},
   "learned_facts": [
     {
       "fact": "Subreddit selection criteria: match audience demographics not just topic name; check subreddit rules and posting guidelines (sidebar); review recent posts for tone and content expectations; subreddit size sweet spot is 50K-500K for engagement rate",
@@ -38,5 +38,9 @@
       "session_id": "ENRICH-20260220"
     }
   ],
-  "known_paths": {}
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }

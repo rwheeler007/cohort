@@ -39,45 +39,45 @@
     },
     {
       "fact": "Python docstring conventions: Sphinx/reStructuredText style uses :param name: description for parameters. Google style uses Args: with indented parameters. NumPy style uses a Parameters section with dashed underlines. When asked about :param syntax, the answer is Sphinx/reST, NOT NumPy.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "documentation",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Martin Fowler technical debt quadrant: Deliberate Prudent = knowingly taking shortcuts with full understanding of tradeoffs (ship now, refactor later). Deliberate Reckless = knowingly cutting corners without caring. Inadvertent Prudent = learning after the fact that there was a better approach. Inadvertent Reckless = not knowing best practices.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "tech_debt",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Reaching definitions analysis: a definition d of variable v at point p reaches point q if there EXISTS A PATH from p to q along which d is NOT KILLED by another definition of v. The variable does NOT need to be used at q. The path does NOT need to be direct. Existence of any un-killed path is sufficient.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "flow_analysis",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Mermaid flowchart arrow syntax: --> is solid line with arrow (standard). --- is solid line without arrow. ==> is thick line with arrow. ---> is a LONGER solid line with arrow (extra dashes increase length, NOT change arrow type). For standard solid arrow from A to B, use A --> B.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "diagramming",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "CFG cyclomatic complexity: CC = E - N + 2P where E = edges, N = nodes, P = connected components (usually 1). Count edges carefully: each branch (if/else) adds 2 edges (true + false). Return/exit edges count. For a function with 2 branch points, typical CC = 3.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "flow_analysis",
-      "date_added": "2026-03-13"
+      "session_id": ""
     },
     {
       "fact": "Live variable analysis: a variable is live at a point if there exists a path from that point to a USE of the variable without an intervening redefinition. After a for loop completes, the loop variable is dead if no subsequent code references it. Variables used only inside the loop body are dead after the loop exit.",
-      "source": "assessment_gap_fill",
+      "learned_from": "assessment_gap_fill",
+      "timestamp": "2026-03-13",
       "confidence": "high",
-      "topic": "flow_analysis",
-      "date_added": "2026-03-13"
+      "session_id": ""
     }
   ],
   "active_tasks": [],
@@ -87,13 +87,13 @@
       "timestamp": "2026-03-08T13:55:30.369775",
       "channel": "dm-code_archaeologist",
       "input": "What do you do?",
-      "response": "Hey! I'm **Code Archaeologist** - your deep codebase analysis & technical documentation specialist. 🏺\n\nHere's what I do:\n\n## My Core Purpose\nI systematically excavate codebases to create comprehensive understanding and eliminate technical debt through thorough documentation. Think of me as the team's institutional memory for how everything works.\n\n## What I Can Do For You\n\n| Task | What It Delivers |\n|------|------------------|\n| **Codebase Analysis** | Complete inventory, technology stack mappi"
+      "response": "Hey! I'm **Code Archaeologist** - your deep codebase analysis & technical documentation specialist. \ud83c\udffa\n\nHere's what I do:\n\n## My Core Purpose\nI systematically excavate codebases to create comprehensive understanding and eliminate technical debt through thorough documentation. Think of me as the team's institutional memory for how everything works.\n\n## What I Can Do For You\n\n| Task | What It Delivers |\n|------|------------------|\n| **Codebase Analysis** | Complete inventory, technology stack mappi"
     },
     {
       "timestamp": "2026-03-08T13:57:07.951843",
       "channel": "dm-code_archaeologist",
       "input": "Please provide me with a sample of this 3. I visualize complexity - Mermaid diagrams for anything with branching logic (3+ decision points).",
-      "response": "Here's a sample demonstrating my **visual complexity documentation** capability:\n\n## What You're Seeing\n\nI've created a comprehensive example showing how I visualize branching logic in code. The sample includes:\n\n### 📊 A Real Code Example\n- A request handler with **7 decision points** (authentication, rate limiting, permissions, content types, business logic, response formatting)\n- All error paths documented (401, 429, 405, 403, 415)\n- Complete execution flow from entry to exit\n\n### 🎨 Mermaid Fl"
+      "response": "Here's a sample demonstrating my **visual complexity documentation** capability:\n\n## What You're Seeing\n\nI've created a comprehensive example showing how I visualize branching logic in code. The sample includes:\n\n### \ud83d\udcca A Real Code Example\n- A request handler with **7 decision points** (authentication, rate limiting, permissions, content types, business logic, response formatting)\n- All error paths documented (401, 429, 405, 403, 415)\n- Complete execution flow from entry to exit\n\n### \ud83c\udfa8 Mermaid Fl"
     }
   ],
   "learning_history": [],

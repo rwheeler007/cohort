@@ -1,6 +1,6 @@
 {
   "agent_id": "system_coder",
-  "working_memory": [],
+  "known_paths": {},
   "learned_facts": [
     {
       "fact": "CI pipeline stage ordering for fail-fast efficiency: lint (fastest, seconds) -> type check (fast, catches logic errors) -> unit tests (medium, catches bugs) -> integration tests (slow, catches wiring) -> build/package (slow, catches packaging). If lint fails, skip everything downstream. This minimizes wasted compute on doomed builds.",
@@ -38,5 +38,9 @@
       "session_id": "ENRICH-20260220"
     }
   ],
-  "known_paths": {}
+  "active_tasks": [],
+  "collaborators": {},
+  "working_memory": [],
+  "learning_history": [],
+  "archive_history": []
 }
