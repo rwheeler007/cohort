@@ -3,7 +3,6 @@ name: preheat
 description: Warm up Ollama models so the first real prompt gets accurate results, not cold-model garbage.
 argument-hint: [all | <model_name>]
 disable-model-invocation: true
-allowed-tools: Bash
 ---
 
 # Cohort Preheat

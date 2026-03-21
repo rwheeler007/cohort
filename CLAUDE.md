@@ -119,6 +119,7 @@ Defined in `.claude/skills/<name>/SKILL.md`. Execute directly in Claude Code ses
 - `/queue` or `/queue list` - List non-terminal work queue items
 - `/queue active` - Show currently active item
 - `/queue show <id>` - Full item detail
+- `/queue cancel <id>` - Cancel a queued item
 
 ### /settings - Runtime Settings
 
@@ -130,9 +131,13 @@ Defined in `.claude/skills/<name>/SKILL.md`. Execute directly in Claude Code ses
 - `/rate` or `/rate status` - Agent cooldown, escalation budget, cloud API availability
 - `/rate escalations` - Escalation budget detail
 
-### /decisions - Agent Decision Tracker (Phase 2)
+### /decisions - Agent Decision Tracker
 
-Not yet implemented. Requires `active_decisions` data structure in agent memory. Planned.
+- `/decisions` or `/decisions open` - All open decisions across all agents
+- `/decisions list <agent>` - All decisions for one agent (shorthand: co, pd, cs, sec, qa, mk)
+- `/decisions show <agent> <id>` - Full detail for one decision
+- `/decisions add <agent> <description>` - Add a new decision
+- `/decisions close <agent> <id> [resolution]` - Close a decision
 
 All write operations are audit-logged to `data/skill_audit.jsonl`.
 
@@ -146,3 +151,30 @@ All write operations are audit-logged to `data/skill_audit.jsonl`.
 - **Socket.IO** for real-time UI updates
 - **MCP server** with browser automation (Playwright), 40+ actions, 3-tier permissions
 - **Task system**: WorkQueue (FIFO) + TaskExecutor (briefing -> execution) + Scheduler (cron)
+
+---
+
+## Exports
+
+Reusable capabilities other projects can import or call from Cohort.
+
+| Capability | Entry Point | What It Does |
+|------------|-------------|--------------|
+| website-pipeline | `cohort/website_creator/pipeline.py` | End-to-end YAML brief -> static HTML site generation (~60 sec) |
+| decision-engine | `cohort/website_creator/decision_engine.py` | Neural flowchart: Tier 1 classification -> Tier 2 generation for website structure |
+| block-populator | `cohort/website_creator/block_populator.py` | Taste profile + business info -> block assembly specs (32 block types, 48 templates) |
+| form-handler | `cohort/website_creator/form_handler.py` | Drop-in JS for static site form submission (Formspree, CF Workers, any endpoint) |
+| image-resolver | `cohort/website_creator/image_resolver.py` | Resolve placeholder images to real Unsplash URLs by category/context |
+| website-deploy | `cohort/website_creator/deploy.py` | `wrangler pages deploy` wrapper -> live *.pages.dev URL |
+| site-brief | `cohort/website_creator/site_brief.py` | YAML-based website specification schema (Pydantic dataclasses) |
+| local-router | `cohort/local/router.py` | Local Ollama inference routing (zero-dependency, never raises) |
+| hardware-detect | `cohort/local/detect.py` | GPU/VRAM/CPU detection -> optimal model recommendation |
+| cloud-backend | `cohort/local/cloud.py` | Provider-agnostic cloud LLM (Anthropic, OpenAI) with user-supplied key |
+| compiled-roundtable | `cohort/compiled_roundtable.py` | Single-call multi-agent discussion (N personas in one context, ~90% token savings) |
+| capability-router | `cohort/capability_router.py` | Dynamic agent routing by triggers/capabilities (not hardcoded names) |
+| learning-system | `cohort/learning.py` | Extract durable facts from conversations; deduplicate; evolve user profile |
+| import-seed | `cohort/import_seed.py` | Parse ChatGPT/Claude exports -> preference extraction via local LLM |
+| agent-assessor | `tools/agent_assessor.py` | 100-question agent assessment with multi-step challenges and scoring |
+| codegen-pipeline | `cohort/codegen/generator.py` | LLM code generation with planning, verification, and safety checks |
+| export-personas | `cohort/export_personas.py` | Export agent definitions as lightweight portable markdown files |
+| channel-plugin | `plugins/cohort-channel/src/index.ts` | MCP server: poll/claim/reply lifecycle for Claude Code integration |

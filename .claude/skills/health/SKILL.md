@@ -3,7 +3,6 @@ name: health
 description: Cohort system health check -- server, Ollama, agents, channels, queue status. No server required for basic checks.
 argument-hint: [all | server | ollama | doctor]
 disable-model-invocation: true
-allowed-tools: Bash, Read, Glob
 ---
 
 # Cohort Health CLI

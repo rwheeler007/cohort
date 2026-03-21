@@ -3,7 +3,6 @@ name: settings
 description: View and update Cohort settings (model, timeouts, display, execution backend). Reads data/settings.json directly.
 argument-hint: [show | set <key> <value>]
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash
 ---
 
 # Cohort Settings CLI
@@ -14,7 +13,7 @@ View and update Cohort runtime settings. Reads `data/settings.json` directly -- 
 
 ## Storage
 
-Settings live at: `data/settings.json`
+Settings live at: `G:/cohort/data/settings.json`
 
 Key fields (safe to display):
 - `model_name` — Default Ollama model

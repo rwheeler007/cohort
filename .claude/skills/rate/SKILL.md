@@ -3,7 +3,6 @@ name: rate
 description: Check escalation rate limits and cloud API availability for the smartest tier pipeline.
 argument-hint: [status | escalations]
 disable-model-invocation: true
-allowed-tools: Bash, Read
 ---
 
 # Cohort Rate Limit CLI

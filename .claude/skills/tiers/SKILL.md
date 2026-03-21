@@ -3,7 +3,6 @@ name: tiers
 description: View and manage Cohort response tier model assignments (smart/smarter/smartest). Reads data/tier_settings.json and cohort/local/config.py.
 argument-hint: [show | set <tier> <model> | budget | reset]
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash, Glob
 ---
 
 # Cohort Tier Manager
