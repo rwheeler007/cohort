@@ -114,6 +114,26 @@ Defined in `.claude/skills/<name>/SKILL.md`. Execute directly in Claude Code ses
 - `/preheat` or `/preheat all` - Warm up the primary model via Ollama
 - `/preheat <model_name>` - Warm up a specific model
 
+### /queue - Work Queue Inspector
+
+- `/queue` or `/queue list` - List non-terminal work queue items
+- `/queue active` - Show currently active item
+- `/queue show <id>` - Full item detail
+
+### /settings - Runtime Settings
+
+- `/settings` or `/settings show` - Display current config (model, timeout, backend)
+- `/settings set <key> <value>` - Update a setting (rejects secret fields)
+
+### /rate - Rate Limit & Cloud API Status
+
+- `/rate` or `/rate status` - Agent cooldown, escalation budget, cloud API availability
+- `/rate escalations` - Escalation budget detail
+
+### /decisions - Agent Decision Tracker (Phase 2)
+
+Not yet implemented. Requires `active_decisions` data structure in agent memory. Planned.
+
 All write operations are audit-logged to `data/skill_audit.jsonl`.
 
 ---

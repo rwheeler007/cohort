@@ -100,6 +100,9 @@ const instructions = [
   "  /health - System health check (Cohort server, Ollama, diagnostics)",
   "  /tiers - View/set smart/smarter/smartest model tier assignments",
   "  /preheat - Warm up Ollama models before first inference",
+  "  /queue - View work queue items and status",
+  "  /settings - View/update runtime config (model, timeout, backend)",
+  "  /rate - Check escalation budget and cloud API availability",
 ].join("\n");
 
 const mcp = new Server(
