@@ -809,6 +809,31 @@ async def channel_launch_ack(request: Request) -> JSONResponse:
     return JSONResponse({"ok": ok})
 
 
+async def channel_sessions(request: Request) -> JSONResponse:
+    """GET /api/channel/sessions -- detailed session status for VS Code panel."""
+    from cohort.channel_bridge import get_all_sessions_status
+
+    return JSONResponse(get_all_sessions_status())
+
+
+async def channel_register(request: Request) -> JSONResponse:
+    """POST /api/channel/register -- register a new channel session."""
+    from cohort.channel_bridge import register_channel_session
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    result = register_channel_session(
+        channel_id=body.get("channel_id", ""),
+        session_id=body.get("session_id", "unknown"),
+        pid=body.get("pid"),
+    )
+    status_code = 200 if result.get("ok") else 429
+    return JSONResponse(result, status_code=status_code)
+
+
 # =====================================================================
 # Schedule endpoints
 # =====================================================================
@@ -6063,6 +6088,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
+        Route("/api/channel/sessions", channel_sessions, methods=["GET"]),
+        Route("/api/channel/register", channel_register, methods=["POST"]),
         Route("/api/channel/launch-queue", channel_launch_queue, methods=["GET"]),
         Route("/api/channel/launch-queue/{channel_id}/ack", channel_launch_ack, methods=["POST"]),
         Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),

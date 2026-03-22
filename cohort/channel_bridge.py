@@ -101,23 +101,42 @@ _launch_lock = threading.Lock()
 # Public API -- called by agent_router.py
 # =====================================================================
 
-def ensure_channel_session(channel_id: str) -> bool:
-    """Ensure a Claude Code channel session exists or is queued for launch.
+def ensure_channel_session(channel_id: str) -> str:
+    """Ensure a Claude Code channel session exists and is alive.
 
-    If a healthy session exists, returns True immediately.
-    Otherwise adds the channel to the launch queue for the VS Code
-    extension to pick up and spawn as a terminal.  Returns True
-    (optimistic -- the extension will spawn it).
+    Returns a string indicating outcome:
+      "existing"  -- healthy session already running
+      "vscode"    -- VS Code extension spawned it
+      "direct"    -- fell back to direct spawn (no VS Code)
+      ""          -- failed to create a session (falsy)
     """
     with _sessions_lock:
         session = _channel_sessions.get(channel_id)
         if session and _is_session_alive(session):
             session["last_activity"] = time.time()
-            return True
+            return "existing"
 
     # Add to launch queue for VS Code extension to pick up
     _add_to_launch_queue(channel_id)
-    return True
+
+    # Wait for the VS Code extension to spawn it (polls every ~10s,
+    # heartbeat every 1s once alive)
+    _vscode_wait = min(SPAWN_WAIT_TIMEOUT_S, 15)
+    deadline = time.time() + _vscode_wait
+    while time.time() < deadline:
+        time.sleep(1.0)
+        with _sessions_lock:
+            session = _channel_sessions.get(channel_id)
+            if session and _is_session_alive(session):
+                session["last_activity"] = time.time()
+                logger.info("[OK] Channel session for #%s came alive via VS Code", channel_id)
+                return "vscode"
+
+    # VS Code didn't spawn it in time -- try direct spawn as fallback
+    logger.info("[*] VS Code didn't launch #%s in %ds, spawning directly", channel_id, _vscode_wait)
+    if _spawn_channel_session(channel_id):
+        return "direct"
+    return ""
 
 
 def _add_to_launch_queue(channel_id: str) -> None:
@@ -403,6 +422,106 @@ def get_session_status(channel_id: Optional[str] = None) -> Dict[str, Any]:
             "session_count": len(sessions),
             "queue_depth": total_queue,
         }
+
+
+def get_all_sessions_status() -> Dict[str, Any]:
+    """Return detailed session status in the format expected by the VS Code extension.
+
+    Used by ``/api/channel/sessions`` for the Channel Sessions panel.
+    """
+    now = time.time()
+    channels: Dict[str, Any] = {}
+
+    with _sessions_lock:
+        for channel_id, session in _channel_sessions.items():
+            last_hb = session.get("last_heartbeat", 0)
+            channels[channel_id] = {
+                "sessions": [{
+                    "session_id": session.get("session_id"),
+                    "pid": session.get("pid"),
+                    "registered_at": session.get("registered_at"),
+                    "last_heartbeat": last_hb,
+                    "healthy": (now - last_hb) < HEARTBEAT_TIMEOUT_S if last_hb else False,
+                    "stale_seconds": round(now - last_hb, 1) if last_hb else None,
+                }],
+                "queue_depth": 0,
+            }
+
+        total_queue = sum(1 for req in _channel_queue if req["status"] == "pending")
+        total_healthy = sum(
+            1 for s in _channel_sessions.values()
+            if _is_session_alive(s)
+        )
+
+    # Distribute queue depth to channels (best-effort: assign to first channel)
+    for req in _channel_queue:
+        if req["status"] == "pending":
+            ch = req.get("channel_id")
+            if ch and ch in channels:
+                channels[ch]["queue_depth"] += 1
+
+    return {
+        "channels": channels,
+        "total_sessions": len(channels),
+        "total_healthy": total_healthy,
+        "total_queue_depth": total_queue,
+        "thresholds": {
+            "limit": 5,
+            "warn": 3,
+            "default": 1,
+            "idle_timeout": 600,
+            "auto_launch": False,
+        },
+        "launch_queue": [],
+    }
+
+
+def register_channel_session(
+    channel_id: str,
+    session_id: str,
+    pid: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Register a Claude Code session for a specific channel.
+
+    Enforces a hard session limit.  Returns registration result.
+    Called by ``/api/channel/register``.
+    """
+    SESSION_LIMIT = 5
+    now = time.time()
+
+    with _sessions_lock:
+        active_count = sum(1 for s in _channel_sessions.values() if _is_session_alive(s))
+
+        if active_count >= SESSION_LIMIT:
+            logger.warning(
+                "[X] Session limit reached (%d/%d), rejecting %s for #%s",
+                active_count, SESSION_LIMIT, session_id, channel_id,
+            )
+            return {
+                "ok": False,
+                "error": "session_limit_reached",
+                "limit": SESSION_LIMIT,
+                "active": active_count,
+            }
+
+        _channel_sessions[channel_id] = {
+            "session_id": session_id,
+            "pid": pid,
+            "registered_at": now,
+            "last_heartbeat": now,
+            "last_activity": now,
+        }
+
+    logger.info(
+        "[OK] Registered session %s for #%s (pid=%s, %d/%d active)",
+        session_id, channel_id, pid, active_count + 1, SESSION_LIMIT,
+    )
+    return {
+        "ok": True,
+        "session_id": session_id,
+        "active": active_count + 1,
+        "limit": SESSION_LIMIT,
+    }
 
 
 # =====================================================================
