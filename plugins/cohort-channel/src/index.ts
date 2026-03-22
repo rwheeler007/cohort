@@ -50,6 +50,7 @@ function log(level: string, msg: string): void {
 
 const SERVER_NAME = process.env.CHANNEL_NAME ?? "cohort-wq";
 const channelId = process.env.CHANNEL_ID;
+console.error(`[cohort-wq] ENV: CHANNEL_ID=${channelId ?? "(unset)"} COHORT_BASE_URL=${process.env.COHORT_BASE_URL ?? "(unset)"}`);
 
 const config: ChannelConfig = {
   cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
@@ -351,7 +352,7 @@ async function heartbeatLoop(): Promise<void> {
 // PID lockfile -- prevents multiple instances from competing for same work
 // ---------------------------------------------------------------------------
 
-const LOCK_FILE = join(LOG_DIR, `${SERVER_NAME}.lock`);
+const LOCK_FILE = join(LOG_DIR, `${SERVER_NAME}${channelId ? `-${channelId}` : ""}.lock`);
 
 function acquireLock(): boolean {
   try {
