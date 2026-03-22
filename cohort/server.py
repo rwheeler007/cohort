@@ -5475,6 +5475,38 @@ async def website_serve_preview(request: Request) -> Response:
 
 
 # =====================================================================
+# Ecosystem Inventory endpoints
+# =====================================================================
+
+# Module-level cache for the merged inventory (loaded on startup or first request)
+_inventory_cache: list[dict[str, Any]] | None = None
+
+
+def _load_inventory_cache() -> list[dict[str, Any]]:
+    """Load or refresh the merged inventory from all sources."""
+    global _inventory_cache  # noqa: PLW0603
+    from cohort.inventory_loader import load_merged_inventory
+    entries = load_merged_inventory()
+    _inventory_cache = [e.to_dict() for e in entries]
+    logger.info("[OK] Inventory loaded: %d entries", len(_inventory_cache))
+    return _inventory_cache
+
+
+async def get_inventory(request: Request) -> JSONResponse:
+    """GET /api/inventory -- return the merged ecosystem inventory."""
+    global _inventory_cache  # noqa: PLW0603
+    if _inventory_cache is None:
+        _load_inventory_cache()
+    return JSONResponse({"entries": _inventory_cache, "count": len(_inventory_cache or [])})
+
+
+async def refresh_inventory(request: Request) -> JSONResponse:
+    """POST /api/inventory/refresh -- force reload from all sources."""
+    entries = _load_inventory_cache()
+    return JSONResponse({"entries": entries, "count": len(entries), "refreshed": True})
+
+
+# =====================================================================
 # Project Manager endpoints
 # =====================================================================
 
@@ -6153,6 +6185,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/benchmark/start", benchmark_start, methods=["POST"]),
         Route("/api/benchmark/runs/{run_id}/score", benchmark_score, methods=["POST"]),
         Route("/api/benchmark/runs/{run_id}/auto-score", benchmark_auto_score, methods=["POST"]),
+        # Ecosystem Inventory
+        Route("/api/inventory", get_inventory, methods=["GET"]),
+        Route("/api/inventory/refresh", refresh_inventory, methods=["POST"]),
         # Project Manager
         Route("/api/projects", list_projects, methods=["GET"]),
         Route("/api/projects", create_project, methods=["POST"]),
@@ -6204,6 +6239,12 @@ def create_app(data_dir: str = "data") -> Starlette:
         # Wire benchmark runner to Socket.IO
         _bench.set_emit(sio.emit, loop)
         logger.info("[OK] Benchmark runner wired to Socket.IO")
+
+        # Load ecosystem inventory cache (best-effort, non-blocking)
+        try:
+            _load_inventory_cache()
+        except Exception as exc:
+            logger.warning("[!] Inventory pre-load failed (will retry on first request): %s", exc)
 
         # Start the task scheduler background loop
         if _scheduler is not None:

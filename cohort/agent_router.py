@@ -30,6 +30,7 @@ from cohort.api import (
 )
 from cohort.local.config import classify_confidence
 from cohort.agent_context import load_agent_context, load_project_memory, load_user_profile_block
+from cohort.inventory_query import should_query_inventory, query_inventory_block
 
 logger = logging.getLogger(__name__)
 
@@ -1217,6 +1218,15 @@ def _invoke_agent_sync(item: dict) -> None:
         conversation_context=channel_context + thread_context,
     )
 
+    # Load ecosystem inventory (cross-project capability awareness)
+    # Only fires for implementation-related messages to avoid prompt bloat.
+    _inventory_block = ""
+    if should_query_inventory(message_content):
+        try:
+            _inventory_block = query_inventory_block(message_content)
+        except Exception as exc:
+            logger.debug("[!] Inventory query failed for %s: %s", agent_id, exc)
+
     # Construct prompts: one with tool awareness (Claude CLI), one without (local tools)
     _base_prompt = (
         f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
@@ -1225,6 +1235,7 @@ def _invoke_agent_sync(item: dict) -> None:
         f"{_user_profile_block}\n"
         f"{_agent_memory_block}\n"
         f"{_project_memory_block}\n"
+        f"{_inventory_block}"
         f"{GROUNDING_RULES}\n"
         f"{_collab_section}"
     )
