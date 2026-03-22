@@ -29,7 +29,7 @@ from cohort.api import (
     resolve_permissions, get_central_permissions, ResolvedPermissions,
 )
 from cohort.local.config import classify_confidence
-from cohort.agent_context import load_agent_context, load_user_profile_block
+from cohort.agent_context import load_agent_context, load_project_memory, load_user_profile_block
 
 logger = logging.getLogger(__name__)
 
@@ -650,6 +650,7 @@ def queue_agent_response(
     thread_id: str | None = None,
     priority: int = 50,
     response_mode: str = "smarter",
+    project_path: str | None = None,
 ) -> None:
     """Add an agent response to the priority queue."""
     with _state.queue_lock:
@@ -659,7 +660,7 @@ def queue_agent_response(
                 logger.info("[*] Skipping duplicate queue entry: %s in #%s", agent_id, channel_id)
                 return
 
-        _state.queue.append({
+        item: dict = {
             "agent_id": agent_id,
             "message_content": message_content,
             "channel_id": channel_id,
@@ -667,7 +668,10 @@ def queue_agent_response(
             "priority": priority,
             "queued_at": time.time(),
             "response_mode": response_mode,
-        })
+        }
+        if project_path:
+            item["project_path"] = project_path
+        _state.queue.append(item)
         # Sort: lower priority number = responds first
         _state.queue.sort(key=lambda x: x["priority"])
 
@@ -1202,6 +1206,12 @@ def _invoke_agent_sync(item: dict) -> None:
         agent_id, query=message_content, agent_store=_agent_store,
     )
 
+    # Load per-project memory (working memory scoped to this workspace)
+    _project_path = item.get("project_path")
+    _project_memory_block = load_project_memory(
+        agent_id, project_path=_project_path, query=message_content,
+    ) if _project_path else ""
+
     # Load user profile (core paragraph + adaptation rules + distilled traits)
     _user_profile_block = load_user_profile_block(
         conversation_context=channel_context + thread_context,
@@ -1214,6 +1224,7 @@ def _invoke_agent_sync(item: dict) -> None:
         f"---\n{agent_prompt}\n---\n\n"
         f"{_user_profile_block}\n"
         f"{_agent_memory_block}\n"
+        f"{_project_memory_block}\n"
         f"{GROUNDING_RULES}\n"
         f"{_collab_section}"
     )
@@ -1792,7 +1803,13 @@ def _route_roundtable_to_channel(
 # Entry point (called from socketio_events.py)
 # =====================================================================
 
-def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "smarter") -> None:
+def route_mentions(
+    message: Any,
+    mentions: list[str],
+    *,
+    response_mode: str = "smarter",
+    project_path: str | None = None,
+) -> None:
     """Route @mentions from a posted message to agent response queue.
 
     This is the main entry point, called after a message is posted and broadcast.
@@ -1801,6 +1818,7 @@ def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "s
         message: The posted message object.
         mentions: List of @mentioned agent IDs.
         response_mode: "smart", "smarter" (default), or "smartest".
+        project_path: Workspace path for per-project memory injection.
     """
     if not mentions or _chat is None:
         return
@@ -1903,6 +1921,7 @@ def route_mentions(message: Any, mentions: list[str], *, response_mode: str = "s
             thread_id=message.id,
             priority=priority,
             response_mode=response_mode,
+            project_path=project_path,
         )
 
     # Track depth for the triggering message

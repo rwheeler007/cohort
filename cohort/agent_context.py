@@ -214,6 +214,84 @@ def load_agent_context(
 
 
 # =====================================================================
+# Project memory loader
+# =====================================================================
+
+MAX_PROJECT_MEMORY_ENTRIES = 10
+MAX_PROJECT_MEMORY_TOKENS = 500  # Rough budget (~2000 chars)
+
+
+def load_project_memory(
+    agent_id: str,
+    project_path: str | None = None,
+    query: str = "",
+) -> str:
+    """Load per-project working memory for an agent.
+
+    Project memory lives at ``{project_path}/.cohort/data/agents/{agent_id}/project_memory.json``.
+    Entries are scored against the current query for relevance, same as learned facts.
+
+    Returns:
+        Formatted context string for prompt injection, or empty string.
+    """
+    if not project_path or not agent_id:
+        return ""
+
+    mem_path = Path(project_path) / ".cohort" / "data" / "agents" / agent_id / "project_memory.json"
+    if not mem_path.exists():
+        return ""
+
+    try:
+        data = json.loads(mem_path.read_text(encoding="utf-8"))
+    except Exception:
+        return ""
+
+    entries = data.get("entries", [])
+    if not entries:
+        return ""
+
+    # Score entries against current query for relevance
+    terms = _normalize_query(query)
+    scored: list[tuple[float, dict]] = []
+    for entry in entries:
+        text = f"{entry.get('input', '')} {entry.get('response', '')}"
+        score = _score_text(text, terms) if terms else 0.0
+        score += _recency_boost(entry.get("timestamp"))
+        scored.append((score, entry))
+
+    # Sort by score descending, take top N
+    scored.sort(key=lambda x: x[0], reverse=True)
+    selected = [e for _, e in scored[:MAX_PROJECT_MEMORY_ENTRIES]]
+
+    if not selected:
+        return ""
+
+    lines: list[str] = []
+    char_budget = MAX_PROJECT_MEMORY_TOKENS * 4  # ~4 chars per token
+    used = 0
+    for entry in selected:
+        channel = entry.get("channel", "")
+        inp = entry.get("input", "")[:200]
+        resp = entry.get("response", "")[:200]
+        ts = entry.get("timestamp", "")[:10]  # Just the date
+        line = f"- [{ts}] #{channel}: Q: {inp} | A: {resp}"
+        if used + len(line) > char_budget:
+            break
+        lines.append(line)
+        used += len(line)
+
+    if not lines:
+        return ""
+
+    return (
+        "=== PROJECT MEMORY ===\n"
+        "Your previous interactions in this project:\n"
+        + "\n".join(lines)
+        + "\n=== END PROJECT MEMORY ===\n"
+    )
+
+
+# =====================================================================
 # User profile loader (delegates to shared BOSS module)
 # =====================================================================
 

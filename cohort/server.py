@@ -377,12 +377,15 @@ async def send_message(request: Request) -> JSONResponse:
         if response_mode not in ("smart", "smarter", "smartest", "channel"):
             response_mode = "smarter"
 
+        # Pass project path from extension for per-project memory injection
+        project_path = body.get("project_path")
+
         from cohort.agent_router import resolve_agent_id
         is_agent_sender = resolve_agent_id(sender) is not None
         mentions = msg.metadata.get("mentions", [])
         if mentions and not is_agent_sender:
             from cohort.agent_router import route_mentions
-            route_mentions(msg, mentions, response_mode=response_mode)
+            route_mentions(msg, mentions, response_mode=response_mode, project_path=project_path)
 
         return JSONResponse({"success": True, "message_id": msg.id})
     except Exception as exc:
