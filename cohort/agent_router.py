@@ -440,10 +440,6 @@ def setup_agent_router(
     except RuntimeError:
         _event_loop = None
 
-    # Wire chat reference into channel_bridge for context hydration
-    from cohort.channel_bridge import set_chat_ref
-    set_chat_ref(chat)
-
     logger.info("[OK] Agent router initialised (AGENTS_ROOT=%s)", AGENTS_ROOT)
 
 
@@ -477,19 +473,6 @@ def apply_settings(settings: dict) -> None:
     if "channel_mode" in settings:
         _channel_mode_enabled = bool(settings["channel_mode"])
         logger.info("[OK] Channel mode: %s", _channel_mode_enabled)
-
-    # Propagate channel session thresholds
-    try:
-        from cohort.channel_bridge import apply_channel_settings
-        apply_channel_settings(
-            limit=settings.get("channel_session_limit", 5),
-            warn=settings.get("channel_session_warn", 3),
-            default=settings.get("channel_session_default", 1),
-            idle_timeout=settings.get("channel_idle_timeout", 600),
-            auto_launch=settings.get("channel_auto_launch", False),
-        )
-    except ImportError:
-        pass
 
     if settings.get("claude_cmd"):
         CLAUDE_CMD = settings["claude_cmd"]
@@ -1150,8 +1133,8 @@ def _invoke_agent_sync(item: dict) -> None:
     if os.environ.get("COHORT_FULL_PROMPT", "").strip() == "1":
         response_mode = "smarter"
 
-    # Smarter/Smartest = full prompt; Smart = lightweight persona
-    use_full_prompt = (response_mode in ("smarter", "smartest"))
+    # Smarter/Smartest/Channel = full prompt; Smart = lightweight persona
+    use_full_prompt = (response_mode in ("smarter", "smartest", "channel"))
 
     # Load agent prompt -- persona first (light mode), full prompt as fallback
     agent_prompt: str | None = None
@@ -1182,12 +1165,8 @@ def _invoke_agent_sync(item: dict) -> None:
             # Truncated fallback: first 1000 chars of agent_prompt.md
             agent_prompt = full_text[:1000]
 
-    # Build context (prepend hydration summary if a session was recently registered)
+    # Build context
     channel_context = build_channel_context(channel_id)
-    from cohort.context_hydration import get_cached_hydration
-    _hydration = get_cached_hydration(channel_id)
-    if _hydration:
-        channel_context = _hydration + "\n\n" + channel_context
     thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
 
     # Resolve tool permissions (needed for both prompt injection and CLI flags)
@@ -1323,6 +1302,35 @@ def _invoke_agent_sync(item: dict) -> None:
         else:
             logger.warning("[!] No cloud API or dev CLI available, falling back to smarter for %s",
                            agent_id)
+            response_mode = "smarter"
+
+    # Channel mode: route through per-channel persistent Claude Code session
+    if response_mode == "channel" and not response_content:
+        if _channel_mode_enabled:
+            from cohort.channel_bridge import ensure_channel_session, enqueue_channel_request, await_channel_response
+            if ensure_channel_session(channel_id):
+                try:
+                    request_id = enqueue_channel_request(
+                        prompt=full_prompt,
+                        agent_id=agent_id,
+                        channel_id=channel_id,
+                        thread_id=thread_id,
+                        response_mode="channel",
+                    )
+                    ch_content, ch_meta = await_channel_response(
+                        request_id, timeout=RESPONSE_TIMEOUT,
+                    )
+                    if ch_content:
+                        response_content = ch_content
+                        response_metadata = ch_meta or {}
+                        logger.info("[OK] Channel mode: %s in #%s", agent_id, channel_id)
+                except Exception:
+                    logger.exception("[!] Channel mode failed for %s, degrading to smarter", agent_id)
+                    response_mode = "smarter"
+            else:
+                logger.warning("[!] Could not start channel session for #%s, degrading to smarter", channel_id)
+                response_mode = "smarter"
+        else:
             response_mode = "smarter"
 
     # Standard local routing (smart / smarter modes)

@@ -374,7 +374,7 @@ async def send_message(request: Request) -> JSONResponse:
         # Skip routing for agent-sent messages (roundtable posts, etc.)
         # to prevent re-triggering loops.  Only human messages trigger agents.
         response_mode = body.get("response_mode", "smarter")
-        if response_mode not in ("smart", "smarter", "smartest"):
+        if response_mode not in ("smart", "smarter", "smartest", "channel"):
             response_mode = "smarter"
 
         from cohort.agent_router import resolve_agent_id
@@ -682,7 +682,6 @@ async def channel_poll(request: Request) -> JSONResponse:
     """GET /api/channel/poll -- return next pending agent request.
 
     Accepts optional ``channel_id`` query param to scope to one channel.
-    Without it, returns the next pending request from any channel (backward compat).
     """
     from cohort.channel_bridge import poll_next_request
 
@@ -790,84 +789,21 @@ async def channel_status(request: Request) -> JSONResponse:
     return JSONResponse(get_session_status(channel_id=channel_id))
 
 
-async def channel_register(request: Request) -> JSONResponse:
-    """POST /api/channel/register -- register a session for a specific channel.
+async def channel_launch_queue(request: Request) -> JSONResponse:
+    """GET /api/channel/launch-queue -- next channel needing a session."""
+    from cohort.channel_bridge import pop_launch_queue
 
-    Enforces the configurable session limit.  Returns 429 if at capacity.
-    """
-    from cohort.channel_bridge import register_channel_session
-
-    try:
-        body = await request.json()
-    except Exception:
-        body = {}
-
-    channel_id = body.get("channel_id", "")
-    if not channel_id:
-        return JSONResponse({"error": "channel_id required"}, status_code=400)
-
-    session_id = body.get("session_id", "unknown")
-    pid = body.get("pid")
-    result = register_channel_session(channel_id, session_id, pid)
-    status_code = 200 if result["ok"] else 429
-    return JSONResponse(result, status_code=status_code)
+    pending = pop_launch_queue()
+    return JSONResponse({"pending": pending})
 
 
-async def channel_sessions_list(request: Request) -> JSONResponse:
-    """GET /api/channel/sessions -- list all active channel sessions."""
-    from cohort.channel_bridge import get_all_sessions_status
-
-    return JSONResponse(get_all_sessions_status())
-
-
-async def channel_hydration_status(request: Request) -> JSONResponse:
-    """GET /api/channel/hydration -- check context hydration cache status."""
-    import time as _time
-    from cohort.context_hydration import _hydration_cache
-
-    channel_id = request.query_params.get("channel_id", "")
-    if channel_id:
-        entry = _hydration_cache.get(channel_id)
-        if entry:
-            return JSONResponse({
-                "channel_id": channel_id,
-                "cached": True,
-                "tier": entry["tier"],
-                "chars": len(entry["text"]),
-                "age_seconds": round(_time.time() - entry["created_at"], 1),
-            })
-        return JSONResponse({"channel_id": channel_id, "cached": False})
-
-    # No channel_id: return all cached channels
-    result = {}
-    for cid, entry in _hydration_cache.items():
-        result[cid] = {
-            "tier": entry["tier"],
-            "chars": len(entry["text"]),
-            "age_seconds": round(_time.time() - entry["created_at"], 1),
-        }
-    return JSONResponse({"channels": result, "total_cached": len(result)})
-
-
-async def channel_launch_queue_poll(request: Request) -> JSONResponse:
-    """GET /api/channel/launch-queue -- peek at next channel needing a session."""
-    from cohort.channel_bridge import poll_launch_queue
-
-    item = poll_launch_queue()
-    if item is None:
-        return JSONResponse({"pending": None})
-    return JSONResponse({"pending": item})
-
-
-async def channel_launch_queue_ack(request: Request) -> JSONResponse:
-    """POST /api/channel/launch-queue/{channel_id}/ack -- acknowledge a launch."""
+async def channel_launch_ack(request: Request) -> JSONResponse:
+    """POST /api/channel/launch-queue/<channel_id>/ack -- extension launched it."""
     from cohort.channel_bridge import ack_launch
 
-    channel_id = request.path_params.get("channel_id", "")
-    if not channel_id:
-        return JSONResponse({"error": "channel_id required"}, status_code=400)
-    found = ack_launch(channel_id)
-    return JSONResponse({"ok": found})
+    channel_id = request.path_params["channel_id"]
+    ok = ack_launch(channel_id)
+    return JSONResponse({"ok": ok})
 
 
 # =====================================================================
@@ -1815,6 +1751,14 @@ async def get_settings(request: Request) -> JSONResponse:
     except ImportError:
         pass
 
+    # Channel mode available if setting is enabled (sessions spawn on demand)
+    channel_available = False
+    try:
+        from cohort.agent_router import _channel_mode_enabled
+        channel_available = bool(_channel_mode_enabled)
+    except ImportError:
+        pass
+
     # Mask cloud API key
     cloud_api_key = settings.get("cloud_api_key", "")
     if cloud_api_key:
@@ -1831,15 +1775,11 @@ async def get_settings(request: Request) -> JSONResponse:
         "execution_backend": settings.get("execution_backend", "cli"),
         "claude_code_connected": claude_connected,
         "smartest_available": smartest_available,
+        "channel_available": channel_available,
         "admin_mode": settings.get("admin_mode", False),
         "dev_mode": settings.get("dev_mode", False),
         "force_to_claude_code": settings.get("force_to_claude_code", False),
         "channel_mode": settings.get("channel_mode", False),
-        "channel_session_limit": settings.get("channel_session_limit", 5),
-        "channel_session_warn": settings.get("channel_session_warn", 3),
-        "channel_session_default": settings.get("channel_session_default", 1),
-        "channel_idle_timeout": settings.get("channel_idle_timeout", 600),
-        "channel_auto_launch": settings.get("channel_auto_launch", False),
         "cloud_provider": settings.get("cloud_provider", ""),
         "cloud_api_key_masked": cloud_key_masked,
         "cloud_model": settings.get("cloud_model", ""),
@@ -1879,7 +1819,7 @@ async def post_settings(request: Request) -> JSONResponse:
         if isinstance(timeout, int) and 30 <= timeout <= 600:
             settings["response_timeout"] = timeout
     if "execution_backend" in body:
-        if body["execution_backend"] in ("cli", "api", "chat"):
+        if body["execution_backend"] in ("cli", "api", "chat", "channel"):
             settings["execution_backend"] = body["execution_backend"]
     if "claude_enabled" in body:
         settings["claude_enabled"] = bool(body["claude_enabled"])
@@ -1891,24 +1831,6 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["dev_mode"] = bool(body["dev_mode"])
     if "channel_mode" in body:
         settings["channel_mode"] = bool(body["channel_mode"])
-    if "channel_session_limit" in body:
-        val = int(body["channel_session_limit"])
-        if 1 <= val <= 50:
-            settings["channel_session_limit"] = val
-    if "channel_session_warn" in body:
-        val = int(body["channel_session_warn"])
-        if 1 <= val <= 50:
-            settings["channel_session_warn"] = val
-    if "channel_session_default" in body:
-        val = int(body["channel_session_default"])
-        if 0 <= val <= 10:
-            settings["channel_session_default"] = val
-    if "channel_idle_timeout" in body:
-        val = int(body["channel_idle_timeout"])
-        if 60 <= val <= 3600:
-            settings["channel_idle_timeout"] = val
-    if "channel_auto_launch" in body:
-        settings["channel_auto_launch"] = bool(body["channel_auto_launch"])
     if "cloud_provider" in body:
         if body["cloud_provider"] in ("", "anthropic", "openai"):
             settings["cloud_provider"] = body["cloud_provider"]
@@ -3101,136 +3023,6 @@ async def setup_detect_claude(request: Request) -> JSONResponse:
         "existing_agents_root": settings.get("agents_root", ""),
         "platform": __import__("platform").system().lower(),
     })
-
-
-# =====================================================================
-# Setup: Preference Import (ChatGPT / Claude Code)
-# =====================================================================
-
-
-async def setup_import_chatgpt_titles(request: Request) -> JSONResponse:
-    """POST /api/setup/import-chatgpt-titles -- parse conversations.json, return titles."""
-    from cohort.import_seed import parse_chatgpt_titles
-
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
-
-    conversations = body.get("conversations", [])
-    if not isinstance(conversations, list) or not conversations:
-        return JSONResponse({"error": "No conversations found"}, status_code=400)
-
-    titles = parse_chatgpt_titles(conversations)
-    return JSONResponse({"titles": titles, "total": len(titles)})
-
-
-async def setup_import_chatgpt_extract(request: Request) -> JSONResponse:
-    """POST /api/setup/import-chatgpt-extract -- extract facts from selected conversations.
-
-    Falls back to regex-based extraction if no local model is available.
-    """
-    from cohort.import_seed import extract_facts_regex, extract_from_chatgpt
-    from cohort.local.config import DEFAULT_MODEL
-    from cohort.local.ollama import OllamaClient
-
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
-
-    conversations = body.get("conversations", [])
-    selected_ids = set(body.get("selected_ids", []))
-
-    if not conversations or not selected_ids:
-        return JSONResponse({"error": "No conversations or IDs provided"}, status_code=400)
-
-    # Try model-based extraction first, fall back to regex
-    method = "model"
-    client = OllamaClient(timeout=120)
-    if client.health_check():
-        facts = await asyncio.to_thread(
-            extract_from_chatgpt, conversations, selected_ids, client, DEFAULT_MODEL
-        )
-    else:
-        method = "regex"
-        facts = extract_facts_regex(conversations, selected_ids)
-
-    return JSONResponse({"facts": facts, "count": len(facts), "method": method})
-
-
-async def setup_import_claude_detect(request: Request) -> JSONResponse:
-    """POST /api/setup/import-claude-detect -- check for ~/.claude/ and parse memories."""
-    from cohort.import_seed import detect_claude_dir, parse_claude_memory
-
-    info = detect_claude_dir()
-    facts: list[dict] = []
-
-    if info["exists"]:
-        facts = parse_claude_memory()
-
-    return JSONResponse({
-        **info,
-        "facts": facts,
-        "count": len(facts),
-    })
-
-
-async def setup_import_profile_prompt(request: Request) -> JSONResponse:
-    """GET /api/setup/import-profile-prompt -- return the prompt users paste into their AI."""
-    from cohort.import_seed import get_profile_prompt
-    return JSONResponse({"prompt": get_profile_prompt()})
-
-
-async def setup_import_profile_paste(request: Request) -> JSONResponse:
-    """POST /api/setup/import-profile-paste -- parse pasted profile prompt output."""
-    from cohort.import_seed import parse_profile_paste
-
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
-
-    text = body.get("text", "")
-    if not text.strip():
-        return JSONResponse({"error": "No text provided"}, status_code=400)
-
-    facts = parse_profile_paste(text)
-    return JSONResponse({"facts": facts, "count": len(facts)})
-
-
-async def setup_import_config_files(request: Request) -> JSONResponse:
-    """POST /api/setup/import-config-files -- extract preferences from config files."""
-    from cohort.import_seed import extract_from_config_files
-
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
-
-    files = body.get("files", {})
-    if not files:
-        return JSONResponse({"error": "No files provided"}, status_code=400)
-
-    facts = extract_from_config_files(files)
-    return JSONResponse({"facts": facts, "count": len(facts)})
-
-
-async def setup_import_commit(request: Request) -> JSONResponse:
-    """POST /api/setup/import-commit -- save approved facts to agent memories."""
-    from cohort.import_seed import commit_facts
-
-    try:
-        body = await request.json()
-    except Exception:
-        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
-
-    facts = body.get("facts", [])
-    if not facts:
-        return JSONResponse({"stored": 0})
-
-    stored = commit_facts(facts, _agent_store)
-    return JSONResponse({"stored": stored})
 
 
 # =====================================================================
@@ -6236,11 +6028,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
-        Route("/api/channel/register", channel_register, methods=["POST"]),
-        Route("/api/channel/sessions", channel_sessions_list, methods=["GET"]),
-        Route("/api/channel/hydration", channel_hydration_status, methods=["GET"]),
-        Route("/api/channel/launch-queue", channel_launch_queue_poll, methods=["GET"]),
-        Route("/api/channel/launch-queue/{channel_id}/ack", channel_launch_queue_ack, methods=["POST"]),
+        Route("/api/channel/launch-queue", channel_launch_queue, methods=["GET"]),
+        Route("/api/channel/launch-queue/{channel_id}/ack", channel_launch_ack, methods=["POST"]),
         Route("/api/channel/{request_id}/claim", channel_claim, methods=["POST"]),
         Route("/api/channel/{request_id}/respond", channel_respond, methods=["POST"]),
         Route("/api/channel/{request_id}/error", channel_error, methods=["POST"]),
@@ -6274,13 +6063,6 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
         Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
         Route("/api/setup/global-agents", setup_global_agents, methods=["POST"]),
-        Route("/api/setup/import-chatgpt-titles", setup_import_chatgpt_titles, methods=["POST"]),
-        Route("/api/setup/import-chatgpt-extract", setup_import_chatgpt_extract, methods=["POST"]),
-        Route("/api/setup/import-claude-detect", setup_import_claude_detect, methods=["POST"]),
-        Route("/api/setup/import-profile-prompt", setup_import_profile_prompt, methods=["GET"]),
-        Route("/api/setup/import-profile-paste", setup_import_profile_paste, methods=["POST"]),
-        Route("/api/setup/import-config-files", setup_import_config_files, methods=["POST"]),
-        Route("/api/setup/import-commit", setup_import_commit, methods=["POST"]),
         # Session endpoints (canonical)
         Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
         Route("/api/sessions/setup-parse", session_setup_parse, methods=["POST"]),
@@ -6434,6 +6216,22 @@ def create_app(data_dir: str = "data") -> Starlette:
     # Wrap Starlette with Socket.IO ASGI app
     import socketio as sio_module
     app = sio_module.ASGIApp(sio, other_asgi_app=starlette_app)
+
+    # Start channel session idle reaper (background daemon)
+    def _channel_idle_reaper() -> None:
+        import time as _time
+        while True:
+            _time.sleep(60)
+            try:
+                from cohort.channel_bridge import reap_idle_sessions
+                reaped = reap_idle_sessions()
+                if reaped:
+                    logger.info("[*] Reaped %d idle channel session(s)", reaped)
+            except Exception:
+                logger.exception("[!] Channel reaper error")
+
+    import threading
+    threading.Thread(target=_channel_idle_reaper, daemon=True, name="channel-reaper").start()
 
     return app
 

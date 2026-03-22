@@ -6,7 +6,7 @@
  * Heartbeat is best-effort (no retry).
  */
 
-import type { PollResponse, ClaimResponse, ChannelConfig, RegisterResponse } from "./types.js";
+import type { PollResponse, ClaimResponse, ChannelConfig } from "./types.js";
 
 export class CohortClient {
   private baseUrl: string;
@@ -17,23 +17,6 @@ export class CohortClient {
     this.baseUrl = config.cohort_base_url;
     this.sessionId = config.session_id;
     this.channelId = config.channel_id;
-  }
-
-  /**
-   * Register this session for a specific channel.
-   * Enforces the server-side session limit.
-   */
-  async register(): Promise<RegisterResponse> {
-    const res = await fetch(`${this.baseUrl}/api/channel/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        channel_id: this.channelId,
-        session_id: this.sessionId,
-        pid: process.pid,
-      }),
-    });
-    return (await res.json()) as RegisterResponse;
   }
 
   /**
@@ -156,7 +139,7 @@ export class CohortClient {
   }
 
   /**
-   * Send heartbeat. Best-effort. Includes channel_id if scoped.
+   * Send heartbeat. Best-effort.
    */
   async heartbeat(): Promise<void> {
     try {

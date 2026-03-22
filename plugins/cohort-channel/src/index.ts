@@ -10,16 +10,12 @@
  * All prompt construction, context enrichment, memory injection, and response
  * posting stay server-side in Cohort. This plugin is intentionally thin.
  *
- * Usage (global -- polls all channels, backward compat):
+ * Usage:
  *   claude --dangerously-load-development-channels server:cohort-wq
- *
- * Usage (scoped -- polls only one channel):
- *   CHANNEL_ID=general claude --dangerously-load-development-channels server:cohort-ch-general
  *
  * Environment:
  *   COHORT_BASE_URL  -- Cohort server URL (default: http://localhost:5100)
  *   POLL_INTERVAL    -- Poll interval in ms (default: 5000)
- *   CHANNEL_ID       -- Scope to a specific Cohort channel (optional)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -30,7 +26,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { CohortClient } from "./cohort-client.js";
 import type { ChannelConfig } from "./types.js";
-import { appendFileSync, mkdirSync } from "fs";
+import { appendFileSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, existsSync } from "fs";
 import { join, dirname } from "path";
 
 // ---------------------------------------------------------------------------
@@ -52,15 +48,14 @@ function log(level: string, msg: string): void {
 // Configuration
 // ---------------------------------------------------------------------------
 
+const SERVER_NAME = process.env.CHANNEL_NAME ?? "cohort-wq";
 const channelId = process.env.CHANNEL_ID;
 
 const config: ChannelConfig = {
   cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
   poll_interval_ms: parseInt(process.env.POLL_INTERVAL ?? "5000", 10),
   heartbeat_interval_ms: 10_000,
-  session_id: channelId
-    ? `cohort-ch-${channelId}-${Date.now()}`
-    : `cohort-wq-${Date.now()}`,
+  session_id: `${SERVER_NAME}-${Date.now()}`,
   channel_id: channelId,
 };
 
@@ -74,46 +69,27 @@ let currentRequestClaimedAt: number | null = null;
 // MCP Server
 // ---------------------------------------------------------------------------
 
-const serverName = channelId ? `cohort-ch-${channelId}` : "cohort-wq";
-
-const instructions = [
-  "You are an AI agent in the Cohort team chat system.",
-  ...(channelId
-    ? [`You are scoped to channel #${channelId}. Only respond to requests for this channel.`]
-    : []),
-  `When you receive a prompt via <channel source="${serverName}">, respond to`,
-  "the conversation following the persona and instructions in the prompt.",
-  "",
-  "Workflow for each request:",
-  "1. Read the prompt carefully -- it contains the agent persona, grounding",
-  "   rules, channel context, and the user's message",
-  "2. Respond as the specified agent, in character",
-  "3. Call cohort_respond with your response text",
-  "4. If you cannot respond, call cohort_error with a description",
-  "",
-  "After responding, wait -- the next request will arrive automatically.",
-  "",
-  "When working with tool results, write down any important information you might need later",
-  "in your response, as the original tool result may be cleared later.",
-  "",
-  "Available CLI skills (invoke via slash command if relevant to the task):",
-  "  /health - System health check (Cohort server, Ollama, diagnostics)",
-  "  /tiers - View/set smart/smarter/smartest model tier assignments",
-  "  /preheat - Warm up Ollama models before first inference",
-  "  /queue - View work queue items and status",
-  "  /settings - View/update runtime config (model, timeout, backend)",
-  "  /rate - Check escalation budget and cloud API availability",
-  "  /decisions - View/manage agent decisions across all agents",
-].join("\n");
-
 const mcp = new Server(
-  { name: serverName, version: "0.2.0" },
+  { name: SERVER_NAME, version: "0.1.0" },
   {
     capabilities: {
       experimental: { "claude/channel": {} },
       tools: {},
     },
-    instructions,
+    instructions: [
+      "You are an AI agent in the Cohort team chat system.",
+      `When you receive a prompt via <channel source="${SERVER_NAME}">, respond to`,
+      "the conversation following the persona and instructions in the prompt.",
+      "",
+      "Workflow for each request:",
+      "1. Read the prompt carefully -- it contains the agent persona, grounding",
+      "   rules, channel context, and the user's message",
+      "2. Respond as the specified agent, in character",
+      "3. Call cohort_respond with your response text",
+      "4. If you cannot respond, call cohort_error with a description",
+      "",
+      "After responding, wait -- the next request will arrive automatically.",
+    ].join("\n"),
   }
 );
 
@@ -372,44 +348,86 @@ async function heartbeatLoop(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// PID lockfile -- prevents multiple instances from competing for same work
+// ---------------------------------------------------------------------------
+
+const LOCK_FILE = join(LOG_DIR, `${SERVER_NAME}.lock`);
+
+function acquireLock(): boolean {
+  try {
+    if (existsSync(LOCK_FILE)) {
+      const content = readFileSync(LOCK_FILE, "utf-8").trim();
+      const existingPid = parseInt(content, 10);
+      if (!isNaN(existingPid)) {
+        try {
+          process.kill(existingPid, 0); // Signal 0 = existence check
+          return false; // Process is still alive
+        } catch {
+          log("WARN", `Stale lockfile for PID ${existingPid}, taking over`);
+        }
+      }
+    }
+    writeFileSync(LOCK_FILE, String(process.pid), "utf-8");
+    return true;
+  } catch (e) {
+    log("WARN", `Lock check failed: ${(e as Error).message}, proceeding anyway`);
+    return true; // Fail open
+  }
+}
+
+function releaseLock(): void {
+  try {
+    if (existsSync(LOCK_FILE)) {
+      const content = readFileSync(LOCK_FILE, "utf-8").trim();
+      if (content === String(process.pid)) {
+        unlinkSync(LOCK_FILE);
+      }
+    }
+  } catch { /* best-effort */ }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
+  // Only acquire lock and start poll/heartbeat when spawned for a specific channel.
+  // Normal Claude Code sessions (no CHANNEL_ID) get the MCP tools but don't poll.
+  const isChannelSession = !!channelId;
+
+  if (isChannelSession) {
+    if (!acquireLock()) {
+      log("WARN", `Another ${SERVER_NAME} instance is already running. Exiting.`);
+      process.exit(0);
+    }
+
+    process.on("exit", releaseLock);
+    process.on("SIGINT", () => { releaseLock(); process.exit(0); });
+    process.on("SIGTERM", () => { releaseLock(); process.exit(0); });
+  }
+
   const transport = new StdioServerTransport();
   await mcp.connect(transport);
 
-  log("INFO", `Session ${config.session_id} connected. Log: ${LOG_FILE}`);
+  log("INFO", `Session ${config.session_id} connected (PID ${process.pid}). Log: ${LOG_FILE}`);
 
-  // Register with Cohort if scoped to a specific channel
-  if (config.channel_id) {
-    const regResult = await client.register();
-    if (!regResult.ok) {
-      log(
-        "FATAL",
-        `Registration rejected: ${regResult.error} (limit=${regResult.limit}, active=${regResult.active})`
-      );
-      process.exit(1);
-    }
-    if (regResult.warn) {
-      log("WARN", `Session count at warning threshold (${regResult.active}/${regResult.limit})`);
-    }
-    log("INFO", `Registered for channel: ${config.channel_id}`);
+  if (isChannelSession) {
+    // Start background loops -- only for spawned channel sessions
+    pollLoop().catch((e) =>
+      log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
+    );
+    heartbeatLoop().catch((e) =>
+      log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
+    );
+
+    log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (channel=#${channelId})`);
+  } else {
+    log("INFO", "Passive mode -- tools available but no poll/heartbeat (no CHANNEL_ID set)");
   }
-
-  // Start background loops (non-blocking)
-  pollLoop().catch((e) =>
-    log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
-  );
-  heartbeatLoop().catch((e) =>
-    log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
-  );
-
-  const scope = config.channel_id ? `#${config.channel_id}` : "all channels";
-  log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (scope: ${scope})`);
 }
 
 main().catch((e) => {
   log("FATAL", (e as Error).message);
+  if (channelId) releaseLock();
   process.exit(1);
 });
