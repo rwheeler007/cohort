@@ -499,10 +499,12 @@ class LiteBackend:
             if success_criteria:
                 outcome = {"type": "report", "success_criteria": success_criteria,
                            "artifact_ref": None, "verified": False}
+            trigger = {"type": trigger_type, "source": trigger_source}
             task = self._task_store.create_task(
                 agent_id=agent_id,
                 description=description,
                 priority=priority,
+                trigger=trigger,
                 action=action,
                 outcome=outcome,
             )
@@ -516,10 +518,10 @@ class LiteBackend:
     async def get_work_queue(
         self, status: str | None = None,
     ) -> list[dict[str, Any]] | None:
-        # Work queue items are tasks with trigger_type="mcp"
+        # Work queue items are tasks with trigger.type="mcp"
         try:
             tasks = self._task_store.list_tasks(status_filter=status)
-            return [t for t in tasks if t.get("trigger_type") == "mcp"]
+            return [t for t in tasks if (t.get("trigger") or {}).get("type") == "mcp"]
         except Exception as exc:
             logger.debug("[!] lite backend: get_work_queue error - %s", exc)
             return []
@@ -537,7 +539,7 @@ class LiteBackend:
                 agent_id=agent_id or "",
                 description=description,
                 priority=priority,
-                trigger_type="mcp",
+                trigger={"type": "mcp", "source": requester},
             )
             return {"success": True, "item_id": task.get("task_id", "")} if task else {"success": False}
         except Exception as exc:
@@ -547,7 +549,7 @@ class LiteBackend:
     async def claim_work_item(self) -> dict[str, Any] | None:
         try:
             tasks = self._task_store.list_tasks(status_filter="assigned")
-            mcp_tasks = [t for t in tasks if t.get("trigger_type") == "mcp"]
+            mcp_tasks = [t for t in tasks if (t.get("trigger") or {}).get("type") == "mcp"]
             if not mcp_tasks:
                 return {"success": False, "error": "No work items available"}
             task = mcp_tasks[0]

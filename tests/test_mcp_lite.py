@@ -98,11 +98,17 @@ async def test_post_message_auto_creates_channel(backend: LiteBackend):
 
 
 @pytest.mark.asyncio
-async def test_condense_returns_error_in_lite_mode(backend: LiteBackend):
-    result = await backend.condense_channel("test", keep_last=5)
+async def test_condense_removes_old_messages(backend: LiteBackend):
+    # Post several messages then condense
+    for i in range(5):
+        await backend.post_message("condense-ch", "user", f"Message {i}")
+    result = await backend.condense_channel("condense-ch", keep_last=2)
     assert result is not None
-    assert result["success"] is False
-    assert "requires" in result["error"].lower()
+    assert result["success"] is True
+    assert result["archived_count"] >= 3  # may include auto-created system message
+    # Verify only 2 messages remain
+    msgs = await backend.get_messages("condense-ch", limit=100)
+    assert len(msgs) == 2
 
 
 # =====================================================================
@@ -236,40 +242,64 @@ async def test_get_mentions(backend: LiteBackend):
 
 
 # =====================================================================
-# Session tests (lite mode stubs)
+# Session tests
 # =====================================================================
 
 @pytest.mark.asyncio
-async def test_start_session_lite_mode(backend: LiteBackend):
+async def test_start_session_creates_channel_and_routes(backend: LiteBackend):
     await backend.create_channel("session-ch", description="Session test")
     result = await backend.start_session("session-ch", ["test_agent"], "Discuss X")
     assert result is not None
     assert result["success"] is True
-    assert result["status"] == "lite_mode"
+    assert result["status"] == "active"
+    assert "session_id" in result
+    # Should have posted messages to the channel
+    msgs = await backend.get_messages("session-ch", limit=50)
+    assert len(msgs) >= 2  # system kickoff + user prompt
 
 
 @pytest.mark.asyncio
-async def test_get_session_status_lite_mode(backend: LiteBackend):
+async def test_get_session_status_after_start(backend: LiteBackend):
+    result = await backend.start_session("status-ch", ["test_agent"], "Test")
+    session_id = result["session_id"]
+    status = await backend.get_session_status(session_id)
+    assert status is not None
+    assert status["status"] == "active"
+
+
+@pytest.mark.asyncio
+async def test_get_session_status_unknown(backend: LiteBackend):
     result = await backend.get_session_status("fake-id")
     assert result is not None
-    assert result["status"] == "lite_mode"
+    assert result["status"] == "unknown"
 
 
 # =====================================================================
-# Work queue / task stubs
+# Work queue / task operations
 # =====================================================================
 
 @pytest.mark.asyncio
-async def test_work_queue_stubs(backend: LiteBackend):
-    assert await backend.get_work_queue() == []
+async def test_task_crud(backend: LiteBackend):
+    # Start empty
     assert await backend.get_task_queue() == []
-    assert await backend.get_outputs_for_review() == []
 
-    result = await backend.enqueue_work_item("Test task")
-    assert result["success"] is False
-
+    # Create a task
     result = await backend.create_task("test_agent", "Do something")
-    assert result["success"] is False
+    assert result["success"] is True
+    task_id = result["task_id"]
+
+    # List shows the task
+    tasks = await backend.get_task_queue()
+    assert len(tasks) == 1
+    assert tasks[0]["task_id"] == task_id
+
+    # Enqueue a work item
+    result = await backend.enqueue_work_item("Test work item")
+    assert result["success"] is True
+
+    # Work queue shows only mcp-triggered items
+    work = await backend.get_work_queue()
+    assert len(work) == 1
 
 
 # =====================================================================
@@ -301,13 +331,20 @@ async def test_checklist_no_path():
 
 
 # =====================================================================
-# Briefing stubs
+# Briefing
 # =====================================================================
 
 @pytest.mark.asyncio
-async def test_briefing_stubs(backend: LiteBackend):
-    result = await backend.generate_briefing()
-    assert result["success"] is False
+async def test_briefing_generates_summary(backend: LiteBackend):
+    # Post some activity first
+    await backend.post_message("general", "user", "Let's discuss the roadmap")
+    await backend.post_message("general", "test_agent", "Here's what I think...")
 
-    result = await backend.get_latest_briefing()
-    assert result is None
+    result = await backend.generate_briefing(hours=24, post_to_channel=False)
+    assert result["success"] is True
+    assert "report" in result
+    assert "summary" in result["report"]
+
+    # Latest briefing should be cached
+    latest = await backend.get_latest_briefing()
+    assert latest is not None
