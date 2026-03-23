@@ -2008,7 +2008,7 @@ async def post_settings(request: Request) -> JSONResponse:
 
     # Hot-reload channel session settings
     try:
-        from cohort.channel_bridge_v2_sessions import apply_channel_settings
+        from cohort.channel_bridge import apply_channel_settings
         apply_channel_settings(
             limit=settings.get("channel_session_limit", 5),
             warn=settings.get("channel_session_warn", 3),
