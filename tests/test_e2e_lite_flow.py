@@ -304,3 +304,222 @@ class TestLiteBackendE2E:
         assert "Message for B" not in a_content
         assert "Message for B" in b_content
         assert "Message for A" not in b_content
+
+
+# =====================================================================
+# Full agent response flow (requires Ollama)
+# =====================================================================
+
+def _ollama_available() -> bool:
+    """Check if Ollama is running and has at least one model."""
+    try:
+        import urllib.request
+        req = urllib.request.Request("http://127.0.0.1:11434/api/tags", method="GET")
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            if resp.status == 200:
+                body = json.loads(resp.read().decode("utf-8"))
+                return len(body.get("models", [])) > 0
+    except Exception:
+        pass
+    return False
+
+
+requires_ollama = pytest.mark.skipif(
+    not _ollama_available(),
+    reason="Ollama not running or no models installed",
+)
+
+
+@pytest.fixture
+def agent_data_dir(tmp_path: Path) -> Path:
+    """Data dir with a minimal test agent configured."""
+    # Data files
+    (tmp_path / "channels.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "messages.json").write_text("[]", encoding="utf-8")
+    (tmp_path / "settings.json").write_text("{}", encoding="utf-8")
+
+    # Create a test agent with a simple persona
+    agents_dir = tmp_path / "agents" / "test_responder"
+    agents_dir.mkdir(parents=True)
+    (agents_dir / "agent_config.json").write_text(json.dumps({
+        "agent_id": "test_responder",
+        "name": "Test Responder",
+        "role": "A helpful test agent",
+        "status": "active",
+        "personality": "Concise and friendly",
+        "primary_task": "Answer questions briefly",
+        "capabilities": ["chat"],
+        "domain_expertise": ["testing"],
+        "triggers": ["test"],
+        "avatar": "TR",
+        "color": "#4CAF50",
+        "group": "Test",
+        "agent_type": "specialist",
+    }), encoding="utf-8")
+    (agents_dir / "memory.json").write_text(json.dumps({
+        "working_memory": [],
+        "learned_facts": [],
+        "collaborators": {},
+    }), encoding="utf-8")
+    (agents_dir / "agent_prompt.md").write_text(
+        "You are Test Responder, a concise test agent.\n"
+        "Always respond in one short sentence.\n"
+        "Never use more than 20 words.\n",
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+class TestAgentResponseFlow:
+    """Full e2e: user message → route_mentions → LLM → agent response in channel.
+
+    Requires Ollama running with at least one model installed.
+    This tests the exact flow the VS Code extension triggers when a user
+    sends a message in a DM channel.
+    """
+
+    @requires_ollama
+    def test_dm_message_triggers_agent_response(self, agent_data_dir: Path):
+        """Post to dm-test_responder → route_mentions fires → agent responds.
+
+        This is the core flow: user sends message in extension →
+        cohort_json.py posts with mentions metadata → LiteBackend routes
+        to agent_router → Ollama generates response → response posted
+        to channel → file watcher would pick up the change.
+        """
+        from cohort.mcp.lite_backend import LiteBackend
+        import asyncio
+
+        backend = LiteBackend(
+            data_dir=agent_data_dir,
+            agents_dir=agent_data_dir / "agents",
+        )
+
+        # Post a message with mentions (simulates what the extension does)
+        result = asyncio.run(backend.post_message(
+            channel="dm-test_responder",
+            sender="user",
+            message="What is 2+2?",
+            metadata={"mentions": ["test_responder"], "response_mode": "smart"},
+        ))
+        assert result["success"] is True
+
+        # Wait for the agent router background thread to process
+        # route_mentions spawns a daemon thread that calls Ollama
+        max_wait = 60  # seconds (Ollama can be slow on first call)
+        poll_interval = 2
+        agent_responded = False
+
+        for _ in range(max_wait // poll_interval):
+            time.sleep(poll_interval)
+            msgs = asyncio.run(backend.get_messages("dm-test_responder", limit=100))
+            agent_msgs = [m for m in msgs if m.get("sender") == "test_responder"]
+            if agent_msgs:
+                agent_responded = True
+                break
+
+        assert agent_responded, (
+            "Agent did not respond within timeout. "
+            "Check that Ollama is running and has a model installed."
+        )
+
+        # Verify the response is actually in the channel
+        msgs = asyncio.run(backend.get_messages("dm-test_responder", limit=100))
+        agent_msgs = [m for m in msgs if m.get("sender") == "test_responder"]
+        assert len(agent_msgs) >= 1
+        assert len(agent_msgs[0]["content"]) > 0, "Agent response should not be empty"
+
+        # Verify the message file was actually written to disk
+        raw = json.loads((agent_data_dir / "messages.json").read_text(encoding="utf-8"))
+        disk_agent_msgs = [
+            m for m in raw
+            if m.get("sender") == "test_responder"
+            and m.get("channel_id") == "dm-test_responder"
+        ]
+        assert len(disk_agent_msgs) >= 1, "Agent response should be persisted to messages.json"
+
+    @requires_ollama
+    def test_session_with_agent_response(self, agent_data_dir: Path):
+        """Start a session → agents get routed → at least one responds."""
+        from cohort.mcp.lite_backend import LiteBackend
+        import asyncio
+
+        backend = LiteBackend(
+            data_dir=agent_data_dir,
+            agents_dir=agent_data_dir / "agents",
+        )
+
+        result = asyncio.run(backend.start_session(
+            channel="session-test",
+            agents=["test_responder"],
+            prompt="What is the meaning of testing?",
+        ))
+        assert result["success"] is True
+
+        # Wait for agent response
+        max_wait = 60
+        poll_interval = 2
+        agent_responded = False
+
+        for _ in range(max_wait // poll_interval):
+            time.sleep(poll_interval)
+            msgs = asyncio.run(backend.get_messages("session-test", limit=100))
+            agent_msgs = [m for m in msgs if m.get("sender") == "test_responder"]
+            if agent_msgs:
+                agent_responded = True
+                break
+
+        assert agent_responded, "Agent should respond in session"
+
+    @requires_ollama
+    def test_file_watcher_detects_agent_response(self, agent_data_dir: Path):
+        """Verify that messages.json mtime changes when an agent responds.
+
+        This is critical: the VS Code extension's file watcher depends on
+        the mtime changing to push new messages to the webview.
+        """
+        from cohort.mcp.lite_backend import LiteBackend
+        import asyncio
+
+        backend = LiteBackend(
+            data_dir=agent_data_dir,
+            agents_dir=agent_data_dir / "agents",
+        )
+
+        messages_path = agent_data_dir / "messages.json"
+        mtime_before = messages_path.stat().st_mtime
+
+        # Post message that triggers agent
+        asyncio.run(backend.post_message(
+            channel="dm-test_responder",
+            sender="user",
+            message="Say hello",
+            metadata={"mentions": ["test_responder"], "response_mode": "smart"},
+        ))
+
+        # mtime already changed from the user post — record it
+        time.sleep(0.1)
+        mtime_after_user = messages_path.stat().st_mtime
+        assert mtime_after_user > mtime_before, "User message should update mtime"
+
+        # Wait for agent response to further update the file
+        max_wait = 60
+        poll_interval = 2
+
+        for _ in range(max_wait // poll_interval):
+            time.sleep(poll_interval)
+            current_mtime = messages_path.stat().st_mtime
+            if current_mtime > mtime_after_user:
+                # File was modified again — agent response was written
+                raw = json.loads(messages_path.read_text(encoding="utf-8"))
+                agent_msgs = [
+                    m for m in raw
+                    if m.get("sender") == "test_responder"
+                ]
+                if agent_msgs:
+                    return  # SUCCESS
+
+        pytest.fail(
+            "messages.json mtime did not change after agent response. "
+            "File watcher would not have triggered."
+        )
