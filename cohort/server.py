@@ -816,6 +816,76 @@ async def channel_sessions(request: Request) -> JSONResponse:
     return JSONResponse(get_all_sessions_status())
 
 
+async def channel_ensure_session(request: Request) -> JSONResponse:
+    """POST /api/channel/ensure-session -- add a channel to the VS Code launch queue.
+
+    Non-blocking.  The VS Code ChannelSessionLauncher polls the launch queue
+    and spawns a terminal.  Callers should poll /api/channel/status until
+    healthy before sending the first prompt.
+
+    Expects JSON: {channel_id}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    channel_id = body.get("channel_id", "")
+    if not channel_id:
+        return JSONResponse({"error": "Missing channel_id"}, status_code=400)
+
+    from cohort.channel_bridge import _add_to_launch_queue, channel_mode_active
+    if channel_mode_active(channel_id):
+        return JSONResponse({"ok": True, "already_alive": True, "channel_id": channel_id})
+
+    _add_to_launch_queue(channel_id)
+    return JSONResponse({"ok": True, "already_alive": False, "channel_id": channel_id})
+
+
+async def channel_invoke(request: Request) -> JSONResponse:
+    """POST /api/channel/invoke -- build the full agent prompt and enqueue it.
+
+    Call this AFTER /api/channel/ensure-session and confirming the session is
+    healthy via /api/channel/status.  Bypasses the global channel_mode_enabled
+    flag -- the extension decides channel mode per-channel.
+
+    Expects JSON: {agent_id, channel_id, message, thread_id?, project_path?}
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    agent_id = body.get("agent_id", "")
+    channel_id = body.get("channel_id", "")
+    message = body.get("message", "")
+    thread_id = body.get("thread_id")
+    project_path = body.get("project_path")
+
+    if not agent_id or not channel_id or not message:
+        missing = [n for n, v in [("agent_id", agent_id), ("channel_id", channel_id), ("message", message)] if not v]
+        return JSONResponse({"error": f"Missing required fields: {', '.join(missing)}"}, status_code=400)
+
+    try:
+        import threading
+        from cohort.agent_router import enqueue_agent_channel_request
+        threading.Thread(
+            target=enqueue_agent_channel_request,
+            kwargs=dict(
+                agent_id=agent_id,
+                channel_id=channel_id,
+                message=message,
+                thread_id=thread_id,
+                project_path=project_path,
+            ),
+            daemon=True,
+        ).start()
+        return JSONResponse({"ok": True, "agent_id": agent_id, "channel_id": channel_id})
+    except Exception as exc:
+        logger.exception("channel_invoke failed for %s in #%s", agent_id, channel_id)
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
 async def channel_register(request: Request) -> JSONResponse:
     """POST /api/channel/register -- register a new channel session."""
     from cohort.channel_bridge import register_channel_session
@@ -1772,18 +1842,19 @@ async def get_settings(request: Request) -> JSONResponse:
         from cohort.channel_bridge import channel_mode_active
         smartest_available = (
             check_cloud_available(settings)
-            or (_channel_mode_enabled and channel_mode_active())
+            or channel_mode_active()
             or (_dev_mode and check_claude_cli_available())
             or check_claude_cli_available()  # Handoff mode (no harvest)
         )
     except ImportError:
         pass
 
-    # Channel mode available if setting is enabled (sessions spawn on demand)
+    # Channel mode available if global setting is on OR any channel session is healthy
     channel_available = False
     try:
         from cohort.agent_router import _channel_mode_enabled
-        channel_available = bool(_channel_mode_enabled)
+        from cohort.channel_bridge import channel_mode_active
+        channel_available = bool(_channel_mode_enabled) or channel_mode_active()
     except ImportError:
         pass
 
@@ -1913,7 +1984,40 @@ async def post_settings(request: Request) -> JSONResponse:
             pass  # budget is saved as part of tier_settings below
         _save_tier_settings(tier_data)
 
+    # Channel session settings
+    if "channel_session_limit" in body:
+        val = body["channel_session_limit"]
+        if isinstance(val, int) and 1 <= val <= 20:
+            settings["channel_session_limit"] = val
+    if "channel_session_warn" in body:
+        val = body["channel_session_warn"]
+        if isinstance(val, int) and 1 <= val <= 20:
+            settings["channel_session_warn"] = val
+    if "channel_session_default" in body:
+        val = body["channel_session_default"]
+        if isinstance(val, int) and 0 <= val <= 10:
+            settings["channel_session_default"] = val
+    if "channel_idle_timeout" in body:
+        val = body["channel_idle_timeout"]
+        if isinstance(val, int) and 60 <= val <= 3600:
+            settings["channel_idle_timeout"] = val
+    if "channel_auto_launch" in body:
+        settings["channel_auto_launch"] = bool(body["channel_auto_launch"])
+
     _save_settings(settings)
+
+    # Hot-reload channel session settings
+    try:
+        from cohort.channel_bridge_v2_sessions import apply_channel_settings
+        apply_channel_settings(
+            limit=settings.get("channel_session_limit", 5),
+            warn=settings.get("channel_session_warn", 3),
+            default=settings.get("channel_session_default", 1),
+            idle_timeout=settings.get("channel_idle_timeout", 600),
+            auto_launch=settings.get("channel_auto_launch", False),
+        )
+    except ImportError:
+        pass
 
     # Hot-reload settings into agent router
     try:
@@ -6089,6 +6193,8 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
         Route("/api/channel/sessions", channel_sessions, methods=["GET"]),
+        Route("/api/channel/ensure-session", channel_ensure_session, methods=["POST"]),
+        Route("/api/channel/invoke", channel_invoke, methods=["POST"]),
         Route("/api/channel/register", channel_register, methods=["POST"]),
         Route("/api/channel/launch-queue", channel_launch_queue, methods=["GET"]),
         Route("/api/channel/launch-queue/{channel_id}/ack", channel_launch_ack, methods=["POST"]),

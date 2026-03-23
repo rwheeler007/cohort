@@ -640,6 +640,23 @@ def _emit_sync(event: str, data: dict) -> None:
         logger.debug("No event loop for emit_sync: %s", event)
 
 
+def _ensure_channel_with_toast(channel_id: str) -> bool:
+    """Call ensure_channel_session and emit a toast on fallback or failure."""
+    from cohort.channel_bridge import ensure_channel_session
+    result = ensure_channel_session(channel_id)
+    if result == "direct":
+        _emit_sync("toast", {
+            "message": f"VS Code didn't respond -- spawned channel session for #{channel_id} directly",
+            "level": "warning",
+        })
+    elif not result:
+        _emit_sync("toast", {
+            "message": f"Failed to create channel session for #{channel_id}",
+            "level": "error",
+        })
+    return bool(result)
+
+
 # =====================================================================
 # Queue management
 # =====================================================================
@@ -678,6 +695,92 @@ def queue_agent_response(
 
     logger.info("[>>] Queued %s response (priority %d) in #%s", agent_id, priority, channel_id)
     _start_queue_processor()
+
+
+def enqueue_agent_channel_request(
+    agent_id: str,
+    channel_id: str,
+    message: str,
+    thread_id: str | None = None,
+    project_path: str | None = None,
+) -> str:
+    """Build the full agent prompt and enqueue it for a channel session to claim.
+
+    Bypasses the ``_channel_mode_enabled`` global flag -- the caller (VS Code
+    extension DM handler) has already decided to use channel mode per-channel.
+    Also skips ``ensure_channel_session()`` -- the extension pre-warms the
+    session before calling this, so the session is already alive and polling.
+
+    Returns the enqueued request_id.
+    """
+    from cohort.channel_bridge import enqueue_channel_request
+
+    # Load full agent prompt with persona
+    agent_prompt: str | None = None
+    if _agent_store is not None:
+        config = _agent_store.get(agent_id)
+        if config and config.persona_text:
+            agent_prompt = config.persona_text
+    if not agent_prompt:
+        prompt_path = get_agent_prompt_path(agent_id)
+        if prompt_path:
+            try:
+                agent_prompt = prompt_path.read_text(encoding="utf-8")
+            except Exception:
+                logger.exception("[X] Failed to read prompt for %s", agent_id)
+        if not agent_prompt:
+            agent_prompt = load_persona(agent_id) or f"You are the {agent_id} agent."
+
+    # Build context blocks
+    channel_context = build_channel_context(channel_id)
+    thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
+    agent_cfg = _agent_store.get(agent_id) if _agent_store else None
+    perms = resolve_permissions(agent_id, agent_cfg, get_central_permissions())
+    tool_awareness = _build_tool_awareness(perms) if (perms and perms.allowed_tools) else ""
+    _agent_memory_block = load_agent_context(agent_id, query=message, agent_store=_agent_store)
+    _project_memory_block = load_project_memory(agent_id, project_path=project_path, query=message) if project_path else ""
+    _user_profile_block = load_user_profile_block(conversation_context=channel_context + thread_context)
+
+    full_prompt = (
+        f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
+        f"Follow this agent prompt exactly:\n\n"
+        f"---\n{agent_prompt}\n---\n\n"
+        f"{_user_profile_block}\n"
+        f"{_agent_memory_block}\n"
+        f"{_project_memory_block}\n"
+        f"{GROUNDING_RULES}\n"
+        f"{tool_awareness}"
+        f"{channel_context}"
+        f"{thread_context}"
+        f"Now respond to this message:\n{message}"
+    )
+
+    request_id = enqueue_channel_request(
+        prompt=full_prompt,
+        agent_id=agent_id,
+        channel_id=channel_id,
+        thread_id=thread_id,
+        response_mode="channel",
+    )
+    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s", request_id, agent_id, channel_id)
+
+    # Spawn a thread to collect the response and post it to the channel.
+    # enqueue_agent_channel_request returns immediately (fire-and-forget from the
+    # extension side), so nothing else is waiting to post the response.
+    def _collect_and_post() -> None:
+        from cohort.channel_bridge import await_channel_response
+        try:
+            response_content, response_metadata = await_channel_response(request_id, timeout=300.0)
+            if response_content and _chat is not None:
+                _chat.post_message(channel_id, agent_id, response_content,
+                                   metadata=response_metadata or {})
+                logger.info("[OK] Channel response posted to #%s by %s", channel_id, agent_id)
+        except Exception:
+            logger.exception("[!] Failed to collect/post channel response for %s", request_id)
+
+    threading.Thread(target=_collect_and_post, daemon=True).start()
+
+    return request_id
 
 
 def _start_queue_processor() -> None:
@@ -910,8 +1013,32 @@ def _invoke_smartest_pipeline(
         smartest_primary = get_smartest_model()
         smartest_fallback = get_smartest_fallback()
 
+        # Channel as Phase 3 primary: route through channel bridge
+        if smartest_primary == "channel" and not response_text:
+            from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+            if _ensure_channel_with_toast("smartest"):
+                try:
+                    logger.info("[>>] Smartest Phase 3 (channel/primary): %s", agent_id)
+                    request_id = enqueue_channel_request(
+                        prompt=claude_prompt,
+                        agent_id=agent_id,
+                        channel_id="smartest",
+                        response_mode="smartest",
+                    )
+                    ch_content, ch_meta = await_channel_response(
+                        request_id, timeout=RESPONSE_TIMEOUT,
+                    )
+                    if ch_content:
+                        response_text = ch_content
+                        actual_tokens_in = len(claude_prompt) // 4
+                        actual_tokens_out = len(response_text) // 4
+                        phase3_model = "claude_code_channel"
+                        logger.info("[OK] Smartest Phase 3 (channel/primary): %s", agent_id)
+                except Exception:
+                    logger.exception("[!] Smartest Phase 3 channel/primary failed for %s", agent_id)
+
         # Try local 35B model first (if configured as primary)
-        if smartest_primary not in ("cloud_api", "local") and not response_text:
+        if smartest_primary not in ("cloud_api", "local", "channel") and not response_text:
             _esc_allowed, _esc_reason = _check_escalation_rate()
             if not _esc_allowed:
                 logger.warning("[!] %s -- skipping local escalation for %s", _esc_reason, agent_id)
@@ -976,9 +1103,13 @@ def _invoke_smartest_pipeline(
                         logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
 
         # Channel mode: persistent Claude Code session via MCP Channels
-        if not response_text and _channel_mode_enabled:
-            from cohort.channel_bridge import channel_mode_active
-            if channel_mode_active():
+        # Triggers when channel_mode is globally enabled OR when tier fallback is "channel"
+        _try_channel_p3 = (
+            not response_text
+            and (smartest_fallback == "channel" or _channel_mode_enabled)
+        )
+        if _try_channel_p3:
+            if _ensure_channel_with_toast("smartest"):
                 try:
                     from cohort.channel_bridge import (
                         enqueue_channel_request,
@@ -1293,7 +1424,7 @@ def _invoke_agent_sync(item: dict) -> None:
         from cohort.channel_bridge import channel_mode_active as _ch_active
         _smartest_available = (
             check_cloud_available(_cloud_settings)
-            or (_channel_mode_enabled and _ch_active())
+            or _ch_active()
             or (_dev_mode and check_claude_cli_available())
             or check_claude_cli_available()  # Handoff mode (no harvest)
         )
@@ -1326,18 +1457,52 @@ def _invoke_agent_sync(item: dict) -> None:
                            agent_id)
             response_mode = "smarter"
 
-    # Channel mode: route through per-channel persistent Claude Code session
+    # Channel mode: route through per-channel persistent Claude Code session.
+    # Honour explicit user toggle (response_mode="channel") even when the
+    # global channel_mode setting is off -- the user picked it per-conversation.
     if response_mode == "channel" and not response_content:
-        if _channel_mode_enabled:
-            from cohort.channel_bridge import ensure_channel_session, enqueue_channel_request, await_channel_response
-            if ensure_channel_session(channel_id):
+        from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+        if _ensure_channel_with_toast(channel_id):
+            try:
+                request_id = enqueue_channel_request(
+                    prompt=full_prompt,
+                    agent_id=agent_id,
+                    channel_id=channel_id,
+                    thread_id=thread_id,
+                    response_mode="channel",
+                )
+                ch_content, ch_meta = await_channel_response(
+                    request_id, timeout=RESPONSE_TIMEOUT,
+                )
+                if ch_content:
+                    response_content = ch_content
+                    response_metadata = ch_meta or {}
+                    logger.info("[OK] Channel mode: %s in #%s", agent_id, channel_id)
+            except Exception:
+                logger.exception("[!] Channel mode failed for %s, degrading to smarter", agent_id)
+                response_mode = "smarter"
+        else:
+            logger.warning("[!] Could not start channel session for #%s, degrading to smarter", channel_id)
+            response_mode = "smarter"
+
+    # Tier-aware channel intercept: if the tier's primary model is "channel",
+    # route through the channel bridge instead of local inference.
+    # This handles smart/smarter tiers configured to use Claude Channels.
+    if not response_content and response_mode in ("smart", "smarter"):
+        from cohort.local.config import get_tier_model
+        _tier_model = get_tier_model(response_mode)
+        if _tier_model == "channel":
+            from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+            if _ensure_channel_with_toast(channel_id):
                 try:
+                    logger.info("[>>] Tier %s routed to channel for %s in #%s",
+                                response_mode, agent_id, channel_id)
                     request_id = enqueue_channel_request(
                         prompt=full_prompt,
                         agent_id=agent_id,
                         channel_id=channel_id,
                         thread_id=thread_id,
-                        response_mode="channel",
+                        response_mode=response_mode,
                     )
                     ch_content, ch_meta = await_channel_response(
                         request_id, timeout=RESPONSE_TIMEOUT,
@@ -1345,15 +1510,14 @@ def _invoke_agent_sync(item: dict) -> None:
                     if ch_content:
                         response_content = ch_content
                         response_metadata = ch_meta or {}
-                        logger.info("[OK] Channel mode: %s in #%s", agent_id, channel_id)
+                        response_metadata["pipeline"] = "channel"
+                        response_metadata["model"] = "claude_code_channel"
+                        logger.info("[OK] Tier %s channel: %s in #%s", response_mode, agent_id, channel_id)
                 except Exception:
-                    logger.exception("[!] Channel mode failed for %s, degrading to smarter", agent_id)
-                    response_mode = "smarter"
+                    logger.exception("[!] Tier %s channel failed for %s, falling back to local",
+                                     response_mode, agent_id)
             else:
-                logger.warning("[!] Could not start channel session for #%s, degrading to smarter", channel_id)
-                response_mode = "smarter"
-        else:
-            response_mode = "smarter"
+                logger.warning("[!] Could not start channel session for #%s, falling back to local", channel_id)
 
     # Standard local routing (smart / smarter modes)
     if not response_content and not _force_claude_code:
@@ -1845,7 +2009,7 @@ def route_mentions(
     # alive, bundle into a single roundtable request.  Claude orchestrates
     # the multi-round discussion internally and posts each agent's response
     # via cohort_post.
-    if len(mentions) >= 3 and _channel_mode_enabled:
+    if len(mentions) >= 3:
         from cohort.channel_bridge import channel_mode_active
         if channel_mode_active():
             _route_roundtable_to_channel(message, mentions, response_mode=response_mode)
