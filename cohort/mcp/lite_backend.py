@@ -57,6 +57,10 @@ class LiteBackend:
         self._storage = create_storage(self._data_dir)
         self._chat = ChatManager(self._storage)
 
+        # Local task store (file-backed)
+        from cohort.task_store import TaskStore
+        self._task_store = TaskStore(self._data_dir)
+
         # Resolve agents directory
         if agents_dir:
             self._agents_dir = Path(agents_dir)
@@ -163,11 +167,34 @@ class LiteBackend:
     async def condense_channel(
         self, channel: str, keep_last: int = 5,
     ) -> dict[str, Any] | None:
-        # Condensation requires LLM summarisation -- not available in lite mode.
-        return {
-            "success": False,
-            "error": "Channel condensation requires the Cohort server (LLM summarisation).",
-        }
+        try:
+            all_messages = self._chat.get_channel_messages(channel, limit=10000)
+            total = len(all_messages)
+            if total <= keep_last:
+                return {"success": True, "archived_count": 0, "message": "Nothing to condense"}
+
+            keep_ids = {m.id for m in all_messages[-keep_last:]}
+            archived_count = total - keep_last
+
+            # Remove old messages via storage
+            if hasattr(self._storage, '_read_json'):
+                # JsonFileStorage
+                raw = self._storage._read_json(self._storage._messages_path, [])
+                new = [m for m in raw if m.get("channel_id") != channel or m.get("id") in keep_ids]
+                self._storage._write_json(self._storage._messages_path, new)
+            elif hasattr(self._storage, '_conn'):
+                # SqliteStorage
+                placeholders = ",".join("?" for _ in keep_ids)
+                self._storage._conn.execute(
+                    f"DELETE FROM messages WHERE channel_id = ? AND id NOT IN ({placeholders})",
+                    [channel, *keep_ids],
+                )
+                self._storage._conn.commit()
+
+            return {"success": True, "archived_count": archived_count, "kept": keep_last}
+        except Exception as exc:
+            logger.debug("[!] lite backend: condense_channel error - %s", exc)
+            return {"success": False, "error": str(exc)}
 
     # -- agents -------------------------------------------------------------
 
@@ -342,23 +369,60 @@ class LiteBackend:
         prompt: str,
         sender: str = "claude_code",
     ) -> dict[str, Any] | None:
-        # Sessions with live agent routing require the server.
-        # In lite mode, post the prompt and return a stub session.
         try:
-            await self.post_message(channel, sender, prompt)
-            session_id = str(uuid.uuid4())[:8]
+            session_id = f"s_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+
+            # Auto-create channel if needed
+            if self._chat.get_channel(channel) is None:
+                self._chat.create_channel(name=channel, description=prompt[:100])
+
+            # Post system kickoff message
+            participants_list = ", ".join(f"@{a}" for a in agents)
+            self._chat.post_message(
+                channel_id=channel,
+                sender="system",
+                content=(
+                    f"[SESSION] Discussion started: **{prompt[:200]}**\n\n"
+                    f"**Participants**: {participants_list}\n"
+                    f"**Session ID**: `{session_id}`"
+                ),
+                message_type="system",
+            )
+
+            # Post the user's prompt
+            msg = self._chat.post_message(
+                channel_id=channel,
+                sender=sender,
+                content=prompt,
+                metadata={"mentions": agents, "session_id": session_id},
+            )
+
+            # Track session locally
+            if not hasattr(self, '_sessions'):
+                self._sessions: dict[str, dict[str, Any]] = {}
+            self._sessions[session_id] = {
+                "session_id": session_id,
+                "channel_id": channel,
+                "agents": agents,
+                "status": "active",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+
+            # Route mentions to agents for responses
+            if agents and self._ensure_router():
+                from cohort.agent_router import route_mentions
+                route_mentions(msg, agents, response_mode="smarter")
+
             return {
                 "success": True,
                 "session_id": session_id,
-                "status": "lite_mode",
-                "message": (
-                    "Session created in lite mode. Agent responses require "
-                    "the Cohort server for live routing."
-                ),
+                "channel_id": channel,
+                "status": "active",
+                "participants": agents,
             }
         except Exception as exc:
             logger.debug("[!] lite backend: start_session error - %s", exc)
-            return None
+            return {"success": False, "error": str(exc)}
 
     # Deprecated alias
     start_roundtable = start_session
@@ -366,10 +430,12 @@ class LiteBackend:
     async def get_session_status(
         self, session_id: str,
     ) -> dict[str, Any] | None:
+        if hasattr(self, '_sessions') and session_id in self._sessions:
+            return self._sessions[session_id]
         return {
             "session_id": session_id,
-            "status": "lite_mode",
-            "message": "Session status tracking requires the Cohort server.",
+            "status": "unknown",
+            "message": "Session not found in local store.",
         }
 
     # Deprecated alias
@@ -401,11 +467,19 @@ class LiteBackend:
     async def get_task_queue(
         self, status: str | None = None,
     ) -> list[dict[str, Any]] | None:
-        # Task queue requires the server's TaskStore integration.
-        return []
+        try:
+            return self._task_store.list_tasks(status_filter=status)
+        except Exception as exc:
+            logger.debug("[!] lite backend: get_task_queue error - %s", exc)
+            return []
 
     async def get_outputs_for_review(self) -> list[dict[str, Any]] | None:
-        return []
+        try:
+            tasks = self._task_store.list_tasks(status_filter="complete")
+            return [t for t in tasks if t.get("output")]
+        except Exception as exc:
+            logger.debug("[!] lite backend: get_outputs_for_review error - %s", exc)
+            return []
 
     async def create_task(
         self,
@@ -417,17 +491,38 @@ class LiteBackend:
         tool: str | None = None,
         success_criteria: str | None = None,
     ) -> dict[str, Any] | None:
-        return {
-            "success": False,
-            "error": "Task creation requires the Cohort server.",
-        }
+        try:
+            action = None
+            outcome = None
+            if tool:
+                action = {"tool": tool, "tool_ref": None, "parameters": {}}
+            if success_criteria:
+                outcome = {"type": "report", "success_criteria": success_criteria,
+                           "artifact_ref": None, "verified": False}
+            task = self._task_store.create_task(
+                agent_id=agent_id,
+                description=description,
+                priority=priority,
+                action=action,
+                outcome=outcome,
+            )
+            return {"success": True, **task} if task else {"success": False, "error": "Task creation failed"}
+        except Exception as exc:
+            logger.debug("[!] lite backend: create_task error - %s", exc)
+            return {"success": False, "error": str(exc)}
 
-    # -- work queue ---------------------------------------------------------
+    # -- work queue (uses task store with work-item semantics) ---------------
 
     async def get_work_queue(
         self, status: str | None = None,
     ) -> list[dict[str, Any]] | None:
-        return []
+        # Work queue items are tasks with trigger_type="mcp"
+        try:
+            tasks = self._task_store.list_tasks(status_filter=status)
+            return [t for t in tasks if t.get("trigger_type") == "mcp"]
+        except Exception as exc:
+            logger.debug("[!] lite backend: get_work_queue error - %s", exc)
+            return []
 
     async def enqueue_work_item(
         self,
@@ -437,16 +532,30 @@ class LiteBackend:
         agent_id: str | None = None,
         depends_on: list[str] | None = None,
     ) -> dict[str, Any] | None:
-        return {
-            "success": False,
-            "error": "Work queue requires the Cohort server.",
-        }
+        try:
+            task = self._task_store.create_task(
+                agent_id=agent_id or "",
+                description=description,
+                priority=priority,
+                trigger_type="mcp",
+            )
+            return {"success": True, "item_id": task.get("task_id", "")} if task else {"success": False}
+        except Exception as exc:
+            logger.debug("[!] lite backend: enqueue_work_item error - %s", exc)
+            return {"success": False, "error": str(exc)}
 
     async def claim_work_item(self) -> dict[str, Any] | None:
-        return {
-            "success": False,
-            "error": "Work queue requires the Cohort server.",
-        }
+        try:
+            tasks = self._task_store.list_tasks(status_filter="assigned")
+            mcp_tasks = [t for t in tasks if t.get("trigger_type") == "mcp"]
+            if not mcp_tasks:
+                return {"success": False, "error": "No work items available"}
+            task = mcp_tasks[0]
+            updated = self._task_store.update_task(task["task_id"], status="in_progress")
+            return {"success": True, "item": updated}
+        except Exception as exc:
+            logger.debug("[!] lite backend: claim_work_item error - %s", exc)
+            return {"success": False, "error": str(exc)}
 
     async def update_work_item(
         self,
@@ -454,13 +563,22 @@ class LiteBackend:
         status: str,
         result: str | None = None,
     ) -> dict[str, Any] | None:
-        return {
-            "success": False,
-            "error": "Work queue requires the Cohort server.",
-        }
+        try:
+            if status == "complete" and result:
+                updated = self._task_store.complete_task(item_id, output={"content": result})
+            else:
+                updated = self._task_store.update_task(item_id, status=status)
+            return {"success": True, "item": updated}
+        except Exception as exc:
+            logger.debug("[!] lite backend: update_work_item error - %s", exc)
+            return {"success": False, "error": str(exc)}
 
     async def get_work_item(self, item_id: str) -> dict[str, Any] | None:
-        return None
+        try:
+            tasks = self._task_store.list_tasks()
+            return next((t for t in tasks if t.get("task_id") == item_id), None)
+        except Exception:
+            return None
 
     # -- briefing -----------------------------------------------------------
 
@@ -470,13 +588,101 @@ class LiteBackend:
         post_to_channel: bool = True,
         channel: str = "daily-digest",
     ) -> dict[str, Any] | None:
-        return {
-            "success": False,
-            "error": "Briefing generation requires the Cohort server (LLM summarisation).",
-        }
+        try:
+            # Gather recent messages across all channels
+            cutoff = datetime.now(timezone.utc).timestamp() - (hours * 3600)
+            all_activity: list[dict[str, Any]] = []
+            for ch in self._chat.list_channels():
+                msgs = self._chat.get_channel_messages(ch.id, limit=200)
+                for m in msgs:
+                    try:
+                        ts = datetime.fromisoformat(m.timestamp.replace("Z", "+00:00")).timestamp()
+                    except Exception:
+                        continue
+                    if ts >= cutoff:
+                        all_activity.append({
+                            "channel": ch.id,
+                            "sender": m.sender,
+                            "content": m.content[:300],
+                            "timestamp": m.timestamp,
+                        })
+
+            if not all_activity:
+                return {"success": True, "report": {"summary": "No activity in the last {} hours.".format(hours)}}
+
+            # Build a prompt for Ollama
+            activity_text = "\n".join(
+                f"[{a['channel']}] {a['sender']}: {a['content']}"
+                for a in all_activity[:50]  # Cap to avoid huge prompts
+            )
+            system_prompt = (
+                "You are an executive briefing assistant. Summarize the following team activity "
+                "into a concise briefing with sections: Key Decisions, Active Discussions, "
+                "Action Items, and Blockers. Be brief and actionable."
+            )
+            user_prompt = f"Team activity from the last {hours} hours:\n\n{activity_text}"
+
+            # Call Ollama
+            try:
+                from cohort.local.ollama import OllamaClient
+                client = OllamaClient(timeout=60)
+                if not client.health_check():
+                    # Fallback: simple activity summary without LLM
+                    summary = self._simple_briefing(all_activity, hours)
+                    report = {"summary": summary, "generated_at": datetime.now(timezone.utc).isoformat()}
+                else:
+                    available = client.list_models()
+                    model = next(
+                        (m for m in ["gemma3:12b", "qwen2.5:14b", "llama3.1:8b", "mistral:7b"]
+                         if m in available),
+                        available[0] if available else None,
+                    )
+                    if not model:
+                        summary = self._simple_briefing(all_activity, hours)
+                        report = {"summary": summary, "generated_at": datetime.now(timezone.utc).isoformat()}
+                    else:
+                        result = client.generate(model=model, prompt=user_prompt, system=system_prompt)
+                        summary = result.get("response", "") if isinstance(result, dict) else str(result)
+                        report = {
+                            "summary": summary,
+                            "model": model,
+                            "activity_count": len(all_activity),
+                            "generated_at": datetime.now(timezone.utc).isoformat(),
+                        }
+            except ImportError:
+                summary = self._simple_briefing(all_activity, hours)
+                report = {"summary": summary, "generated_at": datetime.now(timezone.utc).isoformat()}
+
+            # Post to channel if requested
+            if post_to_channel:
+                if self._chat.get_channel(channel) is None:
+                    self._chat.create_channel(name=channel, description="Daily briefings")
+                self._chat.post_message(
+                    channel_id=channel,
+                    sender="system",
+                    content=f"**Executive Briefing** ({hours}h)\n\n{report['summary']}",
+                    message_type="system",
+                )
+
+            self._latest_briefing = report
+            return {"success": True, "report": report}
+        except Exception as exc:
+            logger.debug("[!] lite backend: generate_briefing error - %s", exc)
+            return {"success": False, "error": str(exc)}
+
+    def _simple_briefing(self, activity: list[dict[str, Any]], hours: int) -> str:
+        """Generate a simple activity summary without LLM."""
+        channels = set(a["channel"] for a in activity)
+        senders = set(a["sender"] for a in activity)
+        return (
+            f"**Activity Summary** (last {hours}h)\n\n"
+            f"- **{len(activity)}** messages across **{len(channels)}** channels\n"
+            f"- **Active participants**: {', '.join(sorted(senders))}\n"
+            f"- **Active channels**: {', '.join(sorted(channels))}\n"
+        )
 
     async def get_latest_briefing(self) -> dict[str, Any] | None:
-        return None
+        return getattr(self, '_latest_briefing', None)
 
     # -- checklist (file-based) ---------------------------------------------
 
