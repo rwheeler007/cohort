@@ -3220,6 +3220,7 @@ def _check_tool_readiness(service_id: str) -> dict[str, Any]:
     # Built-in tools: always up if the server is running
     BUILTIN_TOOLS = {
         "document_processor", "website_creator", "project_manager",
+        "hardware_monitor",
     }
     if service_id in BUILTIN_TOOLS:
         return {"status": "up", "detail": "Built-in feature"}
@@ -3298,6 +3299,12 @@ def _check_tool_readiness(service_id: str) -> dict[str, Any]:
             },
         }
         return result
+
+    # If the tool exists in the tools config but has no specific check,
+    # treat it as a built-in feature that's always available.
+    tools_cfg = _load_tools_config()
+    if service_id in tools_cfg.get("tools", []):
+        return {"status": "up", "detail": "Built-in feature"}
 
     return {"status": "unknown", "detail": "Unknown tool"}
 
@@ -6383,6 +6390,14 @@ def create_app(data_dir: str = "data") -> Starlette:
         if _scheduler is not None:
             _scheduler.start()
             logger.info("[OK] Task scheduler started")
+
+        # Run initial health checks so the Health Monitor has data immediately
+        try:
+            from cohort.api import run_service_checks
+            await asyncio.get_event_loop().run_in_executor(None, run_service_checks)
+            logger.info("[OK] Initial health checks completed")
+        except Exception as exc:
+            logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
 
     starlette_app = Starlette(
         routes=routes,
