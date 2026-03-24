@@ -1,0 +1,19 @@
+{
+  "channels": [
+    {
+      "channel_id": "cc-t",
+      "auto_launch": false,
+      "added_at": "2026-03-23T09:32:12.598Z"
+    },
+    {
+      "channel_id": "cc-tester1",
+      "auto_launch": false,
+      "added_at": "2026-03-23T09:49:11.331Z"
+    },
+    {
+      "channel_id": "dm-analytics_agent-13",
+      "auto_launch": false,
+      "added_at": "2026-03-23T10:04:16.129Z"
+    }
+  ]
+}

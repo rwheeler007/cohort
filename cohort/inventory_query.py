@@ -1,12 +1,11 @@
-"""Inventory query — LLM-scored relevance matching against the ecosystem inventory.
+"""Inventory query — relevance matching against the ecosystem inventory.
 
-Used by both:
-    - agent_router.py  (chat prompt injection)
-    - SMACK's enrich_prior_art()  (code queue enrichment, via /api/inventory)
-
-The LLM reads the inventory entries and the user's message/task description,
-then picks the top 3 relevant capabilities. This scales better than keyword
-matching because it handles synonyms and conceptual similarity.
+Two scoring modes:
+    - **Fast** (default for chat): keyword overlap scoring in Python.
+      Zero latency, no model needed. Used by agent_router.py.
+    - **LLM** (opt-in): sends inventory + query to local model for semantic
+      matching. Used by code queue enrichment (which already budgets for
+      an LLM call). Callers opt in via use_llm=True.
 
 Budget: 300 tokens (~1200 chars) for the output block.
 """

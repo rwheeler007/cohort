@@ -120,12 +120,16 @@ class CohortClient:
         return None
 
     async def post_message(
-        self, channel: str, sender: str, message: str
+        self, channel: str, sender: str, message: str,
+        metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
+        body: dict[str, Any] = {"channel": channel, "sender": sender, "message": message}
+        if metadata:
+            body["metadata"] = metadata
         return await _request(
             "POST",
             f"{self.base_url}/api/send",
-            json_body={"channel": channel, "sender": sender, "message": message},
+            json_body=body,
         )
 
     async def condense_channel(

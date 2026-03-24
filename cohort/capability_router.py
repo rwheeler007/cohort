@@ -37,11 +37,76 @@ _STOP_WORDS: frozenset[str] = frozenset(
     "our their me him us them".split()
 )
 
+# =====================================================================
+# Synonym map for query expansion
+# =====================================================================
 
-def _extract_keywords(text: str) -> list[str]:
-    """Extract meaningful keywords from text."""
+SYNONYM_MAP: dict[str, list[str]] = {
+    "api": ["endpoint", "rest", "http", "route", "server", "graphql"],
+    "database": ["db", "sql", "schema", "migration", "query", "postgres", "sqlite"],
+    "frontend": ["ui", "react", "css", "html", "component", "browser", "dom"],
+    "backend": ["server", "api", "endpoint", "service", "microservice"],
+    "test": ["spec", "unittest", "pytest", "coverage", "assert", "qa"],
+    "deploy": ["ci", "cd", "pipeline", "release", "ship", "docker", "kubernetes"],
+    "security": ["auth", "authentication", "authorization", "vulnerability", "crypto", "token"],
+    "python": ["pip", "pytest", "django", "flask", "fastapi", "venv"],
+    "javascript": ["js", "node", "npm", "typescript", "react", "vue"],
+    "refactor": ["restructure", "reorganize", "cleanup", "simplify", "modernize"],
+    "performance": ["optimize", "speed", "latency", "cache", "profiling", "slow"],
+    "documentation": ["docs", "readme", "docstring", "changelog", "wiki"],
+    "debug": ["fix", "bug", "error", "issue", "crash", "traceback", "exception"],
+    "infrastructure": ["devops", "cloud", "aws", "terraform", "monitoring", "logging"],
+    "architecture": ["design", "structure", "pattern", "module", "system"],
+    "orchestrate": ["coordinate", "delegate", "workflow", "route", "dispatch"],
+}
+
+# Build reverse lookup: synonym -> canonical term
+_REVERSE_SYNONYMS: dict[str, str] = {}
+for _canonical, _syns in SYNONYM_MAP.items():
+    for _syn in _syns:
+        if _syn not in _REVERSE_SYNONYMS:
+            _REVERSE_SYNONYMS[_syn] = _canonical
+
+
+def expand_keywords(keywords: list[str]) -> list[str]:
+    """Expand keywords with synonyms from the synonym map.
+
+    For each keyword, adds synonyms if the keyword is a canonical term,
+    or adds the canonical term if the keyword is a known synonym.
+    Returns a deduplicated list preserving original order.
+    """
+    seen: set[str] = set()
+    expanded: list[str] = []
+    for kw in keywords:
+        if kw not in seen:
+            seen.add(kw)
+            expanded.append(kw)
+        # Forward: keyword is a canonical term -> add its synonyms
+        if kw in SYNONYM_MAP:
+            for syn in SYNONYM_MAP[kw]:
+                if syn not in seen:
+                    seen.add(syn)
+                    expanded.append(syn)
+        # Reverse: keyword is a synonym -> add canonical term
+        if kw in _REVERSE_SYNONYMS:
+            canonical = _REVERSE_SYNONYMS[kw]
+            if canonical not in seen:
+                seen.add(canonical)
+                expanded.append(canonical)
+    return expanded
+
+
+def _extract_keywords(text: str, *, expand: bool = True) -> list[str]:
+    """Extract meaningful keywords from text.
+
+    When *expand* is True (the default), keywords are expanded with
+    synonyms from :data:`SYNONYM_MAP` for broader matching.
+    """
     words = re.findall(r"\b[a-z0-9_.]+\b", text.lower())
-    return [w for w in words if w not in _STOP_WORDS and len(w) > 2]
+    keywords = [w for w in words if w not in _STOP_WORDS and len(w) > 2]
+    if expand:
+        keywords = expand_keywords(keywords)
+    return keywords
 
 
 # =====================================================================
@@ -51,6 +116,8 @@ def _extract_keywords(text: str) -> list[str]:
 def score_agent_for_topic(
     agent: AgentConfig,
     topic_keywords: list[str],
+    *,
+    embedding_cache: Any | None = None,
 ) -> float:
     """Score how well an agent matches a set of topic keywords (0.0-1.0).
 
@@ -59,31 +126,55 @@ def score_agent_for_topic(
     - capabilities (keyword-in-phrase matches)
     - domain_expertise (keyword-in-phrase matches)
 
+    When *embedding_cache* is provided and functional, adds a semantic
+    similarity dimension (cosine similarity via embeddings) and
+    rebalances the weights to: triggers 0.30, capabilities 0.15,
+    expertise 0.10, semantic 0.45.
+
     Returns a weighted score normalized to 0.0-1.0.
     """
     if not topic_keywords or agent.status != "active":
         return 0.0
 
     topic_set = set(topic_keywords)
-    score = 0.0
 
     # Triggers: exact match (highest weight)
     trigger_set = {t.lower().strip(".") for t in agent.triggers}
     trigger_hits = len(topic_set & trigger_set)
-    if trigger_set:
-        score += 0.50 * min(trigger_hits / max(len(topic_set), 1), 1.0)
+    trigger_score = min(trigger_hits / max(len(topic_set), 1), 1.0) if trigger_set else 0.0
 
     # Capabilities: keyword-in-phrase match
     cap_text = " ".join(agent.capabilities).lower()
     cap_hits = sum(1 for kw in topic_keywords if kw in cap_text)
-    if agent.capabilities:
-        score += 0.30 * min(cap_hits / max(len(topic_set), 1), 1.0)
+    cap_score = min(cap_hits / max(len(topic_set), 1), 1.0) if agent.capabilities else 0.0
 
     # Domain expertise: keyword-in-phrase match
     exp_text = " ".join(agent.domain_expertise).lower()
     exp_hits = sum(1 for kw in topic_keywords if kw in exp_text)
-    if agent.domain_expertise:
-        score += 0.20 * min(exp_hits / max(len(topic_set), 1), 1.0)
+    exp_score = min(exp_hits / max(len(topic_set), 1), 1.0) if agent.domain_expertise else 0.0
+
+    # Try semantic scoring via embeddings
+    semantic_score = None
+    if embedding_cache is not None:
+        semantic_score = embedding_cache.semantic_score(
+            " ".join(topic_keywords), agent
+        )
+
+    if semantic_score is not None:
+        # Hybrid weights with semantic dimension
+        score = (
+            0.30 * trigger_score
+            + 0.15 * cap_score
+            + 0.10 * exp_score
+            + 0.45 * semantic_score
+        )
+    else:
+        # Original weights (no embeddings available)
+        score = (
+            0.50 * trigger_score
+            + 0.30 * cap_score
+            + 0.20 * exp_score
+        )
 
     return min(score, 1.0)
 
@@ -95,6 +186,8 @@ def find_agents_for_topic(
     min_score: float = 0.1,
     max_results: int = 8,
     prefer_type: str | None = None,
+    routing_history: Any | None = None,
+    embedding_cache: Any | None = None,
 ) -> list[tuple[AgentConfig, float]]:
     """Find agents best-qualified for a topic, ranked by capability match.
 
@@ -110,6 +203,12 @@ def find_agents_for_topic(
         Maximum number of agents to return.
     prefer_type:
         If set, agents of this type get a 0.1 bonus (e.g., "specialist").
+    routing_history:
+        Optional :class:`~cohort.routing_history.RoutingHistory` instance.
+        When provided, historical success/failure data adjusts scores.
+    embedding_cache:
+        Optional :class:`~cohort.embeddings.EmbeddingCache` instance.
+        When provided, adds semantic similarity scoring.
 
     Returns
     -------
@@ -123,7 +222,7 @@ def find_agents_for_topic(
     for agent in agents:
         if agent.status != "active":
             continue
-        s = score_agent_for_topic(agent, keywords)
+        s = score_agent_for_topic(agent, keywords, embedding_cache=embedding_cache)
 
         # Type preference bonus
         if prefer_type and agent.agent_type == prefer_type:
@@ -140,6 +239,10 @@ def find_agents_for_topic(
                 avg_skill = sum(relevant_skills) / len(relevant_skills)
                 s += 0.05 * (avg_skill / 10.0)  # up to +0.05 for skill=10
 
+        # Historical routing feedback adjustment
+        if routing_history is not None:
+            s = routing_history.adjusted_score(s, agent.agent_id, keywords)
+
         if s >= min_score:
             scored.append((agent, min(s, 1.0)))
 
@@ -152,6 +255,8 @@ def route_task(
     task_description: str,
     *,
     prefer_type: str | None = None,
+    routing_history: Any | None = None,
+    embedding_cache: Any | None = None,
 ) -> AgentConfig | None:
     """Route a task to the single best-qualified agent.
 
@@ -159,7 +264,8 @@ def route_task(
     """
     results = find_agents_for_topic(
         agents, task_description, min_score=0.15, max_results=1,
-        prefer_type=prefer_type,
+        prefer_type=prefer_type, routing_history=routing_history,
+        embedding_cache=embedding_cache,
     )
     return results[0][0] if results else None
 

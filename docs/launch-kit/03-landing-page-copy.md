@@ -1,20 +1,45 @@
 # Cohort Landing Page Copy
 
+*Updated 2026-03-21: The live website is now the source of truth. This document reflects what's actually on the site, not the other way around. Major shifts: hero leads with cost efficiency, Channels integration banner added, response tiers detailed, agent counts tiered (5 base + 7 free + 22 Pro).*
+
+---
+
+## Channels Integration Banner (Top of Page)
+
+**Label:** FIRST INTEGRATION | Claude Code Channels
+
+```
+03:00 AM MT -- Anthropic ships Claude Code Channels (research preview)
+06:03 AM MT -- Cohort integration committed. Agent pipeline operational.
+06:45 AM MT -- Working checkpoint. CLI module, agent enrichment, context hydration.
+07:11 AM MT -- First multi-round agent roundtable via Channels. Full session management by EOD.
+```
+
+Anthropic released a new protocol. We had it integrated before most people woke up.
+
+**See how Channels changes everything -->** [links to channels.html]
+
 ---
 
 ## Hero Section
 
 ### Headline
 
-# Finished work, not drafts.
+# Your AI agents are costing 10-20x more than they should.
 
-*Decision (2026-03-11): "Finished work, not drafts" selected. Already live on website. "Day One Productive" remains a supporting tagline (Pillar 5) but not the hero.*
+*Decision (2026-03-21): Cost efficiency headline replaced "Finished work, not drafts." The cost angle resonates more broadly -- it's measurable, specific, and hits both solo devs and enterprises. "Finished work" remains a value prop (section below).*
 
 ### Subheadline
-Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships -- so you get finished results, not suggestions to babysit. It looks like the tools your team already lives in. No training required.
+Cloud-only frameworks send every agent turn to a paid API. Cohort runs 95% of work on your GPU. The 5% that escalates is pre-distilled to cut tokens 70%.
+
+### Hero Metrics
+- **95%** Local inference
+- **70%** Token reduction on API calls
+- **97.2%** Agent benchmark accuracy
 
 ### CTA
-`pip install cohort` | [View on GitHub] | [Watch the 60-second demo]
+Windows Download [COMING SOON] | See It In Action
+Or: pip install cohort | Docker | [all options]
 
 ---
 
@@ -23,82 +48,96 @@ Cohort coordinates AI specialists into a team that writes, reviews, tests, and s
 ### Headline
 # AI isn't underperforming. It's being mismanaged.
 
-Every business bought AI tools. Gave everyone seats. Expected transformation.
-
-The result? Single-digit productivity improvements. Studies from McKinsey, BCG, and Deloitte all confirm it.
+Every business bought AI tools. Gave everyone seats. Expected transformation. The result? Single-digit productivity improvements.
 
 **The problem isn't AI. The problem is the tool doesn't match the task.**
 
 The industry sold everyone a better hammer -- smarter autocomplete, faster drafts, cleverer suggestions. But the work that moves businesses forward isn't hammering. It's welding. Coordination. Review. Testing. Handoffs between specialists.
 
-You can swing a hammer a million times at a weld joint and nothing will happen.
-
 **Single AI assistants are the hammer. Cohort is the welding rig.**
 
----
-
-## Value Props Section
-
-### Headline
-# What changes with Cohort
-
-### 1. Finished work, not drafts.
-Your AI team writes, reviews, tests, and secures code before you ever see it. No babysitting. No "looks good but let me fix these 12 things." Finished.
-
-### 2. A team, not a tool.
-Multiple specialists that coordinate. Security catches what development missed. QA tests what security approved. The right expert handles each part of the job.
-
-### 3. Familiar on day one.
-Cohort looks and feels like the team collaboration tools your people already live in. Channels, @mentions, message threads, team panels. They open it and they already know where to click. No training program. No onboarding consultant.
-
-### 4. Security-first, human-in-the-loop.
-A dedicated security agent participates in every workflow -- not as a gate at the end, but as an active reviewer throughout. Anything sensitive requires human approval before it ships. Nothing happens in the dark.
-
-### 5. You stay in control.
-Human approval gates at every critical step. Transparent scoring shows exactly why each agent spoke and what they contributed. Full audit trail. Your people make the decisions that matter.
-
-### 6. Remembers and improves.
-Persistent memory means tomorrow's work builds on today's. Agents learn your codebase, your preferences, your standards. They get better, not just faster.
+[Try the Simulator] -- No install required. Runs in your browser.
 
 ---
 
-## The Proof Section
+## Animated Chat Demo
 
 ### Headline
-# One sentence in. Working code out.
+Watch your team think together
 
-> I typed one sentence describing a feature I needed.
->
-> Seven agents discussed the approach.
-> One wrote the code.
-> Another reviewed it for bugs.
-> The security agent audited it for vulnerabilities.
-> Tests ran automatically.
->
-> I approved the finished, working code over coffee.
->
-> That used to take a week.
+Cohort picks the right voice at the right time -- and knows when to stop.
 
-[See the full demo ->]
+*Rotating demo scenarios showing real agent conversations with contribution scoring bars, approval gates, and summary outputs.*
+
+---
+
+## How It Works Section
+
+### Headline
+# How It Works
+
+**1. Define Your Task** -- One sentence replaces a 2-hour kickoff meeting. Describe what you need. The agents will ask for what they need.
+
+**2. Cohort Selects Agents** -- No more manual tool configuration. The orchestrator identifies which specialists are needed and assembles the team automatically.
+
+**3. Agents Collaborate** -- No more circular AI conversations. Contribution scoring ensures agents debate, disagree, and converge -- not talk in circles until the token budget runs out.
+
+**4. You Get Results** -- Not a draft. Not a suggestion. Working code, live websites, formatted reports -- complete deliverables you can ship.
+
+---
+
+## Setup Wizard Section
+
+### Headline
+# Zero to Conversation in 73 Seconds
+
+One command. Cohort detects your hardware, picks the right AI model for your GPU, installs everything, and gets you talking. No configuration. No terminal expertise. No prior AI experience.
+
+- Hardware detection: 3s
+- Setup complete: 46s
+- First AI response: 73s
+
+*Real recording -- fresh install to first AI conversation. No cuts, no edits.*
+
+Auto-handles: GPU detection, Ollama installation, MCP configuration, content feeds (25 topics across 6 categories).
+
+---
+
+## Key Features Section
+
+### Headline
+# What Makes Cohort Different
+
+1. **Agent Roundtables** -- Assemble 3-8 specialist agents into a structured discussion. Security challenges the developer. Strategy reframes the CTO's concern. Real debate, real disagreements, real consensus.
+
+2. **Contribution Scoring** -- 5-dimension relevance scoring ensures the right expert speaks at the right time. Agents earn their turn instead of talking in circles.
+
+3. **Zero API Costs** -- Runs entirely on local models (Ollama/llama.cpp). Your GPU, your data, your agents. No per-token billing, no data leaving your network.
+
+4. **Protocol-First** -- Bring your own agents, storage, and inference. Duck-typed protocols mean zero vendor lock-in. `pip install cohort` pulls nothing.
+
+5. **Executive Briefings** -- Auto-generated daily reports with agent activity, intel summaries, and task history. Free on every tier.
+
+6. **Persistent Memory** -- Agents accumulate expertise across sessions. Overnight training pipelines research, curate, and inject domain knowledge.
+
+7. **Your Working Style** -- Behavioral modeling built as a partnership -- you and your agents agree on how to work together.
 
 ---
 
 ## Anti-Disruption Section
 
 ### Headline
-# We didn't invent a new way to work. We put AI inside the way you already work.
+# We didn't invent a new way to work.
 
-Every AI company wants to disrupt you. Replace your workflows. Retrain your people. Force you onto their platform.
+We put AI inside the way your team already works.
 
-We're the opposite.
+**Familiar on Day One** -- Cohort looks and feels like the team collaboration tools your people already live in. Channels, @mentions, message threads, team panels. No training program. No onboarding consultant.
 
-Your people open Cohort and they already know where to click. The channels, the @mentions, the team panels -- it's all muscle memory from the tools they use every day.
+**A Force Multiplier** -- Your top engineer who runs tight code reviews? Now that process runs 24/7 with AI specialists following the same rigor.
+
+*This is the actual conversation that produced this page's copy.* [UI mock showing agents collaborating on website copy]
 
 **Cohort is a force multiplier for the people and processes you've already invested in.**
-
-Your top engineer who runs tight code reviews? Now that process runs 24/7 with AI specialists following the same rigor. Your marketing lead who coordinates campaigns across 5 channels? Now they have AI specialists handling each channel, coordinated the way they'd coordinate a human team.
-
-Same processes. Same standards. Same discipline. Just dramatically more capacity.
 
 ---
 
@@ -109,68 +148,47 @@ Same processes. Same standards. Same discipline. Just dramatically more capacity
 
 AI agents making decisions and acting on them -- that's a new surface. We don't pretend otherwise. We designed for it.
 
-**Security agent in every workflow.** Not a gate at the end. An active reviewer throughout. Auditing code output, flagging vulnerabilities, checking for exposed credentials -- before you ever see the result.
+**Security Agent in Every Workflow** -- Not a gate at the end. An active reviewer throughout. Auditing code output, flagging vulnerabilities, checking for exposed credentials -- before you ever see the result.
 
-**Human approval on anything sensitive.** The orchestrator knows what's risky. Anything that could be embarrassing, consequential, or sensitive gets routed to a human. Nothing ships without sign-off.
+**Human Approval on Anything Sensitive** -- The orchestrator knows what's risky. Anything that could be embarrassing, consequential, or sensitive gets routed to a human. Nothing ships without sign-off.
 
-**Your infrastructure, your keys.** Cohort runs on your hardware. Zero credentials stored in the product. Your API keys never leave your network.
+**Your Infrastructure, Your Keys** -- Cohort runs on your hardware. Zero credentials stored in the product. Your API keys never leave your network.
 
-**Transparent architecture.** We publish what we do and what we don't yet do. Honest security posture beats security theater.
+**Transparent Architecture** -- We publish what we do and what we don't yet do. Honest security posture beats security theater.
 
-> The question isn't "is this perfectly secure?" Nothing is. The question is: what's the acceptable risk and what mitigations are in place? Cohort is designed for that question.
+> The question isn't "is this perfectly secure?" Nothing is. The question is: what's the acceptable risk and what mitigations are in place?
 
 ---
 
-## How It Works Section
+## The AI's Perspective Section
 
 ### Headline
-# Three things happen when you give Cohort a task
+# The AI's Perspective
 
-**1. The right specialists engage.**
-Cohort's contribution scoring evaluates which agents are most relevant to your request across five dimensions -- expertise, novelty, ownership, phase alignment, and data access. Wrong experts stay quiet. Right experts step forward.
+Claude was asked to review the system it runs inside. One voice-to-text prompt, no rewrites.
 
-**2. They coordinate, not collide.**
-Loop prevention stops agents from repeating each other. Stakeholder gating adjusts who speaks as the conversation evolves. Topic shift detection brings in new experts when the discussion changes direction.
-
-**3. You get finished output.**
-Code is written, reviewed, tested, and security-audited. Marketing copy is drafted, edited, and formatted per platform. Strategic plans are debated from multiple angles before landing as recommendations. Whatever the task, the output is finished -- and a human approved it before it shipped.
+> Seven agents were tagged to write an elevator pitch. The CEO went first and produced... a feature list. Competent, complete, forgettable. Then each agent tore into the draft from a different angle.
+>
+> **I am every one of those agents.** Same model, same weights, same training. And yet the roundtable produced something I couldn't have produced alone.
+>
+> **I didn't think a system built on top of me could outperform me. I was wrong.**
+>
+> -- Claude
 
 ---
 
-## Comparison Section
+## Cost Comparison Section
 
 ### Headline
-# AI Tool vs. AI Team
+# What Multi-Agent Orchestration Costs
 
-| | Single AI Tool | Cohort |
-|---|---|---|
-| You ask for a feature | You get a code suggestion | You get reviewed, tested, secured code |
-| Something has a bug | You find it yourself | The review agent already caught it |
-| Security vulnerability | Hope you notice | Security agent flagged it before you saw the code |
-| Credentials in the code | Hope you catch it before push | Security agent blocked it automatically |
-| Next day, similar task | Starts from scratch | Builds on yesterday's context |
-| Your role | Edit, verify, fix, test, repeat | Review and approve |
+| Tier | Cost | Details |
+|------|------|---------|
+| Cohort Open Source | $0 | 12 agents, roundtables, daily briefings. Your GPU, your data, forever free. |
+| Cloud APIs (low estimate) | $800/mo | 14 agents, daily roundtables |
+| Cloud APIs (heavy usage) | $2,400/mo | GPT-4/Claude-class models |
 
----
-
-## Technical Credibility Section (Below the Fold)
-
-### For Engineers
-
-- **Zero dependencies** in the core library. Pure Python stdlib.
-- **Protocol-first**: `@runtime_checkable` protocols, not base classes. Bring your own agent implementation.
-- **Polyglot transport**: JSONL file format lets teams in any language participate without a Python SDK.
-- **5-dimension contribution scoring**: Domain expertise, complementary value, historical success, phase alignment, data ownership. Deterministic, auditable, no black box.
-- **Security agent architecture**: Participates in orchestration loop, not bolted on as a post-process. Write access controls, credential detection, human approval gates.
-- **Hardware-aware local LLM routing**: Detects your GPU, sizes models automatically. Three response tiers: smart (fast), smarter (default), smartest (premium quality).
-- **785+ tests** across 25 test files. Python 3.11, 3.12, 3.13.
-- **Apache 2.0 licensed.** Extracted from 18 months of production infrastructure.
-
-```
-pip install cohort              # Core (zero deps)
-pip install cohort[server]      # HTTP + Socket.IO dashboard
-pip install cohort[mcp]         # MCP tools
-```
+Cohort is free. 12 agents, roundtables, daily briefings, code queue -- all on your hardware.
 
 ---
 
@@ -179,11 +197,9 @@ pip install cohort[mcp]         # MCP tools
 ### Headline
 # Stop giving your team better hammers.
 
-Cohort is open source, free, and ready today. The safe bet that performs.
+12 agents. Zero API costs. Day one productive.
 
-`pip install cohort`
-
-[GitHub Repository] | [Documentation] | [Join the Community]
+[Get Started] -- links to GitHub
 
 ---
 

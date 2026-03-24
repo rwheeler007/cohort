@@ -1,0 +1,3 @@
+# Cohort runtime data — project-specific, do not commit
+data/
+server.pid

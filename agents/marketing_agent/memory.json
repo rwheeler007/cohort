@@ -115,5 +115,6 @@
     }
   ],
   "learning_history": [],
-  "archive_history": []
+  "archive_history": [],
+  "active_decisions": []
 }

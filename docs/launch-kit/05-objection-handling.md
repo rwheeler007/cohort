@@ -46,7 +46,7 @@ For sales conversations, community questions, HN comments, and support interacti
 > Those are frameworks for building agent pipelines. Cohort is the coordination layer that manages who speaks, prevents loops, and scores contributions. Also: zero dependencies, extracted from production, not built from theory.
 
 **Response (detailed):**
-> CrewAI, AutoGen, and LangGraph are excellent tools for defining agent tasks and execution flows. Cohort does something different: it manages the conversation dynamics between agents. Who should speak next? Is this agent repeating what was already said? Has the topic shifted and should new specialists engage? These are coordination problems, not pipeline problems. You could use Cohort alongside those frameworks. The other key difference: Cohort was extracted from 18 months of production use, not designed from first principles. The patterns come from what actually worked.
+> CrewAI, AutoGen, and LangGraph are excellent tools for defining agent tasks and execution flows. Cohort does something different: it manages the conversation dynamics between agents. Who should speak next? Is this agent repeating what was already said? Has the topic shifted and should new specialists engage? These are coordination problems, not pipeline problems. You could use Cohort alongside those frameworks. The other key difference: Cohort was extracted from months of daily production use, not designed from first principles. The patterns come from what actually worked.
 
 **Emerging competitors to be aware of (as of March 2026):**
 - **Microsoft Agent Framework** -- AutoGen + Semantic Kernel merger. Hit RC in Feb 2026, GA targeted end of Q1. Enterprise play with A2A, MCP, AG-UI protocols. Heavy (.NET + Python), Azure-oriented. Response: "Enterprise-first, heavy integration surface. Cohort is zero-dep and running today."
@@ -82,10 +82,10 @@ For sales conversations, community questions, HN comments, and support interacti
 **The gap:** They associate "open source" + "new" with "unstable."
 
 **Response (short):**
-> It was extracted FROM production. The system it came from runs agents daily and has for 18 months. Cohort is the battle-tested patterns, packaged clean. IBM-level integration safety, startup-level innovation speed.
+> It was extracted FROM production. The system it came from runs agents daily and has since November 2025. Cohort is the battle-tested patterns, packaged clean. IBM-level integration safety, startup-level innovation speed.
 
 **Response (detailed):**
-> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily for 18 months. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 785+ tests across 25 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
+> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily since November 2025. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 785+ tests across 25 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
 
 **Never say:** "It's totally production ready for enterprise" (be honest about version maturity).
 

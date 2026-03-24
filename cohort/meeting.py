@@ -67,20 +67,101 @@ PHASE_KEYWORDS: dict[str, list[str]] = {
     "DISCOVER": [
         "research", "investigate", "find", "search", "past",
         "history", "bug_fixes", "similar", "existing",
+        "explore", "understand", "analyze", "gather", "context",
     ],
     "PLAN": [
         "design", "architecture", "approach", "strategy",
         "outline", "plan", "structure",
+        "tradeoff", "option", "compare", "diagram", "propose",
     ],
     "EXECUTE": [
         "implement", "code", "write", "create", "build",
         "add", ".py", ".tsx", ".js", ".cpp", ".html",
+        "develop", "refactor", "deploy", "integrate", "commit",
     ],
     "VALIDATE": [
         "test", "review", "check", "verify", "quality",
         "validate", "compliance", "audit",
+        "coverage", "regression", "pass", "fail", "assert",
     ],
 }
+
+# Negation prefixes that negate the following phase keyword
+_NEGATION_PATTERN = re.compile(
+    r"\b(don't|dont|do not|shouldn't|should not|won't|will not|"
+    r"not yet|never|avoid|skip|no need to)\s+(\w+)",
+    re.IGNORECASE,
+)
+
+
+def _strip_negated_keywords(text: str) -> str:
+    """Remove words that follow negation phrases.
+
+    E.g., "don't implement" -> removes "implement" from consideration.
+    """
+    negated_words: set[str] = set()
+    for match in _NEGATION_PATTERN.finditer(text):
+        negated_words.add(match.group(2).lower())
+    if not negated_words:
+        return text
+    # Replace negated words with empty string
+    result = text
+    for word in negated_words:
+        result = re.sub(rf"\b{re.escape(word)}\b", "", result, flags=re.IGNORECASE)
+    return result
+
+def get_dynamic_thresholds(
+    num_participants: int = 5,
+    turn_number: int = 0,
+    max_turns: int = 20,
+) -> dict[str, float]:
+    """Compute adaptive stakeholder thresholds based on session state.
+
+    - Fewer participants -> lower thresholds (encourage participation)
+    - Late in discussion -> raise thresholds (converge toward conclusion)
+
+    Returns a dict with the same keys as :data:`STAKEHOLDER_THRESHOLDS`.
+    With default arguments, returns the same values as the static dict.
+    """
+    progress = turn_number / max(max_turns, 1)
+
+    # Base thresholds
+    active = 0.3
+    approved_silent = 0.7
+
+    # Fewer participants -> lower bar to encourage more voices
+    if num_participants < 3:
+        active -= 0.1
+        approved_silent -= 0.1
+
+    # Late in discussion -> raise bar (converge)
+    if progress > 0.6:
+        convergence_bump = (progress - 0.6) * 0.5
+        active += convergence_bump
+        approved_silent += convergence_bump
+
+    return {
+        StakeholderStatus.ACTIVE.value: max(0.1, active),
+        StakeholderStatus.APPROVED_SILENT.value: min(0.9, approved_silent),
+        StakeholderStatus.OBSERVER.value: min(0.95, max(0.1, approved_silent) + 0.1),
+        StakeholderStatus.DORMANT.value: 1.0,
+    }
+
+
+def get_threshold_for_status(
+    status: str,
+    *,
+    num_participants: int = 5,
+    turn_number: int = 0,
+    max_turns: int = 20,
+) -> float:
+    """Get the gating threshold for a specific stakeholder status.
+
+    Convenience wrapper around :func:`get_dynamic_thresholds`.
+    """
+    thresholds = get_dynamic_thresholds(num_participants, turn_number, max_turns)
+    return thresholds.get(status, 0.8)
+
 
 TOPIC_SHIFT_THRESHOLD: float = 0.3
 TOPIC_LOOKBACK_MESSAGES: int = 5
@@ -296,15 +377,40 @@ def is_directly_questioned(
 # =====================================================================
 
 def detect_current_phase(recent_messages: list[Message]) -> str:
-    """Detect workflow phase (DISCOVER/PLAN/EXECUTE/VALIDATE)."""
+    """Detect workflow phase (DISCOVER/PLAN/EXECUTE/VALIDATE).
+
+    Uses negation-aware keyword extraction and a weighted sliding
+    window where more recent messages have higher influence.
+    """
     if not recent_messages:
         return "DISCOVER"
-    all_kw: list[str] = []
-    for msg in recent_messages[-5:]:
-        all_kw.extend(extract_keywords(msg.content))
-    phase_scores: dict[str, int] = {}
-    for phase, keywords in PHASE_KEYWORDS.items():
-        phase_scores[phase] = sum(1 for kw in all_kw if kw in keywords)
+
+    last_msgs = recent_messages[-5:]
+    num_msgs = len(last_msgs)
+
+    # Weight recent messages more heavily (most recent = highest)
+    # For 5 messages: [0.1, 0.15, 0.2, 0.25, 0.3]
+    # For fewer messages, distribute proportionally
+    if num_msgs == 1:
+        weights = [1.0]
+    else:
+        step = 0.2 / max(num_msgs - 1, 1)
+        base = 1.0 / num_msgs
+        weights = [base + step * i for i in range(num_msgs)]
+        # Normalize so weights sum to 1.0
+        total_w = sum(weights)
+        weights = [w / total_w for w in weights]
+
+    phase_scores: dict[str, float] = {phase: 0.0 for phase in PHASE_KEYWORDS}
+
+    for msg, weight in zip(last_msgs, weights):
+        # Strip negated keywords before phase detection
+        cleaned = _strip_negated_keywords(msg.content)
+        kw = extract_keywords(cleaned)
+        for phase, phase_kw in PHASE_KEYWORDS.items():
+            hits = sum(1 for k in kw if k in phase_kw)
+            phase_scores[phase] += hits * weight
+
     if not any(phase_scores.values()):
         return "DISCOVER"
     return max(phase_scores.items(), key=lambda x: x[1])[0]
@@ -335,12 +441,20 @@ def calculate_historical_success(
     topic_keywords: list[str],
     *,
     agent_profiles: dict[str, Any] | None = None,
+    routing_history: Any | None = None,
 ) -> float:
     """Estimate past success on similar topics.
 
-    If *agent_profiles* is provided, the caller can supply working
-    memory entries.  Otherwise returns a neutral 0.5.
+    If *routing_history* is provided, queries the feedback loop for
+    real success data.  Falls back to *agent_profiles* working memory,
+    then to a neutral 0.5.
     """
+    # Try routing history first (real feedback data)
+    if routing_history is not None:
+        rate = routing_history.success_rate(agent_id, topic_keywords)
+        if rate is not None:
+            return rate
+
     if not agent_profiles:
         return 0.5
     profile = agent_profiles.get(agent_id)
@@ -468,6 +582,10 @@ def should_agent_speak(
     chat: ChatManager | None = None,
     agent_config: dict[str, Any] | None = None,
     use_composite_relevance: bool = False,
+    *,
+    num_participants: int | None = None,
+    turn_number: int | None = None,
+    max_turns: int | None = None,
 ) -> bool:
     """Determine if *agent_id* should respond.
 
@@ -491,6 +609,12 @@ def should_agent_speak(
     use_composite_relevance:
         If *True*, use the composite relevance matrix instead of
         basic contribution score.
+    num_participants:
+        Optional session participant count for adaptive thresholds.
+    turn_number:
+        Optional current turn for adaptive thresholds.
+    max_turns:
+        Optional max turns for adaptive thresholds.
     """
     # Explicit mention always overrides
     if f"@{agent_id}" in message.content:
@@ -504,7 +628,17 @@ def should_agent_speak(
     stakeholder_status = meeting_ctx.get("stakeholder_status", {}).get(
         agent_id, StakeholderStatus.OBSERVER.value
     )
-    threshold = STAKEHOLDER_THRESHOLDS.get(stakeholder_status, 0.8)
+
+    # Use adaptive thresholds when session state is provided
+    if num_participants is not None and turn_number is not None and max_turns is not None:
+        threshold = get_threshold_for_status(
+            stakeholder_status,
+            num_participants=num_participants,
+            turn_number=turn_number,
+            max_turns=max_turns,
+        )
+    else:
+        threshold = STAKEHOLDER_THRESHOLDS.get(stakeholder_status, 0.8)
 
     # Get recent messages
     recent_messages: list[Message] = []

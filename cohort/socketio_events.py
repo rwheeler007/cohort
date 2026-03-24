@@ -631,7 +631,7 @@ async def send_message(sid: str, data: dict) -> dict:
 
     thread_id = data.get("thread_id")
     response_mode = data.get("response_mode", "smarter")
-    if response_mode not in ("smart", "smarter", "smartest"):
+    if response_mode not in ("smart", "smarter", "smartest", "channel"):
         response_mode = "smarter"
 
     msg = _chat.post_message(

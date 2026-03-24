@@ -130,7 +130,7 @@ function fetchTierModelOptions(tierSettings) {
                 for (const sel of [primaryEl, fallbackEl]) {
                     if (!sel) continue;
                     // Remove any previously added model options (keep static ones)
-                    const staticValues = new Set(['', 'cloud_api']);
+                    const staticValues = new Set(['', 'cloud_api', 'channel']);
                     for (let i = sel.options.length - 1; i >= 0; i--) {
                         if (!staticValues.has(sel.options[i].value)) {
                             sel.remove(i);

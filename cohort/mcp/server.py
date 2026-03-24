@@ -30,7 +30,7 @@ import uuid
 from collections import Counter
 from datetime import datetime, timezone
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, ConfigDict, Field
@@ -143,6 +143,9 @@ class PostMessageInput(BaseModel):
     message: str = Field(
         ..., description="Message content (markdown supported)",
         min_length=1,
+    )
+    metadata: dict[str, Any] | None = Field(
+        default=None, description="Optional metadata (model, tokens, elapsed_seconds, etc.)",
     )
 
 
@@ -298,7 +301,7 @@ async def read_channel(params: ReadChannelInput) -> str:
 )
 async def post_message(params: PostMessageInput) -> str:
     """Post a message to a channel."""
-    result = await _client.post_message(params.channel, params.sender, params.message)
+    result = await _client.post_message(params.channel, params.sender, params.message, metadata=params.metadata)
     if result is None:
         return _error_msg(service_down=True)
     if result.get("success"):

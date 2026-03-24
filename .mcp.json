@@ -2,9 +2,33 @@
   "mcpServers": {
     "cohort-wq": {
       "command": "bun",
-      "args": ["./plugins/cohort-channel/src/index.ts"],
+      "args": [
+        "./plugins/cohort-channel/src/index.ts"
+      ],
       "env": {
         "COHORT_BASE_URL": "http://localhost:5100",
+        "POLL_INTERVAL": "5000"
+      }
+    },
+    "cohort-ch-cc-tester1": {
+      "command": "bun",
+      "args": [
+        "G:/cohort/plugins/cohort-channel/src/index.ts"
+      ],
+      "env": {
+        "COHORT_BASE_URL": "http://localhost:5100",
+        "CHANNEL_ID": "cc-tester1",
+        "POLL_INTERVAL": "5000"
+      }
+    },
+    "cohort-ch-dm-analytics_agent-13": {
+      "command": "bun",
+      "args": [
+        "G:/cohort/plugins/cohort-channel/src/index.ts"
+      ],
+      "env": {
+        "COHORT_BASE_URL": "http://127.0.0.1:5100",
+        "CHANNEL_ID": "dm-analytics_agent-13",
         "POLL_INTERVAL": "5000"
       }
     }

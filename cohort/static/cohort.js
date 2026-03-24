@@ -30,8 +30,9 @@ const state = {
     replyingTo: null,        // Message ID being replied to
 
     // Response mode: per-channel toggle (Smarter is default)
-    responseModeChannels: {},  // channel_id -> "smart" | "smarter" | "smartest"
+    responseModeChannels: {},  // channel_id -> "smart" | "smarter" | "smartest" | "channel"
     smartestAvailable: false,  // Set to true when cloud API or Claude Code CLI is available
+    channelAvailable: false,   // Set to true when channel session is healthy
 
     // Folders: { id, name, channelIds: [], open: bool }
     folders: [],
@@ -1006,8 +1007,12 @@ async function fetchTools() {
         const data = await resp.json();
         state.tools = data.tools || [];
         renderSidebarTools();
-        // Fetch health statuses in background, then re-render sidebar with dots
+        // Fetch health statuses in background, then re-render sidebar with dots.
+        // Also poll every 30s to keep dots current.
         fetchToolHealthStatuses();
+        if (!state._toolHealthTimer) {
+            state._toolHealthTimer = setInterval(fetchToolHealthStatuses, 30_000);
+        }
     } catch (err) {
         console.warn('Failed to fetch tools:', err);
     }
@@ -1999,7 +2004,16 @@ async function fetchServiceStatus(serviceId) {
     try {
         const resp = await fetch('/api/service-status/' + encodeURIComponent(serviceId));
         if (!resp.ok) return { status: 'unknown' };
-        return await resp.json();
+        const data = await resp.json();
+        // Sync sidebar cache so dots stay consistent with detail panels
+        if (data.status && state.toolHealthCache) {
+            const prev = state.toolHealthCache[serviceId];
+            if (prev !== data.status) {
+                state.toolHealthCache[serviceId] = data.status;
+                renderSidebarTools();
+            }
+        }
+        return data;
     } catch { return { status: 'unknown' }; }
 }
 
@@ -5184,9 +5198,11 @@ function toggleResponseMode() {
     if (current === 'smart') {
         next = 'smarter';
     } else if (current === 'smarter') {
-        next = state.smartestAvailable ? 'smartest' : 'smart';
+        next = state.smartestAvailable ? 'smartest' : (state.channelAvailable ? 'channel' : 'smart');
+    } else if (current === 'smartest') {
+        next = state.channelAvailable ? 'channel' : 'smart';
     } else {
-        // smartest -> smart
+        // channel -> smart
         next = 'smart';
     }
 
@@ -5203,6 +5219,7 @@ function toggleResponseMode() {
         smart: 'Smart mode -- fast responses, no thinking',
         smarter: 'Smarter mode -- thinking enabled, full reasoning',
         smartest: 'Smartest mode -- local reasoning + cloud polish',
+        channel: 'Channel mode -- Claude Code session',
     };
     showToast(toasts[next], 'info');
 }
@@ -5212,7 +5229,7 @@ function _updateResponseModeBtn() {
     if (!btn) return;
 
     const mode = _getResponseMode();
-    btn.classList.remove('smart', 'smartest');
+    btn.classList.remove('smart', 'smartest', 'channel');
 
     if (mode === 'smart') {
         btn.classList.add('smart');
@@ -5221,12 +5238,17 @@ function _updateResponseModeBtn() {
     } else if (mode === 'smartest') {
         btn.classList.add('smartest');
         btn.textContent = '[S++]';
-        btn.title = 'Smartest mode (local + cloud) -- click for Smart';
+        btn.title = 'Smartest mode (local + cloud) -- click for '
+            + (state.channelAvailable ? 'Channel' : 'Smart');
+    } else if (mode === 'channel') {
+        btn.classList.add('channel');
+        btn.textContent = '[CH]';
+        btn.title = 'Channel mode (Claude Code session) -- click for Smart';
     } else {
         // smarter (default)
         btn.textContent = '[S+]';
         btn.title = 'Smarter mode (thinking enabled) -- click for '
-            + (state.smartestAvailable ? 'Smartest' : 'Smart');
+            + (state.smartestAvailable ? 'Smartest' : (state.channelAvailable ? 'Channel' : 'Smart'));
     }
 }
 
@@ -6656,6 +6678,7 @@ function connectSocket() {
         fetch('/api/settings').then(r => r.json()).then(d => {
             state.adminMode = !!d.admin_mode;
             state.smartestAvailable = !!d.smartest_available;
+            state.channelAvailable = !!d.channel_available;
             applyUserIdentity(d.user_display_name || '', d.user_display_role || '', d.user_display_avatar || '');
         }).catch(() => {});
         showToast('Connected to Cohort', 'success');
@@ -6926,6 +6949,13 @@ function connectSocket() {
             if (data.channel_id === state.currentChannel) {
                 renderMessages();
             }
+        }
+    });
+
+    // -- Server-pushed toasts --
+    sock.on('toast', (data) => {
+        if (data && data.message) {
+            showToast(data.message, data.level || 'info');
         }
     });
 

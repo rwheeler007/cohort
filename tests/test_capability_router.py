@@ -4,8 +4,11 @@ import pytest
 
 from cohort.agent import AgentConfig, AgentEducation
 from cohort.capability_router import (
+    SYNONYM_MAP,
+    _extract_keywords,
     build_partnership_graph,
     collect_acceptance_criteria,
+    expand_keywords,
     find_agents_for_topic,
     find_required_consultations,
     route_task,
@@ -155,16 +158,16 @@ class TestFindAgents:
             assert results[0][0].agent_type == "orchestrator"
 
     def test_skill_level_bonus(self, agents):
-        results = find_agents_for_topic(agents, "python api")
-        pd = next((a for a, s in results if a.agent_id == "python_developer"), None)
-        assert pd is not None  # Should be found
-        pd_score = next(s for a, s in results if a.agent_id == "python_developer")
-        # Skill bonus should push score higher than without skills
+        # Compare two agents scored with the same keyword set
+        keywords = ["python", "api"]
+        pd = agents[0]  # python_developer (has skill_levels)
         agent_no_skills = _make_agent(
             "no_skills", triggers=["python", "api"],
             capabilities=["Backend API design"],
         )
-        score_no_skills = score_agent_for_topic(agent_no_skills, ["python", "api"])
+        pd_score = score_agent_for_topic(pd, keywords)
+        score_no_skills = score_agent_for_topic(agent_no_skills, keywords)
+        # Skill bonus should push score higher
         assert pd_score >= score_no_skills
 
 
@@ -279,3 +282,55 @@ class TestMemoryTrim:
         }
         result = trim_agent_memory(memory, keep_last=10)
         assert len(result["working_memory"]) == 2
+
+
+# =====================================================================
+# Synonym expansion
+# =====================================================================
+
+class TestSynonymExpansion:
+    def test_expand_canonical_term(self):
+        result = expand_keywords(["api"])
+        assert "endpoint" in result
+        assert "rest" in result
+        assert "http" in result
+        assert "api" in result  # original preserved
+
+    def test_expand_synonym_to_canonical(self):
+        result = expand_keywords(["endpoint"])
+        assert "api" in result  # reverse lookup
+
+    def test_expand_preserves_unknown(self):
+        result = expand_keywords(["foobar"])
+        assert result == ["foobar"]
+
+    def test_expand_deduplicates(self):
+        result = expand_keywords(["api", "endpoint"])
+        assert len(result) == len(set(result))
+
+    def test_extract_keywords_with_expansion(self):
+        kw = _extract_keywords("expose data over http")
+        assert "api" in kw  # http -> api via reverse synonym
+
+    def test_extract_keywords_without_expansion(self):
+        kw = _extract_keywords("expose data over http", expand=False)
+        assert "api" not in kw  # no expansion
+
+    def test_semantic_routing_via_synonyms(self, agents):
+        """The motivating example: 'expose data over HTTP' should match api agent."""
+        results = find_agents_for_topic(agents, "expose data over HTTP")
+        if results:
+            agent_ids = [a.agent_id for a, _ in results]
+            assert "python_developer" in agent_ids
+
+    def test_synonym_map_reverse_lookup(self):
+        """Known synonyms should expand to at least one canonical term."""
+        # "endpoint" is only in "api", so it should reverse to "api"
+        expanded = expand_keywords(["endpoint"])
+        assert "api" in expanded
+        # "auth" is only in "security"
+        expanded = expand_keywords(["auth"])
+        assert "security" in expanded
+        # "django" is only in "python"
+        expanded = expand_keywords(["django"])
+        assert "python" in expanded

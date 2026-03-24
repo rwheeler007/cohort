@@ -123,6 +123,42 @@ class OllamaClient:
         except Exception:
             return []
 
+    def embed(
+        self,
+        model: str,
+        input_text: str,
+    ) -> list[float] | None:
+        """Get embedding vector for text via Ollama /api/embed endpoint.
+
+        Args:
+            model: Embedding model name (e.g., "nomic-embed-text")
+            input_text: Text to embed
+
+        Returns:
+            List of floats (embedding vector), or None on failure.
+
+        Never raises exceptions -- returns None on any error.
+        """
+        try:
+            body = {
+                "model": model,
+                "input": input_text,
+            }
+            req = urllib.request.Request(
+                f"{self.base_url}/api/embed",
+                data=json.dumps(body).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                embeddings = data.get("embeddings", [])
+                if embeddings and len(embeddings) > 0:
+                    return embeddings[0]
+                return None
+        except Exception:
+            return None
+
     def generate(
         self,
         model: str,

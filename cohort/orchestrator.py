@@ -22,7 +22,9 @@ from cohort.meeting import (
     calculate_composite_relevance,
     calculate_contribution_score,
     calculate_keyword_overlap,
+    calculate_novelty,
     extract_keywords,
+    get_threshold_for_status,
     identify_stakeholders_for_topic,
 )
 
@@ -480,7 +482,13 @@ class Orchestrator:
         scores.sort(key=lambda x: x["score"], reverse=True)
         top = scores[0]
 
-        threshold = STAKEHOLDER_THRESHOLDS.get(top["status"], 0.5)
+        # Use adaptive thresholds based on session state
+        threshold = get_threshold_for_status(
+            top["status"],
+            num_participants=len(session.active_participants),
+            turn_number=session.current_turn,
+            max_turns=session.max_turns,
+        )
         if top["score"] < threshold:
             return None
 
@@ -558,6 +566,27 @@ class Orchestrator:
         # Check for topic shift
         self._check_topic_shift(session, message_keywords)
 
+        # Check for synthesis opportunity
+        opportunity = self.detect_synthesis_opportunity(session_id)
+        if opportunity:
+            synthesis_msg = self._build_synthesis_message(opportunity, session)
+            self.chat.post_message(
+                channel_id=session.channel_id,
+                sender="system",
+                content=synthesis_msg,
+                message_type="system",
+            )
+            # Track last synthesis turn for rate limiting
+            if not hasattr(self, "_last_synthesis_turn"):
+                self._last_synthesis_turn: dict[str, int] = {}
+            self._last_synthesis_turn[session_id] = session.current_turn
+            self._emit("synthesis_triggered", {
+                "session_id": session_id,
+                "type": opportunity["type"],
+                "reason": opportunity.get("reason", ""),
+                "turn": session.current_turn,
+            })
+
         self._emit("turn_recorded", {
             "session_id": session_id,
             "turn": asdict(turn),
@@ -597,6 +626,225 @@ class Orchestrator:
             for agent_id, status in session.active_participants.items():
                 if agent_id not in new_stakeholders and status == StakeholderStatus.ACTIVE.value:
                     session.active_participants[agent_id] = StakeholderStatus.DORMANT.value
+
+    # =========================================================================
+    # PROACTIVE SYNTHESIS
+    # =========================================================================
+
+    # Minimum turns between synthesis interventions per session
+    _SYNTHESIS_COOLDOWN = 3
+
+    # Signal words for detecting agreement/disagreement
+    _AGREEMENT_MARKERS = frozenset({
+        "agree", "correct", "exactly", "good point", "builds on",
+        "right", "yes", "absolutely", "indeed", "well said",
+    })
+    _DISAGREEMENT_MARKERS = frozenset({
+        "disagree", "however", "on the other hand", "actually",
+        "wrong", "instead", "but", "rather", "no", "incorrect",
+        "alternatively", "conversely",
+    })
+
+    def detect_synthesis_opportunity(
+        self, session_id: str,
+    ) -> dict[str, Any] | None:
+        """Detect if the discussion needs a synthesis/resolution turn.
+
+        Returns a dict with synthesis type and reason, or None if no
+        intervention is needed.
+
+        Synthesis types: "contradiction", "consensus", "stall", "divergence"
+        """
+        session = self.sessions.get(session_id)
+        if not session or session.state != SessionState.ACTIVE.value:
+            return None
+
+        # Rate limiting: don't trigger too often
+        last_synthesis = getattr(self, "_last_synthesis_turn", {})
+        last_turn = last_synthesis.get(session_id, -self._SYNTHESIS_COOLDOWN)
+        if session.current_turn - last_turn < self._SYNTHESIS_COOLDOWN:
+            return None
+
+        recent = self.chat.get_channel_messages(session.channel_id, limit=10)
+        # Filter to non-system messages from agents
+        agent_msgs = [m for m in recent if m.sender != "system"]
+        if len(agent_msgs) < 3:
+            return None
+
+        last_3 = agent_msgs[-3:]
+
+        # 1. Contradiction detection
+        contradiction = self._detect_contradiction(last_3)
+        if contradiction:
+            return contradiction
+
+        # 2. Consensus detection
+        consensus = self._detect_consensus(last_3, session)
+        if consensus:
+            return consensus
+
+        # 3. Stall detection
+        stall = self._detect_stall(last_3, recent)
+        if stall:
+            return stall
+
+        # 4. Divergence detection
+        divergence = self._detect_divergence(last_3, session)
+        if divergence:
+            return divergence
+
+        return None
+
+    def _detect_contradiction(
+        self, messages: list[Message],
+    ) -> dict[str, Any] | None:
+        """Detect disagreement between agents on the same sub-topic."""
+        disagreeing_agents: list[str] = []
+        for msg in messages:
+            text_lower = msg.content.lower()
+            if any(marker in text_lower for marker in self._DISAGREEMENT_MARKERS):
+                disagreeing_agents.append(msg.sender)
+
+        if len(set(disagreeing_agents)) >= 2:
+            # Check that they're discussing the same topic
+            kw_sets = [set(extract_keywords(m.content)) for m in messages]
+            # Pairwise overlap
+            for i in range(len(kw_sets)):
+                for j in range(i + 1, len(kw_sets)):
+                    overlap = calculate_keyword_overlap(
+                        list(kw_sets[i]), list(kw_sets[j])
+                    )
+                    if overlap > 0.2:  # same topic, different opinions
+                        return {
+                            "type": "contradiction",
+                            "agents": list(set(disagreeing_agents)),
+                            "reason": "Multiple agents expressing disagreement on overlapping topics",
+                        }
+        return None
+
+    def _detect_consensus(
+        self, messages: list[Message], session: Session,
+    ) -> dict[str, Any] | None:
+        """Detect when agents are converging on agreement."""
+        agreeing_agents: set[str] = set()
+        for msg in messages:
+            text_lower = msg.content.lower()
+            if any(marker in text_lower for marker in self._AGREEMENT_MARKERS):
+                agreeing_agents.add(msg.sender)
+
+        if len(agreeing_agents) >= 3:
+            # Check keyword overlap (are they agreeing about the same thing?)
+            kw_lists = [extract_keywords(m.content) for m in messages]
+            # Average pairwise overlap
+            overlaps = []
+            for i in range(len(kw_lists)):
+                for j in range(i + 1, len(kw_lists)):
+                    overlaps.append(calculate_keyword_overlap(kw_lists[i], kw_lists[j]))
+            avg_overlap = sum(overlaps) / len(overlaps) if overlaps else 0
+            if avg_overlap > 0.3:
+                return {
+                    "type": "consensus",
+                    "agents": list(agreeing_agents),
+                    "reason": "Multiple agents expressing agreement on shared topics",
+                }
+        return None
+
+    def _detect_stall(
+        self, last_messages: list[Message], all_recent: list[Message],
+    ) -> dict[str, Any] | None:
+        """Detect when the discussion is circling without progress."""
+        # Check novelty of each recent message against earlier ones
+        earlier = [m for m in all_recent if m not in last_messages and m.sender != "system"]
+        if not earlier:
+            return None
+
+        low_novelty_count = 0
+        for msg in last_messages:
+            novelty = calculate_novelty(msg.content, earlier)
+            if novelty < 0.3:
+                low_novelty_count += 1
+
+        if low_novelty_count >= 2:
+            # Find dormant agents who might have fresh perspective
+            return {
+                "type": "stall",
+                "reason": f"{low_novelty_count} of last 3 messages have low novelty",
+            }
+        return None
+
+    def _detect_divergence(
+        self, messages: list[Message], session: Session,
+    ) -> dict[str, Any] | None:
+        """Detect when conversation is branching away from the topic."""
+        if not session.current_topic_keywords:
+            return None
+
+        recent_kw: set[str] = set()
+        for msg in messages:
+            recent_kw.update(extract_keywords(msg.content))
+
+        overlap = calculate_keyword_overlap(
+            list(recent_kw), session.current_topic_keywords
+        )
+        if overlap < TOPIC_SHIFT_THRESHOLD:
+            # Check if there's a clear new topic or just scatter
+            if len(recent_kw) > 0:
+                return {
+                    "type": "divergence",
+                    "overlap": overlap,
+                    "reason": "Discussion drifting from original topic",
+                    "original_keywords": session.current_topic_keywords[:5],
+                }
+        return None
+
+    def _build_synthesis_message(
+        self, opportunity: dict[str, Any], session: Session,
+    ) -> str:
+        """Build a synthesis intervention message."""
+        synth_type = opportunity["type"]
+
+        if synth_type == "contradiction":
+            agents = opportunity.get("agents", [])
+            mentions = " and ".join(f"@{a}" for a in agents[:3])
+            return (
+                f"[SYNTHESIS] {mentions} appear to have differing views. "
+                f"Can you address each other's concerns directly to find alignment?"
+            )
+
+        if synth_type == "consensus":
+            return (
+                "[SYNTHESIS] It appears consensus is forming. "
+                "Should we summarize the agreed points and move to the next phase?"
+            )
+
+        if synth_type == "stall":
+            # Find agents who haven't contributed recently
+            recent_speakers = set(session.last_speakers[:3])
+            dormant = [
+                a for a in session.active_participants
+                if a not in recent_speakers
+                and session.active_participants[a] != StakeholderStatus.DORMANT.value
+            ]
+            if dormant:
+                mention = f"@{dormant[0]}"
+                return (
+                    f"[SYNTHESIS] The discussion has covered similar ground recently. "
+                    f"{mention}, do you have a different perspective to offer?"
+                )
+            return (
+                "[SYNTHESIS] The discussion appears to be circling. "
+                "Let's try to identify the key open questions and focus there."
+            )
+
+        if synth_type == "divergence":
+            original_kw = opportunity.get("original_keywords", [])
+            topic_str = ", ".join(original_kw[:3]) if original_kw else "the original topic"
+            return (
+                f"[SYNTHESIS] The conversation is branching. "
+                f"Let's refocus on {topic_str} before exploring tangents."
+            )
+
+        return "[SYNTHESIS] Let's take a moment to align on where we stand."
 
     # =========================================================================
     # GATING INTEGRATION
@@ -642,7 +890,13 @@ class Orchestrator:
             recent_messages=recent,
         )
 
-        threshold = STAKEHOLDER_THRESHOLDS.get(status, 0.5)
+        # Use adaptive thresholds based on session state
+        threshold = get_threshold_for_status(
+            status,
+            num_participants=len(session.active_participants),
+            turn_number=session.current_turn,
+            max_turns=session.max_turns,
+        )
         if score < threshold:
             return (False, f"score_{score:.2f}_below_threshold_{threshold:.2f}")
         return (True, f"score_{score:.2f}_passes_threshold_{threshold:.2f}")

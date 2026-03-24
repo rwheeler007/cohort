@@ -18,6 +18,8 @@ from cohort.meeting import (
     detect_current_phase,
     detect_topic_shift,
     extract_keywords,
+    get_dynamic_thresholds,
+    get_threshold_for_status,
     identify_stakeholders_for_topic,
     initialize_meeting_context,
     is_directly_questioned,
@@ -272,6 +274,19 @@ class TestDetectPhase:
 
     def test_empty_defaults_to_discover(self):
         assert detect_current_phase([]) == "DISCOVER"
+
+    def test_negation_overrides_keyword(self):
+        msgs = [_msg("don't implement this yet, let's plan the approach first")]
+        assert detect_current_phase(msgs) == "PLAN"
+
+    def test_recency_weighting(self):
+        # Earlier message says EXECUTE, but more recent ones say VALIDATE
+        msgs = [
+            _msg("implement the code and create the module"),
+            _msg("review and test the quality thoroughly, check coverage"),
+            _msg("validate and verify the compliance audit results"),
+        ]
+        assert detect_current_phase(msgs) == "VALIDATE"
 
 
 # =====================================================================
@@ -574,3 +589,53 @@ class TestDataOwnershipConfigOverride:
             "cohort_orchestrator", ["custom_logs"], config
         )
         assert score > 0.0
+
+
+# =====================================================================
+# Adaptive thresholds
+# =====================================================================
+
+class TestDynamicThresholds:
+    def test_defaults_match_static(self):
+        dynamic = get_dynamic_thresholds()
+        assert dynamic[StakeholderStatus.ACTIVE.value] == pytest.approx(0.3)
+        assert dynamic[StakeholderStatus.DORMANT.value] == 1.0
+
+    def test_fewer_participants_lowers_active(self):
+        normal = get_dynamic_thresholds(num_participants=5)
+        fewer = get_dynamic_thresholds(num_participants=2)
+        assert fewer[StakeholderStatus.ACTIVE.value] < normal[StakeholderStatus.ACTIVE.value]
+
+    def test_late_discussion_raises_thresholds(self):
+        early = get_dynamic_thresholds(turn_number=2, max_turns=20)
+        late = get_dynamic_thresholds(turn_number=18, max_turns=20)
+        assert late[StakeholderStatus.ACTIVE.value] > early[StakeholderStatus.ACTIVE.value]
+
+    def test_bounds_respected(self):
+        # Extreme: 1 participant, turn 0/1
+        thresholds = get_dynamic_thresholds(num_participants=1, turn_number=0, max_turns=1)
+        assert thresholds[StakeholderStatus.ACTIVE.value] >= 0.1
+        assert thresholds[StakeholderStatus.DORMANT.value] == 1.0
+        # Extreme: late convergence
+        thresholds = get_dynamic_thresholds(num_participants=10, turn_number=20, max_turns=20)
+        assert thresholds[StakeholderStatus.APPROVED_SILENT.value] <= 0.9
+
+    def test_ordering_preserved(self):
+        thresholds = get_dynamic_thresholds(num_participants=3, turn_number=10, max_turns=20)
+        vals = [
+            thresholds[s.value]
+            for s in [
+                StakeholderStatus.ACTIVE,
+                StakeholderStatus.APPROVED_SILENT,
+                StakeholderStatus.OBSERVER,
+                StakeholderStatus.DORMANT,
+            ]
+        ]
+        assert vals == sorted(vals)
+
+    def test_get_threshold_for_status(self):
+        t = get_threshold_for_status(
+            StakeholderStatus.ACTIVE.value,
+            num_participants=2, turn_number=0, max_turns=20,
+        )
+        assert t < 0.3  # lowered for few participants

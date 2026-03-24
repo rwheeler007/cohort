@@ -9,19 +9,43 @@
       "timestamp": "2026-03-04T22:46:40.403413",
       "channel": "dm-marketing_agent",
       "input": "@cohort_orchestrator  - can you get a roundtable going about this please?",
-      "response": "The Cohort server isn't currently running on port 5000, so I can't create the session via API right now. But here's what I'd set up — let me know if you want me to start the server, or if it's running on a different port:\n\n---\n\n**Roundtable Plan: AI Call Center Replacement — Strategic Analysis**\n\n**Topic:** A major Trane D2B dealer replaced their call center with AI, saving $1.1M/year. What are the outcomes, ramifications, and strategic implications?\n\n**Recommended Agents (by relevance):**\n\n| Ag"
+      "response": "The Cohort server isn't currently running on port 5000, so I can't create the session via API right now. But here's what I'd set up â€” let me know if you want me to start the server, or if it's running on a different port:\n\n---\n\n**Roundtable Plan: AI Call Center Replacement â€” Strategic Analysis**\n\n**Topic:** A major Trane D2B dealer replaced their call center with AI, saving $1.1M/year. What are the outcomes, ramifications, and strategic implications?\n\n**Recommended Agents (by relevance):**\n\n| Ag"
     },
     {
       "timestamp": "2026-03-04T23:03:08.385125",
       "channel": "dm-marketing_agent",
       "input": "@Orchestrator yes",
-      "response": "The roundtable is live. Here's what I've set up:\n\n**Session: `ai-callcenter-strategy`** (ID: `s_20260304_230243_9c00f7`)\n\n**Channel:** `#ai-callcenter-strategy` on port 5100\n\n**Participants:**\n- **marketing_agent** — competitive positioning, reinvestment strategy, data risk (already provided initial analysis)\n- **analytics_agent** — ROI modeling, TCO framework, KPI tracking (asked to lead off)\n- **content_strategy_agent** — thought leadership positioning, contractor-facing messaging\n- **campaign"
+      "response": "The roundtable is live. Here's what I've set up:\n\n**Session: `ai-callcenter-strategy`** (ID: `s_20260304_230243_9c00f7`)\n\n**Channel:** `#ai-callcenter-strategy` on port 5100\n\n**Participants:**\n- **marketing_agent** â€” competitive positioning, reinvestment strategy, data risk (already provided initial analysis)\n- **analytics_agent** â€” ROI modeling, TCO framework, KPI tracking (asked to lead off)\n- **content_strategy_agent** â€” thought leadership positioning, contractor-facing messaging\n- **campaign"
     },
     {
       "timestamp": "2026-03-05T12:10:22.252743",
       "channel": "dm-cohort_orchestrator-3",
       "input": "This is a test message for our first smartest setting so please describe the exact LLM chain of events takes place when you process this message",
       "response": "Now I have the full picture. Here's the exact LLM chain of events for the \"smartest\" response mode:\n\n---\n\nHere's the exact chain for your message in **smartest** mode:\n\n**Step 1: WebSocket Ingress**\nYour browser emits a `send_message` Socket.IO event. `socketio_events.py:send_message` receives it, persists it via `ChatManager.post_message()`, and broadcasts `new_message` to all clients.\n\n**Step 2: Mention Routing**\nSince this is a DM channel (`dm-cohort_orchestrator-3`), the handler auto-injects"
+    },
+    {
+      "timestamp": "2026-03-21T16:44:23.338074",
+      "channel": "general",
+      "input": "@cohort_orchestrator Hello, can you confirm this channel bridge is working? Just a brief reply.",
+      "response": "Yes, the channel bridge is working."
+    },
+    {
+      "timestamp": "2026-03-21T17:01:39.773889",
+      "channel": "general",
+      "input": "@cohort_orchestrator Can you confirm the channel bridge is working? Brief reply please.",
+      "response": "Yes, the channel bridge is working."
+    },
+    {
+      "timestamp": "2026-03-21T17:07:48.109075",
+      "channel": "general",
+      "input": "@cohort_orchestrator Can you confirm the channel bridge is working? Brief reply please.",
+      "response": "Yes, the channel bridge is working."
+    },
+    {
+      "timestamp": "2026-03-21T21:50:32.992398",
+      "channel": "general",
+      "input": "@cohort_orchestrator Can you confirm the channel bridge is working? Brief reply please.",
+      "response": "I lack direct access. Run /health."
     }
   ],
   "learning_history": [],

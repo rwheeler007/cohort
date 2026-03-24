@@ -42,7 +42,7 @@
 
 **For HN, dev conferences, Anthropic DevRel outreach:**
 
-> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. It manages structured agent discussions with 5-dimension contribution scoring, stakeholder gating, and topic-shift detection so agents stop talking in circles and start shipping work. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 18 months of production use. 785+ tests. Apache 2.0 licensed. `pip install cohort`.
+> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. It manages structured agent discussions with 5-dimension contribution scoring, stakeholder gating, and topic-shift detection so agents stop talking in circles and start shipping work. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 4 months of production use. 785+ tests. Apache 2.0 licensed. `pip install cohort`.
 
 ---
 
@@ -66,11 +66,11 @@
 
 ### For AI Engineers (Early Adopters)
 
-> Built from 18 months of production multi-agent infrastructure. Zero dependencies. Protocol-first, so it works with your existing agents. Security baked into the orchestration layer, not bolted on after. Not theoretical -- extracted from a system running agents daily.
+> Built from 4 months of production multi-agent infrastructure. Zero dependencies. Protocol-first, so it works with your existing agents. Security baked into the orchestration layer, not bolted on after. Not theoretical -- extracted from a system running agents daily.
 
 ### For Investors
 
-> The AI industry built individual tools because that's what was easy to build. But businesses run on teams, not individuals. Cohort is the coordination layer the industry skipped. We're disruptive in outcome -- teams ship dramatically more finished output. But non-disruptive in adoption -- works with existing workflows, existing tools, existing team structures. That combination drives adoption velocity that rip-and-replace tools can't match. 18 months of compounding production data is the moat. Zero-training UX compresses enterprise sales cycles.
+> The AI industry built individual tools because that's what was easy to build. But businesses run on teams, not individuals. Cohort is the coordination layer the industry skipped. We're disruptive in outcome -- teams ship dramatically more finished output. But non-disruptive in adoption -- works with existing workflows, existing tools, existing team structures. That combination drives adoption velocity that rip-and-replace tools can't match. 4 months of compounding production data is the moat. Zero-training UX compresses enterprise sales cycles.
 
 ### For Enterprise Procurement / CISOs
 
@@ -98,7 +98,7 @@
 
 ### "Is it production ready?"
 
-> It was extracted FROM production. The system it came from has been running agents daily for 18 months. Cohort is the battle-tested patterns, packaged as a clean library. IBM-level integration safety, startup-level innovation speed.
+> It was extracted FROM production. The system it came from has been running agents daily for 4 months. Cohort is the battle-tested patterns, packaged as a clean library. IBM-level integration safety, startup-level innovation speed.
 
 ### "What about security? AI agents seem risky."
 

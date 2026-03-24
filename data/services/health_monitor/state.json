@@ -2,11 +2,11 @@
   "paused": false,
   "target_status": {
     "service:cohort_server": {
-      "status": "healthy",
-      "ok": true,
-      "status_code": 200,
-      "response_ms": 358.5,
-      "last_checked": "2026-03-16T16:59:22.184631",
+      "status": "down",
+      "ok": false,
+      "status_code": 0,
+      "response_ms": 2322.8,
+      "last_checked": "2026-03-23T23:40:02.405590",
       "url": "http://127.0.0.1:5100/health",
       "description": "Cohort multi-agent team server (Starlette)",
       "port": 5100,
@@ -19,8 +19,8 @@
       "status": "healthy",
       "ok": true,
       "status_code": 200,
-      "response_ms": 271.6,
-      "last_checked": "2026-03-16T16:59:22.184631",
+      "response_ms": 267.8,
+      "last_checked": "2026-03-23T23:40:02.405590",
       "url": "http://127.0.0.1:11434/api/tags",
       "description": "Ollama LLM inference server (GPU 1 - pinned via CUDA_VISIBLE_DEVICES)",
       "port": 11434,
@@ -43,11 +43,11 @@
       ]
     },
     "service:comms_service": {
-      "status": "healthy",
-      "ok": true,
-      "status_code": 200,
-      "response_ms": 283.0,
-      "last_checked": "2026-03-16T16:59:22.184631",
+      "status": "down",
+      "ok": false,
+      "status_code": 0,
+      "response_ms": 2340.4,
+      "last_checked": "2026-03-23T23:40:02.405590",
       "url": "http://127.0.0.1:8001/health",
       "description": "Email, calendar, and social media communications",
       "port": 8001,
@@ -71,9 +71,31 @@
       "snoozed": false
     }
   },
-  "last_alerts": {},
-  "last_checks": {
-    "services": "2026-03-16T16:59:22.184631"
+  "last_alerts": {
+    "service:cohort_server": {
+      "timestamp": "2026-03-23T12:41:08.423429",
+      "severity": "error",
+      "message": "Service DOWN: cohort_server at http://127.0.0.1:5100/health",
+      "recovered": true,
+      "recovered_at": "2026-03-23T13:26:34.789357"
+    },
+    "service:comms_service": {
+      "timestamp": "2026-03-23T12:41:08.423429",
+      "severity": "error",
+      "message": "Service DOWN: comms_service at http://127.0.0.1:8001/health",
+      "recovered": true,
+      "recovered_at": "2026-03-23T20:40:12.851740"
+    },
+    "service:ollama": {
+      "timestamp": "2026-03-23T16:22:42.186677",
+      "severity": "error",
+      "message": "Service DOWN: ollama at http://127.0.0.1:11434/api/tags",
+      "recovered": true,
+      "recovered_at": "2026-03-23T23:40:02.405590"
+    }
   },
-  "last_updated": "2026-03-16T16:59:24.173312"
+  "last_checks": {
+    "services": "2026-03-23T23:40:02.405590"
+  },
+  "last_updated": "2026-03-23T23:40:14.072507"
 }

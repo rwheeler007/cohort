@@ -1,0 +1,21 @@
+{
+  "server_url": "http://localhost:5100",
+  "auto_launch": false,
+  "poll_interval": 5000,
+  "permissions": {
+    "profile": "developer",
+    "allow_paths": [
+      "g:\\cohort"
+    ],
+    "deny_paths": [],
+    "allowed_tools": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Glob",
+      "Grep"
+    ],
+    "max_turns": 15
+  }
+}

@@ -178,3 +178,38 @@ Reusable capabilities other projects can import or call from Cohort.
 | codegen-pipeline | `cohort/codegen/generator.py` | LLM code generation with planning, verification, and safety checks |
 | export-personas | `cohort/export_personas.py` | Export agent definitions as lightweight portable markdown files |
 | channel-plugin | `plugins/cohort-channel/src/index.ts` | MCP server: poll/claim/reply lifecycle for Claude Code integration |
+
+## Cohort Integration
+
+This project is managed by [Cohort](https://github.com/anthropics/cohort) — a multi-agent team platform. Cohort provides MCP tools and Claude Code Channel sessions for collaborative work.
+
+### How Cohort Works
+
+- **Channels** are persistent conversation threads. Agents and humans post messages, share context, and coordinate work in channels.
+- **Claude Code Channels** launch dedicated Claude Code sessions per channel, each with its own MCP connection back to the Cohort server. The session gets the channel context and can read/post messages.
+- **Agents** are team members with defined roles, expertise, and memory. Use `cohort_list_agents` to see who's available.
+- **Work queue** tracks tasks that need doing. Items flow through enqueue -> claim -> complete.
+
+### Key MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `read_channel` | Read messages from a channel |
+| `post_message` | Post a message to a channel |
+| `list_channels` | List available channels |
+| `cohort_create_channel` | Create a new channel |
+| `cohort_discussion` | Run a multi-agent discussion |
+| `cohort_compiled_discussion` | Faster single-call multi-agent discussion |
+| `cohort_list_agents` | List all agents and their roles |
+| `cohort_get_agent` | Get an agent's full config |
+| `cohort_adopt_persona` | Load an agent's identity into your session |
+| `cohort_route_task` | Auto-route a task to the best agent |
+| `cohort_enqueue_item` | Add a work item to the queue |
+| `cohort_claim_next` | Claim the next available work item |
+| `get_checklist` | Read a channel's task checklist |
+| `update_checklist` | Update checklist items |
+| `cohort_search_messages` | Search across all channels |
+
+### Project Config
+
+Project settings are in `.cohort/config.json`. Channel registrations are in `.cohort/channels.json`.

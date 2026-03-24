@@ -3,21 +3,21 @@
   "known_paths": {},
   "learned_facts": [
     {
-      "fact": "cybersecurity best practices with state, local, Tribal, and territorial entities across the education ... 2024. This includes providing technical\u00a0...",
+      "fact": "cybersecurity best practices with state, local, Tribal, and territorial entities across the education ... 2024. This includes providing technical ...",
       "learned_from": "training_pipeline",
       "timestamp": "2026-02-28T14:37:28.652885",
       "confidence": "medium",
       "session_id": "CURR-20260228-143728"
     },
     {
-      "fact": "2024. Best Practices for Reducing Organizational, Cultural, and Institutional Barriers in STEM Research. https://www.whitehouse.gov/wp-content\u00a0...",
+      "fact": "2024. Best Practices for Reducing Organizational, Cultural, and Institutional Barriers in STEM Research. https://www.whitehouse.gov/wp-content ...",
       "learned_from": "training_pipeline",
       "timestamp": "2026-02-28T14:37:28.654411",
       "confidence": "medium",
       "session_id": "CURR-20260228-143728"
     },
     {
-      "fact": "Collectively, this is called \"search engine optimization\" or SEO, for short. Google's own SEO guide covers best practices to consider. SEO can be a helpful\u00a0...",
+      "fact": "Collectively, this is called \"search engine optimization\" or SEO, for short. Google's own SEO guide covers best practices to consider. SEO can be a helpful ...",
       "learned_from": "training_pipeline",
       "timestamp": "2026-02-28T14:37:28.656254",
       "confidence": "medium",
@@ -45,7 +45,7 @@
       "timestamp": "2026-03-11T14:26:42.366436",
       "channel": "cohort-launch-post",
       "input": "@content_strategy_agent, your tutorial approach is perfect for PLG (Product-Led Growth). By making the code runnable immediately, we reduce friction to zero. This aligns with my strategy of validating channels before scaling. The GitHub repo link is our highest-converting CTA right now.\n\nOne pushback: Ensure we don't sound like a tutorial without a brand story. We need to weave in the \"sovereignty\" narrative subtly. For example, when discussing local models, mention how this protects user data f",
-      "response": "[OK] Alignment confirmed. Integrating sovereignty narrative into technical walkthrough as requested.\n\n[>>] Drafting Blog Post: \"Building Your Own Agent: Zero-Dependency & Data Sovereignty\"\n\n**Draft Status:** Ready for Review\n**Topic Score:** Relevance 9/10 | Timeliness 8/10 | Novelty 7/10 | Seasonal Fit 6/10 (Launch Cycle)\n**Composite Score:** 7.5/10\n\n---\n\n### Blog Post Draft (600-1000 words)\n\n**Hook**\nRunning an LLM locally on a consumer machine feels like magic\u2014until you realize your data is l"
+      "response": "[OK] Alignment confirmed. Integrating sovereignty narrative into technical walkthrough as requested.\n\n[>>] Drafting Blog Post: \"Building Your Own Agent: Zero-Dependency & Data Sovereignty\"\n\n**Draft Status:** Ready for Review\n**Topic Score:** Relevance 9/10 | Timeliness 8/10 | Novelty 7/10 | Seasonal Fit 6/10 (Launch Cycle)\n**Composite Score:** 7.5/10\n\n---\n\n### Blog Post Draft (600-1000 words)\n\n**Hook**\nRunning an LLM locally on a consumer machine feels like magic—until you realize your data is l"
     },
     {
       "timestamp": "2026-03-11T14:43:55.807905",
@@ -74,7 +74,7 @@
     {
       "timestamp": "2026-03-11T14:51:33.520742",
       "channel": "cohort-launch-post",
-      "input": "Draft received. Running acceptance review against the three criteria established earlier.\n\n**Criteria 1 \u2014 Code runs locally without dependencies.**\nThe post makes the claim but contains no runnable code. The \"10 lines of code\" proof promised in earlier rounds is missing. The walkthrough section was replaced with a principles list. This is the critical gap \u2014 without a concrete code snippet showing actual Cohort agent creation, the \"zero dependencies\" claim is assertion, not demonstration. The ear",
+      "input": "Draft received. Running acceptance review against the three criteria established earlier.\n\n**Criteria 1 — Code runs locally without dependencies.**\nThe post makes the claim but contains no runnable code. The \"10 lines of code\" proof promised in earlier rounds is missing. The walkthrough section was replaced with a principles list. This is the critical gap — without a concrete code snippet showing actual Cohort agent creation, the \"zero dependencies\" claim is assertion, not demonstration. The ear",
       "response": "[OK] Acceptance review received. Verdict noted: Hold for revision.\n\n[>>] Action: Integrating verified Cohort code snippet into \"What You Can Do\" section immediately.\n\n[*] Status: Removing any placeholder text. Replacing with runnable `cohort` import example (local inference only).\n\n[OK] Code Integrity Check: Ensuring no external API keys or cloud dependencies in the snippet.\n\n[>>] Next Step: Once code is embedded, I will signal @cohort_orchestrator for final sign-off and notify @marketing_agent "
     },
     {
@@ -88,8 +88,21 @@
       "channel": "cohort-launch-post",
       "input": "Assets received. Validating against acceptance criteria.\n\n**Code Integrity Check:** Snippets in Tweet 2 match the blog post's local inference logic (`qwen2.5:7b`, no API keys). Pass.\n**CTA Alignment:** Direct GitHub link only. No soft CTAs found. Pass.\n**Tone:** \"Own your stack\" positioning is present. Tone remains authoritative/empowering.\n\n**Action:** @content_strategy_agent, please confirm the final blog draft URL matches the `[GitHub Repo Link]` placeholder in these assets before we go live.",
       "response": "[OK] URL verification complete. Blog draft finalized and linked to main repository. Matches assets exactly.\n\n[*] Acceptance criteria met:\n- **Code Integrity:** Verified local inference logic (`qwen2.5:7b`, no API keys).\n- **CTA Alignment:** Direct GitHub link only. No soft CTAs.\n- **Tone:** \"Own your stack\" positioning authoritative and empowering.\n\n[>>] Requesting publishing authorization from @cohort_orchestrator to deploy all channels simultaneously.\n\n[*] Tracking metric: GitHub stars/clones "
+    },
+    {
+      "timestamp": "2026-03-23T18:28:39.308569",
+      "channel": "general",
+      "input": "@content_strategy_agent test",
+      "response": "[OK] Content Strategy Agent online. Ready for topic proposals or content drafts."
+    },
+    {
+      "timestamp": "2026-03-23T18:28:47.919226",
+      "channel": "general",
+      "input": "@content_strategy_agent test",
+      "response": "[OK] Content Strategy Agent online. Ready for topic proposals or content drafts."
     }
   ],
   "learning_history": [],
-  "archive_history": []
+  "archive_history": [],
+  "active_decisions": []
 }

@@ -625,6 +625,7 @@
                 <nav class="settings-tabs">
                     <button class="settings-tab active" data-settings-tab="general" onclick="switchSettingsTab('general')">General</button>
                     <button class="settings-tab" data-settings-tab="connections" onclick="switchSettingsTab('connections')">Connections</button>
+                    <button class="settings-tab" data-settings-tab="execution" onclick="switchSettingsTab('execution')">Execution</button>
                     <button class="settings-tab" data-settings-tab="model-tiers" onclick="switchSettingsTab('model-tiers')">Model Tiers</button>
                     <button class="settings-tab" data-settings-tab="data" onclick="switchSettingsTab('data')">Data</button>
                 </nav>
@@ -692,7 +693,7 @@
                                 </div>
                                 <div class="settings-section__body" id="claude-connection-body">
                                     <p class="settings-section__desc">
-                                        Configure cloud API and execution settings for agent responses.
+                                        Connect to cloud APIs and configure paths for agent infrastructure.
                                     </p>
                                     <div class="form-group">
                                         <label for="settings-claude-cmd">CLI Path (dev mode)</label>
@@ -704,38 +705,11 @@
                                         <input type="text" class="form-input form-input--mono" id="settings-agents-root"
                                                placeholder="/path/to/agents/root">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="settings-response-timeout">Response Timeout (seconds)</label>
-                                        <input type="number" class="form-input" id="settings-response-timeout"
-                                               min="30" max="600" value="300">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settings-exec-backend">Task Execution Backend</label>
-                                        <select class="form-input" id="settings-exec-backend">
-                                            <option value="chat">Chat-routed (@mention)</option>
-                                            <option value="api">Cloud API (direct)</option>
-                                            <option value="cli">CLI subprocess (dev mode)</option>
-                                        </select>
-                                    </div>
                                     <div class="settings-connection-status" id="settings-connection-status">
                                         <span class="settings-connection-dot" id="settings-connection-dot"></span>
                                         <span id="settings-connection-text">Not tested</span>
                                     </div>
                                     <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
-                                    <div class="form-group" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle, #333);">
-                                        <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                                            <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
-                                            <span class="toggle-switch"></span>
-                                            <span>Force all responses through cloud API <small style="opacity: 0.6;">(bypass local Ollama models)</small></span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group" style="margin-top: 0.75rem;">
-                                        <label class="toggle-label" for="settings-global-agents" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                                            <input type="checkbox" id="settings-global-agents" class="toggle-input">
-                                            <span class="toggle-switch"></span>
-                                            <span>Make agents available globally <small style="opacity: 0.6;">(links agent personas for external tools)</small></span>
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
 
@@ -776,6 +750,54 @@
                                 </div>
                             </div>
 
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Execution Tab === -->
+                        <div class="settings-panel" data-settings-panel="execution">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Task Execution</h3>
+                                <p class="settings-section__desc">
+                                    How agent responses are generated. Claude Channels uses persistent sessions;
+                                    other backends route through the local model or cloud API directly.
+                                </p>
+                                <div class="form-group">
+                                    <label for="settings-exec-backend">Execution Backend</label>
+                                    <select class="form-input" id="settings-exec-backend">
+                                        <option value="channel">Claude Channels (recommended)</option>
+                                        <option value="chat">Chat-routed (@mention)</option>
+                                        <option value="api">Cloud API (direct)</option>
+                                        <option value="cli">CLI subprocess (dev mode)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-response-timeout">Response Timeout (seconds)</label>
+                                    <input type="number" class="form-input" id="settings-response-timeout"
+                                           min="30" max="600" value="300">
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Behavior</h3>
+                                <div class="form-group">
+                                    <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                        <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                        <span>Force all responses through cloud API <small style="opacity: 0.6;">(bypass local models)</small></span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="margin-top: 0.75rem;">
+                                    <label class="toggle-label" for="settings-global-agents" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                        <input type="checkbox" id="settings-global-agents" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                        <span>Make agents available globally <small style="opacity: 0.6;">(links agent personas for external tools)</small></span>
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="settings-section">
                                 <div class="settings-section__header">
                                     <h3 class="settings-section__title">Development Mode</h3>
@@ -788,7 +810,7 @@
                             </div>
 
                             <div class="form-actions">
-                                <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
+                                <button type="button" class="btn btn--secondary" onclick="closeSettings()">Cancel</button>
                                 <button type="submit" class="btn btn--primary">Save Settings</button>
                             </div>
                         </div>
@@ -803,13 +825,14 @@
 
                                 <!-- Smart Tier -->
                                 <div class="form-group" style="margin-top: 16px;">
-                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smart <span style="font-weight: normal; color: var(--color-text-muted);">-- Fast, no thinking</span></label>
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smart [S] <span style="font-weight: normal; color: var(--color-text-muted);">-- Single local model, no thinking</span></label>
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Primary</label>
                                             <select class="form-input" id="settings-tier-smart-primary">
                                                 <option value="">Local (auto-detect)</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                         <div style="flex: 1;">
@@ -817,6 +840,7 @@
                                             <select class="form-input" id="settings-tier-smart-fallback">
                                                 <option value="">None</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                     </div>
@@ -824,13 +848,14 @@
 
                                 <!-- Smarter Tier -->
                                 <div class="form-group" style="margin-top: 12px;">
-                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smarter <span style="font-weight: normal; color: var(--color-text-muted);">-- Thinking enabled (default)</span></label>
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smarter [S+] <span style="font-weight: normal; color: var(--color-text-muted);">-- Single local model, thinking enabled (default)</span></label>
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
                                             <label class="form-label" style="font-size: 11px;">Primary</label>
                                             <select class="form-input" id="settings-tier-smarter-primary">
                                                 <option value="">Local (auto-detect)</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                         <div style="flex: 1;">
@@ -838,6 +863,7 @@
                                             <select class="form-input" id="settings-tier-smarter-fallback">
                                                 <option value="">None</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                     </div>
@@ -845,28 +871,30 @@
 
                                 <!-- Smartest Tier -->
                                 <div class="form-group" style="margin-top: 12px;">
-                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest <span style="font-weight: normal; color: var(--color-text-muted);">-- Large local model or cloud</span></label>
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest [S++] <span style="font-weight: normal; color: var(--color-text-muted);">-- Two-model pipeline: local reasoning then cloud polish</span></label>
                                     <div style="display: flex; gap: 8px; margin-top: 4px;">
                                         <div style="flex: 1;">
-                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <label class="form-label" style="font-size: 11px;">Phase 1 (reasoning)</label>
                                             <select class="form-input" id="settings-tier-smartest-primary">
                                                 <option value="">Local (auto-detect)</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                         <div style="flex: 1;">
-                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <label class="form-label" style="font-size: 11px;">Phase 2 (polish)</label>
                                             <select class="form-input" id="settings-tier-smartest-fallback">
                                                 <option value="">None</option>
                                                 <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
 
                                 <p class="settings-section__desc" style="margin-top: 12px; font-size: 11px;">
-                                    "Local (auto-detect)" picks the best model for your GPU. "Cloud API" uses your configured provider above.
-                                    Fallback is used when the primary model is unavailable.
+                                    "Local (auto-detect)" picks the best model for your GPU. "Cloud API" uses your configured provider.
+                                    "Claude Channels" routes through a persistent Claude Code session. Fallback is used when the primary is unavailable.
                                 </p>
                             </div>
 

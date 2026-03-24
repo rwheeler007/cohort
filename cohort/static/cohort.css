@@ -1795,6 +1795,11 @@ textarea.form-input {
     background-color: rgba(245, 158, 11, 0.12);
 }
 
+.message__model-badge.channel-pipeline {
+    color: #0ea5e9;
+    background-color: rgba(2, 132, 199, 0.12);
+}
+
 .message__token-badge {
     font-size: var(--font-size-xs);
     color: #7cb342;
@@ -2036,6 +2041,17 @@ textarea.form-input {
 .response-mode-btn.smartest:hover {
     color: var(--color-text-primary);
     border-color: #a855f7;
+}
+
+.response-mode-btn.channel {
+    color: #0ea5e9;
+    border-color: #0284c7;
+    background: rgba(2, 132, 199, 0.12);
+}
+
+.response-mode-btn.channel:hover {
+    color: var(--color-text-primary);
+    border-color: #0284c7;
 }
 
 /* =============================================================================
