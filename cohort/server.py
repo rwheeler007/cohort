@@ -299,6 +299,52 @@ async def create_channel_endpoint(request: Request) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=500)
 
 
+async def delete_channel_endpoint(request: Request) -> JSONResponse:
+    """DELETE /api/channels/{channel_id} -- delete a channel."""
+    channel_id = request.path_params["channel_id"]
+    try:
+        chat = _get_chat()
+        ok = chat.delete_channel(channel_id)
+        if ok:
+            return JSONResponse({"ok": True})
+        return JSONResponse({"error": "Channel not found"}, status_code=404)
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def rename_channel_endpoint(request: Request) -> JSONResponse:
+    """PATCH /api/channels/{channel_id} -- rename a channel."""
+    channel_id = request.path_params["channel_id"]
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+    new_name = body.get("name", "")
+    if not new_name:
+        return JSONResponse({"error": "Missing name"}, status_code=400)
+    try:
+        chat = _get_chat()
+        ch = chat.rename_channel(channel_id, new_name)
+        if ch:
+            return JSONResponse({"ok": True, "channel": ch.to_dict()})
+        return JSONResponse({"error": "Channel not found"}, status_code=404)
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def archive_channel_endpoint(request: Request) -> JSONResponse:
+    """POST /api/channels/{channel_id}/archive -- archive a channel."""
+    channel_id = request.path_params["channel_id"]
+    try:
+        chat = _get_chat()
+        ch = chat.archive_channel(channel_id, archived_by="user")
+        if ch:
+            return JSONResponse({"ok": True})
+        return JSONResponse({"error": "Channel not found"}, status_code=404)
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=500)
+
+
 async def get_messages(request: Request) -> JSONResponse:
     """GET /api/messages?channel=X&limit=50 -- fetch channel messages."""
     channel = request.query_params.get("channel")
@@ -6161,6 +6207,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/health", health, methods=["GET"]),
         Route("/api/channels", list_channels, methods=["GET"]),
         Route("/api/channels", create_channel_endpoint, methods=["POST"]),
+        Route("/api/channels/{channel_id}", delete_channel_endpoint, methods=["DELETE"]),
+        Route("/api/channels/{channel_id}", rename_channel_endpoint, methods=["PATCH"]),
+        Route("/api/channels/{channel_id}/archive", archive_channel_endpoint, methods=["POST"]),
         Route("/api/messages", get_messages, methods=["GET"]),
         Route("/api/send", send_message, methods=["POST"]),
         Route("/api/channels/{channel_id}/condense", condense_channel, methods=["POST"]),
