@@ -365,6 +365,13 @@ class TaskExecutor:
                     "cohort:team_update",
                     self.data_layer.get_team_snapshot(),
                 )
+            # Auto-trigger review pipeline (BOSS pattern)
+            if completed.get("status") == "complete":
+                try:
+                    from cohort.server import _maybe_trigger_auto_review
+                    _maybe_trigger_auto_review(completed)
+                except Exception:
+                    pass
 
     def _execute_cli_task(
         self,
@@ -558,6 +565,13 @@ class TaskExecutor:
                     "cohort:team_update",
                     self.data_layer.get_team_snapshot(),
                 )
+            # Auto-trigger review pipeline (BOSS pattern)
+            if completed.get("status") == "complete":
+                try:
+                    from cohort.server import _maybe_trigger_auto_review
+                    _maybe_trigger_auto_review(completed)
+                except Exception:
+                    pass
 
     def set_task_store(self, store: Any) -> None:
         """Wire the TaskStore for scheduled task persistence."""

@@ -27,6 +27,7 @@ import json
 import logging
 import os
 import subprocess
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -590,6 +591,10 @@ async def update_task(request: Request) -> JSONResponse:
     except Exception:
         pass
 
+    # Auto-trigger review pipeline on task completion (BOSS pattern)
+    if status == "complete":
+        _maybe_trigger_auto_review(task)
+
     return JSONResponse({"success": True, "task": task})
 
 
@@ -725,6 +730,172 @@ def _broadcast_work_queue() -> None:
 _approval_store: Optional["ApprovalStore"] = None
 _deliverable_tracker: Optional["DeliverableTracker"] = None
 _review_pipeline: Optional["ReviewPipeline"] = None
+
+
+# =====================================================================
+# Auto-Review Pipeline (runs on task completion, like BOSS)
+# =====================================================================
+
+def _run_auto_review(task: Dict[str, Any]) -> None:
+    """Background thread: run the review pipeline on a completed task.
+
+    Mirrors BOSS's automatic flow:
+    1. Move task to 'reviewing'
+    2. Run each pipeline stage via Ollama
+    3. Attach review results
+    4. If majority rejects -> auto-requeue with combined feedback
+    5. If approved -> emit for human review
+    """
+    task_id = task.get("task_id", "?")
+    logger.info("[>>] Auto-review starting for %s", task_id)
+
+    try:
+        if _task_store is None or _review_pipeline is None:
+            logger.warning("[!] Auto-review skipped: stores not initialised")
+            return
+
+        # Skip tasks without output
+        output = task.get("output")
+        if not output:
+            logger.info("[*] Auto-review skipped for %s: no output", task_id)
+            return
+
+        # Step 1: Move to reviewing
+        reviewed = _task_store.submit_for_review(task_id)
+        if reviewed is None:
+            logger.warning("[!] Auto-review: could not move %s to reviewing", task_id)
+            return
+
+        _emit_async("cohort:task_progress", reviewed)
+
+        # Step 2: Build task context for the pipeline
+        output_text = output.get("content") or output.get("diff") or output.get("summary") or ""
+        deliverables = task.get("deliverables") or []
+        deliverables_text = "\n".join(
+            f"- [{d.get('id', '?')}] {d.get('description', '')}"
+            for d in deliverables
+        ) if deliverables else "(no deliverables defined)"
+
+        task_context = {
+            "description": task.get("description", "(no description)"),
+            "deliverables": deliverables_text,
+            "code": output_text[:15000],  # Cap to avoid huge prompts
+            "self_review": "(automated)",
+        }
+
+        # Step 3: Run the pipeline with Ollama as backend
+        def reviewer_fn(stage, system_prompt, user_prompt):
+            """Pluggable reviewer using Ollama local LLM."""
+            try:
+                from cohort.local.ollama import OllamaClient
+                client = OllamaClient()
+                if not client.health_check():
+                    logger.warning("[!] Ollama not available for review stage %s", stage.role)
+                    return None
+
+                # Pick the best available model
+                models = client.list_models()
+                # Prefer larger models for review, fall back to whatever is available
+                review_model = None
+                for preferred in ["qwen3.5:35b-a3b", "qwen3.5:9b", "qwen2.5-coder:14b", "qwen2.5-coder:7b"]:
+                    if any(preferred in m for m in models):
+                        review_model = preferred
+                        break
+                if not review_model and models:
+                    review_model = models[0]
+                if not review_model:
+                    logger.warning("[!] No Ollama models available for review")
+                    return None
+
+                result = client.generate(
+                    model=review_model,
+                    prompt=user_prompt,
+                    system=system_prompt,
+                    temperature=0.15,
+                )
+                return result.text if result else None
+
+            except Exception as exc:
+                logger.warning("[!] Reviewer fn failed for %s: %s", stage.role, exc)
+                return None
+
+        reviews = _review_pipeline.run_reviews(task_context, reviewer_fn)
+
+        # Step 4: Attach reviews to task
+        if reviews:
+            review_dicts = [r.to_dict() for r in reviews]
+            _task_store.attach_reviews(task_id, review_dicts)
+
+        # Step 5: Evaluate verdict
+        verdict = _review_pipeline.evaluate_verdict(reviews)
+
+        from cohort.review_pipeline import PipelineVerdict
+
+        if verdict == PipelineVerdict.REJECTED:
+            # Auto-requeue with combined feedback (BOSS pattern)
+            feedback = _review_pipeline.collect_rejection_feedback(reviews)
+            new_task = _task_store.requeue_task(task_id, feedback=feedback)
+            if new_task:
+                logger.info(
+                    "[X] Auto-review REJECTED %s -> requeued as %s",
+                    task_id, new_task.get("task_id"),
+                )
+                _emit_async("cohort:task_requeued", {
+                    "old_task_id": task_id,
+                    "new_task": new_task,
+                })
+            else:
+                logger.warning("[!] Auto-review rejected %s but requeue failed (max requeues?)", task_id)
+                # Record the rejection as a review so it shows in UI
+                _task_store.record_review(task_id, "rejected", feedback)
+                updated = _task_store.get_task(task_id)
+                if updated:
+                    _emit_async("cohort:review_submitted", updated.get("review", {}))
+        else:
+            # APPROVED or INCOMPLETE — put in human review queue
+            logger.info("[OK] Auto-review %s for %s — awaiting human review", verdict.value, task_id)
+            # Don't auto-approve — let human make the final call
+            # Just update the task so the Review tab shows it with pipeline results
+            updated = _task_store.get_task(task_id)
+            if updated:
+                _emit_async("cohort:task_progress", updated)
+
+    except Exception as exc:
+        logger.error("[X] Auto-review failed for %s: %s", task_id, exc, exc_info=True)
+
+
+def _emit_async(event: str, data: Any) -> None:
+    """Emit a Socket.IO event from a background thread."""
+    try:
+        from cohort.socketio_events import sio
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.run_coroutine_threadsafe(sio.emit(event, data), loop)
+        else:
+            asyncio.run(sio.emit(event, data))
+    except Exception:
+        # If no event loop, try creating a task (might work in some contexts)
+        try:
+            from cohort.socketio_events import sio
+            asyncio.create_task(sio.emit(event, data))
+        except Exception:
+            pass
+
+
+def _maybe_trigger_auto_review(task: Dict[str, Any]) -> None:
+    """Start auto-review in a background thread if pipeline is configured."""
+    if _review_pipeline is None or not _review_pipeline.stages:
+        return
+    # Only auto-review tasks that just completed
+    if task.get("status") != "complete":
+        return
+    thread = threading.Thread(
+        target=_run_auto_review,
+        args=(task,),
+        daemon=True,
+        name=f"auto-review-{task.get('task_id', '?')}",
+    )
+    thread.start()
 
 
 def _broadcast_approvals() -> None:
