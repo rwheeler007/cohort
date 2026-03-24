@@ -55,7 +55,7 @@ console.error(`[cohort-wq] ENV: CHANNEL_ID=${channelId ?? "(unset)"} COHORT_BASE
 const config: ChannelConfig = {
   cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
   poll_interval_ms: parseInt(process.env.POLL_INTERVAL ?? "5000", 10),
-  heartbeat_interval_ms: 10_000,
+  heartbeat_interval_ms: 1_000,
   session_id: `${SERVER_NAME}-${Date.now()}`,
   channel_id: channelId,
 };
@@ -188,7 +188,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
           : undefined;
         await client.respond(requestId, content, {
           ...(elapsed !== undefined && { elapsed_seconds: Math.round(elapsed * 100) / 100 }),
-          tokens_out_estimate: Math.ceil(content.length / 4),
+          tokens_out: Math.ceil(content.length / 4),
         });
         currentRequestId = null;
         currentRequestClaimedAt = null;
@@ -413,6 +413,21 @@ async function main(): Promise<void> {
   log("INFO", `Session ${config.session_id} connected (PID ${process.pid}). Log: ${LOG_FILE}`);
 
   if (isChannelSession) {
+    // Register with the server so ensure-session knows we're alive
+    try {
+      const regResult = await client.register();
+      if (!regResult.ok) {
+        log("FATAL", `Registration rejected: ${regResult.error} (limit=${regResult.limit}, active=${regResult.active})`);
+        process.exit(1);
+      }
+      if (regResult.warn) {
+        log("WARN", `Session count at warning threshold (${regResult.active}/${regResult.limit})`);
+      }
+      log("INFO", `Registered with server (active=${regResult.active}/${regResult.limit})`);
+    } catch (e) {
+      log("WARN", `Registration failed: ${(e as Error).message} -- continuing anyway`);
+    }
+
     // Start background loops -- only for spawned channel sessions
     pollLoop().catch((e) =>
       log("FATAL", `Poll loop crashed: ${(e as Error).message}`)

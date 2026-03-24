@@ -20,6 +20,23 @@ export class CohortClient {
   }
 
   /**
+   * Register this session with the Cohort server.
+   * Enforces the server-side session limit.
+   */
+  async register(): Promise<{ ok: boolean; error?: string; active?: number; limit?: number; warn?: boolean }> {
+    const res = await fetch(`${this.baseUrl}/api/channel/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        channel_id: this.channelId,
+        session_id: this.sessionId,
+        pid: process.pid,
+      }),
+    });
+    return (await res.json()) as { ok: boolean; error?: string; active?: number; limit?: number; warn?: boolean };
+  }
+
+  /**
    * Poll for the next pending agent request. No side effects.
    * If channelId is set, only polls for that channel's requests.
    */
