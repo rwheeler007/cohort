@@ -368,6 +368,7 @@ async def send_message(request: Request) -> JSONResponse:
             channel_id=channel,
             sender=sender,
             content=message,
+            metadata=body.get("metadata"),
         )
 
         # Route @mentions to agent response pipeline
