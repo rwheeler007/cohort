@@ -903,15 +903,19 @@ async def channel_invoke(request: Request) -> JSONResponse:
     except Exception:
         return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
 
-    agent_id = body.get("agent_id", "")
+    raw_agent_id = body.get("agent_id", "")
     channel_id = body.get("channel_id", "")
     message = body.get("message", "")
     thread_id = body.get("thread_id")
     project_path = body.get("project_path")
 
-    if not agent_id or not channel_id or not message:
-        missing = [n for n, v in [("agent_id", agent_id), ("channel_id", channel_id), ("message", message)] if not v]
+    if not raw_agent_id or not channel_id or not message:
+        missing = [n for n, v in [("agent_id", raw_agent_id), ("channel_id", channel_id), ("message", message)] if not v]
         return JSONResponse({"error": f"Missing required fields: {', '.join(missing)}"}, status_code=400)
+
+    # Resolve agent_id from mention text (e.g., "Cohort" -> "cohort_orchestrator")
+    from cohort.agent_router import resolve_agent_id
+    agent_id = resolve_agent_id(raw_agent_id) or raw_agent_id
 
     try:
         import threading
@@ -6441,13 +6445,18 @@ def create_app(data_dir: str = "data") -> Starlette:
             _scheduler.start()
             logger.info("[OK] Task scheduler started")
 
-        # Run initial health checks so the Health Monitor has data immediately
-        try:
-            from cohort.api import run_service_checks
-            await asyncio.get_event_loop().run_in_executor(None, run_service_checks)
-            logger.info("[OK] Initial health checks completed")
-        except Exception as exc:
-            logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
+        # Run initial health checks in background — can't run synchronously here
+        # because the cohort_server entry checks its own /health endpoint, which
+        # won't be available until on_startup completes (deadlock).
+        async def _deferred_health_checks() -> None:
+            await asyncio.sleep(2)  # let uvicorn finish binding
+            try:
+                from cohort.api import run_service_checks
+                await asyncio.get_event_loop().run_in_executor(None, run_service_checks)
+                logger.info("[OK] Initial health checks completed")
+            except Exception as exc:
+                logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
+        asyncio.create_task(_deferred_health_checks())
 
     starlette_app = Starlette(
         routes=routes,

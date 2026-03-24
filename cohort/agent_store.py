@@ -316,10 +316,14 @@ class AgentStore:
         if agent:
             return agent
 
-        # Scan all agents for alias match
+        # Scan all agents for alias, name, or nickname match
         self._ensure_all_loaded()
         for config in self._cache.values():
             if normalized in [a.lower() for a in config.aliases]:
+                return config
+            if config.name and normalized == config.name.lower().replace("-", "_").replace(" ", "_"):
+                return config
+            if config.nickname and normalized == config.nickname.lower().replace("-", "_").replace(" ", "_"):
                 return config
 
         # Original casing match

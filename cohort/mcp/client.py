@@ -107,6 +107,28 @@ class CohortClient:
             },
         )
 
+    async def delete_channel(self, channel_id: str) -> dict[str, Any] | None:
+        """DELETE /api/channels/{channel_id} -> soft-delete a channel."""
+        return await _request(
+            "DELETE",
+            f"{self.base_url}/api/channels/{channel_id}",
+        )
+
+    async def archive_channel(self, channel_id: str) -> dict[str, Any] | None:
+        """POST /api/channels/{channel_id}/archive -> archive a channel."""
+        return await _request(
+            "POST",
+            f"{self.base_url}/api/channels/{channel_id}/archive",
+        )
+
+    async def rename_channel(self, channel_id: str, new_name: str) -> dict[str, Any] | None:
+        """PATCH /api/channels/{channel_id} -> rename a channel."""
+        return await _request(
+            "PATCH",
+            f"{self.base_url}/api/channels/{channel_id}",
+            json_body={"name": new_name},
+        )
+
     async def get_messages(
         self, channel: str, limit: int = 50
     ) -> list[dict[str, Any]] | None:

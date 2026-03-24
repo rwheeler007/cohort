@@ -127,6 +127,39 @@ class LiteBackend:
             logger.debug("[!] lite backend: create_channel error - %s", exc)
             return {"success": False, "error": str(exc)}
 
+    async def delete_channel(self, channel_id: str) -> dict[str, Any] | None:
+        """Soft-delete a channel via ChatManager."""
+        try:
+            ok = self._chat.delete_channel(channel_id)
+            if ok:
+                return {"ok": True}
+            return {"error": "Channel not found"}
+        except Exception as exc:
+            logger.debug("[!] lite backend: delete_channel error - %s", exc)
+            return {"error": str(exc)}
+
+    async def archive_channel(self, channel_id: str) -> dict[str, Any] | None:
+        """Archive a channel via ChatManager."""
+        try:
+            ch = self._chat.archive_channel(channel_id)
+            if ch:
+                return {"ok": True}
+            return {"error": "Channel not found"}
+        except Exception as exc:
+            logger.debug("[!] lite backend: archive_channel error - %s", exc)
+            return {"error": str(exc)}
+
+    async def rename_channel(self, channel_id: str, new_name: str) -> dict[str, Any] | None:
+        """Rename a channel via ChatManager."""
+        try:
+            ch = self._chat.rename_channel(channel_id, new_name)
+            if ch:
+                return {"ok": True, "channel": ch.to_dict()}
+            return {"error": "Channel not found"}
+        except Exception as exc:
+            logger.debug("[!] lite backend: rename_channel error - %s", exc)
+            return {"error": str(exc)}
+
     async def get_messages(
         self, channel: str, limit: int = 50,
     ) -> list[dict[str, Any]] | None:
