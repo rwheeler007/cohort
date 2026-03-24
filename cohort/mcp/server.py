@@ -35,7 +35,7 @@ from typing import Any, List, Optional
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, ConfigDict, Field
 
-from cohort.mcp.client import CohortClient, DEFAULT_URL
+from cohort.mcp.client import CohortClient, DEFAULT_URL, _request
 
 logger = logging.getLogger(__name__)
 
@@ -2895,6 +2895,280 @@ async def browser_status(params: BrowserStatusInput) -> str:
             lines.append(f"    - {aid}: {tab_count} tab(s)")
     else:
         lines.append("  Active sessions: 0")
+
+    return "\n".join(lines)
+
+
+# =====================================================================
+# Approval Pipeline Tools
+# =====================================================================
+
+
+class SubmitForReviewInput(BaseModel):
+    """Input for submitting a task or work item for multi-stakeholder review."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_type: str = Field(
+        ..., description="Type: 'task' or 'work_item'.",
+    )
+    item_id: str = Field(
+        ..., description="The task_id or work queue item_id to submit for review.",
+        min_length=1, max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_submit_for_review",
+    annotations={
+        "title": "Submit For Review",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_submit_for_review(params: SubmitForReviewInput) -> str:
+    """Submit a completed task or active work item for multi-stakeholder review."""
+    result = await _client.submit_for_review(params.item_type, params.item_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+    return f"Submitted {params.item_type} `{params.item_id}` for review."
+
+
+class GetPendingReviewsInput(BaseModel):
+    """Input for listing items awaiting review."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    status: Optional[str] = Field(
+        "pending", description="Filter by approval status. Default: 'pending'.",
+    )
+    item_type: Optional[str] = Field(
+        None, description="Filter by item type: 'task' or 'work_item'. Default: all.",
+    )
+
+
+@mcp.tool(
+    name="cohort_get_pending_reviews",
+    annotations={
+        "title": "Get Pending Reviews",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_pending_reviews(params: GetPendingReviewsInput) -> str:
+    """List approval requests awaiting review."""
+    result = await _client.list_approvals(
+        status=params.status, item_type=params.item_type,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+
+    approvals = result.get("approvals", [])
+    if not approvals:
+        return "No pending reviews."
+
+    lines = [f"## Pending Reviews ({len(approvals)})"]
+    for a in approvals:
+        risk = a.get("risk_level", "?")
+        desc = (a.get("description") or "")[:100]
+        item_id = a.get("item_id", "?")
+        lines.append(
+            f"- **{a.get('id', '?')}** [{risk}] {desc} "
+            f"(item: `{item_id}`, requester: {a.get('requester', '?')})"
+        )
+    return "\n".join(lines)
+
+
+class SubmitReviewInput(BaseModel):
+    """Input for submitting a review verdict from an agent."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    approval_id: str = Field(
+        ..., description="The approval request ID to resolve.",
+        min_length=1, max_length=100,
+    )
+    action: str = Field(
+        ..., description="Verdict: 'approve' or 'deny'.",
+    )
+    resolved_by: str = Field(
+        ..., description="Who is submitting this review (agent_id or 'human').",
+        min_length=1, max_length=100,
+    )
+    notes: str = Field(
+        "", description="Optional review notes.",
+        max_length=2000,
+    )
+
+
+@mcp.tool(
+    name="cohort_submit_review",
+    annotations={
+        "title": "Submit Review Verdict",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_submit_review(params: SubmitReviewInput) -> str:
+    """Submit an approve/deny verdict for a pending approval request."""
+    result = await _client.resolve_approval(
+        params.approval_id, params.action,
+        resolved_by=params.resolved_by, notes=params.notes,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+    return f"Approval `{params.approval_id}` {result.get('status', 'resolved')}."
+
+
+class SetDeliverablesInput(BaseModel):
+    """Input for setting acceptance criteria on a task or work item."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_type: str = Field(
+        ..., description="Type: 'task' or 'work_item'.",
+    )
+    item_id: str = Field(
+        ..., description="The task_id or work queue item_id.",
+        min_length=1, max_length=100,
+    )
+    deliverables: List[dict[str, Any]] = Field(
+        ..., description=(
+            "List of deliverable dicts. Each must have 'id' (e.g. 'D1') and "
+            "'description'. Optional: 'category' (functional/quality/security/testing)."
+        ),
+    )
+    append: bool = Field(
+        False, description="If true, append to existing deliverables instead of replacing.",
+    )
+
+
+@mcp.tool(
+    name="cohort_set_deliverables",
+    annotations={
+        "title": "Set Deliverables",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_set_deliverables(params: SetDeliverablesInput) -> str:
+    """Set or append acceptance criteria (deliverables) on a task or work item."""
+    # This operates via the HTTP API which stores deliverables on the item
+    if params.item_type == "task":
+        url = f"/api/tasks/{params.item_id}"
+        result = await _request(
+            "PATCH",
+            f"{_client.base_url}{url}",
+            json_body={"status": "in_progress", "deliverables": params.deliverables},
+        )
+    else:
+        url = f"/api/work-queue/{params.item_id}"
+        result = await _request(
+            "PATCH",
+            f"{_client.base_url}{url}",
+            json_body={"deliverables": params.deliverables},
+        )
+
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+
+    count = len(params.deliverables)
+    mode = "appended" if params.append else "set"
+    return f"{mode.title()} {count} deliverable(s) on {params.item_type} `{params.item_id}`."
+
+
+class RequeueItemInput(BaseModel):
+    """Input for requeuing a rejected item with feedback."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_type: str = Field(
+        ..., description="Type: 'task' or 'work_item'.",
+    )
+    item_id: str = Field(
+        ..., description="The task_id or work queue item_id to requeue.",
+        min_length=1, max_length=100,
+    )
+    feedback: str = Field(
+        "", description="Feedback for the requeued item (why it was rejected, what to fix).",
+        max_length=2000,
+    )
+
+
+@mcp.tool(
+    name="cohort_requeue_item",
+    annotations={
+        "title": "Requeue Item",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_requeue_item(params: RequeueItemInput) -> str:
+    """Requeue a rejected/failed task or work item with feedback."""
+    result = await _client.requeue_item(
+        params.item_type, params.item_id, feedback=params.feedback,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+
+    new_id = result.get("task", {}).get("task_id") or result.get("item", {}).get("id", "?")
+    return f"Requeued {params.item_type} `{params.item_id}` -> new item `{new_id}`."
+
+
+class GetApprovalStatusInput(BaseModel):
+    """Input for checking approval status."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_type: Optional[str] = Field(
+        None, description="Filter by item type: 'task' or 'work_item'.",
+    )
+
+
+@mcp.tool(
+    name="cohort_get_approval_status",
+    annotations={
+        "title": "Get Approval Status",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_get_approval_status(params: GetApprovalStatusInput) -> str:
+    """Get an overview of approval pipeline status."""
+    result = await _client.list_approvals(item_type=params.item_type)
+    if result is None:
+        return _error_msg(service_down=True)
+
+    approvals = result.get("approvals", [])
+    pending_count = result.get("pending_count", 0)
+
+    if not approvals:
+        return "No approval requests found."
+
+    # Group by status
+    by_status: dict[str, int] = {}
+    for a in approvals:
+        s = a.get("status", "unknown")
+        by_status[s] = by_status.get(s, 0) + 1
+
+    lines = [f"## Approval Pipeline Status"]
+    lines.append(f"Pending: **{pending_count}** | Total: {len(approvals)}")
+    for status, count in sorted(by_status.items()):
+        lines.append(f"- {status}: {count}")
 
     return "\n".join(lines)
 

@@ -39,9 +39,10 @@ VALID_PRIORITIES = frozenset({"low", "medium", "high", "critical"})
 VALID_SCHEDULE_TYPES = frozenset({"once", "interval", "cron"})
 VALID_TASK_STATUSES = frozenset({
     "briefing", "assigned", "in_progress", "complete",
-    "approved", "needs_work", "rejected", "failed",
+    "reviewing", "approved", "needs_work", "rejected", "failed",
     "archived",
 })
+MAX_REQUEUE_COUNT = 3
 MAX_RUNS_PER_SCHEDULE = 100  # Keep last N runs, prune older
 
 VALID_TRIGGER_TYPES = frozenset({"manual", "scheduled", "event", "mcp"})
@@ -296,6 +297,13 @@ class TaskStore:
             "trigger": trigger,
             "action": action,
             "outcome": outcome,
+            # Approval pipeline fields
+            "deliverables": [],
+            "review_results": None,
+            "approval_id": None,
+            "self_review_report": None,
+            "requeue_count": 0,
+            "requeued_from": None,
         }
         with self._lock:
             self._ensure_loaded()
@@ -493,6 +501,91 @@ class TaskStore:
             self._save_tasks()
         logger.info("[*] Review for %s: %s", task_id, verdict)
         return review
+
+    # -- approval pipeline ----------------------------------------------
+
+    def submit_for_review(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """Transition a complete task to reviewing status."""
+        with self._lock:
+            self._ensure_loaded()
+            task = self._tasks.get(task_id)
+            if task is None or task.get("status") != "complete":
+                return None
+            task["status"] = "reviewing"
+            task["updated_at"] = _now_iso()
+            self._save_tasks()
+        logger.info("[*] Task %s -> reviewing", task_id)
+        return task
+
+    def attach_reviews(
+        self, task_id: str, reviews: list[dict[str, Any]],
+    ) -> Optional[Dict[str, Any]]:
+        """Attach review pipeline results to a task."""
+        with self._lock:
+            self._ensure_loaded()
+            task = self._tasks.get(task_id)
+            if task is None:
+                return None
+            task["review_results"] = reviews
+            task["updated_at"] = _now_iso()
+            self._save_tasks()
+        return task
+
+    def requeue_task(
+        self,
+        task_id: str,
+        feedback: str = "",
+    ) -> Optional[Dict[str, Any]]:
+        """Requeue a rejected/needs_work/failed task as a new task.
+
+        Returns the *new* task, or ``None`` if requeue limit hit.
+        """
+        with self._lock:
+            self._ensure_loaded()
+            old = self._tasks.get(task_id)
+            if old is None:
+                return None
+            if old.get("status") not in ("rejected", "needs_work", "failed"):
+                return None
+
+            count = old.get("requeue_count", 0)
+            if count >= MAX_REQUEUE_COUNT:
+                logger.warning(
+                    "[!] Task %s already requeued %d times (max %d)",
+                    task_id, count, MAX_REQUEUE_COUNT,
+                )
+                return None
+
+            now = _now_iso()
+            new_id = f"task_{uuid.uuid4().hex[:8]}"
+            new_task = {
+                **{k: v for k, v in old.items() if k != "task_id"},
+                "task_id": new_id,
+                "status": "briefing",
+                "created_at": now,
+                "updated_at": now,
+                "completed_at": None,
+                "output": None,
+                "review": None,
+                "review_results": None,
+                "self_review_report": None,
+                "requeue_count": count + 1,
+                "requeued_from": task_id,
+            }
+            if feedback:
+                new_task.setdefault("action", {})
+                if new_task["action"] is None:
+                    new_task["action"] = {}
+                new_task["action"]["requeue_feedback"] = feedback
+
+            self._tasks[new_id] = new_task
+            self._save_tasks()
+
+        logger.info(
+            "[+] Requeued task %s -> %s (count %d)",
+            task_id, new_id, count + 1,
+        )
+        return new_task
 
     def reap_stale_briefings(self, max_age_hours: int = 4) -> list[str]:
         """Auto-fail tasks stuck in 'briefing' status longer than max_age_hours.

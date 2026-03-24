@@ -568,6 +568,64 @@ class CohortClient:
             f"{self.base_url}/api/briefing/latest",
         )
 
+    # -- approval pipeline -----------------------------------------------
+
+    async def list_approvals(
+        self, status: str | None = None, item_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        """GET /api/approvals."""
+        return await _request(
+            "GET", f"{self.base_url}/api/approvals",
+            params={"status": status, "item_type": item_type},
+        )
+
+    async def create_approval(self, data: dict[str, Any]) -> dict[str, Any] | None:
+        """POST /api/approvals."""
+        return await _request("POST", f"{self.base_url}/api/approvals", json_body=data)
+
+    async def resolve_approval(
+        self, approval_id: str, action: str, resolved_by: str = "human", notes: str = "",
+    ) -> dict[str, Any] | None:
+        """PATCH /api/approvals/{approval_id}."""
+        return await _request(
+            "PATCH", f"{self.base_url}/api/approvals/{approval_id}",
+            json_body={"action": action, "resolved_by": resolved_by, "notes": notes},
+        )
+
+    async def submit_for_review(
+        self, item_type: str, item_id: str,
+    ) -> dict[str, Any] | None:
+        """POST /api/tasks/{id}/submit-review or /api/work-queue/{id}/submit-review."""
+        if item_type == "task":
+            url = f"{self.base_url}/api/tasks/{item_id}/submit-review"
+        else:
+            url = f"{self.base_url}/api/work-queue/{item_id}/submit-review"
+        return await _request("POST", url)
+
+    async def attach_reviews(
+        self, item_type: str, item_id: str, reviews: list[dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        """POST /api/tasks/{id}/reviews or /api/work-queue/{id}/reviews."""
+        if item_type == "task":
+            url = f"{self.base_url}/api/tasks/{item_id}/reviews"
+        else:
+            url = f"{self.base_url}/api/work-queue/{item_id}/reviews"
+        return await _request("POST", url, json_body={"reviews": reviews})
+
+    async def requeue_item(
+        self, item_type: str, item_id: str, feedback: str = "",
+    ) -> dict[str, Any] | None:
+        """POST /api/tasks/{id}/requeue or /api/work-queue/{id}/requeue."""
+        if item_type == "task":
+            url = f"{self.base_url}/api/tasks/{item_id}/requeue"
+        else:
+            url = f"{self.base_url}/api/work-queue/{item_id}/requeue"
+        return await _request("POST", url, json_body={"feedback": feedback})
+
+    async def get_review_pipeline_config(self) -> dict[str, Any] | None:
+        """GET /api/review-pipeline/config."""
+        return await _request("GET", f"{self.base_url}/api/review-pipeline/config")
+
     # -- checklist (file-based) -----------------------------------------
 
     async def read_checklist(self) -> dict[str, Any] | None:

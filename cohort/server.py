@@ -719,6 +719,270 @@ def _broadcast_work_queue() -> None:
 
 
 # =====================================================================
+# Approval Pipeline endpoints
+# =====================================================================
+
+_approval_store: Optional["ApprovalStore"] = None
+_deliverable_tracker: Optional["DeliverableTracker"] = None
+_review_pipeline: Optional["ReviewPipeline"] = None
+
+
+def _broadcast_approvals() -> None:
+    """Push approval updates to all connected dashboard clients."""
+    if _approval_store is None:
+        return
+    try:
+        from cohort.socketio_events import sio
+        pending = _approval_store.get_pending()
+        asyncio.create_task(
+            sio.emit("cohort:approvals_update", {
+                "pending": [a.to_dict() for a in pending],
+                "pending_count": len(pending),
+            }),
+        )
+    except Exception:
+        pass
+
+
+async def list_approvals(request: Request) -> JSONResponse:
+    """GET /api/approvals -- list approval requests."""
+    if _approval_store is None:
+        return JSONResponse({"error": "Approval store not initialised"}, status_code=500)
+
+    status_filter = request.query_params.get("status")
+    item_type = request.query_params.get("item_type")
+    limit = int(request.query_params.get("limit", "50"))
+
+    items = _approval_store.list_all(status=status_filter, item_type=item_type, limit=limit)
+    return JSONResponse({
+        "approvals": [a.to_dict() for a in items],
+        "pending_count": _approval_store.get_pending_count(),
+    })
+
+
+async def create_approval(request: Request) -> JSONResponse:
+    """POST /api/approvals -- create a new approval request."""
+    if _approval_store is None:
+        return JSONResponse({"error": "Approval store not initialised"}, status_code=500)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    required = ("item_id", "item_type", "requester", "action_type", "risk_level", "description")
+    missing = [f for f in required if not body.get(f)]
+    if missing:
+        return JSONResponse({"error": f"Missing fields: {', '.join(missing)}"}, status_code=400)
+
+    try:
+        approval = _approval_store.create(
+            item_id=body["item_id"],
+            item_type=body["item_type"],
+            requester=body["requester"],
+            action_type=body["action_type"],
+            risk_level=body["risk_level"],
+            description=body["description"],
+            details=body.get("details"),
+            timeout=body.get("timeout"),
+            reviewer_role=body.get("reviewer_role"),
+        )
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+    _broadcast_approvals()
+    return JSONResponse({"success": True, "approval": approval.to_dict()})
+
+
+async def resolve_approval(request: Request) -> JSONResponse:
+    """PATCH /api/approvals/{approval_id} -- approve/deny/cancel."""
+    if _approval_store is None:
+        return JSONResponse({"error": "Approval store not initialised"}, status_code=500)
+
+    approval_id = request.path_params.get("approval_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    action = body.get("action")  # approve | deny | cancel
+    resolved_by = body.get("resolved_by", "human")
+
+    if action == "cancel":
+        result = _approval_store.cancel(approval_id, cancelled_by=resolved_by)
+    elif action in ("approve", "deny"):
+        result = _approval_store.resolve(
+            approval_id, action, resolved_by,
+            audit_notes=body.get("notes", ""),
+        )
+    else:
+        return JSONResponse({"error": "action must be: approve, deny, or cancel"}, status_code=400)
+
+    if "error" in result:
+        return JSONResponse(result, status_code=400)
+
+    _broadcast_approvals()
+    return JSONResponse({"success": True, **result})
+
+
+async def submit_task_for_review(request: Request) -> JSONResponse:
+    """POST /api/tasks/{task_id}/submit-review -- move task to reviewing."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+
+    task_id = request.path_params.get("task_id", "")
+    task = _task_store.submit_for_review(task_id)
+    if task is None:
+        return JSONResponse(
+            {"error": f"Task '{task_id}' not found or not in 'complete' status"},
+            status_code=400,
+        )
+
+    # Broadcast task update
+    try:
+        from cohort.socketio_events import sio
+        asyncio.create_task(sio.emit("cohort:task_progress", task))
+    except Exception:
+        pass
+
+    return JSONResponse({"success": True, "task": task})
+
+
+async def attach_task_reviews(request: Request) -> JSONResponse:
+    """POST /api/tasks/{task_id}/reviews -- attach review pipeline results."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+
+    task_id = request.path_params.get("task_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    reviews = body.get("reviews", [])
+    task = _task_store.attach_reviews(task_id, reviews)
+    if task is None:
+        return JSONResponse({"error": f"Task '{task_id}' not found"}, status_code=404)
+
+    return JSONResponse({"success": True, "task": task})
+
+
+async def requeue_task(request: Request) -> JSONResponse:
+    """POST /api/tasks/{task_id}/requeue -- requeue with feedback."""
+    if _task_store is None:
+        return JSONResponse({"error": "Task store not initialised"}, status_code=500)
+
+    task_id = request.path_params.get("task_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    feedback = body.get("feedback", "")
+    new_task = _task_store.requeue_task(task_id, feedback=feedback)
+    if new_task is None:
+        return JSONResponse(
+            {"error": f"Task '{task_id}' cannot be requeued (not rejected/needs_work/failed, or max requeues reached)"},
+            status_code=400,
+        )
+
+    # Broadcast
+    try:
+        from cohort.socketio_events import sio
+        asyncio.create_task(sio.emit("cohort:task_requeued", {
+            "old_task_id": task_id,
+            "new_task": new_task,
+        }))
+    except Exception:
+        pass
+
+    return JSONResponse({"success": True, "task": new_task})
+
+
+async def submit_work_item_for_review(request: Request) -> JSONResponse:
+    """POST /api/work-queue/{item_id}/submit-review -- move to reviewing."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    item_id = request.path_params.get("item_id", "")
+    item = _work_queue.submit_for_review(item_id)
+    if item is None:
+        return JSONResponse(
+            {"error": f"Item '{item_id}' not found or not in 'active' status"},
+            status_code=400,
+        )
+
+    _broadcast_work_queue()
+    return JSONResponse({"success": True, "item": item.to_dict()})
+
+
+async def attach_work_item_reviews(request: Request) -> JSONResponse:
+    """POST /api/work-queue/{item_id}/reviews -- attach review results."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    item_id = request.path_params.get("item_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    reviews = body.get("reviews", [])
+    item = _work_queue.attach_reviews(item_id, reviews)
+    if item is None:
+        return JSONResponse({"error": f"Item '{item_id}' not found"}, status_code=404)
+
+    return JSONResponse({"success": True, "item": item.to_dict()})
+
+
+async def requeue_work_item(request: Request) -> JSONResponse:
+    """POST /api/work-queue/{item_id}/requeue -- requeue with feedback."""
+    if _work_queue is None:
+        return JSONResponse({"error": "Work queue not initialised"}, status_code=500)
+
+    item_id = request.path_params.get("item_id", "")
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    feedback = body.get("feedback", "")
+    new_item = _work_queue.requeue(item_id, feedback=feedback)
+    if new_item is None:
+        return JSONResponse(
+            {"error": f"Item '{item_id}' cannot be requeued"},
+            status_code=400,
+        )
+
+    _broadcast_work_queue()
+    return JSONResponse({"success": True, "item": new_item.to_dict()})
+
+
+async def get_review_pipeline_config(request: Request) -> JSONResponse:
+    """GET /api/review-pipeline/config -- get pipeline stage configuration."""
+    if _review_pipeline is None:
+        return JSONResponse({"error": "Review pipeline not initialised"}, status_code=500)
+    return JSONResponse(_review_pipeline.to_dict())
+
+
+async def put_review_pipeline_config(request: Request) -> JSONResponse:
+    """PUT /api/review-pipeline/config -- update pipeline stages."""
+    global _review_pipeline  # noqa: PLW0603
+    if _review_pipeline is None:
+        return JSONResponse({"error": "Review pipeline not initialised"}, status_code=500)
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
+
+    from cohort.review_pipeline import ReviewPipeline
+    _review_pipeline = ReviewPipeline.from_dict(body)
+    _review_pipeline.save_config(Path(_resolved_data_dir))
+    return JSONResponse({"success": True, **_review_pipeline.to_dict()})
+
+
+# =====================================================================
 # Channel endpoints -- Claude Code Channels integration
 #
 # These endpoints let a Claude Code Channel plugin drive agent responses
@@ -6319,6 +6583,16 @@ def create_app(data_dir: str = "data") -> Starlette:
     setup_work_queue(_work_queue)
     logger.info("[OK] Work queue initialised")
 
+    # -- Approval Pipeline (multi-stakeholder review) -------------------
+    global _approval_store, _deliverable_tracker, _review_pipeline  # noqa: PLW0603
+    from cohort.approval_store import ApprovalStore
+    from cohort.deliverables import DeliverableTracker
+    from cohort.review_pipeline import ReviewPipeline
+    _approval_store = ApprovalStore(data_dir=Path(resolved_dir))
+    _deliverable_tracker = DeliverableTracker(data_dir=Path(resolved_dir))
+    _review_pipeline = ReviewPipeline.load_config(Path(resolved_dir))
+    logger.info("[OK] Approval pipeline initialised (%d review stages)", len(_review_pipeline.stages))
+
     # -- Task Store (file-backed tasks + schedules) -----------------------
     from cohort.api import TaskStore
     from cohort.socketio_events import setup_task_store, setup_scheduler
@@ -6402,6 +6676,18 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/work-queue/claim", claim_work_item, methods=["POST"]),
         Route("/api/work-queue/{item_id}", get_work_item, methods=["GET"]),
         Route("/api/work-queue/{item_id}", update_work_item, methods=["PATCH"]),
+        Route("/api/work-queue/{item_id}/submit-review", submit_work_item_for_review, methods=["POST"]),
+        Route("/api/work-queue/{item_id}/reviews", attach_work_item_reviews, methods=["POST"]),
+        Route("/api/work-queue/{item_id}/requeue", requeue_work_item, methods=["POST"]),
+        # Approval pipeline
+        Route("/api/approvals", list_approvals, methods=["GET"]),
+        Route("/api/approvals", create_approval, methods=["POST"]),
+        Route("/api/approvals/{approval_id}", resolve_approval, methods=["PATCH"]),
+        Route("/api/tasks/{task_id}/submit-review", submit_task_for_review, methods=["POST"]),
+        Route("/api/tasks/{task_id}/reviews", attach_task_reviews, methods=["POST"]),
+        Route("/api/tasks/{task_id}/requeue", requeue_task, methods=["POST"]),
+        Route("/api/review-pipeline/config", get_review_pipeline_config, methods=["GET"]),
+        Route("/api/review-pipeline/config", put_review_pipeline_config, methods=["PUT"]),
         # Channel (Claude Code Channels integration)
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),

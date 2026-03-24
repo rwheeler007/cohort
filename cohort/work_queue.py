@@ -5,11 +5,14 @@ File-backed JSON persistence. Thread-safe.
 
 Status lifecycle::
 
-    queued --> active --> completed
-      |          |
-      |          +--> failed
-      |
-      +--> cancelled
+    queued --> active --> reviewing --> approved --> completed
+      |          |          |
+      |          +--> failed |
+      |                      +--> rejected
+      +--> cancelled                  |
+                                      +--> requeued (new item)
+
+    stale_bounced: git staleness detected, bounced for re-evaluation
 
 Storage: ``{data_dir}/work_queue.json``
 """
@@ -27,8 +30,12 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-VALID_STATUSES = frozenset({"queued", "active", "completed", "failed", "cancelled"})
+VALID_STATUSES = frozenset({
+    "queued", "active", "reviewing", "approved", "rejected",
+    "completed", "failed", "cancelled", "stale_bounced",
+})
 TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled"})
+MAX_REQUEUE_COUNT = 3
 VALID_PRIORITIES = frozenset({"critical", "high", "medium", "low"})
 PRIORITY_RANK: Dict[str, int] = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
@@ -57,6 +64,12 @@ class WorkItem:
     depends_on: List[str] = field(default_factory=list)
     result: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    # Approval pipeline fields
+    deliverables: List[Dict[str, Any]] = field(default_factory=list)
+    review_results: Optional[List[Dict[str, Any]]] = None
+    approval_id: Optional[str] = None
+    requeue_count: int = 0
+    requeued_from: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -252,6 +265,143 @@ class WorkQueue:
                 return item
         return None
 
+    # -- approval pipeline ----------------------------------------------
+
+    def submit_for_review(self, item_id: str) -> Optional[WorkItem]:
+        """Transition an active item to reviewing status."""
+        with self._lock:
+            self._ensure_loaded()
+            item = self._items.get(item_id)
+            if item is None or item.status != "active":
+                return None
+            item.status = "reviewing"
+            self._save_to_disk()
+        logger.info("[*] %s -> reviewing", item_id)
+        return item
+
+    def approve(
+        self,
+        item_id: str,
+        approved_by: str = "",
+        notes: str = "",
+    ) -> Optional[WorkItem]:
+        """Approve a reviewing item."""
+        with self._lock:
+            self._ensure_loaded()
+            item = self._items.get(item_id)
+            if item is None or item.status != "reviewing":
+                return None
+            item.status = "approved"
+            item.completed_at = _now_iso()
+            if notes:
+                item.metadata.setdefault("review_notes", []).append({
+                    "by": approved_by, "notes": notes, "verdict": "approved",
+                    "at": _now_iso(),
+                })
+            self._save_to_disk()
+        logger.info("[OK] %s approved by %s", item_id, approved_by)
+        return item
+
+    def reject(
+        self,
+        item_id: str,
+        rejected_by: str = "",
+        reason: str = "",
+    ) -> Optional[WorkItem]:
+        """Reject a reviewing item."""
+        with self._lock:
+            self._ensure_loaded()
+            item = self._items.get(item_id)
+            if item is None or item.status != "reviewing":
+                return None
+            item.status = "rejected"
+            item.completed_at = _now_iso()
+            if reason:
+                item.metadata.setdefault("review_notes", []).append({
+                    "by": rejected_by, "notes": reason, "verdict": "rejected",
+                    "at": _now_iso(),
+                })
+            self._save_to_disk()
+        logger.info("[X] %s rejected by %s", item_id, rejected_by)
+        return item
+
+    def attach_reviews(
+        self, item_id: str, reviews: List[Dict[str, Any]],
+    ) -> Optional[WorkItem]:
+        """Attach review pipeline results to an item."""
+        with self._lock:
+            self._ensure_loaded()
+            item = self._items.get(item_id)
+            if item is None:
+                return None
+            item.review_results = reviews
+            self._save_to_disk()
+        return item
+
+    def requeue(
+        self,
+        item_id: str,
+        feedback: str = "",
+    ) -> Optional[WorkItem]:
+        """Requeue a rejected or stale_bounced item as a new queued item.
+
+        Returns the *new* queued item, or ``None`` if requeue limit hit
+        or item not in a requeuable state.
+        """
+        with self._lock:
+            self._ensure_loaded()
+            old = self._items.get(item_id)
+            if old is None or old.status not in ("rejected", "stale_bounced", "failed"):
+                return None
+
+            if old.requeue_count >= MAX_REQUEUE_COUNT:
+                logger.warning(
+                    "[!] %s already requeued %d times (max %d)",
+                    item_id, old.requeue_count, MAX_REQUEUE_COUNT,
+                )
+                return None
+
+            new_item = WorkItem(
+                id=f"wq_{uuid.uuid4().hex[:8]}",
+                description=old.description,
+                requester=old.requester,
+                priority=old.priority,
+                status="queued",
+                created_at=_now_iso(),
+                agent_id=old.agent_id,
+                depends_on=old.depends_on,
+                metadata={
+                    **old.metadata,
+                    "requeue_feedback": feedback,
+                },
+                deliverables=old.deliverables,
+                requeue_count=old.requeue_count + 1,
+                requeued_from=old.id,
+            )
+            self._items[new_item.id] = new_item
+            self._save_to_disk()
+
+        logger.info(
+            "[+] Requeued %s -> %s (count %d)",
+            item_id, new_item.id, new_item.requeue_count,
+        )
+        return new_item
+
+    def stale_bounce(self, item_id: str, reason: str = "") -> Optional[WorkItem]:
+        """Mark an item as stale_bounced (git staleness detected)."""
+        with self._lock:
+            self._ensure_loaded()
+            item = self._items.get(item_id)
+            if item is None or item.status in TERMINAL_STATUSES:
+                return None
+            item.status = "stale_bounced"
+            item.completed_at = _now_iso()
+            if reason:
+                item.metadata["stale_reason"] = reason
+            self._save_to_disk()
+        logger.info("[!] %s stale-bounced: %s", item_id, reason)
+        return item
+
     # -- internal -------------------------------------------------------
 
     def _deps_satisfied(self, item: WorkItem) -> bool:
@@ -284,6 +434,8 @@ class WorkQueue:
             if target_status == "cancelled":
                 if item.status in TERMINAL_STATUSES:
                     return None  # Already terminal
+            elif target_status == "completed" and item.status == "approved":
+                pass  # approved -> completed is valid
             elif item.status != "active":
                 return None  # Can only complete/fail active items
 
