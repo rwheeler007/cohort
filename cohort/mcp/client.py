@@ -295,6 +295,116 @@ class CohortClient:
     # Deprecated alias
     get_roundtable_status = get_session_status
 
+    async def end_session(self, session_id: str) -> dict[str, Any] | None:
+        """POST /api/sessions/{session_id}/end."""
+        return await _request("POST", f"{self.base_url}/api/sessions/{session_id}/end")
+
+    async def pause_session(self, session_id: str) -> dict[str, Any] | None:
+        """POST /api/sessions/{session_id}/pause."""
+        return await _request("POST", f"{self.base_url}/api/sessions/{session_id}/pause")
+
+    async def resume_session(self, session_id: str) -> dict[str, Any] | None:
+        """POST /api/sessions/{session_id}/resume."""
+        return await _request("POST", f"{self.base_url}/api/sessions/{session_id}/resume")
+
+    async def extend_session(
+        self, session_id: str, turns: int = 10,
+    ) -> dict[str, Any] | None:
+        """POST /api/sessions/{session_id}/extend."""
+        return await _request(
+            "POST", f"{self.base_url}/api/sessions/{session_id}/extend",
+            json_body={"turns": turns},
+        )
+
+    async def add_participant(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        """POST /api/sessions/{session_id}/participants."""
+        return await _request(
+            "POST", f"{self.base_url}/api/sessions/{session_id}/participants",
+            json_body={"agent_id": agent_id},
+        )
+
+    async def remove_participant(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        """DELETE /api/sessions/{session_id}/participants/{agent_id}."""
+        return await _request(
+            "DELETE", f"{self.base_url}/api/sessions/{session_id}/participants/{agent_id}",
+        )
+
+    async def update_participant_status(
+        self, session_id: str, agent_id: str, status: str,
+    ) -> dict[str, Any] | None:
+        """PUT /api/sessions/{session_id}/participants/{agent_id}/status."""
+        return await _request(
+            "PUT", f"{self.base_url}/api/sessions/{session_id}/participants/{agent_id}/status",
+            json_body={"status": status},
+        )
+
+    async def score_agent(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        """GET /api/sessions/{session_id}/score/{agent_id}."""
+        return await _request(
+            "GET", f"{self.base_url}/api/sessions/{session_id}/score/{agent_id}",
+        )
+
+    async def get_next_speaker(
+        self, session_id: str,
+    ) -> dict[str, Any] | None:
+        """GET /api/sessions/{session_id}/next-speaker."""
+        return await _request(
+            "GET", f"{self.base_url}/api/sessions/{session_id}/next-speaker",
+        )
+
+    async def get_channel_session(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        """GET /api/sessions/channel/{channel_id}."""
+        return await _request(
+            "GET", f"{self.base_url}/api/sessions/channel/{channel_id}",
+        )
+
+    async def list_sessions(self) -> dict[str, Any] | None:
+        """GET /api/sessions."""
+        return await _request("GET", f"{self.base_url}/api/sessions")
+
+    # -- meeting mode (standalone, no session) -----------------------------
+
+    async def enable_meeting_mode(
+        self, channel_id: str, agents: list[str], topic: str = "",
+    ) -> dict[str, Any] | None:
+        """POST /api/channels/{channel_id}/meeting-mode."""
+        return await _request(
+            "POST", f"{self.base_url}/api/channels/{channel_id}/meeting-mode",
+            json_body={"agents": agents, "topic": topic},
+        )
+
+    async def disable_meeting_mode(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        """DELETE /api/channels/{channel_id}/meeting-mode."""
+        return await _request(
+            "DELETE", f"{self.base_url}/api/channels/{channel_id}/meeting-mode",
+        )
+
+    async def get_meeting_context(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        """GET /api/channels/{channel_id}/meeting-context."""
+        return await _request(
+            "GET", f"{self.base_url}/api/channels/{channel_id}/meeting-context",
+        )
+
+    async def detect_phase(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        """GET /api/channels/{channel_id}/phase."""
+        return await _request(
+            "GET", f"{self.base_url}/api/channels/{channel_id}/phase",
+        )
+
     # -- agent persona ---------------------------------------------------
 
     async def get_agent_persona(self, agent_id: str) -> str | None:

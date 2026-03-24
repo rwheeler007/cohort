@@ -1769,6 +1769,159 @@ async def get_channel_session(request: Request) -> JSONResponse:
     return JSONResponse({"success": True, "has_session": True, "session": session.to_dict()})
 
 
+# =========================================================================
+# MEETING MODE / PARTICIPANT MANAGEMENT ENDPOINTS
+# =========================================================================
+
+async def session_add_participant(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/participants -- add participant."""
+    session_id = request.path_params["session_id"]
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        body = {}
+    agent_id = body.get("agent_id")
+    if not agent_id:
+        return JSONResponse({"success": False, "error": "agent_id is required"}, status_code=400)
+    orch = _get_session_orch()
+    ok = orch.add_participant(session_id, agent_id)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found, not active, or agent already present"}, status_code=400)
+    return JSONResponse({"success": True})
+
+
+async def session_remove_participant(request: Request) -> JSONResponse:
+    """DELETE /api/sessions/{session_id}/participants/{agent_id} -- remove participant."""
+    session_id = request.path_params["session_id"]
+    agent_id = request.path_params["agent_id"]
+    orch = _get_session_orch()
+    ok = orch.remove_participant(session_id, agent_id)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found or agent not in session"}, status_code=400)
+    return JSONResponse({"success": True})
+
+
+async def session_update_participant_status(request: Request) -> JSONResponse:
+    """PUT /api/sessions/{session_id}/participants/{agent_id}/status -- promote/demote."""
+    session_id = request.path_params["session_id"]
+    agent_id = request.path_params["agent_id"]
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        body = {}
+    status_str = body.get("status", "").lower()
+    status_map = {
+        "active": "active_stakeholder",
+        "active_stakeholder": "active_stakeholder",
+        "silent": "approved_silent",
+        "approved_silent": "approved_silent",
+        "observer": "observer",
+        "dormant": "dormant",
+    }
+    mapped = status_map.get(status_str)
+    if not mapped:
+        return JSONResponse({
+            "success": False,
+            "error": f"Invalid status '{status_str}'. Use: active, silent, observer, dormant",
+        }, status_code=400)
+
+    from cohort.meeting import StakeholderStatus
+    status_enum = StakeholderStatus(mapped)
+    orch = _get_session_orch()
+    ok = orch.update_participant_status(session_id, agent_id, status_enum)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found or agent not in session"}, status_code=400)
+    return JSONResponse({"success": True})
+
+
+async def session_score_agent(request: Request) -> JSONResponse:
+    """GET /api/sessions/{session_id}/score/{agent_id} -- agent relevance breakdown."""
+    session_id = request.path_params["session_id"]
+    agent_id = request.path_params["agent_id"]
+    orch = _get_session_orch()
+    result = orch.score_agent(session_id, agent_id)
+    if not result:
+        return JSONResponse({"success": False, "error": "Session or agent not found"}, status_code=404)
+    return JSONResponse({"success": True, "score": result})
+
+
+async def session_extend_turns(request: Request) -> JSONResponse:
+    """POST /api/sessions/{session_id}/extend -- add more turns."""
+    session_id = request.path_params["session_id"]
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        body = {}
+    additional = body.get("turns", 10)
+    orch = _get_session_orch()
+    ok = orch.extend_turns(session_id, additional_turns=additional)
+    if not ok:
+        return JSONResponse({"success": False, "error": "Session not found"}, status_code=404)
+    return JSONResponse({"success": True})
+
+
+async def channel_meeting_enable(request: Request) -> JSONResponse:
+    """POST /api/channels/{channel_id}/meeting-mode -- enable meeting mode."""
+    channel_id = request.path_params["channel_id"]
+    try:
+        body: dict[str, Any] = await request.json()
+    except (json.JSONDecodeError, Exception):
+        body = {}
+    agents = body.get("agents", [])
+    topic = body.get("topic", "")
+    if not agents:
+        return JSONResponse({"success": False, "error": "agents list is required"}, status_code=400)
+
+    chat = _get_chat()
+    channel = chat.get_channel(channel_id)
+    if not channel:
+        return JSONResponse({"success": False, "error": f"Channel '{channel_id}' not found"}, status_code=404)
+
+    from cohort.meeting import enable_meeting_mode
+    context = enable_meeting_mode(channel, agents, chat, topic=topic)
+    return JSONResponse({"success": True, "meeting_context": context})
+
+
+async def channel_meeting_disable(request: Request) -> JSONResponse:
+    """DELETE /api/channels/{channel_id}/meeting-mode -- disable meeting mode."""
+    channel_id = request.path_params["channel_id"]
+    chat = _get_chat()
+    channel = chat.get_channel(channel_id)
+    if not channel:
+        return JSONResponse({"success": False, "error": f"Channel '{channel_id}' not found"}, status_code=404)
+
+    from cohort.meeting import disable_meeting_mode
+    was_active = disable_meeting_mode(channel, chat)
+    return JSONResponse({"success": True, "was_active": was_active})
+
+
+async def channel_meeting_context(request: Request) -> JSONResponse:
+    """GET /api/channels/{channel_id}/meeting-context -- introspect meeting state."""
+    channel_id = request.path_params["channel_id"]
+    orch = _get_session_orch()
+    ctx = orch.get_meeting_context(channel_id)
+    return JSONResponse({"success": True, "meeting_context": ctx})
+
+
+async def channel_detect_phase(request: Request) -> JSONResponse:
+    """GET /api/channels/{channel_id}/phase -- detect discussion phase."""
+    channel_id = request.path_params["channel_id"]
+    chat = _get_chat()
+    recent = chat.get_channel_messages(channel_id, limit=10)
+    if not recent:
+        return JSONResponse({"success": True, "phase": "DISCOVER", "evidence": []})
+
+    from cohort.meeting import detect_current_phase, extract_keywords
+    phase = detect_current_phase(recent)
+    # Gather evidence keywords from recent messages
+    evidence = []
+    for msg in recent[-5:]:
+        kw = extract_keywords(msg.content)
+        if kw:
+            evidence.append({"sender": msg.sender, "keywords": kw[:5]})
+    return JSONResponse({"success": True, "phase": phase, "evidence": evidence})
+
+
 async def condense_channel(request: Request) -> JSONResponse:
     """POST /api/channels/{channel_id}/condense -- trim old messages.
 
@@ -6302,7 +6455,16 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/sessions/{session_id}/pause", pause_session_endpoint, methods=["POST"]),
         Route("/api/sessions/{session_id}/resume", resume_session_endpoint, methods=["POST"]),
         Route("/api/sessions/{session_id}/end", end_session_endpoint, methods=["POST"]),
+        Route("/api/sessions/{session_id}/extend", session_extend_turns, methods=["POST"]),
+        Route("/api/sessions/{session_id}/participants", session_add_participant, methods=["POST"]),
+        Route("/api/sessions/{session_id}/participants/{agent_id}", session_remove_participant, methods=["DELETE"]),
+        Route("/api/sessions/{session_id}/participants/{agent_id}/status", session_update_participant_status, methods=["PUT"]),
+        Route("/api/sessions/{session_id}/score/{agent_id}", session_score_agent, methods=["GET"]),
         Route("/api/sessions/channel/{channel_id}", get_channel_session, methods=["GET"]),
+        Route("/api/channels/{channel_id}/meeting-mode", channel_meeting_enable, methods=["POST"]),
+        Route("/api/channels/{channel_id}/meeting-mode", channel_meeting_disable, methods=["DELETE"]),
+        Route("/api/channels/{channel_id}/meeting-context", channel_meeting_context, methods=["GET"]),
+        Route("/api/channels/{channel_id}/phase", channel_detect_phase, methods=["GET"]),
         # Deprecated aliases (roundtable -> sessions)
         Route("/api/roundtable/sessions", list_sessions_endpoint, methods=["GET"]),
         Route("/api/roundtable/setup-parse", session_setup_parse, methods=["POST"]),
@@ -6445,18 +6607,13 @@ def create_app(data_dir: str = "data") -> Starlette:
             _scheduler.start()
             logger.info("[OK] Task scheduler started")
 
-        # Run initial health checks in background — can't run synchronously here
-        # because the cohort_server entry checks its own /health endpoint, which
-        # won't be available until on_startup completes (deadlock).
-        async def _deferred_health_checks() -> None:
-            await asyncio.sleep(2)  # let uvicorn finish binding
-            try:
-                from cohort.api import run_service_checks
-                await asyncio.get_event_loop().run_in_executor(None, run_service_checks)
-                logger.info("[OK] Initial health checks completed")
-            except Exception as exc:
-                logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
-        asyncio.create_task(_deferred_health_checks())
+        # Run initial health checks so the Health Monitor has data immediately
+        try:
+            from cohort.api import run_service_checks
+            await asyncio.get_event_loop().run_in_executor(None, run_service_checks)
+            logger.info("[OK] Initial health checks completed")
+        except Exception as exc:
+            logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
 
     starlette_app = Starlette(
         routes=routes,

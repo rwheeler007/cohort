@@ -933,7 +933,56 @@ class Orchestrator:
         if not session or agent_id not in session.active_participants:
             return False
         session.active_participants[agent_id] = new_status.value
+
+        # Keep channel meeting_context in sync
+        channel = self.chat.get_channel(session.channel_id)
+        if channel and channel.meeting_context:
+            channel.meeting_context.setdefault("stakeholder_status", {})
+            channel.meeting_context["stakeholder_status"][agent_id] = new_status.value
         return True
+
+    def get_meeting_context(self, channel_id: str) -> dict[str, Any] | None:
+        """Return the meeting context for a channel, if any.
+
+        Works for both session-backed and standalone meeting mode.
+        """
+        channel = self.chat.get_channel(channel_id)
+        if not channel:
+            return None
+        return channel.meeting_context
+
+    def score_agent(
+        self, session_id: str, agent_id: str
+    ) -> dict[str, Any] | None:
+        """Full composite relevance breakdown for an agent in a session."""
+        session = self.sessions.get(session_id)
+        if not session or agent_id not in session.active_participants:
+            return None
+
+        recent_messages = self.chat.get_channel_messages(
+            session.channel_id, limit=15
+        )
+        agent_config = self._agent_config(agent_id)
+        meeting_ctx = {
+            "stakeholder_status": session.active_participants,
+            "current_topic": {"keywords": session.current_topic_keywords},
+        }
+
+        relevance = calculate_composite_relevance(
+            agent_id=agent_id,
+            meeting_context=meeting_ctx,
+            agent_config=agent_config,
+            recent_messages=recent_messages,
+        )
+
+        return {
+            "agent_id": agent_id,
+            "session_id": session_id,
+            "status": session.active_participants.get(agent_id, "unknown"),
+            "phase": relevance.pop("detected_phase", "unknown"),
+            "composite_total": relevance.pop("composite_total", 0.0),
+            "dimensions": relevance,
+        }
 
     # =========================================================================
     # SUMMARY AND REPORTING

@@ -728,3 +728,64 @@ def update_stakeholder_status(
     stakeholder_status[agent_id] = new_status.value
     meeting_ctx["stakeholder_status"] = stakeholder_status
     channel.meeting_context = meeting_ctx
+
+
+# =====================================================================
+# Standalone meeting mode (no session required)
+# =====================================================================
+
+def enable_meeting_mode(
+    channel: Channel,
+    agents: list[str],
+    chat: ChatManager,
+    *,
+    topic: str = "",
+) -> dict[str, Any]:
+    """Enable stakeholder gating on a channel without a full session.
+
+    Sets ``channel.meeting_context`` so the scoring engine activates.
+    Returns the meeting context dict.
+    """
+    topic_keywords = extract_keywords(topic) if topic else []
+    stakeholder_status = {
+        agent_id: StakeholderStatus.ACTIVE.value for agent_id in agents
+    }
+    context: dict[str, Any] = {
+        "stakeholder_status": stakeholder_status,
+        "current_topic": {
+            "keywords": topic_keywords,
+            "primary_stakeholders": list(agents),
+        },
+    }
+    channel.meeting_context = context
+    chat.post_message(
+        channel_id=channel.id,
+        sender="system",
+        content=(
+            f"[MEETING] Meeting mode enabled. "
+            f"Participants: {', '.join(f'@{a}' for a in agents)}"
+        ),
+        message_type="system",
+    )
+    return context
+
+
+def disable_meeting_mode(
+    channel: Channel,
+    chat: ChatManager,
+) -> bool:
+    """Disable stakeholder gating on a channel.
+
+    Clears ``channel.meeting_context``.  Returns *True* if meeting mode
+    was active, *False* if it was already off.
+    """
+    was_active = channel.meeting_context is not None
+    channel.meeting_context = None
+    if was_active:
+        chat.post_message(
+            channel_id=channel.id,
+            sender="system",
+            content="[MEETING] Meeting mode disabled.",
+            message_type="system",
+        )
+    return was_active

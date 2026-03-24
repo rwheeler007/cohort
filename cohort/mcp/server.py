@@ -1929,6 +1929,334 @@ cohort_compiled_roundtable = cohort_compiled_discussion
 
 
 # =====================================================================
+# Meeting control tools
+# =====================================================================
+
+class MeetingStartInput(BaseModel):
+    """Start a meeting session on a channel."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    channel: str = Field(..., description="Channel ID.", min_length=1, max_length=100)
+    topic: str = Field(..., description="Discussion topic.", min_length=1)
+    agents: Optional[List[str]] = Field(None, description="Agent IDs. Auto-selects if omitted.")
+    max_turns: int = Field(20, ge=1, le=100, description="Max turns (default 20).")
+
+
+@mcp.tool(
+    name="cohort_meeting_start",
+    annotations={"title": "Start Meeting Session", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False},
+)
+async def cohort_meeting_start(params: MeetingStartInput) -> str:
+    """Start a meeting session with stakeholder gating on a channel."""
+    result = await _client.start_session(
+        channel=params.channel,
+        agents=params.agents or [],
+        prompt=params.topic,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success"):
+        return f"Error: {result.get('error', 'Unknown')}"
+    session = result.get("session", {})
+    sid = session.get("session_id", "?")
+    agents = session.get("initial_agents", [])
+    return f"Session `{sid}` started in #{params.channel}. Participants: {', '.join(agents)}"
+
+
+class MeetingStopInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID to end.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_stop",
+    annotations={"title": "End Meeting Session", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_stop(params: MeetingStopInput) -> str:
+    """End a meeting session and generate summary."""
+    result = await _client.end_session(params.session_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success"):
+        return f"Error: {result.get('error', 'Unknown')}"
+    summary = result.get("summary", {})
+    return f"Session ended. {summary.get('total_turns', 0)} turns, {len(summary.get('participants', {}).get('contributed', []))} contributors."
+
+
+class MeetingStatusInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_status",
+    annotations={"title": "Meeting Session Status", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_status(params: MeetingStatusInput) -> str:
+    """Get the current status of a meeting session."""
+    result = await _client.get_session_status(params.session_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    status = result.get("status", result)
+    if not status.get("session_id"):
+        return f"Error: {result.get('error', 'Session not found')}"
+    p = status.get("participants", {})
+    lines = [
+        f"**{status.get('topic', '?')}** ({status.get('state', '?')})",
+        f"Turn {status.get('current_turn', 0)}/{status.get('max_turns', 20)}",
+        f"Active: {', '.join(p.get('active', []))}",
+    ]
+    if p.get("silent"):
+        lines.append(f"Silent: {', '.join(p['silent'])}")
+    if p.get("dormant"):
+        lines.append(f"Dormant: {', '.join(p['dormant'])}")
+    return "\n".join(lines)
+
+
+class MeetingPauseInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_pause",
+    annotations={"title": "Pause Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_pause(params: MeetingPauseInput) -> str:
+    """Pause a meeting session."""
+    result = await _client.pause_session(params.session_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    return "Session paused." if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingResumeInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_resume",
+    annotations={"title": "Resume Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_resume(params: MeetingResumeInput) -> str:
+    """Resume a paused meeting session."""
+    result = await _client.resume_session(params.session_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    return "Session resumed." if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingPromoteInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    agent_id: str = Field(..., description="Agent to promote to ACTIVE.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_promote",
+    annotations={"title": "Promote Agent", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_promote(params: MeetingPromoteInput) -> str:
+    """Promote an agent to ACTIVE stakeholder status in a meeting."""
+    result = await _client.update_participant_status(params.session_id, params.agent_id, "active")
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"{params.agent_id} -> ACTIVE" if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingDemoteInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    agent_id: str = Field(..., description="Agent to demote.", min_length=1)
+    status: str = Field("silent", description="Target status: silent, observer, or dormant.")
+
+
+@mcp.tool(
+    name="cohort_meeting_demote",
+    annotations={"title": "Demote Agent", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_demote(params: MeetingDemoteInput) -> str:
+    """Demote an agent's stakeholder status in a meeting."""
+    result = await _client.update_participant_status(params.session_id, params.agent_id, params.status)
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"{params.agent_id} -> {params.status.upper()}" if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingAddInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    agent_id: str = Field(..., description="Agent to add.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_add_participant",
+    annotations={"title": "Add Meeting Participant", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_add_participant(params: MeetingAddInput) -> str:
+    """Add a participant to an active meeting session."""
+    result = await _client.add_participant(params.session_id, params.agent_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"{params.agent_id} added." if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingRemoveInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    agent_id: str = Field(..., description="Agent to remove.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_remove_participant",
+    annotations={"title": "Remove Meeting Participant", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_remove_participant(params: MeetingRemoveInput) -> str:
+    """Remove a participant from a meeting session."""
+    result = await _client.remove_participant(params.session_id, params.agent_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"{params.agent_id} removed." if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingNextSpeakerInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_next_speaker",
+    annotations={"title": "Next Speaker Recommendation", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_next_speaker(params: MeetingNextSpeakerInput) -> str:
+    """Get the recommended next speaker with relevance scores."""
+    result = await _client.get_next_speaker(params.session_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success"):
+        return f"No speaker available: {result.get('error', 'threshold not met or session ended')}"
+    rec = result.get("recommendation", {})
+    lines = [
+        f"**Recommended:** {rec.get('recommended_speaker', '?')} (score: {rec.get('relevance_score', 0):.3f})",
+        f"Phase: {rec.get('phase', '?')}",
+        f"Reason: {rec.get('reason', '?')}",
+    ]
+    alts = rec.get("alternatives", [])
+    if alts:
+        lines.append(f"Alternatives: {', '.join(alts)}")
+    return "\n".join(lines)
+
+
+class MeetingScoreInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    agent_id: str = Field(..., description="Agent to score.", min_length=1)
+
+
+@mcp.tool(
+    name="cohort_meeting_score",
+    annotations={"title": "Agent Relevance Score", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_score(params: MeetingScoreInput) -> str:
+    """Get the full 5-dimension composite relevance breakdown for an agent."""
+    result = await _client.score_agent(params.session_id, params.agent_id)
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success"):
+        return f"Error: {result.get('error', 'Unknown')}"
+    score = result.get("score", {})
+    dims = score.get("dimensions", {})
+    lines = [
+        f"**{score.get('agent_id', '?')}** -- {score.get('status', '?')} / Phase: {score.get('phase', '?')}",
+        f"Composite: {score.get('composite_total', 0):.3f}",
+    ]
+    for dim, val in dims.items():
+        lines.append(f"  {dim}: {float(val):.3f}")
+    return "\n".join(lines)
+
+
+class MeetingPhaseInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    channel: str = Field(..., description="Channel ID.", min_length=1, max_length=100)
+
+
+@mcp.tool(
+    name="cohort_meeting_phase",
+    annotations={"title": "Detect Discussion Phase", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_phase(params: MeetingPhaseInput) -> str:
+    """Detect the current discussion phase (DISCOVER/PLAN/EXECUTE/VALIDATE)."""
+    result = await _client.detect_phase(params.channel)
+    if result is None:
+        return _error_msg(service_down=True)
+    phase = result.get("phase", "?")
+    evidence = result.get("evidence", [])
+    lines = [f"Phase: **{phase}**"]
+    if evidence:
+        for e in evidence[:3]:
+            kw = ", ".join(e.get("keywords", [])[:5])
+            lines.append(f"  {e.get('sender', '?')}: {kw}")
+    return "\n".join(lines)
+
+
+class MeetingExtendInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    session_id: str = Field(..., description="Session ID.", min_length=1)
+    turns: int = Field(10, ge=1, le=100, description="Turns to add (default 10).")
+
+
+@mcp.tool(
+    name="cohort_meeting_extend",
+    annotations={"title": "Extend Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_extend(params: MeetingExtendInput) -> str:
+    """Add more turns to a meeting session."""
+    result = await _client.extend_session(params.session_id, turns=params.turns)
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"Extended by {params.turns} turns." if result.get("success") else f"Error: {result.get('error', 'Unknown')}"
+
+
+class MeetingEnableInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    channel: str = Field(..., description="Channel ID.", min_length=1, max_length=100)
+    agents: List[str] = Field(..., description="Agent IDs to gate.", min_length=1)
+    topic: str = Field("", description="Optional topic for keyword scoring.")
+
+
+@mcp.tool(
+    name="cohort_meeting_enable",
+    annotations={"title": "Enable Meeting Mode", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_enable(params: MeetingEnableInput) -> str:
+    """Enable stakeholder gating on a channel without a full session."""
+    result = await _client.enable_meeting_mode(params.channel, params.agents, topic=params.topic)
+    if result is None:
+        return _error_msg(service_down=True)
+    if not result.get("success"):
+        return f"Error: {result.get('error', 'Unknown')}"
+    return f"Meeting mode enabled on #{params.channel}. Participants: {', '.join(params.agents)}"
+
+
+class MeetingDisableInput(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    channel: str = Field(..., description="Channel ID.", min_length=1, max_length=100)
+
+
+@mcp.tool(
+    name="cohort_meeting_disable",
+    annotations={"title": "Disable Meeting Mode", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+)
+async def cohort_meeting_disable(params: MeetingDisableInput) -> str:
+    """Disable stakeholder gating on a channel."""
+    result = await _client.disable_meeting_mode(params.channel)
+    if result is None:
+        return _error_msg(service_down=True)
+    was = result.get("was_active", False)
+    return f"Meeting mode disabled on #{params.channel}." if was else f"Meeting mode was already off on #{params.channel}."
+
+
+# =====================================================================
 # Executive briefing
 # =====================================================================
 
