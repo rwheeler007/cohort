@@ -839,6 +839,9 @@ def _process_queue() -> None:
                 logger.exception("[X] Error invoking %s", agent_id)
 
             _record_response(agent_id, channel_id)
+            # Also record in unified gate state
+            from cohort.response_gate import record_response as _gate_record
+            _gate_record(channel_id, agent_id)
     finally:
         _state.processor_running = False
 
@@ -1833,8 +1836,17 @@ def _invoke_agent_sync(item: dict) -> None:
                 continue
             if not get_agent_prompt_path(resolved):
                 continue
-            if _check_response_loop(channel_id, resolved):
-                logger.info("[*] Skipping chain @%s -- loop detected", resolved)
+            from cohort.response_gate import should_allow_response as _gate_check
+            chain_gate = _gate_check(
+                channel_id=channel_id,
+                agent_id=resolved,
+                message_content=response_content,
+                is_explicit_mention=False,  # chain mentions are implicit
+                chat=_chat,
+                orchestrator=_orchestrator,
+            )
+            if not chain_gate.allowed:
+                logger.info("[*] Gate blocked chain @%s: %s", resolved, chain_gate.reason)
                 continue
 
             depth = _get_conversation_depth(response_msg.id)
@@ -2018,10 +2030,6 @@ def route_mentions(
     sender = getattr(message, "sender", "")
     channel_id = getattr(message, "channel_id", "")
 
-    # Check session gating (scoring engine gates agents when a session is active)
-    channel = _chat.get_channel(channel_id) if channel_id else None
-    has_active_session = channel and getattr(channel, "meeting_context", None) is not None
-
     priority_boost = 0  # first mentioned agent gets a boost
     for mention in mentions:
         mention_lower = mention.lower()
@@ -2052,20 +2060,25 @@ def route_mentions(
                 logger.info("[*] Skipping @%s -- no prompt file or persona", resolved)
                 continue
 
-        # Session gating (if orchestrator is wired up and session is active)
-        if has_active_session and _orchestrator:
-            session = _orchestrator.get_session_for_channel(channel_id)
-            if session:
-                should_respond, reason = _orchestrator.should_agent_respond(
-                    session.session_id, resolved, message.content,
-                )
-                if not should_respond:
-                    logger.info("[*] Gated %s in roundtable: %s", resolved, reason)
-                    continue
-
-        # Loop detection
-        if _check_response_loop(channel_id, resolved):
-            logger.info("[*] Skipping @%s -- loop detected", resolved)
+        # Unified response gate (replaces separate session gating + loop detection)
+        from cohort.response_gate import should_allow_response as _gate_check
+        agent_cfg_dict = None
+        if _agent_store:
+            _cfg = _agent_store.get(resolved)
+            if _cfg:
+                agent_cfg_dict = _cfg.to_dict()
+        gate = _gate_check(
+            channel_id=channel_id,
+            agent_id=resolved,
+            message_content=message.content,
+            is_explicit_mention=True,  # all agents in mentions list were @mentioned
+            thread_id=getattr(message, "thread_id", None),
+            chat=_chat,
+            agent_config=agent_cfg_dict,
+            orchestrator=_orchestrator,
+        )
+        if not gate.allowed:
+            logger.info("[*] Gate blocked %s in #%s: %s", resolved, channel_id, gate.reason)
             continue
 
         # Calculate priority (first mentioned = highest priority)
