@@ -255,7 +255,7 @@ def ensure_channel_session(channel_id: str) -> str:
                 logger.info("[OK] Channel session for #%s came alive via VS Code", channel_id)
                 return "vscode"
 
-    # VS Code didn't spawn it in time -- try direct spawn as fallback
+    # VS Code didn't spawn it in time -- fall back to direct spawn
     logger.info("[*] VS Code didn't launch #%s in %ds, spawning directly", channel_id, _vscode_wait)
     if _spawn_channel_session(channel_id):
         return "direct"
@@ -1205,6 +1205,45 @@ def reap_idle_sessions(max_idle_seconds: Optional[float] = None) -> int:
 
 
 # =====================================================================
+# MCP config helper
+# =====================================================================
+
+def _ensure_mcp_entry(cohort_root: Path, server_key: str, channel_id: str) -> None:
+    """Ensure .mcp.json in *cohort_root* contains a server entry for this channel.
+
+    Creates the file if missing; adds the entry if absent; leaves existing
+    entries untouched.
+    """
+    import json as _json
+
+    mcp_path = cohort_root / ".mcp.json"
+    plugin_entry = str(cohort_root / "plugins" / "cohort-channel" / "src" / "index.ts")
+    # Forward slashes for cross-platform compat
+    plugin_entry = plugin_entry.replace("\\", "/")
+
+    try:
+        data = _json.loads(mcp_path.read_text("utf-8")) if mcp_path.exists() else {}
+    except Exception:
+        data = {}
+
+    servers = data.setdefault("mcpServers", {})
+    if server_key in servers:
+        return  # Already configured
+
+    servers[server_key] = {
+        "command": "bun",
+        "args": [plugin_entry],
+        "env": {
+            "COHORT_BASE_URL": COHORT_BASE_URL,
+            "CHANNEL_ID": channel_id,
+            "POLL_INTERVAL": "5000",
+        },
+    }
+    mcp_path.write_text(_json.dumps(data, indent=2) + "\n", "utf-8")
+    logger.info("[*] Added MCP entry '%s' to %s", server_key, mcp_path)
+
+
+# =====================================================================
 # Session lifecycle -- spawn and kill
 # =====================================================================
 
@@ -1220,9 +1259,9 @@ def _spawn_channel_session(channel_id: str) -> bool:
     cmd = [
         CLAUDE_CMD,
         "--dangerously-load-development-channels", "server:cohort-wq",
-        "--permission-mode", "acceptEdits",
+        "--dangerously-skip-permissions",
         "--allowedTools",
-        "mcp__cohort-wq__cohort_respond,mcp__cohort-wq__cohort_error,mcp__cohort-wq__cohort_post",
+        "mcp__cohort-wq__cohort_respond,mcp__cohort-wq__cohort_error,mcp__cohort-wq__cohort_post,mcp__cohort-wq__cohort_ready",
         "--model", CHANNEL_MODEL,
         "--system-prompt", system_prompt,
     ]
