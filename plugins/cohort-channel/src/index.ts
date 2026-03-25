@@ -65,6 +65,7 @@ const client = new CohortClient(config);
 // Track current request so reply tools know what's active
 let currentRequestId: string | null = null;
 let currentRequestClaimedAt: number | null = null;
+let requestCount: number = 0;
 
 // ---------------------------------------------------------------------------
 // MCP Server
@@ -297,7 +298,8 @@ async function pollLoop(): Promise<void> {
         const claim = await client.claim(requestId);
         currentRequestId = claim.id;
         currentRequestClaimedAt = Date.now();
-        log("INFO", `Claimed ${claim.id} (agent=${claim.agent_id}, mode=${claim.response_mode})`);
+        requestCount++;
+        log("INFO", `Claimed ${claim.id} (agent=${claim.agent_id}, mode=${claim.response_mode}, request #${requestCount})`);
 
         // Push the prompt into the Claude Code session
         await mcp.notification({
@@ -341,7 +343,10 @@ async function pollLoop(): Promise<void> {
 
 async function heartbeatLoop(): Promise<void> {
   while (true) {
-    await client.heartbeat();
+    await client.heartbeat({
+      requests_served: requestCount,
+      current_request_active: currentRequestId !== null,
+    });
     await new Promise((r) =>
       setTimeout(r, config.heartbeat_interval_ms)
     );

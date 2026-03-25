@@ -70,6 +70,24 @@ _session_default: int = 1     # Sessions to launch on startup (0 = on-demand)
 _idle_timeout_s: int = 600    # 10 minutes -- kill idle sessions
 _auto_launch: bool = False    # Auto-launch sessions on demand (opt-in)
 
+# Context pressure thresholds (configurable via env vars)
+_PRESSURE_WARN: float = float(os.environ.get("COHORT_PRESSURE_WARN", "0.35"))
+_PRESSURE_ROTATE: float = float(os.environ.get("COHORT_PRESSURE_ROTATE", "0.50"))
+_MAX_REQUESTS_PER_SESSION: int = int(os.environ.get("COHORT_MAX_REQUESTS", "30"))
+
+# Context pressure estimation constants
+_RETENTION_FACTOR: float = 0.6   # ~60% of cumulative I/O survives compression
+_CONTEXT_BUDGET_CHARS: int = 800_000  # ~200K tokens * 4 chars/token
+
+# Per-channel pressure tracking (channel_id -> {cumulative_prompt_chars, ...})
+_channel_pressure: Dict[str, Dict[str, Any]] = {}
+
+# Session handoffs for rotation continuity (channel_id -> handoff_text)
+_session_handoffs: Dict[str, str] = {}
+
+# Rotation event log
+_rotation_log: deque = deque(maxlen=100)
+
 # Reaper daemon state
 _reaper_started: bool = False
 
@@ -124,14 +142,24 @@ def apply_channel_settings(
     default: int = 1,
     idle_timeout: int = 600,
     auto_launch: bool = False,
+    pressure_warn: Optional[float] = None,
+    pressure_rotate: Optional[float] = None,
+    max_requests_per_session: Optional[int] = None,
 ) -> None:
     """Update session threshold settings.  Called from server.py post_settings()."""
     global _session_limit, _session_warn, _session_default, _idle_timeout_s, _auto_launch  # noqa: PLW0603
+    global _PRESSURE_WARN, _PRESSURE_ROTATE, _MAX_REQUESTS_PER_SESSION  # noqa: PLW0603
     _session_limit = max(1, limit)
     _session_warn = max(1, warn)
     _session_default = max(0, default)
     _idle_timeout_s = max(60, idle_timeout)  # Minimum 1 minute
     _auto_launch = bool(auto_launch)
+    if pressure_warn is not None:
+        _PRESSURE_WARN = max(0.1, min(0.9, pressure_warn))
+    if pressure_rotate is not None:
+        _PRESSURE_ROTATE = max(0.2, min(1.0, pressure_rotate))
+    if max_requests_per_session is not None:
+        _MAX_REQUESTS_PER_SESSION = max(5, max_requests_per_session)
     logger.info(
         "[OK] Channel session thresholds: limit=%d, warn=%d, default=%d, "
         "idle_timeout=%ds, auto_launch=%s",
@@ -284,6 +312,12 @@ def enqueue_channel_request(
 
     Returns the request_id.
     """
+    # Prepend handoff context if this is the first request after a rotation
+    handoff = _session_handoffs.pop(channel_id, None)
+    if handoff:
+        prompt = handoff + "\n\n" + prompt
+        logger.info("[*] Injected handoff for #%s (%d chars)", channel_id, len(handoff))
+
     request_id = f"ch_{uuid.uuid4().hex[:8]}"
     request = {
         "id": request_id,
@@ -427,6 +461,7 @@ def claim_request(request_id: str, session_id: str = "unknown") -> Optional[Dict
         req["claimed_by"] = session_id
 
     touch_channel_activity(req["channel_id"])
+    _record_prompt(req["channel_id"], len(req.get("prompt", "")), req.get("agent_id"))
     logger.info("[>>] Channel request claimed: %s by %s", request_id, session_id)
     return {
         "id": req["id"],
@@ -472,7 +507,21 @@ def deliver_response(
 
         _channel_cv.notify_all()
 
+    channel_id = req.get("channel_id", "")
+    _record_response(channel_id, len(content))
+
+    pressure = _calculate_pressure(channel_id)
+    if pressure >= _PRESSURE_WARN:
+        logger.info(
+            "[*] Channel #%s pressure: %.1f%% (%s tier)",
+            channel_id, pressure * 100, get_pressure_tier(channel_id),
+        )
+
     logger.info("[OK] Channel response delivered: %s (%.1fs)", request_id, elapsed)
+
+    # Check if session should be rotated due to context pressure
+    _check_and_rotate(channel_id)
+
     return True
 
 
@@ -601,6 +650,7 @@ def register_channel_session(
         }
         active_count += 1
 
+    touch_channel_activity(channel_id)  # Seed idle reaper timestamp
     logger.info(
         "[OK] Registered session %s for #%s (pid=%s, %d/%d active)",
         session_id, channel_id, pid, active_count, _session_limit,
@@ -700,6 +750,9 @@ def get_all_sessions_status() -> Dict[str, Any]:
         _prune_stale_sessions()
 
         for channel_id, ch_sessions in _channel_sessions.items():
+            last_activity = _channel_last_activity.get(channel_id, 0)
+            idle_secs = round(now - last_activity, 1) if last_activity else None
+
             sessions_list = []
             for session_id, info in ch_sessions.items():
                 last_hb = info.get("last_heartbeat", 0)
@@ -716,6 +769,8 @@ def get_all_sessions_status() -> Dict[str, Any]:
             channels[channel_id] = {
                 "sessions": sessions_list,
                 "queue_depth": sum(1 for r in queue if r["status"] == "pending"),
+                "idle_seconds": idle_secs,
+                "pressure": get_channel_pressure(channel_id),
             }
 
         total_healthy = _count_healthy_sessions()
@@ -731,7 +786,11 @@ def get_all_sessions_status() -> Dict[str, Any]:
             "default": _session_default,
             "idle_timeout": _idle_timeout_s,
             "auto_launch": _auto_launch,
+            "pressure_warn": _PRESSURE_WARN,
+            "pressure_rotate": _PRESSURE_ROTATE,
+            "max_requests_per_session": _MAX_REQUESTS_PER_SESSION,
         },
+        "recent_rotations": list(_rotation_log)[-10:],
         "launch_queue": get_launch_queue(),
     }
 
@@ -743,6 +802,198 @@ def get_all_sessions_status() -> Dict[str, Any]:
 def touch_channel_activity(channel_id: str) -> None:
     """Record activity on a channel (for idle reaper scoring)."""
     _channel_last_activity[channel_id] = time.time()
+
+
+# =====================================================================
+# Context pressure tracking
+# =====================================================================
+
+def _get_pressure_info(channel_id: str) -> Dict[str, Any]:
+    """Get or create pressure tracking dict for a channel."""
+    if channel_id not in _channel_pressure:
+        _channel_pressure[channel_id] = {
+            "requests_served": 0,
+            "cumulative_prompt_chars": 0,
+            "cumulative_response_chars": 0,
+            "last_agent_id": None,
+        }
+    return _channel_pressure[channel_id]
+
+
+def _record_prompt(channel_id: str, prompt_chars: int, agent_id: Optional[str] = None) -> None:
+    """Record a prompt injection into the pressure tracker."""
+    info = _get_pressure_info(channel_id)
+    info["requests_served"] += 1
+    info["cumulative_prompt_chars"] += prompt_chars
+    if agent_id:
+        info["last_agent_id"] = agent_id
+
+
+def _record_response(channel_id: str, response_chars: int) -> None:
+    """Record a response from the session into the pressure tracker."""
+    info = _get_pressure_info(channel_id)
+    info["cumulative_response_chars"] += response_chars
+
+
+def _calculate_pressure(channel_id: str) -> float:
+    """Estimate 0.0-1.0 context utilization for a channel session."""
+    info = _channel_pressure.get(channel_id)
+    if not info:
+        return 0.0
+    total = info["cumulative_prompt_chars"] + info["cumulative_response_chars"]
+    estimated_live = total * _RETENTION_FACTOR
+    return min(1.0, estimated_live / _CONTEXT_BUDGET_CHARS)
+
+
+def _reset_pressure(channel_id: str) -> None:
+    """Reset pressure tracking for a channel (called on session rotation)."""
+    _channel_pressure.pop(channel_id, None)
+
+
+def get_pressure_tier(channel_id: str) -> str:
+    """Return prompt tier based on current pressure: 'full', 'condensed', or 'minimal'."""
+    pressure = _calculate_pressure(channel_id)
+    if pressure >= _PRESSURE_ROTATE:
+        return "minimal"
+    if pressure >= _PRESSURE_WARN:
+        return "condensed"
+    return "full"
+
+
+def get_channel_pressure(channel_id: str) -> Dict[str, Any]:
+    """Return pressure metrics for a channel (for status API)."""
+    info = _channel_pressure.get(channel_id, {})
+    pressure = _calculate_pressure(channel_id)
+    return {
+        "pressure": round(pressure, 3),
+        "tier": get_pressure_tier(channel_id),
+        "requests_served": info.get("requests_served", 0),
+        "cumulative_prompt_chars": info.get("cumulative_prompt_chars", 0),
+        "cumulative_response_chars": info.get("cumulative_response_chars", 0),
+        "last_agent_id": info.get("last_agent_id"),
+    }
+
+
+# =====================================================================
+# Session rotation (context pressure-based)
+# =====================================================================
+
+def _should_rotate(channel_id: str) -> tuple:
+    """Check whether a channel session should be rotated.
+
+    Returns (should_rotate: bool, reason: str).
+    Defers rotation if requests are still queued.
+    """
+    pressure = _calculate_pressure(channel_id)
+    info = _channel_pressure.get(channel_id, {})
+    requests = info.get("requests_served", 0)
+
+    # Don't rotate while requests are queued
+    with _channel_lock:
+        queue = _channel_queues.get(channel_id, deque())
+        has_pending = any(r["status"] in ("pending", "claimed") for r in queue)
+    if has_pending:
+        return (False, "")
+
+    if pressure >= _PRESSURE_ROTATE:
+        return (True, f"pressure_{pressure:.2f}")
+    if requests >= _MAX_REQUESTS_PER_SESSION:
+        return (True, f"max_requests_{requests}")
+    return (False, "")
+
+
+def _build_handoff(channel_id: str) -> str:
+    """Build a condensed handoff for session continuity after rotation.
+
+    Uses LocalRouter.distill() if available, otherwise falls back to
+    last 5 messages verbatim.
+    """
+    # Collect recent channel messages for the handoff
+    try:
+        from cohort.agent_router import _chat
+        messages = _chat.get_channel_messages(channel_id, limit=20) if _chat else []
+    except Exception:
+        messages = []
+
+    if not messages:
+        return ""
+
+    # Build transcript for distillation (messages may be dicts or dataclasses)
+    transcript_lines = []
+    for msg in messages[-20:]:
+        sender = getattr(msg, "sender", None) or (msg.get("sender", "?") if isinstance(msg, dict) else "?")
+        content = getattr(msg, "content", None) or (msg.get("content", "") if isinstance(msg, dict) else "")
+        transcript_lines.append(f"{sender}: {content[:500]}")
+    transcript = "\n".join(transcript_lines)
+
+    # Try LLM distillation
+    try:
+        from cohort.local.router import LocalRouter
+        router = LocalRouter()
+        handoff = router.distill(
+            f"SESSION HANDOFF for #{channel_id}.\n"
+            f"A new Claude Code session is taking over. Summarize the ESSENTIAL "
+            f"state for continuity:\n"
+            f"1. Active agents and their roles\n"
+            f"2. Key decisions or agreements\n"
+            f"3. Current topic being discussed\n"
+            f"4. In-flight commitments or action items\n\n"
+            f"Recent messages:\n{transcript}"
+        )
+        if handoff:
+            return f"=== SESSION HANDOFF ===\n{handoff}\n=== END HANDOFF ==="
+    except Exception:
+        logger.debug("[!] Handoff distillation failed for #%s, using heuristic", channel_id)
+
+    # Fallback: last 5 messages verbatim
+    fallback_lines = transcript_lines[-5:]
+    fallback = "\n".join(fallback_lines)[:2000]
+    return f"=== SESSION HANDOFF ===\n{fallback}\n=== END HANDOFF ==="
+
+
+def rotate_session(channel_id: str, reason: str) -> None:
+    """Rotate a channel session: build handoff, kill old session, reset pressure.
+
+    The next request to this channel will spawn a fresh session via
+    ensure_channel_session(), which gets the handoff prepended.
+    """
+    logger.info("[*] Rotating session for #%s (reason: %s)", channel_id, reason)
+
+    # Build handoff before killing the session
+    handoff = _build_handoff(channel_id)
+    if handoff:
+        _session_handoffs[channel_id] = handoff
+
+    # Log rotation event
+    info = _channel_pressure.get(channel_id, {})
+    _rotation_log.append({
+        "channel_id": channel_id,
+        "timestamp": time.time(),
+        "reason": reason,
+        "requests_served": info.get("requests_served", 0),
+        "cumulative_chars": info.get("cumulative_prompt_chars", 0) + info.get("cumulative_response_chars", 0),
+        "handoff_size_chars": len(handoff),
+    })
+
+    # Kill all sessions for this channel
+    with _sessions_lock:
+        ch_sessions = _channel_sessions.get(channel_id, {})
+        for session_id, sess_info in list(ch_sessions.items()):
+            _kill_session(sess_info)
+            del ch_sessions[session_id]
+        if not ch_sessions:
+            _channel_sessions.pop(channel_id, None)
+
+    # Reset pressure for fresh session
+    _reset_pressure(channel_id)
+    logger.info("[OK] Session rotated for #%s, handoff=%d chars", channel_id, len(handoff))
+
+
+def _check_and_rotate(channel_id: str) -> None:
+    """Check if rotation is needed and execute it. Called after deliver_response."""
+    should, reason = _should_rotate(channel_id)
+    if should:
+        rotate_session(channel_id, reason)
 
 
 # =====================================================================
@@ -885,7 +1136,14 @@ def _reap_idle_sessions() -> None:
 
             last_activity = _channel_last_activity.get(channel_id, 0)
             if last_activity == 0:
-                continue  # Never had activity, skip
+                # Fallback: use earliest session registration time
+                earliest = min(
+                    (info.get("registered_at", 0) for info in ch_sessions.values()),
+                    default=0,
+                )
+                if earliest == 0 or (now - earliest) < _idle_timeout_s:
+                    continue
+                # Fall through — registered but never used, past timeout
 
             idle_seconds = now - last_activity
             if idle_seconds < _idle_timeout_s:

@@ -158,11 +158,12 @@ export class CohortClient {
   /**
    * Send heartbeat. Best-effort.
    */
-  async heartbeat(): Promise<void> {
+  async heartbeat(extra?: Record<string, unknown>): Promise<void> {
     try {
       const body: Record<string, unknown> = {
         session_id: this.sessionId,
         pid: process.pid,
+        ...extra,
       };
       if (this.channelId) body.channel_id = this.channelId;
 

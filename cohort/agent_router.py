@@ -741,19 +741,36 @@ def enqueue_agent_channel_request(
     _project_memory_block = load_project_memory(agent_id, project_path=project_path, query=message) if project_path else ""
     _user_profile_block = load_user_profile_block(conversation_context=channel_context + thread_context)
 
-    full_prompt = (
-        f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
-        f"Follow this agent prompt exactly:\n\n"
-        f"---\n{agent_prompt}\n---\n\n"
-        f"{_user_profile_block}\n"
-        f"{_agent_memory_block}\n"
-        f"{_project_memory_block}\n"
-        f"{GROUNDING_RULES}\n"
-        f"{tool_awareness}"
-        f"{channel_context}"
-        f"{thread_context}"
-        f"Now respond to this message:\n{message}"
-    )
+    from cohort.channel_bridge import get_pressure_tier
+    _prompt_tier = get_pressure_tier(channel_id)
+
+    if _prompt_tier == "minimal":
+        full_prompt = (
+            f"[Request for {agent_id}]\n"
+            f"{thread_context}"
+            f"Now respond to this message:\n{message}"
+        )
+    elif _prompt_tier == "condensed":
+        full_prompt = (
+            f"You are responding as the {agent_id} agent.\n\n"
+            f"{_agent_memory_block}\n"
+            f"{thread_context}"
+            f"Now respond to this message in #{channel_id}:\n{message}"
+        )
+    else:
+        full_prompt = (
+            f"You are responding as the {agent_id} agent in Cohort team chat.\n\n"
+            f"Follow this agent prompt exactly:\n\n"
+            f"---\n{agent_prompt}\n---\n\n"
+            f"{_user_profile_block}\n"
+            f"{_agent_memory_block}\n"
+            f"{_project_memory_block}\n"
+            f"{GROUNDING_RULES}\n"
+            f"{tool_awareness}"
+            f"{channel_context}"
+            f"{thread_context}"
+            f"Now respond to this message:\n{message}"
+        )
 
     request_id = enqueue_channel_request(
         prompt=full_prompt,
@@ -762,7 +779,7 @@ def enqueue_agent_channel_request(
         thread_id=thread_id,
         response_mode="channel",
     )
-    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s", request_id, agent_id, channel_id)
+    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
 
     # Spawn a thread to collect the response and post it to the channel.
     # enqueue_agent_channel_request returns immediately (fire-and-forget from the
@@ -1633,15 +1650,37 @@ def _invoke_agent_sync(item: dict) -> None:
                         await_channel_response,
                     )
 
-                    logger.info("[>>] Channel mode for %s in #%s", agent_id, channel_id)
+                    from cohort.channel_bridge import get_pressure_tier
+                    _prompt_tier = get_pressure_tier(channel_id)
+                    logger.info("[>>] Channel mode for %s in #%s (tier=%s)", agent_id, channel_id, _prompt_tier)
                     ch_t0 = time.monotonic()
                     # Channel session already has conversation history in
                     # its context window -- strip channel context to avoid
                     # double-loading (saves ~2-15K tokens per request).
-                    _channel_prompt = _base_prompt + (
-                        f"Now respond to this message in #{channel_id}:\n"
-                        f"{message_content}"
-                    )
+                    # Tiered prompt: at higher pressure, send less context
+                    # since the session already has prior turns in memory.
+                    if _prompt_tier == "minimal":
+                        # Session knows the persona from prior turns --
+                        # just send the message and agent identity.
+                        _channel_prompt = (
+                            f"[Request for {agent_id}]\n"
+                            f"{thread_context}"
+                            f"Now respond to this message:\n{message_content}"
+                        )
+                    elif _prompt_tier == "condensed":
+                        # Skip inventory, trim to essentials
+                        _channel_prompt = (
+                            f"You are responding as the {agent_id} agent.\n\n"
+                            f"{_agent_memory_block}\n"
+                            f"{thread_context}"
+                            f"Now respond to this message in #{channel_id}:\n"
+                            f"{message_content}"
+                        )
+                    else:
+                        _channel_prompt = _base_prompt + (
+                            f"Now respond to this message in #{channel_id}:\n"
+                            f"{message_content}"
+                        )
                     request_id = enqueue_channel_request(
                         prompt=_channel_prompt,
                         agent_id=agent_id,
