@@ -300,14 +300,38 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
 // ---------------------------------------------------------------------------
 
 const READY_TIMEOUT_MS = 90_000; // 90s -- covers slow resume sessions
+const STARTUP_PING_INTERVAL_MS = 4_000; // re-ping if Claude hasn't called cohort_ready yet
 
 async function pollLoop(): Promise<void> {
+  // Claude won't spontaneously call cohort_ready -- it needs a prompt.
+  // Send a startup ping every few seconds until it responds.
+  log("INFO", "Sending startup ping to Claude...");
+
+  const sendStartupPing = async () => {
+    try {
+      await mcp.notification({
+        method: "notifications/claude/channel",
+        params: {
+          content: "Session started. Your first action must be to call `cohort_ready` with no arguments.",
+          meta: { request_id: "startup", type: "startup" },
+        },
+      });
+    } catch { /* best-effort */ }
+  };
+
+  await sendStartupPing();
+  const pingTimer = setInterval(async () => {
+    if (resolveReady === null) { clearInterval(pingTimer); return; } // already resolved
+    log("INFO", "Re-sending startup ping (cohort_ready not yet called)...");
+    await sendStartupPing();
+  }, STARTUP_PING_INTERVAL_MS);
+
   // Block until Claude calls cohort_ready, proving the channel is live.
-  log("INFO", "Waiting for Claude ready signal (timeout 90s)...");
   const timeout = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error("Claude ready timeout after 90s")), READY_TIMEOUT_MS)
   );
   await Promise.race([claudeReady, timeout]);
+  clearInterval(pingTimer);
   log("INFO", "Claude is ready -- starting poll loop");
 
   let consecutiveFailures = 0;
