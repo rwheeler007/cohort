@@ -99,6 +99,18 @@ class WorkQueue:
         self._lock = threading.Lock()
         self._items: Dict[str, WorkItem] = {}
         self._loaded = False
+        self._deliverable_tracker: Optional[Any] = None
+        self._on_complete_callback: Optional[Any] = None
+
+    # -- hook wiring ----------------------------------------------------
+
+    def set_deliverable_tracker(self, tracker: Any) -> None:
+        """Wire DeliverableTracker for claim gate enforcement."""
+        self._deliverable_tracker = tracker
+
+    def set_on_complete_callback(self, fn: Any) -> None:
+        """Wire a callback called whenever an item transitions to reviewing."""
+        self._on_complete_callback = fn
 
     # -- persistence ----------------------------------------------------
 
@@ -194,10 +206,12 @@ class WorkQueue:
                     "active_item": active.to_dict(),
                 }
 
-            # Find eligible items: queued + deps satisfied
+            # Find eligible items: queued + deps satisfied + deliverables finalized
             eligible = [
                 item for item in self._items.values()
-                if item.status == "queued" and self._deps_satisfied(item)
+                if item.status == "queued"
+                and self._deps_satisfied(item)
+                and self._deliverables_finalized(item)
             ]
             if not eligible:
                 return {"item": None}
@@ -277,6 +291,13 @@ class WorkQueue:
             item.status = "reviewing"
             self._save_to_disk()
         logger.info("[*] %s -> reviewing", item_id)
+
+        if self._on_complete_callback:
+            try:
+                self._on_complete_callback(item)
+            except Exception:
+                pass  # Never let callback crash the queue
+
         return item
 
     def approve(
@@ -403,6 +424,14 @@ class WorkQueue:
         return item
 
     # -- internal -------------------------------------------------------
+
+    def _deliverables_finalized(self, item: WorkItem) -> bool:
+        """Gate: only claim items whose deliverables are finalized."""
+        if not item.deliverables:
+            return True  # No deliverables defined -- no gate, backward compat
+        if self._deliverable_tracker is None:
+            return True  # No tracker wired -- open by default
+        return self._deliverable_tracker.is_finalized(item.id)
 
     def _deps_satisfied(self, item: WorkItem) -> bool:
         """Check whether all depends_on items are in a terminal state."""

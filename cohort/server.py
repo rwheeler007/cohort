@@ -1030,6 +1030,112 @@ def _maybe_trigger_auto_review(task: Dict[str, Any]) -> None:
     thread.start()
 
 
+# =====================================================================
+# Auto-Review Pipeline for Work Queue items
+# =====================================================================
+
+def _run_auto_review_work_item(item_dict: Dict[str, Any], review_backend: str = "local") -> None:
+    """Background thread: run the review pipeline on a work item in reviewing state.
+
+    Mirrors ``_run_auto_review()`` but operates on WorkQueue items instead of Tasks.
+
+    Verdict outcomes:
+    - APPROVED: leave in reviewing state (human makes final call), emit update.
+    - REJECTED / NEEDS_WORK: reject the item, requeue with combined feedback, emit update.
+    - INCOMPLETE: log warning, emit current state, no transition.
+    """
+    item_id = item_dict.get("id", "?")
+    logger.info("[>>] Auto-review (work-queue) starting for %s (backend=%s)", item_id, review_backend)
+
+    try:
+        if _work_queue is None or _review_pipeline is None:
+            logger.warning("[!] Auto-review (wq) skipped: stores not initialised")
+            return
+
+        # Build task context for the review pipeline
+        description = item_dict.get("description", "(no description)")
+        result_text = item_dict.get("result", "") or ""
+        deliverables = item_dict.get("deliverables") or []
+        deliverables_text = "\n".join(
+            f"- [{d.get('id', '?')}] {d.get('description', '')}"
+            for d in deliverables
+        ) if deliverables else "(no deliverables defined)"
+
+        task_context = {
+            "description": description,
+            "deliverables": deliverables_text,
+            "code": result_text[:15000],
+            "self_review": "(automated)",
+        }
+
+        # Select reviewer backend
+        if review_backend == "channel":
+            if _ensure_review_channel_session():
+                reviewer_fn = _make_channel_reviewer_fn(item_id)
+            else:
+                reviewer_fn = _make_ollama_reviewer_fn()
+        elif review_backend == "auto":
+            if _channel_session_available():
+                reviewer_fn = _make_channel_reviewer_fn(item_id)
+            else:
+                reviewer_fn = _make_ollama_reviewer_fn()
+        else:
+            reviewer_fn = _make_ollama_reviewer_fn()
+
+        reviews = _review_pipeline.run_reviews(task_context, reviewer_fn)
+
+        # Attach reviews
+        if reviews:
+            review_dicts = [r.to_dict() for r in reviews]
+            _work_queue.attach_reviews(item_id, review_dicts)
+
+        # Evaluate verdict
+        verdict = _review_pipeline.evaluate_verdict(reviews)
+
+        from cohort.review_pipeline import PipelineVerdict
+
+        if verdict == PipelineVerdict.APPROVED:
+            # Leave in reviewing -- human makes final call
+            logger.info("[OK] Auto-review (wq) APPROVED %s -- awaiting human review", item_id)
+            _broadcast_work_queue()
+
+        elif verdict in (PipelineVerdict.REJECTED, PipelineVerdict.NEEDS_WORK):
+            feedback = _review_pipeline.collect_rejection_feedback(reviews)
+            # Must reject before requeue (requeue requires rejected/stale_bounced/failed status)
+            _work_queue.reject(item_id, rejected_by="auto-review", reason=feedback)
+            _broadcast_work_queue()
+            new_item = _work_queue.requeue(item_id, feedback=feedback)
+            if new_item:
+                logger.info(
+                    "[X] Auto-review (wq) %s %s -> requeued as %s",
+                    verdict.value, item_id, new_item.id,
+                )
+            else:
+                logger.warning("[!] Auto-review (wq) rejected %s but requeue failed", item_id)
+            _broadcast_work_queue()
+
+        elif verdict == PipelineVerdict.INCOMPLETE:
+            logger.warning("[!] Auto-review (wq) INCOMPLETE for %s -- no transition", item_id)
+            _broadcast_work_queue()
+
+    except Exception as exc:
+        logger.error("[X] Auto-review (wq) failed for %s: %s", item_id, exc, exc_info=True)
+
+
+def _work_item_review_trigger(item: Any) -> None:
+    """Callback: auto-trigger review when work item enters reviewing state."""
+    if _review_pipeline is None or not _review_pipeline.stages:
+        return
+    review_backend = _get_review_backend()
+    thread = threading.Thread(
+        target=_run_auto_review_work_item,
+        args=(item.to_dict() if hasattr(item, "to_dict") else item, review_backend),
+        daemon=True,
+        name=f"auto-review-wq-{getattr(item, 'id', '?')}",
+    )
+    thread.start()
+
+
 def _broadcast_approvals() -> None:
     """Push approval updates to all connected dashboard clients."""
     if _approval_store is None:
@@ -6887,6 +6993,7 @@ def create_app(data_dir: str = "data") -> Starlette:
     logger.info("[OK] Work queue initialised")
 
     # -- Approval Pipeline (multi-stakeholder review) -------------------
+    # (hooks wired after _deliverable_tracker and _review_pipeline init below)
     global _approval_store, _deliverable_tracker, _review_pipeline  # noqa: PLW0603
     from cohort.approval_store import ApprovalStore
     from cohort.deliverables import DeliverableTracker
@@ -6895,6 +7002,11 @@ def create_app(data_dir: str = "data") -> Starlette:
     _deliverable_tracker = DeliverableTracker(data_dir=Path(resolved_dir))
     _review_pipeline = ReviewPipeline.load_config(Path(resolved_dir))
     logger.info("[OK] Approval pipeline initialised (%d review stages)", len(_review_pipeline.stages))
+
+    # -- Wire work queue pipeline hooks ---------------------------------
+    if _deliverable_tracker is not None:
+        _work_queue.set_deliverable_tracker(_deliverable_tracker)
+    _work_queue.set_on_complete_callback(_work_item_review_trigger)
 
     # -- Task Store (file-backed tasks + schedules) -----------------------
     from cohort.api import TaskStore
