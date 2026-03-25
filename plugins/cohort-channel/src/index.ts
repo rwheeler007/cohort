@@ -50,7 +50,8 @@ function log(level: string, msg: string): void {
 
 const SERVER_NAME = process.env.CHANNEL_NAME ?? "cohort-wq";
 const channelId = process.env.CHANNEL_ID;
-console.error(`[cohort-wq] ENV: CHANNEL_ID=${channelId ?? "(unset)"} COHORT_BASE_URL=${process.env.COHORT_BASE_URL ?? "(unset)"}`);
+const projectId = process.env.PROJECT_ID ?? "default";
+console.error(`[cohort-wq] ENV: CHANNEL_ID=${channelId ?? "(unset)"} PROJECT_ID=${projectId} COHORT_BASE_URL=${process.env.COHORT_BASE_URL ?? "(unset)"}`);
 
 const config: ChannelConfig = {
   cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
@@ -432,20 +433,34 @@ async function heartbeatLoop(): Promise<void> {
 // PID lockfile -- prevents multiple instances from competing for same work
 // ---------------------------------------------------------------------------
 
-const LOCK_FILE = join(LOG_DIR, `${SERVER_NAME}${channelId ? `-${channelId}` : ""}.lock`);
+// Lock file is per-project + per-channel so multiple projects don't collide.
+// e.g. cohort-wq-cohort-vscode-general.lock
+const LOCK_FILE = join(
+  LOG_DIR,
+  `${SERVER_NAME}-${projectId}${channelId ? `-${channelId}` : ""}.lock`
+);
+
+function isPidAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e: any) {
+    // EPERM = process exists but we can't signal it (still alive)
+    // ESRCH = no such process (dead)
+    return e?.code === "EPERM";
+  }
+}
 
 function acquireLock(): boolean {
   try {
     if (existsSync(LOCK_FILE)) {
       const content = readFileSync(LOCK_FILE, "utf-8").trim();
       const existingPid = parseInt(content, 10);
-      if (!isNaN(existingPid)) {
-        try {
-          process.kill(existingPid, 0); // Signal 0 = existence check
-          return false; // Process is still alive
-        } catch {
-          log("WARN", `Stale lockfile for PID ${existingPid}, taking over`);
+      if (!isNaN(existingPid) && existingPid !== process.pid) {
+        if (isPidAlive(existingPid)) {
+          return false; // Another live instance holds the lock
         }
+        log("WARN", `Stale lockfile for PID ${existingPid}, taking over`);
       }
     }
     writeFileSync(LOCK_FILE, String(process.pid), "utf-8");
