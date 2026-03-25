@@ -22,7 +22,7 @@ This is what Cohort was built for. We just didn't know Anthropic would be the on
 
 We integrated Channels three hours after Anthropic shipped the protocol. That's the headline. But the real story is the months before that morning.
 
-**We've been MCP-native from day one.** Cohort's entire tool surface -- 57 CLI commands, 12+ specialist agents, roundtables, code queue, health checks -- is already exposed as MCP tools. Channels are MCP servers. The integration was a thin bridge, not an architecture change.
+**We've been MCP-native from day one.** Cohort's entire tool surface -- 73 CLI commands, 12+ specialist agents, roundtables, code queue, health checks -- is already exposed as MCP tools. Channels are MCP servers. The integration was a thin bridge, not an architecture change.
 
 **We already had the request/response infrastructure.** Cohort's code queue is a full lifecycle state machine: submit, preprocess, claim, execute, self-review, agent review, approve. The Channel plugin just polls it. No new infrastructure.
 
@@ -98,6 +98,44 @@ Cohort inverted this:
 
 ---
 
+## VS Code: Where It All Lives
+
+The entire Cohort experience runs inside VS Code. No browser tabs. No context-switching.
+
+**Claude Code writes your code. Cohort's agent team reviews, tests, and coordinates it. Both live inside VS Code -- working together.**
+
+The extension (v0.3.8) operates in two modes:
+
+- **Lite Mode** (no server): Channel management, agent listing, message posting. Works standalone with local JSON storage.
+- **Full Mode** (connected to Cohort server): Real-time agent responses, task queue with approval pipeline, meeting control with scoring and phase detection, model settings, benchmarks.
+
+Auto-upgrades from Lite to Full when your server is detected. Eight commands via the command palette. Zero external dependencies beyond Python and the Cohort package.
+
+This matters for the Channels story because the VS Code extension is where most users will experience bidirectional AI. Claude Code sessions launch inside VS Code. Cohort's agent panels live inside VS Code. The handoff between local agents and Claude happens seamlessly in the same window.
+
+---
+
+## Meeting Control: Structured Agent Discussions
+
+Unstructured multi-agent conversations loop. Agents repeat each other, wrong experts dominate, and there's no convergence mechanism. Meetings fix this.
+
+**18 CLI subcommands** (`cohort meet ...`) manage the full lifecycle:
+
+- **Session lifecycle:** start, stop, pause, resume, extend
+- **Participant management:** add, remove, promote, demote agents mid-discussion
+- **Scoring & introspection:** next-speaker recommendation, per-agent score breakdown, phase detection
+- **Standalone mode:** enable/disable meeting gating on any channel without a session
+
+The scoring engine runs offline -- it's deterministic code, not an LLM call. Five dimensions (domain expertise 30%, complementary value 25%, historical success 20%, phase alignment 15%, data ownership 10%) produce a composite score. If the score beats the agent's threshold, they speak. If not, they wait.
+
+**Phase detection** reads recent messages and classifies the discussion as Discover, Plan, Execute, or Validate. Thresholds auto-adjust: early phases are loose (encourage exploration), late phases are tight (force convergence).
+
+**Stakeholder gating** prevents dominant agents: Active (easy to speak), Silent (stepped back voluntarily), Observer (mostly listening), Dormant (can't speak without @mention). Users promote or demote agents in real-time.
+
+This is what other frameworks don't have. CrewAI uses max-iteration timeouts. LangGraph uses manual conditional edges. Cohort's scoring engine makes deterministic turn-allocation decisions that the LLM can't override.
+
+---
+
 ## Key Messaging for Channels
 
 **Hero line:** "Claude uses your tools. Your agents use Claude."
@@ -106,11 +144,11 @@ Cohort inverted this:
 
 **The speed story:** "Anthropic shipped the protocol at 3 AM. We had it integrated before most people woke up."
 
-**The preparation story:** "Three hours to integrate. Four months of daily production use built the system it plugged into."
+**The preparation story:** "Three hours to integrate. Five months of daily production use built the system it plugged into."
 
 **The economic story:** "The API model was a blank check. Channels gives you a fixed budget. Cohort makes every dollar count."
 
-**The technical story:** "MCP-native from day one. 57 CLI commands, 12+ agents, full code queue -- all already exposed as MCP tools. Channels was a transport layer, not an architecture change."
+**The technical story:** "MCP-native from day one. 73 CLI commands, 12+ agents, full code queue -- all already exposed as MCP tools. Channels was a transport layer, not an architecture change."
 
 ---
 

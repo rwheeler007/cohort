@@ -1,12 +1,12 @@
 # Creator Target List -- Cohort Launch
 
-Researched 2026-03-10. Verified against live sources. Update contact info before outreach.
+Researched 2026-03-10. Verified 2026-03-25 (all creators confirmed active). Update contact info before outreach.
 
 ## Outreach Strategy
 
 **Timeline:** L-28 (list build) -> L-21 (warm-up) -> L-14 (Tier 1 outreach) -> L-10 (Tier 2-3) -> L-7 (support) -> L-Day -> L+7 (amplify)
 
-**Approach:** No paid sponsorships. Trade early access + responsive support for coverage. Personalize every message -- reference their specific content. Lead with "local-first" and "zero-dep" angles.
+**Approach:** No paid sponsorships. Trade early access + responsive support for coverage. Personalize every message -- reference their specific content. Lead with "local-first," "zero-dep," and "Claude Code Channels integration" angles.
 
 **Fallback:** If Tier 1 ignores us, double down on Tier 3 community posts. Organic Reddit/HN buzz is what gets Tier 1 attention.
 
@@ -31,8 +31,10 @@ Researched 2026-03-10. Verified against live sources. Update contact info before
 
 1. **Matt Williams** -- Ollama expert, local-first audience, most natural fit
 2. **Dave Ebbelaar** -- Agent framework tutorials, practical dev audience
-3. **Sam Witteveen** -- Framework reviews, provides Google Colab notebooks (interactive demos)
+3. **Sam Witteveen** -- Framework reviews, provides Google Colab notebooks (interactive demos). Covers MCP ecosystem directly.
 4. **Cole Medin** (see Tier 3) -- Builds local AI stacks with Ollama, agents masterclass series
+5. **NetworkChuck** -- Has a GitHub repo specifically for "AI in the Terminal" covering Claude Code. Already in the ecosystem.
+6. **Theo Browne** -- T3 Chat has native MCP support, has discussed Claude Code + Ollama. Building products in this exact space.
 
 ---
 
@@ -66,8 +68,8 @@ Researched 2026-03-10. Verified against live sources. Update contact info before
 
 | # | Creator | Platform | Reach | Relevance | Contact |
 |---|---------|----------|-------|-----------|---------|
-| 1 | **Cole Medin** | YouTube + GitHub | Growing | AI Agents Masterclass series. Local AI starter kits (Ollama + Supabase + n8n). oTTomator platform. Microsoft Learn contributor. | @cole_medin on X, GitHub (coleam00) |
-| 2 | **IndyDevDan** (Dan Disler) | YouTube + GitHub | Growing | Claude Code, MCP, AI coding agents, git worktrees for parallel execution. Built "infinite agentic loop." | GitHub (disler) |
+| 1 | **Cole Medin** | YouTube + GitHub | Growing fast | AI Agents Masterclass series. Local AI starter kits (Ollama + Supabase + n8n). oTTomator platform. Microsoft Learn contributor. Built Claude Code hooks for multi-agent observability. Conference talks on "Agentic Engineering with Context-Driven Development." **Strongest Channels outreach target.** | @cole_medin on X, GitHub (coleam00), LinkedIn |
+| 2 | **IndyDevDan** (Dan Disler) | YouTube + GitHub | Growing fast | Claude Code, MCP, AI coding agents, git worktrees for parallel execution. Built "infinite agentic loop." Repos: claude-code-hooks-multi-agent-observability, single-file-agents, claude-code-is-programmable. Very aligned with multi-agent orchestration story. | GitHub (disler) |
 | 3 | **James Briggs** (Aurelio AI) | YouTube + X | ~63.5K | Founder of Aurelio AI, ex-Pinecone. Agent frameworks, RAG, LangChain AI Handbook co-author. | @jamescalam on X, GitHub (jamescalam) |
 | 4 | **Mervin Praison** (PraisonAI) | YouTube + GitHub + X | Growing | Creator of PraisonAI multi-agent framework. Extensive CrewAI + Ollama tutorials. Direct competitor awareness. | @MervinPraison on X, mer.vin |
 | 5 | **Jeff Geerling** | YouTube + Blog | ~981K | Self-hosted/homelab influencer. Ollama on Raspberry Pi, DeepSeek R1 locally. Consumer-GPU audience. | jeffgeerling.com |
@@ -83,6 +85,16 @@ Researched 2026-03-10. Verified against live sources. Update contact info before
 | **Latent Space** | swyx + guests | THE AI engineering podcast. Covers agents, MCP, infrastructure. | latent.space |
 | **Practical AI** (Changelog) | Chris & Daniel | "2025 Was The Year of Agents, What's Coming In 2026?" Massive dev network reach. | practicalai.fm |
 | **The Cognitive Revolution** | Nathan Labenz | Biweekly. Interviews builders, researchers, investors. Good for deep-dive conversation. | cognitiverevolution.ai |
+
+### Channels Priority Outreach (added 2026-03-25)
+
+These creators are already in or adjacent to the Claude Code ecosystem. Lead with the Channels integration story.
+
+1. **Simon Willison** -- Blog posts on Claude Code auto mode (Mar 24), coding agents for data analysis (Mar 16). Single highest-leverage target. One blog post = HN front page.
+2. **Cole Medin** -- Built Claude Code hooks for multi-agent observability. Conference talks on "Agentic Engineering." Almost certainly aware of Channels already.
+3. **NetworkChuck** -- GitHub repo "AI in the Terminal" covers Claude Code alongside Gemini CLI and Codex.
+4. **Theo Browne** -- T3 Chat has native MCP support. Has discussed Claude Code + Ollama integration.
+5. **IndyDevDan** -- Repos: claude-code-is-programmable, single-file-agents. Deep in Claude Code multi-agent tooling.
 
 ### Communities (Post Directly)
 
@@ -106,7 +118,9 @@ Researched 2026-03-10. Verified against live sources. Update contact info before
 | Tutorial makers | "Build a team in 20 min" | Demo-first: build something real with < 50 lines |
 | Newsletter writers | "New category: AI Team Coordination" | "ChatGPT is a person. Cohort is a company." |
 | Homelab/self-hosted | "Consumer hardware agents" | "5 AI agents on a $300 GPU" |
-| Podcast hosts | "Extracted from production" | Story of building a real 60+ agent system, then packaging the patterns |
+| Podcast hosts | "Extracted from production" | Story of building a 12-agent production system daily since Nov 2025, then packaging the patterns |
+| Claude Code creators | "First Channels integration" | "Anthropic shipped Channels at 3 AM. We had roundtables by 7 AM." |
+| VS Code extension creators | "Your agent team in VS Code" | "Claude Code writes. Cohort's agents review. Both in the same window." |
 
 ---
 
@@ -132,7 +146,7 @@ Prepare these before any outreach:
 >
 > I saw your [specific video/post] about [specific topic]. You mentioned [specific pain point they raised] -- we built something that addresses exactly that.
 >
-> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, and uses contribution scoring to decide which agent speaks next (instead of round-robin or random). It was extracted from a production system running 60+ agents.
+> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, with Claude Code Channels integration for fixed-cost frontier reasoning. 73 CLI commands, 18 meeting-control subcommands with contribution scoring, and a VS Code extension. Extracted from a 12-agent production system running daily since November 2025.
 >
 > We're launching publicly soon and I'd love to give you early access -- no strings attached. If you find it interesting enough to cover, great. If not, I'd still value your feedback.
 >

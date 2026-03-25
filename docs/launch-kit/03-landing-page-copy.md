@@ -122,6 +122,10 @@ Auto-handles: GPU detection, Ollama installation, MCP configuration, content fee
 
 7. **Your Working Style** -- Behavioral modeling built as a partnership -- you and your agents agree on how to work together.
 
+8. **Meeting Control** -- 18 CLI commands to run structured multi-agent sessions. Start, pause, promote, demote agents mid-discussion. 5-dimension scoring decides who speaks next. Phase detection (Discover/Plan/Execute/Validate) auto-adjusts thresholds. Conversations converge instead of looping.
+
+9. **VS Code Extension** -- Full agent dashboard inside your editor. Browse channels, manage tasks, approve code, control meetings -- without switching to a browser. Two modes: Lite (standalone, no server) and Full (connected to your Cohort server with real-time updates). Claude Code writes code; Cohort's agents review it; both live in VS Code.
+
 ---
 
 ## Anti-Disruption Section

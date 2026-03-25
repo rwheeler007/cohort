@@ -26,7 +26,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > We had multi-agent roundtables running through it by 7 AM.
 >
-> Three hours. Not because we're fast -- because we've been building MCP-native for months. Channels was a transport layer. The system it plugged into took 4 months of daily production use.
+> Three hours. Not because we're fast -- because we've been building MCP-native for months. Channels was a transport layer. The system it plugged into took 5 months of daily production use.
 
 ### Tweet 3 (Bidirectional)
 
@@ -64,7 +64,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > 10 lines to your first multi-agent session. Works with Ollama, llama.cpp, or Claude Code Channels.
 >
-> Zero deps in core. 785+ tests. Apache 2.0.
+> Zero deps in core. 1,100+ tests. Apache 2.0.
 >
 > GitHub: [link]
 > Docs: [link]
@@ -94,7 +94,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > @runtime_checkable protocols. JSONL transport. 5-dimension contribution scoring. MCP-native tool surface (57 commands). Three response tiers (Smart/Smarter/Smartest).
 >
-> 785+ tests. Python 3.11-3.13. Apache 2.0.
+> 1,100+ tests. Python 3.11-3.13. Apache 2.0.
 >
 > pip install cohort
 
@@ -125,6 +125,26 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 > That quote is from the AI that powers every Cohort agent.
 >
 > [link to AI's Perspective page]
+
+### The VS Code Angle
+
+> Your AI agents live inside VS Code now.
+>
+> Browse channels. Approve code. Control meetings. Score agent relevance. All without leaving your editor.
+>
+> Claude Code writes. Cohort's agents review. Both in the same window.
+>
+> VS Code extension: [link]
+
+### The Meeting Control Angle
+
+> Most multi-agent systems let agents talk until the token budget runs out.
+>
+> Cohort has 18 meeting commands. Start, pause, promote, demote agents mid-discussion. 5-dimension scoring decides who speaks. Phase detection forces convergence.
+>
+> Deterministic turn allocation. Not another LLM call.
+>
+> The difference between a meeting with an agenda and a meeting without one.
 
 ### The "We Were Ready" Angle
 
@@ -172,7 +192,7 @@ I've been running a multi-agent system on consumer GPUs since November 2025 (dua
 
 **But it works fully offline.** The 12 agents, roundtables, code queue, scoring engine -- all of it runs without Channels. Channels is an optional escalation path.
 
-**Zero dependencies** in core. `pip install cohort` pulls nothing. 785+ tests. Apache 2.0. Python 3.11+.
+**Zero dependencies** in core. `pip install cohort` pulls nothing. 1,100+ tests. Apache 2.0. Python 3.11+.
 
 GitHub: [link]
 
@@ -192,9 +212,9 @@ The design philosophy:
 
 - **Zero core dependencies.** `pip install cohort` pulls nothing from PyPI. Pure stdlib.
 - **Protocol-first.** `@runtime_checkable` protocols instead of base classes. Bring your own agent implementation.
-- **MCP-native.** 57 CLI commands and 12+ agents exposed as MCP tools. This is what made the Claude Code Channels integration a 3-hour job instead of a 3-week job.
+- **MCP-native.** 73 CLI commands and 12+ agents exposed as MCP tools. This is what made the Claude Code Channels integration a 3-hour job instead of a 3-week job.
 - **JSONL transport.** Non-Python teams can participate without a Python SDK.
-- **785+ tests** across 25+ test files. CI on 3.11, 3.12, 3.13.
+- **1,100+ tests** across 25+ test files. CI on 3.11, 3.12, 3.13.
 
 The interesting technical bits:
 
@@ -204,7 +224,7 @@ The interesting technical bits:
 
 **Context distillation** -- before escalating to Claude, local models pre-process and condense the context. Claude gets a structured briefing instead of raw data. 70% token reduction on escalated calls.
 
-Extracted from 4 months of daily production use. Apache 2.0.
+Extracted from 5 months of daily production use. Apache 2.0.
 
 GitHub: [link]
 

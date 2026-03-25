@@ -85,7 +85,7 @@ For sales conversations, community questions, HN comments, and support interacti
 > It was extracted FROM production. The system it came from runs agents daily and has since November 2025. Cohort is the battle-tested patterns, packaged clean. IBM-level integration safety, startup-level innovation speed.
 
 **Response (detailed):**
-> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily since November 2025. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 785+ tests across 25 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
+> Cohort wasn't built as a greenfield project. It was extracted from a production multi-agent system that has been running agents daily since November 2025. The orchestration patterns, loop prevention, contribution scoring -- all of it was proven in production before being packaged as a library. The test suite has 1,100+ tests across 25 test files. It runs on Python 3.11, 3.12, and 3.13. The core library has zero external dependencies. That said, we're transparent about maturity. The patterns are proven. The packaging is new. We publish what we do and what we don't yet do.
 
 **Never say:** "It's totally production ready for enterprise" (be honest about version maturity).
 

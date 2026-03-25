@@ -18,7 +18,7 @@ The single highest-leverage launch moment. Follow HN conventions: factual title,
 
 ## Submission Comment
 
-Hi HN, I'm Ryan. I've been running a multi-agent system with 60+ AI specialists since November 2025. The patterns that actually worked are now an open-source Python library.
+Hi HN, I'm Ryan. I've been running a production multi-agent system since November 2025 -- 12 specialist agents coordinating daily across code generation, security audits, and strategic planning. The patterns that actually worked are now an open-source Python library.
 
 **The problem Cohort solves:** Every multi-agent framework routes every agent turn through a cloud API. More agents = more cost. More rounds = more cost. The bill is unpredictable and scales linearly with usage. We inverted this.
 
@@ -33,11 +33,13 @@ Hi HN, I'm Ryan. I've been running a multi-agent system with 60+ AI specialists 
 **What makes it different:**
 
 - Zero dependencies in core. `pip install cohort` pulls nothing.
-- MCP-native architecture -- 57 CLI commands and 12+ agents exposed as MCP tools
+- MCP-native architecture -- 73 CLI commands and 12+ agents exposed as MCP tools
 - 5-dimension contribution scoring (not round-robin)
 - Loop prevention, session isolation, context distillation
 - Security agent in every workflow + human approval gates
-- 785+ tests. Python 3.11-3.13. Apache 2.0.
+- Meeting control: 18 subcommands for structured discussions with scoring, phase detection, stakeholder gating
+- VS Code extension (v0.3.8) -- full agent dashboard in your editor, no browser needed
+- 1,100+ tests. Python 3.11-3.13. Apache 2.0.
 
 **Quick start:**
 
@@ -65,7 +67,7 @@ GitHub: [link]
 Docs: [link]
 Apache 2.0 licensed.
 
-Happy to answer questions about the Channels integration, cost model, scoring algorithm, or what we learned running 60+ agents in production.
+Happy to answer questions about the Channels integration, VS Code extension, meeting control, cost model, scoring algorithm, or what we learned running multi-agent systems in daily production.
 
 ---
 
@@ -91,7 +93,7 @@ Happy to answer questions about the Channels integration, cost model, scoring al
 > Anything Ollama or llama.cpp can run. Default is qwen3.5:9b (6.6GB, fits on 12GB GPU with room to spare, 104 tok/s on RTX 3080 Ti). Also works with cloud APIs if you prefer -- protocol-first means any inference backend works. The Smartest tier uses Claude Code via Channels for frontier reasoning.
 
 ### "Is this production ready?"
-> The patterns are proven -- they've been running in production since November 2025 with 60+ agents. The packaging as a standalone library is v0.3.1. We're transparent about that distinction. 785+ tests, CI on three Python versions, Apache 2.0.
+> The patterns are proven -- 12 specialist agents have been running in daily production since November 2025. The packaging as a standalone library is v0.3.1. We're transparent about that distinction. 1,100+ tests, CI on three Python versions, Apache 2.0.
 
 ### "Fixed cost sounds great, but what happens when you hit the limit?"
 > Cohort manages the budget intelligently. Local-first triage (95% free), context distillation (70% token reduction on escalated calls), session persistence (no cold starts), and graceful degradation back to local models when capacity is constrained. You set the ceiling; Cohort makes every interaction count within it.

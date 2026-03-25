@@ -77,33 +77,53 @@ What if the AI tools looked like the tools your team already uses? What if they 
 
 Zero learning curve isn't a nice-to-have. It's the difference between "Day One Productive" and "maybe productive by month three."
 
+## The Cost Problem Nobody Talks About
+
+There's a second gap hiding behind the productivity gap: economics.
+
+Every multi-agent framework on the market routes every agent turn through a cloud API. More agents, more cost. More discussion rounds, more cost. More context, more cost. The bill is unpredictable and scales linearly with usage. A busy week can cost $500. A runaway loop can cost thousands.
+
+This is why most teams don't actually run multi-agent workflows. The economics don't work. You can't coordinate seven agents on a task when each agent turn costs $0.10-0.50 in API fees. The math kills the architecture before the architecture can prove itself.
+
+The fix isn't cheaper models. It's running locally.
+
+A $300 consumer GPU runs a 9-billion parameter model at 104 tokens per second. That's fast enough for real-time agent conversations. It's free after the hardware cost. And it means 95% of your agent work never touches a cloud API.
+
+The 5% that genuinely needs frontier reasoning -- complex multi-file refactors, nuanced architectural decisions, problems that need the best model available -- that's where Claude Code Channels comes in. Fixed monthly cost. Not per-token. Not per-call. Fixed. Your local agents pre-distill the context (70% token reduction), and Claude gets a structured briefing instead of raw data.
+
+**The economics of multi-agent AI just changed: 95% free, 5% fixed-cost.**
+
 ## The Welding Rig
 
-We built Cohort because we lived this problem. Since November 2025, we've run a multi-agent system with AI specialists handling everything from code generation to security audits to strategic planning. The system that worked wasn't the one where we made each agent smarter. It was the one where we made agents **coordinate** -- with a security-first architecture and human approval gates on everything that mattered.
+We built Cohort because we lived this problem. Since November 2025, we've run a multi-agent system with 12 specialist agents handling everything from code generation to security audits to strategic planning. The system that worked wasn't the one where we made each agent smarter. It was the one where we made agents **coordinate** -- with a security-first architecture and human approval gates on everything that mattered.
 
 The breakthrough wasn't a better model. It was better integration.
 
-Cohort is the result: an open-source coordination layer that manages which AI specialists engage, prevents them from talking in circles, scores their contributions, ensures structured handoffs, and puts a security agent and a human in the loop before anything ships. The output isn't a draft for you to fix. It's finished, reviewed, tested work.
+When Anthropic shipped Claude Code Channels, we had it integrated in three hours. Not because we're fast -- because we'd spent five months building MCP-native infrastructure. Channels was a transport layer. The system it plugged into was the real work.
 
-It looks like the tools your team already uses. They're productive on day one.
+Cohort is the result: an open-source coordination layer that manages which AI specialists engage, prevents them from talking in circles, scores their contributions across five dimensions, detects when the conversation phase shifts, ensures structured handoffs, and puts a security agent and a human in the loop before anything ships. 18 meeting-control commands give you direct control over who speaks, when they step back, and when the discussion converges. The output isn't a draft for you to fix. It's finished, reviewed, tested work.
+
+It runs inside VS Code. It looks like the tools your team already uses. They're productive on day one.
 
 One sentence in. Working code out.
 
 ## What To Do About It
 
-If you're a CTO or technical leader staring at AI spend that isn't producing the returns you expected, the fix isn't a better model, a bigger context window, or more seats. The fix is integration:
+If you're a CTO or technical leader staring at AI spend that isn't producing the returns you expected, the fix isn't a better model, a bigger context window, or more seats. The fix is integration and economics:
 
 1. **Stop treating AI as individual productivity.** It's a team coordination problem.
-2. **Add quality gates.** AI-generated code should go through review and security audit before a human ever sees it -- just like human-generated code does.
-3. **Build security into the process, not around it.** A security agent that participates in every workflow catches problems that post-hoc scanning misses.
-4. **Keep humans in the loop.** AI handles the volume. Humans handle the judgment. That's the division of labor that works.
-5. **Use familiar interfaces.** If your team needs training to use the AI tool, you've already lost the adoption battle.
-6. **Measure finished output, not draft speed.** The metric that matters isn't "how fast did AI generate code." It's "how much finished, shipped, working code came out of the pipeline."
+2. **Run locally first.** 95% of agent work doesn't need frontier models. A consumer GPU handles it at zero marginal cost.
+3. **Add quality gates.** AI-generated code should go through review and security audit before a human ever sees it -- just like human-generated code does.
+4. **Build security into the process, not around it.** A security agent that participates in every workflow catches problems that post-hoc scanning misses.
+5. **Keep humans in the loop.** AI handles the volume. Humans handle the judgment. That's the division of labor that works.
+6. **Use familiar interfaces.** If your team needs training to use the AI tool, you've already lost the adoption battle.
+7. **Measure finished output, not draft speed.** The metric that matters isn't "how fast did AI generate code." It's "how much finished, shipped, working code came out of the pipeline."
+8. **Fix the economics.** If your multi-agent bill is unpredictable, your architecture is wrong. Local-first with fixed-cost escalation is the model that scales.
 
-The tools exist. The models are capable. What's missing is the coordination layer.
+The tools exist. The models are capable. What's missing is the coordination layer -- and the economic model that makes it sustainable.
 
 Stop buying better hammers. Get a welding rig.
 
 ---
 
-*Cohort is open-source AI team coordination. Security-first, human-in-the-loop, productive on day one. [Get started on GitHub.]*
+*Cohort is open-source AI team coordination. 95% local, fixed-cost escalation via Claude Code Channels, security-first, human-in-the-loop. 1,100+ tests. Apache 2.0. [Get started on GitHub.]*

@@ -1,6 +1,6 @@
 # Cohort Launch Messaging Kit
 
-Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7-agent Claude Roundtable review, updated 2026-03-21 to reflect Channels integration and site evolution.
+Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7-agent Claude Roundtable review. Updated 2026-03-25: numbers sweep (1,100+ tests, 73 CLI commands), VS Code extension narrative, meeting control feature, social post additions.
 
 **Source of truth:** The live website at `rwheeler007.github.io/cohort/` is canonical. These docs track the messaging strategy behind it.
 
@@ -9,14 +9,14 @@ Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7
 | # | Asset | Purpose | Primary Audience | Status |
 |---|-------|---------|-----------------|--------|
 | 01 | [Positioning Statement](01-positioning-statement.md) | Five pillars, messaging hierarchy, language rules | Internal (all team members) | Ready |
-| 02 | [Elevator Pitches](02-elevator-pitches.md) | One-liner through 60-second pitches, audience variants, quick objection responses | Sales, founders, community | Ready |
-| 03 | [Landing Page Copy](03-landing-page-copy.md) | Mirror of live site sections: hero, problem, features, security, Channels, CTA | Website visitors | Updated 2026-03-21 |
-| 04 | [The AI Productivity Gap](04-blog-the-ai-productivity-gap.md) | Anchor blog post -- SEO, thought leadership, security section | General audience, HN, LinkedIn | Ready |
+| 02 | [Elevator Pitches](02-elevator-pitches.md) | One-liner through 60-second pitches, audience variants, quick objection responses | Sales, founders, community | Updated 2026-03-25 |
+| 03 | [Landing Page Copy](03-landing-page-copy.md) | Mirror of live site sections: hero, problem, features, security, Channels, CTA | Website visitors | Updated 2026-03-25 |
+| 04 | [The AI Productivity Gap](04-blog-the-ai-productivity-gap.md) | Anchor blog post -- SEO, thought leadership, economics + Channels + security | General audience, HN, LinkedIn | Updated 2026-03-25 |
 | 05 | [Objection Handling](05-objection-handling.md) | 10 objections with short + detailed responses, meta-rules + 2026 competitor briefing | Sales, community support, HN comments | Updated 2026-03-11 |
-| 06 | [Creator Targets](06-creator-targets.md) | 35+ verified content creators, outreach strategy, templates | Marketing, outreach | Ready |
-| 07 | [Show HN Draft](07-show-hn-draft.md) | HN submission title, comment, Q&A playbook, timing strategy | Launch day | Updated 2026-03-21 |
-| 08 | [Launch Day Social Posts](08-launch-day-social-posts.md) | Pre-written posts for Twitter, Reddit, LinkedIn + r/ClaudeAI with posting schedule | Launch day | Updated 2026-03-21 |
-| 09 | [Channels Narrative](09-channels-narrative.md) | Why Channels changes everything -- MCP history, bidirectional tools, economics, key messaging | All assets, internal alignment | **NEW** 2026-03-21 |
+| 06 | [Creator Targets](06-creator-targets.md) | 35+ verified content creators, Channels priority outreach, templates | Marketing, outreach | Verified 2026-03-25 |
+| 07 | [Show HN Draft](07-show-hn-draft.md) | HN submission title, comment, Q&A playbook, timing strategy | Launch day | Updated 2026-03-25 |
+| 08 | [Launch Day Social Posts](08-launch-day-social-posts.md) | Pre-written posts for Twitter, Reddit, LinkedIn + r/ClaudeAI with posting schedule | Launch day | Updated 2026-03-25 |
+| 09 | [Channels Narrative](09-channels-narrative.md) | Channels + VS Code extension + meeting control -- full product narrative | All assets, internal alignment | Updated 2026-03-25 |
 
 ## Positioning Evolution
 
