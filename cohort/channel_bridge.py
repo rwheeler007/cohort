@@ -337,6 +337,19 @@ def enqueue_channel_request(
     with _channel_cv:
         if channel_id not in _channel_queues:
             _channel_queues[channel_id] = deque(maxlen=100)
+
+        # Deduplicate: skip if a pending request for the same agent+channel
+        # already exists (extension and server route_mentions both enqueue).
+        for existing in _channel_queues[channel_id]:
+            if (existing["status"] == "pending"
+                    and existing["agent_id"] == agent_id
+                    and existing["channel_id"] == channel_id):
+                logger.info(
+                    "[*] Dedup: skipping duplicate request for %s on #%s (existing: %s)",
+                    agent_id, channel_id, existing["id"],
+                )
+                return existing["id"]
+
         _channel_queues[channel_id].append(request)
         _channel_cv.notify_all()
 
