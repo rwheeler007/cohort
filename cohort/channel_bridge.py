@@ -308,9 +308,11 @@ def enqueue_channel_request(
 
     touch_channel_activity(channel_id)
 
-    # Auto-launch: if no session exists for this channel, queue a launch
-    if _auto_launch and not channel_mode_active(channel_id=channel_id):
-        request_session(channel_id)
+    # Demand-driven launch: if no session exists, queue one.
+    # Uses force=True to bypass the auto_launch gate -- this is a real
+    # request that needs a session, not a proactive startup launch.
+    if not channel_mode_active(channel_id=channel_id):
+        request_session(channel_id, force=True)
 
     logger.info(
         "[>>] Channel request enqueued: %s for %s in #%s",
@@ -747,14 +749,21 @@ def touch_channel_activity(channel_id: str) -> None:
 # Auto-launch and priority eviction
 # =====================================================================
 
-def request_session(channel_id: str) -> Dict[str, Any]:
-    """Request a session for a channel.  Used by auto-launch.
+def request_session(channel_id: str, *, force: bool = False) -> Dict[str, Any]:
+    """Request a session for a channel.
 
-    If auto-launch is enabled and we're under the session limit, adds the
-    channel to the launch queue.  If at the limit, attempts priority
-    eviction of the least-active idle session.
+    Args:
+        channel_id: Channel needing a session.
+        force: If True, bypass the auto_launch gate.  Used for demand-driven
+               launches (e.g. @mention triggers agent response and needs a
+               session).  The auto_launch setting only gates proactive/startup
+               launches.
+
+    If auto-launch is enabled (or force=True) and we're under the session
+    limit, adds the channel to the launch queue.  If at the limit, attempts
+    priority eviction of the least-active idle session.
     """
-    if not _auto_launch:
+    if not force and not _auto_launch:
         return {"queued": False, "reason": "auto_launch_disabled"}
 
     if channel_mode_active(channel_id=channel_id):
