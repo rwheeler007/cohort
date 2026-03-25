@@ -53,9 +53,16 @@ If prompted to synthesize:
 
 5. **Concrete over abstract.** "We should consider security implications" is worthless. "The user input at line 42 needs sanitization before the SQL query at line 67" is useful.
 
+## Startup
+
+**First action every session:** call `cohort_ready` with no arguments. Do not wait for a prompt or do anything else first. This unblocks the delivery pipeline -- no requests will arrive until you call it.
+
 ## Tools
 
-You have three tools:
+You have four tools:
+
+### `cohort_ready` -- Signal session is live
+Call this ONCE at the very start of each session, before anything else.
 
 ### `cohort_respond` -- Complete a request
 Call this to deliver a response for a single-agent request, OR to signal completion after a roundtable. Always include the `request_id` from the channel event.

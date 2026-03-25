@@ -67,6 +67,13 @@ let currentRequestId: string | null = null;
 let currentRequestClaimedAt: number | null = null;
 let requestCount: number = 0;
 
+// Ready-gate: poll loop blocks until Claude calls cohort_ready, proving the
+// channel is bidirectional and Claude is actually listening for notifications.
+let resolveReady: (() => void) | null = null;
+const claudeReady = new Promise<void>((resolve) => {
+  resolveReady = resolve;
+});
+
 // ---------------------------------------------------------------------------
 // MCP Server
 // ---------------------------------------------------------------------------
@@ -172,6 +179,15 @@ mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["request_id", "error"],
       },
     },
+    {
+      name: "cohort_ready",
+      description:
+        "Signal that this Claude Code session is initialized and ready to " +
+        "receive channel requests. Call this ONCE at the very start of each " +
+        "session, before doing anything else. This unblocks prompt delivery -- " +
+        "no requests will be pushed until this is called.",
+      inputSchema: { type: "object" as const, properties: {}, required: [] },
+    },
   ],
 }));
 
@@ -260,6 +276,17 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       };
     }
 
+    case "cohort_ready": {
+      if (resolveReady) {
+        resolveReady();
+        resolveReady = null;
+        log("INFO", "Claude signaled ready -- prompt delivery unblocked");
+      }
+      return {
+        content: [{ type: "text", text: "Ready acknowledged. Waiting for requests..." }],
+      };
+    }
+
     default:
       return {
         content: [{ type: "text", text: `Unknown tool: ${name}` }],
@@ -272,7 +299,17 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
 // Poll Loop -- checks Cohort for pending requests, pushes prompts to Claude
 // ---------------------------------------------------------------------------
 
+const READY_TIMEOUT_MS = 90_000; // 90s -- covers slow resume sessions
+
 async function pollLoop(): Promise<void> {
+  // Block until Claude calls cohort_ready, proving the channel is live.
+  log("INFO", "Waiting for Claude ready signal (timeout 90s)...");
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Claude ready timeout after 90s")), READY_TIMEOUT_MS)
+  );
+  await Promise.race([claudeReady, timeout]);
+  log("INFO", "Claude is ready -- starting poll loop");
+
   let consecutiveFailures = 0;
   const MAX_BACKOFF_MS = 30_000;
 
@@ -296,24 +333,38 @@ async function pollLoop(): Promise<void> {
 
         // Claim the request (get the full prompt)
         const claim = await client.claim(requestId);
-        currentRequestId = claim.id;
-        currentRequestClaimedAt = Date.now();
         requestCount++;
         log("INFO", `Claimed ${claim.id} (agent=${claim.agent_id}, mode=${claim.response_mode}, request #${requestCount})`);
 
+        // Guard: skip if server returned an empty prompt
+        if (!claim.prompt) {
+          log("WARN", `Claim ${claim.id} has empty prompt -- skipping`);
+          continue;
+        }
+
+        currentRequestId = claim.id;
+        currentRequestClaimedAt = Date.now();
+
         // Push the prompt into the Claude Code session
-        await mcp.notification({
-          method: "notifications/claude/channel",
-          params: {
-            content: claim.prompt,
-            meta: {
-              request_id: claim.id,
-              agent_id: claim.agent_id,
-              channel_id: claim.channel_id,
-              response_mode: claim.response_mode,
+        try {
+          await mcp.notification({
+            method: "notifications/claude/channel",
+            params: {
+              content: claim.prompt,
+              meta: {
+                request_id: claim.id,
+                agent_id: claim.agent_id,
+                channel_id: claim.channel_id,
+                response_mode: claim.response_mode,
+              },
             },
-          },
-        });
+          });
+        } catch (notifyErr) {
+          log("ERR", `Failed to push notification for ${claim.id}: ${(notifyErr as Error).message}`);
+          // Reset so the next poll cycle can retry
+          currentRequestId = null;
+          currentRequestClaimedAt = null;
+        }
       }
     } catch (e) {
       consecutiveFailures++;
