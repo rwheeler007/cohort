@@ -163,6 +163,14 @@ def build_execution_prompt(
             + "\n=== END CONSTRAINTS ===\n\n"
         )
 
+    # Channel discussion context from enrichment (if available)
+    enriched_context = confirmed_brief.get("channel_context", "")
+    enriched_block = ""
+    if enriched_context:
+        enriched_block = (
+            f"\n## Channel Discussion Context\n{enriched_context}\n\n"
+        )
+
     return (
         f"You are the {agent_id} agent executing an approved task.\n\n"
         f"Follow this agent prompt exactly:\n"
@@ -174,6 +182,7 @@ def build_execution_prompt(
         f"Agreed plan:\n{brief_lines}\n"
         f"=== END CONFIRMED TASK ===\n\n"
         f"{constraint_block}"
+        f"{enriched_block}"
         f"{channel_context}"
         f"Now execute the task.  Produce the deliverable."
     )

@@ -28,6 +28,12 @@ from cohort.briefing import (
 
 logger = logging.getLogger(__name__)
 
+_SELF_REVIEW_SYSTEM_PROMPT = """You are evaluating whether a task's output satisfies each acceptance criterion.
+For each deliverable, assess: pass (clearly satisfied), fail (clearly not satisfied), or pending (cannot determine from output alone).
+Respond with valid JSON only, no prose.
+Schema: {"verdict": "PASS|FAIL|PARTIAL", "deliverables": {"<id>": {"status": "pass|fail|pending", "notes": "<brief reason>"}}, "remaining_issues": [{"id": "<id>", "description": "<deliverable text>", "notes": "<what's missing>"}], "summary": "<1-2 sentence overall assessment>"}
+PASS = all deliverables pass. FAIL = one or more fail. PARTIAL = mix of pass and pending."""
+
 
 class TaskExecutor:
     """Manages the full task lifecycle: briefing -> execution -> completion."""
@@ -314,6 +320,20 @@ class TaskExecutor:
             task_id, agent_id, backend,
         )
 
+        # Context enrichment: inject channel discussion into execution brief
+        source_channel = task.get("channel_id") or task.get("source_channel")
+        if source_channel and self.chat:
+            try:
+                from cohort.context_enrichment import enrich_channel_discussion
+                enrichment = enrich_channel_discussion(
+                    source_channel, task.get("description", ""), self.chat
+                )
+                if enrichment:
+                    confirmed_brief = dict(confirmed_brief)
+                    confirmed_brief["channel_context"] = enrichment
+            except Exception:
+                pass  # Best-effort, never block execution
+
         # Typing indicator
         self._emit_sync("user_typing", {
             "sender": agent_id,
@@ -343,11 +363,17 @@ class TaskExecutor:
         # Post result to chat
         self._post_and_broadcast(channel_id, agent_id, result)
 
+        # Self-review against deliverables
+        self_review_report = {}
+        if task.get("deliverables") and result and not str(result).startswith("[Error]"):
+            self_review_report = self._run_self_review(task, result)
+
         # Mark task complete -- use TaskStore if available, else data_layer
         output = {
             "content": result,
             "backend": backend,
             "completed_at": datetime.now().isoformat(),
+            "self_review": self_review_report,
         }
         if hasattr(self, '_task_store') and self._task_store:
             if result.startswith("[Error]") or result.startswith("[Timeout]"):
@@ -531,6 +557,20 @@ class TaskExecutor:
             task_id, agent_id, backend,
         )
 
+        # Context enrichment: inject channel discussion into execution brief
+        source_channel = task.get("channel_id") or task.get("source_channel")
+        if source_channel and self.chat:
+            try:
+                from cohort.context_enrichment import enrich_channel_discussion
+                enrichment = enrich_channel_discussion(
+                    source_channel, task.get("description", ""), self.chat
+                )
+                if enrichment:
+                    confirmed_brief = dict(confirmed_brief)
+                    confirmed_brief["channel_context"] = enrichment
+            except Exception:
+                pass  # Best-effort, never block execution
+
         try:
             if backend == "api":
                 result = self._execute_api(task, confirmed_brief)
@@ -540,12 +580,18 @@ class TaskExecutor:
             logger.exception("[X] Scheduled execution failed for task %s", task_id)
             result = f"[Error] Execution failed: {exc}"
 
+        # Self-review against deliverables
+        self_review_report = {}
+        if task.get("deliverables") and result and not str(result).startswith("[Error]"):
+            self_review_report = self._run_self_review(task, result)
+
         # Mark task complete (task_store handles schedule stats)
         output = {
             "content": result,
             "backend": backend,
             "completed_at": datetime.now().isoformat(),
             "scheduled": True,
+            "self_review": self_review_report,
         }
 
         # Use task_store if available, otherwise fall back to data_layer
@@ -576,6 +622,78 @@ class TaskExecutor:
     def set_task_store(self, store: Any) -> None:
         """Wire the TaskStore for scheduled task persistence."""
         self._task_store = store
+
+    # =================================================================
+    # Self-review
+    # =================================================================
+
+    def _run_self_review(self, task: dict, output_text: str) -> dict:
+        """Evaluate task output against its deliverables using local LLM.
+
+        Returns structured report: {
+            "verdict": "PASS|FAIL|PARTIAL",
+            "deliverables": {"D1": {"status": "pass|fail|pending", "notes": "..."}},
+            "remaining_issues": [{"id": "D1", "description": "...", "notes": "..."}],
+            "summary": "..."
+        }
+        Returns empty dict on any failure (best-effort, never raises).
+        """
+        try:
+            deliverables = task.get("deliverables") or []
+            if not deliverables:
+                return {}
+
+            # Build deliverables listing for the prompt
+            deliverable_lines = []
+            for d in deliverables:
+                d_id = d.get("id", "?")
+                d_desc = d.get("description", "")
+                deliverable_lines.append(f"- {d_id}: {d_desc}")
+            deliverables_text = "\n".join(deliverable_lines)
+
+            user_prompt = (
+                f"## Deliverables\n{deliverables_text}\n\n"
+                f"## Task Output\n{output_text[:4000]}"
+            )
+
+            # Try local LLM (same pattern as _call_local in briefing)
+            response_text = None
+            try:
+                from cohort.local import LocalRouter
+
+                router = LocalRouter()
+                result = router.route(
+                    user_prompt,
+                    task_type="reasoning",
+                    response_mode="smart",
+                    system=_SELF_REVIEW_SYSTEM_PROMPT,
+                )
+                if result is not None and result.text:
+                    response_text = result.text
+            except Exception:
+                pass
+
+            if not response_text:
+                return {}
+
+            # Parse JSON from response (handle markdown fences)
+            import json
+            import re
+
+            text = response_text.strip()
+            # Strip markdown code fences
+            fence_match = re.search(r"```(?:json)?\s*\n?(.*?)\n?```", text, re.DOTALL)
+            if fence_match:
+                text = fence_match.group(1).strip()
+
+            report = json.loads(text)
+            if not isinstance(report, dict):
+                return {}
+            return report
+
+        except Exception as exc:
+            logger.debug("Self-review failed (non-fatal): %s", exc)
+            return {}
 
     # =================================================================
     # Helpers
