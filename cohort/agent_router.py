@@ -736,7 +736,9 @@ def enqueue_agent_channel_request(
     thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
     agent_cfg = _agent_store.get(agent_id) if _agent_store else None
     perms = resolve_permissions(agent_id, agent_cfg, get_central_permissions())
-    tool_awareness = _build_tool_awareness(perms) if (perms and perms.allowed_tools) else ""
+    # NOTE: tool_awareness is no longer injected into the prompt for this
+    # path.  Channel requests go to Claude Code sessions which auto-discover
+    # MCP tools; repeating them in text wastes ~130 tokens per invocation.
     _agent_memory_block = load_agent_context(agent_id, query=message, agent_store=_agent_store)
     _project_memory_block = load_project_memory(agent_id, project_path=project_path, query=message) if project_path else ""
     _user_profile_block = load_user_profile_block(conversation_context=channel_context + thread_context)
@@ -766,20 +768,23 @@ def enqueue_agent_channel_request(
             f"{_agent_memory_block}\n"
             f"{_project_memory_block}\n"
             f"{GROUNDING_RULES}\n"
-            f"{tool_awareness}"
             f"{channel_context}"
             f"{thread_context}"
             f"Now respond to this message:\n{message}"
         )
 
+    # Route all @mention requests to the cohort-wq queue so the work-queue
+    # session (which polls channel_id=cohort-wq) picks them up.  The
+    # _collect_and_post thread below still uses the original channel_id closure
+    # to post the response back to the correct source channel.
     request_id = enqueue_channel_request(
         prompt=full_prompt,
         agent_id=agent_id,
-        channel_id=channel_id,
+        channel_id="cohort-wq",
         thread_id=thread_id,
         response_mode="channel",
     )
-    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
+    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s -> wq (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
 
     # Spawn a thread to collect the response and post it to the channel.
     # enqueue_agent_channel_request returns immediately (fire-and-forget from the
@@ -1395,9 +1400,13 @@ def _invoke_agent_sync(item: dict) -> None:
         f"{thread_context}"
         f"Now respond to this message:\n{message_content}"
     )
-    # Full prompt with tool awareness text (for Claude CLI fallback)
+    # Clean prompt (no tool awareness text).  Claude Code sessions auto-
+    # discover MCP tools; the CLI gets --allowedTools and --max-turns flags;
+    # local routers receive real tool schemas.  Injecting a plain-text tool
+    # list was purely redundant (~130 tokens per call).
+    # full_prompt with tool awareness is kept only for the local-router
+    # no-tools single-shot path where the model has no other tool context.
     full_prompt = _base_prompt + tool_awareness + _context_suffix
-    # Clean prompt without tool awareness (for local tool calling -- model gets real schemas)
     _local_prompt = _base_prompt + _context_suffix
 
     # D5: Circuit breaker -- reject oversized prompts
@@ -1485,7 +1494,7 @@ def _invoke_agent_sync(item: dict) -> None:
         if _ensure_channel_with_toast(channel_id):
             try:
                 request_id = enqueue_channel_request(
-                    prompt=full_prompt,
+                    prompt=_local_prompt,
                     agent_id=agent_id,
                     channel_id=channel_id,
                     thread_id=thread_id,
@@ -1518,7 +1527,7 @@ def _invoke_agent_sync(item: dict) -> None:
                     logger.info("[>>] Tier %s routed to channel for %s in #%s",
                                 response_mode, agent_id, channel_id)
                     request_id = enqueue_channel_request(
-                        prompt=full_prompt,
+                        prompt=_local_prompt,
                         agent_id=agent_id,
                         channel_id=channel_id,
                         thread_id=thread_id,
@@ -1623,7 +1632,7 @@ def _invoke_agent_sync(item: dict) -> None:
                 # Split prompt into system/user for cloud API
                 cr = cloud.complete(
                     system_prompt="You are a helpful AI assistant.",
-                    user_message=full_prompt,
+                    user_message=_local_prompt,
                 )
                 if cr.text.strip():
                     response_content = cr.text.strip()
@@ -1747,7 +1756,7 @@ def _invoke_agent_sync(item: dict) -> None:
 
                     result = subprocess.run(
                         cli_cmd,
-                        input=full_prompt,
+                        input=_local_prompt,
                         capture_output=True,
                         text=True,
                         cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
@@ -1765,7 +1774,7 @@ def _invoke_agent_sync(item: dict) -> None:
 
                     result = subprocess.run(
                         cli_cmd,
-                        input=full_prompt,
+                        input=_local_prompt,
                         capture_output=True,
                         text=True,
                         cwd=str(AGENTS_ROOT) if AGENTS_ROOT else None,
@@ -1782,7 +1791,7 @@ def _invoke_agent_sync(item: dict) -> None:
                     logger.error("[X] Claude CLI error for %s: %s", agent_id, result.stderr[:200])
                 else:
                     cli_elapsed = round(time.monotonic() - cli_t0, 1)
-                    est_in = len(full_prompt) // 4
+                    est_in = len(_local_prompt) // 4
                     est_out = len(response_content) // 4 if response_content else 0
                     response_metadata = {
                         "tier": 5,
