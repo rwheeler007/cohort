@@ -1266,6 +1266,86 @@ async def cohort_claim_next() -> str:
 
 
 # =====================================================================
+# Tool 16e: cohort_complete_item
+# =====================================================================
+
+class CompleteItemInput(BaseModel):
+    """Input for completing an active work queue item."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_id: str = Field(
+        ..., description="Work queue item ID to complete.",
+        min_length=1, max_length=100,
+    )
+    result: Optional[str] = Field(
+        None, description="Result summary (what was accomplished).",
+        max_length=2000,
+    )
+
+
+@mcp.tool(
+    name="cohort_complete_item",
+    annotations={
+        "title": "Complete Work Item",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_complete_item(params: CompleteItemInput) -> str:
+    """Mark an active work queue item as completed.
+
+    Only active items can be completed. Frees the queue for the next item.
+    """
+    result = await _client.update_work_item(
+        params.item_id, "completed", result=params.result,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+    return f"Completed: {params.item_id}"
+
+
+# =====================================================================
+# Tool 16f: cohort_cancel_item
+# =====================================================================
+
+class CancelItemInput(BaseModel):
+    """Input for cancelling a work queue item."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_id: str = Field(
+        ..., description="Work queue item ID to cancel.",
+        min_length=1, max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_cancel_item",
+    annotations={
+        "title": "Cancel Work Item",
+        "readOnlyHint": False,
+        "destructiveHint": True,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_cancel_item(params: CancelItemInput) -> str:
+    """Cancel a queued, active, or reviewing work queue item.
+
+    Cancelled items are removed from processing. Use requeue to retry instead.
+    """
+    result = await _client.update_work_item(params.item_id, "cancelled")
+    if result is None:
+        return _error_msg(service_down=True)
+    if "error" in result:
+        return f"Error: {result['error']}"
+    return f"Cancelled: {params.item_id}"
+
+
+# =====================================================================
 # Tool 17: cohort_get_outputs
 # =====================================================================
 
