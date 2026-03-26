@@ -630,9 +630,11 @@ class ListAgentsInput(BaseModel):
 )
 async def cohort_list_agents(params: ListAgentsInput) -> str:
     """List all agents with ID, role, status, and skills."""
-    agents = await _client.list_agents()
-    if agents is None:
+    raw = await _client.list_agents()
+    if raw is None:
         return _error_msg(service_down=True)
+    # /api/agents returns {"agents": [...], ...} wrapper
+    agents = raw.get("agents", raw) if isinstance(raw, dict) else raw
     if not agents:
         return "No agents registered."
 
@@ -1641,9 +1643,10 @@ async def cohort_route_task(params: RouteTaskInput) -> str:
     """
     from cohort.capability_router import find_agents_for_topic
 
-    agents_data = await _client.list_agents()
-    if not agents_data:
+    raw = await _client.list_agents()
+    if not raw:
         return "No agents registered."
+    agents_data = raw.get("agents", raw) if isinstance(raw, dict) else raw
 
     # We need AgentConfig objects -- fetch full configs from server
     from cohort.agent import AgentConfig
@@ -1711,9 +1714,10 @@ async def cohort_find_agents(params: FindAgentsInput) -> str:
     from cohort.capability_router import find_agents_for_topic
     from cohort.agent import AgentConfig
 
-    agents_data = await _client.list_agents()
-    if not agents_data:
+    raw = await _client.list_agents()
+    if not raw:
         return "No agents registered."
+    agents_data = raw.get("agents", raw) if isinstance(raw, dict) else raw
 
     configs: list[AgentConfig] = []
     for agent_info in agents_data:
@@ -1755,9 +1759,10 @@ async def cohort_partnership_graph(params: PartnershipGraphInput) -> str:
     from cohort.capability_router import build_partnership_graph, get_partnerships
     from cohort.agent import AgentConfig
 
-    agents_data = await _client.list_agents()
-    if not agents_data:
+    raw = await _client.list_agents()
+    if not raw:
         return "No agents registered."
+    agents_data = raw.get("agents", raw) if isinstance(raw, dict) else raw
 
     configs: list[AgentConfig] = []
     for agent_info in agents_data:

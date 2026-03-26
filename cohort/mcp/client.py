@@ -167,7 +167,11 @@ class CohortClient:
 
     async def list_agents(self) -> list[dict[str, Any]] | None:
         """GET /api/agents -> list of agent config dicts."""
-        return await _request("GET", f"{self.base_url}/api/agents")
+        raw = await _request("GET", f"{self.base_url}/api/agents")
+        # /api/agents returns {"agents": [...], ...} wrapper
+        if isinstance(raw, dict) and "agents" in raw:
+            return raw["agents"]
+        return raw
 
     async def get_agent(self, agent_id: str) -> dict[str, Any] | None:
         """GET /api/agents/{agent_id} -> full agent config."""
