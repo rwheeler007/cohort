@@ -52,7 +52,12 @@ async def _request(
             "[!] cohort client: HTTP %s from %s",
             exc.response.status_code, url,
         )
-        return None
+        # Return the error body so callers can show the real message
+        # instead of assuming the server is down.
+        try:
+            return exc.response.json()
+        except Exception:
+            return {"error": f"HTTP {exc.response.status_code}"}
     except Exception as exc:
         logger.debug("[!] cohort client: error for %s - %s", url, exc)
         return None
