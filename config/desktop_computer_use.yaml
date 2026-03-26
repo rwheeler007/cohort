@@ -1,0 +1,63 @@
+# Desktop Computer Use MCP Server Configuration
+# ================================================
+# GLOBAL KILL SWITCH -- default OFF. Set to true to enable.
+enabled: true
+
+# Default permission tier for sessions
+# desktop_observe: screenshots, window listing (read-only)
+# desktop_interact: mouse, keyboard, window focus (safe on virtual display)
+# desktop_advanced: launch apps, close windows, run commands
+permission_tier: "desktop_interact"
+
+# Virtual Display (Parsec VDD)
+# Creates an isolated virtual monitor so sessions don't touch the real desktop.
+virtual_display:
+  enabled: true
+  width: 1024       # Anthropic recommended for computer use
+  height: 768       # Anthropic recommended for computer use
+  refresh_rate: 60
+
+# Screenshots
+screenshot_dir: "desktop_computer_use/screenshots"
+max_screenshot_rate_ms: 1000
+max_dimension: 1568       # Claude vision optimal (1024x768 already fits)
+max_screenshots_retained: 500
+
+# Window allowlist (fnmatch patterns)
+# Empty = allow all windows on virtual display; restrict on real desktop.
+# Only matters when virtual_display.enabled is false.
+window_allowlist: []
+# Examples:
+#   - "*Visual Studio Code*"
+#   - "*Chrome*"
+#   - "*Notepad*"
+
+# Application launch allowlist (basename or full path)
+allowed_apps:
+  - "notepad.exe"
+  - "code.exe"
+  - "Code.exe"
+# Examples:
+#   - "notepad.exe"
+#   - "calc.exe"
+#   - "chrome.exe"
+
+# Blocked key combinations (always denied regardless of tier)
+blocked_key_combos:
+  - "ctrl+alt+delete"
+  - "win+l"
+  - "win+r"
+
+# Audit
+audit_log: "desktop_computer_use/audit.jsonl"
+
+# Safety
+pre_action_screenshot: true
+
+# Session limits
+max_sessions: 2             # Max concurrent virtual displays (VDD max = 8)
+session_timeout_seconds: 600  # Auto-teardown after 10 min idle
+
+# Command execution (run_command action)
+run_command_enabled: false
+allowed_commands: []
