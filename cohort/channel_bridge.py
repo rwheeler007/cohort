@@ -255,10 +255,16 @@ def ensure_channel_session(channel_id: str) -> str:
                 logger.info("[OK] Channel session for #%s came alive via VS Code", channel_id)
                 return "vscode"
 
-    # VS Code didn't spawn it in time -- fall back to direct spawn
-    logger.info("[*] VS Code didn't launch #%s in %ds, spawning directly", channel_id, _vscode_wait)
-    if _spawn_channel_session(channel_id):
-        return "direct"
+    # VS Code didn't spawn it in time.  Direct spawn is disabled because
+    # standalone console windows crash with isRawModeSupported (no PTY).
+    # The VS Code extension eagerly launches cohort-wq on startup — if it
+    # didn't pick up the request, the session isn't available yet.
+    logger.warning(
+        "[X] VS Code didn't launch #%s in %ds. Direct spawn disabled "
+        "(isRawModeSupported crash). Ensure VS Code extension is running "
+        "with channel_mode enabled.",
+        channel_id, _vscode_wait,
+    )
     return ""
 
 
