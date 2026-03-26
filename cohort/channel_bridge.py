@@ -242,9 +242,9 @@ def ensure_channel_session(channel_id: str) -> str:
     # Add to launch queue for VS Code extension to pick up
     _add_to_launch_queue(channel_id)
 
-    # Wait for the VS Code extension to spawn it (polls every ~10s,
-    # heartbeat every 1s once alive)
-    _vscode_wait = min(SPAWN_WAIT_TIMEOUT_S, 15)
+    # Wait for the VS Code extension to spawn it (polls every ~3s,
+    # heartbeat every 1s once alive).  30s window gives ~10 poll cycles.
+    _vscode_wait = min(SPAWN_WAIT_TIMEOUT_S, 30)
     deadline = time.time() + _vscode_wait
     while time.time() < deadline:
         time.sleep(1.0)
@@ -338,15 +338,18 @@ def enqueue_channel_request(
         if channel_id not in _channel_queues:
             _channel_queues[channel_id] = deque(maxlen=100)
 
-        # Deduplicate: skip if a pending request for the same agent+channel
-        # already exists (extension and server route_mentions both enqueue).
+        # Deduplicate: both the extension and server's route_mentions enqueue
+        # for the same message in channel mode.  Skip if a pending request for
+        # the same agent+channel was created within the last 5 seconds.
+        now = time.time()
         for existing in _channel_queues[channel_id]:
             if (existing["status"] == "pending"
                     and existing["agent_id"] == agent_id
-                    and existing["channel_id"] == channel_id):
+                    and existing["channel_id"] == channel_id
+                    and now - existing["created_at"] < 5.0):
                 logger.info(
-                    "[*] Dedup: skipping duplicate request for %s on #%s (existing: %s)",
-                    agent_id, channel_id, existing["id"],
+                    "[*] Dedup: skipping duplicate request for %s on #%s (existing: %s, age=%.1fs)",
+                    agent_id, channel_id, existing["id"], now - existing["created_at"],
                 )
                 return existing["id"]
 
