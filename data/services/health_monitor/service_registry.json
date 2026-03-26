@@ -33,6 +33,16 @@
       "startup_mode": "on_demand",
       "snoozed": false
     },
+    "wq_worker": {
+      "port": 8102,
+      "host": "127.0.0.1",
+      "description": "Work-queue dispatcher - claims items and routes to channels",
+      "health_endpoint": "/health",
+      "start_command": "python service.py",
+      "start_cwd": "services/wq_worker",
+      "startup_mode": "on_demand",
+      "snoozed": false
+    },
     "mcp_server": {
       "description": "Model Context Protocol server (agent tool integration)",
       "health_check_module": "cohort.mcp.server",
