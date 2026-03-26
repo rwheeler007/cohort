@@ -277,9 +277,9 @@ class CohortClient:
             "POST",
             f"{self.base_url}/api/sessions/start",
             json_body={
-                "channel": channel,
+                "channel_id": channel,
+                "topic": prompt,
                 "agents": agents,
-                "prompt": prompt,
                 "sender": sender,
             },
         )

@@ -1247,6 +1247,22 @@ async def submit_task_for_review(request: Request) -> JSONResponse:
             status_code=400,
         )
 
+    # Create an approval record so the review pipeline can track it
+    if _approval_store is not None:
+        try:
+            approval = _approval_store.create(
+                item_id=task_id,
+                item_type="task",
+                requester=task.get("agent_id", "system"),
+                action_type="custom",
+                risk_level="medium",
+                description=task.get("description", f"Review task {task_id}"),
+            )
+            task["approval_id"] = approval.id
+            _task_store._save_tasks()  # persist the approval_id link
+        except Exception as exc:
+            logger.warning("Could not create approval for task %s: %s", task_id, exc)
+
     # Broadcast task update
     try:
         from cohort.socketio_events import sio
@@ -1320,6 +1336,22 @@ async def submit_work_item_for_review(request: Request) -> JSONResponse:
             {"error": f"Item '{item_id}' not found or not in 'active' status"},
             status_code=400,
         )
+
+    # Create an approval record so the review pipeline can track it
+    if _approval_store is not None:
+        try:
+            approval = _approval_store.create(
+                item_id=item_id,
+                item_type="work_item",
+                requester=getattr(item, "requester", "system"),
+                action_type="custom",
+                risk_level="medium",
+                description=getattr(item, "description", f"Review work item {item_id}"),
+            )
+            item.approval_id = approval.id
+            _work_queue._save_to_disk()  # persist the approval_id link
+        except Exception as exc:
+            logger.warning("Could not create approval for work item %s: %s", item_id, exc)
 
     _broadcast_work_queue()
     return JSONResponse({"success": True, "item": item.to_dict()})
@@ -2636,15 +2668,10 @@ async def condense_channel(request: Request) -> JSONResponse:
         keep_ids = {m.id for m in all_messages[-keep_last:]}
         archived_count = total - keep_last
 
-        # Rewrite the messages file, removing the old messages for this channel
-        raw_messages: list[dict] = storage._read_json(  # noqa: SLF001
-            storage._messages_path, [],  # noqa: SLF001
-        )
-        new_messages = [
-            m for m in raw_messages
-            if m.get("channel_id") != channel_id or m.get("id") in keep_ids
-        ]
-        storage._write_json(storage._messages_path, new_messages)  # noqa: SLF001
+        # Delete old messages via storage API (works with both JSON and SQLite)
+        for msg in all_messages:
+            if msg.id not in keep_ids:
+                storage.delete_message(msg.id, channel_id=channel_id)
 
         logger.info(
             "Condensed channel %s: archived %d messages, kept %d",
