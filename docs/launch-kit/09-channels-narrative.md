@@ -39,9 +39,11 @@ The integration timeline tells the story:
 07:11 AM MT  -- First multi-round agent roundtable via Channels.
 05:38 PM MT  -- Per-channel session management with auto-launch and idle reaping.
 10:06 PM MT  -- VS Code extension panel for session management shipped.
+
+03:00 AM MT, one week later -- Open-source launch. Full platform public. 3 AM to 3 AM.
 ```
 
-Three hours to working integration. One day to production-grade session management. Because the hard work was already done.
+Three hours to working integration. One day to production-grade session management. One week to open-source launch. Because the hard work was already done.
 
 ---
 
@@ -142,9 +144,9 @@ This is what other frameworks don't have. CrewAI uses max-iteration timeouts. La
 
 **Subline:** "Bidirectional AI at a fixed monthly cost -- not open API metering."
 
-**The speed story:** "Anthropic shipped the protocol at 3 AM. We had it integrated before most people woke up."
+**The speed story:** "Anthropic shipped the protocol at 3 AM. We had it integrated before most people woke up. One week later -- 3 AM to 3 AM -- we open-sourced the whole platform."
 
-**The preparation story:** "Three hours to integrate. Five months of daily production use built the system it plugged into."
+**The preparation story:** "Three hours to integrate. One week to launch. Five months of daily production use built the system it plugged into."
 
 **The economic story:** "The API model was a blank check. Channels gives you a fixed budget. Cohort makes every dollar count."
 

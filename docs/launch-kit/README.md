@@ -53,9 +53,9 @@ The messaging has shifted since the original March 11 kit. Both framings are val
 
 **Economics:** "The API model was a blank check. Channels gives you a fixed budget. Cohort makes every dollar count."
 
-**Speed story:** "Anthropic shipped the protocol at 3 AM. We had it integrated before most people woke up."
+**Speed story:** "Anthropic shipped the protocol at 3 AM. We had it integrated before most people woke up. One week later -- 3 AM to 3 AM -- we open-sourced the whole platform."
 
-**Preparation story:** "Three hours to integrate. Four months of daily production use built the system it plugged into."
+**Preparation story:** "Three hours to integrate. One week to launch. Five months of daily production use built the system it plugged into."
 
 **Force multiplier:** "A force multiplier for the people and processes you've already invested in."
 
