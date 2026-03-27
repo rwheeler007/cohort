@@ -118,7 +118,7 @@ These creators are already in or adjacent to the Claude Code ecosystem. Lead wit
 | Tutorial makers | "Build a team in 20 min" | Demo-first: build something real with < 50 lines |
 | Newsletter writers | "New category: AI Team Coordination" | "ChatGPT is a person. Cohort is a company." |
 | Homelab/self-hosted | "Consumer hardware agents" | "5 AI agents on a $300 GPU" |
-| Podcast hosts | "Extracted from production" | Story of building a 12-agent production system daily since Nov 2025, then packaging the patterns |
+| Podcast hosts | "Extracted from production" | Story of building a 23-agent production system daily since Nov 2025, then packaging the patterns |
 | Claude Code creators | "First Channels integration" | "Anthropic shipped Channels at 3 AM. We had roundtables by 7 AM." |
 | VS Code extension creators | "Your agent team in VS Code" | "Claude Code writes. Cohort's agents review. Both in the same window." |
 
@@ -146,7 +146,7 @@ Prepare these before any outreach:
 >
 > I saw your [specific video/post] about [specific topic]. You mentioned [specific pain point they raised] -- we built something that addresses exactly that.
 >
-> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, with Claude Code Channels integration for fixed-cost frontier reasoning. 185 CLI commands, 18 meeting-control subcommands with contribution scoring, and a VS Code extension. Extracted from a 12-agent production system running daily since November 2025.
+> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, with Claude Code Channels integration for fixed-cost frontier reasoning. 185 CLI commands, 18 meeting-control subcommands with contribution scoring, and a VS Code extension. Extracted from a 23-agent production system running daily since November 2025.
 >
 > We're launching publicly soon and I'd love to give you early access -- no strings attached. If you find it interesting enough to cover, great. If not, I'd still value your feedback.
 >
