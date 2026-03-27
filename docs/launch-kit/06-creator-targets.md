@@ -150,7 +150,7 @@ Prepare these before any outreach:
 >
 > We're launching publicly soon and I'd love to give you early access -- no strings attached. If you find it interesting enough to cover, great. If not, I'd still value your feedback.
 >
-> [GitHub link] | [30-second demo GIF]
+> https://github.com/rwheeler007/cohort | [30-second demo GIF]
 >
 > -- Ryan
 

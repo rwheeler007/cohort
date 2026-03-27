@@ -63,8 +63,8 @@ rec = orch.get_next_speaker(session.session_id)
 print(f"Next: {rec['recommended_speaker']} -- {rec['reason']}")
 ```
 
-GitHub: [link]
-Docs: [link]
+GitHub: https://github.com/rwheeler007/cohort
+Docs: https://rwheeler007.github.io/cohort/
 Apache 2.0 licensed.
 
 Happy to answer questions about the Channels integration, VS Code extension, meeting control, cost model, scoring algorithm, or what we learned running multi-agent systems in daily production.

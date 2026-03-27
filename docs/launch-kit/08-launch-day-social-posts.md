@@ -18,7 +18,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > Open source. pip install cohort
 >
-> [GitHub link]
+> https://github.com/rwheeler007/cohort
 
 ### Tweet 2 (The Channels Story)
 
@@ -66,8 +66,8 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > Zero deps in core. 1,100+ tests. Apache 2.0.
 >
-> GitHub: [link]
-> Docs: [link]
+> GitHub: https://github.com/rwheeler007/cohort
+> Docs: https://rwheeler007.github.io/cohort/
 
 ---
 
@@ -86,7 +86,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 > Before: One direction (you ask, AI answers)
 > After: Bidirectional tool use
 >
-> [Channels page link]
+> https://rwheeler007.github.io/cohort/channels.html
 
 ### The Technical Angle
 
@@ -134,7 +134,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 >
 > Claude Code writes. Cohort's agents review. Both in the same window.
 >
-> VS Code extension: [link]
+> VS Code extension: https://github.com/rwheeler007/cohort-vscode
 
 ### The Meeting Control Angle
 
@@ -194,7 +194,7 @@ I've been running a multi-agent system on consumer GPUs since November 2025 (dua
 
 **Zero dependencies** in core. `pip install cohort` pulls nothing. 1,100+ tests. Apache 2.0. Python 3.11+.
 
-GitHub: [link]
+GitHub: https://github.com/rwheeler007/cohort
 
 Happy to answer questions about running multi-agent systems on consumer hardware, the Channels integration, or the cost model.
 
@@ -226,7 +226,7 @@ The interesting technical bits:
 
 Extracted from 5 months of daily production use. Apache 2.0.
 
-GitHub: [link]
+GitHub: https://github.com/rwheeler007/cohort
 
 ---
 
@@ -250,7 +250,7 @@ Three weeks ago Anthropic shipped Claude Code Channels. We had the first third-p
 
 **The economics:** Instead of open API metering ($800-2,000+/mo), you get local inference for free and a fixed Claude Code subscription ($100-200/mo) for the hard stuff. Cohort manages the budget -- local-first triage, context distillation, session persistence.
 
-Open source, Apache 2.0. GitHub: [link]
+Open source, Apache 2.0. GitHub: https://github.com/rwheeler007/cohort
 
 ---
 
@@ -268,7 +268,7 @@ Open source, Apache 2.0. GitHub: [link]
 >
 > Open source. Zero dependencies. Apache 2.0.
 >
-> [GitHub link]
+> https://github.com/rwheeler007/cohort
 >
 > #AI #OpenSource #MultiAgent #Python #ClaudeCode
 
