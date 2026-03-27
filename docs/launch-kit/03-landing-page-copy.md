@@ -89,13 +89,13 @@ Cohort picks the right voice at the right time -- and knows when to stop.
 ## Setup Wizard Section
 
 ### Headline
-# Zero to Conversation in 73 Seconds
+# Zero to Conversation in 44 Seconds
 
 One command. Cohort detects your hardware, picks the right AI model for your GPU, installs everything, and gets you talking. No configuration. No terminal expertise. No prior AI experience.
 
 - Hardware detection: 3s
 - Setup complete: 46s
-- First AI response: 73s
+- First AI response: 44s
 
 *Real recording -- fresh install to first AI conversation. No cuts, no edits.*
 
