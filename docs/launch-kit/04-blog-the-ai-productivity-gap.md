@@ -95,7 +95,7 @@ The 5% that genuinely needs frontier reasoning -- complex multi-file refactors, 
 
 ## The Welding Rig
 
-We built Cohort because we lived this problem. Since November 2025, we've run a multi-agent system with 12 specialist agents handling everything from code generation to security audits to strategic planning. The system that worked wasn't the one where we made each agent smarter. It was the one where we made agents **coordinate** -- with a security-first architecture and human approval gates on everything that mattered.
+We built Cohort because we lived this problem. Since November 2025, we've run a multi-agent system with 23 specialist agents handling everything from code generation to security audits to strategic planning. The system that worked wasn't the one where we made each agent smarter. It was the one where we made agents **coordinate** -- with a security-first architecture and human approval gates on everything that mattered.
 
 The breakthrough wasn't a better model. It was better integration.
 

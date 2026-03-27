@@ -92,7 +92,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 
 > Zero-dependency multi-agent orchestration in Python.
 >
-> @runtime_checkable protocols. JSONL transport. 5-dimension contribution scoring. MCP-native tool surface (57 commands). Three response tiers (Smart/Smarter/Smartest).
+> @runtime_checkable protocols. JSONL transport. 5-dimension contribution scoring. MCP-native tool surface (185 commands). Three response tiers (Smart/Smarter/Smartest).
 >
 > 1,100+ tests. Python 3.11-3.13. Apache 2.0.
 >
@@ -110,7 +110,7 @@ Pre-written posts for launch day. Adapt as needed but maintain messaging discipl
 
 > Your AI agents never send a single token to the cloud (unless you want them to).
 >
-> Cohort runs on Ollama/llama.cpp. 104 tok/s on a 3080 Ti. 12+ agents with persistent memory.
+> Cohort runs on Ollama/llama.cpp. 104 tok/s on a 3080 Ti. 23 agents with persistent memory.
 >
 > Channels is opt-in for frontier reasoning. The system works fully offline.
 >
@@ -190,7 +190,7 @@ I've been running a multi-agent system on consumer GPUs since November 2025 (dua
 
 **Claude Code Channels integration:** Anthropic shipped the protocol three weeks ago. We had it integrated in three hours because Cohort was already MCP-native. Bidirectional tool use -- Claude calls your agents, your agents call Claude. Fixed cost, persistent sessions, no cold starts.
 
-**But it works fully offline.** The 12 agents, roundtables, code queue, scoring engine -- all of it runs without Channels. Channels is an optional escalation path.
+**But it works fully offline.** The 23 agents, roundtables, code queue, scoring engine -- all of it runs without Channels. Channels is an optional escalation path.
 
 **Zero dependencies** in core. `pip install cohort` pulls nothing. 1,100+ tests. Apache 2.0. Python 3.11+.
 
@@ -212,7 +212,7 @@ The design philosophy:
 
 - **Zero core dependencies.** `pip install cohort` pulls nothing from PyPI. Pure stdlib.
 - **Protocol-first.** `@runtime_checkable` protocols instead of base classes. Bring your own agent implementation.
-- **MCP-native.** 73 CLI commands and 12+ agents exposed as MCP tools. This is what made the Claude Code Channels integration a 3-hour job instead of a 3-week job.
+- **MCP-native.** 185 CLI commands and 23 agents exposed as MCP tools. This is what made the Claude Code Channels integration a 3-hour job instead of a 3-week job.
 - **JSONL transport.** Non-Python teams can participate without a Python SDK.
 - **1,100+ tests** across 25+ test files. CI on 3.11, 3.12, 3.13.
 
@@ -232,7 +232,7 @@ GitHub: [link]
 
 ## Reddit -- r/ClaudeAI (NEW)
 
-**Title:** We built a multi-agent orchestration layer for Claude Code Channels -- 12 agents, bidirectional tool use, fixed-cost escalation
+**Title:** We built a multi-agent orchestration layer for Claude Code Channels -- 23 agents, bidirectional tool use, fixed-cost escalation
 
 **Post:**
 
@@ -240,7 +240,7 @@ Three weeks ago Anthropic shipped Claude Code Channels. We had the first third-p
 
 **What Cohort adds to Claude Code:**
 
-- 12+ specialist agents (security, QA, Python dev, web dev, content strategy, etc.) accessible via MCP tools
+- 23 specialist agents (security, QA, Python dev, web dev, content strategy, etc.) accessible via MCP tools
 - Contribution scoring -- Claude doesn't just get access to agents, it gets recommendations on which agent to call and why
 - Context hydration -- when a Claude Code session starts, Cohort summarizes recent channel discussion and injects it. Claude joins mid-conversation without being caught up
 - Session isolation -- each channel gets its own Claude Code session, up to 5 simultaneous

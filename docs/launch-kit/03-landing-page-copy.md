@@ -1,6 +1,6 @@
 # Cohort Landing Page Copy
 
-*Updated 2026-03-21: The live website is now the source of truth. This document reflects what's actually on the site, not the other way around. Major shifts: hero leads with cost efficiency, Channels integration banner added, response tiers detailed, agent counts tiered (5 base + 7 free + 22 Pro).*
+*Updated 2026-03-21: The live website is now the source of truth. This document reflects what's actually on the site, not the other way around. Major shifts: hero leads with cost efficiency, Channels integration banner added, response tiers detailed, 23 agents all free for launch.*
 
 ---
 
@@ -188,11 +188,11 @@ Claude was asked to review the system it runs inside. One voice-to-text prompt, 
 
 | Tier | Cost | Details |
 |------|------|---------|
-| Cohort Open Source | $0 | 12 agents, roundtables, daily briefings. Your GPU, your data, forever free. |
+| Cohort Open Source | $0 | 23 agents, roundtables, daily briefings. Your GPU, your data, forever free. |
 | Cloud APIs (low estimate) | $800/mo | 14 agents, daily roundtables |
 | Cloud APIs (heavy usage) | $2,400/mo | GPT-4/Claude-class models |
 
-Cohort is free. 12 agents, roundtables, daily briefings, code queue -- all on your hardware.
+Cohort is free. 23 agents, roundtables, daily briefings, code queue -- all on your hardware.
 
 ---
 
@@ -201,7 +201,7 @@ Cohort is free. 12 agents, roundtables, daily briefings, code queue -- all on yo
 ### Headline
 # Stop giving your team better hammers.
 
-12 agents. Zero API costs. Day one productive.
+23 agents. Zero API costs. Day one productive.
 
 [Get Started] -- links to GitHub
 

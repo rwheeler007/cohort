@@ -42,7 +42,7 @@
 
 **For HN, dev conferences, Anthropic DevRel outreach:**
 
-> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. 73 CLI commands including 18 meeting-control subcommands with 5-dimension scoring, stakeholder gating, and phase detection. Bidirectional Claude Code Channels integration. VS Code extension with full agent dashboard. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 5 months of production use. 1,100+ tests. Apache 2.0 licensed. `pip install cohort`.
+> Cohort is an open-source orchestration layer for multi-agent systems. Zero-dep core, protocol-first design, JSONL transport for polyglot teams. 185 CLI commands including 18 meeting-control subcommands with 5-dimension scoring, stakeholder gating, and phase detection. Bidirectional Claude Code Channels integration. VS Code extension with full agent dashboard. Security agent in the loop on every workflow. Human approval gates on anything sensitive. Extracted from 5 months of production use. 1,100+ tests. Apache 2.0 licensed. `pip install cohort`.
 
 ---
 

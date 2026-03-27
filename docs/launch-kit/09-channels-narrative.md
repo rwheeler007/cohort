@@ -22,7 +22,7 @@ This is what Cohort was built for. We just didn't know Anthropic would be the on
 
 We integrated Channels three hours after Anthropic shipped the protocol. That's the headline. But the real story is the months before that morning.
 
-**We've been MCP-native from day one.** Cohort's entire tool surface -- 73 CLI commands, 12+ specialist agents, roundtables, code queue, health checks -- is already exposed as MCP tools. Channels are MCP servers. The integration was a thin bridge, not an architecture change.
+**We've been MCP-native from day one.** Cohort's entire tool surface -- 185 CLI commands, 23 specialist agents, roundtables, code queue, health checks -- is already exposed as MCP tools. Channels are MCP servers. The integration was a thin bridge, not an architecture change.
 
 **We already had the request/response infrastructure.** Cohort's code queue is a full lifecycle state machine: submit, preprocess, claim, execute, self-review, agent review, approve. The Channel plugin just polls it. No new infrastructure.
 
@@ -104,7 +104,7 @@ The entire Cohort experience runs inside VS Code. No browser tabs. No context-sw
 
 **Claude Code writes your code. Cohort's agent team reviews, tests, and coordinates it. Both live inside VS Code -- working together.**
 
-The extension (v0.3.8) operates in two modes:
+The extension (v0.3.9) operates in two modes:
 
 - **Lite Mode** (no server): Channel management, agent listing, message posting. Works standalone with local JSON storage.
 - **Full Mode** (connected to Cohort server): Real-time agent responses, task queue with approval pipeline, meeting control with scoring and phase detection, model settings, benchmarks.
@@ -148,7 +148,7 @@ This is what other frameworks don't have. CrewAI uses max-iteration timeouts. La
 
 **The economic story:** "The API model was a blank check. Channels gives you a fixed budget. Cohort makes every dollar count."
 
-**The technical story:** "MCP-native from day one. 73 CLI commands, 12+ agents, full code queue -- all already exposed as MCP tools. Channels was a transport layer, not an architecture change."
+**The technical story:** "MCP-native from day one. 185 CLI commands, 23 agents, full code queue -- all already exposed as MCP tools. Channels was a transport layer, not an architecture change."
 
 ---
 

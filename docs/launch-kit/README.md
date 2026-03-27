@@ -1,6 +1,6 @@
 # Cohort Launch Messaging Kit
 
-Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7-agent Claude Roundtable review. Updated 2026-03-25: numbers sweep (1,100+ tests, 73 CLI commands), VS Code extension narrative, meeting control feature, social post additions.
+Complete messaging assets for the Cohort launch. Developed through 3 rounds of 7-agent Claude Roundtable review. Updated 2026-03-25: numbers sweep (1,100+ tests, 185 CLI commands), VS Code extension narrative, meeting control feature, social post additions.
 
 **Source of truth:** The live website at `rwheeler007.github.io/cohort/` is canonical. These docs track the messaging strategy behind it.
 
@@ -28,7 +28,7 @@ The messaging has shifted since the original March 11 kit. Both framings are val
 | Primary differentiator | Coordination + zero deps | Cost efficiency + Channels integration |
 | Channels | Not mentioned (didn't exist yet) | Central narrative -- bidirectional tools, fixed cost |
 | Zero deps | Hero pillar | Technical spec, below the fold |
-| Agent count | "12+" (vague) | 5 base + 7 free + 22 Pro (tiered) |
+| Agent count | "23" (vague) | 23 agents, all free for launch |
 | Response tiers | Mentioned vaguely | Smart ($0) / Smarter ($0) / Smartest (fixed monthly) |
 
 ## Five Positioning Pillars
@@ -75,7 +75,7 @@ Never mix these in the same context:
 
 - Never reference competitor security incidents by name or implication
 - Never name-drop Slack/Teams in permanent brand copy (use in demos/sales only)
-- Never claim agent counts that don't match what ships with PyPI (5 base + 7 free from Agent Store)
+- Never claim agent counts that don't match what ships with PyPI (23 agents for launch)
 - Never claim "enterprise security," SOC 2, or formal audit status we don't have
 - Never use padlock/shield/checkmark symbols for security -- show architecture flow
 - IBM Principle is enterprise-segment specific -- don't put on homepage hero

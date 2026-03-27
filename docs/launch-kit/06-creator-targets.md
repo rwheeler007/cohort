@@ -146,7 +146,7 @@ Prepare these before any outreach:
 >
 > I saw your [specific video/post] about [specific topic]. You mentioned [specific pain point they raised] -- we built something that addresses exactly that.
 >
-> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, with Claude Code Channels integration for fixed-cost frontier reasoning. 73 CLI commands, 18 meeting-control subcommands with contribution scoring, and a VS Code extension. Extracted from a 12-agent production system running daily since November 2025.
+> Cohort is an open-source Python framework for multi-agent orchestration. Zero dependencies, runs locally on Ollama/llama.cpp, with Claude Code Channels integration for fixed-cost frontier reasoning. 185 CLI commands, 18 meeting-control subcommands with contribution scoring, and a VS Code extension. Extracted from a 12-agent production system running daily since November 2025.
 >
 > We're launching publicly soon and I'd love to give you early access -- no strings attached. If you find it interesting enough to cover, great. If not, I'd still value your feedback.
 >
