@@ -54,6 +54,7 @@ logger = logging.getLogger(__name__)
 HEARTBEAT_TIMEOUT_S = 30
 CLAIMED_STALE_TIMEOUT_S = 60
 SPAWN_WAIT_TIMEOUT_S = 30
+ABANDONED_REQUEST_TTL_S = 1800  # 30 minutes -- truly abandoned requests get reaped
 
 CLAUDE_CMD = os.environ.get("COHORT_CLAUDE_CMD", "claude")
 COHORT_BASE_URL = os.environ.get("COHORT_BASE_URL", "http://localhost:5100")
@@ -417,10 +418,18 @@ def await_channel_response(
 
             remaining = deadline - time.time()
             if remaining <= 0:
-                req["status"] = "timeout"
-                logger.warning("[X] Channel request %s timed out", request_id)
-                _cleanup_request(request_id)
-                return None, {"error": "channel_timeout"}
+                # Caller timed out waiting, but leave request as pending
+                # so the session can still claim it when it comes alive.
+                # Mark caller_gone so deliver_response knows to self-post.
+                # A separate reaper removes truly abandoned requests after
+                # ABANDONED_REQUEST_TTL_S.
+                req["caller_gone"] = True
+                logger.warning(
+                    "[X] Channel request %s: caller timed out after %.0fs, "
+                    "request stays pending for late claim",
+                    request_id, timeout,
+                )
+                return None, {"error": "channel_timeout", "request_id": request_id}
 
             _channel_cv.wait(timeout=min(remaining, 2.0))
 
@@ -501,12 +510,18 @@ def deliver_response(
     content: str,
     metadata: Optional[Dict[str, Any]] = None,
 ) -> bool:
-    """Deliver a response for a claimed request."""
+    """Deliver a response for a claimed request.
+
+    If the caller already timed out (caller_gone=True), posts the response
+    directly to the channel so late-arriving work doesn't get silently dropped.
+    """
+    caller_gone = False
     with _channel_cv:
         req = _find_request(request_id)
         if req is None or req["status"] != "claimed":
             return False
 
+        caller_gone = req.get("caller_gone", False)
         req["status"] = "completed"
         req["response_content"] = content
         req["completed_at"] = time.time()
@@ -530,6 +545,8 @@ def deliver_response(
         _channel_cv.notify_all()
 
     channel_id = req.get("channel_id", "")
+    agent_id = req.get("agent_id", "agent")
+    thread_id = req.get("thread_id")
     _record_response(channel_id, len(content))
 
     pressure = _calculate_pressure(channel_id)
@@ -539,12 +556,59 @@ def deliver_response(
             channel_id, pressure * 100, get_pressure_tier(channel_id),
         )
 
-    logger.info("[OK] Channel response delivered: %s (%.1fs)", request_id, elapsed)
+    # If the caller timed out, nobody is reading the response from the queue.
+    # Post directly to the channel so the user still gets the answer.
+    if caller_gone:
+        logger.info(
+            "[OK] Late channel response for %s by %s in #%s (%.1fs) — self-posting",
+            request_id, agent_id, channel_id, elapsed,
+        )
+        _self_post_response(channel_id, agent_id, content, thread_id, default_meta)
+    else:
+        logger.info("[OK] Channel response delivered: %s (%.1fs)", request_id, elapsed)
 
     # Check if session should be rotated due to context pressure
     _check_and_rotate(channel_id)
 
+    # Clean up completed requests where caller is gone (nobody will read them)
+    if caller_gone:
+        with _channel_lock:
+            _cleanup_request(request_id)
+
     return True
+
+
+def _self_post_response(
+    channel_id: str,
+    agent_id: str,
+    content: str,
+    thread_id: Optional[str],
+    metadata: Dict[str, Any],
+) -> None:
+    """Post a late-arriving response directly to the channel.
+
+    This mirrors what _invoke_agent_sync does after await_channel_response
+    returns, but handles the case where the caller already timed out.
+    """
+    try:
+        from cohort.agent_router import _chat, _emit_sync
+        if _chat is None:
+            logger.warning("[!] Cannot self-post: _chat not initialized")
+            return
+
+        response_msg = _chat.post_message(
+            channel_id=channel_id,
+            sender=agent_id,
+            content=content,
+            thread_id=thread_id,
+        )
+        if response_msg:
+            msg_dict = response_msg.to_dict()
+            msg_dict["metadata"] = metadata
+            _emit_sync("new_message", msg_dict)
+            logger.info("[OK] Self-posted late response to #%s by %s", channel_id, agent_id)
+    except Exception:
+        logger.exception("[X] Failed to self-post late response for %s in #%s", agent_id, channel_id)
 
 
 def deliver_error(request_id: str, error: str) -> bool:
@@ -1133,11 +1197,12 @@ def _start_reaper() -> None:
 
 
 def _reaper_loop() -> None:
-    """Background thread that kills idle sessions."""
+    """Background thread that kills idle sessions and abandoned requests."""
     while True:
         try:
             time.sleep(60)
             _reap_idle_sessions()
+            _reap_abandoned_requests()
         except Exception:
             logger.exception("[X] Reaper error")
 
@@ -1191,6 +1256,30 @@ def _reap_idle_sessions() -> None:
             "[*] Reaped idle session for #%s (idle %.0fs, timeout %ds)",
             ch_id, now - _channel_last_activity.get(ch_id, 0), _idle_timeout_s,
         )
+
+
+def _reap_abandoned_requests() -> None:
+    """Remove requests that have been pending for longer than the TTL.
+
+    These are requests where the caller already timed out and no session
+    ever claimed them.  Without this, the queue would grow unboundedly.
+    """
+    now = time.time()
+    with _channel_lock:
+        for channel_id, q in _channel_queues.items():
+            to_remove = []
+            for i, req in enumerate(q):
+                if req["status"] == "pending":
+                    age = now - req["created_at"]
+                    if age > ABANDONED_REQUEST_TTL_S:
+                        to_remove.append(i)
+                        logger.info(
+                            "[*] Reaping abandoned request %s in #%s (age %.0fs)",
+                            req["id"], channel_id, age,
+                        )
+            # Remove in reverse order to preserve indices
+            for i in reversed(to_remove):
+                del q[i]
 
 
 def reap_idle_sessions(max_idle_seconds: Optional[float] = None) -> int:

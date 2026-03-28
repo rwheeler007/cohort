@@ -1613,6 +1613,7 @@ async def channel_invoke(request: Request) -> JSONResponse:
     message = body.get("message", "")
     thread_id = body.get("thread_id")
     project_path = body.get("project_path")
+    reply_channel = body.get("reply_channel")  # Where to post the response (if different from channel_id)
 
     if not raw_agent_id or not channel_id or not message:
         missing = [n for n, v in [("agent_id", raw_agent_id), ("channel_id", channel_id), ("message", message)] if not v]
@@ -1633,6 +1634,7 @@ async def channel_invoke(request: Request) -> JSONResponse:
                 message=message,
                 thread_id=thread_id,
                 project_path=project_path,
+                reply_channel=reply_channel,
             ),
             daemon=True,
         ).start()

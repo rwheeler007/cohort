@@ -710,6 +710,7 @@ def enqueue_agent_channel_request(
     message: str,
     thread_id: str | None = None,
     project_path: str | None = None,
+    reply_channel: str | None = None,
 ) -> str:
     """Build the full agent prompt and enqueue it for a channel session to claim.
 
@@ -717,6 +718,11 @@ def enqueue_agent_channel_request(
     extension DM handler) has already decided to use channel mode per-channel.
     Also skips ``ensure_channel_session()`` -- the extension pre-warms the
     session before calling this, so the session is already alive and polling.
+
+    Args:
+        reply_channel: If set, the response is posted to this channel instead
+            of ``channel_id``.  Used by the wq_worker when the agent session
+            runs on a DM channel but the response belongs in the source channel.
 
     Returns the enqueued request_id.
     """
@@ -780,30 +786,33 @@ def enqueue_agent_channel_request(
             f"Now respond to this message:\n{message}"
         )
 
-    # Route all @mention requests to the cohort-wq queue so the work-queue
-    # session (which polls channel_id=cohort-wq) picks them up.  The
-    # _collect_and_post thread below still uses the original channel_id closure
-    # to post the response back to the correct source channel.
+    # Enqueue the request on the agent's target channel.  The channel_id
+    # passed by the caller determines where the cohort-channel plugin picks
+    # it up (e.g. "dm-python_developer").  The _collect_and_post thread
+    # below still uses the original channel_id closure to post the response
+    # back to the correct source channel.
     request_id = enqueue_channel_request(
         prompt=full_prompt,
         agent_id=agent_id,
-        channel_id="cohort-wq",
+        channel_id=channel_id,
         thread_id=thread_id,
         response_mode="channel",
     )
-    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s -> wq (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
+    logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
 
-    # Spawn a thread to collect the response and post it to the channel.
+    # Spawn a thread to collect the response and post it to the reply channel.
     # enqueue_agent_channel_request returns immediately (fire-and-forget from the
     # extension side), so nothing else is waiting to post the response.
+    _reply_to = reply_channel or channel_id
+
     def _collect_and_post() -> None:
         from cohort.channel_bridge import await_channel_response
         try:
             response_content, response_metadata = await_channel_response(request_id, timeout=300.0)
             if response_content and _chat is not None:
-                _chat.post_message(channel_id, agent_id, response_content,
+                _chat.post_message(_reply_to, agent_id, response_content,
                                    metadata=response_metadata or {})
-                logger.info("[OK] Channel response posted to #%s by %s", channel_id, agent_id)
+                logger.info("[OK] Channel response posted to #%s by %s", _reply_to, agent_id)
         except Exception:
             logger.exception("[!] Failed to collect/post channel response for %s", request_id)
 
@@ -1493,32 +1502,36 @@ def _invoke_agent_sync(item: dict) -> None:
                            agent_id)
             response_mode = "smarter"
 
-    # Channel mode: route through per-channel persistent Claude Code session.
-    # Honour explicit user toggle (response_mode="channel") even when the
-    # global channel_mode setting is off -- the user picked it per-conversation.
+    # Channel mode: route through work queue -> wq_worker -> agent channel.
+    # The wq_worker dispatches items to agent-specific channels where the
+    # VS Code extension launches Claude Code sessions on demand.
     if response_mode == "channel" and not response_content:
-        from cohort.channel_bridge import enqueue_channel_request, await_channel_response
-        if _ensure_channel_with_toast(channel_id):
-            try:
-                request_id = enqueue_channel_request(
-                    prompt=_local_prompt,
-                    agent_id=agent_id,
-                    channel_id=channel_id,
-                    thread_id=thread_id,
-                    response_mode="channel",
-                )
-                ch_content, ch_meta = await_channel_response(
-                    request_id, timeout=RESPONSE_TIMEOUT,
-                )
-                if ch_content:
-                    response_content = ch_content
-                    response_metadata = ch_meta or {}
-                    logger.info("[OK] Channel mode: %s in #%s", agent_id, channel_id)
-            except Exception:
-                logger.exception("[!] Channel mode failed for %s, degrading to smarter", agent_id)
-                response_mode = "smarter"
-        else:
-            logger.warning("[!] Could not start channel session for #%s, degrading to smarter", channel_id)
+        try:
+            from cohort.server import _work_queue as _wq
+            if _wq is None:
+                raise RuntimeError("Work queue not initialised")
+            wq_item = _wq.enqueue(
+                description=_local_prompt,
+                requester=f"mention:{channel_id}",
+                priority="medium",
+                agent_id=agent_id,
+                metadata={
+                    "channel": channel_id,
+                    "agent_id": agent_id,
+                    "thread_id": thread_id or "",
+                    "source": "route_mentions",
+                    "response_mode": "channel",
+                },
+            )
+            logger.info("[>>] Work queue item %s enqueued for %s (source=#%s)",
+                        wq_item.id, agent_id, channel_id)
+            # Response will be posted back to the channel by the wq_worker
+            # after the agent's channel session completes.  Return now --
+            # the rest of _invoke_agent_sync is synchronous fallbacks.
+            _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
+            return
+        except Exception:
+            logger.exception("[!] Work queue enqueue failed for %s, degrading to smarter", agent_id)
             response_mode = "smarter"
 
     # Tier-aware channel intercept: if the tier's primary model is "channel",

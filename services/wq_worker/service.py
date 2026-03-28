@@ -18,12 +18,13 @@ import logging
 import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 
 import httpx
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -56,6 +57,11 @@ _stats: Dict[str, Any] = {
     "current_item": None,
     "paused": False,
 }
+
+# Channels with at least one live session registered via /ready
+# Keyed by channel ID, value is set of session IDs (may be empty strings)
+_ready_channels: Dict[str, Set[str]] = {}
+_ready_timestamps: Dict[str, str] = {}  # channel -> last ready timestamp
 
 
 # ---------------------------------------------------------------------------
@@ -116,14 +122,26 @@ def build_channel_message(item: Dict) -> str:
 
 
 def resolve_channel(item: Dict) -> str:
-    """Determine which channel a work item should be dispatched to."""
-    # Check metadata for explicit channel routing
-    meta = item.get("metadata", {})
-    if meta.get("channel"):
-        return meta["channel"]
+    """Determine which channel a work item should be dispatched to.
 
-    # Could add agent-based routing here later
-    # (e.g. item.agent_id -> agent's preferred channel)
+    Priority:
+      1. Agent-specific DM channel (dm-{agent_id}) if agent_id is set
+      2. Explicit ``target_channel`` in metadata (for pre-routed items)
+      3. DEFAULT_CHANNEL fallback
+
+    Note: metadata.channel is the SOURCE channel (where the response goes
+    back to), not the dispatch target.  Don't use it for routing.
+    """
+    agent_id = item.get("agent_id")
+    if not agent_id:
+        meta = item.get("metadata", {})
+        agent_id = meta.get("agent_id")
+    if agent_id:
+        return f"dm-{agent_id}"
+
+    meta = item.get("metadata", {})
+    if meta.get("target_channel"):
+        return meta["target_channel"]
 
     return DEFAULT_CHANNEL
 
@@ -132,8 +150,13 @@ def resolve_channel(item: Dict) -> str:
 # Main poll/dispatch loop
 # ---------------------------------------------------------------------------
 
+def _channel_has_session(channel: str) -> bool:
+    """Return True if at least one session has registered as ready on this channel."""
+    return channel in _ready_channels and len(_ready_channels[channel]) > 0
+
+
 async def poll_loop():
-    """Main worker loop: poll queue, claim, dispatch to channel."""
+    """Main worker loop: poll queue, claim, dispatch via channel invoke."""
     logger.info("[OK] Dispatcher started (poll every %ds, default channel: %s)",
                 POLL_INTERVAL, DEFAULT_CHANNEL)
 
@@ -145,7 +168,8 @@ async def poll_loop():
 
             _stats["last_poll"] = datetime.now(timezone.utc).isoformat()
 
-            # Claim next item
+            # Claim next item -- /api/channel/invoke handles session lifecycle
+            # (launching terminals, waiting for sessions) so no pre-check needed.
             claim = await cohort_post("/api/work-queue/claim")
             if claim is None or "error" in (claim or {}):
                 await asyncio.sleep(POLL_INTERVAL)
@@ -164,21 +188,46 @@ async def poll_loop():
             _stats["current_item"] = item_id
             _stats["last_item_id"] = item_id
 
-            # Dispatch to channel as a message
-            message = build_channel_message(item)
-            result = await cohort_post("/api/send", json={
-                "channel": channel,
-                "sender": WORKER_SENDER,
-                "message": message,
-                "metadata": {
-                    "wq_item_id": item_id,
-                    "source": "wq_dispatcher",
-                },
-            })
+            # Dispatch via channel invoke -- builds full agent prompt,
+            # ensures a channel session exists, and enqueues the request
+            # for the cohort-channel plugin to pick up.
+            meta = item.get("metadata", {})
+            agent_id = item.get("agent_id") or meta.get("agent_id")
+            source_channel = meta.get("channel", channel)
+            thread_id = meta.get("thread_id", "")
+            original_message = item.get("description", "")
+
+            if agent_id:
+                # Use /api/channel/invoke for full prompt building + session launch.
+                # channel_id = agent's DM channel (where the session runs)
+                # reply_channel = source channel (where the response gets posted)
+                result = await cohort_post("/api/channel/invoke", json={
+                    "agent_id": agent_id,
+                    "channel_id": channel,
+                    "message": original_message,
+                    "thread_id": thread_id or None,
+                    "reply_channel": source_channel,
+                    "metadata": {
+                        "wq_item_id": item_id,
+                        "source": "wq_dispatcher",
+                    },
+                })
+            else:
+                # No agent -- fall back to posting as a message
+                message = build_channel_message(item)
+                result = await cohort_post("/api/send", json={
+                    "channel": channel,
+                    "sender": WORKER_SENDER,
+                    "message": message,
+                    "metadata": {
+                        "wq_item_id": item_id,
+                        "source": "wq_dispatcher",
+                    },
+                })
 
             _stats["current_item"] = None
 
-            if result and result.get("success"):
+            if result and (result.get("success") or result.get("ok")):
                 _stats["items_dispatched"] += 1
                 logger.info("[OK] %s dispatched to #%s", item_id, channel)
             else:
@@ -255,8 +304,68 @@ async def status():
         "poll_interval_s": POLL_INTERVAL,
         "default_channel": DEFAULT_CHANNEL,
         "sender": WORKER_SENDER,
+        "ready_channels": {
+            ch: {"session_count": len(sessions), "last_ready": _ready_timestamps.get(ch)}
+            for ch, sessions in _ready_channels.items()
+        },
         "stats": _stats,
     }
+
+
+class ReadyInput(BaseModel):
+    channel: str
+    session_id: str = ""
+
+
+@app.post("/ready")
+async def register_ready(body: ReadyInput):
+    """Register a channel session as alive and ready to receive work.
+
+    Called by Claude Code channel sessions at startup via cohort_ready MCP tool.
+    The dispatch loop holds items until at least one session is registered on
+    the target channel.
+    """
+    channel = body.channel.strip()
+    session_id = body.session_id.strip() or "default"
+
+    if channel not in _ready_channels:
+        _ready_channels[channel] = set()
+    _ready_channels[channel].add(session_id)
+    _ready_timestamps[channel] = datetime.now(timezone.utc).isoformat()
+
+    # Count queued items for this channel so the session knows what's waiting
+    queued_items = 0
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            resp = await client.get(f"{COHORT_URL}/api/work-queue?status=queued")
+            if resp.status_code == 200:
+                data = resp.json()
+                for item in data.get("items", []):
+                    if resolve_channel(item) == channel:
+                        queued_items += 1
+    except Exception:
+        pass
+
+    logger.info("[OK] Session ready on #%s (session=%s, queued=%d)",
+                channel, session_id, queued_items)
+    return {
+        "registered": True,
+        "channel": channel,
+        "session_id": session_id,
+        "queued_items": queued_items,
+    }
+
+
+@app.delete("/ready/{channel}")
+async def unregister_ready(channel: str, session_id: str = "default"):
+    """Unregister a session from a channel (called on session shutdown)."""
+    if channel in _ready_channels:
+        _ready_channels[channel].discard(session_id)
+        if not _ready_channels[channel]:
+            del _ready_channels[channel]
+            _ready_timestamps.pop(channel, None)
+    logger.info("[!] Session unregistered from #%s (session=%s)", channel, session_id)
+    return {"unregistered": True, "channel": channel}
 
 
 @app.post("/pause")

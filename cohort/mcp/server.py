@@ -3275,6 +3275,231 @@ async def cohort_get_approval_status(params: GetApprovalStatusInput) -> str:
 
 
 # =====================================================================
+# WQ Session Harness Tools
+# (cohort_ready / cohort_respond / cohort_post / cohort_error)
+#
+# These four tools are used by Claude Code channel sessions that act as
+# WQ workers.  They provide back-pressure (cohort_ready), combined
+# complete+reply (cohort_respond / cohort_error), and agent-voiced
+# posting (cohort_post).
+# =====================================================================
+
+WQ_WORKER_URL = os.environ.get("WQ_WORKER_URL", "http://127.0.0.1:8102")
+
+
+class CohortReadyInput(BaseModel):
+    """Input for signalling that a channel session is ready."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    channel: str = Field(
+        ..., description="Channel ID this session is consuming (e.g. 'cohort-wq').",
+        min_length=1, max_length=100,
+    )
+    session_id: Optional[str] = Field(
+        None, description="Optional stable identifier for this session.",
+        max_length=200,
+    )
+
+
+@mcp.tool(
+    name="cohort_ready",
+    annotations={
+        "title": "Signal Session Ready",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def cohort_ready(params: CohortReadyInput) -> str:
+    """Signal to the WQ dispatcher that this session is alive and ready.
+
+    Call this once at session startup before processing any work items.
+    The dispatcher will hold new items until at least one session is
+    registered on the target channel.
+    """
+    import httpx
+    payload = {"channel": params.channel, "session_id": params.session_id or ""}
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            resp = await client.post(f"{WQ_WORKER_URL}/ready", json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+            queued = data.get("queued_items", 0)
+            suffix = f" ({queued} item(s) queued)" if queued else ""
+            return f"[OK] Session registered on #{params.channel}{suffix}"
+    except Exception as exc:
+        return f"[!] Could not reach WQ dispatcher: {exc}"
+
+
+class CohortRespondInput(BaseModel):
+    """Input for completing a WQ item and posting the result."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_id: str = Field(
+        ..., description="Work queue item ID to complete.",
+        min_length=1, max_length=100,
+    )
+    response: str = Field(
+        ..., description="Response content to post back to the channel.",
+        min_length=1, max_length=10000,
+    )
+    channel: str = Field(
+        ..., description="Channel to post the response to.",
+        min_length=1, max_length=100,
+    )
+    sender: str = Field(
+        "claude_code", description="Agent ID to post as (default 'claude_code').",
+        min_length=1, max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_respond",
+    annotations={
+        "title": "Complete Item and Respond",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_respond(params: CohortRespondInput) -> str:
+    """Complete a WQ item and post the result to the channel in one call.
+
+    Marks the item completed and posts the response as a channel message.
+    Use this as the normal success path after handling a work item.
+    """
+    # Complete the work item
+    complete_result = await _client.update_work_item(
+        params.item_id, "completed", result=params.response[:2000],
+    )
+    if complete_result is None:
+        return _error_msg(service_down=True)
+    if "error" in complete_result:
+        return f"Error completing item: {complete_result['error']}"
+
+    # Post result to channel
+    post_result = await _client.post_message(
+        params.channel,
+        params.sender,
+        params.response,
+        metadata={"wq_item_id": params.item_id, "source": "wq_response"},
+    )
+    if post_result is None:
+        return f"Completed {params.item_id} but could not post to channel."
+    return f"[OK] Completed {params.item_id} and posted to #{params.channel}"
+
+
+class CohortPostInput(BaseModel):
+    """Input for posting as a specific agent."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    channel: str = Field(
+        ..., description="Channel ID to post to.",
+        min_length=1, max_length=100,
+    )
+    sender: str = Field(
+        ..., description="Agent ID to post as.",
+        min_length=1, max_length=100,
+    )
+    content: str = Field(
+        ..., description="Message content.",
+        min_length=1, max_length=10000,
+    )
+    thread_id: Optional[str] = Field(
+        None, description="Optional thread ID for threaded replies.",
+        max_length=200,
+    )
+
+
+@mcp.tool(
+    name="cohort_post",
+    annotations={
+        "title": "Post as Agent",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_post(params: CohortPostInput) -> str:
+    """Post a message to a channel as a specific agent.
+
+    Used during roundtable discussions to post each agent's contribution
+    as a separate message with the correct sender identity.
+    """
+    metadata: dict = {"source": "cohort_post"}
+    if params.thread_id:
+        metadata["thread_id"] = params.thread_id
+
+    result = await _client.post_message(
+        params.channel, params.sender, params.content, metadata=metadata,
+    )
+    if result is None:
+        return _error_msg(service_down=True)
+    return f"[OK] Posted to #{params.channel} as {params.sender}"
+
+
+class CohortErrorInput(BaseModel):
+    """Input for failing a WQ item and posting an error."""
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+
+    item_id: str = Field(
+        ..., description="Work queue item ID to mark as failed.",
+        min_length=1, max_length=100,
+    )
+    error: str = Field(
+        ..., description="Error message describing what went wrong.",
+        min_length=1, max_length=2000,
+    )
+    channel: str = Field(
+        ..., description="Channel to post the error notice to.",
+        min_length=1, max_length=100,
+    )
+    sender: str = Field(
+        "claude_code", description="Agent ID to post as (default 'claude_code').",
+        min_length=1, max_length=100,
+    )
+
+
+@mcp.tool(
+    name="cohort_error",
+    annotations={
+        "title": "Fail Item and Report Error",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": False,
+        "openWorldHint": False,
+    },
+)
+async def cohort_error(params: CohortErrorInput) -> str:
+    """Mark a WQ item as failed and post an error notice to the channel.
+
+    Use this when a work item cannot be completed due to an unrecoverable
+    error.  The item is marked failed and freed from the active slot.
+    """
+    # Mark item failed
+    fail_result = await _client.update_work_item(
+        params.item_id, "failed", result=f"Error: {params.error}",
+    )
+    if fail_result is None:
+        return _error_msg(service_down=True)
+    if "error" in fail_result:
+        return f"Error updating item: {fail_result['error']}"
+
+    # Post error notice to channel
+    error_msg = f"[!] Work item {params.item_id} failed: {params.error}"
+    await _client.post_message(
+        params.channel,
+        params.sender,
+        error_msg,
+        metadata={"wq_item_id": params.item_id, "source": "wq_error"},
+    )
+    return f"[X] Failed {params.item_id} and posted error to #{params.channel}"
+
+
+# =====================================================================
 # Entry point
 # =====================================================================
 

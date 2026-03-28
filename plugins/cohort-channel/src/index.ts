@@ -71,6 +71,7 @@ let requestCount: number = 0;
 // Ready-gate: poll loop blocks until Claude calls cohort_ready, proving the
 // channel is bidirectional and Claude is actually listening for notifications.
 let resolveReady: (() => void) | null = null;
+let startupPingTimer: ReturnType<typeof setInterval> | null = null;
 const claudeReady = new Promise<void>((resolve) => {
   resolveReady = resolve;
 });
@@ -281,6 +282,7 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       if (resolveReady) {
         resolveReady();
         resolveReady = null;
+        if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; }
         log("INFO", "Claude signaled ready -- prompt delivery unblocked");
       }
       return {
@@ -308,6 +310,11 @@ async function pollLoop(): Promise<void> {
   // Send a startup ping every few seconds until it responds.
   log("INFO", "Sending startup ping to Claude...");
 
+  // Once the notification is successfully injected, mark it consumed so the
+  // retry interval doesn't duplicate it while Claude is still processing the
+  // first one (schema fetch + tool call can take several seconds).
+  let startupInjected = false;
+
   const sendStartupPing = async () => {
     try {
       await mcp.notification({
@@ -317,13 +324,20 @@ async function pollLoop(): Promise<void> {
           meta: { request_id: "startup", type: "startup" },
         },
       });
+      startupInjected = true; // Consumed -- don't re-send unless this failed
     } catch { /* best-effort */ }
   };
 
+  // Wait for Claude Code to finish initializing its channel listener.
+  // The MCP handshake completes before Claude is ready to receive
+  // notifications, so firing immediately gets swallowed silently.
+  await new Promise((r) => setTimeout(r, 2000));
   await sendStartupPing();
-  const pingTimer = setInterval(async () => {
-    if (resolveReady === null) { clearInterval(pingTimer); return; } // already resolved
-    log("INFO", "Re-sending startup ping (cohort_ready not yet called)...");
+  startupPingTimer = setInterval(async () => {
+    if (resolveReady === null) { if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; } return; }
+    // Keep retrying -- even if the send "succeeded" (no throw), Claude may
+    // not have been listening yet.  Only stop when cohort_ready arrives.
+    log("INFO", "Re-sending startup ping (waiting for cohort_ready)...");
     await sendStartupPing();
   }, STARTUP_PING_INTERVAL_MS);
 
@@ -332,7 +346,7 @@ async function pollLoop(): Promise<void> {
     setTimeout(() => reject(new Error("Claude ready timeout after 90s")), READY_TIMEOUT_MS)
   );
   await Promise.race([claudeReady, timeout]);
-  clearInterval(pingTimer);
+  if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; }
   log("INFO", "Claude is ready -- starting poll loop");
 
   let consecutiveFailures = 0;
