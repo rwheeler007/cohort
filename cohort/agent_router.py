@@ -110,7 +110,14 @@ def _load_agent_credentials(agent_id: str) -> dict[str, str]:
 
     Reads settings.json, decrypts secrets, checks agent_permissions,
     and returns a dict of env var name -> value for injection into subprocess env.
+
+    In sandbox tier, returns empty dict (no credentials injected).
     """
+    from cohort.permissions import PermissionTier, require_tier
+
+    if not require_tier(PermissionTier.LOCAL):
+        return {}
+
     if _settings_path is None or not _settings_path.exists():
         return {}
 

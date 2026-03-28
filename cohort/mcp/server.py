@@ -2467,6 +2467,14 @@ async def internal_web_search(params: InternalWebSearchInput) -> str:
     library to scrape DuckDuckGo results directly -- no API key, no external
     service, completely free.  Pair with internal_web_fetch to read full pages.
     """
+    from cohort.permissions import PermissionTier, require_tier
+
+    if not require_tier(PermissionTier.LOCAL):
+        return (
+            "Web search is disabled in sandbox mode. "
+            "Set COHORT_TIER=local to enable outbound network access."
+        )
+
     import asyncio
     import logging
 
@@ -2555,6 +2563,14 @@ async def internal_web_fetch(params: InternalWebFetchInput) -> str:
     returns extracted text content.  Screenshots are cached locally for
     later processing by the document pipeline.
     """
+    from cohort.permissions import PermissionTier, require_tier
+
+    if not require_tier(PermissionTier.LOCAL):
+        return (
+            "Web fetch is disabled in sandbox mode. "
+            "Set COHORT_TIER=local to enable outbound network access."
+        )
+
     import asyncio
     import hashlib
     import importlib

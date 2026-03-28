@@ -1497,8 +1497,21 @@ _backend_instance: PlaywrightDirectBackend | None = None
 
 
 def get_browser_backend(**kwargs: Any) -> PlaywrightDirectBackend:
-    """Get or create the singleton browser backend."""
+    """Get or create the singleton browser backend.
+
+    Applies tier-aware URL restrictions unless the caller explicitly
+    passes ``allowlist`` or ``allow_local``.
+    """
     global _backend_instance
     if _backend_instance is None:
+        from cohort.permissions import browser_allow_local, browser_allowlist
+
+        if "allowlist" not in kwargs:
+            tier_allowlist = browser_allowlist()
+            if tier_allowlist is not None:
+                kwargs["allowlist"] = tier_allowlist
+        if "allow_local" not in kwargs:
+            kwargs["allow_local"] = browser_allow_local()
+
         _backend_instance = PlaywrightDirectBackend(**kwargs)
     return _backend_instance

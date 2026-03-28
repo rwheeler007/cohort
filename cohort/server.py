@@ -2791,6 +2791,7 @@ async def get_settings(request: Request) -> JSONResponse:
         "user_display_name": settings.get("user_display_name", ""),
         "user_display_role": settings.get("user_display_role", ""),
         "user_display_avatar": settings.get("user_display_avatar", ""),
+        "permission_tier": settings.get("permission_tier", os.environ.get("COHORT_TIER", "unrestricted")),
         "tier_settings": _load_tier_settings(),
         "token_usage": _get_token_usage_summary(),
         "default_permissions": settings.get("default_permissions", {
@@ -2834,6 +2835,16 @@ async def post_settings(request: Request) -> JSONResponse:
         settings["dev_mode"] = bool(body["dev_mode"])
     if "channel_mode" in body:
         settings["channel_mode"] = bool(body["channel_mode"])
+    if "permission_tier" in body:
+        tier_val = str(body["permission_tier"]).strip().lower()
+        if tier_val in ("sandbox", "local", "unrestricted"):
+            settings["permission_tier"] = tier_val
+            os.environ["COHORT_TIER"] = tier_val
+            try:
+                from cohort.permissions import reset_tier_cache
+                reset_tier_cache()
+            except ImportError:
+                pass
     if "cloud_provider" in body:
         if body["cloud_provider"] in ("", "anthropic", "openai"):
             settings["cloud_provider"] = body["cloud_provider"]
