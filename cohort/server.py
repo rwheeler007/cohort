@@ -79,6 +79,85 @@ def _get_chat() -> ChatManager:
 # Settings persistence
 # =====================================================================
 
+# Keys that belong to the machine, not the workspace.  These are written
+# to ``~/.cohort/defaults.json`` after the first successful wizard run
+# and seeded into new workspaces so users don't have to repeat setup.
+_GLOBAL_DEFAULT_KEYS: set[str] = {
+    "claude_cmd",
+    "hardware_info",
+    "service_keys",
+    "user_display_name",
+    "user_display_role",
+    "user_display_avatar",
+    "model_name",
+    "model_verified",
+}
+
+
+def _global_defaults_path() -> Path:
+    """Return ``~/.cohort/defaults.json``."""
+    return Path(os.path.expanduser("~")) / ".cohort" / "defaults.json"
+
+
+def _load_global_defaults() -> dict[str, Any]:
+    """Load machine-level defaults from ``~/.cohort/defaults.json``."""
+    p = _global_defaults_path()
+    if p.exists():
+        try:
+            with open(p, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning("Failed to load global defaults: %s", exc)
+    return {}
+
+
+def _save_global_defaults(settings: dict[str, Any]) -> None:
+    """Write machine-level keys from *settings* to ``~/.cohort/defaults.json``."""
+    defaults = {k: settings[k] for k in _GLOBAL_DEFAULT_KEYS if k in settings}
+    if not defaults:
+        return
+    p = _global_defaults_path()
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        # Encrypt secrets before writing
+        to_save = json.loads(json.dumps(defaults))
+        encrypt_settings_secrets(to_save)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(to_save, f, indent=2)
+        logger.info("[OK] Global defaults saved to %s", p)
+    except OSError as exc:
+        logger.warning("Failed to save global defaults: %s", exc)
+
+
+def _seed_from_global_defaults() -> dict[str, Any]:
+    """Seed a fresh workspace from global defaults.
+
+    Returns the seeded settings dict (already saved to disk).  If the
+    global defaults include ``claude_cmd``, ``channel_mode`` is
+    automatically enabled so agents work out of the box.
+    """
+    defaults = _load_global_defaults()
+    if not defaults:
+        return {}
+
+    defaults = decrypt_settings_secrets(defaults)
+
+    # If Claude is available, default channel_mode to True
+    if defaults.get("claude_cmd"):
+        defaults.setdefault("channel_mode", True)
+        defaults.setdefault("force_to_claude_code", True)
+        defaults.setdefault("execution_backend", "channel")
+        defaults.setdefault("claude_enabled", True)
+
+    # Mark setup as complete since machine is already configured
+    defaults["setup_completed"] = True
+
+    _save_settings(defaults)
+    logger.info("[OK] Seeded workspace settings from global defaults (%d keys)",
+                len(defaults))
+    return defaults
+
+
 def _load_settings() -> dict[str, Any]:
     """Load settings from {data_dir}/settings.json.
 
@@ -2929,6 +3008,10 @@ async def post_settings(request: Request) -> JSONResponse:
 
     _save_settings(settings)
 
+    # Update global defaults if any machine-level keys changed
+    if _GLOBAL_DEFAULT_KEYS & set(body):
+        _save_global_defaults(settings)
+
     # Hot-reload channel session settings
     try:
         from cohort.channel_bridge import apply_channel_settings
@@ -3875,6 +3958,9 @@ async def setup_save_config(request: Request) -> JSONResponse:
     settings["setup_completed"] = True
     settings["content_topic"] = topic
     _save_settings(settings)
+
+    # Persist machine-level settings so future workspaces inherit them
+    _save_global_defaults(settings)
 
     return JSONResponse({"success": True})
 
@@ -6959,6 +7045,10 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     _settings_path = Path(resolved_dir) / "settings.json"
     saved_settings = _load_settings()
+
+    # -- Seed from global defaults if this is a fresh workspace -----------
+    if not saved_settings:
+        saved_settings = _seed_from_global_defaults()
 
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
