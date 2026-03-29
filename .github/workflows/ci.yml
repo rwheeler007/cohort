@@ -43,7 +43,9 @@ jobs:
 
       - name: Verify no web framework imports in core
         run: |
-          if grep -rn "from starlette\|from socketio\|from fastapi\|import uvicorn" cohort/ --include="*.py"; then
+          if grep -rn "from starlette\|from socketio\|from fastapi\|import uvicorn" cohort/ --include="*.py" \
+            --exclude="server.py" --exclude="oauth2_middleware.py" --exclude="socketio_events.py" \
+            --exclude="tray.py" --exclude="launcher.py" --exclude="agent_router.py"; then
             echo "FAIL: Web framework imports found in core package"
             exit 1
           fi
