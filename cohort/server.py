@@ -30,23 +30,18 @@ import subprocess
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from cohort.api import DEFAULT_MODEL, AgentStore, ChatManager, create_storage
 from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secrets
-
-if TYPE_CHECKING:
-    from cohort.approval_store import ApprovalStore
-    from cohort.deliverables import DeliverableTracker
-    from cohort.review_pipeline import ReviewPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +73,85 @@ def _get_chat() -> ChatManager:
 # =====================================================================
 # Settings persistence
 # =====================================================================
+
+# Keys that belong to the machine, not the workspace.  These are written
+# to ``~/.cohort/defaults.json`` after the first successful wizard run
+# and seeded into new workspaces so users don't have to repeat setup.
+_GLOBAL_DEFAULT_KEYS: set[str] = {
+    "claude_cmd",
+    "hardware_info",
+    "service_keys",
+    "user_display_name",
+    "user_display_role",
+    "user_display_avatar",
+    "model_name",
+    "model_verified",
+}
+
+
+def _global_defaults_path() -> Path:
+    """Return ``~/.cohort/defaults.json``."""
+    return Path(os.path.expanduser("~")) / ".cohort" / "defaults.json"
+
+
+def _load_global_defaults() -> dict[str, Any]:
+    """Load machine-level defaults from ``~/.cohort/defaults.json``."""
+    p = _global_defaults_path()
+    if p.exists():
+        try:
+            with open(p, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning("Failed to load global defaults: %s", exc)
+    return {}
+
+
+def _save_global_defaults(settings: dict[str, Any]) -> None:
+    """Write machine-level keys from *settings* to ``~/.cohort/defaults.json``."""
+    defaults = {k: settings[k] for k in _GLOBAL_DEFAULT_KEYS if k in settings}
+    if not defaults:
+        return
+    p = _global_defaults_path()
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        # Encrypt secrets before writing
+        to_save = json.loads(json.dumps(defaults))
+        encrypt_settings_secrets(to_save)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(to_save, f, indent=2)
+        logger.info("[OK] Global defaults saved to %s", p)
+    except OSError as exc:
+        logger.warning("Failed to save global defaults: %s", exc)
+
+
+def _seed_from_global_defaults() -> dict[str, Any]:
+    """Seed a fresh workspace from global defaults.
+
+    Returns the seeded settings dict (already saved to disk).  If the
+    global defaults include ``claude_cmd``, ``channel_mode`` is
+    automatically enabled so agents work out of the box.
+    """
+    defaults = _load_global_defaults()
+    if not defaults:
+        return {}
+
+    defaults = decrypt_settings_secrets(defaults)
+
+    # If Claude is available, default channel_mode to True
+    if defaults.get("claude_cmd"):
+        defaults.setdefault("channel_mode", True)
+        defaults.setdefault("force_to_claude_code", True)
+        defaults.setdefault("execution_backend", "channel")
+        defaults.setdefault("claude_enabled", True)
+
+    # Mark setup as complete since machine is already configured
+    defaults["setup_completed"] = True
+
+    _save_settings(defaults)
+    logger.info("[OK] Seeded workspace settings from global defaults (%d keys)",
+                len(defaults))
+    return defaults
+
 
 def _load_settings() -> dict[str, Any]:
     """Load settings from {data_dir}/settings.json.
@@ -232,10 +306,15 @@ def _load_tool_filter() -> tuple[list[str], dict[str, str]] | None:
 # =====================================================================
 
 async def index(request: Request) -> HTMLResponse:
-    """GET / -- serve the Cohort dashboard."""
+    """GET / -- serve the Cohort dashboard (if installed)."""
     html_path = _TEMPLATES_DIR / "cohort.html"
     if not html_path.exists():
-        return HTMLResponse("<h1>Cohort UI not found</h1>", status_code=404)
+        return HTMLResponse(
+            "<h1>Cohort API Server</h1>"
+            "<p>The API is running. Use the "
+            "<a href='https://marketplace.visualstudio.com/items?itemName=cohort-ai.cohort-vscode'>"
+            "VS Code extension</a> to connect.</p>",
+        )
     return HTMLResponse(html_path.read_text(encoding="utf-8"))
 
 
@@ -2929,6 +3008,10 @@ async def post_settings(request: Request) -> JSONResponse:
 
     _save_settings(settings)
 
+    # Update global defaults if any machine-level keys changed
+    if _GLOBAL_DEFAULT_KEYS & set(body):
+        _save_global_defaults(settings)
+
     # Hot-reload channel session settings
     try:
         from cohort.channel_bridge import apply_channel_settings
@@ -3230,7 +3313,7 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
             "content-type": "application/json",
         })
         try:
-            with urllib.request.urlopen(req, timeout=15):
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 return {"success": True, "message": "API key valid -- connected to Anthropic"}
         except urllib.error.HTTPError as e:
             if e.code == 401:
@@ -3875,6 +3958,9 @@ async def setup_save_config(request: Request) -> JSONResponse:
     settings["setup_completed"] = True
     settings["content_topic"] = topic
     _save_settings(settings)
+
+    # Persist machine-level settings so future workspaces inherit them
+    _save_global_defaults(settings)
 
     return JSONResponse({"success": True})
 
@@ -6657,7 +6743,7 @@ async def create_project(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Directory already exists: {project_dir}"}, status_code=400)
 
     cohort_root = Path(__file__).resolve().parent.parent
-    _load_settings()
+    settings = _load_settings()
 
     # Profile -> tools mapping
     profile_tools = {
@@ -6959,6 +7045,12 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     _settings_path = Path(resolved_dir) / "settings.json"
     saved_settings = _load_settings()
+
+    # -- Seed from global defaults if this workspace hasn't been set up ---
+    if not saved_settings.get("setup_completed"):
+        seeded = _seed_from_global_defaults()
+        if seeded:
+            saved_settings.update(seeded)
 
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
@@ -7313,8 +7405,11 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/website/projects", website_list_projects, methods=["GET"]),
         Route("/api/website/projects/{project_name:path}", website_serve_page, methods=["GET"]),
         Route("/api/website/preview/{project_name:path}", website_serve_preview, methods=["GET"]),
-        Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
+
+    # Only mount static files if the directory exists (dashboard is optional)
+    if _STATIC_DIR.is_dir():
+        routes.append(Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"))
 
     # Restrict CORS to localhost origins.  Override with COHORT_CORS_ORIGINS
     # env var (comma-separated) if the server needs to be accessed from other
