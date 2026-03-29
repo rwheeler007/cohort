@@ -7046,9 +7046,11 @@ def create_app(data_dir: str = "data") -> Starlette:
     _settings_path = Path(resolved_dir) / "settings.json"
     saved_settings = _load_settings()
 
-    # -- Seed from global defaults if this is a fresh workspace -----------
-    if not saved_settings:
-        saved_settings = _seed_from_global_defaults()
+    # -- Seed from global defaults if this workspace hasn't been set up ---
+    if not saved_settings.get("setup_completed"):
+        seeded = _seed_from_global_defaults()
+        if seeded:
+            saved_settings.update(seeded)
 
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
