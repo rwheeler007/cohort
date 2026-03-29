@@ -30,23 +30,18 @@ import subprocess
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from cohort.api import DEFAULT_MODEL, AgentStore, ChatManager, create_storage
 from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secrets
-
-if TYPE_CHECKING:
-    from cohort.approval_store import ApprovalStore
-    from cohort.deliverables import DeliverableTracker
-    from cohort.review_pipeline import ReviewPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -311,10 +306,15 @@ def _load_tool_filter() -> tuple[list[str], dict[str, str]] | None:
 # =====================================================================
 
 async def index(request: Request) -> HTMLResponse:
-    """GET / -- serve the Cohort dashboard."""
+    """GET / -- serve the Cohort dashboard (if installed)."""
     html_path = _TEMPLATES_DIR / "cohort.html"
     if not html_path.exists():
-        return HTMLResponse("<h1>Cohort UI not found</h1>", status_code=404)
+        return HTMLResponse(
+            "<h1>Cohort API Server</h1>"
+            "<p>The API is running. Use the "
+            "<a href='https://marketplace.visualstudio.com/items?itemName=cohort-ai.cohort-vscode'>"
+            "VS Code extension</a> to connect.</p>",
+        )
     return HTMLResponse(html_path.read_text(encoding="utf-8"))
 
 
@@ -3313,7 +3313,7 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
             "content-type": "application/json",
         })
         try:
-            with urllib.request.urlopen(req, timeout=15):
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 return {"success": True, "message": "API key valid -- connected to Anthropic"}
         except urllib.error.HTTPError as e:
             if e.code == 401:
@@ -6743,7 +6743,7 @@ async def create_project(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Directory already exists: {project_dir}"}, status_code=400)
 
     cohort_root = Path(__file__).resolve().parent.parent
-    _load_settings()
+    settings = _load_settings()
 
     # Profile -> tools mapping
     profile_tools = {
@@ -7405,8 +7405,11 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/website/projects", website_list_projects, methods=["GET"]),
         Route("/api/website/projects/{project_name:path}", website_serve_page, methods=["GET"]),
         Route("/api/website/preview/{project_name:path}", website_serve_preview, methods=["GET"]),
-        Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"),
     ]
+
+    # Only mount static files if the directory exists (dashboard is optional)
+    if _STATIC_DIR.is_dir():
+        routes.append(Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"))
 
     # Restrict CORS to localhost origins.  Override with COHORT_CORS_ORIGINS
     # env var (comma-separated) if the server needs to be accessed from other
