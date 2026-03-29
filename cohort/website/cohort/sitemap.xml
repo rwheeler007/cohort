@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://cohort.dev/index.html</loc><priority>1.0</priority></url>
-  <url><loc>https://cohort.dev/features.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/tools.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/use-cases.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/pricing.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/benchmarks.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/docs.html</loc><priority>0.8</priority></url>
-  <url><loc>https://cohort.dev/contact.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/index.html</loc><priority>1.0</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/download.html</loc><priority>0.9</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/features.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/tools.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/use-cases.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/pricing.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/benchmarks.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/docs.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/contact.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/compare.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/conversations.html</loc><priority>0.7</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/ai-perspective.html</loc><priority>0.7</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/marketing.html</loc><priority>0.7</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/cli.html</loc><priority>0.7</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/roadmap.html</loc><priority>0.6</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/project-integration.html</loc><priority>0.6</priority></url>
+  <url><loc>https://rwheeler007.github.io/cohort/mcp-tools.html</loc><priority>0.6</priority></url>
 </urlset>

@@ -1,0 +1,33 @@
+# .public-files — allowlist of paths that sync to rwheeler007/cohort (public)
+# New files are private by default. Only paths listed here go public.
+# Lines starting with # are comments. Blank lines are ignored.
+# Lines starting with ! are exclusions (applied after includes).
+
+# Root files
+.github/workflows/ci.yml
+.gitignore
+CHANGELOG.md
+CLAUDE.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+Dockerfile
+LICENSE
+NOTICE
+QUICKSTART.md
+README.md
+SECURITY.md
+docker-compose.yml
+pyproject.toml
+
+# Core package
+cohort/
+!cohort/website/
+
+# Public extras
+examples/
+plugins/
+services/
+tests/
+
+# Website: cohort/website/cohort/ → docs/ (path mapping handled in workflow)
+# The _archive/ subdirectory is excluded from the mapping.

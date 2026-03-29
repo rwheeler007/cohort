@@ -1,0 +1,84 @@
+name: Sync to Public Repo
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout public repo
+        uses: actions/checkout@v4
+        with:
+          repository: rwheeler007/cohort
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          path: _public
+          fetch-depth: 0
+
+      - name: Clean public repo (preserve .git)
+        run: |
+          cd _public
+          # Remove everything except .git
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+
+      - name: Copy allowed root files
+        run: |
+          for f in \
+            .gitignore CHANGELOG.md CLAUDE.md CODE_OF_CONDUCT.md \
+            CONTRIBUTING.md Dockerfile LICENSE NOTICE QUICKSTART.md \
+            README.md SECURITY.md docker-compose.yml pyproject.toml
+          do
+            [ -f "$f" ] && cp "$f" _public/
+          done
+
+      - name: Copy allowed directories
+        run: |
+          # CI workflow
+          mkdir -p _public/.github/workflows
+          cp .github/workflows/ci.yml _public/.github/workflows/
+
+          # Core package (excluding website)
+          rsync -a --exclude='website/' cohort/ _public/cohort/
+
+          # Public extras
+          for dir in examples plugins services tests; do
+            [ -d "$dir" ] && rsync -a "$dir/" "_public/$dir/"
+          done
+
+      - name: Map website to docs/
+        run: |
+          # cohort/website/cohort/ → docs/ (excluding _archive/)
+          if [ -d "cohort/website/cohort" ]; then
+            rsync -a --exclude='_archive/' cohort/website/cohort/ _public/docs/
+          fi
+
+      - name: Commit and push
+        run: |
+          cd _public
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to sync"
+            exit 0
+          fi
+
+          COMMIT_MSG=$(git -C .. log -1 --format="%s")
+          git commit -m "$COMMIT_MSG" -m "Auto-synced from private repo"
+          git push origin main
+
+      - name: Sync tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd _public
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          git tag "$TAG_NAME"
+          git push origin "$TAG_NAME"

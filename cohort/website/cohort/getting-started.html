@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started | COHORT</title>
+    <meta name="description" content="Step-by-step guide to install and run Cohort from scratch. No experience required -- from zero to your first AI agent session.">
+    <meta name="keywords" content="cohort getting started, install cohort, python setup, AI agents tutorial, beginner guide, multi-agent setup">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/getting-started.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/getting-started.html">
+    <meta property="og:title" content="Getting Started with Cohort | From Zero to AI Agents">
+    <meta property="og:description" content="Step-by-step beginner guide. Install Python, Cohort, and launch your first AI agent session in minutes.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Getting Started with Cohort | From Zero to AI Agents">
+    <meta name="twitter:description" content="Step-by-step beginner guide. Install Python, Cohort, and launch your first AI agent session in minutes.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing section-hero-accent">
+    <div class="container text-center">
+        <h1 class="responsive-h1">Getting Started</h1>
+        <p class="responsive-p-large">From zero to your first AI agent session.<br>No experience required.</p>
+    </div>
+</section>
+
+<!-- VS Code Extension Quick Start -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">The Easy Way</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Already using VS Code? Search, install, done.</p>
+
+        <div style="display: grid; gap: 1.5rem;">
+
+            <!-- Step 1: Install from Marketplace -->
+            <div class="card card-highlighted" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">1</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Install the VS Code Extension</h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Open VS Code and search <strong>"Cohort"</strong> in the Extensions panel (<code>Ctrl+Shift+X</code>). Click <strong>Install</strong>.</p>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Then open the panel:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div>Ctrl+Shift+P &rarr; "Cohort: Open Channels"</div>
+                    </div>
+                    <p class="responsive-p-body" style="margin: 0.75rem 0 0 0;">The extension auto-installs the Cohort Python package if it's missing. The server starts automatically when you open the panel -- no setup wizard, no terminal commands.</p>
+                    <p class="responsive-p-body" style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.85rem;">Requires Python 3.11+ and VS Code 1.85+. Also available as a <a data-v-href="releaseUrl">.vsix download</a> from GitHub.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Manual instructions banner -->
+<div id="manual" style="background: linear-gradient(135deg, #c0c0c0, #a8a8a8); padding: 0.75rem 0; text-align: center;">
+    <a href="#manual-steps" style="color: #333; text-decoration: none; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.02em;">
+        Prefer to install manually? Step-by-step instructions below &#8595;
+    </a>
+</div>
+
+<!-- Manual Step by Step -->
+<section id="manual-steps" class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Manual Setup</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Seven steps from a blank machine to a running AI agent team.</p>
+
+        <div style="display: grid; gap: 1.5rem;">
+
+            <!-- Step 1 -->
+            <div id="step-1" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">1</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Install Python</h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Download Python 3.11 or newer from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>. Run the installer and <strong>check the box that says "Add Python to PATH"</strong> -- this is the most common mistake beginners make.</p>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">After the install finishes, open a terminal and verify it worked:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div><span style="user-select: none;">$ </span>python --version</div>
+                        <div style="color: var(--color-success);">Python 3.13.2</div>
+                    </div>
+                    <p class="responsive-p-body" style="margin: 0.75rem 0 0 0; color: var(--text-muted); font-size: 0.85rem;">On macOS or Linux, you may need to use <code>python3</code> instead of <code>python</code>.</p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="step-2" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">2</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Install VS Code <span style="color: var(--text-muted); font-weight: 400; font-size: 0.85rem;">(optional but recommended)</span></h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Download VS Code from <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a>. This gives you the full Cohort experience: channel messaging, agent panels, integrated terminals, and inline approvals.</p>
+                    <p class="responsive-p-body" style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">You can skip this step and use the CLI + web dashboard instead. VS Code just makes everything more convenient.</p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div id="step-3" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">3</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Install Cohort</h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Open a terminal (Command Prompt, PowerShell, or the VS Code terminal) and run:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div><span style="user-select: none;">$ </span>pip install "cohort[server]"</div>
+                    </div>
+                    <p class="responsive-p-body" style="margin: 0.75rem 0 0 0;">This installs the Cohort server, MCP tools, web dashboard, and 23 bundled AI agents. The install takes about a minute.</p>
+                    <p class="responsive-p-body" style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.85rem;"><strong>Windows users:</strong> The quotes around <code>"cohort[server]"</code> are required in PowerShell. Without them, the extras won't install and the server won't start.</p>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div id="step-4" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">4</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Run the Setup Wizard</h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Run the one-time setup wizard in your terminal:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div><span style="user-select: none;">$ </span>python -m cohort setup</div>
+                    </div>
+                    <p class="responsive-p-body" style="margin: 0.75rem 0 0 0;">The wizard detects your hardware (CPU, GPU, available memory), configures the server, and optionally sets up <a href="https://ollama.com/" target="_blank" rel="noopener">Ollama</a> for local LLM inference. Follow the prompts -- it takes about two minutes.</p>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div id="step-5" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">5</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Start the Server</h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Launch the Cohort server:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div><span style="user-select: none;">$ </span>python -m cohort serve</div>
+                    </div>
+                    <p class="responsive-p-body" style="margin: 0.75rem 0 0 0;">The web dashboard opens automatically at <a href="http://127.0.0.1:5100" target="_blank" rel="noopener">http://127.0.0.1:5100</a>. Leave this terminal window open -- it's running your server.</p>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div id="step-6" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">6</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Install the VS Code Extension <span style="color: var(--text-muted); font-weight: 400; font-size: 0.85rem;">(if you installed VS Code)</span></h3>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Download <a data-v-href="releaseUrl"><strong><span data-v="vsixFile">cohort-vscode-0.4.12.vsix</span></strong></a> from the GitHub release page.</p>
+                    <p class="responsive-p-body" style="margin: 0 0 1rem 0;">Then install it in VS Code:</p>
+                    <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                        <div style="color: var(--text-muted); margin-bottom: 0.5rem;"># In VS Code:</div>
+                        <div>Ctrl+Shift+P &rarr; "Extensions: Install from VSIX..."</div>
+                        <div style="color: var(--text-muted); margin-top: 0.25rem;">&rarr; Select the downloaded .vsix file</div>
+                        <div style="color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 0.5rem;"># Then open the panel:</div>
+                        <div>Ctrl+Shift+P &rarr; "Cohort: Open Channels"</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7 -->
+            <div id="step-7" class="card" style="display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start;">
+                <div style="width: 3rem; height: 3rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">7</div>
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Start Your First Session</h3>
+                    <p class="responsive-p-body" style="margin: 0;">Create a channel, pick your agents, and start a discussion. The orchestrator automatically picks who speaks next based on relevance scoring -- you don't have to manage turn-taking. Contribution scoring, loop prevention, and executive briefings all work out of the box.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- What's Next -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">What's Next</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">You're up and running. Here's where to go from here.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <a href="docs.html" class="card" style="text-decoration: none; color: inherit; display: block;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem;">Full Documentation</h3>
+                <p class="responsive-p-body" style="margin: 0; color: var(--text-muted);">API reference, configuration options, and advanced features.</p>
+            </a>
+            <a href="team.html" class="card" style="text-decoration: none; color: inherit; display: block;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem;">Meet the Agents</h3>
+                <p class="responsive-p-body" style="margin: 0; color: var(--text-muted);">23 pre-configured agents with specialized roles and expertise.</p>
+            </a>
+            <a href="channels.html" class="card" style="text-decoration: none; color: inherit; display: block;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem;">Channel System</h3>
+                <p class="responsive-p-body" style="margin: 0; color: var(--text-muted);">How channels, messaging, and multi-agent conversations work.</p>
+            </a>
+            <a href="vscode.html" class="card" style="text-decoration: none; color: inherit; display: block;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem;">VS Code Extension</h3>
+                <p class="responsive-p-body" style="margin: 0; color: var(--text-muted);">Panels, permissions, session management, and keyboard shortcuts.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Troubleshooting -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Troubleshooting</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Common issues and how to fix them.</p>
+
+        <div style="display: grid; gap: 1rem;">
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">"python not found"</h3>
+                <p class="responsive-p-body" style="margin: 0;">Python wasn't added to your system PATH during installation. The fix: re-run the Python installer, choose "Modify", and make sure <strong>"Add Python to PATH"</strong> is checked. Then restart your terminal.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">"pip not found"</h3>
+                <p class="responsive-p-body" style="margin: 0 0 0.75rem 0;">Some systems don't add <code>pip</code> directly to PATH. Use the long form instead:</p>
+                <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                    <div><span style="user-select: none;">$ </span>python -m pip install "cohort[server]"</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">PowerShell ignores [server] extras</h3>
+                <p class="responsive-p-body" style="margin: 0;">PowerShell treats square brackets as wildcards. Wrap the package name in quotes: <code>pip install "cohort[server]"</code>. Without quotes, pip installs the base package and the server dependencies are silently skipped.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">"cohort" is not recognized</h3>
+                <p class="responsive-p-body" style="margin: 0 0 0.75rem 0;">Python's Scripts folder isn't on your PATH. Use the module form instead:</p>
+                <div class="code-block" style="border-radius: 8px; padding: 1rem; margin: 0; font-family: monospace; color: #C8C8C8;">
+                    <div><span style="user-select: none;">$ </span>python -m cohort setup</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">Server won't start</h3>
+                <p class="responsive-p-body" style="margin: 0;">Port 5100 is probably already in use by another process. Either close the other process or run Cohort on a different port. Check with <code>netstat -ano | findstr 5100</code> on Windows or <code>lsof -i :5100</code> on macOS/Linux.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--color-primary);">No GPU detected</h3>
+                <p class="responsive-p-body" style="margin: 0;">Cohort works fine on CPU -- it's just slower for local inference. If you have an NVIDIA GPU and it's not being detected, make sure your GPU drivers are up to date. You can also install <a href="https://ollama.com/" target="_blank" rel="noopener">Ollama</a> manually and Cohort will detect it on next startup.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing section-dark" style="background: var(--color-dark-bg); color: white;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: white;">Need Help?</h2>
+        <p class="responsive-p-large" style="color: var(--text-on-dark-muted); margin-bottom: 2rem;">If you're stuck, we're here.</p>
+        <div class="button-group" style="justify-content: center;">
+            <a href="https://github.com/rwheeler007/cohort/issues" class="btn-primary" style="font-size: 1rem; padding: 1rem 2rem;" target="_blank" rel="noopener">Open a GitHub Issue</a>
+            <a href="contact.html" class="btn-secondary" style="font-size: 1rem; padding: 1rem 2rem; color: white; border-color: rgba(255,255,255,0.3);">Contact Us</a>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer"></footer>
+
+    <script src="site-config.js"></script>
+    <script src="nav.js"></script>
+    <script src="footer.js"></script>
+</body>
+</html>

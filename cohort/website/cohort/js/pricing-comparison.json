@@ -1,0 +1,112 @@
+{
+    "_lastVerified": "2026-03-13",
+    "_notes": "Only include published, verifiable pricing. Use null for unpublished costs.",
+    "cohort": {
+        "name": "Cohort",
+        "perCallCost": 0,
+        "platformFee": 0,
+        "transparency": true,
+        "localInference": true,
+        "apiEscalation": "Optional (Smartest mode only)",
+        "estimatedApiPct": 5,
+        "notes": "95% of work runs on local GPU. Smartest mode distills context before API call, reducing tokens ~70%."
+    },
+    "competitors": [
+        {
+            "name": "CrewAI",
+            "perCallCost": null,
+            "platformFee": "$0 (OSS) / $99/mo - $120K/yr (Enterprise)",
+            "platformFeeSource": "https://www.zenml.io/blog/crewai-pricing",
+            "transparency": false,
+            "localInference": false,
+            "apiRequired": true,
+            "sourceNote": "Cloud API required for all agent turns. Platform fees for hosted enterprise.",
+            "apiModel": "GPT-4 / Claude (user-supplied keys)"
+        },
+        {
+            "name": "LangGraph",
+            "perCallCost": null,
+            "platformFee": "$0 (OSS) / $39/user/mo (LangSmith Plus, max 10 users)",
+            "platformFeeSource": "https://www.zenml.io/blog/langgraph-pricing",
+            "nodeExecutionFee": "$0.001/node",
+            "transparency": false,
+            "localInference": false,
+            "apiRequired": true,
+            "sourceNote": "Cloud API required for all inference. LangSmith platform add-on for tracing.",
+            "apiModel": "Any OpenAI-compatible (user-supplied keys)"
+        }
+    ],
+    "calculatorDefaults": {
+        "agentsPerConversation": 5,
+        "turnsPerConversation": 20,
+        "conversationsPerDay": 3,
+        "firstCallInput": 3000,
+        "firstCallOutput": 2000,
+        "inputGrowthPerTurn": 700,
+        "outputPerTurn": 800,
+        "_cumulativeNote": "Cloud API calls are cumulative: each turn resends the full conversation history. Turn 1 = 3K input (persona + memory + message). By turn 10 = ~10K input. By turn 20 = ~16K input. Cohort runs this locally; only distilled escalations hit the API.",
+        "claudeInputPer1k": 0.003,
+        "claudeOutputPer1k": 0.015,
+        "gpt4oInputPer1k": 0.0025,
+        "_gpt4oSource": "https://openai.com/api/pricing/",
+        "gpt4oOutputPer1k": 0.01,
+        "_claudeSource": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "cohortApiEscalationPct": 5,
+        "cohortDistillReduction": 70
+    },
+    "caseStudies": [
+        {
+            "title": "Website Generation",
+            "stat": "9 pages in 7:39",
+            "detail": "5 agents, 0 hand-written lines of code",
+            "apiCost": "$0.00"
+        },
+        {
+            "title": "Content Pipeline",
+            "stat": "6hrs to 30min",
+            "detail": "RSS to published post, fully orchestrated",
+            "apiCost": "$0.00"
+        },
+        {
+            "title": "Agent Benchmarks",
+            "stat": "97.2% accuracy",
+            "detail": "2,400 questions across 23 agents, all tiers",
+            "apiCost": "$0.00"
+        }
+    ],
+    "claudeCodeMultiplier": {
+        "condense": {
+            "name": "condense",
+            "description": "Compresses conversation context before sending to Claude",
+            "tokenReduction": "~70%",
+            "benefit": "Send 500 tokens instead of 5,000"
+        },
+        "distill": {
+            "name": "distill",
+            "description": "Pre-processes local model output into a briefing for Claude",
+            "tokenReduction": "50-70%",
+            "benefit": "Claude sees structured briefing, not raw conversation"
+        },
+        "roundtable": {
+            "name": "roundtable",
+            "description": "Runs multi-agent discussion in one local call",
+            "tokenReduction": "~90%",
+            "benefit": "1 compiled call replaces N separate API calls"
+        }
+    },
+    "industrySources": {
+        "avgMonthlyAISpend": {
+            "value": "$85,521/mo (2025)",
+            "yoyGrowth": "36%",
+            "source": "https://zylo.com/blog/ai-cost/"
+        },
+        "aiNativeSpendGrowth": {
+            "value": "108% YoY, large enterprises 393%",
+            "source": "https://zylo.com/reports/2026-saas-management-index/"
+        },
+        "agentOperationalCosts": {
+            "value": "$3,200-$13,000/mo post-launch",
+            "source": "https://www.cleveroad.com/blog/ai-agent-development-cost/"
+        }
+    }
+}

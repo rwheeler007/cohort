@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | COHORT</title>
     <meta name="description" content="Get in touch with the Cohort team -- questions, partnerships, enterprise inquiries.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
 
-    <link rel="canonical" href="https://cohort.dev/contact.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/contact.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/contact.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/contact.html">
     <meta property="og:title" content="Contact | COHORT">
     <meta property="og:description" content="Get in touch with the Cohort team -- questions, partnerships, enterprise inquiries.">
 
@@ -39,16 +47,7 @@ COHORT            </a>
                 &#9776;
             </button>
             <ul class="nav-links">
-                <li><a href="features.html">How It Works</a></li>
-                <li><a href="tools.html">Tools</a></li>
-                <li><a href="use-cases.html">Use Cases</a></li>
-                <li><a href="marketing.html">Content Pipeline</a></li>
-                <li><a href="pricing.html">Pricing</a></li>
-                <li><a href="benchmarks.html">Benchmarks</a></li>
-                <li><a href="docs.html">Docs</a></li>
-                <li><a href="compare.html">Compare</a></li>
-                <li><a href="ai-perspective.html">AI's Take</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <!-- Populated by nav.js -->
             </ul>
         </div>
     </nav>
@@ -70,7 +69,7 @@ COHORT            </a>
             <!-- Form -->
             <div class="card">
                 <h2 class="responsive-h2">Send a Message</h2>
-                <form action="#" method="POST">
+                <form id="contact-form">
                     <div class="form-group">
                         <label for="name">Name *</label>
                         <input type="text" id="name" name="name" required placeholder="Your name">
@@ -83,8 +82,42 @@ COHORT            </a>
                         <label for="message">Message *</label>
                         <textarea id="message" name="message" rows="5" required placeholder="How can we help?"></textarea>
                     </div>
-                    <button type="submit" class="btn-primary" style="width: 100%;">Send Message</button>
+                    <button type="submit" class="btn-primary" style="width: 100%;" id="contact-submit">Send Message</button>
+                    <div id="contact-status" style="margin-top: 1rem; display: none;"></div>
                 </form>
+                <script>
+                document.getElementById("contact-form").addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    var btn = document.getElementById("contact-submit");
+                    var status = document.getElementById("contact-status");
+                    btn.disabled = true;
+                    btn.textContent = "Sending...";
+                    status.style.display = "none";
+                    fetch("https://script.google.com/macros/s/AKfycbx8qO0t9BScMxyINwnITUEGcKsdAkmd9gE8hHgpiVWxmvSYlsKKo5t0QaBODugkLJYW/exec", {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({
+                            name: document.getElementById("name").value,
+                            email: document.getElementById("email").value,
+                            message: document.getElementById("message").value
+                        })
+                    }).then(function() {
+                        status.style.display = "block";
+                        status.style.color = "#3fb950";
+                        status.textContent = "Message sent -- we'll be in touch.";
+                        document.getElementById("contact-form").reset();
+                        btn.disabled = false;
+                        btn.textContent = "Send Message";
+                    }).catch(function() {
+                        status.style.display = "block";
+                        status.style.color = "#f85149";
+                        status.textContent = "Something went wrong. Please email hello@cohort.dev instead.";
+                        btn.disabled = false;
+                        btn.textContent = "Send Message";
+                    });
+                });
+                </script>
             </div>
 
             <!-- Contact Info -->
@@ -95,7 +128,7 @@ COHORT            </a>
                 </div>
                 <div class="card">
                     <h3 class="responsive-h3">Follow Us</h3>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="display: inline-block; margin-right: 1rem; color: var(--color-primary); font-weight: 600;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="display: inline-block; margin-right: 1rem; color: var(--color-primary); font-weight: 600;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="display: inline-block; margin-right: 1rem; color: var(--color-primary); font-weight: 600;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="display: inline-block; margin-right: 1rem; color: var(--color-primary); font-weight: 600;">Discord</a>
                 </div>
@@ -116,20 +149,20 @@ COHORT            </a>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

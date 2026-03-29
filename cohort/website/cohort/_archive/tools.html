@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools | COHORT</title>
+    <meta name="description" content="Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more.">
+    <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/tools.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/tools.html">
+    <meta property="og:title" content="Tools | COHORT">
+    <meta property="og:description" content="Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tools | COHORT">
+    <meta name="twitter:description" content="Explore Cohort's toolset -- agent orchestration, website generation, executive briefings, local inference, work queues, and more.">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .subpage-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-decoration: none;
+            display: block;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .subpage-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .subpage-card h3 { color: #fff; font-size: 0.95rem; margin: 0 0 0.35rem 0; }
+        .subpage-card p { color: #C8C8C8; font-size: 0.8rem; margin: 0; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <li><a href="features.html">How It Works</a></li>
+                <li><a href="tools.html">Tools</a></li>
+                <li><a href="use-cases.html">Use Cases</a></li>
+                <li><a href="marketing.html">Content Pipeline</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="benchmarks.html">Benchmarks</a></li>
+                <li><a href="docs.html">Docs</a></li>
+                <li><a href="compare.html">Compare</a></li>
+                <li><a href="ai-perspective.html">AI's Take</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+<!-- Tools Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">The Toolbox</h1>
+        <p class="responsive-p-large">Core orchestration ships with Cohort. The full ecosystem adds communication, content, and monitoring tools for production deployments.</p>
+    </div>
+</section>
+
+<!-- Tools at a Glance -->
+<section class="section-spacing">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">At a Glance</h2>
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">8</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Built-In Tools</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">All health-monitored</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">1</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Dashboard</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Start, stop, configure everything</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">$0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Default Cost</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Local-first, API optional</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #d29922;">0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Auto-Sends</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Human approval gates on everything</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category: Communication & Research -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">Communication & Research</h2>
+        <p class="responsive-p-large text-center" style="max-width: 700px; margin: 0 auto;">How your agents reach the outside world -- with you approving every outbound action.</p>
+        <div style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 6px; padding: 0.75rem 1rem; max-width: 700px; margin: 0.5rem auto 0; font-size: 0.8rem; color: #d29922; text-align: center;">Ecosystem tools -- available in full BOSS deployments, not included in <code style="color: #d29922;">pip install cohort</code></div>
+
+        <div id="email-calendar" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[EC]</div>
+            <h3 class="responsive-h3">Email & Calendar<span class="tier-badge tier-enterprise">Enterprise</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Send emails via Resend, manage Google Calendar events, and post to social media (Twitter, LinkedIn, Facebook, Threads). Every outbound message goes through a human approval gate before sending -- nothing leaves without your explicit OK.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Approval workflow</div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">Agent drafts</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">Pending queue</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">You approve</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #bc8cff; font-weight: 600;">Sent + logged</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                    Full audit log: who requested it, what was sent, which channel, timestamps, approval status. Nothing is ever sent automatically.
+                </div>
+            </div>
+        </div>
+
+        <div id="web-search" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[WS]</div>
+            <h3 class="responsive-h3">Web Search<span class="tier-badge tier-free">Free</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Two search paths: API-based (SerpAPI, Serper, Google) for high-quality structured results, and local DuckDuckGo for free unlimited search. Enable both, either, or neither. Agents automatically use whichever is available.</p>
+
+            <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                    <div style="font-size: 1.1rem; font-weight: 700; color: #58a6ff; margin-bottom: 0.5rem;">API Search</div>
+                    <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.5;">SerpAPI, Serper, or Google Custom Search. Higher-quality snippets, structured data. Requires API key. Rate-limited (30/min, 250/day default).</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; border: 1px solid #3fb950;">
+                    <div style="font-size: 1.1rem; font-weight: 700; color: #3fb950; margin-bottom: 0.5rem;">Local Search (Free)</div>
+                    <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.5;">DuckDuckGo via <code style="color:#d29922; white-space: nowrap;">pip install ddgs</code>. No API key, no cost, no rate limits. Runs entirely on your machine.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="youtube" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[YT]</div>
+            <h3 class="responsive-h3">YouTube<span class="tier-badge tier-enterprise">Enterprise</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Search YouTube videos by keyword, get detailed metadata (title, description, channel, view counts, duration), and auto-extract chapter timestamps from video descriptions. Agents use this for research, content analysis, and finding relevant tutorials.</p>
+
+            <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1rem; text-align: center;">
+                    <div style="font-family: monospace; font-size: 1rem; color: #D97757; font-weight: 700; margin-bottom: 0.5rem;">Search</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">Keyword search with filters</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1rem; text-align: center;">
+                    <div style="font-family: monospace; font-size: 1rem; color: #D97757; font-weight: 700; margin-bottom: 0.5rem;">Metadata</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">Title, views, duration, tags</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1rem; text-align: center;">
+                    <div style="font-family: monospace; font-size: 1rem; color: #D97757; font-weight: 700; margin-bottom: 0.5rem;">Chapters</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">Auto-extract timestamps</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category: Content & Intelligence -->
+<section class="section-spacing">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">Content & Intelligence</h2>
+        <p class="responsive-p-large text-center" style="max-width: 700px; margin: 0 auto;">Automated pipelines that discover, analyze, and draft content -- on a schedule, with human approval.</p>
+        <div style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 6px; padding: 0.75rem 1rem; max-width: 700px; margin: 0.5rem auto 0; font-size: 0.8rem; color: #d29922; text-align: center;">Ecosystem tools -- available in full BOSS deployments, not included in <code style="color: #d29922;">pip install cohort</code></div>
+
+        <div id="rss-news" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[RSS]</div>
+            <h3 class="responsive-h3">RSS & News Monitoring<span class="tier-badge tier-pro">Pro</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Automated tech intelligence pipeline. Monitors RSS feeds on a schedule, fetches new articles, scores them for relevance (0-10), and generates periodic briefings. Three stages: RSS Fetch, Analysis, and Weekly Digest.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Pipeline stages</div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">RSS Fetch</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">Analysis & Scoring</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">Weekly Briefing</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                    Configurable fetch windows (e.g., business hours only), per-day article caps, minimum relevance threshold. Scores: <span style="color:#3fb950;">7+</span> high, <span style="color:#d29922;">4-6</span> moderate, <span style="color:#888;">&lt;4</span> low priority.
+                </div>
+            </div>
+        </div>
+
+        <div id="social-media" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[SM]</div>
+            <h3 class="responsive-h3">Social Media & Marketing<span class="tier-badge tier-pro">Pro</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Content marketing automation with multi-project support. Create multiple projects (brands/products), each with its own content strategy -- target audiences, content pillars, relevance keywords, and brand voice. AI drafts posts from high-scoring content. You approve before anything goes live.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Content pipeline</div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.3rem 0.6rem; color: #58a6ff; font-size: 0.8rem;">1. Fetch</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.3rem 0.6rem; color: #d29922; font-size: 0.8rem;">2. Analyze</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 4px; padding: 0.3rem 0.6rem; color: #bc8cff; font-size: 0.8rem;">3. Draft</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e1a1a; border: 1px solid #D97757; border-radius: 4px; padding: 0.3rem 0.6rem; color: #D97757; font-size: 0.8rem;">4. Pending</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.3rem 0.6rem; color: #3fb950; font-size: 0.8rem;">5. Approved</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                    Sources: RSS feeds, Reddit, forums. Each project has its own strategy config. Daily limits prevent runaway automation. Nothing publishes without human approval.
+                </div>
+            </div>
+        </div>
+
+        <div id="document-processing" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[DOC]</div>
+            <h3 class="responsive-h3">Document Processing<span class="tier-badge tier-free">Free</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Summarize and analyze documents using local AI. Three input methods: drag-and-drop files, paste a URL, or paste text directly. Four analysis modes: Summary, Outline, Key Points, and All.</p>
+
+            <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                    <h4 style="color: #fff; margin-bottom: 0.75rem; font-size: 0.9rem;">Supported Formats</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #58a6ff; font-size: 0.75rem;">PDF</span>
+                        <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #58a6ff; font-size: 0.75rem;">Word</span>
+                        <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #58a6ff; font-size: 0.75rem;">Excel</span>
+                        <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 3px; padding: 0.2rem 0.5rem; color: #3fb950; font-size: 0.75rem;">Images</span>
+                        <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 3px; padding: 0.2rem 0.5rem; color: #3fb950; font-size: 0.75rem;">Video</span>
+                        <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 3px; padding: 0.2rem 0.5rem; color: #d29922; font-size: 0.75rem;">HTML</span>
+                        <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 3px; padding: 0.2rem 0.5rem; color: #d29922; font-size: 0.75rem;">CSV</span>
+                        <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 3px; padding: 0.2rem 0.5rem; color: #d29922; font-size: 0.75rem;">JSON</span>
+                        <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #bc8cff; font-size: 0.75rem;">Python</span>
+                        <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #bc8cff; font-size: 0.75rem;">JS/TS</span>
+                        <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 3px; padding: 0.2rem 0.5rem; color: #bc8cff; font-size: 0.75rem;">Markdown</span>
+                    </div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
+                    <h4 style="color: #fff; margin-bottom: 0.75rem; font-size: 0.9rem;">Analysis Modes</h4>
+                    <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.8;">
+                        <div><strong style="color: #D97757;">Summary</strong> -- Concise paragraph of main ideas</div>
+                        <div><strong style="color: #58a6ff;">Outline</strong> -- Hierarchical structure with headings</div>
+                        <div><strong style="color: #3fb950;">Key Points</strong> -- Bullet list of important facts</div>
+                        <div><strong style="color: #d29922;">Image</strong> -- Describe visual content</div>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic;">Two processing backends: Ollama (local, free, private) or cloud API (paid, higher quality for complex documents). Toggle between them in the UI.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Category: System Management -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">System Management</h2>
+        <p class="responsive-p-large text-center" style="max-width: 700px; margin: 0 auto;">Monitor services, manage models, and keep everything running from one place.</p>
+
+        <div id="health-monitor" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[H]</div>
+            <h3 class="responsive-h3">System Health Monitor<span class="tier-badge tier-free">Free</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Monitors all system services and lets you start, stop, and restart them from the dashboard. Click "Run All Checks" to scan every service, then use buttons to control individual services. Add new services by editing a YAML config file.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Service status panel</div>
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: center;">
+                    <div>Cohort Server <span style="color: #888; font-size: 0.75rem;">:5100</span></div>
+                    <span style="color: #3fb950; font-weight: 600;">Healthy</span>
+                    <div>Ollama <span style="color: #888; font-size: 0.75rem;">:11434</span></div>
+                    <span style="color: #3fb950; font-weight: 600;">Healthy</span>
+                    <div>Web Search <span style="color: #888; font-size: 0.75rem;">:8005</span></div>
+                    <span style="color: #3fb950; font-weight: 600;">Healthy</span>
+                    <div>Email & Calendar <span style="color: #888; font-size: 0.75rem;">:8001</span></div>
+                    <span style="color: #3fb950; font-weight: 600;">Healthy</span>
+                    <div>YouTube <span style="color: #888; font-size: 0.75rem;">:8002</span></div>
+                    <span style="color: #D97757; font-weight: 600;">Down</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                    One-click Start / Stop / Restart per service. Health checks with automatic retry to avoid false positives. State persisted across restarts.
+                </div>
+            </div>
+        </div>
+
+        <div id="llm-manager" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[LLM]</div>
+            <h3 class="responsive-h3">LLM Manager<span class="tier-badge tier-free">Free</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Manage local AI models via Ollama. View installed models, check GPU memory usage, pull new models, and remove ones you don't need. Shows real-time VRAM usage and which models are currently loaded in GPU memory.</p>
+
+            <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">31</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">tokens/sec</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">qwen3.5:9b on RTX 3080</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">262K</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">context window</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">default model</div>
+                </div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #D97757;">6.6 GB</div>
+                    <div style="font-size: 0.8rem; color: #C8C8C8;">VRAM usage</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">fits consumer GPUs</div>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.75rem; font-style: italic;">Models loaded on-demand, unloaded after use. Quick-pull buttons for recommended models. GPU memory bar shows real-time VRAM allocation.</p>
+        </div>
+
+        <div id="work-queue" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[Q]</div>
+            <h3 class="responsive-h3">Work Queue<span class="tier-badge tier-free">Free</span></h3>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Priority-ordered task execution with single-active constraint. Tasks queue up, the highest-priority one runs, and results flow back to the requesting channel. No parallel execution surprises.</p>
+
+            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Task lifecycle</div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">queued</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">active</span>
+                    <span style="color: #555;">--></span>
+                    <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">completed</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                    Priority levels: <strong style="color:#D97757;">critical</strong> > <strong style="color:#d29922;">high</strong> > <strong style="color:#58a6ff;">medium</strong> > <strong style="color:#888;">low</strong>. FIFO within each level. JSON-backed persistence -- survives restarts.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dive Deeper -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Dive Deeper</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Detailed pages for each tool category.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <a href="mcp-tools.html" class="subpage-card">
+                <h3>MCP Tools<span class="tier-badge tier-free">Free</span></h3>
+                <p>31 MCP tools for multi-agent orchestration. Channels, agents, tasks, discussions, search, briefings, web access.</p>
+            </a>
+            <a href="cli.html" class="subpage-card">
+                <h3>CLI<span class="tier-badge tier-free">Free</span></h3>
+                <p>6 commands: gate checks, speaker ranking, briefings, messaging, setup wizard, tutorial.</p>
+            </a>
+            <a href="marketing.html" class="subpage-card">
+                <h3>Content Pipeline<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>RSS monitoring, article scoring, AI-drafted posts, multi-platform publishing. Human approval on everything.</p>
+            </a>
+            <a href="website-creator.html" class="subpage-card">
+                <h3>Website Creator<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>7-stage pipeline from YAML brief to production site. Agent roundtables review every page. This site was built by it.</p>
+            </a>
+            <a href="project-integration.html" class="subpage-card">
+                <h3>Project Integration<span class="tier-badge tier-pro">Pro</span></h3>
+                <p>Bring your agents to every project. .cohort manifest, scoped permissions, portable memory, automatic scaffolding.</p>
+            </a>
+            <a href="vscode.html" class="subpage-card">
+                <h3>VS Code Extension<span class="tier-badge tier-free">Free</span></h3>
+                <p>Full Cohort dashboard inside VS Code. Channels, agents, tasks, and settings without leaving your editor.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">Ready to Build?</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Core tools ship with <code style="background: rgba(255,255,255,0.15); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Ecosystem tools available in full deployments.</p>
+        <div class="button-group">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">How It Works</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

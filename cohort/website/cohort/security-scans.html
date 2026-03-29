@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Scan Log | COHORT</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .scan-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+        .scan-table th { text-align: left; padding: 0.75rem; border-bottom: 2px solid #3fb950; color: #3fb950; font-size: 0.85rem; }
+        .scan-table td { padding: 0.75rem; border-bottom: 1px solid #333; font-size: 0.85rem; color: #C8C8C8; }
+        .scan-table tr:hover td { background: rgba(63,185,80,0.05); }
+        .scan-clean { color: #3fb950; font-weight: 700; }
+        .scan-hash { font-family: monospace; font-size: 0.75rem; color: #888; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <header class="site-header"><nav id="main-nav"></nav></header>
+    <main>
+
+<section style="max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem;">
+    <h1 class="responsive-h1">Security Scan Log</h1>
+    <p class="responsive-p-body" style="color: #C8C8C8; margin-bottom: 0.5rem;">
+        Every release is scanned with <a href="https://www.virustotal.com" style="color: #3fb950;">VirusTotal</a> (70+ antivirus engines) before distribution.
+        This page tracks every scan so you can verify independently.
+    </p>
+    <p style="font-size: 0.8rem; color: #888; margin-bottom: 2rem;">
+        All source code is open under Apache 2.0. No outbound network calls from the VS Code extension. Secrets are never exposed in process listings.
+    </p>
+
+    <h2 class="responsive-h2" style="font-size: 1.2rem;">VS Code Extension (.vsix)</h2>
+    <table class="scan-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Version</th>
+                <th>Result</th>
+                <th>SHA256</th>
+                <th>Report</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2026-03-27</td>
+                <td><span data-v="releaseTag">v0.4.12</span></td>
+                <td><span class="scan-clean">0 detections</span></td>
+                <td><span class="scan-hash">c82c851eaa24d8168fe844d2505853014aed3ca0974adac2b75313728608b1ab</span></td>
+                <td><a href="https://www.virustotal.com/gui/file/c82c851eaa24d8168fe844d2505853014aed3ca0974adac2b75313728608b1ab" style="color: #58a6ff;" target="_blank" rel="noopener">View</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="responsive-h2" style="font-size: 1.2rem; margin-top: 2.5rem;">Python Package (PyPI)</h2>
+    <table class="scan-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Version</th>
+                <th>Result</th>
+                <th>SHA256</th>
+                <th>Report</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2026-03-27</td>
+                <td><span data-v="releaseTag">v0.4.12</span></td>
+                <td><span class="scan-clean">0 detections</span></td>
+                <td><span class="scan-hash">cab30ad8c25fceb6a7786963fcc8ceb75ebaf4f522e2582061aacd17bf5b9cd5</span></td>
+                <td><a href="https://www.virustotal.com/gui/file/cab30ad8c25fceb6a7786963fcc8ceb75ebaf4f522e2582061aacd17bf5b9cd5" style="color: #58a6ff;" target="_blank" rel="noopener">View</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="responsive-h2" style="font-size: 1.2rem; margin-top: 2.5rem;">GitHub Repository URL</h2>
+    <table class="scan-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>URL</th>
+                <th>Result</th>
+                <th>Report</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2026-03-27</td>
+                <td><a href="https://github.com/rwheeler007/cohort" style="color: #58a6ff;">github.com/rwheeler007/cohort</a></td>
+                <td><span class="scan-clean">0 flags</span></td>
+                <td><a href="https://www.virustotal.com/gui/url/d88625a6a6516135866ba2d4a705f0f68ab1cbc644ff6052a931af26083158a9/detection" style="color: #58a6ff;" target="_blank" rel="noopener">View</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 3rem; padding: 1.5rem; background: #1a1d21; border-radius: 8px; border: 1px solid #333;">
+        <h3 style="color: #3fb950; font-size: 1rem; margin: 0 0 0.75rem 0;">Verify It Yourself</h3>
+        <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0 0 0.75rem 0;">
+            Download the .vsix from the <a href="https://github.com/rwheeler007/cohort/releases/tag/v0.4.12-vscode" style="color: #58a6ff;">GitHub release</a>, then check the hash:
+        </p>
+        <div style="background: #2D2D2D; border-radius: 4px; padding: 0.5rem 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
+            # Linux/macOS<br>
+            sha256sum cohort-vscode-0.4.12.vsix<br><br>
+            # Windows (PowerShell)<br>
+            Get-FileHash cohort-vscode-0.4.12.vsix -Algorithm SHA256
+        </div>
+        <p style="font-size: 0.8rem; color: #888; margin: 0.75rem 0 0 0;">
+            Compare the output to the SHA256 in the table above. If they match, you have the exact file we scanned.
+        </p>
+    </div>
+</section>
+
+    </main>
+    <footer class="site-footer"></footer>
+    <script src="site-config.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>

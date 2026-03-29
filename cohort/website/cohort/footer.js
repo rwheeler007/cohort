@@ -9,11 +9,13 @@ var FOOTER_CONFIG = {
         {
             heading: "Product",
             links: [
+                { label: "Download", href: "download.html" },
                 { label: "How It Works", href: "features.html" },
                 { label: "The Tools", href: "tools.html" },
                 { label: "Use Cases", href: "use-cases.html" },
-                { label: "Content Pipeline", href: "marketing.html" },
-                { label: "Pricing", href: "pricing.html" }
+                { label: "Pricing", href: "pricing.html" },
+                { label: "ROI", href: "roi.html" },
+                { label: "Simulator", href: "simulator.html" }
             ]
         },
         {
@@ -21,24 +23,23 @@ var FOOTER_CONFIG = {
             links: [
                 { label: "Documentation", href: "docs.html" },
                 { label: "Benchmarks", href: "benchmarks.html" },
+                { label: "Mode Comparison", href: "benchmark-modes.html" },
                 { label: "Compare", href: "compare.html" },
                 { label: "The Team", href: "team.html" },
                 { label: "AI's Take", href: "ai-perspective.html" },
-                { label: "GitHub", href: "https://github.com/cohort-dev/cohort", external: true }
+                { label: "GitHub", href: "https://github.com/rwheeler007/cohort", external: true }
             ]
         },
         {
             heading: "Connect",
             links: [
                 { label: "Contact", href: "contact.html" },
-                { label: "hello@cohort.dev", href: "mailto:hello@cohort.dev" },
-                { label: "Twitter/X", href: "https://twitter.com/cohort_dev", external: true },
-                { label: "Discord", href: "https://discord.gg/cohort", external: true }
+                { label: "GitHub Discussions", href: "https://github.com/rwheeler007/cohort/discussions", external: true }
             ]
         }
     ],
     bottom: {
-        copyright: "&copy; 2026 Cohort. Open source under <a href=\"https://github.com/cohort-dev/cohort/blob/main/LICENSE\" style=\"color: rgba(255,255,255,0.7);\">MIT License</a>.",
+        copyright: "&copy; 2026 Cohort. Open source under <a href=\"https://github.com/rwheeler007/cohort/blob/main/LICENSE\" style=\"color: rgba(255,255,255,0.7);\">Apache 2.0 License</a>.",
         badge: "[*] Built with Cohort"
     }
 };

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI: How Much Does Multi-Agent AI Actually Cost? | COHORT</title>
+    <meta name="description" content="Calculate your multi-agent AI costs. See how Cohort's local-first pipeline cuts API spend 10-20x vs cloud-only frameworks. Every response shows what it cost.">
+    <meta name="keywords" content="AI agent cost, multi-agent ROI, CrewAI pricing, LangGraph cost, local AI inference, API cost reduction, AI cost transparency">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/roi.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/roi.html">
+    <meta property="og:title" content="ROI: How Much Does Multi-Agent AI Actually Cost? | COHORT">
+    <meta property="og:description" content="Calculate your savings. Cohort runs 95% of agent work on your GPU. The 5% that hits an API is pre-distilled to cut tokens 70%.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ROI: How Much Does Multi-Agent AI Actually Cost? | COHORT">
+    <meta name="twitter:description" content="Calculate your savings. Cohort runs 95% of agent work on your GPU. The 5% that hits an API is pre-distilled to cut tokens 70%.">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How much do multi-agent AI frameworks cost?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Cloud-only frameworks like CrewAI ($99-$10K/mo platform fee + API tokens) and LangGraph ($39/user/mo + $0.001/node) charge per API call. A team running 5 agents with 20 turns across 3 daily conversations can spend $50-500/mo in API costs alone. Cohort runs 95% of inference locally for $0."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can AI agents run locally without cloud APIs?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Cohort runs 95% of agent work on your local GPU using models like Qwen 3.5 9B via Ollama or llama.cpp. Only 5% of complex tasks escalate to a cloud API, and those are pre-distilled to reduce tokens by 70%. Web search, page reading, RSS monitoring, and multi-agent conversations all run locally at zero cost."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the ROI of local AI inference vs cloud APIs?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Local-first AI reduces costs 10-20x compared to cloud-only frameworks. Capabilities that cost $350-900/mo on cloud platforms (web search, document processing, agent conversations, training, observability) cost $0/mo on Cohort. The only cost is optional API escalation at roughly $0.002 per escalated response."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <!-- Populated by nav.js -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- ============================================================
+     SECTION 1: Hero Stat
+     ============================================================ -->
+<section class="section-spacing section-dark">
+    <div class="container text-center">
+        <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-on-dark-muted); margin-bottom: 1rem;">Fiduciary AI</p>
+        <h1 class="responsive-h1" style="color: #fff;">How much are your<br>AI agents actually costing?</h1>
+        <p class="responsive-p-large" style="color: var(--text-on-dark);">Drag the sliders below to model your workload. See what you'd spend on a cloud-only framework vs Cohort's local-first pipeline.</p>
+        <div style="display: flex; justify-content: center; gap: 3rem; margin-top: 2.5rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-success); line-height: 1;">95%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Local inference</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-primary); line-height: 1;">70%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Token reduction on API calls</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-info); line-height: 1;"><a href="benchmarks.html" style="color: var(--color-info); text-decoration: none;">97.2%</a></div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Agent benchmark accuracy</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2: Interactive Cost Calculator
+     ============================================================ -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Calculate Your Savings</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Drag the sliders to match your workload. See what you'd pay on a cloud-only framework vs Cohort.</p>
+
+        <div id="roi-calculator-form" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; margin-bottom: 2rem;">
+            <!-- Slider: Agents per conversation -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <label for="roi-agents" style="font-weight: 600; font-size: 0.9rem;">Agents per conversation</label>
+                    <span id="roi-agents-val" style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-primary);">5</span>
+                </div>
+                <input type="range" id="roi-agents" min="2" max="15" value="5" step="1"
+                       aria-label="Number of agents per conversation"
+                       style="width: 100%; height: 44px; cursor: pointer; accent-color: var(--color-primary);">
+            </div>
+
+            <!-- Slider: Turns per conversation -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <label for="roi-turns" style="font-weight: 600; font-size: 0.9rem;">Turns per conversation</label>
+                    <span id="roi-turns-val" style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-primary);">20</span>
+                </div>
+                <input type="range" id="roi-turns" min="5" max="100" value="20" step="5"
+                       aria-label="Number of turns per conversation"
+                       style="width: 100%; height: 44px; cursor: pointer; accent-color: var(--color-primary);">
+            </div>
+
+            <!-- Slider: Conversations per day -->
+            <div style="margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <label for="roi-conversations" style="font-weight: 600; font-size: 0.9rem;">Conversations per day</label>
+                    <span id="roi-conversations-val" style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-primary);">3</span>
+                </div>
+                <input type="range" id="roi-conversations" min="1" max="20" value="3" step="1"
+                       aria-label="Number of conversations per day"
+                       style="width: 100%; height: 44px; cursor: pointer; accent-color: var(--color-primary);">
+            </div>
+
+            <!-- Results -->
+            <div aria-live="polite" aria-atomic="true">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <!-- Competitor cost -->
+                    <div style="background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.3); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">Cloud-only framework</div>
+                        <div id="roi-result-competitor" style="font-size: 1.5rem; font-weight: 700; color: #f85149; font-family: var(--font-heading);">--</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">GPT-4o pricing ($2.50/$10 per 1M tokens)</div>
+                    </div>
+                    <!-- Cohort cost -->
+                    <div style="background: rgba(63,185,80,0.06); border: 1px solid rgba(63,185,80,0.3); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">Cohort</div>
+                        <div id="roi-result-cohort" style="font-size: 1.5rem; font-weight: 700; color: #3fb950; font-family: var(--font-heading);">--</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">5% escalation via Claude Sonnet ($3/$15 per 1M)</div>
+                    </div>
+                </div>
+
+                <!-- Savings banner -->
+                <div style="background: var(--color-dark-bg); border-radius: 8px; padding: 1.25rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-on-dark-muted); text-transform: uppercase; letter-spacing: 0.1em;">You save</div>
+                        <div id="roi-result-savings" style="font-size: 1.5rem; font-weight: 700; color: var(--color-success); font-family: var(--font-heading);">--</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-on-dark-muted); text-transform: uppercase; letter-spacing: 0.1em;">Cost reduction</div>
+                        <div id="roi-result-multiplier" style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary); font-family: var(--font-heading);">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Show your math -->
+            <div style="margin-top: 1rem; text-align: center;">
+                <button id="roi-show-math" aria-expanded="false" aria-controls="roi-math-detail"
+                        style="background: none; border: none; color: var(--color-primary); cursor: pointer; font-size: 0.85rem; font-weight: 600; padding: 0.5rem;">[>>] Show your math</button>
+                <div id="roi-math-detail" style="display: none; margin-top: 1rem; text-align: left; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: 'Consolas', 'JetBrains Mono', 'Courier New', monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8;">
+                    <div style="color: var(--text-muted); margin-bottom: 0.5rem;">// How we calculate -- all pricing from published sources <a href="#roi-sources" style="color: var(--color-info);">[sources]</a></div>
+                    <div><span style="color: var(--color-info);">Cloud-only:</span> Every turn resends <span style="color: var(--color-danger);">the entire conversation history</span></div>
+                    <div>&nbsp;&nbsp;<span style="color: var(--text-muted);">// API calls are cumulative -- input tokens grow every turn</span></div>
+                    <div>&nbsp;&nbsp;turn_1_input = <span style="color: var(--color-warning);">3,000</span> (persona + memory + first message)</div>
+                    <div>&nbsp;&nbsp;turn_2_input = <span style="color: var(--color-warning);">3,700</span> (+ prior turn resent)</div>
+                    <div>&nbsp;&nbsp;turn_10_input = <span style="color: var(--color-warning);">9,300</span> (+ all 9 prior turns resent)</div>
+                    <div>&nbsp;&nbsp;turn_20_input = <span style="color: var(--color-danger);">16,300</span></div>
+                    <div>&nbsp;&nbsp;output/turn = ~800 (response stays flat)</div>
+                    <div>&nbsp;&nbsp;per_conversation = sum of all turns (arithmetic series)</div>
+                    <div>&nbsp;&nbsp;monthly_cost = per_convo x agents x convos x <span style="color: var(--color-warning);">$2.50/$10.00 per 1M</span> x 22 days</div>
+                    <div style="margin-top: 0.75rem;"><span style="color: var(--color-success);">Cohort:</span> 95% runs locally (free). 5% escalates to API.</div>
+                    <div>&nbsp;&nbsp;escalated_turns = total_turns x 0.05</div>
+                    <div>&nbsp;&nbsp;<span style="color: var(--color-success);">no context snowball</span> -- distillation sends a flat briefing, not raw history</div>
+                    <div>&nbsp;&nbsp;distilled_tokens = (3,000 + 800) x 0.30 per escalated turn (70% reduction)</div>
+                    <div>&nbsp;&nbsp;monthly_cost = distilled x <span style="color: var(--color-warning);">$3.00/$15.00 per 1M</span> x 22 days</div>
+                    <div style="margin-top: 0.75rem; color: var(--text-muted);">// Cloud-only: GPT-4o pricing ($2.50/$10.00 per 1M tokens)</div>
+                    <div style="color: var(--text-muted);">//&nbsp;&nbsp;Source: <a href="https://openai.com/api/pricing/" style="color: var(--color-info);" target="_blank" rel="noopener">openai.com/api/pricing</a></div>
+                    <div style="color: var(--text-muted);">// Cohort escalation: Claude Sonnet 4.6 ($3.00/$15.00 per 1M tokens)</div>
+                    <div style="color: var(--text-muted);">//&nbsp;&nbsp;Source: <a href="https://platform.claude.com/docs/en/about-claude/pricing" style="color: var(--color-info);" target="_blank" rel="noopener">platform.claude.com/docs/.../pricing</a></div>
+                    <div style="color: var(--text-muted);">// 22 workdays/month. Growth rate +700 tokens/turn is conservative.</div>
+                </div>
+            </div>
+        </div>
+
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; font-style: italic;">This calculator is the only JavaScript on this page. We treat your bandwidth the way we treat your API budget.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3: Radical Transparency Proof
+     ============================================================ -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Every Response Tells You What It Cost</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Cohort tags every agent response with its tier, model, token count, confidence, and elapsed time. No other multi-agent framework does this.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+            <!-- Cohort response -->
+            <div>
+                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; color: var(--color-success);">[OK] Cohort response</div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: 'Consolas', 'JetBrains Mono', 'Courier New', monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8;">
+                    <div style="color: #e5e7eb; margin-bottom: 1rem;">The connection pool should use a max of 10 concurrent connections with a 30-second idle timeout. Here's the implementation...</div>
+                    <div style="border-top: 1px solid #333; padding-top: 0.75rem; color: var(--text-muted);">
+                        <div><span style="color: var(--color-info);">tier:</span> smart &nbsp; <span style="color: var(--color-info);">model:</span> qwen3.5:9b</div>
+                        <div><span style="color: var(--color-info);">tokens:</span> 847 &nbsp; <span style="color: var(--color-info);">confidence:</span> 0.94</div>
+                        <div><span style="color: var(--color-info);">elapsed:</span> 2.3s &nbsp; <span style="color: var(--color-success); font-weight: 700;">cost: $0.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitor response -->
+            <div>
+                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; color: var(--text-muted);">Other frameworks</div>
+                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: 'Consolas', 'JetBrains Mono', 'Courier New', monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8;">
+                    <div style="color: #e5e7eb; margin-bottom: 1rem;">The connection pool should use a max of 10 concurrent connections with a 30-second idle timeout. Here's the implementation...</div>
+                    <div style="border-top: 1px solid #333; padding-top: 0.75rem; color: #555; font-style: italic;">
+                        <div>No metadata provided.</div>
+                        <div>No cost visibility.</div>
+                        <div>No confidence score.</div>
+                        <div style="margin-top: 0.5rem; color: #444;">Check your API dashboard... eventually.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="responsive-p-body text-center" style="margin-top: 2rem; font-weight: 600;">Same answer. One tells you what it cost. The other doesn't.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4: Smart / Smarter / Smartest Pipeline
+     ============================================================ -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Three Tiers. You Choose the Cost.</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Cohort's response pipeline lets you match quality to the task. Most work never touches a paid API.</p>
+
+        <div class="grid-3" style="margin-top: 0; align-items: stretch;">
+            <!-- Smart -->
+            <div class="card" style="display: flex; flex-direction: column; border-top: 3px solid var(--color-success);">
+                <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success); margin-bottom: 0.5rem;">[S] Smart</div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Fast local inference</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">No reasoning, 4K token budget. Your local GPU handles it entirely. Good for quick lookups, status checks, and routine tasks.</p>
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                    <div style="font-size: 0.8rem;"><strong>Cost:</strong> <span style="color: var(--color-success); font-weight: 700;">$0.00</span></div>
+                    <div style="font-size: 0.8rem;"><strong>Speed:</strong> 2-5 seconds</div>
+                </div>
+            </div>
+
+            <!-- Smarter -->
+            <div class="card" style="display: flex; flex-direction: column; border-top: 3px solid var(--color-primary);">
+                <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-primary); margin-bottom: 0.5rem;">[S>] Smarter</div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Local with reasoning</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Extended thinking enabled, 16K token budget. Handles 90%+ of real work -- code review, planning, analysis -- entirely on your hardware.</p>
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                    <div style="font-size: 0.8rem;"><strong>Cost:</strong> <span style="color: var(--color-success); font-weight: 700;">$0.00</span></div>
+                    <div style="font-size: 0.8rem;"><strong>Speed:</strong> 5-15 seconds</div>
+                </div>
+            </div>
+
+            <!-- Smartest -->
+            <div class="card" style="display: flex; flex-direction: column; border-top: 3px solid var(--color-info);">
+                <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-info); margin-bottom: 0.5rem;">[S>>] Smartest</div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Local draft + Claude review</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Three-phase pipeline: local reasoning, distillation (70% token reduction), then Claude polishes. API-class quality at a fraction of the token cost.</p>
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
+                    <div style="font-size: 0.8rem;"><strong>Cost:</strong> <span style="color: var(--color-info); font-weight: 700;">~$0.002/response</span></div>
+                    <div style="font-size: 0.8rem;"><strong>Speed:</strong> 15-45 seconds</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline visual -->
+        <div style="margin-top: 2.5rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: 'Consolas', 'JetBrains Mono', 'Courier New', monospace; font-size: 0.8rem; line-height: 1.8; color: #C8C8C8;">
+            <div style="color: var(--text-muted); margin-bottom: 0.5rem;">// Smartest pipeline: how it actually works</div>
+            <div><span style="color: var(--color-success);">Phase 1</span> &nbsp;Local model drafts response &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-muted);">(free, ~8K thinking tokens)</span></div>
+            <div><span style="color: var(--color-primary);">Phase 2</span> &nbsp;Distill: compress draft to briefing &nbsp;<span style="color: var(--text-muted);">(free, 70% token reduction)</span></div>
+            <div><span style="color: var(--color-info);">Phase 3</span> &nbsp;Claude reviews the briefing &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--text-muted);">(API, but only ~30% of original tokens)</span></div>
+            <div style="border-top: 1px solid #444; margin-top: 0.75rem; padding-top: 0.75rem;">
+                <span style="color: var(--color-success);">Result:</span> API-quality output. 70% fewer tokens billed.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5: Claude API Multiplier
+     ============================================================ -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Already Use the Claude API?<br>Get 3-5x More From It.</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Cohort connects to Claude API via <a href="mcp-tools.html" style="color: var(--color-primary); font-weight: 600;">MCP</a>. Three tools turn your existing subscription into an orchestration engine.</p>
+
+        <div class="grid-3" style="margin-top: 0; align-items: stretch;">
+            <!-- condense -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-primary); margin-bottom: 0.75rem;">condense</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Compress conversation context</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Strips noise from long conversations before sending to Claude. Same context, ~70% fewer tokens.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(63,185,80,0.06); border-radius: 6px; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Token reduction</div>
+                    <div style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-success);">~70%</div>
+                </div>
+            </div>
+
+            <!-- distill -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-primary); margin-bottom: 0.75rem;">distill</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Pre-process for Claude</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Local model generates a structured briefing. Claude sees a concise summary, not a raw thread of agent chatter.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(63,185,80,0.06); border-radius: 6px; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Token reduction</div>
+                    <div style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-success);">50-70%</div>
+                </div>
+            </div>
+
+            <!-- roundtable -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-primary); margin-bottom: 0.75rem;">roundtable</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">One call, many agents</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Compiled roundtable loads 3-8 agent personas into a single context. One inference call replaces N separate calls.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(63,185,80,0.06); border-radius: 6px; text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Token reduction</div>
+                    <div style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--color-success);">~90%</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="mcp-tools.html" style="font-size: 0.85rem; color: var(--color-primary); font-weight: 600; text-decoration: none;">See all MCP tools [>>]</a>
+        </div>
+
+        <div style="margin-top: 2rem; background: #F5E6DE; border-radius: 8px; padding: 1.5rem; text-align: center;">
+            <p class="responsive-p-body" style="max-width: none; margin-bottom: 0; font-weight: 500;">Cohort is not a new budget line. It's ROI on the AI investment you've already made.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 6: Comparison Table
+     ============================================================ -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Platform Comparison</h2>
+
+        <div style="overflow-x: auto; margin-top: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <caption class="sr-only">Comparison of Cohort, CrewAI, and LangGraph on cost, transparency, and features</caption>
+                <thead>
+                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                        <th scope="col" style="text-align: left; padding: 0.75rem 1rem; font-weight: 600;"></th>
+                        <th scope="col" style="text-align: center; padding: 0.75rem 1rem; font-weight: 700; color: var(--color-primary); background: rgba(217,119,87,0.05);">Cohort</th>
+                        <th scope="col" style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">CrewAI</th>
+                        <th scope="col" style="text-align: center; padding: 0.75rem 1rem; font-weight: 600;">LangGraph</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">API cost per agent turn</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);">$0.00 (local)</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">Per-token (cloud API)</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">Per-token (cloud API)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Platform fee</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);">$0 (Open Source)</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">$0 (OSS) / $99-$10K</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center;">$0 (OSS) / $39/seat</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Cost transparency</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);">Per-response metadata</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">None</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">LangSmith (add-on)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Local inference</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);">[OK] Built-in</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Limited</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Limited</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Web search (built-in)</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);"><a href="mcp-tools.html" style="color: var(--color-success); text-decoration: none; border-bottom: 1px solid rgba(63,185,80,0.3);">[OK] Free MCP tool</a></td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Third-party / paid</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Third-party / paid</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6; background: #fafafa;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Website processing</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);"><a href="mcp-tools.html" style="color: var(--color-success); text-decoration: none; border-bottom: 1px solid rgba(63,185,80,0.3);">[OK] Free MCP tool</a></td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Not included</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Not included</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Air-gap deployment</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);">[OK] Enterprise</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Cloud required</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">Self-hosted option</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.6rem 1rem; font-weight: 600;">Compiled roundtables</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; font-weight: 700; color: var(--color-success); background: rgba(217,119,87,0.05);"><a href="features.html" style="color: var(--color-success); text-decoration: none; border-bottom: 1px solid rgba(63,185,80,0.3);">[OK] 90% token savings</a></td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">N/A</td>
+                        <td style="padding: 0.6rem 1rem; text-align: center; color: var(--text-muted);">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Last verified date from JSON -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
+            <a href="compare.html" style="font-size: 0.85rem; color: var(--color-primary); font-weight: 600; text-decoration: none;">See full comparison [>>]</a>
+            <p style="font-size: 0.75rem; color: #aaa; margin: 0;"><!-- Last verified: 2026-03-13 --> Competitor data reflects published pricing. Costs marked "per-token" vary by provider and model.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 6b: Zero-Cost Capabilities
+     ============================================================ -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Things That Cost $0 on Cohort</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Other frameworks charge per-token for research. Cohort ships these as free local tools -- no API key, no metering, no surprise invoices.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <!-- Web Search -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">web_search</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">100+ Free Web Searches Per Day</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Agents research topics, verify facts, and pull current data -- locally routed through DuckDuckGo. No API key. No per-query billing. No daily caps that matter.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> $0.005-0.01/search (Tavily, SerpAPI)</div>
+                    <div><span style="color: var(--color-info);">100 searches/day:</span> <span style="color: var(--color-danger);">$11-22/mo</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00/mo</div>
+                </div>
+            </div>
+
+            <!-- Web Page Reading -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">web_fetch</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Full Webpage Reading &amp; Transcription</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Fetch any URL, extract clean text, and feed it to agents -- all locally. Documentation pages, blog posts, competitor sites, research papers. Zero token cost.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> Send page text as tokens to API</div>
+                    <div><span style="color: var(--color-info);">avg page (~4K tokens):</span> <span style="color: var(--color-danger);">$0.01-0.04 each</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (local extraction + local LLM)</div>
+                </div>
+            </div>
+
+            <!-- RSS Monitoring -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">content_monitor</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">24/7 RSS &amp; Content Monitoring</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Track industry feeds, competitor blogs, and news sources around the clock. Local LLM analyzes, filters, and summarizes -- no API involved.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> Feedly AI ($18/mo) + API tokens</div>
+                    <div><span style="color: var(--color-info);">50 feeds, 4 checks/day:</span> <span style="color: var(--color-danger);">$18-40/mo</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00/mo</div>
+                </div>
+            </div>
+
+            <!-- Agent Conversations -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">roundtable</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Multi-Agent Conversations</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">5 agents discussing a code review? 8 agents planning a feature? Every turn runs locally. The conversation that would cost $2-5 on a cloud framework costs nothing.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> 5 agents x 20 turns x ~1K tokens</div>
+                    <div><span style="color: var(--color-info);">one conversation:</span> <span style="color: var(--color-danger);">$0.50-2.00</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (all local inference)</div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Document Ingestion -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">document_library</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Document Ingestion &amp; Knowledge Base</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Ingest PDFs, HTML pages, manuals, and research papers into a persistent local library. Agents search it, extract facts, and build domain knowledge -- no vector DB subscription required.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> Pinecone ($25-70/mo) + embedding API</div>
+                    <div><span style="color: var(--color-info);">1K docs indexed:</span> <span style="color: var(--color-danger);">$30-100/mo</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (SQLite + local extraction)</div>
+                </div>
+            </div>
+
+            <!-- Executive Briefings -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">generate_briefing</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Executive Briefings &amp; Observability</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Auto-generated summaries of all agent activity -- who did what, key decisions, blockers, task progress. Local LLM compiles it. No LangSmith, no Datadog add-on.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> LangSmith Plus ($39/user/mo)</div>
+                    <div><span style="color: var(--color-info);">5-person team:</span> <span style="color: var(--color-danger);">$195/mo</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (built-in MCP tool)</div>
+                </div>
+            </div>
+
+            <!-- Agent Training -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">training_pipeline</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Agent Training &amp; Benchmarking</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Overnight training pipeline: research topics, curate materials, inject knowledge, test with 2,400+ questions, certify. All local inference. Agents get smarter while you sleep.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> Fine-tuning API ($8-25/M training tokens)</div>
+                    <div><span style="color: var(--color-info);">weekly fine-tune cycle:</span> <span style="color: var(--color-danger);">$50-300/mo</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (local Ollama pipeline)</div>
+                </div>
+            </div>
+
+            <!-- Context Compression -->
+            <div class="card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="font-family: var(--font-heading); font-size: 0.75rem; color: var(--color-success);">condense_channel</div>
+                    <div style="font-family: var(--font-heading); font-size: 0.85rem; color: var(--color-success);">$0.00</div>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Context Compression &amp; Archival</h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">Long conversations get summarized and archived locally. Channels stay fast, history is preserved, and you never re-pay to process old context through an API.</p>
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-code-bg); border-radius: 6px; font-family: monospace; font-size: 0.8rem; line-height: 1.6; color: #C8C8C8;">
+                    <div><span style="color: var(--color-info);">competitor:</span> Re-process old tokens on every call</div>
+                    <div><span style="color: var(--color-info);">50K stale tokens x 20 calls:</span> <span style="color: var(--color-danger);">$2.50-5.00/day</span></div>
+                    <div><span style="color: var(--color-success);">cohort:</span> $0.00 (local summarization)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly tally -->
+        <div style="margin-top: 2rem; background: var(--color-dark-bg); border-radius: 8px; padding: 2rem; text-align: center;">
+            <div style="font-size: 0.7rem; color: var(--text-on-dark-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">All 8 capabilities above</div>
+            <div style="font-size: 0.85rem; color: var(--color-danger); text-decoration: line-through; margin-bottom: 0.5rem;">$350-900/mo on cloud frameworks</div>
+            <div style="font-family: var(--font-heading); font-size: 1.75rem; color: var(--color-success);">$0.00/mo on Cohort</div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 7: Case Studies (micro-format)
+     ============================================================ -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Real Work. Real Numbers.</h2>
+
+        <div class="grid-3" style="margin-top: 0; align-items: stretch;">
+            <!-- Website -->
+            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-heading); font-size: 1.75rem; color: var(--color-primary); margin-bottom: 0.5rem;">7:39</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;"><a href="website-creator.html" style="color: inherit; text-decoration: none; border-bottom: 1px solid #e5e7eb;">Website Generation</a></h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">9 pages, 5 agents, 0 hand-written lines of code.</p>
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 700; color: var(--color-success);">API cost: $0.00</div>
+            </div>
+
+            <!-- Content -->
+            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-heading); font-size: 1.75rem; color: var(--color-primary); margin-bottom: 0.5rem;">6h [>>] 30m</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;"><a href="marketing.html" style="color: inherit; text-decoration: none; border-bottom: 1px solid #e5e7eb;">Content Pipeline</a></h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">RSS to published post. Fully orchestrated, human reviews only.</p>
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 700; color: var(--color-success);">API cost: $0.00</div>
+            </div>
+
+            <!-- Benchmarks -->
+            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-heading); font-size: 1.75rem; color: var(--color-primary); margin-bottom: 0.5rem;">97.2%</div>
+                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;"><a href="benchmarks.html" style="color: inherit; text-decoration: none; border-bottom: 1px solid #e5e7eb;">Agent Benchmarks</a></h3>
+                <p style="font-size: 0.85rem; color: #666; flex: 1;">2,400 questions across 23 agents. All difficulty levels. Local model only.</p>
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 700; color: var(--color-success);">API cost: $0.00</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 8: Sources & Methodology
+     ============================================================ -->
+<section id="roi-sources" class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Sources &amp; Methodology</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">Every number on this page comes from a published source. We show our work because that's the whole point.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- API Pricing Sources -->
+            <div>
+                <h3 style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; color: var(--text-muted);">API Pricing (Calculator Inputs)</h3>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; line-height: 1.8;">
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <strong>GPT-4o:</strong> $2.50 input / $10.00 output per 1M tokens<br>
+                        <a href="https://openai.com/api/pricing/" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">openai.com/api/pricing</a>
+                    </li>
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <strong>Claude Sonnet 4.6:</strong> $3.00 input / $15.00 output per 1M tokens<br>
+                        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">platform.claude.com/docs/.../pricing</a>
+                    </li>
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <strong>Claude Haiku 4.5:</strong> $1.00 input / $5.00 output per 1M tokens<br>
+                        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">platform.claude.com/docs/.../pricing</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Industry Data -->
+            <div>
+                <h3 style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; color: var(--text-muted);">Industry Context</h3>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; line-height: 1.8;">
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        Average monthly enterprise AI spend: <strong>$85,521</strong> (2025, +36% YoY)<br>
+                        <a href="https://zylo.com/blog/ai-cost/" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">Zylo: AI Pricing Report 2026</a>
+                    </li>
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        AI-native app spend grew <strong>108% YoY</strong>; large enterprises <strong>393%</strong><br>
+                        <a href="https://zylo.com/reports/2026-saas-management-index/" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">Zylo: 2026 SaaS Management Index</a>
+                    </li>
+                    <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                        AI agent operational costs: <strong>$3,200-$13,000/mo</strong> post-launch<br>
+                        <a href="https://www.cleveroad.com/blog/ai-agent-development-cost/" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">Cleveroad: AI Agent Development Cost Guide</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Competitor Pricing Sources -->
+        <div style="margin-top: 2rem;">
+            <h3 style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; color: var(--text-muted);">Competitor Platform Pricing (Comparison Table)</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; line-height: 1.8;">
+                <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <strong>CrewAI:</strong> $99/mo (Starter) to $120K/yr (Ultra). API costs billed separately by provider. Pricing requires account login.<br>
+                    <a href="https://www.zenml.io/blog/crewai-pricing" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">ZenML: CrewAI Pricing Guide</a> |
+                    <a href="https://www.lindy.ai/blog/crew-ai-pricing" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">Lindy: CrewAI Pricing 2026</a>
+                </li>
+                <li style="padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <strong>LangGraph:</strong> Requires LangSmith Plus ($39/user/mo). Plus plan limited to 10 users. Node execution fee: $0.001/node.<br>
+                    <a href="https://www.zenml.io/blog/langgraph-pricing" target="_blank" rel="noopener" style="color: var(--color-primary); font-size: 0.8rem;">ZenML: LangGraph Pricing Guide</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Methodology note -->
+        <div style="margin-top: 2rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; font-size: 0.8rem; color: #C8C8C8; line-height: 1.8;">
+            <strong style="color: #fff;">Calculator methodology:</strong> The calculator models a team running multi-agent conversations where each agent turn generates ~800 tokens (60% input, 40% output). Cloud-only frameworks send every turn to a paid API. Cohort runs 95% of turns on local hardware (cost: $0) and escalates 5% to Claude Sonnet via the Smartest pipeline, which distills context to reduce tokens ~70% before the API call. All prices are standard (non-cached, non-batch). Actual costs depend on model choice, caching strategy, and workload pattern. Last verified: March 2026.
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9: Segmented CTA
+     ============================================================ -->
+<section class="section-spacing section-dark">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 800px; margin: 0 auto;">
+            <!-- SMB CTA -->
+            <div style="text-align: center;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-on-dark-muted); margin-bottom: 0.75rem;">Teams &amp; Small Business</div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-bottom: 0.75rem;">Your GPU is already paid for.</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 1.5rem;">Stop paying per conversation. Deploy in 15 minutes. 23 agents, zero API cost.</p>
+                <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-success); color: #fff; width: 100%;">Deploy Free Now</a>
+            </div>
+            <!-- Enterprise CTA -->
+            <div style="text-align: center;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-on-dark-muted); margin-bottom: 0.75rem;">Enterprise</div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-bottom: 0.75rem;">Every response has an audit trail.</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 1.5rem;">Air-gap deployment. SSO. Full cost transparency. No other platform does this.</p>
+                <a href="contact.html" class="btn-primary" style="background: var(--color-primary); color: #fff; width: 100%;">Schedule Compliance Review</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer"></footer>
+
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+<script defer src="js/roi-calculator.js"></script>
+</body>
+</html>

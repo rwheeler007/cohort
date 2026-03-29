@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Team | COHORT</title>
     <meta name="description" content="Meet the 22 AI agents that power Cohort -- each trained, benchmarked, and reviewed by Claude.">
     <meta name="keywords" content="AI agents, multi-agent team, agent benchmarks, Claude review, specialist agents, open source AI">
 
-    <link rel="canonical" href="https://cohort.dev/team.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/team.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/team.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/team.html">
     <meta property="og:title" content="The Team | COHORT">
     <meta property="og:description" content="Meet the 22 AI agents that power Cohort -- each trained, benchmarked, and reviewed by Claude.">
 
@@ -27,7 +35,7 @@
     <style>
         /* ---- Team Card ---- */
         .team-card {
-            background: var(--color-background);
+            background: var(--color-light-bg);
             border-radius: var(--radius);
             box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
             overflow: hidden;
@@ -89,7 +97,7 @@
         }
         .team-card-score {
             font-family: var(--font-heading);
-            font-size: 0.35rem;
+            font-size: 0.55rem;
             background: var(--color-secondary);
             color: #fff;
             padding: 0.2rem 0.4rem;
@@ -97,7 +105,7 @@
         }
         .team-card-tier {
             font-family: var(--font-heading);
-            font-size: 0.35rem;
+            font-size: 0.55rem;
             padding: 0.2rem 0.4rem;
             border-radius: var(--radius);
             text-transform: uppercase;
@@ -116,12 +124,16 @@
             z-index: 2;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+        .tier-free {
+            background: var(--color-secondary);
+            color: #fff;
+        }
         .tier-pro {
             background: var(--color-primary);
             color: #fff;
         }
         .tier-enterprise {
-            background: #9B59B6;
+            background: #d29922;
             color: #fff;
         }
 
@@ -158,7 +170,7 @@
             display: flex;
         }
         .team-detail {
-            background: var(--color-background);
+            background: var(--color-light-bg);
             border-radius: var(--radius);
             box-shadow: 0 16px 48px rgba(0,0,0,0.2);
             max-width: 700px;
@@ -363,11 +375,7 @@ COHORT            </a>
                 &#9776;
             </button>
             <ul class="nav-links">
-                <li><a href="features.html">How It Works</a></li>
-                <li><a href="tools.html">The Tools</a></li>
-                <li><a href="pricing.html">Pricing</a></li>
-                <li><a href="docs.html">Docs</a></li>
-                <li><a href="team.html">The Team</a></li>
+                <!-- Populated by nav.js -->
             </ul>
         </div>
     </nav>
@@ -389,7 +397,7 @@ COHORT            </a>
 
     <!-- Expanded Detail Overlay -->
     <div class="team-detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
-        <div class="team-detail" id="detail-panel">
+        <div class="team-detail" id="detail-panel" role="dialog" aria-modal="true" aria-label="Agent details">
             <button class="team-detail-close" onclick="closeDetail()">&times;</button>
             <div class="team-detail-header" id="detail-header"></div>
             <div class="team-detail-review" id="detail-review"></div>
@@ -416,10 +424,20 @@ COHORT            </a>
             group.agents.forEach(function(agent) {
                 var card = document.createElement('div');
                 card.className = 'team-card';
-                card.onclick = function() { openDetail(agent); };
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', 'View details for ' + agent.name);
+                card.onclick = function() { openDetail(agent, this); };
+                card.onkeydown = function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openDetail(agent, this);
+                    }
+                };
 
                 var scoreHtml = agent.score ? '<span class="team-card-score">' + agent.score + '%</span>' : '';
                 var tierHtml = '';
+                if (agent.tier === 'free') tierHtml = '<span class="team-card-tier tier-free">Free</span>';
                 if (agent.tier === 'pro') tierHtml = '<span class="team-card-tier tier-pro">Pro</span>';
                 if (agent.tier === 'enterprise') tierHtml = '<span class="team-card-tier tier-enterprise">Enterprise</span>';
 
@@ -443,14 +461,34 @@ COHORT            </a>
         });
     })();
 
+    var previousFocus = null;
+
+    // Focus trap handler (assigned per open, removed on close)
+    function trapFocus(e) {
+        if (e.key !== 'Tab') return;
+        var overlay = document.getElementById('detail-overlay');
+        var focusable = overlay.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+
     // Open detail panel
-    function openDetail(agent) {
+    function openDetail(agent, triggerEl) {
         var header = document.getElementById('detail-header');
         var review = document.getElementById('detail-review');
         var sections = document.getElementById('detail-sections');
 
         var scoreHtml = agent.score ? '<span class="team-card-score">' + agent.score + '%</span>' : '';
         var tierHtml = '';
+        if (agent.tier === 'free') tierHtml = '<span class="team-card-tier tier-free">Free</span>';
         if (agent.tier === 'pro') tierHtml = '<span class="team-card-tier tier-pro">Pro</span>';
         if (agent.tier === 'enterprise') tierHtml = '<span class="team-card-tier tier-enterprise">Enterprise</span>';
         var benchHtml = agent.score ? '<a class="bench-link" href="benchmarks.html#bench-' + agent.id + '">View Benchmarks</a>' : '';
@@ -504,11 +542,24 @@ COHORT            </a>
 
         document.getElementById('detail-overlay').classList.add('open');
         document.body.style.overflow = 'hidden';
+
+        // Focus management: store trigger, move focus into overlay, enable trap
+        previousFocus = triggerEl || document.activeElement;
+        var closeBtn = document.querySelector('.team-detail-close');
+        if (closeBtn) closeBtn.focus();
+        document.addEventListener('keydown', trapFocus);
     }
 
     function closeDetail() {
         document.getElementById('detail-overlay').classList.remove('open');
         document.body.style.overflow = '';
+
+        // Focus management: remove trap, restore focus to trigger element
+        document.removeEventListener('keydown', trapFocus);
+        if (previousFocus && previousFocus.focus) {
+            previousFocus.focus();
+            previousFocus = null;
+        }
     }
 
     document.addEventListener('keydown', function(e) {
@@ -527,7 +578,7 @@ COHORT            </a>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
@@ -537,7 +588,7 @@ COHORT            </a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

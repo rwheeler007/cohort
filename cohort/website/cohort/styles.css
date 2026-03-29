@@ -12,6 +12,23 @@
     --color-background: #FAFAF8;
     --color-text: #2B2D31;
 
+    /* Status Colors */
+    --color-success: #3fb950;
+    --color-info: #58a6ff;
+    --color-danger: #f85149;
+    --color-warning: #d29922;
+
+    /* Surface Colors */
+    --color-dark-bg: #2B2D31;
+    --color-code-bg: #2D2D2D;
+    --color-light-bg: #FAFAF8;
+
+    /* Text on dark */
+    --text-on-dark: rgba(255,255,255,0.85);
+    --text-on-dark-muted: rgba(255,255,255,0.7);
+    --text-on-dark-faint: rgba(255,255,255,0.6);
+    --text-muted: #888;
+
     /* Typography */
     --font-heading: 'Press Start 2P', 'Courier New', monospace;
     --font-heading-weight: 400;
@@ -23,12 +40,18 @@
 
 /* ---- Reset & Base ---- */
 *, *::before, *::after { box-sizing: border-box; }
+html {
+    overflow-x: hidden;
+}
 body {
     margin: 0;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
     font-family: var(--font-body);
     color: var(--color-text);
     background: var(--color-background);
-    overflow-x: hidden;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
@@ -64,6 +87,7 @@ body {
     max-width: 65ch;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
 }
 .responsive-p-body {
     font-size: 0.875rem;
@@ -147,6 +171,18 @@ body {
     color: #fff;
 }
 
+/* Focus styles for keyboard navigation */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+.card:focus-visible,
+.team-card:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .button-group {
     display: flex;
     flex-direction: column;
@@ -205,7 +241,7 @@ body {
 
 /* ---- Testimonial ---- */
 .testimonial {
-    background: #FAFAF8;
+    background: var(--color-light-bg);
     border-left: 4px solid var(--color-primary);
     border-radius: var(--radius);
     padding: 1.5rem 2rem;
@@ -293,6 +329,18 @@ body {
     transition: opacity 0.2s;
 }
 .nav-dropdown-toggle:hover { opacity: 0.8; }
+.nav-dropdown-toggle:focus-visible,
+.nav-links a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+.nav-active {
+    color: var(--color-primary) !important;
+}
+.nav-parent-active {
+    color: var(--color-primary) !important;
+    opacity: 1 !important;
+}
 .nav-caret {
     font-size: 0.6em;
     transition: transform 0.2s;
@@ -331,7 +379,58 @@ body {
 .nav-dropdown-menu li a:hover {
     background: rgba(255,255,255,0.08);
     color: #fff;
-    opacity: 1;
+}
+
+/* ---- Nav CTA buttons ---- */
+.nav-cta-group {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.nav-pip-btn,
+.nav-download-btn {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+.nav-pip-btn {
+    font-family: monospace;
+    background: rgba(217,119,87,0.15);
+    border: 1px solid #D97757;
+    color: #D97757 !important;
+}
+.nav-pip-btn:hover {
+    background: #D97757;
+    color: #fff !important;
+    opacity: 1 !important;
+}
+.nav-download-btn {
+    font-family: var(--font-body);
+    background: #D97757;
+    border: 1px solid #D97757;
+    color: #fff !important;
+}
+.nav-download-btn:hover {
+    background: #c4623f;
+    border-color: #c4623f;
+    opacity: 1 !important;
+}
+@media (max-width: 768px) {
+    .nav-cta-group {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        flex-direction: column;
+    }
+    .nav-pip-btn,
+    .nav-download-btn {
+        display: block;
+        text-align: center;
+    }
 }
 
 /* Mobile dropdowns */
@@ -507,7 +606,7 @@ body {
     vertical-align: middle;
 }
 .bench-table tbody tr:hover {
-    background: #F5E6DE;
+    background: var(--color-accent);
 }
 .bench-agent-name {
     font-weight: 600;
@@ -562,9 +661,16 @@ body {
 
 .bench-score-badge {
     font-family: var(--font-heading);
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     font-weight: var(--font-heading-weight);
     color: var(--color-primary);
+}
+.bench-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+    min-height: 3.5rem;
 }
 
 .bench-cat-grid {
@@ -600,6 +706,9 @@ body {
 .bench-cat-score {
     font-weight: 600;
 }
+.bench-cat-masonry {
+    align-items: start;
+}
 
 /* ---- Responsive Inline Grid Overrides ---- */
 /* Apply these classes to inline-styled grids that need mobile stacking */
@@ -615,6 +724,99 @@ body {
     .mobile-stack-4to2 {
         grid-template-columns: repeat(2, 1fr) !important;
     }
+}
+
+/* ---- Tier Badges ---- */
+.tier-badge {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.55rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+}
+.tier-free { background: var(--color-success); color: #fff; }
+.tier-pro { background: var(--color-primary); color: #fff; }
+.tier-enterprise { background: #9B59B6; color: #fff; }
+
+/* ---- Reusable Inline-Pattern Classes ---- */
+.section-hero-accent {
+    background: var(--color-accent);
+}
+
+.section-dark {
+    background: var(--color-dark-bg);
+    color: #fff;
+}
+
+.metric-card {
+    background: var(--color-dark-bg);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    text-align: center;
+}
+.metric-card .metric-value {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+.metric-card .metric-label {
+    font-size: 0.85rem;
+    color: var(--text-on-dark);
+}
+
+.agent-quote {
+    background: var(--color-code-bg);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin: 0.75rem 0;
+    color: var(--text-on-dark);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+.agent-quote .agent-name {
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+}
+
+.code-block {
+    background: var(--color-code-bg);
+    color: var(--text-on-dark);
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius);
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.pipeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+.pipeline-step .step-number {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
 }
 
 /* UI Mock: hide sidebar on mobile */

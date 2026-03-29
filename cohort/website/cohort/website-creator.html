@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Creator | COHORT</title>
@@ -28,7 +36,7 @@
         .tier-badge {
             display: inline-block;
             font-family: var(--font-heading);
-            font-size: 0.35rem;
+            font-size: 0.55rem;
             padding: 0.2rem 0.45rem;
             border-radius: var(--radius);
             text-transform: uppercase;
@@ -36,14 +44,14 @@
             vertical-align: middle;
             margin-left: 0.5rem;
         }
-        .tier-free { background: #3fb950; color: #fff; }
+        .tier-free { background: var(--color-success); color: #fff; }
         .tier-pro { background: var(--color-primary); color: #fff; }
-        .tier-enterprise { background: #9B59B6; color: #fff; }
+        .tier-enterprise { background: #d29922; color: #fff; }
         .stage-card {
             display: flex;
             gap: 1.25rem;
             align-items: flex-start;
-            background: #2D2D2D;
+            background: var(--color-code-bg);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -51,7 +59,7 @@
         .stage-num {
             font-family: var(--font-heading);
             font-size: 1.5rem;
-            color: #D97757;
+            color: var(--color-primary);
             min-width: 2.5rem;
             text-align: center;
             line-height: 1;
@@ -90,7 +98,7 @@ COHORT            </a>
     <main id="main">
 
 <!-- Hero -->
-<section class="section-spacing" style="background: #F5E6DE;">
+<section class="section-spacing section-hero-accent">
     <div class="container text-center">
         <h1 class="responsive-h1">Website Creator</h1>
         <span class="tier-badge tier-pro" style="margin-left: 0;">Pro</span>
@@ -103,29 +111,29 @@ COHORT            </a>
 <section class="section-spacing">
     <div class="container">
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 800px; margin: 0 auto;">
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">7</div>
+            <div class="metric-card" style="border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">7</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Pipeline Stages</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">6</div>
+            <div class="metric-card" style="border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);">6</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Review Agents</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">25+</div>
+            <div class="metric-card" style="border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-info);">25+</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Block Templates</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">$0</div>
+            <div class="metric-card" style="border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);">$0</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">API Cost</div>
-                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Local Ollama</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">Local Ollama</div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Pipeline -->
-<section class="section-spacing" style="background: #FAFAF8;">
+<section class="section-spacing" style="background: var(--color-light-bg);">
     <div class="container" style="max-width: 800px;">
         <h2 class="responsive-h2 text-center">The Pipeline</h2>
         <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 2rem;">Seven stages from intake to deployed site. Each stage is independently testable and produces artifacts you can inspect.</p>
@@ -194,67 +202,67 @@ COHORT            </a>
         <h2 class="responsive-h2 text-center">The YAML Brief</h2>
         <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">One file drives the entire site. Edit a field, re-render, see the change. No code required.</p>
 
-        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-            <div style="color: #888;"># site_brief.yaml (excerpt)</div>
-            <div><span style="color: #58a6ff;">product_name:</span> <span style="color: #d29922;">"Cohort"</span></div>
-            <div><span style="color: #58a6ff;">tagline:</span> <span style="color: #d29922;">"AI Team Coordination"</span></div>
-            <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">brand_tokens:</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">primary_color:</span> <span style="color: #d29922;">"#D97757"</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">font_heading:</span> <span style="color: #d29922;">"Press Start 2P"</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">border_radius:</span> <span style="color: #d29922;">"0.25rem"</span></div>
-            <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">hero:</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">headline:</span> <span style="color: #d29922;">"Your AI agents, thinking together"</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">subheadline:</span> <span style="color: #d29922;">"12 specialists. One team."</span></div>
-            <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">pricing_tiers:</span></div>
-            <div style="padding-left: 1.5rem;"><span style="color: #58a6ff;">- name:</span> <span style="color: #d29922;">"Open Source"</span></div>
-            <div style="padding-left: 2.25rem;"><span style="color: #58a6ff;">price:</span> <span style="color: #d29922;">"$0"</span></div>
-            <div style="padding-left: 2.25rem;"><span style="color: #58a6ff;">features:</span> <span style="color: #888;">[...]</span></div>
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+            <div style="color: var(--text-muted);"># site_brief.yaml (excerpt)</div>
+            <div><span style="color: var(--color-info);">product_name:</span> <span style="color: var(--color-warning);">"Cohort"</span></div>
+            <div><span style="color: var(--color-info);">tagline:</span> <span style="color: var(--color-warning);">"AI Team Coordination"</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: var(--color-info);">brand_tokens:</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">primary_color:</span> <span style="color: var(--color-warning);">"#D97757"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">font_heading:</span> <span style="color: var(--color-warning);">"Press Start 2P"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">border_radius:</span> <span style="color: var(--color-warning);">"0.25rem"</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: var(--color-info);">hero:</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">headline:</span> <span style="color: var(--color-warning);">"Your AI agents, thinking together"</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">subheadline:</span> <span style="color: var(--color-warning);">"23 specialists. One team."</span></div>
+            <div style="margin-top: 0.5rem;"><span style="color: var(--color-info);">pricing_tiers:</span></div>
+            <div style="padding-left: 1.5rem;"><span style="color: var(--color-info);">- name:</span> <span style="color: var(--color-warning);">"Open Source"</span></div>
+            <div style="padding-left: 2.25rem;"><span style="color: var(--color-info);">price:</span> <span style="color: var(--color-warning);">"$0"</span></div>
+            <div style="padding-left: 2.25rem;"><span style="color: var(--color-info);">features:</span> <span style="color: var(--text-muted);">[...]</span></div>
         </div>
     </div>
 </section>
 
 <!-- Block Library -->
-<section class="section-spacing" style="background: #FAFAF8;">
+<section class="section-spacing" style="background: var(--color-light-bg);">
     <div class="container" style="max-width: 800px;">
         <h2 class="responsive-h2 text-center">Block Library</h2>
         <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">25+ composable blocks. Mix and match to build any page layout.</p>
 
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Navigation</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">clean, bold</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Navigation</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">clean, bold</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Hero</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">centered, split, image-bg, minimal</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Hero</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">centered, split, image-bg, minimal</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Features</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">3-col cards, icon-left</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Features</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">3-col cards, icon-left</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Pricing</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">tiered comparison</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Pricing</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">tiered comparison</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Testimonials</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">cards, quotes</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Testimonials</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">cards, quotes</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">FAQ</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">accordion</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">FAQ</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">accordion</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Gallery</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">grid, masonry</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Gallery</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">grid, masonry</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">CTA</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">strip, banner</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">CTA</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">strip, banner</div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 6px; padding: 0.75rem; text-align: center;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: #D97757;">Contact</div>
-                <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">form, stats, footer</div>
+            <div style="background: var(--color-code-bg); border-radius: 6px; padding: 0.75rem; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);">Contact</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">form, stats, footer</div>
             </div>
         </div>
     </div>
@@ -267,24 +275,24 @@ COHORT            </a>
         <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Cohort's own marketing site was built by the Website Creator pipeline in a 24-hour sprint.</p>
 
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
-                <div style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Build stats</div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Build stats</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 2;">
-                    <div><strong style="color: #D97757;">1,241</strong> lines of Python</div>
-                    <div><strong style="color: #58a6ff;">10</strong> Jinja2 templates</div>
-                    <div><strong style="color: #3fb950;">15</strong> pages generated</div>
-                    <div><strong style="color: #d29922;">535 KB</strong> total output</div>
-                    <div><strong style="color: #bc8cff;">19</strong> git commits</div>
+                    <div><strong style="color: var(--color-primary);">1,241</strong> lines of Python</div>
+                    <div><strong style="color: var(--color-info);">10</strong> Jinja2 templates</div>
+                    <div><strong style="color: var(--color-success);">15</strong> pages generated</div>
+                    <div><strong style="color: var(--color-warning);">535 KB</strong> total output</div>
+                    <div><strong style="color: #D97757;">19</strong> git commits</div>
                 </div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem;">
-                <div style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Review roundtable</div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;">Review roundtable</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 2;">
-                    <div><strong style="color: #D97757;">6</strong> agent personas loaded</div>
-                    <div><strong style="color: #58a6ff;">1</strong> LLM call (compiled mode)</div>
-                    <div><strong style="color: #3fb950;">~90%</strong> token reduction</div>
-                    <div><strong style="color: #d29922;">Local</strong> Ollama inference</div>
-                    <div><strong style="color: #3fb950;">$0</strong> API cost</div>
+                    <div><strong style="color: var(--color-primary);">6</strong> agent personas loaded</div>
+                    <div><strong style="color: var(--color-info);">1</strong> LLM call (compiled mode)</div>
+                    <div><strong style="color: var(--color-success);">~90%</strong> token reduction</div>
+                    <div><strong style="color: var(--color-warning);">Local</strong> Ollama inference</div>
+                    <div><strong style="color: var(--color-success);">$0</strong> API cost</div>
                 </div>
             </div>
         </div>
@@ -292,19 +300,19 @@ COHORT            </a>
 </section>
 
 <!-- Two Entry Points -->
-<section class="section-spacing" style="background: #FAFAF8;">
+<section class="section-spacing" style="background: var(--color-light-bg);">
     <div class="container" style="max-width: 800px;">
         <h2 class="responsive-h2 text-center">Two Ways to Start</h2>
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #3fb950;">
-                <h3 style="color: #3fb950; font-size: 1rem; margin: 0 0 0.5rem 0;">From YAML</h3>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--color-success);">
+                <h3 style="color: var(--color-success); font-size: 1rem; margin: 0 0 0.5rem 0;">From YAML</h3>
                 <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">Already have a brief? Point the renderer at your YAML file. Skip intake, skip roundtables -- go straight to HTML.</p>
                 <div style="background: #1a1d21; border-radius: 4px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
                     create_from_yaml("site_brief.yaml")
                 </div>
             </div>
-            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #58a6ff;">
-                <h3 style="color: #58a6ff; font-size: 1rem; margin: 0 0 0.5rem 0;">From URL</h3>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--color-info);">
+                <h3 style="color: var(--color-info); font-size: 1rem; margin: 0 0 0.5rem 0;">From URL</h3>
                 <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">Point it at your existing site and competitors. Full pipeline: scrape, analyze, worksheet, roundtable, render.</p>
                 <div style="background: #1a1d21; border-radius: 4px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
                     create_from_url("mysite.com", ["comp1.com"])
@@ -315,7 +323,7 @@ COHORT            </a>
 </section>
 
 <!-- CTA -->
-<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">Build Your Site with Agents</h2>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Website Creator ships with Cohort Pro. Open source users get the template library and renderer.</p>
@@ -351,7 +359,7 @@ COHORT            </a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Use Cases | COHORT</title>
     <meta name="description" content="Real-world use cases for Cohort multi-agent orchestration -- website generation, code review, content pipelines, security audits.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
 
-    <link rel="canonical" href="https://cohort.dev/use-cases.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/use-cases.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/use-cases.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/use-cases.html">
     <meta property="og:title" content="Use Cases | COHORT">
     <meta property="og:description" content="Real-world use cases for Cohort multi-agent orchestration -- website generation, code review, content pipelines, security audits.">
 
@@ -39,16 +47,7 @@ COHORT            </a>
                 &#9776;
             </button>
             <ul class="nav-links">
-                <li><a href="features.html">How It Works</a></li>
-                <li><a href="tools.html">Tools</a></li>
-                <li><a href="use-cases.html">Use Cases</a></li>
-                <li><a href="marketing.html">Content Pipeline</a></li>
-                <li><a href="pricing.html">Pricing</a></li>
-                <li><a href="benchmarks.html">Benchmarks</a></li>
-                <li><a href="docs.html">Docs</a></li>
-                <li><a href="compare.html">Compare</a></li>
-                <li><a href="ai-perspective.html">AI's Take</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <!-- Populated by nav.js -->
             </ul>
         </div>
     </nav>
@@ -56,7 +55,7 @@ COHORT            </a>
     <!-- Main Content -->
     <main id="main">
 <!-- Page Header -->
-<section class="section-spacing" style="background: #F5E6DE;">
+<section class="section-spacing section-hero-accent">
     <div class="container text-center">
         <h1 class="responsive-h1">Use Cases</h1>
         <p class="responsive-p-large">What teams are building with Cohort today.</p>
@@ -64,7 +63,7 @@ COHORT            </a>
 </section>
 
 <!-- Use Cases Detail -->
-<section class="section-spacing" style="background: #FAFAF8;">
+<section class="section-spacing" style="background: var(--color-light-bg);">
     <div class="container">
 
         <!-- Website Generation -->
@@ -76,44 +75,44 @@ COHORT            </a>
 
             <!-- Real pipeline stats -->
             <div class="mobile-stack" style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 1.75rem; font-weight: 700; color: #D97757;">7:39</div>
+                <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--color-primary);">7:39</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">total build time</div>
                 </div>
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 1.75rem; font-weight: 700; color: #58a6ff;">9</div>
+                <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--color-info);">9</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">pages generated</div>
                 </div>
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 1.75rem; font-weight: 700; color: #3fb950;">5</div>
+                <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--color-success);">5</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">agents involved</div>
                 </div>
-                <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                    <div style="font-size: 1.75rem; font-weight: 700; color: #d29922;">0</div>
+                <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--color-warning);">0</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">lines hand-written</div>
                 </div>
             </div>
 
             <!-- Real conversation excerpt -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Website build pipeline -- cohort.dev</div>
+            <div style="margin-top: 1.5rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Website build pipeline -- cohort.dev</div>
 
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                    <div style="color: #58a6ff; font-weight: 600; margin-bottom: 0.25rem;">Strategist Agent</div>
+                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--color-info);">
+                    <div style="color: var(--color-info); font-weight: 600; margin-bottom: 0.25rem;">Strategist Agent</div>
                     <div>Competitor analysis complete. 3 positioning gaps identified: none mention local inference costs, none show real agent conversations, none publish benchmarks. Recommend leading with "zero API cost" differentiator.</div>
                 </div>
 
-                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #3fb950;">
-                    <div style="color: #3fb950; font-weight: 600; margin-bottom: 0.25rem;">Copywriter Agent</div>
+                <div style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--color-success);">
+                    <div style="color: var(--color-success); font-weight: 600; margin-bottom: 0.25rem;">Copywriter Agent</div>
                     <div>Draft complete for 9 pages. Hero headline: "Your AI Team. Built to Ship." -- emphasizes outcomes over features. Each page opens with a concrete proof point before explaining the concept.</div>
                 </div>
 
-                <div style="padding-left: 1rem; border-left: 3px solid #D97757;">
-                    <div style="color: #D97757; font-weight: 600; margin-bottom: 0.25rem;">Developer Agent</div>
+                <div style="padding-left: 1rem; border-left: 3px solid var(--color-primary);">
+                    <div style="color: var(--color-primary); font-weight: 600; margin-bottom: 0.25rem;">Developer Agent</div>
                     <div>All 9 pages rendered. CSS custom properties for theming, responsive breakpoints at 768/1024/1280px, semantic HTML with ARIA labels. Total output: 4,200 lines of production HTML/CSS.</div>
                 </div>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">From the actual build log of this website. The strategist found the positioning gaps, the copywriter drafted around them, the developer shipped production code.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">From the actual build log of this website. The strategist found the positioning gaps, the copywriter drafted around them, the developer shipped production code.</p>
         </div>
 
         <!-- Code Review & Security Audit -->
@@ -124,29 +123,29 @@ COHORT            </a>
             <p class="responsive-p-body">Cohort's contribution scoring ensures the right expert speaks at the right time. The security agent's findings don't get buried by style nits, and the performance agent yields the floor when the topic shifts to auth. Agents progress through stakeholder statuses -- active, approved_silent, observer -- so the conversation self-organizes toward the findings that matter most.</p>
 
             <!-- Real audit output -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Multi-agent code review -- parallel findings</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #D97757; font-weight: 600;">[Security Agent]</span>
-  <span style="color: #f85149;">CRITICAL</span> api/routes.py:312 -- unsanitized user input in
+            <div style="margin-top: 1.5rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+                <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Multi-agent code review -- parallel findings</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: var(--color-primary); font-weight: 600;">[Security Agent]</span>
+  <span style="color: var(--color-danger);">CRITICAL</span> api/routes.py:312 -- unsanitized user input in
   resource name passed to file path construction. CWE-22 path
   traversal. Fix: validate against ^[a-z0-9-]+$ pattern.
 
-<span style="color: #58a6ff; font-weight: 600;">[Code Quality Agent]</span>
-  <span style="color: #d29922;">WARNING</span> worker/executor.py -- run_task() is 347 lines
+<span style="color: var(--color-info); font-weight: 600;">[Code Quality Agent]</span>
+  <span style="color: var(--color-warning);">WARNING</span> worker/executor.py -- run_task() is 347 lines
   with 8 levels of nesting. Extract: build_prompt(),
   commit_checkpoint(), review_output() as separate methods.
 
-<span style="color: #3fb950; font-weight: 600;">[Performance Agent]</span>
-  <span style="color: #d29922;">WARNING</span> inference/router.py:load_model() -- synchronous
+<span style="color: var(--color-success); font-weight: 600;">[Performance Agent]</span>
+  <span style="color: var(--color-warning);">WARNING</span> inference/router.py:load_model() -- synchronous
   model loading blocks the event loop for 12-18 seconds.
   Move to background thread with asyncio.to_thread().
 
-<span style="color: #bc8cff; font-weight: 600;">[Documentation Agent]</span>
-  <span style="color: #58a6ff;">INFO</span> 23 public functions missing docstrings in tools/.
+<span style="color: #D97757; font-weight: 600;">[Documentation Agent]</span>
+  <span style="color: var(--color-info);">INFO</span> 23 public functions missing docstrings in tools/.
   4 config keys undocumented in config.yaml. README references
   deprecated CLI flags (--force-gpu, --no-cache).</pre>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Four agents, four perspectives, one pass. The security agent catches what the code quality agent ignores, and vice versa. Each finding is independently scored and prioritized.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">Four agents, four perspectives, one pass. The security agent catches what the code quality agent ignores, and vice versa. Each finding is independently scored and prioritized.</p>
         </div>
 
         <!-- Content Pipeline -->
@@ -157,43 +156,43 @@ COHORT            </a>
             <p class="responsive-p-body">Each stage runs through Cohort's meeting system: a strategy agent picks topics, a writer drafts, an editor refines, and a social media agent adapts for each platform. Contribution scoring prevents any one agent from dominating -- the writer yields when the strategist has a better angle.</p>
 
             <!-- Pipeline flow diagram -->
-            <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
-                <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Content pipeline -- Cohort scheduler + meeting orchestration</div>
+            <div style="margin-top: 1.5rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+                <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Content pipeline -- Cohort scheduler + meeting orchestration</div>
 
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
-                        <span style="color: #D97757; font-weight: 600;">Step 1</span> Intel Fetch
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
+                        <span style="color: var(--color-primary); font-weight: 600;">Step 1</span> Intel Fetch
                     </div>
                     <div style="color: #555;">--></div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
-                        <span style="color: #58a6ff; font-weight: 600;">Step 2</span> Analysis & Scoring
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
+                        <span style="color: var(--color-info); font-weight: 600;">Step 2</span> Analysis & Scoring
                     </div>
                     <div style="color: #555;">--></div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
-                        <span style="color: #3fb950; font-weight: 600;">Step 3</span> Agent Roundtable
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
+                        <span style="color: var(--color-success); font-weight: 600;">Step 3</span> Agent Roundtable
                     </div>
                     <div style="color: #555;">--></div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
-                        <span style="color: #d29922; font-weight: 600;">Step 4</span> Multi-Format Output
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem; white-space: nowrap;">
+                        <span style="color: var(--color-warning); font-weight: 600;">Step 4</span> Multi-Format Output
                     </div>
                 </div>
 
                 <div class="mobile-stack" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">RSS + Web Sources</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #58a6ff;">Configurable</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-info);">Configurable</div>
                     </div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Relevance Scoring</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #3fb950;">LLM-Powered</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-success);">LLM-Powered</div>
                     </div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Output Formats</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #D97757;">Blog + Social + Mail</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-primary);">Blog + Social + Mail</div>
                     </div>
                 </div>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Built on Cohort's intel_fetcher, content_analyzer, and TaskScheduler modules. Define your feeds, register your agents, set a cron schedule -- the orchestrator handles the rest.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">Built on Cohort's intel_fetcher, content_analyzer, and TaskScheduler modules. Define your feeds, register your agents, set a cron schedule -- the orchestrator handles the rest.</p>
         </div>
 
         <!-- Executive Briefings -->
@@ -204,23 +203,23 @@ COHORT            </a>
             <p class="responsive-p-body">The briefing engine uses LLM-enhanced narratives when a local model is available, with deterministic fallback when it's not. Agent activity cards are written in first-person voice. Intel articles get "why it matters" analysis. Everything is served from Cohort's built-in dashboard or emailed as standalone HTML.</p>
 
             <!-- Briefing preview -->
-            <div style="margin-top: 1rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #e6edf3; border: 1px solid #30363d;">
+            <div style="margin-top: 1rem; background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #e6edf3; border: 1px solid #30363d;">
                 <div style="text-align: center; border-bottom: 3px double #30363d; padding-bottom: 0.75rem; margin-bottom: 1rem;">
                     <div style="font-size: 1.1rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Executive Briefing</div>
                     <div style="color: #8b949e; font-size: 0.8rem;">Mon Mar 10, 2026</div>
                 </div>
                 <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Agents Active</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #3fb950;">14</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-success);">14</div>
                     </div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Tasks Completed</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #58a6ff;">8</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-info);">8</div>
                     </div>
-                    <div style="background: #2D2D2D; border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
+                    <div style="background: var(--color-code-bg); border: 1px solid #30363d; border-radius: 6px; padding: 0.75rem; text-align: center;">
                         <div style="font-size: 0.7rem; color: #8b949e; text-transform: uppercase;">Intel Articles</div>
-                        <div style="font-size: 1.5rem; font-weight: 600; color: #d29922;">23</div>
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--color-warning);">23</div>
                     </div>
                 </div>
                 <div style="margin-bottom: 0.75rem;">
@@ -229,14 +228,14 @@ COHORT            </a>
                 </div>
                 <div style="font-style: italic; color: #8b949e; font-size: 0.8rem; border-top: 1px solid #30363d; padding-top: 0.75rem;">Generated by Cohort's executive_briefing module. Runs on schedule or on demand via the /api/briefing endpoint.</div>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">Real briefing format from Cohort's built-in executive_briefing module. Plug in your data sources and agent registry -- the engine handles rendering, LLM narratives, and delivery.</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">Real briefing format from Cohort's built-in executive_briefing module. Plug in your data sources and agent registry -- the engine handles rendering, LLM narratives, and delivery.</p>
         </div>
 
     </div>
 </section>
 
 <!-- CTA -->
-<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+<section class="section-spacing section-dark">
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">Ready to Build?</h2>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Every use case above runs on a single consumer GPU. No API keys. No cloud dependency. Your data stays on your machine.</p>
@@ -259,20 +258,20 @@ COHORT            </a>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

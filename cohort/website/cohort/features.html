@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>How It Works | COHORT</title>
     <meta name="description" content="Learn how Cohort's multi-agent orchestration works -- compiled roundtables, contribution scoring, and parallel work queues.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
 
-    <link rel="canonical" href="https://cohort.dev/features.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/features.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/features.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/features.html">
     <meta property="og:title" content="How It Works | COHORT">
     <meta property="og:description" content="Learn how Cohort's multi-agent orchestration works -- compiled roundtables, contribution scoring, and parallel work queues.">
 
@@ -39,6 +47,7 @@ COHORT            </a>
                 &#9776;
             </button>
             <ul class="nav-links">
+                <li><a href="channels.html" style="color: var(--color-primary);">Channels</a></li>
                 <li><a href="features.html">How It Works</a></li>
                 <li><a href="tools.html">Tools</a></li>
                 <li><a href="use-cases.html">Use Cases</a></li>
@@ -164,8 +173,8 @@ COHORT            </a>
                     <div>Strong contributions across the board -- but one critical gap: <strong>who is this for?</strong> Every pitch describes what BOSS <em>is</em> and what it <em>does</em>. None answer the question: what job is the buyer hiring BOSS to do?</div>
                 </div>
 
-                <div style="padding-left: 1rem; border-left: 3px solid #bc8cff;">
-                    <div style="color: #bc8cff; font-weight: 600; margin-bottom: 0.25rem;">CEO Agent (synthesis)</div>
+                <div style="padding-left: 1rem; border-left: 3px solid #D97757;">
+                    <div style="color: #D97757; font-weight: 600; margin-bottom: 0.25rem;">CEO Agent (synthesis)</div>
                     <div>Six agents, one prompt, and we've gone from a flat feature list to a category-creating narrative in under 10 minutes. Structure: Content Strategy's arc wins. Frame: Marketing's category-creation angle. Proof point: Sales's code queue story. One round of refinement, then we ship it.</div>
                 </div>
             </div>
@@ -219,7 +228,7 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
                     <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">97.2%</div>
                     <div style="font-size: 0.8rem; color: #C8C8C8;">assessment pass rate</div>
-                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">2,400 questions, 24 agents</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">2,400 questions, 23 agents</div>
                 </div>
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
                     <div style="font-size: 2rem; font-weight: 700; color: #D97757;">$0</div>
@@ -316,7 +325,7 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
         <div id="protocols" style="max-width: 800px; margin: 3rem auto; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[P]</div>
             <h3 class="responsive-h3">Protocol-First Architecture</h3>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">Agents, storage backends, and inference providers are all duck-typed protocols. Implement the interface, and Cohort uses it. No base classes to inherit, no vendor SDK to import. <code style="white-space: nowrap;">pip install cohort</code> pulls zero dependencies beyond the standard library.</p>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">Agents, storage backends, and inference providers are all duck-typed protocols. Implement the interface, and Cohort uses it. No base classes to inherit, no vendor SDK to import. <code style="white-space: nowrap;">pip install cohort</code> pulls only two lightweight dependencies (httpx + fastmcp).</p>
             <p class="responsive-p-body">Swap Ollama for llama.cpp. Replace SQLite with Postgres. Bring your own agents written in any framework. Cohort doesn't care -- it talks protocols, not implementations.</p>
 
             <!-- Real protocol code -->
@@ -402,7 +411,7 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">See It In Action</h2>
         <div class="button-group">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">Get Started</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary">Get Started</a>
             <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
@@ -420,20 +429,20 @@ score += SCORING_WEIGHTS[<span style="color: #3fb950;">"expertise"</span>] * cal
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>

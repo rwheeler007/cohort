@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLI | COHORT</title>
-    <meta name="description" content="Cohort CLI -- 57 commands across 25 categories covering agents, channels, work queues, briefings, search, scheduling, secrets, cloud providers, assessments, and more. All from the command line.">
+    <meta name="description" content="Cohort CLI -- 185 commands across 61 categories covering agents, channels, work queues, meeting control, briefings, search, scheduling, secrets, cloud providers, assessments, ecosystem inventory, and more. All from the command line.">
     <meta name="keywords" content="cohort CLI, command line, AI agent CLI, multi-agent orchestration, contribution scoring, executive briefing">
 
     <link rel="canonical" href="https://rwheeler007.github.io/cohort/cli.html">
@@ -13,12 +21,12 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rwheeler007.github.io/cohort/cli.html">
     <meta property="og:title" content="CLI | COHORT">
-    <meta property="og:description" content="Cohort CLI -- 57 commands for multi-agent orchestration, all from the terminal.">
+    <meta property="og:description" content="Cohort CLI -- 185 commands for multi-agent orchestration, all from the terminal.">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CLI | COHORT">
-    <meta name="twitter:description" content="Cohort CLI -- 57 commands for multi-agent orchestration.">
+    <meta name="twitter:description" content="Cohort CLI -- 185 commands for multi-agent orchestration.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,7 +103,7 @@
             margin-top: 3rem;
             margin-bottom: 1.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #3a3a3a;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
         }
         .cmd-sub {
             font-family: monospace;
@@ -122,7 +130,7 @@
             font-size: 0.85rem;
             transition: background 0.15s;
         }
-        .toc-item:hover { background: #383838; }
+        .toc-item:hover { background: rgba(255,255,255,0.08); }
         .toc-item .toc-cmd { font-family: monospace; color: #D97757; font-weight: 600; }
         .toc-item .toc-count { font-size: 0.75rem; color: #888; }
     </style>
@@ -150,7 +158,7 @@ COHORT            </a>
 <section class="section-spacing" style="background: #F5E6DE;">
     <div class="container text-center">
         <h1 class="responsive-h1">CLI</h1>
-        <p class="responsive-p-large">57 commands across 25 categories. Agents, channels, work queues, models, benchmarks, learning, analysis, meetings, cloud providers, assessments, and more -- all from the terminal.</p>
+        <p class="responsive-p-large">185 commands across 61 categories. Agents, channels, work queues, meeting control, models, benchmarks, learning, analysis, cloud providers, assessments, ecosystem inventory, session management, and more -- all from the terminal.</p>
         <p class="responsive-p-body" style="margin-top: 0.5rem;">Everything runs via <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">python -m cohort &lt;command&gt;</code></p>
     </div>
 </section>
@@ -160,7 +168,7 @@ COHORT            </a>
     <div class="container">
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 900px; margin: 0 auto;">
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
-                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">57</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">73</div>
                 <div style="font-size: 0.85rem; color: #C8C8C8;">Commands</div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
@@ -199,7 +207,7 @@ COHORT            </a>
             <a href="#cat-benchmark" class="toc-item"><span class="toc-cmd">benchmark</span><br><span class="toc-count">scenarios, runs, show, delete</span></a>
             <a href="#cat-learn" class="toc-item"><span class="toc-cmd">learn</span><br><span class="toc-count">profile, bootstrap, status</span></a>
             <a href="#cat-analyze" class="toc-item"><span class="toc-cmd">analyze</span><br><span class="toc-count">keywords, overlap, score, distill</span></a>
-            <a href="#cat-meet" class="toc-item"><span class="toc-cmd">meet</span><br><span class="toc-count">stakeholders, relevance</span></a>
+            <a href="#cat-meet" class="toc-item"><span class="toc-cmd">meet</span><br><span class="toc-count">18 cmds: sessions, gating, scoring, phase</span></a>
             <a href="#cat-config" class="toc-item"><span class="toc-cmd">secret / profile / tools / config</span><br><span class="toc-count">20 providers, permissions, merged config</span></a>
             <a href="#cat-infra" class="toc-item"><span class="toc-cmd">serve / setup / codegen</span><br><span class="toc-count">server, wizard, LLM codegen</span></a>
             <a href="#cat-service" class="toc-item"><span class="toc-cmd">service</span><br><span class="toc-count">manage, status, logs</span></a>
@@ -211,6 +219,8 @@ COHORT            </a>
             <a href="#cat-quiz" class="toc-item"><span class="toc-cmd">quiz</span><br><span class="toc-count">import assessment questions</span></a>
             <a href="#cat-inject" class="toc-item"><span class="toc-cmd">inject</span><br><span class="toc-count">test fact injection</span></a>
             <a href="#cat-overnight" class="toc-item"><span class="toc-cmd">overnight</span><br><span class="toc-count">runner status, history</span></a>
+            <a href="#cat-inventory" class="toc-item"><span class="toc-cmd">inventory</span><br><span class="toc-count">list, search, sources, refresh</span></a>
+            <a href="#cat-sessions" class="toc-item"><span class="toc-cmd">sessions</span><br><span class="toc-count">status, show, reap, purge</span></a>
         </div>
     </div>
 </section>
@@ -662,17 +672,76 @@ COHORT            </a>
 
         <div class="cmd-card">
             <div><span class="cmd-name">cohort meet</span><span class="tier-badge tier-free">Free</span></div>
-            <div class="cmd-desc">Stakeholder identification and relevance scoring. Find which agents should participate in a topic discussion and measure how relevant each agent is.</div>
+            <div class="cmd-desc">18-command meeting control surface. Stakeholder identification, session lifecycle, participant management, scoring introspection, phase detection, and standalone meeting mode. The primary consumers are orchestrating agents and skills that need to control multi-agent discussion dynamics programmatically.</div>
             <div style="margin-top: 0.75rem;">
                 <span class="cmd-sub">stakeholders</span>
                 <span class="cmd-sub">relevance</span>
+                <span class="cmd-sub">start</span>
+                <span class="cmd-sub">stop</span>
+                <span class="cmd-sub">pause</span>
+                <span class="cmd-sub">resume</span>
+                <span class="cmd-sub">status</span>
+                <span class="cmd-sub">extend</span>
+                <span class="cmd-sub">promote</span>
+                <span class="cmd-sub">demote</span>
+                <span class="cmd-sub">add</span>
+                <span class="cmd-sub">remove</span>
+                <span class="cmd-sub">next</span>
+                <span class="cmd-sub">score</span>
+                <span class="cmd-sub">phase</span>
+                <span class="cmd-sub">context</span>
+                <span class="cmd-sub">enable</span>
+                <span class="cmd-sub">disable</span>
             </div>
             <div class="cmd-usage">
+                <div><span class="comment"># Offline: find stakeholders and score relevance (no server needed)</span></div>
                 <div><span class="prompt">$</span> python -m cohort meet stakeholders "security audit" <span class="flag">--threshold</span> 0.01</div>
                 <div style="margin-top: 0.5rem; color: #888;">  1. [#########......]  60.2%  security_agent</div>
                 <div style="color: #888;">  2. [####...........]  28.1%  python_developer</div>
                 <div style="margin-top: 0.5rem;"><span class="prompt">$</span> python -m cohort meet relevance security_agent "authentication module audit"</div>
+                <div style="margin-top: 1rem;"><span class="comment"># Start a meeting session with auto-selected agents</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet start my-channel "API redesign" <span class="flag">--agents</span> ceo,pd,sec <span class="flag">--turns</span> 15</div>
+                <div style="color: #888;">  [OK] Session started: s_20260325_143500_abc123</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Check session status (accepts session ID or channel name)</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet status my-channel</div>
+                <div style="color: #888;">  Session: s_20260325_143500_abc123</div>
+                <div style="color: #888;">  Channel: #my-channel    State: ACTIVE    Phase: PLAN</div>
+                <div style="color: #888;">  Turn: 8 / 15</div>
+                <div style="color: #888;">  ACTIVE (2):     python_developer, security_agent</div>
+                <div style="color: #888;">  SILENT (1):     ceo</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Promote/demote agents mid-discussion</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet promote s_20260325_143500_abc123 ceo</div>
+                <div style="color: #888;">  [OK] ceo -> ACTIVE</div>
+                <div><span class="prompt">$</span> python -m cohort meet demote s_20260325_143500_abc123 security_agent <span class="flag">--to</span> observer</div>
+                <div style="color: #888;">  [OK] security_agent -> OBSERVER</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Scoring: who should speak next, full relevance breakdown</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet next s_20260325_143500_abc123</div>
+                <div style="color: #888;">  Recommended: python_developer    Score: 0.782    Phase: PLAN</div>
+                <div><span class="prompt">$</span> python -m cohort meet score s_20260325_143500_abc123 python_developer</div>
+                <div style="color: #888;">  [###########....]  73.2%  domain_expertise</div>
+                <div style="color: #888;">  [########.......]  55.0%  phase_alignment</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Detect discussion phase from message content</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet phase my-channel</div>
+                <div style="color: #888;">  Phase: EXECUTE</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Lightweight meeting mode (no session, just stakeholder gating)</span></div>
+                <div><span class="prompt">$</span> python -m cohort meet enable my-channel <span class="flag">--agents</span> pd,sec,co <span class="flag">--topic</span> "auth rewrite"</div>
+                <div style="color: #888;">  [OK] Meeting mode enabled on #my-channel</div>
+                <div><span class="prompt">$</span> python -m cohort meet disable my-channel</div>
             </div>
+            <dl class="cmd-flags">
+                <dt>--json</dt>
+                <dd>Machine-readable JSON output (all subcommands)</dd>
+                <dt>--threshold &lt;float&gt;</dt>
+                <dd>Minimum relevance score for stakeholders (default: 0.15)</dd>
+                <dt>--agents &lt;a,b,c&gt;</dt>
+                <dd>Comma-separated agent IDs (start, enable)</dd>
+                <dt>--turns &lt;int&gt;</dt>
+                <dd>Max turns for session (start: 20, extend: 10)</dd>
+                <dt>--to &lt;silent|observer|dormant&gt;</dt>
+                <dd>Target status for demote (default: silent)</dd>
+                <dt>--topic &lt;text&gt;</dt>
+                <dd>Optional topic for keyword scoring (enable)</dd>
+            </dl>
         </div>
 
         <!-- ============================================================ -->
@@ -913,7 +982,7 @@ COHORT            </a>
         <div class="category-heading" id="cat-overnight">Overnight Runners</div>
         <!-- ============================================================ -->
 
-        <div class="cmd-card" style="margin-bottom: 0;">
+        <div class="cmd-card">
             <div><span class="cmd-name">cohort overnight</span><span class="tier-badge tier-free">Free</span></div>
             <div class="cmd-desc">Check overnight runner status and history. View which automated pipelines ran, their results, and any failures. Covers temporal fact injection, scenario training, and health checks.</div>
             <div style="margin-top: 0.75rem;">
@@ -925,6 +994,80 @@ COHORT            </a>
                 <div style="margin-top: 0.5rem; color: #888;">  1:00 AM  temporal_facts    [OK] 12 facts injected</div>
                 <div style="color: #888;">  2:00 AM  scenario_runner   [OK] 5/5 scenarios passed</div>
             </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-inventory">Ecosystem Inventory</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card">
+            <div><span class="cmd-name">cohort inventory</span><span class="tier-badge tier-free">Free</span></div>
+            <div class="cmd-desc">Cross-project ecosystem inventory. Discovers tools, exports, patterns, and projects across VS Code project registry, CLAUDE.md Exports tables, and BOSS YAML inventories. Agents use this to find existing capabilities before building from scratch.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">list</span>
+                <span class="cmd-sub">search</span>
+                <span class="cmd-sub">sources</span>
+                <span class="cmd-sub">refresh</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># List all inventory entries</span></div>
+                <div><span class="prompt">$</span> python -m cohort inventory list</div>
+                <div style="margin-top: 0.5rem; color: #888;">    1. [T] llm-router</div>
+                <div style="color: #888;">       Unified local/cloud LLM routing with task-based model selection</div>
+                <div style="color: #888;">       -> tools/llm_router/llm_router.py</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Search for capabilities</span></div>
+                <div><span class="prompt">$</span> python -m cohort inventory search "llm routing"</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Filter by type or source</span></div>
+                <div><span class="prompt">$</span> python -m cohort inventory list <span class="flag">--type</span> export <span class="flag">--source</span> cohort</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Show where entries come from</span></div>
+                <div><span class="prompt">$</span> python -m cohort inventory sources</div>
+                <div style="margin-top: 0.5rem; color: #888;">  By source:</div>
+                <div style="color: #888;">    BOSS                             62</div>
+                <div style="color: #888;">    cohort                           19</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Refresh from all sources (via server or local fallback)</span></div>
+                <div><span class="prompt">$</span> python -m cohort inventory refresh</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>--type {tool,export,project,pattern}</dt><dd>Filter by entry type</dd>
+                <dt>--source NAME</dt><dd>Filter by source project name</dd>
+                <dt>--limit N</dt><dd>Max entries to display (default: 50)</dd>
+                <dt>--json</dt><dd>Machine-readable JSON output</dd>
+            </dl>
+        </div>
+
+        <!-- ============================================================ -->
+        <div class="category-heading" id="cat-sessions">Channel Sessions</div>
+        <!-- ============================================================ -->
+
+        <div class="cmd-card" style="margin-bottom: 0;">
+            <div><span class="cmd-name">cohort sessions</span><span class="tier-badge tier-ollama">Server</span></div>
+            <div class="cmd-desc">Inspect and manage Claude Code channel sessions. Each channel gets its own Claude Code session with MCP, spawned on demand and reaped after idle timeout. View health, PIDs, heartbeat staleness, queue depths, and session thresholds.</div>
+            <div style="margin-top: 0.75rem;">
+                <span class="cmd-sub">status</span>
+                <span class="cmd-sub">show</span>
+                <span class="cmd-sub">reap</span>
+                <span class="cmd-sub">purge</span>
+            </div>
+            <div class="cmd-usage">
+                <div><span class="comment"># Show all active sessions</span></div>
+                <div><span class="prompt">$</span> python -m cohort sessions</div>
+                <div style="margin-top: 0.5rem; color: #888;">  Channel Sessions (3 total, 3 healthy)</div>
+                <div style="color: #888;">  Limit: 5  Warn: 3  Idle timeout: 600s  Auto-launch: off</div>
+                <div style="color: #888;">  #code-review  (1 sessions, 1 healthy, 0 queued)</div>
+                <div style="color: #888;">    [OK] a1b2c3d4e5f6  pid=12345  heartbeat=8s ago</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Inspect a specific channel</span></div>
+                <div><span class="prompt">$</span> python -m cohort sessions show code-review</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Force-reap idle sessions</span></div>
+                <div><span class="prompt">$</span> python -m cohort sessions reap <span class="flag">--timeout</span> 300</div>
+                <div style="margin-top: 0.5rem;"><span class="comment"># Purge all session registrations</span></div>
+                <div><span class="prompt">$</span> python -m cohort sessions purge</div>
+            </div>
+            <dl class="cmd-flags">
+                <dt>show &lt;channel_id&gt;</dt><dd>Detail for a specific channel's sessions</dd>
+                <dt>reap --timeout N</dt><dd>Reap sessions idle longer than N seconds</dd>
+                <dt>purge</dt><dd>Clear all session registrations</dd>
+                <dt>--json</dt><dd>Machine-readable JSON output</dd>
+            </dl>
         </div>
 
     </div>
@@ -955,7 +1098,7 @@ COHORT            </a>
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">Get Started in 30 Seconds</h2>
         <div style="background: #1a1d21; border-radius: 8px; padding: 1rem 1.5rem; display: inline-block; font-family: monospace; font-size: 0.9rem; color: #C8C8C8; margin: 1rem 0;">
-            <span style="color: #3fb950;">$</span> pip install cohort && python -m cohort setup
+            <span style="color: #3fb950;">$</span> pip install "cohort[server]" && python -m cohort setup
         </div>
         <div class="button-group" style="margin-top: 1rem;">
             <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">View on GitHub</a>

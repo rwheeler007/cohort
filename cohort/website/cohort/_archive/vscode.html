@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Extension | COHORT</title>
+    <meta name="description" content="Bring your Cohort agent team directly into VS Code. Channels, discussions, tasks, and agent management -- all without leaving your editor.">
+    <meta name="keywords" content="VS Code extension, AI agents, multi-agent orchestration, VS Code AI, Cohort extension, agent-powered IDE">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/vscode.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/vscode.html">
+    <meta property="og:title" content="VS Code Extension | COHORT">
+    <meta property="og:description" content="Bring your Cohort agent team directly into VS Code. Channels, discussions, tasks, and agent management without leaving your editor.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VS Code Extension | COHORT">
+    <meta name="twitter:description" content="Your AI agent team, inside your editor. Channels, tasks, and discussions in VS Code.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: #3fb950; color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .feature-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .feature-card h3 {
+            color: #fff;
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+        }
+        .feature-card p {
+            color: #C8C8C8;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        .feature-icon {
+            font-family: monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #D97757;
+            margin-bottom: 0.75rem;
+        }
+        .command-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #3a3a3a;
+            align-items: center;
+        }
+        .command-row:last-child { border-bottom: none; }
+        .command-name {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        .command-desc {
+            font-size: 0.85rem;
+            color: #C8C8C8;
+        }
+        .mode-card {
+            background: #2D2D2D;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid transparent;
+        }
+        .mode-card h3 {
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+        }
+        .mode-card p {
+            font-size: 0.85rem;
+            color: #C8C8C8;
+            line-height: 1.6;
+            margin: 0;
+        }
+        .mode-card ul {
+            margin: 0.75rem 0 0 0;
+            padding-left: 1.25rem;
+            font-size: 0.8rem;
+            color: #C8C8C8;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">VS Code Extension</h1>
+        <span class="tier-badge tier-free" style="margin-left: 0;">Free</span>
+        <p class="responsive-p-large" style="margin-top: 1rem;">Your full agent team inside your editor. Channels, discussions, tasks, and settings -- without switching windows.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem; font-style: italic;">The same dashboard you use in the browser, embedded natively in VS Code.</p>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 800px; margin: 0 auto;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">8</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Commands</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">2</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Operating Modes</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #58a6ff;">0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Dependencies</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">Just Python + Cohort</div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Cost</div>
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.25rem;">100% local</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What You Get -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">What You Get</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 2rem;">The full Cohort dashboard -- team chat, tasks, review queue, settings -- running as a native VS Code webview panel.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="feature-card">
+                <div class="feature-icon">[T]</div>
+                <h3>Team Chat</h3>
+                <p>Browse channels, read discussions, post messages, and tag agents. Real-time message updates via WebSocket bridge. Create new channels for any topic.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[K]</div>
+                <h3>Task Management</h3>
+                <p>View, create, and manage tasks across your agent team. Priority queuing, status tracking, and assignment -- all from the sidebar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[O]</div>
+                <h3>Review Queue</h3>
+                <p>Agent outputs land in a review panel. Approve, reject, or request changes without context-switching to a browser.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">[S]</div>
+                <h3>Settings & Config</h3>
+                <p>Model selection, temperature tuning, agent permissions, and server configuration. Same settings panel as the web dashboard.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Two Modes -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Two Operating Modes</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Works standalone or as a full-server client. Starts in lite mode and auto-upgrades when it detects your Cohort server.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+            <div class="mode-card" style="border-color: #3fb950;">
+                <h3 style="color: #3fb950;">Lite Mode</h3>
+                <p>No server required. The extension spawns a local Python MCP backend and gives you core agent features out of the box.</p>
+                <ul>
+                    <li>Channel management</li>
+                    <li>Agent listing and search</li>
+                    <li>Message posting</li>
+                    <li>Local JSON data store</li>
+                </ul>
+            </div>
+            <div class="mode-card" style="border-color: #58a6ff;">
+                <h3 style="color: #58a6ff;">Full Mode</h3>
+                <p>Connects to your running Cohort server (default: <code style="color: #d29922;">localhost:5100</code>). Unlocks the complete dashboard with real-time WebSocket updates.</p>
+                <ul>
+                    <li>Full web dashboard in webview</li>
+                    <li>Real-time agent responses</li>
+                    <li>Task queue and review pipeline</li>
+                    <li>Settings, benchmarks, permissions</li>
+                    <li>Agent Store sync</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">How It Works</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">The extension loads the real Cohort web app inside a VS Code webview and bridges all communication through the extension host.</p>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+            <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Communication flow</div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">Cohort UI</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">vscode-bridge.js</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #bc8cff; font-weight: 600;">Extension Host</span>
+                <span style="color: #555;">--></span>
+                <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">Cohort Server</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+                The bridge shim replaces Socket.IO and <code style="color: #d29922;">fetch()</code> calls with <code style="color: #d29922;">vscode.postMessage</code> routing. The extension host handles the real HTTP and WebSocket connections to your Cohort server. Same UI, native performance.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Commands -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Command Palette</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">All commands available via <kbd style="background: #2D2D2D; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.8rem; border: 1px solid #555;">Ctrl+Shift+P</kbd></p>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem;">
+            <div class="command-row">
+                <div class="command-name">Cohort: Open Channels</div>
+                <div class="command-desc">Open the full dashboard panel with team chat</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Open Agents</div>
+                <div class="command-desc">Browse and inspect your agent roster</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Post Message</div>
+                <div class="command-desc">Send a message to any channel</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Read Channel</div>
+                <div class="command-desc">Quick-read a channel's recent messages</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Create Channel</div>
+                <div class="command-desc">Start a new discussion channel</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Find Agents</div>
+                <div class="command-desc">Search for agents by topic or capability</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: List Agents</div>
+                <div class="command-desc">Show all available agents with status</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">Cohort: Restart Server</div>
+                <div class="command-desc">Restart the MCP backend process</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Configuration -->
+<section class="section-spacing" style="background: #FAFAF8;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Configuration</h2>
+        <p class="responsive-p-body text-center" style="max-width: 600px; margin: 0 auto 1.5rem;">Set once in VS Code settings, works automatically from there.</p>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem;">
+            <div class="command-row">
+                <div class="command-name">cohort.pythonPath</div>
+                <div class="command-desc">Python executable for the MCP backend (default: <code style="color: #d29922;">python</code>)</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">cohort.serverUrl</div>
+                <div class="command-desc">Cohort server URL for full mode (default: <code style="color: #d29922;">http://127.0.0.1:5100</code>)</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">cohort.dataDir</div>
+                <div class="command-desc">Local data directory (default: <code style="color: #d29922;">cohort-data/</code> in workspace)</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">cohort.autoStart</div>
+                <div class="command-desc">Auto-launch MCP server on VS Code open (default: <code style="color: #3fb950;">true</code>)</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">cohort.agentStoreUrl</div>
+                <div class="command-desc">Agent Store API endpoint for cloud-synced agents</div>
+            </div>
+            <div class="command-row">
+                <div class="command-name">cohort.agentStoreKey</div>
+                <div class="command-desc">API key for tier-gated Agent Store access</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Get Started</h2>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #3fb950;">
+                <h3 style="color: #3fb950; font-size: 1rem; margin: 0 0 0.5rem 0;">From VSIX</h3>
+                <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">Download the latest <code style="color: #d29922;">.vsix</code> from the Cohort repo and install manually.</p>
+                <div style="background: #1a1d21; border-radius: 4px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
+                    code --install-extension cohort-vscode-0.3.8.vsix
+                </div>
+            </div>
+            <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #58a6ff;">
+                <h3 style="color: #58a6ff; font-size: 1rem; margin: 0 0 0.5rem 0;">Prerequisites</h3>
+                <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0 0 0.75rem 0;">Two things:</p>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.8;">
+                    <div><strong style="color: #58a6ff;">1.</strong> Python 3.10+ with <code style="color: #d29922;">pip install cohort</code></div>
+                    <div><strong style="color: #58a6ff;">2.</strong> VS Code 1.85+</div>
+                </div>
+                <div style="font-size: 0.75rem; color: #888; margin-top: 0.5rem;">Optional: Running Cohort server for full mode</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">Code with Your Agents</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">The VS Code extension ships free with every Cohort installation.</p>
+        <div class="button-group">
+            <a href="tools.html" class="btn-primary" style="background: var(--color-primary);">Tools Overview</a>
+            <a href="docs.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Documentation</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

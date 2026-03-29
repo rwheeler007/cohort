@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COHORT | Hero Proposal Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ============================================================
+           PROPOSAL: Product Showcase + Animated Chat Demo
+           These styles would be added to styles.css if approved.
+           ============================================================ */
+
+        /* --- Product Showcase Section --- */
+        .product-showcase {
+            background: #232528;
+            padding: 0 0 4rem 0;
+            overflow: hidden;
+        }
+        .product-showcase .caption {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Window chrome wrapper */
+        .product-window {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .product-window-frame {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            background: #1a1d21;
+        }
+        .product-window-chrome {
+            background: #1E2024;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .window-dot.red { background: #FF5F57; }
+        .window-dot.yellow { background: #FEBC2E; }
+        .window-dot.green { background: #28C840; }
+        .window-title {
+            flex: 1;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+        }
+        .window-dots-spacer {
+            width: 52px; /* balances the dots on the left */
+        }
+        .product-window-content {
+            position: relative;
+            background: #2B2D31;
+        }
+
+        /* The "screenshot" -- built with CSS for the preview since we
+           don't have the actual PNG yet. In production this would be
+           an <img> with loading="lazy" */
+        .mock-dashboard {
+            padding: 1.5rem;
+            font-family: var(--font-body);
+            color: #fff;
+        }
+        .mock-dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .mock-dashboard-header h3 {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: #fff;
+        }
+        .mock-dashboard-header .agent-count {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+        }
+        .mock-sidebar {
+            display: none;
+        }
+        .mock-dash-body {
+            display: flex;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .mock-sidebar {
+                display: block;
+                width: 180px;
+                flex-shrink: 0;
+            }
+            .mock-sidebar-item {
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                color: rgba(255,255,255,0.5);
+                cursor: default;
+                display: flex;
+                justify-content: space-between;
+            }
+            .mock-sidebar-item.active {
+                background: rgba(217, 119, 87, 0.15);
+                color: #D97757;
+            }
+            .mock-sidebar-item .badge {
+                background: rgba(255,255,255,0.1);
+                border-radius: 10px;
+                padding: 1px 8px;
+                font-size: 0.7rem;
+            }
+            .mock-sidebar-item.active .badge {
+                background: rgba(217, 119, 87, 0.3);
+            }
+        }
+        .mock-main-area {
+            flex: 1;
+            min-width: 0;
+        }
+        .mock-category {
+            margin-bottom: 1.25rem;
+        }
+        .mock-category-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .mock-agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+        .mock-agent-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .mock-agent-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .status-idle {
+            background: rgba(40, 200, 64, 0.15);
+            color: #28C840;
+        }
+        .status-busy {
+            background: rgba(254, 188, 46, 0.15);
+            color: #FEBC2E;
+        }
+        .mock-agent-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .mock-skill-tag {
+            font-size: 0.65rem;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.45);
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        /* Perspective tilt on desktop */
+        @media (min-width: 768px) {
+            .product-window-frame {
+                transform: perspective(1500px) rotateX(2deg);
+                transition: transform 0.3s ease;
+            }
+            .product-window-frame:hover {
+                transform: perspective(1500px) rotateX(0deg);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .product-window-frame {
+                transform: none !important;
+            }
+        }
+
+        /* --- Gradient bridge from hero to showcase --- */
+        .hero-to-showcase {
+            height: 80px;
+            background: linear-gradient(to bottom, #2B2D31, #232528);
+        }
+
+        /* --- Animated Chat Demo Section --- */
+        .chat-demo-section {
+            background: #1E2024;
+            padding: 4rem 0;
+        }
+        .chat-demo-heading {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .chat-demo-subheading {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+        .chat-window {
+            max-width: 560px;
+            margin: 0 auto;
+            background: #2B2D31;
+            border-radius: 12px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .chat-window-chrome {
+            background: #1a1d21;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .channel-hash {
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+        .channel-name {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .chat-messages {
+            padding: 1rem;
+            min-height: 360px;
+        }
+        .chat-message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .chat-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #1a1d21;
+            flex-shrink: 0;
+        }
+        .chat-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-sender {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .chat-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        /* Scoring event */
+        .chat-event {
+            text-align: center;
+            margin: 1rem 0;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .chat-event.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-event-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(217, 119, 87, 0.1);
+            border: 1px solid rgba(217, 119, 87, 0.2);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            color: #D97757;
+        }
+        .relevance-bar {
+            width: 60px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .relevance-fill {
+            height: 100%;
+            background: #D97757;
+            border-radius: 2px;
+            transition: width 0.6s ease;
+        }
+
+        /* Gate event */
+        .chat-gate {
+            text-align: center;
+            margin: 0.75rem 0;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .chat-gate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-gate-inner {
+            display: inline-block;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.35);
+            font-style: italic;
+        }
+
+        /* Summary card */
+        .chat-summary {
+            margin: 1rem 0.5rem 0.5rem;
+            background: rgba(40, 200, 64, 0.08);
+            border: 1px solid rgba(40, 200, 64, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .chat-summary.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-summary-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #28C840;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chat-summary-items {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.6;
+        }
+        .chat-summary-items li {
+            margin-bottom: 2px;
+        }
+
+        /* Bridge to next section */
+        .showcase-to-content {
+            height: 80px;
+            background: linear-gradient(to bottom, #1E2024, var(--color-background));
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .chat-message,
+            .chat-event,
+            .chat-gate,
+            .chat-summary {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* --- Proposal label overlay --- */
+        .proposal-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #D97757;
+            color: #1a1d21;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 9999;
+            letter-spacing: 0.05em;
+        }
+        body { padding-top: 36px; }
+    </style>
+</head>
+<body>
+    <div class="proposal-banner">PREVIEW ONLY -- Proposed changes to index.html (no production files modified)</div>
+
+    <!-- Navigation (from nav.js) -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <ul class="nav-links">
+                <li><a href="#">How It Works</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">Docs</a></li>
+                <li><a href="#">The Tools</a></li>
+                <li><a href="#">The Team</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main">
+        <!-- ============================================================
+             HERO SECTION (UNCHANGED)
+             ============================================================ -->
+        <section class="section-spacing-hero" style="background: #2B2D31; color: #fff; padding: 4rem 0;">
+            <div class="container text-center">
+                <h1 class="responsive-h1" style="color: #fff;">Finished work, not drafts.</h1>
+                <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships -- so you get finished results, not suggestions to babysit. It looks like the tools your team already lives in. No training required.</p>
+                <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1.5rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
+                <div class="button-group">
+                    <a href="#" class="btn-primary" style="background: #D97757; color: #fff;">Get Started Free</a>
+                    <a href="#product-showcase" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">See It In Action</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             NEW: Gradient bridge
+             ============================================================ -->
+        <div class="hero-to-showcase"></div>
+
+        <!-- ============================================================
+             NEW: Product Showcase (Dashboard Screenshot)
+             In production this uses a real screenshot PNG/WebP.
+             For this preview, it's a CSS mock of the dashboard.
+             ============================================================ -->
+        <section class="product-showcase" id="product-showcase" style="scroll-margin-top: 80px;">
+            <div class="product-window">
+                <div class="product-window-frame">
+                    <div class="product-window-chrome">
+                        <span class="window-dot red"></span>
+                        <span class="window-dot yellow"></span>
+                        <span class="window-dot green"></span>
+                        <span class="window-title">Cohort Dashboard</span>
+                        <span class="window-dots-spacer"></span>
+                    </div>
+                    <div class="product-window-content">
+                        <!-- CSS mock of the real dashboard -->
+                        <div class="mock-dashboard">
+                            <div class="mock-dashboard-header">
+                                <h3>Team Dashboard</h3>
+                                <span class="agent-count">22 agents</span>
+                            </div>
+                            <div class="mock-dash-body">
+                                <div class="mock-sidebar">
+                                    <div class="mock-sidebar-item active">
+                                        <span>Team</span>
+                                        <span class="badge">22</span>
+                                    </div>
+                                    <div class="mock-sidebar-item">
+                                        <span>Tasks</span>
+                                        <span class="badge">3</span>
+                                    </div>
+                                    <div class="mock-sidebar-item">
+                                        <span>Review</span>
+                                        <span class="badge">1</span>
+                                    </div>
+                                    <div class="mock-sidebar-item" style="margin-top: 1rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.25);">
+                                        <span>Channels</span>
+                                    </div>
+                                    <div class="mock-sidebar-item" style="margin-top: 0.5rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.25);">
+                                        <span>Tools</span>
+                                    </div>
+                                </div>
+                                <div class="mock-main-area">
+                                    <div class="mock-category">
+                                        <div class="mock-category-header">
+                                            <span>Leadership</span>
+                                            <span>2</span>
+                                        </div>
+                                        <div class="mock-agent-grid">
+                                            <div class="mock-agent-card">
+                                                <div class="mock-agent-name">
+                                                    Cohort
+                                                    <span class="status-badge status-idle">IDLE</span>
+                                                </div>
+                                                <div class="mock-agent-skills">
+                                                    <span class="mock-skill-tag">Agent discovery</span>
+                                                    <span class="mock-skill-tag">Task routing</span>
+                                                </div>
+                                            </div>
+                                            <div class="mock-agent-card">
+                                                <div class="mock-agent-name">
+                                                    Supervisor
+                                                    <span class="status-badge status-idle">IDLE</span>
+                                                </div>
+                                                <div class="mock-agent-skills">
+                                                    <span class="mock-skill-tag">Performance monitoring</span>
+                                                    <span class="mock-skill-tag">Quality assurance</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mock-category">
+                                        <div class="mock-category-header">
+                                            <span>Core Developers</span>
+                                            <span>5</span>
+                                        </div>
+                                        <div class="mock-agent-grid">
+                                            <div class="mock-agent-card">
+                                                <div class="mock-agent-name">
+                                                    Python Developer
+                                                    <span class="status-badge status-busy">BUSY</span>
+                                                </div>
+                                                <div class="mock-agent-skills">
+                                                    <span class="mock-skill-tag">Security scan</span>
+                                                </div>
+                                            </div>
+                                            <div class="mock-agent-card">
+                                                <div class="mock-agent-name">
+                                                    Web Developer
+                                                    <span class="status-badge status-idle">IDLE</span>
+                                                </div>
+                                                <div class="mock-agent-skills">
+                                                    <span class="mock-skill-tag">HTML5 / WCAG</span>
+                                                    <span class="mock-skill-tag">CSS Grid</span>
+                                                </div>
+                                            </div>
+                                            <div class="mock-agent-card">
+                                                <div class="mock-agent-name">
+                                                    JS Developer
+                                                    <span class="status-badge status-idle">IDLE</span>
+                                                </div>
+                                                <div class="mock-agent-skills">
+                                                    <span class="mock-skill-tag">React</span>
+                                                    <span class="mock-skill-tag">Node.js</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="caption">Your team at a glance</p>
+        </section>
+
+        <!-- ============================================================
+             NEW: Animated Chat Demo
+             ============================================================ -->
+        <section class="chat-demo-section">
+            <h2 class="responsive-h2 chat-demo-heading" style="color:#fff;">Watch your team think together</h2>
+            <p class="chat-demo-subheading">Cohort picks the right voice at the right time -- and knows when to stop.</p>
+
+            <div class="chat-window">
+                <div class="chat-window-chrome">
+                    <span class="channel-hash">#</span>
+                    <span class="channel-name">q3-planning-review</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             Bridge back to existing content
+             ============================================================ -->
+        <div class="showcase-to-content"></div>
+
+        <!-- ============================================================
+             EXISTING: Problem Statement (unchanged, for context)
+             ============================================================ -->
+        <section class="section-spacing" style="background: var(--color-background);">
+            <div class="container text-center" style="max-width: 800px;">
+                <h2 class="responsive-h2">AI isn't underperforming. It's being mismanaged.</h2>
+                <p class="responsive-p-body" style="max-width: 700px;">Every business bought AI tools. Gave everyone seats. Expected transformation. The result? Single-digit productivity improvements.</p>
+                <p class="responsive-p-body" style="max-width: 700px;"><strong>The problem isn't AI. The problem is the tool doesn't match the task.</strong></p>
+                <p class="responsive-p-body" style="max-width: 700px;">The industry sold everyone a better hammer -- smarter autocomplete, faster drafts, cleverer suggestions. But the work that moves businesses forward isn't hammering. It's welding. Coordination. Review. Testing. Handoffs between specialists.</p>
+                <p class="responsive-p-large" style="font-weight: 600; margin-top: 2rem;">Single AI assistants are the hammer. Cohort is the welding rig.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Animated chat demo driver -->
+    <script>
+    (function () {
+        var TRANSCRIPT = [
+            {
+                type: "message",
+                agent: "Strategist",
+                avatar: "S",
+                color: "#D97757",
+                text: "We need a launch plan covering messaging, target channels, and a realistic timeline. What do we have so far?"
+            },
+            {
+                type: "message",
+                agent: "Writer",
+                avatar: "W",
+                color: "#5B8DEF",
+                text: "I'll draft the announcement post -- targeting dev blogs, Hacker News, and the Python subreddit. I have competitor positioning data ready."
+            },
+            {
+                type: "scoring",
+                text: "Writer scores highest -- new content to contribute",
+                fill: 87
+            },
+            {
+                type: "message",
+                agent: "Analyst",
+                avatar: "A",
+                color: "#28C840",
+                text: "Before we publish, the draft needs benchmark numbers. I have comparison data against three competitors -- zero-dep advantage is our strongest angle."
+            },
+            {
+                type: "gate",
+                text: "Strategist steps back -- key points already covered"
+            },
+            {
+                type: "message",
+                agent: "Writer",
+                avatar: "W",
+                color: "#5B8DEF",
+                text: "Good call. I'll weave the benchmarks into the post and have a review draft by Thursday."
+            },
+            {
+                type: "summary",
+                title: "3 action items assigned",
+                items: [
+                    "Writer: Draft announcement with benchmarks (due Thu)",
+                    "Analyst: Finalize comparison data tables",
+                    "Strategist: Review messaging alignment on Friday"
+                ]
+            }
+        ];
+
+        var container = document.getElementById("chatMessages");
+        var elements = [];
+        var currentIndex = 0;
+        var observer = null;
+        var interval = null;
+        var isVisible = false;
+
+        // Pre-build all DOM elements (hidden)
+        TRANSCRIPT.forEach(function (item) {
+            var el;
+            if (item.type === "message") {
+                el = document.createElement("div");
+                el.className = "chat-message";
+                el.innerHTML =
+                    '<div class="chat-avatar" style="background:' + item.color + '">' + item.avatar + '</div>' +
+                    '<div class="chat-body">' +
+                        '<div class="chat-sender">' + item.agent + '</div>' +
+                        '<div class="chat-text">' + item.text + '</div>' +
+                    '</div>';
+            } else if (item.type === "scoring") {
+                el = document.createElement("div");
+                el.className = "chat-event";
+                el.innerHTML =
+                    '<div class="chat-event-inner">' +
+                        '<span>' + item.text + '</span>' +
+                        '<div class="relevance-bar"><div class="relevance-fill" style="width:0%" data-fill="' + item.fill + '"></div></div>' +
+                    '</div>';
+            } else if (item.type === "gate") {
+                el = document.createElement("div");
+                el.className = "chat-gate";
+                el.innerHTML = '<div class="chat-gate-inner">' + item.text + '</div>';
+            } else if (item.type === "summary") {
+                el = document.createElement("div");
+                el.className = "chat-summary";
+                var listItems = item.items.map(function (i) { return "<li>" + i + "</li>"; }).join("");
+                el.innerHTML =
+                    '<div class="chat-summary-title">[OK] ' + item.title + '</div>' +
+                    '<ul class="chat-summary-items">' + listItems + '</ul>';
+            }
+            container.appendChild(el);
+            elements.push(el);
+        });
+
+        function showNext() {
+            if (currentIndex >= elements.length) {
+                // Pause on summary, then restart
+                clearInterval(interval);
+                setTimeout(function () {
+                    resetAndReplay();
+                }, 4000);
+                return;
+            }
+            var el = elements[currentIndex];
+            el.classList.add("visible");
+
+            // Animate relevance bar fill
+            var fill = el.querySelector(".relevance-fill");
+            if (fill) {
+                setTimeout(function () {
+                    fill.style.width = fill.getAttribute("data-fill") + "%";
+                }, 100);
+            }
+            currentIndex++;
+        }
+
+        function resetAndReplay() {
+            currentIndex = 0;
+            elements.forEach(function (el) {
+                el.classList.remove("visible");
+                var fill = el.querySelector(".relevance-fill");
+                if (fill) fill.style.width = "0%";
+            });
+            if (isVisible) {
+                setTimeout(function () {
+                    startPlayback();
+                }, 500);
+            }
+        }
+
+        function startPlayback() {
+            if (interval) clearInterval(interval);
+            showNext();
+            interval = setInterval(showNext, 2200);
+        }
+
+        // Respect prefers-reduced-motion
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            elements.forEach(function (el) {
+                el.classList.add("visible");
+                var fill = el.querySelector(".relevance-fill");
+                if (fill) fill.style.width = fill.getAttribute("data-fill") + "%";
+            });
+            return;
+        }
+
+        // IntersectionObserver: play when visible, pause when not
+        if ("IntersectionObserver" in window) {
+            observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting && !isVisible) {
+                        isVisible = true;
+                        startPlayback();
+                    } else if (!entry.isIntersecting && isVisible) {
+                        isVisible = false;
+                        clearInterval(interval);
+                    }
+                });
+            }, { threshold: 0.3 });
+            observer.observe(container);
+        } else {
+            // Fallback: just play
+            isVisible = true;
+            startPlayback();
+        }
+    })();
+    </script>
+
+    <script src="nav.js"></script>
+</body>
+</html>

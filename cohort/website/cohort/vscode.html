@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VS Code Extension | COHORT</title>
@@ -66,7 +74,7 @@
             grid-template-columns: 1fr 2fr;
             gap: 1rem;
             padding: 0.75rem 0;
-            border-bottom: 1px solid #3a3a3a;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             align-items: center;
         }
         .command-row:last-child { border-bottom: none; }
@@ -129,13 +137,46 @@ COHORT            </a>
     <div class="container text-center">
         <h1 class="responsive-h1">VS Code Extension</h1>
         <span class="tier-badge tier-free" style="margin-left: 0;">Free</span>
-        <p class="responsive-p-large" style="margin-top: 1rem;">Your full agent team inside your editor. Channels, discussions, tasks, and settings -- without switching windows.</p>
-        <p class="responsive-p-body" style="margin-top: 0.5rem; font-style: italic;">The same dashboard you use in the browser, embedded natively in VS Code.</p>
+        <p class="responsive-p-large" style="margin-top: 1rem;">Claude Code writes your code. Cohort's agent team reviews, tests, and coordinates it. Both live inside VS Code -- working together.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem;">This isn't another AI sidebar. It's a full agent team embedded in your editor, running on your hardware, talking to each other while you work.</p>
+    </div>
+</section>
+
+<!-- The Big Idea -->
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center" style="color: #fff;">Two AI Systems, One Editor</h2>
+        <p class="responsive-p-large text-center" style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto 1.5rem;">Claude Code is great at writing code. But who reviews it? Who checks the security? Who makes sure it fits the architecture? That's what Cohort's agents do -- and now they're right here in VS Code with you.</p>
+
+        <!-- Video -->
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.4); background: #000; max-width: 800px; margin: 0 auto;">
+            <video controls preload="metadata" style="width: 100%; display: block; border-radius: 12px;">
+                <source src="videos/vscode-demo.webm" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.75rem; font-style: italic;">Setup wizard to first agent response -- inside VS Code.</p>
+
+        <!-- The workflow -->
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2.5rem;">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #58a6ff; margin-bottom: 0.5rem;">Claude Code</div>
+                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Writes code, edits files, runs commands. The builder.</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.5rem;">Cohort Agents</div>
+                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Review, test, score, discuss, coordinate. The team.</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #3fb950; margin-bottom: 0.5rem;">You</div>
+                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Stay in your editor. Approve what ships. Never switch windows.</div>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- Stats -->
-<section class="section-spacing">
+<section class="section-spacing" style="background: #F5E6DE;">
     <div class="container">
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 800px; margin: 0 auto;">
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-align: center;">
@@ -183,6 +224,11 @@ COHORT            </a>
                 <p>Agent outputs land in a review panel. Approve, reject, or request changes without context-switching to a browser.</p>
             </div>
             <div class="feature-card">
+                <div class="feature-icon">[M]</div>
+                <h3>Meeting Control</h3>
+                <p>Start sessions, promote and demote agents mid-discussion, detect conversation phase, and score relevance. 15 MCP tools for programmatic control of multi-agent discussions.</p>
+            </div>
+            <div class="feature-card">
                 <div class="feature-icon">[S]</div>
                 <h3>Settings & Config</h3>
                 <p>Model selection, temperature tuning, agent permissions, and server configuration. Same settings panel as the web dashboard.</p>
@@ -215,6 +261,7 @@ COHORT            </a>
                     <li>Full web dashboard in webview</li>
                     <li>Real-time agent responses</li>
                     <li>Task queue and review pipeline</li>
+                    <li>Meeting control: session lifecycle, stakeholder gating, scoring</li>
                     <li>Settings, benchmarks, permissions</li>
                     <li>Agent Store sync</li>
                 </ul>
@@ -232,13 +279,13 @@ COHORT            </a>
         <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
             <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Communication flow</div>
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                <span style="background: #1a1a2e; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">Cohort UI</span>
+                <span style="background: #2D2D2D; border: 1px solid #58a6ff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #58a6ff; font-weight: 600;">Cohort UI</span>
                 <span style="color: #555;">--></span>
-                <span style="background: #2e2e1a; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">vscode-bridge.js</span>
+                <span style="background: #2D2D2D; border: 1px solid #d29922; border-radius: 4px; padding: 0.35rem 0.75rem; color: #d29922; font-weight: 600;">vscode-bridge.js</span>
                 <span style="color: #555;">--></span>
-                <span style="background: #2e1a2e; border: 1px solid #bc8cff; border-radius: 4px; padding: 0.35rem 0.75rem; color: #bc8cff; font-weight: 600;">Extension Host</span>
+                <span style="background: rgba(217,119,87,0.15); border: 1px solid #D97757; border-radius: 4px; padding: 0.35rem 0.75rem; color: #D97757; font-weight: 600;">Extension Host</span>
                 <span style="color: #555;">--></span>
-                <span style="background: #1a2e1a; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">Cohort Server</span>
+                <span style="background: #2D2D2D; border: 1px solid #3fb950; border-radius: 4px; padding: 0.35rem 0.75rem; color: #3fb950; font-weight: 600;">Cohort Server</span>
             </div>
             <div style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
                 The bridge shim replaces Socket.IO and <code style="color: #d29922;">fetch()</code> calls with <code style="color: #d29922;">vscode.postMessage</code> routing. The extension host handles the real HTTP and WebSocket connections to your Cohort server. Same UI, native performance.
@@ -333,16 +380,19 @@ COHORT            </a>
         <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #3fb950;">
                 <h3 style="color: #3fb950; font-size: 1rem; margin: 0 0 0.5rem 0;">From VSIX</h3>
-                <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">Download the latest <code style="color: #d29922;">.vsix</code> from the Cohort repo and install manually.</p>
+                <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">Download the latest <code style="color: #d29922;">.vsix</code> from the <a data-v-href="releaseUrl" href="https://github.com/rwheeler007/cohort/releases/tag/v0.4.12-vscode" style="color: #3fb950;">GitHub release</a> and install manually.</p>
                 <div style="background: #1a1d21; border-radius: 4px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-family: monospace; font-size: 0.8rem; color: #C8C8C8;">
-                    code --install-extension cohort-vscode-0.3.8.vsix
+                    code --install-extension <span data-v="vsixFile">cohort-vscode-0.4.12.vsix</span>
+                </div>
+                <div style="margin-top: 0.75rem; font-size: 0.75rem;">
+                    <a href="https://www.virustotal.com/gui/file/c82c851eaa24d8168fe844d2505853014aed3ca0974adac2b75313728608b1ab" style="color: #3fb950;" target="_blank" rel="noopener">VirusTotal: 0 detections</a> &middot; <span style="color: #888;">Scanned 2026-03-27</span>
                 </div>
             </div>
             <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; border: 1px solid #58a6ff;">
                 <h3 style="color: #58a6ff; font-size: 1rem; margin: 0 0 0.5rem 0;">Prerequisites</h3>
                 <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0 0 0.75rem 0;">Two things:</p>
                 <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.8;">
-                    <div><strong style="color: #58a6ff;">1.</strong> Python 3.10+ with <code style="color: #d29922;">pip install cohort</code></div>
+                    <div><strong style="color: #58a6ff;">1.</strong> Python 3.11+ with <code style="color: #d29922;">pip install "cohort[server]"</code></div>
                     <div><strong style="color: #58a6ff;">2.</strong> VS Code 1.85+</div>
                 </div>
                 <div style="font-size: 0.75rem; color: #888; margin-top: 0.5rem;">Optional: Running Cohort server for full mode</div>
@@ -393,6 +443,7 @@ COHORT            </a>
             </div>
         </div>
     </footer>
+<script src="site-config.js"></script>
 <script src="nav.js"></script>
 <script src="footer.js"></script>
 </body>

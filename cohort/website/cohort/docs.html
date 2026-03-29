@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation | COHORT</title>
     <meta name="description" content="Cohort documentation -- installation, quickstart, API reference, and agent development guide.">
     <meta name="keywords" content="multi-agent orchestration, AI agent framework, agentic AI, website generator, code review automation, content pipeline, open source AI, self-hosted AI">
 
-    <link rel="canonical" href="https://cohort.dev/docs.html">
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/docs.html">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cohort.dev/docs.html">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/docs.html">
     <meta property="og:title" content="Documentation | COHORT">
     <meta property="og:description" content="Cohort documentation -- installation, quickstart, API reference, and agent development guide.">
 
@@ -39,6 +47,7 @@ COHORT            </a>
                 &#9776;
             </button>
             <ul class="nav-links">
+                <li><a href="channels.html" style="color: var(--color-primary);">Channels</a></li>
                 <li><a href="features.html">How It Works</a></li>
                 <li><a href="tools.html">Tools</a></li>
                 <li><a href="use-cases.html">Use Cases</a></li>
@@ -84,12 +93,12 @@ COHORT            </a>
                 <div style="font-size: 0.85rem;">REST endpoints, CLI, MCP</div>
             </a>
             <a href="#storage" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
-                <div style="font-weight: 600; color: #bc8cff; margin-bottom: 0.25rem;">Storage Backends</div>
+                <div style="font-weight: 600; color: #D97757; margin-bottom: 0.25rem;">Storage Backends</div>
                 <div style="font-size: 0.85rem;">JSON, JSONL, or bring your own</div>
             </a>
             <a href="#cli" style="background: #2D2D2D; border-radius: 8px; padding: 1.25rem; text-decoration: none; color: #C8C8C8;">
                 <div style="font-weight: 600; color: #f85149; margin-bottom: 0.25rem;">CLI Reference</div>
-                <div style="font-size: 0.85rem;">57 commands across 25 categories</div>
+                <div style="font-size: 0.85rem;">185 commands across 61 categories</div>
             </a>
         </div>
     </div>
@@ -106,20 +115,14 @@ COHORT            </a>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
                 <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Install options</div>
-<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Zero-dependency core</span>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: #888;"># Recommended — full server + MCP tools</span>
+pip install "cohort[server]"
+
+<span style="color: #888;"># Library only (httpx + fastmcp, no server)</span>
 pip install cohort
 
-<span style="color: #888;"># REST API + Socket.IO dashboard</span>
-pip install cohort[server]
-
-<span style="color: #888;"># MCP tools (optional)</span>
-pip install cohort[mcp]
-
-<span style="color: #888;"># Agent-as-a-service HTTP API</span>
-pip install cohort[agent-api]
-
-<span style="color: #888;"># Everything</span>
-pip install cohort[all]</pre>
+<span style="color: #888;"># Everything including dev tools</span>
+pip install "cohort[all]"</pre>
             </div>
         </div>
 
@@ -155,7 +158,7 @@ print(f<span style="color: #3fb950;">"Next: {rec['recommended_speaker']} - {rec[
 <span style="color: #888;"># 5. Record a turn (agent spoke)</span>
 orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</span>, <span style="color: #3fb950;">"msg-001"</span>)</pre>
             </div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">No HTTP server required. The orchestrator works directly with file-backed storage. Add cohort[server] when you want the dashboard.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem; font-style: italic;">No HTTP server required. The orchestrator works directly with file-backed storage. Add cohort[mcp] when you want MCP integration.</p>
         </div>
 
         <!-- Agent Development -->
@@ -216,7 +219,7 @@ orch.record_turn(session.session_id, <span style="color: #3fb950;">"architect"</
                     <div style="font-size: 0.7rem; color: #C8C8C8;">Phase</div>
                 </div>
                 <div style="background: #2D2D2D; border-radius: 8px; padding: 0.75rem; text-align: center;">
-                    <div style="font-size: 1.25rem; font-weight: 700; color: #bc8cff;">10%</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: #D97757;">10%</div>
                     <div style="font-size: 0.7rem; color: #C8C8C8;">Data Ownership</div>
                 </div>
             </div>
@@ -319,7 +322,7 @@ condense_channel   <span style="color: #888;"># Archive + summarize old messages
         <div id="cli" style="margin-bottom: 3rem; scroll-margin-top: 5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">[CLI]</div>
             <h2 class="responsive-h2">CLI Reference</h2>
-            <p class="responsive-p-body" style="margin-top: 0.5rem;">57 commands across 25 categories. Most work without a server (file-backed storage). Every command supports <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">--json</code> for scripting.</p>
+            <p class="responsive-p-body" style="margin-top: 0.5rem;">185 commands across 61 categories. Most work without a server (file-backed storage). Every command supports <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">--json</code> for scripting.</p>
 
             <div style="margin-top: 1.5rem; background: #2D2D2D; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
                 <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Agents &amp; Routing</div>
@@ -378,7 +381,7 @@ python -m cohort web fetch https://example.com
 python -m cohort youtube transcript dQw4w9WgXcQ</pre>
             </div>
 
-            <p style="font-size: 0.85rem; color: #888; margin-top: 0.75rem;">See <a href="cli.html" style="color: #D97757;">full CLI reference</a> for all 57 commands with examples and flag documentation.</p>
+            <p style="font-size: 0.85rem; color: #888; margin-top: 0.75rem;">See <a href="cli.html" style="color: #D97757;">full CLI reference</a> for all 185 commands with examples and flag documentation.</p>
         </div>
 
     </div>
@@ -389,9 +392,9 @@ python -m cohort youtube transcript dQw4w9WgXcQ</pre>
     <div class="container text-center">
         <h2 class="responsive-h2" style="color: #fff;">Ready to Build?</h2>
         <p class="responsive-p-large" style="color: rgba(255,255,255,0.8);">Install Cohort and have your first multi-agent discussion running in under five minutes.</p>
-        <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;">$ pip install cohort</div>
+        <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem 1.5rem; display: inline-block; margin: 1rem 0; font-family: monospace; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px;"><span style="user-select: none;">$ </span>pip install "cohort[server]"</div>
         <div class="button-group" style="margin-top: 1rem;">
-            <a href="https://github.com/cohort-dev/cohort" class="btn-primary">GitHub</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary">GitHub</a>
             <a href="pricing.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">View Pricing</a>
         </div>
     </div>
@@ -409,20 +412,20 @@ python -m cohort youtube transcript dQw4w9WgXcQ</pre>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
                     <ul style="list-style:none; padding:0; margin:0;">
-                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/cohort-dev/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
                         <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
                     <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
-                    <a href="https://github.com/cohort-dev/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
                     <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
                     <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/cohort-dev/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">MIT License</a>.</p>
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
                 <div class="cohort-badge">[*] Built with Cohort</div>
             </div>
         </div>
