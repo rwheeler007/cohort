@@ -24,10 +24,9 @@ from __future__ import annotations
 import asyncio
 import ipaddress
 import logging
-import re
 import socket
 from dataclasses import dataclass, field
-from typing import Any, Optional, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)

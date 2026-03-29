@@ -10,9 +10,7 @@ from cohort.cli._base import (
     channel_not_found,
     format_output,
     resolve_data_dir,
-    truncation_notice,
 )
-
 
 # ---------------------------------------------------------------------------
 # Formatters

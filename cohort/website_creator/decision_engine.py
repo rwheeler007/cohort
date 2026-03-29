@@ -13,24 +13,23 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 import time
-import yaml
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
 import httpx
+import yaml
 
 from .block_populator import (
-    TasteProfile,
+    BlockPopulator,
+    BlockSiteSpec,
     BusinessInfo,
     CompetitorProfile,
     PopulatorInput,
-    BlockSiteSpec,
-    BlockPopulator,
+    TasteProfile,
 )
 
 # Backward-compatible aliases used throughout this module
@@ -968,11 +967,10 @@ class DecisionEngine:
             all_blocks.extend(assembly.get("optional", []))
         all_blocks = list(set(all_blocks))
 
-        intel = derive_competitive_intel(competitors, all_blocks)
+        derive_competitive_intel(competitors, all_blocks)
 
         # ── Phase 3: Block Selection ──
         t0 = time.monotonic()
-        selected_blocks: dict[str, str] | None = None
 
         if not self.config.dry_run and competitors:
             # Use tier 1 for optional block inclusion decisions

@@ -21,7 +21,6 @@ import pytest_asyncio
 
 from cohort.mcp.lite_backend import LiteBackend
 
-
 # =====================================================================
 # Fixtures
 # =====================================================================
@@ -232,7 +231,6 @@ class TestLiteBackendE2E:
         assert any(t["task_id"] == task_id for t in tasks)
 
         # Complete
-        from cohort.task_store import TaskStore
         backend._task_store.complete_task(task_id, output={"content": "Done"})
 
         # Outputs for review
@@ -387,8 +385,9 @@ class TestAgentResponseFlow:
         to agent_router → Ollama generates response → response posted
         to channel → file watcher would pick up the change.
         """
-        from cohort.mcp.lite_backend import LiteBackend
         import asyncio
+
+        from cohort.mcp.lite_backend import LiteBackend
 
         backend = LiteBackend(
             data_dir=agent_data_dir,
@@ -441,8 +440,9 @@ class TestAgentResponseFlow:
     @requires_ollama
     def test_session_with_agent_response(self, agent_data_dir: Path):
         """Start a session → agents get routed → at least one responds."""
-        from cohort.mcp.lite_backend import LiteBackend
         import asyncio
+
+        from cohort.mcp.lite_backend import LiteBackend
 
         backend = LiteBackend(
             data_dir=agent_data_dir,
@@ -478,8 +478,9 @@ class TestAgentResponseFlow:
         This is critical: the VS Code extension's file watcher depends on
         the mtime changing to push new messages to the webview.
         """
-        from cohort.mcp.lite_backend import LiteBackend
         import asyncio
+
+        from cohort.mcp.lite_backend import LiteBackend
 
         backend = LiteBackend(
             data_dir=agent_data_dir,
@@ -880,7 +881,7 @@ class TestInvokeAgentSubprocess:
             ]
             if agent_msgs:
                 # Check metadata on the persisted message
-                meta = agent_msgs[0].get("metadata", {})
+                agent_msgs[0].get("metadata", {})
                 # Note: metadata may be empty if route_mentions posts without it
                 # (the metadata comes from cohort_setup.py invoke-agent, not route_mentions)
                 # This test verifies the message itself was persisted

@@ -7,7 +7,6 @@ import sys
 
 from cohort.cli._base import format_output, resolve_data_dir, truncation_notice
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -65,7 +64,7 @@ def _format_task_detail(task: dict) -> str:
 
     output = task.get("output")
     if output:
-        lines.append(f"\n  Output:")
+        lines.append("\n  Output:")
         out_str = str(output)
         if len(out_str) > 500:
             out_str = out_str[:500] + "..."

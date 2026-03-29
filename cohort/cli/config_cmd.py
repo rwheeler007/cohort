@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 from cohort.cli._base import format_output
-
 
 # ---------------------------------------------------------------------------
 # Formatters
@@ -82,8 +80,10 @@ def _format_config(config: dict) -> str:
 def _cmd_config_show(args: argparse.Namespace) -> int:
     """Show merged configuration from all sources."""
     from cohort.local.config import (
-        get_tier_settings, get_budget_limits,
-        TASK_TEMPERATURES, RESPONSE_MODE_PARAMS,
+        RESPONSE_MODE_PARAMS,
+        TASK_TEMPERATURES,
+        get_budget_limits,
+        get_tier_settings,
     )
 
     config: dict = {}

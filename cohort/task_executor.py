@@ -202,8 +202,8 @@ class TaskExecutor:
 
         if not response_content:
             response_content = (
-                f"I'm ready to help with this task.  "
-                f"Could you provide a bit more detail about what you need?"
+                "I'm ready to help with this task.  "
+                "Could you provide a bit more detail about what you need?"
             )
 
         self._post_and_broadcast(channel_id, agent_id, response_content)
@@ -255,7 +255,7 @@ class TaskExecutor:
         6. Mark complete with output
         """
         task_id = task["task_id"]
-        agent_id = task["agent_id"]
+        task["agent_id"]
         channel_id = task.get("channel_id", f"task-{task_id}")
 
         # Triad validation gate -- warn on missing elements
@@ -523,7 +523,7 @@ class TaskExecutor:
         creating a task channel or running the conversational intake.
         """
         task_id = task["task_id"]
-        agent_id = task["agent_id"]
+        task["agent_id"]
 
         # Transition to in_progress
         if hasattr(self, '_task_store') and self._task_store:
@@ -719,7 +719,7 @@ class TaskExecutor:
 
             available = {a.agent_id: a for a in store.list_agents()}
 
-            from cohort.capability_router import find_required_consultations, _extract_keywords
+            from cohort.capability_router import _extract_keywords, find_required_consultations
             task_kw = _extract_keywords(task.get("description", ""))
             return find_required_consultations(agent, task_kw, available)
         except Exception as exc:

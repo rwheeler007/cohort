@@ -926,9 +926,9 @@ JSON:"""
 
             try:
                 # Use Claude CLI as judge for accurate scoring
+                import os
                 import subprocess
                 import sys
-                import os
 
                 claude_cmd = os.environ.get("COHORT_CLAUDE_CMD", "claude")
                 cli_cmd = [claude_cmd, "-p", "-"]
@@ -1070,7 +1070,7 @@ JSON:"""
         except subprocess.TimeoutExpired:
             logger.error("[X] Claude CLI timeout in benchmark")
             return None
-        except Exception as exc:
+        except Exception:
             logger.exception("[X] Claude CLI failed in benchmark")
             return None
 

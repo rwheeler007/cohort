@@ -14,13 +14,11 @@ compatibility but this is the canonical location.
 
 from __future__ import annotations
 
-import math
-import yaml
 from pathlib import Path
 from typing import Any, Literal
 
+import yaml
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Taxonomy loader
@@ -592,7 +590,7 @@ class BlockPopulator:
             ).get("booking_widget", f"Schedule Service with {biz.name}")
             data["description"] = content.get(
                 "booking_description",
-                f"Call us or book online for fast, reliable service.",
+                "Call us or book online for fast, reliable service.",
             )
             data["phone"] = biz.phone
             data["button_text"] = content.get("booking_button_text", "Book Online")

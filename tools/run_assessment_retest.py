@@ -6,12 +6,12 @@ Scheduled via Windows Task Scheduler for 2:00 AM.
 Before scores: linkedin 94%, hardware_agent 90%, javascript_developer 91%,
                web_developer 93%, code_archaeologist 94%
 """
+import json
 import subprocess
 import sys
 import time
-import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 COHORT_ROOT = Path(__file__).resolve().parent.parent
 LOG_FILE = COHORT_ROOT / "data" / "assessment_results" / f"retest_{datetime.now().strftime('%Y-%m-%d')}.log"
@@ -59,7 +59,7 @@ def main():
                 log(f"  {l}")
 
         except subprocess.TimeoutExpired:
-            log(f"  [X] TIMEOUT after 7200s")
+            log("  [X] TIMEOUT after 7200s")
             continue
         except Exception as e:
             log(f"  [X] ERROR: {e}")

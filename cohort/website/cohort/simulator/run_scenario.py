@@ -261,7 +261,7 @@ class ConversationRunner:
                 "topic": "API pagination redesign"
             }
         )
-        data = resp.json()
+        resp.json()
         print(f"    [OK] Channel #{self.channel_name} ready")
 
     async def _start_session(self):
@@ -286,7 +286,7 @@ class ConversationRunner:
 
         # Snapshot message count before posting
         pre_messages = await self._get_all_messages()
-        pre_count = len(pre_messages)
+        len(pre_messages)
         self.known_message_ids = {m["id"] for m in pre_messages}
 
         # Post the seed

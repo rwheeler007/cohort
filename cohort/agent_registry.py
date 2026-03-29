@@ -10,8 +10,6 @@ The only static entries are for non-file-backed virtual senders
 
 from __future__ import annotations
 
-from typing import Any
-
 from cohort.agent_store import AgentStore
 
 # =====================================================================

@@ -5,7 +5,6 @@ Manages the lifecycle of email drafts: create, approve/reject, send via Resend A
 Each draft is stored as a JSON file in a status-based subdirectory structure.
 """
 
-import json
 import logging
 import os
 import uuid

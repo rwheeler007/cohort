@@ -1,24 +1,20 @@
 """Tests for cohort.approval_store."""
 
 import json
-import time
 import threading
-from pathlib import Path
 
 import pytest
 
 from cohort.approval_store import (
+    MAX_PENDING_PER_REQUESTER,
+    MAX_REQUESTS_PER_REQUESTER_PER_MINUTE,
     ApprovalRequest,
     ApprovalStore,
-    MAX_PENDING_PER_REQUESTER,
-    MAX_PENDING_TOTAL,
-    MAX_REQUESTS_PER_REQUESTER_PER_MINUTE,
-    validate_approval_input,
     _check_json_depth,
     _clamp_timeout,
     _sanitize_description,
+    validate_approval_input,
 )
-
 
 # =====================================================================
 # Fixtures
@@ -294,7 +290,6 @@ class TestRateLimiting:
         store2._request_timestamps = {}
 
         # Use different "minutes" by manipulating timestamps to avoid burst
-        import time as _time
         for i in range(MAX_PENDING_PER_REQUESTER):
             store2.create(
                 item_id=f"cap{i}", item_type="task", requester="flood_agent",

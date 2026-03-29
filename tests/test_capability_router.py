@@ -4,7 +4,6 @@ import pytest
 
 from cohort.agent import AgentConfig, AgentEducation
 from cohort.capability_router import (
-    SYNONYM_MAP,
     _extract_keywords,
     build_partnership_graph,
     collect_acceptance_criteria,
@@ -15,7 +14,6 @@ from cohort.capability_router import (
     score_agent_for_topic,
     trim_agent_memory,
 )
-
 
 # =====================================================================
 # Fixtures

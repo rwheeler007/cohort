@@ -5,8 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from cohort.cli._base import format_output, resolve_data_dir, truncation_notice
-
+from cohort.cli._base import format_output, resolve_data_dir
 
 # ---------------------------------------------------------------------------
 # Formatters

@@ -219,7 +219,7 @@ def extract_answer(response: str, valid_letters: str = "ABCDEFGHIJ") -> str | No
 def format_question(q: dict) -> str:
     """Format a question for the model."""
     q_type = q.get("type", "standard")
-    difficulty = q.get("difficulty", "unknown")
+    q.get("difficulty", "unknown")
 
     lines = []
     if q_type == "multi_step":
@@ -440,12 +440,12 @@ def assess_agent(agent_id: str, questions: list, dry_run: bool = False,
 
 def print_agent_breakdown(results: dict):
     """Print detailed breakdown for one agent."""
-    agent_id = results["agent_id"]
+    results["agent_id"]
 
     # Difficulty breakdown
     by_diff = results.get("by_difficulty", {})
     if by_diff:
-        print(f"\n  Difficulty breakdown:")
+        print("\n  Difficulty breakdown:")
         for diff in ["intermediate", "advanced", "expert"]:
             if diff in by_diff:
                 d = by_diff[diff]
@@ -455,7 +455,7 @@ def print_agent_breakdown(results: dict):
     # Type breakdown
     by_type = results.get("by_type", {})
     if by_type:
-        print(f"  Type breakdown:")
+        print("  Type breakdown:")
         for qtype in ["standard", "multi_step"]:
             if qtype in by_type:
                 d = by_type[qtype]
@@ -466,7 +466,7 @@ def print_agent_breakdown(results: dict):
     # Category breakdown
     by_cat = results.get("by_category", {})
     if by_cat:
-        print(f"  Category breakdown:")
+        print("  Category breakdown:")
         for cat, d in sorted(by_cat.items(), key=lambda x: x[1]["correct"] / max(x[1]["total"], 1)):
             pct = round(d["correct"] / d["total"] * 100) if d["total"] else 0
             bar = "#" * (pct // 5) + "." * (20 - pct // 5)

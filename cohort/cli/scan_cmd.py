@@ -17,12 +17,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
-from typing import Any
 
 from cohort.cli._base import format_output
-
 
 # ---------------------------------------------------------------------------
 # Heuristic signals for exportable modules

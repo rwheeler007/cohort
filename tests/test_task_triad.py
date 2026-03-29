@@ -11,19 +11,17 @@ Covers:
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
-from cohort.task_store import TaskStore, TaskSchedule
 from cohort.briefing import (
-    parse_confirmation,
-    extract_triad_from_brief,
     _infer_outcome_type,
+    extract_triad_from_brief,
+    parse_confirmation,
 )
-
+from cohort.task_store import TaskSchedule, TaskStore
 
 # =====================================================================
 # Fixtures

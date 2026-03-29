@@ -10,7 +10,6 @@ import pytest
 from cohort.agent import AgentConfig, AgentMemory, LearnedFact
 from cohort.agent_store import AgentStore
 
-
 # =====================================================================
 # Fixtures
 # =====================================================================

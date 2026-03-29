@@ -58,15 +58,15 @@ def setup_calendar(project_id: str):
     print(f"[*] Tokens file: {tokens_path}")
 
     if not credentials_path.exists():
-        print(f"\n[!] Credentials file not found!")
+        print("\n[!] Credentials file not found!")
         print(f"[>>] To set up Google Calendar for {project_id}:")
-        print(f"    1. Go to https://console.cloud.google.com/")
-        print(f"    2. Create or select a project")
-        print(f"    3. Enable Google Calendar API")
-        print(f"    4. Create OAuth 2.0 credentials (Desktop app)")
-        print(f"    5. Download credentials JSON")
+        print("    1. Go to https://console.cloud.google.com/")
+        print("    2. Create or select a project")
+        print("    3. Enable Google Calendar API")
+        print("    4. Create OAuth 2.0 credentials (Desktop app)")
+        print("    5. Download credentials JSON")
         print(f"    6. Save to: {credentials_path}")
-        print(f"\n[>>] Then run this script again.")
+        print("\n[>>] Then run this script again.")
         return 1
 
     # Import Google Calendar setup
@@ -76,8 +76,8 @@ def setup_calendar(project_id: str):
         print("[X] setup_google_auth.py not found")
         return 1
 
-    print(f"\n[>>] Running OAuth flow...")
-    print(f"[*] A browser window will open for authorization")
+    print("\n[>>] Running OAuth flow...")
+    print("[*] A browser window will open for authorization")
 
     success = setup_google_calendar(
         credentials_path=str(credentials_path),
@@ -164,7 +164,7 @@ def list_projects():
             print(f"    Credentials: {'[OK]' if has_creds else '[MISSING]'}")
             print(f"    Token: {'[OK]' if has_token else '[MISSING]'}")
         else:
-            print(f"  Calendar: [NOT CONFIGURED]")
+            print("  Calendar: [NOT CONFIGURED]")
 
         # Social status
         if project.social:
@@ -180,7 +180,7 @@ def list_projects():
                 else:
                     print(f"    {platform}: [NOT CONNECTED]")
         else:
-            print(f"  Social Media: [NOT CONFIGURED]")
+            print("  Social Media: [NOT CONFIGURED]")
 
     print("\n" + "=" * 70)
     print(f"\n[*] Total projects: {len(projects)}")

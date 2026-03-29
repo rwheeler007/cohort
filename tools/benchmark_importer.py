@@ -24,15 +24,14 @@ Options:
     --output-dir     Override output directory
 """
 
+import hashlib
 import json
 import re
-import sys
 import time
-import hashlib
 from pathlib import Path
 from typing import Optional
-from urllib.request import urlopen, Request
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 COHORT_ROOT = Path(__file__).parent.parent
 OUTPUT_DIR = COHORT_ROOT / "data" / "assessments_benchmark"
@@ -144,13 +143,13 @@ def _fetch_url(url: str, cache_key: str = "", cache_ttl: int = 86400 * 7) -> byt
                 continue
             print(f"  [X] Failed: {e}")
             if cache_file.exists():
-                print(f"  [!] Using stale cache")
+                print("  [!] Using stale cache")
                 return cache_file.read_bytes()
             return b""
         except URLError as e:
             print(f"  [X] Failed: {e}")
             if cache_file.exists():
-                print(f"  [!] Using stale cache")
+                print("  [!] Using stale cache")
                 return cache_file.read_bytes()
             return b""
 
@@ -387,7 +386,7 @@ def fetch_cybermetric(size: int = 10000) -> list[dict]:
     elif isinstance(data, list):
         questions = data
     else:
-        print(f"  [X] Unexpected CyberMetric format")
+        print("  [X] Unexpected CyberMetric format")
         return []
 
     print(f"  [OK] CyberMetric-{size}: {len(questions)} questions")

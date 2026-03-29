@@ -6,17 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from cohort.inventory_schema import InventoryEntry
 from cohort.inventory_loader import (
-    load_registry,
-    load_exports,
-    load_yaml_inventories,
-    load_merged_inventory,
+    _basic_yaml_list_loader,
     _extract_keywords,
     _slugify,
-    _basic_yaml_list_loader,
+    load_exports,
+    load_merged_inventory,
+    load_registry,
+    load_yaml_inventories,
 )
-
+from cohort.inventory_schema import InventoryEntry
 
 # ── Fixtures ─────────────────────────────────────────────────────────────
 
@@ -205,7 +204,7 @@ class TestMergedInventory:
             boss_root=yaml_inventory_dir,
         )
         # Count entries with id "boss" — should be 1 (registry wins over YAML)
-        boss_entries = [e for e in entries if e.id.lower() in ("boss",)]
+        [e for e in entries if e.id.lower() in ("boss",)]
         # registry has type=project id=BOSS, YAML has type=project id=boss
         # dedup key is (type, id) — these should collapse
         project_boss = [e for e in entries if e.type == "project" and e.id.lower() == "boss"]

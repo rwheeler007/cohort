@@ -25,12 +25,9 @@ Usage::
 from __future__ import annotations
 
 import json
-import os
-import platform
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
-
 
 MANIFEST_FILENAME = ".cohort"
 WORKING_MEMORY_DIR = ".cohort-memory"

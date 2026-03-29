@@ -13,12 +13,11 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 from typing import Any
 
 from cohort.cli._base import agent_not_found, format_output, require_server, resolve_agents_dir
-
 
 # ---------------------------------------------------------------------------
 # HTTP helper (thin, synchronous -- CLI doesn't need asyncio)
@@ -194,9 +193,9 @@ def _cmd_meet_stakeholders(args: argparse.Namespace) -> int:
     """Identify stakeholders for a topic."""
     from cohort.agent_store import AgentStore
     from cohort.meeting import (
-        identify_stakeholders_for_topic,
-        extract_keywords,
         calculate_expertise_relevance,
+        extract_keywords,
+        identify_stakeholders_for_topic,
     )
 
     agents_dir = resolve_agents_dir()

@@ -54,12 +54,12 @@ import argparse
 import logging
 import sys
 import time
-import yaml
 from pathlib import Path
 
-from .decision_engine import DecisionEngine, EngineConfig
-from .block_renderer import BlockRenderer
+import yaml
 
+from .block_renderer import BlockRenderer
+from .decision_engine import DecisionEngine, EngineConfig
 
 # ---------------------------------------------------------------------------
 # Worksheet questions (MVP for small business websites)
@@ -263,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[*] Page limit: {args.pages}")
     print()
 
-    engine = DecisionEngine(config)
+    DecisionEngine(config)
 
     # Step 1: Classify
     t0 = _progress(1, 4, "Classifying business category...")
@@ -274,7 +274,8 @@ def main(argv: list[str] | None = None) -> int:
     # Step 2: Taste profile (site analysis + merge)
     t0 = _progress(2, 4, "Generating taste profile...")
     from .decision_engine import (
-        analyze_site_html, merge_taste_profiles,
+        analyze_site_html,
+        merge_taste_profiles,
     )
     from .roundtable_bridge import RoundtableBridge
     bridge = RoundtableBridge()
@@ -359,7 +360,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"    -> {len(spec.pages)} pages, {total_blocks} blocks ({_elapsed(t0)})")
 
     # ── Summary ──
-    total_ms = int((time.monotonic() - t_total) * 1000)
+    int((time.monotonic() - t_total) * 1000)
     print(f"\n[OK] Pipeline complete in {_elapsed(t_total)}")
     print(f"  Pages: {len(spec.pages)}")
     for page in spec.pages:

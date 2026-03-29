@@ -182,7 +182,7 @@ def _step_3_conversation(chat):
     ]
 
     for sender, content, annotation in messages_data:
-        msg = chat.post_message(
+        chat.post_message(
             channel_id="tutorial",
             sender=sender,
             content=content,

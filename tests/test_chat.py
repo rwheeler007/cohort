@@ -7,7 +7,6 @@ import pytest
 from cohort.chat import Channel, ChatManager, Message, MessageType, parse_mentions
 from cohort.registry import JsonFileStorage
 
-
 # =====================================================================
 # Fixtures
 # =====================================================================

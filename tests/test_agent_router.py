@@ -11,7 +11,6 @@ from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager, Message
 from cohort.registry import JsonFileStorage
 
-
 # =====================================================================
 # Fixtures
 # =====================================================================

@@ -18,7 +18,6 @@ import pytest_asyncio
 from cohort.chat import ChatManager
 from cohort.registry import JsonFileStorage
 
-
 # =====================================================================
 # pytest configuration
 # =====================================================================

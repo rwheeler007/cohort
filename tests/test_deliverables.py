@@ -1,17 +1,15 @@
 """Tests for cohort.deliverables."""
 
-from pathlib import Path
 
 import pytest
 
 from cohort.deliverables import (
+    MAX_DELIVERABLES_PER_ITEM,
+    MAX_DESCRIPTION_LENGTH,
     Deliverable,
     DeliverableTracker,
     validate_deliverables,
-    MAX_DELIVERABLES_PER_ITEM,
-    MAX_DESCRIPTION_LENGTH,
 )
-
 
 # =====================================================================
 # Fixtures

@@ -8,7 +8,6 @@ from pathlib import Path
 
 from cohort.cli._base import format_output, resolve_data_dir
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

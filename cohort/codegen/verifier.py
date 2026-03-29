@@ -19,7 +19,6 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
-from typing import Any
 
 from cohort.codegen.models import (
     CodegenTask,

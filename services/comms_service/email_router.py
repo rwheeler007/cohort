@@ -5,10 +5,10 @@ Falls back to Claude API when local models aren't confident enough.
 """
 
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+
 import yaml
 
 # LLM Router (local-first routing)
@@ -22,12 +22,12 @@ except ImportError:
     _LLM_ROUTER_AVAILABLE = False
 
 from models import (
-    ReceivedEmail,
     EmailClassification,
-    EmailRoutingDecision,
     EmailIntent,
+    EmailRoutingDecision,
     Priority,
-    ReceivedEmailStatus
+    ReceivedEmail,
+    ReceivedEmailStatus,
 )
 
 

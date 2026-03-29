@@ -220,10 +220,10 @@ def get_transcript(
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
         from youtube_transcript_api._errors import (
-            TranscriptsDisabled,
-            NoTranscriptFound,
-            VideoUnavailable,
             NoTranscriptAvailable,
+            NoTranscriptFound,
+            TranscriptsDisabled,
+            VideoUnavailable,
         )
     except ImportError:
         return {"error": "youtube-transcript-api not installed. Run: pip install youtube-transcript-api"}

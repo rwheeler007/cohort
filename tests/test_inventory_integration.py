@@ -4,22 +4,18 @@ Tests the keyword gate, query function (with mocked LLM), and the
 prompt injection format for both chat and code queue paths.
 """
 
-import json
-import textwrap
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from cohort.inventory_schema import InventoryEntry
 from cohort.inventory_query import (
-    should_query_inventory,
+    IMPL_SIGNALS,
+    _resolve_inventory,
     query_inventory,
     query_inventory_block,
-    _resolve_inventory,
-    IMPL_SIGNALS,
+    should_query_inventory,
 )
-
+from cohort.inventory_schema import InventoryEntry
 
 # ── Keyword gate ─────────────────────────────────────────────────────────
 

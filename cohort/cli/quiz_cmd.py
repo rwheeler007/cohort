@@ -7,8 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from cohort.cli._base import format_output
-
 
 def _tool_path() -> Path:
     return Path(__file__).resolve().parent.parent.parent / "tools" / "linkedin_quiz_importer.py"

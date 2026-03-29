@@ -6,7 +6,6 @@ permission system from cohort/mcp/browser_backend.py.
 """
 
 import fnmatch
-import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path

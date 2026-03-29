@@ -30,19 +30,23 @@ import subprocess
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse
+from starlette.responses import HTMLResponse, JSONResponse, Response
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from cohort.api import DEFAULT_MODEL, AgentStore, ChatManager, create_storage
 from cohort.secret_store import decrypt_settings_secrets, encrypt_settings_secrets
 
-from cohort.api import AgentStore, ChatManager, DEFAULT_MODEL, JsonFileStorage, create_storage
+if TYPE_CHECKING:
+    from cohort.approval_store import ApprovalStore
+    from cohort.deliverables import DeliverableTracker
+    from cohort.review_pipeline import ReviewPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -789,8 +793,8 @@ def _make_channel_reviewer_fn(task_id: str) -> Callable:
     def reviewer_fn(stage, system_prompt, user_prompt):
         try:
             from cohort.channel_bridge import (
-                enqueue_channel_request,
                 await_channel_response,
+                enqueue_channel_request,
             )
 
             # Combine system + user prompt for the channel session
@@ -860,7 +864,8 @@ def _ensure_review_channel_session() -> bool:
     seconds for it to become healthy.  Returns True if session is ready.
     """
     import time as _time
-    from cohort.channel_bridge import request_session, channel_mode_active
+
+    from cohort.channel_bridge import channel_mode_active, request_session
 
     if channel_mode_active(REVIEW_CHANNEL_ID):
         return True
@@ -1625,6 +1630,7 @@ async def channel_invoke(request: Request) -> JSONResponse:
 
     try:
         import threading
+
         from cohort.agent_router import enqueue_agent_channel_request
         threading.Thread(
             target=enqueue_agent_channel_request,
@@ -1718,8 +1724,9 @@ async def create_schedule_endpoint(request: Request) -> JSONResponse:
         )
 
     try:
-        from cohort.api import compute_next_run
         from datetime import timezone
+
+        from cohort.api import compute_next_run
         next_run = compute_next_run(
             schedule_type, schedule_expr, datetime.now(timezone.utc),
         )
@@ -2272,8 +2279,7 @@ async def add_agent_fact(request: Request) -> JSONResponse:
         return JSONResponse({"error": "Missing required field: fact"}, status_code=400)
 
     try:
-        from cohort.api import LearnedFact
-        from cohort.api import MemoryManager
+        from cohort.api import LearnedFact, MemoryManager
 
         fact = LearnedFact(
             fact=fact_text,
@@ -2743,9 +2749,9 @@ async def get_settings(request: Request) -> JSONResponse:
     # Check if Smartest mode is available (cloud API, dev-mode CLI, or CLI handoff)
     smartest_available = False
     try:
-        from cohort.local.cloud import check_cloud_available
-        from cohort.agent_router import check_claude_cli_available, _dev_mode, _channel_mode_enabled
+        from cohort.agent_router import _channel_mode_enabled, _dev_mode, check_claude_cli_available
         from cohort.channel_bridge import channel_mode_active
+        from cohort.local.cloud import check_cloud_available
         smartest_available = (
             check_cloud_available(settings)
             or channel_mode_active()
@@ -3135,8 +3141,6 @@ async def test_service_key(request: Request) -> JSONResponse:
     Returns: { "success": true/false, "message": "...", "latency_ms": 123 }
     """
     import time
-    import urllib.request
-    import urllib.error
 
     try:
         body: dict[str, Any] = await request.json()
@@ -3189,8 +3193,8 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
 
     Returns {"success": bool, "message": str}.
     """
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     def _http_test(url: str, headers: dict | None = None, method: str = "GET") -> dict:
         """Synchronous HTTP request helper for API tests."""
@@ -3226,7 +3230,7 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
             "content-type": "application/json",
         })
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15):
                 return {"success": True, "message": "API key valid -- connected to Anthropic"}
         except urllib.error.HTTPError as e:
             if e.code == 401:
@@ -3448,6 +3452,7 @@ def _save_tool_permissions(data: dict[str, Any]) -> None:
 async def get_tool_permissions(request: Request) -> JSONResponse:
     """GET /api/tool-permissions -- profiles, defaults, and per-agent resolved view."""
     import re
+
     from cohort.api import resolve_permissions
 
     central = _load_tool_permissions()
@@ -3618,8 +3623,7 @@ async def setup_status(request: Request) -> JSONResponse:
 
 async def setup_detect_hardware(request: Request) -> JSONResponse:
     """POST /api/setup/detect -- detect GPU and VRAM."""
-    from cohort.api import MODEL_DESCRIPTIONS, get_model_for_vram
-    from cohort.api import detect_hardware
+    from cohort.api import MODEL_DESCRIPTIONS, detect_hardware, get_model_for_vram
 
     hw = detect_hardware()
     model = get_model_for_vram(hw.vram_mb)
@@ -3877,7 +3881,6 @@ async def setup_save_config(request: Request) -> JSONResponse:
 
 async def setup_check_mcp(request: Request) -> JSONResponse:
     """POST /api/setup/check-mcp -- check MCP deps, Ollama, and model availability."""
-    import shutil
 
     # 1. Check MCP package imports (fastmcp, mcp)
     deps: dict[str, bool] = {}
@@ -4391,6 +4394,8 @@ async def llm_pull_model(request: Request) -> JSONResponse:
         return JSONResponse({"error": "model is required"}, status_code=400)
 
     # Reuse existing streaming pull mechanism
+    from cohort.socketio_events import sio
+
     asyncio.create_task(_stream_model_pull(model, sio))
     return JSONResponse({"status": "pulling", "model": model})
 
@@ -4491,6 +4496,7 @@ async def get_health_monitor_alerts(request: Request) -> JSONResponse:
 async def health_monitor_run_checks(request: Request) -> JSONResponse:
     """POST /api/health-monitor/run -- run health checks on all services now."""
     import asyncio
+
     from cohort.api import run_service_checks
     # Run blocking checks in a thread to not block the event loop
     loop = asyncio.get_event_loop()
@@ -4507,6 +4513,7 @@ async def health_monitor_services(request: Request) -> JSONResponse:
 async def health_monitor_stop(request: Request) -> JSONResponse:
     """POST /api/health-monitor/stop/{service_key} -- stop a service."""
     import asyncio
+
     from cohort.api import stop_service
     service_key = request.path_params["service_key"]
     loop = asyncio.get_event_loop()
@@ -4518,6 +4525,7 @@ async def health_monitor_stop(request: Request) -> JSONResponse:
 async def health_monitor_start(request: Request) -> JSONResponse:
     """POST /api/health-monitor/start/{service_key} -- start a service."""
     import asyncio
+
     from cohort.api import start_service
     service_key = request.path_params["service_key"]
     try:
@@ -4533,6 +4541,7 @@ async def health_monitor_start(request: Request) -> JSONResponse:
 async def health_monitor_restart(request: Request) -> JSONResponse:
     """POST /api/health-monitor/restart/{service_key} -- restart a service."""
     import asyncio
+
     from cohort.api import restart_service
     service_key = request.path_params["service_key"]
     try:
@@ -5522,8 +5531,9 @@ def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str)
     try:
         # ── PDF ──
         if ext == ".pdf" or content_type == "application/pdf":
-            import pdfplumber
             import io
+
+            import pdfplumber
             pages_text = []
             with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
                 result["pages"] = len(pdf.pages)
@@ -5536,8 +5546,9 @@ def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str)
 
         # ── Word (.docx) ──
         elif ext == ".docx" or content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            import docx
             import io
+
+            import docx
             doc = docx.Document(io.BytesIO(file_bytes))
             paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
             result["text"] = "\n\n".join(paragraphs)
@@ -5545,8 +5556,9 @@ def _extract_text_from_file(file_bytes: bytes, filename: str, content_type: str)
 
         # ── Excel (.xlsx) ──
         elif ext in (".xlsx", ".xls") or "spreadsheet" in content_type:
-            import openpyxl
             import io
+
+            import openpyxl
             wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
             sheets_text = []
             for ws in wb.worksheets:
@@ -5629,9 +5641,9 @@ def _is_video_type(filename: str, content_type: str) -> bool:
 
 def _extract_video_frames(file_bytes: bytes, max_frames: int = 4) -> list[bytes]:
     """Extract evenly-spaced keyframes from video as JPEG bytes."""
-    import cv2
     import tempfile
-    import numpy as np
+
+    import cv2
 
     frames = []
     tmp = None
@@ -5808,9 +5820,9 @@ async def doc_process_file(request: Request) -> JSONResponse:
 
         prompts = {
             "summary": f"These are frames from a video called '{filename}'. Describe what happens in the video. Provide a coherent narrative summary.",
-            "outline": f"These are frames from a video. Create a structured timeline of what happens at each stage.",
-            "extract_key_points": f"These are frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
-            "image": f"These are frames from a video. Describe what is visually depicted: subjects, actions, colors, style, setting, and composition.",
+            "outline": "These are frames from a video. Create a structured timeline of what happens at each stage.",
+            "extract_key_points": "These are frames from a video. Extract all key information: actions, text visible, objects, people, settings, and any data shown.",
+            "image": "These are frames from a video. Describe what is visually depicted: subjects, actions, colors, style, setting, and composition.",
         }
         prompt = prompts.get(mode, prompts["summary"])
 
@@ -6330,9 +6342,9 @@ async def website_create(request: Request) -> JSONResponse:
     except Exception:
         return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
 
-    from cohort.website_creator.pipeline import WebsiteCreator
-    from cohort.website_creator.site_brief import SiteBrief
     import tempfile
+
+    from cohort.website_creator.pipeline import WebsiteCreator
 
     output_base = Path(__file__).parent / "website_creator" / "output"
     creator = WebsiteCreator(output_base=output_base)
@@ -6435,7 +6447,8 @@ async def website_list_projects(request: Request) -> JSONResponse:
 
 def _serve_static_site_file(file_path: Path, is_graduated: bool) -> "Response":
     """Serve a static site file with appropriate headers."""
-    from starlette.responses import HTMLResponse, Response as StarletteResponse
+    from starlette.responses import HTMLResponse
+    from starlette.responses import Response as StarletteResponse
 
     content = file_path.read_text(encoding="utf-8")
 
@@ -6510,7 +6523,8 @@ async def website_serve_preview(request: Request) -> Response:
     except ValueError:
         return JSONResponse({"error": "Invalid path"}, status_code=403)
 
-    from starlette.responses import HTMLResponse, Response as StarletteResponse
+    from starlette.responses import HTMLResponse
+    from starlette.responses import Response as StarletteResponse
 
     content = file_path.read_text(encoding="utf-8")
     ext = file_path.suffix.lower()
@@ -6643,7 +6657,7 @@ async def create_project(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Directory already exists: {project_dir}"}, status_code=400)
 
     cohort_root = Path(__file__).resolve().parent.parent
-    settings = _load_settings()
+    _load_settings()
 
     # Profile -> tools mapping
     profile_tools = {
@@ -6949,8 +6963,8 @@ def create_app(data_dir: str = "data") -> Starlette:
     logger.info("[OK] ChatManager initialised (data_dir=%s)", resolved_dir)
 
     # -- Agent store (file-backed agent configs + memory) ---------------
-    from cohort.api import _LEGACY_REGISTRY, set_registry_store as set_store
-    from cohort.api import set_global_store
+    from cohort.api import _LEGACY_REGISTRY, set_global_store
+    from cohort.api import set_registry_store as set_store
 
     agents_dir_env = os.environ.get("COHORT_AGENTS_DIR")
     if agents_dir_env:
@@ -7008,7 +7022,8 @@ def create_app(data_dir: str = "data") -> Starlette:
     setup_socketio(data_layer, chat=_chat, agent_store=_agent_store)
 
     # -- Agent router (@mention -> agent response pipeline) -------------
-    from cohort.agent_router import setup_agent_router, apply_settings as _apply_router_settings
+    from cohort.agent_router import apply_settings as _apply_router_settings
+    from cohort.agent_router import setup_agent_router
 
     agents_root = saved_settings.get("agents_root") or os.environ.get(
         "COHORT_AGENTS_ROOT", "",
@@ -7050,7 +7065,7 @@ def create_app(data_dir: str = "data") -> Starlette:
 
     # -- Task Store (file-backed tasks + schedules) -----------------------
     from cohort.api import TaskStore
-    from cohort.socketio_events import setup_task_store, setup_scheduler
+    from cohort.socketio_events import setup_scheduler, setup_task_store
     global _task_store, _scheduler  # noqa: PLW0603
     _task_store = TaskStore(Path(resolved_dir))
     setup_task_store(_task_store)

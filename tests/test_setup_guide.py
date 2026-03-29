@@ -13,10 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from cohort.agent_store import AgentStore
-from cohort.personas import load_persona, _PERSONAS_DIR
+from cohort.personas import _PERSONAS_DIR, load_persona
 
 _AGENTS_DIR = Path(__file__).resolve().parent.parent / "agents"
 _SETUP_GUIDE_DIR = _AGENTS_DIR / "setup_guide"

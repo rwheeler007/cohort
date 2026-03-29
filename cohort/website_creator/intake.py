@@ -8,7 +8,6 @@ Phase 3: Output a populated SiteBrief.
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -46,8 +45,8 @@ async def scrape_site(url: str) -> SiteAnalysis:
     Uses httpx + basic HTML parsing. No Playwright needed for
     initial version -- we extract from raw HTML.
     """
+
     import httpx
-    from html.parser import HTMLParser
 
     analysis = SiteAnalysis(url=url)
 

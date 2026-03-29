@@ -46,7 +46,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -253,7 +253,6 @@ def _generate_agent_narrative(
         )
 
     # Build context about today's intel and user interests
-    intel_block = ""
     if articles:
         top = sorted(
             articles,
@@ -264,7 +263,7 @@ def _generate_agent_narrative(
             f"- {a.get('title', '?')} (score: {a.get('relevance_score', 0)})"
             for a in top
         ]
-        intel_block = (
+        (
             "\n--- TODAY'S INTEL HEADLINES ---\n"
             + "\n".join(headlines)
             + "\n--- END HEADLINES ---\n"
@@ -456,7 +455,7 @@ def _generate_agent_recommendation(
     group = agent.get("group", "")
     skills = agent.get("skills", [])
     status = agent.get("status", "idle")
-    completed = agent.get("tasks_completed", 0)
+    agent.get("tasks_completed", 0)
     current_task = agent.get("current_task")
 
     if status == "busy" and current_task:
@@ -1826,7 +1825,7 @@ def _build_html(report: BriefingReport, data_dir: Path | None = None) -> str:
     wq = report.get_section("Work Queue")
     ca = report.get_section("Channel Activity")
     ts = report.get_section("Team Status")
-    ds = report.get_section("Discussion Sessions")
+    report.get_section("Discussion Sessions")
     intel = report.get_section("Intel Feed")
 
     wq_data = wq.data if wq else {}
@@ -1970,9 +1969,9 @@ line-height:1.6;color:var(--text)">&ldquo;{narrative_esc}&rdquo;</div>
 </div>
 <div class="agent-footer"><span class="agent-stats">{stats_line}</span>\
 <div class="agent-footer-btns">\
-{'<button class="tasks-btn" data-agent-id="' + agent_id + '"'
- ' onclick="window.open(\'/?panel=tasks&amp;agent=' + agent_id + '\',\'_blank\')"'
- '>Current Tasks</button>' if active_count > 0 else ''}\
+{('<button class="tasks-btn" data-agent-id="' + agent_id + '"'
+ " onclick=" + '"' + "window.open(" + "'" + "/?panel=tasks&amp;agent=" + agent_id + "'" + "," + "'" + "_blank" + "'" + ")" + '"'
+ '>Current Tasks</button>') if active_count > 0 else ''}\
 <button class="assign-btn" data-agent-id="{agent_id}" \
 data-agent-name="{name}" \
 data-suggestion="{_esc(narrative)}">Assign Task</button></div></div>
@@ -2279,7 +2278,7 @@ data-suggestion="{_esc(narrative)}">Assign Task</button></div></div>
 rel="noopener">{_esc(_trunc(v.get('title', ''), 60))}</a> \
 {_score_badge(v.get('relevance_score', 0))}</div>
 <div class="article-meta">{_esc(v.get('source', ''))}</div>
-{f'<div class="article-thumb"><img src="https://img.youtube.com/vi/{yt_id}/mqdefault.jpg" alt="thumbnail" onerror="this.style.display=\'none\'"></div>' if yt_id else ''}
+{('<div class="article-thumb"><img src="https://img.youtube.com/vi/' + yt_id + '/mqdefault.jpg" alt="thumbnail" onerror="this.style.display=' + "'" + 'none' + "'" + '"></div>') if yt_id else ''}
 </div>""")
             parts.append("</div>")
 

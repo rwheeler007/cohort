@@ -18,7 +18,6 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 # Add cohort to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -26,21 +25,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from cohort.chat import Channel, ChatManager, Message
 from cohort.file_transport import JsonlFileStorage
 from cohort.meeting import (
+    RELEVANCE_DIMENSIONS,
     SCORING_WEIGHTS,
     STAKEHOLDER_THRESHOLDS,
-    RELEVANCE_DIMENSIONS,
     StakeholderStatus,
-    calculate_contribution_score,
     calculate_composite_relevance,
-    calculate_novelty,
+    calculate_contribution_score,
     calculate_expertise_relevance,
+    calculate_novelty,
     detect_current_phase,
     detect_topic_shift,
     extract_keywords,
     initialize_meeting_context,
     should_agent_speak,
 )
-
 
 # =====================================================================
 # Scenario definition -- the scripted conversation
@@ -211,7 +209,7 @@ class ScenarioExporter:
 
             for sender, text in phase_block["messages"]:
                 # Post the message to real Cohort chat
-                msg_id = self.chat.post_message(
+                self.chat.post_message(
                     channel_id=self.channel_id,
                     sender=sender,
                     content=text,
@@ -236,7 +234,7 @@ class ScenarioExporter:
                 detected_phase = detect_current_phase(recent)
 
                 # Check for topic shift
-                topic_shifted = detect_topic_shift(recent, self.meeting_context)
+                detect_topic_shift(recent, self.meeting_context)
 
                 # Message step
                 self.message_count += 1

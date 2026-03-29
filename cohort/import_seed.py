@@ -304,7 +304,7 @@ def _parse_memory_file(path: Path) -> list[dict[str, str]]:
         return []
 
     mem_type = frontmatter.get("type", "").lower()
-    name = frontmatter.get("name", path.stem)
+    frontmatter.get("name", path.stem)
     source = f"claude_code:{path.name}"
 
     # Only import user preferences and feedback — skip project/reference
@@ -934,7 +934,6 @@ def _distill_profile_from_import(
     If no local model is available, builds the profile from facts directly
     using heuristics instead of Qwen distillation.
     """
-    from cohort.learning import bootstrap_profile, load_profile
 
     # Collect preference-like facts
     pref_facts = [f["fact"] for f in facts if f.get("category") in (

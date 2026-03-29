@@ -181,6 +181,7 @@ class TestMigration:
     def test_migrate_json_to_sqlite(self, tmp_path: Path):
         """End-to-end: write JSON, migrate, verify in SQLite."""
         import json
+
         from cohort.migrate_json_to_sqlite import migrate
 
         # Seed JSON files

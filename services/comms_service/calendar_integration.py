@@ -30,7 +30,7 @@ try:
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
     from googleapiclient.discovery import build
-    from googleapiclient.errors import HttpError
+    from googleapiclient.errors import HttpError  # noqa: F401
 
     GOOGLE_API_AVAILABLE = True
 except ImportError:
@@ -156,7 +156,7 @@ class CalendarManager:
                 }
 
         except Exception as e:
-            logger.warning(f"[!] Calendar connection check failed for project %s: %s", project_id, e)
+            logger.warning("[!] Calendar connection check failed for project %s: %s", project_id, e)
             return {
                 "connected": False,
                 "status": "error",

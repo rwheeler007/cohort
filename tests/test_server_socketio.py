@@ -14,7 +14,6 @@ Covers:
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -25,7 +24,6 @@ from cohort.chat import ChatManager
 from cohort.data_layer import CohortDataLayer
 from cohort.registry import JsonFileStorage
 from cohort.task_store import TaskStore
-
 
 # =====================================================================
 # Fixtures
@@ -143,7 +141,6 @@ class TestConnectionLifecycle:
 
     async def test_join_without_data_layer_returns_error(self, sio_chat):
         """join returns error dict when data layer is not initialised."""
-        from cohort.socketio_events import sio
 
         import cohort.socketio_events as _mod
         original_dl = _mod._data_layer
@@ -248,7 +245,7 @@ class TestMessageFlow:
     async def test_messages_persist_and_appear_in_join_channel(self, sio_env):
         """Messages posted via send_message appear when join_channel is called."""
         sio, sio_chat, _dl, mock_emit = sio_env
-        from cohort.socketio_events import send_message, join_channel
+        from cohort.socketio_events import join_channel, send_message
 
         # Send two messages (auto-creates channel)
         await send_message(SID, {"channel_id": "persist-test", "sender": "a", "content": "msg1"})

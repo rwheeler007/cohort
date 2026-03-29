@@ -4,7 +4,6 @@ import pytest
 
 from cohort.routing_history import RoutingHistory, RoutingOutcome
 
-
 # =====================================================================
 # RoutingOutcome
 # =====================================================================

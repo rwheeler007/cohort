@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import urllib.request
 import urllib.error
+import urllib.request
 
 from cohort.cli._base import format_output, require_server
-
 
 # ---------------------------------------------------------------------------
 # Server API helpers

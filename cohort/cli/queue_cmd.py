@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 from cohort.cli._base import format_output, resolve_data_dir, truncation_notice
-
 
 # ---------------------------------------------------------------------------
 # Formatters

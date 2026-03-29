@@ -19,16 +19,15 @@ Options:
     --dry-run        Parse and show stats without writing files
 """
 
+import hashlib
 import json
 import re
-import sys
 import time
-import hashlib
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
-from urllib.request import urlopen, Request
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 COHORT_ROOT = Path(__file__).parent.parent
 ASSESSMENTS_DIR = COHORT_ROOT / "data" / "assessments_linkedin"
@@ -548,7 +547,7 @@ def cmd_list():
         status = "[cached]" if cached else ""
         print(f"  {qz:<55s} {status}")
 
-    print(f"\n=== Agent Mappings ===\n")
+    print("\n=== Agent Mappings ===\n")
     mapping = _load_mapping()
     for agent_id, cfg in sorted(mapping.items()):
         quizzes = ", ".join(q.split("/")[0] for q in cfg["quizzes"])
@@ -574,7 +573,7 @@ def cmd_preview(quiz_name: str):
     print(f"Multi-correct: {sum(1 for q in questions if q.multi_correct)}")
     print(f"Usable (no image, single correct): {sum(1 for q in questions if not q.has_image and not q.multi_correct)}")
 
-    print(f"\n--- First 5 Questions ---\n")
+    print("\n--- First 5 Questions ---\n")
     for q in questions[:5]:
         print(f"Q{q.number}. {q.question[:120]}...")
         for label, text in q.choices.items():

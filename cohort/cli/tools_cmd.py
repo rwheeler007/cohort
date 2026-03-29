@@ -7,7 +7,6 @@ import sys
 
 from cohort.cli._base import agent_not_found, format_output, resolve_agents_dir
 
-
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------

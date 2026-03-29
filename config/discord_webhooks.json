@@ -1,0 +1,22 @@
+{
+  "_comment": "Discord webhook URLs for the Cohort Discord bridge. Each channel maps to a Discord webhook URL. Create webhooks in Discord: Server Settings > Integrations > Webhooks.",
+  "channels": {
+    "ai-news": "PASTE_WEBHOOK_URL_HERE",
+    "code-review": "PASTE_WEBHOOK_URL_HERE",
+    "cohort-features": "PASTE_WEBHOOK_URL_HERE",
+    "strategy-room": "PASTE_WEBHOOK_URL_HERE",
+    "security-briefs": "PASTE_WEBHOOK_URL_HERE",
+    "the-watercooler": "PASTE_WEBHOOK_URL_HERE"
+  },
+  "agent_avatars": {
+    "_comment": "Optional: URL to avatar image for each agent. Discord will display this as the webhook user's avatar.",
+    "developer": "",
+    "security": "",
+    "strategist": "",
+    "qa_engineer": "",
+    "researcher": "",
+    "technical_writer": "",
+    "creative_writer": "",
+    "marketing": ""
+  }
+}

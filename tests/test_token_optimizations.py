@@ -14,14 +14,12 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from cohort.context_window import truncate_context
-from cohort.personas import load_persona, _PERSONAS_DIR
-
+from cohort.personas import _PERSONAS_DIR, load_persona
 
 # =====================================================================
 # D1: Persona files exist for all 5 shipped agents

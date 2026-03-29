@@ -27,12 +27,10 @@ Output:
 from __future__ import annotations
 
 import argparse
-import os
 import platform
 import shutil
 import subprocess
 import sys
-import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -254,9 +252,9 @@ def step_create_assets() -> None:
 
         img = _create_icon_image()
         # Save as .ico with multiple sizes
-        img_16 = img.resize((16, 16))
-        img_32 = img.resize((32, 32))
-        img_48 = img.resize((48, 48))
+        img.resize((16, 16))
+        img.resize((32, 32))
+        img.resize((48, 48))
         img_256 = img.resize((256, 256))
         img_256.save(
             str(ico_path),
@@ -305,7 +303,7 @@ def step_summary() -> None:
     print("  Next steps:")
     print("    1. Install Inno Setup 6.x from https://jrsoftware.org/isinfo.php")
     print("    2. Run: iscc cohort_installer.iss")
-    print(f"    3. Installer will be at: installer/output/CohortSetup-*.exe")
+    print("    3. Installer will be at: installer/output/CohortSetup-*.exe")
     print()
 
 

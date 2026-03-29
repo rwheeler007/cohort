@@ -7,15 +7,14 @@ import sys
 
 from cohort.cli._base import agent_not_found, format_output, resolve_agents_dir
 
-
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
 
 def _cmd_context_agent(args: argparse.Namespace) -> int:
     """Show what an agent sees about itself (memory, facts, profile)."""
-    from cohort.agent_store import AgentStore
     from cohort.agent_context import load_agent_context
+    from cohort.agent_store import AgentStore
 
     agents_dir = resolve_agents_dir()
     store = AgentStore(agents_dir=agents_dir)

@@ -18,11 +18,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from cohort.agent import AgentConfig, AgentMemory
+from cohort.agent import AgentMemory
 from cohort.agent_store import AgentStore
 from cohort.chat import ChatManager
 from cohort.personas import load_persona
-from cohort.registry import JsonFileStorage, create_storage
+from cohort.registry import create_storage
 
 logger = logging.getLogger(__name__)
 

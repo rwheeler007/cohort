@@ -10,7 +10,6 @@ import pytest
 from cohort.chat import ChatManager
 from cohort.file_transport import JsonlFileStorage, load_agents_from_file
 
-
 # =====================================================================
 # Fixtures
 # =====================================================================

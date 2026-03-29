@@ -10,12 +10,10 @@ flat templates; this one handles the taxonomy-driven block system.
 from __future__ import annotations
 
 import shutil
-import yaml
 from pathlib import Path
-from typing import Any
 
+import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 
 BLOCKS_DIR = Path(__file__).parent / "blocks"
 TAXONOMY_PATH = Path(__file__).parent / "taxonomy.yaml"

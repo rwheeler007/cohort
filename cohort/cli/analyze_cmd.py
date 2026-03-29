@@ -8,7 +8,6 @@ import sys
 
 from cohort.cli._base import format_output, resolve_data_dir
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -95,7 +94,7 @@ def _cmd_analyze_keywords(args: argparse.Namespace) -> int:
 
 def _cmd_analyze_overlap(args: argparse.Namespace) -> int:
     """Calculate keyword overlap between two texts."""
-    from cohort.meeting import extract_keywords, calculate_keyword_overlap
+    from cohort.meeting import calculate_keyword_overlap, extract_keywords
 
     kw1 = extract_keywords(args.text1)
     kw2 = extract_keywords(args.text2)
@@ -136,7 +135,6 @@ def _cmd_analyze_score(args: argparse.Namespace) -> int:
             return 1
     else:
         # Try loading default project config
-        from pathlib import Path
         data_dir = resolve_data_dir(args)
         config_path = data_dir / "content_projects.json"
         if config_path.exists():

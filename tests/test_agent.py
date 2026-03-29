@@ -3,10 +3,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
-from pathlib import Path
-
-import pytest
 
 from cohort.agent import (
     AgentConfig,
@@ -15,7 +11,6 @@ from cohort.agent import (
     LearnedFact,
     WorkingMemoryEntry,
 )
-
 
 # =====================================================================
 # LearnedFact

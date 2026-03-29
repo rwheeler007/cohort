@@ -93,7 +93,7 @@ def start_run(port: int, scenario_id: str) -> dict | None:
             timeout=15,
         )
         if r.status_code == 409:
-            print(f"  [!] Server says a run is already active -- waiting for it to finish")
+            print("  [!] Server says a run is already active -- waiting for it to finish")
             return None
         if r.status_code != 200:
             print(f"  [X] start_run HTTP {r.status_code}: {r.text[:200]}")
@@ -212,7 +212,7 @@ def run_overnight(
     plan = [(scenario, pass_num) for pass_num in range(1, passes + 1) for scenario in scenarios]
     total = len(plan)
 
-    print(f"\n[*] Overnight A/B Benchmark Plan")
+    print("\n[*] Overnight A/B Benchmark Plan")
     print(f"    Scenarios : {', '.join(scenarios)}")
     print(f"    Passes    : {passes}")
     print(f"    Total runs: {total}")
@@ -247,7 +247,7 @@ def run_overnight(
         run_info = start_run(port, scenario_id)
         if run_info is None:
             # Might already be running (e.g. stale active run). Wait and retry once.
-            print(f"  [!] Could not start -- waiting 60s and retrying once")
+            print("  [!] Could not start -- waiting 60s and retrying once")
             time.sleep(60)
             run_info = start_run(port, scenario_id)
             if run_info is None:

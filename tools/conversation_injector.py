@@ -853,7 +853,7 @@ class ResponseCollector:
             return scores
 
         agent_contents = [m.get("content", "") for m in agent_messages]
-        all_content = "\n".join(agent_contents).lower()
+        "\n".join(agent_contents).lower()
 
         # --- Handoff quality: does the delegator @mention others with context? ---
         if "handoff" in suite_name or "delegation" in suite_name:
@@ -949,7 +949,7 @@ class ResponseCollector:
             overlap_count = 0
             for i, msg_a in enumerate(agent_messages):
                 sender_a = msg_a.get("sender", "")
-                content_a = msg_a.get("content", "").lower()
+                msg_a.get("content", "").lower()
                 for msg_b in agent_messages[i + 1:]:
                     sender_b = msg_b.get("sender", "")
                     if sender_a == sender_b:

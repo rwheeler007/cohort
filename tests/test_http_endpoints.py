@@ -10,7 +10,6 @@ Uses httpx.AsyncClient with ASGITransport from conftest.py fixtures.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -587,7 +586,6 @@ class TestTools:
 
     async def test_list_tools_with_cohort_tools(self, server_client, data_dir):
         """Tools endpoint reads from cohort_tools.json."""
-        import json
 
         cohort_tools = {
             "version": 1,

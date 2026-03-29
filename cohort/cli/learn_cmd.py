@@ -7,7 +7,6 @@ import sys
 
 from cohort.cli._base import format_output
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -114,13 +113,13 @@ def _cmd_learn_bootstrap(args: argparse.Namespace) -> int:
 
 def _cmd_learn_status(args: argparse.Namespace) -> int:
     """Show learning system configuration and status."""
-    from cohort.learning import load_profile, _PROFILE_PATH
+    from cohort.learning import _PROFILE_PATH
     from cohort.local.config import (
-        LEARNING_ENABLED,
-        LEARNING_MIN_RESPONSE_LENGTH,
-        LEARNING_GATE_THRESHOLD,
         LEARNING_DEDUP_THRESHOLD,
+        LEARNING_ENABLED,
+        LEARNING_GATE_THRESHOLD,
         LEARNING_MAX_FACTS_PER_AGENT,
+        LEARNING_MIN_RESPONSE_LENGTH,
         LEARNING_PROFILE_EVOLVE_DAYS,
         LEARNING_PROFILE_MIN_NEW_PREFS,
         LEARNING_SKIP_AGENTS,

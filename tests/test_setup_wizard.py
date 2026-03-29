@@ -8,16 +8,12 @@ calls are mocked -- no Ollama or network required.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
-import pytest
-
-from cohort.local.config import MODEL_DESCRIPTIONS, get_model_for_vram
+from cohort.local.config import MODEL_DESCRIPTIONS
 from cohort.local.detect import HardwareInfo
 from cohort.local.setup import (
     MCP_SERVER_CONFIG,
-    OLLAMA_BASE_URL,
     TOPIC_CATEGORIES,
     TOPIC_FEEDS,
     TOPIC_KEYWORDS,
@@ -38,7 +34,6 @@ from cohort.local.setup import (
     _write_mcp_settings,
     run_setup,
 )
-
 
 # =====================================================================
 # Display helpers
@@ -830,9 +825,7 @@ class TestRunSetup:
 class TestCLIRegistration:
     def test_setup_command_exists(self):
         """The 'setup' subcommand is registered in the CLI parser."""
-        import argparse
 
-        from cohort.__main__ import main
 
         # Verify the parser accepts 'setup' without error
         # We can't easily test main() directly since it calls sys.exit,
