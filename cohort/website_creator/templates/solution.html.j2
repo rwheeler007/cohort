@@ -1,0 +1,73 @@
+{# Solution / Product Page -- derived from ChillGuard solution.html #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Solution Hero -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{% if page.content.headline %}{{ page.content.headline }}{% else %}The Solution{% endif %}</h1>
+        <p class="responsive-p-large">{% if page.content.subheadline %}{{ page.content.subheadline }}{% else %}How {{ product_name }} solves the problem.{% endif %}</p>
+    </div>
+</section>
+
+{% if features %}
+<!-- Feature Details -->
+<section class="section-spacing">
+    <div class="container">
+        {% for feature in features %}
+        <div style="display: flex; flex-direction: {% if loop.index is odd %}row{% else %}row-reverse{% endif %}; gap: 3rem; align-items: center; margin-bottom: 3rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <h2 class="responsive-h2">{{ feature.title }}</h2>
+                <p class="responsive-p-body" style="max-width: none;">{{ feature.description }}</p>
+            </div>
+            {% if feature.image %}
+            <div style="flex: 1; min-width: 280px;">
+                <img src="{{ feature.image }}" alt="{{ feature.title }}" style="width: 100%; border-radius: var(--radius);">
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if pricing_tiers %}
+<!-- Pricing -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h2 class="responsive-h2">{% if page.content.pricing_heading %}{{ page.content.pricing_heading }}{% else %}Choose Your Plan{% endif %}</h2>
+        <p class="responsive-p-large">{% if page.content.pricing_subheading %}{{ page.content.pricing_subheading }}{% endif %}</p>
+        <div class="grid-{{ [pricing_tiers|length, 3] | min }}" style="margin-top: 2rem;">
+            {% for tier in pricing_tiers %}
+            <div class="card{% if tier.highlighted %} card-highlighted{% endif %}" style="position: relative;">
+                {% if tier.badge %}
+                <div class="pricing-badge">{{ tier.badge }}</div>
+                {% endif %}
+                <h3 class="responsive-h3">{{ tier.name }}</h3>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--color-primary); margin: 1rem 0;">
+                    {{ tier.price }}<span style="font-size: 1rem; font-weight: 400; color: var(--color-text);">{{ tier.period }}</span>
+                </div>
+                <p class="responsive-p-body">{{ tier.description }}</p>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 1.5rem 0;">
+                    {% for f in tier.features %}
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">[OK] {{ f }}</li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ tier.cta_href }}" class="btn-primary" style="width: 100%;">{{ tier.cta_text }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{% if page.content.cta_heading %}{{ page.content.cta_heading }}{% else %}Ready to Start?{% endif %}</h2>
+        <div class="button-group">
+            <a href="{{ page.content.cta_href | default('contact.html') }}" class="btn-primary">{{ page.content.cta_text | default('Get Started') }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

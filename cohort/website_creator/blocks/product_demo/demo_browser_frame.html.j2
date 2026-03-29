@@ -1,0 +1,54 @@
+{# Product Demo: Screenshot or video inside a browser window chrome frame.
+   Tags: conventional, modern
+   Variables: block.media_type (image|video), block.media_url, block.caption
+#}
+<section class="section-alt py-16 sm:py-20 lg:py-24">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    {# Browser frame #}
+    <div class="rounded-theme overflow-hidden shadow-xl border border-theme">
+      {# Title bar with traffic light dots and address bar #}
+      <div class="bg-white border-b border-theme px-4 py-3 flex items-center gap-3">
+        <div class="flex items-center gap-1.5" aria-hidden="true">
+          <span class="w-3 h-3 rounded-full" style="background-color: #ef4444;"></span>
+          <span class="w-3 h-3 rounded-full" style="background-color: #f59e0b;"></span>
+          <span class="w-3 h-3 rounded-full" style="background-color: #22c55e;"></span>
+        </div>
+        <div class="flex-1 max-w-md mx-auto">
+          <div class="bg-alt rounded-theme px-3 py-1 text-xs text-muted text-center truncate border border-theme">
+            {{ block.media_url | default('yourproduct.com') }}
+          </div>
+        </div>
+        <div class="w-12" aria-hidden="true"></div>
+      </div>
+
+      {# Media content #}
+      <div class="bg-white">
+        {% if block.media_type == 'video' %}
+        <video
+          src="{{ block.media_url }}"
+          class="w-full block"
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-label="{{ block.caption | default('Product demonstration video') }}"
+        >
+          <p>Your browser does not support the video element.</p>
+        </video>
+        {% else %}
+        <img
+          src="{{ block.media_url }}"
+          alt="{{ block.caption | default('Product screenshot') }}"
+          loading="lazy"
+          class="w-full block"
+        >
+        {% endif %}
+      </div>
+    </div>
+
+    {# Caption #}
+    {% if block.caption %}
+    <p class="text-center text-muted text-sm mt-6">{{ block.caption }}</p>
+    {% endif %}
+  </div>
+</section>

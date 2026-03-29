@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D97757">
+    <title>Cohort Simulator -- Experience AI Team Coordination</title>
+    <meta name="description" content="Watch Cohort's scoring engine decide who speaks, who stays silent, and when dormant agents re-engage. Make choices. See the difference.">
+    <meta name="keywords" content="AI team coordination, multi-agent orchestration, contribution scoring, agent gating, interactive demo, Cohort simulator">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/simulator.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/simulator.html">
+    <meta property="og:title" content="Cohort Simulator -- Experience AI Team Coordination">
+    <meta property="og:description" content="Watch Cohort's scoring engine decide who speaks, who stays silent, and when dormant agents re-engage. Make choices. See the difference.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cohort Simulator -- Experience AI Team Coordination">
+    <meta name="twitter:description" content="Watch Cohort's scoring engine decide who speaks, who stays silent, and when dormant agents re-engage.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="simulator.css">
+</head>
+<body>
+<div style="overflow-x:hidden; width:100%; position:relative;">
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <!-- Populated by nav.js -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+    <div style="background: var(--color-dark-bg);">
+    <!-- Hero Section -->
+    <section style="color: #fff; padding: 3rem 0 1rem;">
+        <div class="container text-center" style="max-width: 800px;">
+            <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-on-dark-muted); margin-bottom: 1rem;">Interactive Demo</p>
+            <h1 class="responsive-h1" style="color: #fff;">Experience the Scoring Engine</h1>
+            <p class="responsive-p-body" style="color: var(--text-on-dark); max-width: 600px; margin: 0 auto;">
+                Watch 4 agents collaborate on a real task. Make choices that change which agents speak, who gets silenced, and what the team builds. Every score is computed from the same engine that runs in production.
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.5); max-width: 550px; margin-left: auto; margin-right: auto;">
+                Scoring decisions from Cohort's real engine. Agent responses generated live by qwen3.5:9b on local GPU -- real tokens, real timing, real scores.
+                <br><a href="data/scenario-api-redesign-live.json" target="_blank" style="color: var(--color-primary); text-decoration: underline; opacity: 0.8;">View raw engine log (live run)</a>
+                &middot;
+                <a href="data/scenario-api-redesign.json" target="_blank" style="color: var(--color-primary); text-decoration: underline; opacity: 0.8;">API scenario data</a>
+                &middot;
+                <a href="data/scenario-oauth2-security.json" target="_blank" style="color: var(--color-primary); text-decoration: underline; opacity: 0.8;">OAuth2 scenario data</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Simulator Container -->
+    <section style="padding: 0 1rem 4rem;">
+        <div id="simulator"></div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section-spacing" style="color: #fff; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div class="container text-center">
+            <h2 class="responsive-h2" style="color: #fff;">Ready to run your own team?</h2>
+            <p class="responsive-p-body" style="color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 1.5rem;">
+                The scoring engine you just watched runs on your GPU. 23 agents, 90%+ free on your hardware, day one productive.
+            </p>
+            <div class="button-group">
+                <a href="download.html" class="btn-primary" style="background: var(--color-primary);">Download Cohort</a>
+                <a href="features.html#scoring" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">How Scoring Works</a>
+            </div>
+        </div>
+    </section>
+    </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <!-- Populated by footer.js -->
+    </footer>
+</div>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+<script src="js/simulator.js"></script>
+<script src="js/simulator-data.js"></script>
+</body>
+</html>

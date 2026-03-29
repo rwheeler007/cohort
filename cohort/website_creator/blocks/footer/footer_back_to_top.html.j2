@@ -1,0 +1,75 @@
+{# Footer: Horizontal layout with back-to-top button, logo + tagline left, link row right, copyright.
+   Adapted from HyperUI (MIT).
+   Tags: minimal, functional, back-to-top
+   Variables: block.product_name, block.tagline,
+              block.footer_columns [{title, links: [{label, href}]}],
+              block.social_links [{platform, url}], block.copyright_text
+#}
+<footer style="background: var(--color-accent, #f3f4f6);">
+  <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pt-24">
+    {# Back to top button #}
+    <div class="absolute end-4 top-4 sm:end-6 sm:top-6 lg:end-8 lg:top-8">
+      <a
+        class="inline-block rounded-full p-2 text-white shadow-sm transition hover:opacity-90 sm:p-3 lg:p-4"
+        style="background: var(--color-primary);"
+        href="#"
+        onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;"
+      >
+        <span class="sr-only">Back to top</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </a>
+    </div>
+
+    {# Main content: logo+tagline left, links right #}
+    <div class="lg:flex lg:items-end lg:justify-between">
+      <div>
+        <div class="flex justify-center lg:justify-start" style="color: var(--color-primary);">
+          <span class="text-xl font-bold" style="font-family: var(--font-heading);">{{ block.product_name }}</span>
+        </div>
+
+        {% if block.tagline %}
+        <p class="mx-auto mt-6 max-w-md text-center leading-relaxed lg:text-left" style="color: var(--color-text); opacity: 0.6;">
+          {{ block.tagline }}
+        </p>
+        {% endif %}
+      </div>
+
+      {# Flat link row (flattened from columns) #}
+      {% set all_links = [] %}
+      {% for col in block.footer_columns %}
+        {% for link in col.links %}
+          {% if all_links.append(link) %}{% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% if all_links %}
+      <ul
+        class="mt-12 flex flex-wrap justify-center gap-6 md:gap-8 lg:mt-0 lg:justify-end lg:gap-12"
+      >
+        {% for link in all_links %}
+        <li>
+          <a href="{{ link.href }}" class="transition hover:opacity-75" style="color: var(--color-text); opacity: 0.7;">
+            {{ link.label }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    {# Copyright #}
+    <p class="mt-12 text-center text-sm lg:text-right" style="color: var(--color-text); opacity: 0.5;">
+      {{ block.copyright_text | default('All rights reserved.') }}
+    </p>
+  </div>
+</footer>

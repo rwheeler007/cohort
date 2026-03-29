@@ -1,0 +1,28 @@
+{# Testimonials: Single large centered quote.
+   Tags: minimal, warm
+   Variables: block.testimonials [{quote, name, title, company}]
+   Shows first testimonial prominently.
+#}
+{% set t = block.testimonials[0] if block.testimonials else none %}
+{% if t %}
+<section class="bg-white py-20 sm:py-28">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <svg class="w-12 h-12 text-primary/20 mx-auto mb-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+    </svg>
+    <figure>
+      <blockquote>
+        <p class="text-2xl sm:text-3xl font-medium leading-relaxed" style="font-family: var(--font-heading);">
+          "{{ t.quote }}"
+        </p>
+      </blockquote>
+      <figcaption class="mt-8">
+        <div class="font-semibold text-lg">{{ t.name }}</div>
+        {% if t.title or t.company %}
+        <div class="text-muted mt-1">{{ t.title }}{% if t.title and t.company %}, {% endif %}{{ t.company }}</div>
+        {% endif %}
+      </figcaption>
+    </figure>
+  </div>
+</section>
+{% endif %}

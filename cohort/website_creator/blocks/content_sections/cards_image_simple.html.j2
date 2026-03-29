@@ -1,0 +1,36 @@
+{# Cards: Simple full-width image with bold title and short description.
+   Tags: minimal, visual
+   Variables: block.items [{image, title, excerpt, href}]
+#}
+<section class="section-spacing py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for item in block.items %}
+      <a href="{{ item.href | default('#') }}" class="block">
+        {% if item.image | default('') %}
+        <img
+          src="{{ item.image }}"
+          alt="{{ item.title }}"
+          class="h-64 w-full object-cover sm:h-80 lg:h-96"
+          loading="lazy"
+        />
+        {% else %}
+        <div class="h-64 w-full sm:h-80 lg:h-96 flex items-center justify-center" style="background: var(--color-accent-light, #f3f4f6);">
+          <span class="text-sm" style="color: var(--color-text-muted);">Image</span>
+        </div>
+        {% endif %}
+
+        <h3 class="mt-4 text-lg font-bold sm:text-xl" style="color: var(--color-text); font-family: var(--font-heading);">
+          {{ item.title }}
+        </h3>
+
+        {% if item.excerpt %}
+        <p class="mt-2 max-w-sm" style="color: var(--color-text-muted);">
+          {{ item.excerpt }}
+        </p>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

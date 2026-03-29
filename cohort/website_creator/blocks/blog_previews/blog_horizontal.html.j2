@@ -1,0 +1,62 @@
+{# Blog Previews: Horizontal card with vertical date strip, side image, and CTA button.
+   Tags: editorial, horizontal
+   Variables: block.posts [{image, date, date_year, date_short, title, excerpt, href}]
+   - date_year: e.g. "2025"
+   - date_short: e.g. "Oct 10"
+   - Falls back to date if date_year/date_short not provided
+#}
+<section class="section-spacing py-16 sm:py-20 lg:py-24">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    {% for post in block.posts %}
+    <article class="flex transition hover:shadow-xl" style="background: var(--color-surface, #fff);">
+      {# Vertical date strip #}
+      <div class="rotate-180 p-2 [writing-mode:vertical-lr]">
+        <time class="flex items-center justify-between gap-4 text-xs font-bold uppercase" style="color: var(--color-text);">
+          <span>{{ post.date_year | default(post.date | default('')) }}</span>
+          <span class="w-px flex-1" style="background: var(--color-border, rgba(0,0,0,0.1));"></span>
+          <span>{{ post.date_short | default('') }}</span>
+        </time>
+      </div>
+
+      {# Side image #}
+      {% if post.image %}
+      <div class="hidden sm:block sm:basis-56">
+        <img
+          src="{{ post.image }}"
+          alt="{{ post.title }}"
+          class="aspect-square h-full w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      {% endif %}
+
+      {# Content #}
+      <div class="flex flex-1 flex-col justify-between">
+        <div class="border-s p-4 sm:border-l-transparent sm:p-6" style="border-color: var(--color-border, rgba(0,0,0,0.1));">
+          <a href="{{ post.href | default('#') }}">
+            <h3 class="font-bold uppercase" style="color: var(--color-text); font-family: var(--font-heading);">
+              {{ post.title }}
+            </h3>
+          </a>
+
+          {% if post.excerpt %}
+          <p class="mt-2 line-clamp-3 text-sm leading-relaxed" style="color: var(--color-text-muted);">
+            {{ post.excerpt }}
+          </p>
+          {% endif %}
+        </div>
+
+        <div class="sm:flex sm:items-end sm:justify-end">
+          <a
+            href="{{ post.href | default('#') }}"
+            class="btn-primary block px-5 py-3 text-center text-xs font-bold uppercase transition"
+            style="background: var(--color-accent, #fde047); color: var(--color-text);"
+          >
+            Read Blog
+          </a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>

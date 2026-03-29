@@ -1,0 +1,146 @@
+{# Agent Benchmarks Page -- scorecard, methodology, category breakdowns #}
+{% extends "base.html.j2" %}
+
+{% block content %}
+<!-- Hero Stats -->
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container text-center">
+        <h1 class="responsive-h1">{{ page.title }}</h1>
+        {% if page.content.subheadline %}
+        <p class="responsive-p-large">{{ page.content.subheadline }}</p>
+        {% endif %}
+
+        {% if page.content.hero_stats %}
+        <div class="bench-hero-stats">
+            {% for stat in page.content.hero_stats %}
+            <div class="bench-hero-stat">
+                <span class="bench-hero-number">{{ stat.value }}</span>
+                <span class="bench-hero-label">{{ stat.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Scorecard Table -->
+{% if page.content.agents %}
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">{{ page.content.scorecard_heading | default('Agent Scorecard') }}</h2>
+        <p class="responsive-p-body text-center">{{ page.content.scorecard_subtitle | default('') }}</p>
+
+        <div class="bench-table-wrap">
+            <table class="bench-table">
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Score</th>
+                        <th>Categories</th>
+                        <th class="bench-hide-mobile">Difficulty Spread</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in page.content.agents %}
+                    <tr>
+                        <td class="bench-agent-name">{{ agent.name }}</td>
+                        <td>
+                            <div class="bench-score-cell">
+                                <div class="bench-bar-track">
+                                    <div class="bench-bar-fill" style="width: {{ agent.score }}%;"></div>
+                                </div>
+                                <span class="bench-score-pct">{{ agent.score }}%</span>
+                            </div>
+                        </td>
+                        <td class="bench-cat-count">{{ agent.categories | length }}</td>
+                        <td class="bench-hide-mobile">
+                            {% if agent.difficulty %}
+                            <span class="bench-diff-tag bench-diff-int">Int {{ agent.difficulty.intermediate }}</span>
+                            <span class="bench-diff-tag bench-diff-adv">Adv {{ agent.difficulty.advanced }}</span>
+                            <span class="bench-diff-tag bench-diff-exp">Exp {{ agent.difficulty.expert }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Category Deep-Dives -->
+{% if page.content.agent_details %}
+<section class="section-spacing" style="background: {{ brand.accent_color }};">
+    <div class="container">
+        <h2 class="responsive-h2 text-center">{{ page.content.details_heading | default('Category Breakdowns') }}</h2>
+        <p class="responsive-p-body text-center">{{ page.content.details_subtitle | default('') }}</p>
+
+        <div class="grid-2" style="margin-top: 2rem;">
+            {% for agent in page.content.agent_details %}
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
+                    <h3 class="responsive-h3 mb-0">{{ agent.name }}</h3>
+                    <span class="bench-score-badge">{{ agent.score }}%</span>
+                </div>
+                <div class="bench-cat-grid">
+                    {% for cat in agent.categories %}
+                    <div class="bench-cat-item">
+                        <div class="bench-cat-bar-track">
+                            <div class="bench-cat-bar-fill" style="width: {{ cat.pct }}%;"></div>
+                        </div>
+                        <div class="bench-cat-meta">
+                            <span class="bench-cat-name">{{ cat.name }}</span>
+                            <span class="bench-cat-score">{{ cat.correct }}/{{ cat.total }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Methodology -->
+{% if page.content.methodology %}
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">{{ page.content.methodology_heading | default('Methodology') }}</h2>
+        {% for section in page.content.methodology %}
+        <div style="margin-bottom: 2.5rem;">
+            {% if section.heading %}
+            <h3 class="responsive-h3">{{ section.heading }}</h3>
+            {% endif %}
+            {% if section.body %}
+            <div class="responsive-p-body" style="max-width: none;">{{ section.body }}</div>
+            {% endif %}
+            {% if section.list_items is defined and section.list_items %}
+            <ul style="padding-left: 1.5rem; margin-top: 0.75rem;">
+                {% for item in section.list_items %}
+                <li class="responsive-p-body" style="margin-bottom: 0.4rem;">{{ item }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+{% if page.content.cta_heading %}
+<section class="section-spacing" style="background: {{ brand.secondary_color }}; color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">{{ page.content.cta_heading }}</h2>
+        {% if page.content.cta_subheading %}
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.85);">{{ page.content.cta_subheading }}</p>
+        {% endif %}
+        {% if page.content.cta_href %}
+        <a href="{{ page.content.cta_href }}" class="btn-primary">{{ page.content.cta_text | default('Get Started') }}</a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

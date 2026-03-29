@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task System | COHORT</title>
+    <meta name="description" content="Cohort's task system: parallel agent tasks with briefing phases, a sequential work queue with single-active constraint, and recurring schedules with auto-disable. All from the dashboard.">
+    <meta name="keywords" content="AI task management, agent task queue, multi-agent orchestration, work queue, task scheduling, AI workflow">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/tasks.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/tasks.html">
+    <meta property="og:title" content="Task System | COHORT">
+    <meta property="og:description" content="Two task systems, one dashboard. Parallel agent tasks with conversational briefing, plus a sequential work queue with dependency tracking.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Task System | COHORT">
+    <meta name="twitter:description" content="Parallel agent tasks + sequential work queue. Briefing phases, priority ordering, scheduling, and secret scanning.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.55rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: var(--color-success); color: #fff; }
+        .phase-step {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+        .phase-num {
+            flex-shrink: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+        .phase-content h3 {
+            margin: 0 0 0.25rem;
+            font-size: 1rem;
+        }
+        .phase-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #C8C8C8;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">Task System</h1>
+        <span class="tier-badge tier-free" style="margin-left: 0;">Free</span>
+        <p class="responsive-p-large" style="margin-top: 1rem;">You don't manage these agents by chatting at them and hoping for the best. You give them tasks with clear scope, acceptance criteria, and a review gate. They brief you before they start. You approve before anything ships.</p>
+    </div>
+</section>
+
+<!-- Two Systems -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center">Two Systems, One Dashboard</h2>
+        <p class="responsive-p-body text-center" style="max-width: 700px; margin: 0 auto 2rem;">Cohort runs two task systems side by side. Use whichever fits the work -- or both at once.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--color-primary);">
+                <div style="font-family: monospace; font-size: 1.1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.75rem;">[T] Agent Tasks</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.7;">
+                    <strong style="color: #fff;">Parallel.</strong> Assign work to specific agents. Each task gets its own channel where the agent asks clarifying questions, you confirm scope, and work begins. Multiple agents can work on different tasks simultaneously.
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">Best for: code reviews, research, content drafting, analysis -- work that needs a conversation before execution.</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--color-info);">
+                <div style="font-family: monospace; font-size: 1.1rem; font-weight: 700; color: var(--color-info); margin-bottom: 0.75rem;">[Q] Work Queue</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.7;">
+                    <strong style="color: #fff;">Sequential.</strong> Priority-ordered queue with a single-active constraint. Only one item runs at a time. When it finishes, the next highest-priority item claims automatically. No collisions, no race conditions.
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">Best for: deployments, migrations, builds, CI jobs -- work that must run one at a time in order.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Agent Task Lifecycle -->
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center" style="color: #fff;">How Agent Tasks Work</h2>
+        <p class="responsive-p-body text-center" style="color: rgba(255,255,255,0.7); max-width: 650px; margin: 0 auto 2.5rem;">Every task goes through a structured lifecycle. The agent doesn't just get instructions and disappear -- it briefs you on its plan, you confirm, it executes, and the output lands in a review queue.</p>
+
+        <!-- Pipeline visual -->
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem;">
+            <span style="background: rgba(217,119,87,0.15); border: 1px solid var(--color-primary); border-radius: 4px; padding: 0.35rem 0.75rem; color: var(--color-primary); font-weight: 600; font-size: 0.8rem;">Briefing</span>
+            <span style="color: #555;">--></span>
+            <span style="background: rgba(210,153,34,0.15); border: 1px solid var(--color-warning); border-radius: 4px; padding: 0.35rem 0.75rem; color: var(--color-warning); font-weight: 600; font-size: 0.8rem;">Assigned</span>
+            <span style="color: #555;">--></span>
+            <span style="background: rgba(88,166,255,0.15); border: 1px solid var(--color-info); border-radius: 4px; padding: 0.35rem 0.75rem; color: var(--color-info); font-weight: 600; font-size: 0.8rem;">In Progress</span>
+            <span style="color: #555;">--></span>
+            <span style="background: rgba(63,185,80,0.15); border: 1px solid var(--color-success); border-radius: 4px; padding: 0.35rem 0.75rem; color: var(--color-success); font-weight: 600; font-size: 0.8rem;">Complete</span>
+            <span style="color: #555;">--></span>
+            <span style="background: rgba(188,140,255,0.15); border: 1px solid #D97757; border-radius: 4px; padding: 0.35rem 0.75rem; color: #D97757; font-weight: 600; font-size: 0.8rem;">Review</span>
+        </div>
+
+        <!-- Steps -->
+        <div class="phase-step">
+            <div class="phase-num" style="background: var(--color-primary);">1</div>
+            <div class="phase-content">
+                <h3 style="color: var(--color-primary);">Briefing</h3>
+                <p>You assign a task to an agent. Cohort creates a dedicated channel for that task and the agent responds with questions. What's the goal? What's in scope? What does "done" look like? This is a conversation, not a form. The agent is building a brief: goal, approach, scope, and acceptance criteria.</p>
+            </div>
+        </div>
+
+        <div class="phase-step">
+            <div class="phase-num" style="background: var(--color-warning);">2</div>
+            <div class="phase-content">
+                <h3 style="color: var(--color-warning);">Confirmation</h3>
+                <p>Once the agent has enough context, it presents a confirmation card -- a structured summary of what it understood. You read it, adjust if needed, and confirm. Now both sides agree on what "done" means before any work starts. Tasks stuck in briefing for more than 4 hours auto-fail so nothing hangs forever.</p>
+            </div>
+        </div>
+
+        <div class="phase-step">
+            <div class="phase-num" style="background: var(--color-info);">3</div>
+            <div class="phase-content">
+                <h3 style="color: var(--color-info);">Execution</h3>
+                <p>The agent works. Runs in a background thread with a typing indicator in the task channel so you can see it's active. The agent can use local LLM inference, CLI tools, or the Anthropic API -- whichever backend fits the work. If the agent has partnerships configured (e.g., security agent reviews all code tasks), a consultation gate fires and partners can weigh in before execution proceeds.</p>
+            </div>
+        </div>
+
+        <div class="phase-step">
+            <div class="phase-num" style="background: var(--color-success);">4</div>
+            <div class="phase-content">
+                <h3 style="color: var(--color-success);">Output</h3>
+                <p>The result is posted to the task channel and automatically scanned for secrets -- AWS keys, API tokens, passwords, private keys are all redacted before storage. The output includes what was produced and how it maps to the acceptance criteria from the briefing.</p>
+            </div>
+        </div>
+
+        <div class="phase-step" style="margin-bottom: 0;">
+            <div class="phase-num" style="background: #D97757;">5</div>
+            <div class="phase-content">
+                <h3 style="color: #D97757;">Review</h3>
+                <p>Completed tasks land in a review queue. You see the output, the original brief, and record a verdict: approve, reject, or needs work. The verdict is stored with the task -- full audit trail of who asked for what, what was produced, and whether it was accepted.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Work Queue -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">The Work Queue</h2>
+        <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">When work needs to run in order -- one thing at a time, highest priority first -- use the queue.</p>
+
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.85rem; line-height: 1.6; color: #C8C8C8;">
+            <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Queue state</div>
+
+            <!-- Active item -->
+            <div style="background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="color: var(--color-info); font-weight: 600;">ACTIVE</span>
+                        <span style="color: #fff; margin-left: 0.5rem;">Deploy staging environment</span>
+                    </div>
+                    <span style="background: rgba(248,81,73,0.15); color: var(--color-danger); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600;">CRITICAL</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Claimed 2m ago by system</div>
+            </div>
+
+            <!-- Queued items -->
+            <div style="padding: 0.5rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; margin-right: 0.5rem;">2.</span>
+                    <span>Run integration test suite</span>
+                </div>
+                <span style="background: rgba(210,153,34,0.15); color: var(--color-warning); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600;">HIGH</span>
+            </div>
+            <div style="padding: 0.5rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; margin-right: 0.5rem;">3.</span>
+                    <span>Generate weekly report</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: 0.5rem;">(depends on #2)</span>
+                </div>
+                <span style="background: rgba(88,166,255,0.15); color: var(--color-info); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600;">MEDIUM</span>
+            </div>
+            <div style="padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; margin-right: 0.5rem;">4.</span>
+                    <span>Clean up temp artifacts</span>
+                </div>
+                <span style="background: rgba(255,255,255,0.08); color: var(--text-muted); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600;">LOW</span>
+            </div>
+
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                Priority levels: <strong style="color: var(--color-danger);">critical</strong> > <strong style="color: var(--color-warning);">high</strong> > <strong style="color: var(--color-info);">medium</strong> > <strong style="color: var(--text-muted);">low</strong>. FIFO within each level. Items with unmet dependencies wait regardless of priority.
+            </div>
+        </div>
+
+        <!-- Key properties -->
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;">
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-info); margin-bottom: 0.25rem;">1</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Active at a time</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">Single-active constraint</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-warning); margin-bottom: 0.25rem;">4</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Priority levels</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">critical / high / medium / low</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success); margin-bottom: 0.25rem;">DAG</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Dependency tracking</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">depends_on blocks until met</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Scheduling -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Recurring Schedules</h2>
+        <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">Tasks that need to run on a schedule -- daily reports, hourly checks, weekly audits. Set it once, Cohort fires it automatically.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.5rem;">Interval</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.6;">Every N seconds. Minimum 5 minutes. "Run this health check every hour."</div>
+                <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">schedule_expr: "3600"</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-info); margin-bottom: 0.5rem;">Cron</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.6;">Standard 5-field cron expressions. "Generate the briefing at 9am on weekdays."</div>
+                <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">schedule_expr: "0 9 * * 1-5"</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-success); margin-bottom: 0.5rem;">Once</div>
+                <div style="font-size: 0.8rem; color: #C8C8C8; line-height: 1.6;">Fire at a specific future time. "Run this migration at 2am tonight."</div>
+                <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">schedule_expr: "2026-03-20T02:00"</div>
+            </div>
+        </div>
+
+        <!-- Auto-disable -->
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                <div style="font-size: 1.5rem; flex-shrink: 0; color: var(--color-warning);">[!]</div>
+                <div>
+                    <h3 style="color: #fff; font-size: 1rem; margin: 0 0 0.5rem;">Auto-Disable on Failure</h3>
+                    <p style="font-size: 0.85rem; color: #C8C8C8; line-height: 1.6; margin: 0;">If a scheduled task fails 3 times in a row, the schedule auto-disables and you get a notification. No runaway failures. No silent breakage. You see it, you fix the underlying issue, you re-enable. Max 50 active schedules, with the last 100 run results kept per schedule for debugging.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Safety -->
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center" style="color: #fff;">Built-In Safety</h2>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem;">
+            <div style="border-left: 3px solid var(--color-danger); padding-left: 1.25rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Secret Scanning</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.6; margin: 0;">Every task output is scanned before storage. AWS keys, API tokens, passwords, private keys, PII patterns -- all automatically replaced with <code style="color: var(--color-warning);">[REDACTED:type]</code>. Agents can't accidentally leak credentials in their output.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-warning); padding-left: 1.25rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Stale Task Reaping</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.6; margin: 0;">Tasks stuck in the briefing phase for over 4 hours auto-fail. No orphaned tasks sitting forever in limbo waiting for a confirmation that never comes.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-info); padding-left: 1.25rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Consultation Gates</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.6; margin: 0;">If an agent has partnerships configured -- like "security agent reviews all code tasks" -- a gate fires before execution. Partners can review the plan in the task channel. The audit trail records who was consulted.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-success); padding-left: 1.25rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Human Review Gate</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.6; margin: 0;">Nothing ships without your sign-off. Completed tasks land in a review queue with the original brief alongside the output. You approve, reject, or send back for rework. Full audit trail.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trigger-Action-Outcome -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Full Traceability</h2>
+        <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">Every task records a trigger-action-outcome triad. Six months from now, you can look at any task and know exactly what happened and why.</p>
+
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.8rem; line-height: 1.7; color: #C8C8C8; overflow-x: auto;">
+            <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-family: -apple-system, sans-serif;">Task record</div>
+<pre style="margin: 0; white-space: pre-wrap;"><span style="color: var(--text-muted);">// How was this task initiated?</span>
+<span style="color: var(--color-primary);">"trigger"</span>: {
+  <span style="color: var(--color-info);">"type"</span>: <span style="color: var(--color-success);">"scheduled"</span>,
+  <span style="color: var(--color-info);">"source"</span>: <span style="color: var(--color-success);">"sched_daily_report"</span>,
+  <span style="color: var(--color-info);">"fired_at"</span>: <span style="color: var(--color-success);">"2026-03-19T09:00:00"</span>
+}
+
+<span style="color: var(--text-muted);">// What did the agent do?</span>
+<span style="color: var(--color-primary);">"action"</span>: {
+  <span style="color: var(--color-info);">"tool"</span>: <span style="color: var(--color-success);">"executive_briefing"</span>,
+  <span style="color: var(--color-info);">"parameters"</span>: { <span style="color: var(--color-info);">"hours"</span>: <span style="color: #79c0ff;">24</span> }
+}
+
+<span style="color: var(--text-muted);">// What was the result?</span>
+<span style="color: var(--color-primary);">"outcome"</span>: {
+  <span style="color: var(--color-info);">"type"</span>: <span style="color: var(--color-success);">"report"</span>,
+  <span style="color: var(--color-info);">"success_criteria"</span>: <span style="color: var(--color-success);">"HTML report with agent narratives"</span>,
+  <span style="color: var(--color-info);">"artifact_ref"</span>: <span style="color: var(--color-success);">"briefing_2026-03-19.html"</span>,
+  <span style="color: var(--color-info);">"verified"</span>: <span style="color: #79c0ff;">true</span>
+}</pre>
+        </div>
+    </div>
+</section>
+
+<!-- Access Points -->
+<section class="section-spacing">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Use It From Anywhere</h2>
+        <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">Same task system, four interfaces. Pick the one that fits how you work.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.5rem;">Dashboard</div>
+                <div style="font-size: 0.75rem; color: #C8C8C8;">Visual task board with tabs for active, scheduled, completed, and archived tasks.</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-info); margin-bottom: 0.5rem;">MCP Tools</div>
+                <div style="font-size: 0.75rem; color: #C8C8C8;">6 MCP tools for task + queue operations. Works from Claude Code or any MCP client.</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-success); margin-bottom: 0.5rem;">REST API</div>
+                <div style="font-size: 0.75rem; color: #C8C8C8;">Full CRUD + claim endpoint. Build your own integrations, CI hooks, or monitoring.</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-family: monospace; font-size: 1rem; font-weight: 700; color: var(--color-warning); margin-bottom: 0.5rem;">VS Code</div>
+                <div style="font-size: 0.75rem; color: #C8C8C8;">Task panel in the extension. Assign, monitor, and review without leaving your editor.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">Stop Hoping AI Gets It Right</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Briefing, execution, review. Every task, every time.</p>
+        <div class="button-group">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="tools.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">All Tools</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

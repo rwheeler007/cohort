@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": [
+    "cohort-wq",
+    "cohort-channel"
+  ]
+}

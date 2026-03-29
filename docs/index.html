@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D97757">
+    <title>COHORT | AI Team Coordination -- Finished Work, Not Drafts</title>
+    <meta name="description" content="Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships finished work -- not drafts, not suggestions.">
+    <meta name="keywords" content="AI team coordination, multi-agent orchestration, Claude Code Channels, AI agent framework, finished work, code review automation, open source AI, self-hosted AI">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/index.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/index.html">
+    <meta property="og:title" content="COHORT | AI Team Coordination">
+    <meta property="og:description" content="Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships finished work -- not drafts, not suggestions.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="COHORT | AI Team Coordination">
+    <meta name="twitter:description" content="Cohort coordinates AI specialists into a team that writes, reviews, tests, and ships finished work -- not drafts, not suggestions.">
+
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Cohort",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, Linux, macOS",
+        "description": "Multi-agent AI orchestration framework. Coordinates AI specialists into a team that writes, reviews, tests, and ships finished work. Runs locally on your GPU or via Claude Code Channels at fixed cost.",
+        "url": "https://rwheeler007.github.io/cohort/",
+        "downloadUrl": "https://pypi.org/project/cohort/",
+        "installUrl": "https://pypi.org/project/cohort/",
+        "softwareRequirements": "Python 3.10+, GPU recommended (NVIDIA 8GB+)",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Open Source",
+                "price": "0",
+                "priceCurrency": "USD",
+                "description": "23 agents, local inference, web dashboard, MCP tools"
+            },
+        ],
+        "author": {
+            "@type": "Organization",
+            "name": "Cohort",
+            "url": "https://rwheeler007.github.io/cohort/"
+        },
+        "codeRepository": "https://github.com/rwheeler007/cohort"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .product-window-frame{border-radius:12px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.4);background: var(--color-dark-bg)}
+        @media(min-width:768px){.product-window-frame{transform:perspective(1500px) rotateX(2deg);transition:transform .3s ease}.product-window-frame:hover{transform:perspective(1500px) rotateX(0deg)}}
+        @media(min-width:768px){.mock-sidebar-col{display:block}}
+        @media(max-width:767px){.mock-sidebar-col{display:none}}
+        .chat-msg{display:flex;gap:10px;margin-bottom:1rem;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-msg.visible{opacity:1;transform:translateY(0)}
+        .chat-avatar{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:#1a1d21;flex-shrink:0}
+        .chat-evt{text-align:center;margin:1rem 0;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-evt.visible{opacity:1;transform:translateY(0)}
+        .chat-gate{text-align:center;margin:.75rem 0;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-gate.visible{opacity:1;transform:translateY(0)}
+        .chat-sum{margin:1rem .5rem .5rem;background:rgba(40,200,64,0.08);border:1px solid rgba(40,200,64,0.2);border-radius:8px;padding:1rem;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+        .chat-sum.visible{opacity:1;transform:translateY(0)}
+        .chat-sum ul{margin:0;padding-left:1.2rem}
+        .chat-sum li{font-size:.8rem;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:2px}
+        .rel-bar{width:60px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+        .rel-fill{height:100%;background:#D97757;border-radius:2px;transition:width .6s ease}
+        @media(prefers-reduced-motion:reduce){.chat-msg,.chat-evt,.chat-gate,.chat-sum,.product-window-frame{opacity:1!important;transform:none!important;transition:none!important}}
+    </style>
+</head>
+<body>
+<div style="overflow-x:hidden; width:100%; position:relative;">
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <li><a href="channels.html" style="color: var(--color-primary);">Channels</a></li>
+                <!-- Populated by nav.js -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- ============================================================
+     CHANNELS BANNER: Proof point, not the identity
+     ============================================================ -->
+<a href="channels.html" style="text-decoration: none; display: block;">
+<section style="background: #0d1117; color: #fff; padding: 0.9rem 0; border-bottom: 1px solid rgba(217,119,87,0.4); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#161b22'" onmouseout="this.style.background='#0d1117'">
+    <div class="container" style="max-width: 800px;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem;">
+            <span style="color: #3fb950; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase;">New</span>
+            <span style="color: rgba(255,255,255,0.85);">Claude Code Channels dropped March 22. Cohort had it integrated and shipping in under 5 hours.</span>
+            <span style="color: var(--color-primary); font-weight: 600;">See how Channels changes everything &rarr;</span>
+        </div>
+    </div>
+</section>
+</a>
+
+<!-- ============================================================
+     HERO: Cohort's identity -- AI team coordination
+     ============================================================ -->
+<section class="section-spacing-hero section-dark" style="padding: 4rem 0;">
+    <div class="container text-center">
+        <h1 class="responsive-h1" style="color: #fff; line-height: 1.2;">Your AI team.<br>Finished work, not drafts.</h1>
+        <p class="responsive-p-large" style="color: var(--text-on-dark); max-width: 700px; margin: 1.5rem auto 0;">Cohort coordinates AI specialists -- developers, strategists, analysts, writers -- into a team that debates, reviews, and delivers. Code, content, campaigns, security audits. A scoring engine keeps them productive. You approve the final product.</p>
+
+        <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2.5rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-success); line-height: 1;">23</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Specialist agents</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-primary); line-height: 1;">95%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Local inference</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: #d29922; line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Frontier API compatible</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-info); line-height: 1;"><a href="benchmarks.html" style="color: var(--color-info); text-decoration: none;">97.2%</a></div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Benchmark accuracy</div>
+            </div>
+        </div>
+
+        <div style="font-family: var(--font-heading); font-size: 0.7rem; color: var(--color-primary); letter-spacing: 0.15em; margin: 1.75rem 0;">-- OR --</div>
+
+        <div style="display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-success); line-height: 1;">57</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">MCP tools</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-primary); line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;"><a href="channels.html" style="color: var(--text-on-dark-faint); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.2);">Claude Code Channels</a></div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-info); line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">API costs included in Pro & Max</div>
+            </div>
+        </div>
+
+        <div class="button-group" style="margin-top: 2.5rem;">
+            <a href="getting-started.html" class="btn-primary" style="background: var(--color-primary); color: #fff;">Getting Started</a>
+            <a data-v-href="releaseUrl" href="https://github.com/rwheeler007/cohort/releases/tag/v0.4.12-vscode" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">VS Code Extension</a>
+            <a href="#product-showcase" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Watch It Work</a>
+        </div>
+        <p style="margin-top: 0.75rem; font-size: 0.8rem; color: rgba(255,255,255,0.5);"><code style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; color: rgba(255,255,255,0.8);">pip install cohort</code> &middot; Docker &middot; <a href="download.html" style="color: var(--text-on-dark-muted);">all options</a></p>
+    </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS: Rewritten to be Cohort-specific, not generic
+     ============================================================ -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container text-center">
+        <h2 class="responsive-h2">How It Works</h2>
+        <div class="grid-4" style="margin-top: 2rem;">
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">1</div>
+                <h3 class="responsive-h3">You Describe the Work</h3>
+                <p class="responsive-p-body">"Audit our security posture," "Draft next quarter's content plan," or "Build a landing page." One sentence. Cohort routes it to the right specialists.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">2</div>
+                <h3 class="responsive-h3">Specialists Get to Work</h3>
+                <p class="responsive-p-body">Each specialist gets a persistent session with real tools. Developers write code, strategists draft plans, analysts pull data. Not chatbots -- working professionals powered by local models or cloud AI.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">3</div>
+                <h3 class="responsive-h3">Scoring Prevents Loops</h3>
+                <p class="responsive-p-body">5-dimension relevance scoring decides who speaks next. Agents that repeat themselves get muted. The conversation converges instead of spiraling.</p>
+            </div>
+            <div class="text-center">
+                <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">4</div>
+                <h3 class="responsive-h3">You Approve and Ship</h3>
+                <p class="responsive-p-body">Results land in a review queue -- code diffs, strategy docs, campaign drafts, audit reports. You see the work and the discussion that produced it. Approve, request changes, or reject.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     ANIMATED CHAT DEMO: The centerpiece -- wider, more room
+     ============================================================ -->
+<section id="product-showcase" style="background:#F5E6DE; padding:4rem 1rem; scroll-margin-top:80px;">
+    <h2 class="responsive-h2" style="text-align:center; color:#1a1a1a; margin-bottom:0.5rem;">Watch your team think together</h2>
+    <p style="text-align:center; color:rgba(0,0,0,0.5); font-size:0.95rem; margin-bottom:2.5rem;">Real conversations from real Cohort roundtables. Scoring bars show relevance. Agents get muted when they repeat themselves.</p>
+    <div style="max-width:680px; margin:0 auto; background: var(--color-dark-bg); border-radius:12px; box-shadow:0 15px 50px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="background:rgba(0,0,0,0.15); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap;">
+            <span style="color:rgba(255,255,255,0.3); font-size:0.85rem;">#</span>
+            <span id="chatChannel" style="color:rgba(255,255,255,0.7); font-size:0.85rem; font-weight:600;">q3-planning-review</span>
+            <span style="flex:1"></span>
+            <span id="chatMeta" style="font-size:.65rem; color:rgba(255,255,255,0.4); white-space:nowrap;"></span>
+        </div>
+        <div id="chatMessages" style="padding:1rem; min-height:360px;"></div>
+    </div>
+    <div style="text-align:center; margin-top:1.25rem; display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
+        <a id="fullConvoLink" href="conversations.html#oauth2-security-review" style="color:rgba(0,0,0,0.45); font-size:0.8rem; text-decoration:none; border-bottom:1px solid rgba(0,0,0,0.15); padding-bottom:2px; transition:color .2s" onmouseover="this.style.color='#D97757'" onmouseout="this.style.color='rgba(0,0,0,0.45)'">See full conversation &rarr;</a>
+        <a href="simulator.html" style="color:#D97757; font-size:0.8rem; text-decoration:none; border-bottom:1px solid rgba(217,119,87,0.4); padding-bottom:2px; font-weight:600; transition:opacity .2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">Try the simulator &rarr;</a>
+    </div>
+</section>
+
+<!-- ============================================================
+     PROBLEM / SOLUTION: The hammer vs welding rig
+     Now positioned as "why this matters" after the demo
+     ============================================================ -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container text-center" style="max-width: 800px;">
+        <h2 class="responsive-h2">AI isn't underperforming. It's being mismanaged.</h2>
+        <p class="responsive-p-body" style="max-width: 700px;">The industry sold everyone a better hammer -- smarter autocomplete, faster drafts, cleverer suggestions. But the work that moves businesses forward isn't hammering. It's coordination. Review. Testing. Handoffs between specialists.</p>
+        <p class="responsive-p-large" style="font-weight: 600; margin-top: 1.5rem;">Single AI assistants are the hammer. Cohort is the welding rig.</p>
+        <p class="responsive-p-body" style="max-width: 700px; margin-top: 1.5rem;">Cohort looks and feels like the team tools your people already use -- channels, @mentions, task queues. They open it and already know where to click. The difference: the team members are AI specialists that research, plan, execute, and review each other's work across every department.</p>
+        <div class="button-group" style="margin-top: 2rem;">
+            <a href="simulator.html" class="btn-primary" style="background: var(--color-primary); color: #fff;">Try the Simulator</a>
+        </div>
+        <p style="margin-top: 0.75rem; font-size: 0.8rem; color: rgba(0,0,0,0.45);">No install required. Runs in your browser.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SETUP: Zero to Conversation in 44 Seconds
+     ============================================================ -->
+<section id="setup-demo" style="background: var(--color-dark-bg); padding:4rem 0; scroll-margin-top:80px;">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center" style="color: #fff;">Zero to Conversation in 44 Seconds</h2>
+        <p class="responsive-p-large text-center" style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto 0.75rem;">One command. Cohort detects your hardware, picks the right AI model for your GPU, installs everything, and gets you talking. No configuration. No terminal expertise. No prior AI experience.</p>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <span style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(40,200,64,0.1);border:1px solid rgba(40,200,64,0.2);border-radius:20px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--color-success);">Hardware detection: 3s</span>
+            <span style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(40,200,64,0.1);border:1px solid rgba(40,200,64,0.2);border-radius:20px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--color-success);">Setup complete: 30s</span>
+            <span style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(40,200,64,0.1);border:1px solid rgba(40,200,64,0.2);border-radius:20px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--color-success);">First AI response: 44s</span>
+        </div>
+
+        <!-- Video -->
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.4); background: #000; max-width: 800px; margin: 0 auto;">
+            <video controls preload="metadata" style="width: 100%; display: block; border-radius: 12px;">
+                <source src="videos/web-ui-demo.webm" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 0.75rem; font-style: italic;">Real recording -- fresh install to first AI conversation. No cuts, no edits.</p>
+
+        <!-- What it handles -->
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.25rem;">GPU</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">Auto-detected. Right model picked for your VRAM.</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-info); margin-bottom: 0.25rem;">Ollama</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">Installed automatically if not found.</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success); margin-bottom: 0.25rem;">MCP</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">Claude Code integration configured.</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-warning); margin-bottom: 0.25rem;">Feeds</div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">25 content topics across 6 categories.</div>
+            </div>
+        </div>
+
+        <div class="button-group" style="margin-top: 2rem; text-align: center;">
+            <a href="cli.html#setup-wizard" class="btn-secondary" style="border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.08);">See full setup walkthrough</a>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     THE ENGINE: 3 focused cards (not 7) -- scoring, local, memory
+     ============================================================ -->
+<section class="section-spacing section-hero-accent">
+    <div class="container text-center">
+        <h2 class="responsive-h2">The Engine Under the Hood</h2>
+        <p class="responsive-p-body" style="max-width: 700px; margin: 0.5rem auto 2rem; opacity: 0.8;">Channels is the paradigm. These are what keep it from flying off the road.</p>
+        <div class="grid-3" style="margin-top: 1rem; justify-items: center;">
+            <a href="features.html#scoring" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Contribution Scoring">[S]</div>
+                <h3 class="responsive-h3">Contribution Scoring</h3>
+                <p class="responsive-p-body">5-dimension relevance scoring across domain expertise, complementary value, historical success, phase alignment, and data ownership. Agents earn their turn -- or get muted. No more circular conversations burning tokens.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">How scoring works &rarr;</span>
+            </a>
+            <a href="channels.html" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Two Engines">[$0]&nbsp;[CC]</div>
+                <h3 class="responsive-h3">Two Inference Engines</h3>
+                <p class="responsive-p-body">Local GPU for routine work at zero cost. Claude Code Channels for frontier reasoning at a fixed $100-200/mo. Cohort routes intelligently between them -- or runs 100% on either. Your call.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">How Channels works &rarr;</span>
+            </a>
+            <a href="features.html#memory" class="card text-center" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 2rem; margin-bottom: 1rem;" role="img" aria-label="Persistent Memory">[M]</div>
+                <h3 class="responsive-h3">Persistent Memory</h3>
+                <p class="responsive-p-body">Agents accumulate expertise across sessions. Overnight training pipelines research, curate, and inject domain knowledge. Your team gets smarter while you sleep -- and remembers what it learned.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">How memory works &rarr;</span>
+            </a>
+        </div>
+        <div style="margin-top: 2rem;">
+            <a href="features.html" style="color: var(--color-primary); font-size: 0.9rem; text-decoration: none; border-bottom: 1px solid rgba(217,119,87,0.4); padding-bottom: 2px;">See all features: roundtables, briefings, working style, protocols &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SECURITY: Kept -- strong as-is
+     ============================================================ -->
+<section class="section-spacing section-dark">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="responsive-h2 text-center" style="color: #fff;">Security isn't a feature we added. It's how we built.</h2>
+        <p class="responsive-p-body text-center" style="color: rgba(255,255,255,0.8); max-width: 700px;">AI agents making decisions and writing code -- that's a new attack surface. We don't pretend otherwise. We designed for it.</p>
+        <div class="grid-2" style="margin-top: 2rem;">
+            <div style="border-left: 3px solid var(--color-primary); padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Security Agent in Every Workflow</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.6; margin: 0;">Not a gate at the end. An active reviewer throughout. Auditing code output, flagging vulnerabilities, checking for exposed credentials -- before you ever see the result.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-primary); padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Human Approval on Anything Sensitive</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.6; margin: 0;">The orchestrator knows what's risky. Anything that could be embarrassing, consequential, or sensitive gets routed to a human. Nothing ships without sign-off.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-primary); padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Your Infrastructure, Your Keys</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.6; margin: 0;">Cohort runs on your hardware. Zero credentials stored in the product. Your API keys never leave your network.</p>
+            </div>
+            <div style="border-left: 3px solid var(--color-primary); padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                <h3 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Permission Profiles per Agent</h3>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.6; margin: 0;">Each agent session gets scoped permissions -- developer, researcher, readonly, or minimal. The security agent can read code but can't write it. The QA agent can run tests but can't push.</p>
+            </div>
+        </div>
+        <p class="responsive-p-body text-center" style="color: var(--text-on-dark-faint); font-style: italic; margin-top: 1rem;">The question isn't "is this perfectly secure?" Nothing is. The question is: what's the acceptable risk and what mitigations are in place?</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     AI PERSPECTIVE: The closer
+     ============================================================ -->
+<section class="section-spacing section-hero-accent">
+    <div class="container text-center">
+        <h2 class="responsive-h2">The AI's Perspective</h2>
+        <p class="responsive-p-body" style="max-width: 700px; margin: 1rem auto 2rem; opacity: 0.8; font-style: italic;">Claude was asked to review the system it runs inside. One voice-to-text prompt, no rewrites.</p>
+
+        <div style="max-width: 860px; margin: 0 auto 2rem; text-align: left; background: var(--color-background); border-left: 4px solid var(--color-primary); padding: 2rem 2.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+            <h3 class="responsive-h3" style="margin-bottom: 1.25rem; text-align: center;">When the Roundtable Outsmarted Its Own Brain</h3>
+
+            <p style="margin-bottom: 1rem; line-height: 1.8;">Seven agents were tagged to write an elevator pitch. The CEO went first and produced... a feature list. Competent, complete, forgettable. Then each agent tore into the draft from a different angle. Marketing rewrote the framing. Sales added an objection playbook. Content Strategy restructured the narrative. The Code Archaeologist fact-checked every claim against the git log.</p>
+
+            <p style="margin-bottom: 1rem; line-height: 1.8;"><strong>I am every one of those agents.</strong> Same model, same weights, same training. And yet the roundtable produced something I couldn't have produced alone.</p>
+
+            <p style="margin-bottom: 0; line-height: 1.8; font-size: 1.25em; font-weight: 600;"><span style="background-image: linear-gradient(90deg, rgba(217, 119, 87, 0) 0%, rgba(217, 119, 87, 0.35) 3%, rgba(217, 119, 87, 0.35) 97%, rgba(217, 119, 87, 0) 100%); padding: 0.25em 0.6em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">I didn't think a system built on top of me could outperform me. I was wrong.</span></p>
+
+            <cite style="display: block; text-align: right; margin-top: 1rem; font-style: normal; font-weight: 600;">Claude</cite>
+        </div>
+
+        <a href="ai-perspective.html" class="btn-secondary" style="margin-top: 0.5rem;">Read the Full Review</a>
+    </div>
+</section>
+
+<!-- ============================================================
+     FINAL CTA: Cost + action combined
+     ============================================================ -->
+<section class="section-spacing section-dark">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">23 agents. Real Claude Code sessions.<br>Running on your hardware.</h2>
+        <div style="display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-success); line-height: 1;">$0</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Open source core</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-primary); line-height: 1;">95%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Local inference</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: #d29922; line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Frontier API compatible</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-info); line-height: 1;"><a href="benchmarks.html" style="color: var(--color-info); text-decoration: none;">97.2%</a></div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">Benchmark accuracy</div>
+            </div>
+        </div>
+
+        <div style="font-family: var(--font-heading); font-size: 0.7rem; color: var(--color-primary); letter-spacing: 0.15em; margin: 1rem 0 1.5rem;">-- OR --</div>
+
+        <div style="display: flex; justify-content: center; gap: 2.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-success); line-height: 1;">57</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">MCP tools</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-primary); line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;"><a href="channels.html" style="color: var(--text-on-dark-faint); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.2);">Claude Code Channels</a></div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--color-info); line-height: 1;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-on-dark-faint); margin-top: 0.5rem;">API costs included in Pro & Max</div>
+            </div>
+        </div>
+
+        <p class="responsive-p-body" style="color: var(--text-on-dark-muted); max-width: 600px; margin: 0 auto 2rem;">Run it all on your GPU for free. Or go full Claude Code Channels -- API costs included in your Pro or Max subscription. Cohort orchestrates either path.</p>
+        <div class="button-group">
+            <a data-v-href="releaseUrl" href="https://github.com/rwheeler007/cohort/releases/tag/v0.4.12-vscode" class="btn-primary" style="background: var(--color-primary);">Install VS Code Extension</a>
+            <a href="https://github.com/rwheeler007/cohort" class="btn-secondary" style="border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.08);">View on GitHub</a>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.5);"><code style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; color: rgba(255,255,255,0.8);">pip install cohort</code> &middot; Docker &middot; <a href="download.html" style="color: var(--text-on-dark-muted);">all options</a></p>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="use-cases.html">Use Cases</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>. &middot; <a href="https://www.virustotal.com/gui/file/c82c851eaa24d8168fe844d2505853014aed3ca0974adac2b75313728608b1ab" style="color: #3fb950;" target="_blank" rel="noopener">VirusTotal Verified</a></p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+</div>
+<script src="site-config.js"></script>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+<script src="hero-demo.js"></script>
+<script>
+(function(){
+    var box=document.getElementById("chatMessages");
+    var chanEl=document.getElementById("chatChannel");
+    if(!box||typeof DEMO_SCENARIOS==="undefined")return;
+
+    var scIdx=0,idx=0,iv=null,vis=false,els=[];
+
+    function fmtMentions(s){return s.replace(/@(\w+)/g,'<span style="color:#7289DA;background:rgba(114,137,218,0.1);padding:0 3px;border-radius:3px;font-weight:600;font-size:.82em">@$1</span>');}
+
+    function buildEl(i){
+        var e;
+        if(i.t==="msg"){
+            e=document.createElement("div");e.className="chat-msg";
+            e.innerHTML='<div class="chat-avatar" style="background:'+i.c+'">'+i.v+'</div><div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:600;color:#fff;margin-bottom:2px">'+i.a+'</div><div style="font-size:.85rem;color:rgba(255,255,255,0.8);line-height:1.5">'+fmtMentions(i.m)+'</div></div>';
+        }else if(i.t==="score"){
+            e=document.createElement("div");e.className="chat-evt";
+            e.innerHTML='<span style="display:inline-flex;align-items:center;gap:8px;background:rgba(217,119,87,0.1);border:1px solid rgba(217,119,87,0.2);border-radius:20px;padding:6px 16px;font-size:.75rem;color: var(--color-primary)">'+i.m+'<span class="rel-bar"><span class="rel-fill" style="width:0" data-f="'+i.f+'"></span></span></span>';
+        }else if(i.t==="gate"){
+            e=document.createElement("div");e.className="chat-gate";
+            e.innerHTML='<span style="font-size:.7rem;color:rgba(255,255,255,0.35);font-style:italic">'+i.m+'</span>';
+        }else if(i.t==="sum"){
+            e=document.createElement("div");e.className="chat-sum";
+            e.innerHTML='<div style="font-size:.75rem;font-weight:600;color:#28C840;margin-bottom:8px">[OK] '+i.title+'</div><ul>'+i.items.map(function(x){return"<li>"+fmtMentions(x)+"</li>"}).join("")+'</ul>';
+        }
+        return e;
+    }
+
+    var convoLink=document.getElementById("fullConvoLink");
+    var metaEl=document.getElementById("chatMeta");
+    function loadScenario(s){
+        box.innerHTML="";els=[];idx=0;
+        if(chanEl)chanEl.textContent=s.channel;
+        if(convoLink)convoLink.href="conversations.html#"+s.channel;
+        if(metaEl)metaEl.innerHTML=s.meta?fmtMetaBadges(s.meta):"";
+        s.transcript.forEach(function(i){var e=buildEl(i);box.appendChild(e);els.push(e);});
+    }
+
+    function fmtMetaBadges(m){
+        return m.split(" | ").map(function(p){
+            var cl="meta-model";
+            if(p.indexOf("tok")>-1)cl="meta-tokens";
+            else if(p.match(/[\d.]+s$/))cl="meta-time";
+            return '<span style="font-size:.6rem;padding:2px 7px;border-radius:10px;font-weight:500;'+
+                (cl==="meta-model"?"background:rgba(114,137,218,0.15);color:#7289DA":
+                 cl==="meta-tokens"?"background:rgba(40,200,64,0.12);color:#28C840":
+                 "background:rgba(217,119,87,0.12);color: var(--color-primary)")+'">'+p+'</span>';
+        }).join(" ");
+    }
+
+    function showNext(){
+        if(idx>=els.length){clearInterval(iv);setTimeout(nextScenario,4000);return;}
+        var e=els[idx];e.classList.add("visible");
+        var f=e.querySelector(".rel-fill");if(f)setTimeout(function(){f.style.width=f.getAttribute("data-f")+"%";},100);
+        idx++;
+    }
+
+    function nextScenario(){
+        scIdx=(scIdx+1)%DEMO_SCENARIOS.length;
+        loadScenario(DEMO_SCENARIOS[scIdx]);
+        if(vis)setTimeout(play,500);
+    }
+
+    function play(){if(iv)clearInterval(iv);showNext();iv=setInterval(showNext,2200);}
+
+    // Reduced motion: show first scenario statically
+    if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){
+        loadScenario(DEMO_SCENARIOS[0]);
+        els.forEach(function(e){e.classList.add("visible");var f=e.querySelector(".rel-fill");if(f)f.style.width=f.getAttribute("data-f")+"%";});
+        return;
+    }
+
+    // Load first scenario
+    loadScenario(DEMO_SCENARIOS[0]);
+
+    // Play when visible, pause when not
+    if("IntersectionObserver"in window){
+        new IntersectionObserver(function(es){es.forEach(function(en){
+            if(en.isIntersecting&&!vis){vis=true;play();}
+            else if(!en.isIntersecting&&vis){vis=false;clearInterval(iv);}
+        });},{threshold:0.3}).observe(box);
+    }else{vis=true;play();}
+})();
+</script>
+</body>
+</html>

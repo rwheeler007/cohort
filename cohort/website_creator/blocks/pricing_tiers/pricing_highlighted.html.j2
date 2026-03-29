@@ -1,0 +1,66 @@
+{# Pricing Tiers: Bold/modern variant with elevated highlighted tier (scale + shadow + badge).
+   Tags: bold, modern
+   Variables: block.section_headline,
+              block.tiers [{name, price, period, description, features, cta_text, cta_href, highlighted, badge}]
+#}
+<section class="bg-white py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if block.section_headline %}
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold" style="font-family: var(--font-heading);">{{ block.section_headline }}</h2>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+      {% for tier in block.tiers %}
+      <div
+        class="relative bg-white rounded-theme p-6 sm:p-8 border transition-transform duration-200 {% if tier.highlighted %}border-2 shadow-2xl md:scale-105 z-10{% else %}border-theme shadow-sm{% endif %}"
+        {% if tier.highlighted %}style="border-color: var(--color-primary);"{% endif %}
+      >
+        {# Badge ribbon #}
+        {% if tier.badge %}
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+          <span class="btn-primary inline-block px-5 py-1.5 text-xs font-bold uppercase tracking-wider shadow-md">{{ tier.badge }}</span>
+        </div>
+        {% endif %}
+
+        {# Tier header #}
+        <div class="text-center mb-8 {% if tier.badge %}pt-4{% endif %}">
+          <h3 class="text-xl font-bold mb-2 {% if tier.highlighted %}text-primary{% endif %}" style="font-family: var(--font-heading);">{{ tier.name }}</h3>
+          {% if tier.description %}
+          <p class="text-muted text-sm mb-4">{{ tier.description }}</p>
+          {% endif %}
+          <div class="flex items-baseline justify-center gap-1">
+            <span class="text-5xl font-extrabold {% if tier.highlighted %}text-primary{% endif %}">{{ tier.price }}</span>
+            {% if tier.period %}
+            <span class="text-muted text-sm font-medium">/ {{ tier.period }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {# Feature checklist #}
+        {% if tier.features %}
+        <ul class="space-y-4 mb-8" role="list" aria-label="{{ tier.name }} features">
+          {% for feature in tier.features %}
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5 {% if tier.highlighted %}text-primary{% else %}text-muted{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-sm">{{ feature }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {# CTA #}
+        <a
+          href="{{ tier.cta_href | default('#') }}"
+          class="block w-full text-center px-6 py-3.5 font-bold text-sm transition {% if tier.highlighted %}btn-primary shadow-lg{% else %}btn-secondary{% endif %}"
+        >
+          {{ tier.cta_text | default('Get Started') }}
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

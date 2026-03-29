@@ -1,0 +1,35 @@
+{# Brand Trust Bar: Horizontal row of partner/client logos in grayscale, full color on hover.
+   Tags: conventional, formal
+   Variables: block.heading,
+              block.logos [{image, alt, url}]
+#}
+<section class="bg-white py-12 sm:py-16">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if block.heading %}
+    <p class="text-center text-sm font-semibold uppercase tracking-wider text-muted mb-8">{{ block.heading }}</p>
+    {% endif %}
+
+    <ul class="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16" role="list" aria-label="{{ block.heading | default('Trusted by') }}">
+      {% for logo in block.logos %}
+      <li class="flex-shrink-0">
+        {% if logo.url %}
+        <a href="{{ logo.url }}" target="_blank" rel="noopener noreferrer" class="block">
+          <span class="sr-only">{{ logo.alt }}</span>
+        {% endif %}
+          <img
+            src="{{ logo.image }}"
+            alt="{{ logo.alt }}"
+            loading="lazy"
+            class="h-8 sm:h-10 w-auto object-contain transition-all duration-300"
+            style="filter: grayscale(100%) opacity(0.5);"
+            onmouseover="this.style.filter='grayscale(0%) opacity(1)'"
+            onmouseout="this.style.filter='grayscale(100%) opacity(0.5)'"
+          >
+        {% if logo.url %}
+        </a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

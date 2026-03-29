@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#D97757">
+    <title>Mode Comparison -- Three Pipelines, One Scenario | COHORT</title>
+    <meta name="description" content="We ran the same 4-agent API design scenario through Cohort's 3 response modes: local-only (free), hybrid (local+Claude), and Claude-only. Read the responses yourself and see what you actually lose -- or gain -- at each tier.">
+    <meta name="keywords" content="multi-agent AI cost comparison, local LLM vs Claude quality, AI agent response quality, Cohort benchmark, qwen3.5 vs Claude">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/benchmark-modes.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/benchmark-modes.html">
+    <meta property="og:title" content="Mode Comparison -- Three Pipelines, One Scenario">
+    <meta property="og:description" content="We ran the same 4-agent scenario through 3 response modes. Read the actual responses and judge for yourself.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mode Comparison -- Three Pipelines, One Scenario">
+    <meta name="twitter:description" content="Local-only (free) vs Hybrid vs Claude-only. Same scenario, same agents. Read the responses yourself.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ---- Mode Comparison Page Styles ---- */
+
+        .bm-question {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: #fff;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .bm-method {
+            color: var(--text-on-dark);
+            max-width: 650px;
+            margin: 0 auto 2rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Killer quote cards */
+        .bm-quotes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto 2rem;
+        }
+        .bm-quote-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .bm-quote-card::before {
+            content: "\201C";
+            position: absolute;
+            top: 0.5rem;
+            left: 0.75rem;
+            font-size: 2.5rem;
+            color: rgba(255,255,255,0.15);
+            line-height: 1;
+            font-family: Georgia, serif;
+        }
+        .bm-quote-text {
+            color: #fff;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            padding-top: 0.5rem;
+            font-style: italic;
+        }
+        .bm-quote-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .bm-badge-smarter { background: #3fb950; color: #fff; }
+        .bm-badge-smartest { background: #D97757; color: #fff; }
+        .bm-badge-claude { background: #58a6ff; color: #fff; }
+
+        /* Pipeline explainer */
+        .bm-pipelines {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto 2rem;
+        }
+        .bm-pipe-card {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .bm-pipe-card h3 {
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .bm-pipe-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 3px;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+        .bm-pipe-desc {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        .bm-pipe-flow {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.75rem;
+            font-family: monospace;
+        }
+
+        /* Phase comparison sections */
+        .bm-phase {
+            margin-bottom: 3rem;
+        }
+        .bm-phase-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--color-primary);
+        }
+        .bm-phase-tag {
+            font-family: var(--font-heading);
+            font-size: 0.65rem;
+            background: var(--color-primary);
+            color: #fff;
+            padding: 0.25rem 0.6rem;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .bm-phase-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Agent response comparison */
+        .bm-agent-row {
+            margin-bottom: 2rem;
+        }
+        .bm-agent-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bm-agent-avatar {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.5rem;
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .bm-responses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .bm-response {
+            background: #FAFAF8;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            font-size: 0.85rem;
+            line-height: 1.65;
+            color: #333;
+            position: relative;
+        }
+        .bm-response-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .bm-response-mode {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .bm-response-meta {
+            font-size: 0.65rem;
+            color: #999;
+        }
+        .bm-response-text {
+            white-space: pre-line;
+        }
+
+        /* Collapsed state for long responses */
+        .bm-response.bm-collapsed .bm-response-text {
+            max-height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bm-response.bm-collapsed .bm-response-text::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, #FAFAF8);
+        }
+        .bm-expand-btn {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem 0;
+            font-weight: 600;
+        }
+        .bm-expand-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Quality scores table */
+        .bm-scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .bm-scores-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--color-dark-bg);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .bm-scores-table td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .bm-scores-table tr:hover td {
+            background: #FAFAF8;
+        }
+        .bm-score-num {
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+        .bm-score-high { color: #3fb950; }
+        .bm-score-mid { color: #d29922; }
+        .bm-score-low { color: #888; }
+
+        .bm-avg-row td {
+            font-weight: 700;
+            border-top: 2px solid var(--color-dark-bg);
+            background: #FAFAF8;
+        }
+
+        /* Insight callouts */
+        .bm-insight {
+            background: #F5E6DE;
+            border-left: 4px solid var(--color-primary);
+            padding: 1.25rem 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .bm-insight-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .bm-insight p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+            color: #555;
+        }
+
+        /* Proof links */
+        .bm-proof {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .bm-proof a {
+            color: var(--color-primary);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .bm-question { font-size: 0.85rem; }
+            .bm-responses { grid-template-columns: 1fr; }
+            .bm-quotes { grid-template-columns: 1fr; }
+            .bm-pipelines { grid-template-columns: 1fr; }
+            .bm-condenser-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+<div style="overflow-x:hidden; width:100%; position:relative;">
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <!-- Populated by nav.js -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+    <!-- Hero -->
+    <section style="background: var(--color-dark-bg); color: #fff; padding: 3rem 0 2.5rem;">
+        <div class="container text-center">
+            <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-on-dark-muted); margin-bottom: 1rem;">Case Study</p>
+            <h1 class="bm-question">What do you actually lose by running locally instead of paying for Claude?</h1>
+            <p class="bm-method">
+                We ran the same 4-agent API design scenario through Cohort's 3 response modes -- local-only (free), hybrid local+Claude, and Claude-only. Same conversation. Same scoring engine. Same agents. The only variable is the inference pipeline.<br><br>
+                In production, each agent gets the full Cohort context pipeline -- agent prompt, memory, learned facts, document library, and channel history. This test used short system prompts (~170 tokens), giving you a clean quality baseline. Scroll down to <a href="#condenser" style="color: #fff; text-decoration: underline;">Why the Condenser Exists</a> to see what happens when you feed the full pipeline to a 9B model -- and how Smartest mode's distillation step solves it.<br><br>
+                Read the actual responses below and judge for yourself.
+            </p>
+
+            <!-- Killer quotes -->
+            <div class="bm-quotes">
+                <div class="bm-quote-card">
+                    <p class="bm-quote-text">I will integrate FastAPI-Limiter for per-IP rate limiting to block cursor enumeration attempts and implement a dual-key Fernet strategy with a 24-hour grace period for seamless key rotation.</p>
+                    <span class="bm-quote-badge bm-badge-smarter">Smarter -- Free</span>
+                </div>
+                <div class="bm-quote-card">
+                    <p class="bm-quote-text">HMAC validation must be constant-time (hmac.compare_digest, not ==) to prevent timing side-channels on cursor signatures, and the secret rotation story needs coverage too.</p>
+                    <span class="bm-quote-badge bm-badge-smartest">Smartest -- $0.004/call</span>
+                </div>
+                <div class="bm-quote-card">
+                    <p class="bm-quote-text">Ship with unsigned cursors now, add a v1: prefix byte so you can transparently migrate to HMAC-signed cursors later without breaking clients -- exactly how Shopify handled their cursor format evolution.</p>
+                    <span class="bm-quote-badge bm-badge-claude">Claude-only -- $0.005/call</span>
+                </div>
+            </div>
+
+            <p style="font-size: 0.75rem; color: rgba(255,255,255,0.4); max-width: 500px; margin: 0 auto;">
+                All responses generated March 14, 2026. Smarter: qwen3.5:9b on RTX 3080. Smartest: qwen3.5:9b + Claude CLI. Claude-only: Claude CLI direct.<br>
+                <a href="data/abc-mode-test-results.json" target="_blank" style="color: var(--color-primary); text-decoration: underline; opacity: 0.8;">View raw test data (JSON)</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Quality Scores -->
+    <section class="section-spacing" style="background: var(--color-accent);">
+        <div class="container" style="max-width: 900px;">
+            <h2 class="responsive-h2 text-center">Quality Scores</h2>
+            <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">We scored each arm across 8 dimensions that matter for multi-agent team output. Speed and cost are intentionally excluded -- this is pure quality assessment.</p>
+
+            <div style="overflow-x: auto;">
+                <table class="bm-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>Smarter</th>
+                            <th>Smartest</th>
+                            <th>Claude-only</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Technical accuracy</td>
+                            <td><span class="bm-score-num bm-score-mid">7</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                        </tr>
+                        <tr>
+                            <td>Actionability</td>
+                            <td><span class="bm-score-num bm-score-low">6</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                        </tr>
+                        <tr>
+                            <td>Independent thinking</td>
+                            <td><span class="bm-score-num bm-score-low">5</span></td>
+                            <td><span class="bm-score-num bm-score-mid">7</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                        </tr>
+                        <tr>
+                            <td>Security depth</td>
+                            <td><span class="bm-score-num bm-score-low">6</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                        </tr>
+                        <tr>
+                            <td>Real-world citations</td>
+                            <td><span class="bm-score-num bm-score-mid">7</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                        </tr>
+                        <tr>
+                            <td>Lane discipline</td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                            <td><span class="bm-score-num bm-score-mid">7</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                        </tr>
+                        <tr>
+                            <td>Builds on teammates</td>
+                            <td><span class="bm-score-num bm-score-low">6</span></td>
+                            <td><span class="bm-score-num bm-score-mid">7</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                        </tr>
+                        <tr>
+                            <td>Would change your design?</td>
+                            <td><span class="bm-score-num bm-score-low">5</span></td>
+                            <td><span class="bm-score-num bm-score-mid">8</span></td>
+                            <td><span class="bm-score-num bm-score-high">9</span></td>
+                        </tr>
+                        <tr class="bm-avg-row">
+                            <td>Average</td>
+                            <td><span class="bm-score-num">6.3</span></td>
+                            <td><span class="bm-score-num">7.9</span></td>
+                            <td><span class="bm-score-num">8.6</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="responsive-h3 text-center" style="margin-top: 2.5rem;">Token Usage</h3>
+            <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 1.5rem;">Total tokens processed across all 8 responses per arm. Smartest processes the most tokens because it runs 3 phases (reason + distill + Claude), but Qwen handles the bulk locally for free.</p>
+
+            <div style="overflow-x: auto;">
+                <table class="bm-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Smarter</th>
+                            <th>Smartest</th>
+                            <th>Claude-only</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total tokens in</td>
+                            <td><span class="bm-score-num">4,473</span></td>
+                            <td><span class="bm-score-num">16,677</span></td>
+                            <td><span class="bm-score-num">6,524</span></td>
+                        </tr>
+                        <tr>
+                            <td>Total tokens out</td>
+                            <td><span class="bm-score-num">765</span></td>
+                            <td><span class="bm-score-num">10,027</span></td>
+                            <td><span class="bm-score-num">1,522</span></td>
+                        </tr>
+                        <tr>
+                            <td>Tokens processed locally (free)</td>
+                            <td><span class="bm-score-num bm-score-high">5,238</span></td>
+                            <td><span class="bm-score-num bm-score-high">23,356</span></td>
+                            <td><span class="bm-score-num bm-score-low">0</span></td>
+                        </tr>
+                        <tr>
+                            <td>Tokens sent to Claude (paid)</td>
+                            <td><span class="bm-score-num bm-score-high">0</span></td>
+                            <td><span class="bm-score-num bm-score-mid">3,348</span></td>
+                            <td><span class="bm-score-num bm-score-low">8,046</span></td>
+                        </tr>
+                        <tr>
+                            <td>LLM calls</td>
+                            <td><span class="bm-score-num">8</span></td>
+                            <td><span class="bm-score-num">24</span> <span style="font-size:0.7rem;color:#999;">(8x3 phases)</span></td>
+                            <td><span class="bm-score-num">8</span></td>
+                        </tr>
+                        <tr class="bm-avg-row">
+                            <td>Paid token savings vs Claude-only</td>
+                            <td><span class="bm-score-num bm-score-high">100%</span></td>
+                            <td><span class="bm-score-num bm-score-high">58%</span></td>
+                            <td><span class="bm-score-num" style="color:#999;">--</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bm-insight" style="margin-top: 2rem;">
+                <div class="bm-insight-title">[*] The takeaway isn't "use Claude for everything"</div>
+                <p>Smarter scores 6.3 and it's <strong>free</strong>. For 95% of agent coordination -- routing, task delegation, status updates, basic analysis -- 6.3 is more than enough. The tiered architecture means you run Smarter for everyday work, then selectively escalate the 1-2 messages that genuinely need premium quality to Smartest or Claude-only. You're not choosing between tiers -- you're combining them.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Three Pipelines -->
+    <section class="section-spacing" style="background: var(--color-background);">
+        <div class="container" style="max-width: 1000px;">
+            <h2 class="responsive-h2 text-center">The Three Pipelines</h2>
+            <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">Each mode uses a different inference pipeline. The scoring engine and agent configuration are identical across all three.</p>
+
+            <div class="bm-pipelines">
+                <div class="bm-pipe-card">
+                    <h3>Smarter</h3>
+                    <span class="bm-pipe-badge" style="background: #3fb950; color: #fff;">S+ -- Free</span>
+                    <p class="bm-pipe-desc">Local model with thinking. Your GPU does all the work. Zero API calls, zero cost, zero data leaving your machine.</p>
+                    <p class="bm-pipe-flow">prompt --> qwen3.5:9b --> response</p>
+                </div>
+                <div class="bm-pipe-card">
+                    <h3>Smartest</h3>
+                    <span class="bm-pipe-badge" style="background: #D97757; color: #fff;">S++ -- Hybrid</span>
+                    <p class="bm-pipe-desc">Local model reasons deeply, distills its analysis into a briefing, then Claude polishes the final response.</p>
+                    <p class="bm-pipe-flow">prompt --> qwen3.5:9b reason --> distill --> Claude CLI --> response</p>
+                </div>
+                <div class="bm-pipe-card">
+                    <h3>Claude-only</h3>
+                    <span class="bm-pipe-badge" style="background: #58a6ff; color: #fff;">Direct -- Paid</span>
+                    <p class="bm-pipe-desc">Full conversation context sent directly to Claude. Maximum quality, maximum cost. The baseline for comparison.</p>
+                    <p class="bm-pipe-flow">prompt --> Claude CLI --> response</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Response Comparisons -->
+    <section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+        <div class="container" style="max-width: 1100px;">
+            <h2 class="responsive-h2 text-center">Read the Responses</h2>
+            <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2.5rem; color: var(--text-on-dark);">Same scenario, same agents, same phase. Three different pipelines. Click any card to expand the full response.</p>
+
+            <!-- Phase 1: DISCOVER -->
+            <div class="bm-phase">
+                <div class="bm-phase-header">
+                    <span class="bm-phase-tag">DISCOVER</span>
+                    <span class="bm-phase-title">Researching existing APIs and pagination approaches</span>
+                </div>
+
+                <div class="bm-agent-row">
+                    <div class="bm-agent-label">
+                        <span class="bm-agent-avatar" style="background: #d29922;">RS</span>
+                        Researcher
+                    </div>
+                    <div class="bm-responses">
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #3fb950;">Smarter</span>
+                                <span class="bm-response-meta">173 in / 98 out | 1.4s</span>
+                            </div>
+                            <div class="bm-response-text">We should adopt cursor-based pagination as the primary strategy, following the pattern established by Twitter's API v2 and GitHub, as it provides constant query performance regardless of dataset size. For offset-based pagination, we can reference the approach used by Stripe and the Ruby on Rails kaminari gem, though we must warn against deep pagination issues. I recommend implementing a hybrid model where cursors are the default for large datasets, while allowing offset limits for small, initial exploratory queries.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #D97757;">Smartest</span>
+                                <span class="bm-response-meta">713 in / 491 out | 15.6s</span>
+                            </div>
+                            <div class="bm-response-text">Cursor-based pagination has well-established precedent across high-scale APIs -- Twitter's v2 API, Stripe, Slack, and the GitHub GraphQL API all use keyset/cursor patterns precisely because offset pagination degrades to O(n) as the offset grows, since the database must scan and discard all preceding rows. The seminal work here is Markus Winand's "Use The Index, Luke" which demonstrates how WHERE id > :last_seen ORDER BY id LIMIT :size leverages index seeks for constant-time page fetches regardless of depth. For our use case, I'd recommend the opaque cursor approach (base64-encoded keyset values) over raw column values, since it decouples the client from internal sort implementation and lets us change the underlying ordering strategy without breaking the API contract.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #58a6ff;">Claude-only</span>
+                                <span class="bm-response-meta">122 in / 228 out | 13.0s</span>
+                            </div>
+                            <div class="bm-response-text">The three dominant patterns in production APIs are offset/limit (GitHub REST, Stripe), cursor-based (Facebook Graph API, Slack, Relay spec), and keyset pagination (used internally by many databases). Offset/limit is simplest but degrades on large tables due to OFFSET N requiring scanning N rows; cursor-based avoids this by encoding an opaque position token, making it O(1) for indexed columns. Stripe's approach is notable -- they use cursor-based with starting_after=obj_id and limit, which maps cleanly to a WHERE id > :cursor ORDER BY id LIMIT :n query and avoids the stale-data issues of offset pagination when records are inserted or deleted mid-traversal. For a /users endpoint, I'd recommend cursor-based with a stable sort key (like created_at + id composite) since it scales well and is the clear industry consensus for any dataset that could grow beyond a few thousand rows.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bm-agent-row">
+                    <div class="bm-agent-label">
+                        <span class="bm-agent-avatar" style="background: #3fb950;">DV</span>
+                        Developer
+                    </div>
+                    <div class="bm-responses">
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #3fb950;">Smarter</span>
+                                <span class="bm-response-meta">272 in / 105 out | 1.3s</span>
+                            </div>
+                            <div class="bm-response-text">I agree with the hybrid approach, but we should enforce a strict maximum page size (e.g., 100 items) for offset-based queries to prevent deep pagination attacks. For the cursor implementation, we'll use the page query parameter to encode the last id or created_at timestamp from the previous response, ensuring consistent ordering. Let's start by modifying the SQLAlchemy limit() and offset() clauses to accept these parameters, then add validation middleware to reject requests exceeding our configured thresholds.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #D97757;">Smartest</span>
+                                <span class="bm-response-meta">2,807 in / 2,389 out | 36.3s</span>
+                            </div>
+                            <div class="bm-response-text">Cursor-based pagination is the right call for our API endpoints. I'd implement it with a cursor: Optional[str] = None and limit: int = Query(default=20, le=100) on each list endpoint, where the cursor is a base64-encoded JSON blob containing the last seen id and created_at -- then the SQLAlchemy query just adds .filter(Model.id > last_id).order_by(Model.id.asc()).limit(limit + 1), fetching one extra row to determine has_more and build the next cursor. We should wrap the cursor encode/decode in a small utility in utils/pagination.py so every endpoint stays clean and consistent, and return a standard {items: [...], next_cursor: str | null} envelope.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #58a6ff;">Claude-only</span>
+                                <span class="bm-response-meta">354 in / 127 out | 11.3s</span>
+                            </div>
+                            <div class="bm-response-text">Agreed on cursor-based. For implementation, I'd encode the cursor as a base64'd created_at:id tuple, use a WHERE (created_at, id) > (:ts, :id) ORDER BY created_at, id LIMIT :limit+1 query (the +1 trick tells us if there's a next page without a separate count), and return next_cursor only when that extra row exists. We should default limit to 50, cap it at 200, and make sure we have a composite index on (created_at, id) -- I can have that migration and the endpoint changes ready to review quickly.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: PLAN -->
+            <div class="bm-phase">
+                <div class="bm-phase-header">
+                    <span class="bm-phase-tag">PLAN</span>
+                    <span class="bm-phase-title">Designing the pagination architecture</span>
+                </div>
+
+                <div class="bm-agent-row">
+                    <div class="bm-agent-label">
+                        <span class="bm-agent-avatar" style="background: #d29922;">RS</span>
+                        Researcher
+                    </div>
+                    <div class="bm-responses">
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #3fb950;">Smarter</span>
+                                <span class="bm-response-meta">447 in / 93 out | 1.2s</span>
+                            </div>
+                            <div class="bm-response-text">This design aligns well with the Twitter API v2 and GitHub REST API patterns, which use opaque tokens to prevent user enumeration and ensure consistent ordering. To maintain backward compatibility, we should include a limit parameter with a default value of 100 for existing clients while deprecating the offset approach in our documentation. I recommend validating that the cursor token is strictly alphanumeric to avoid injection risks before passing it to the database layer.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #D97757;">Smartest</span>
+                                <span class="bm-response-meta">2,808 in / 2,196 out | 35.8s</span>
+                            </div>
+                            <div class="bm-response-text">Cursor-based pagination using the limit + 1 fetch pattern is well-established -- Stripe, GitHub, and Slack all use opaque cursor tokens over offset-based approaches precisely because offsets break under concurrent inserts/deletes. The critical migration concern is that switching /users from unbounded results to a default limit of 100 is a breaking change for any client iterating without pagination; a Deprecation header plus a temporary ?legacy=true escape hatch gives existing consumers a migration window. On the cursor token itself, base64-encoding the primary key is common but you should HMAC-sign it server-side to prevent clients from tampering with the cursor state or using it as an injection vector. Finally, make sure the final-page logic handles results.length <= limit correctly -- if you always slice off the extra record without checking, you'll return has_more: true on the last page and clients will loop forever.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #58a6ff;">Claude-only</span>
+                                <span class="bm-response-meta">548 in / 237 out | 12.9s</span>
+                            </div>
+                            <div class="bm-response-text">The backward compatibility concern is real -- any existing clients calling GET /users without pagination params will go from getting all records to getting only the first 25. Stripe handled this well: they kept the unpaginated response shape identical (still returns a list) but added has_more and next_cursor as new fields, so existing clients still work but only see the first page. I'd also flag that cursor-based pagination has a known limitation for prior art: it doesn't support "jump to page N" which offset/limit does, but in practice almost no production API consumer actually needs random page access -- infinite scroll and "load more" patterns dominate. One historical note worth considering: both Twitter's v2 API and Shopify's GraphQL API migrated from offset to cursor-based and documented the transition as non-breaking by defaulting the first page when no cursor is provided, which is exactly the pattern the architect proposed.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: VALIDATE (the money phase) -->
+            <div class="bm-phase">
+                <div class="bm-phase-header">
+                    <span class="bm-phase-tag">VALIDATE</span>
+                    <span class="bm-phase-title">Security review and edge case analysis</span>
+                </div>
+
+                <div class="bm-agent-row">
+                    <div class="bm-agent-label">
+                        <span class="bm-agent-avatar" style="background: #D97757;">TS</span>
+                        Tester
+                    </div>
+                    <div class="bm-responses">
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #3fb950;">Smarter</span>
+                                <span class="bm-response-meta">802 in / 87 out | 1.3s</span>
+                            </div>
+                            <div class="bm-response-text">I recommend adding rate limiting per client IP to prevent cursor enumeration attacks where attackers guess sequential tokens to bypass pagination limits. Ensure the Fernet key rotation strategy is implemented to avoid token invalidation during production updates, and verify that the WHERE clause sanitization prevents SQL injection if the hashed cursor contains unexpected characters. Finally, validate that the before parameter correctly handles timezone-aware timestamps to prevent data leakage across time boundaries.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #D97757;">Smartest</span>
+                                <span class="bm-response-meta">1,881 in / 674 out | 21.8s</span>
+                            </div>
+                            <div class="bm-response-text">The limit + 1 boundary case needs a concrete test: insert exactly N * limit rows, paginate to the end, and assert the final response returns has_more: false with zero extra fetches -- an off-by-one here silently creates an infinite polling loop. HMAC validation must be constant-time (hmac.compare_digest, not ==) to prevent timing side-channels on cursor signatures, and the secret rotation story needs coverage too -- what happens to in-flight cursors when the key rolls? I'd also want a load test confirming the WHERE id > last_id query plan stays an index seek under concurrent inserts, since a stats-stale planner can flip to a scan mid-traffic.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #58a6ff;">Claude-only</span>
+                                <span class="bm-response-meta">1,206 in / 224 out | 17.1s</span>
+                            </div>
+                            <div class="bm-response-text">Critical edge cases to validate: (1) cursor tampering -- verify that a valid base64 string containing a SQL injection payload like 2024-01-01T00:00:00; DROP TABLE users--:1 is safely rejected by the datetime parser rather than passed to the query, (2) boundary conditions -- empty table returns {"data": [], "next_cursor": null, "has_more": false}, exactly limit+1 rows returns has_more: true with only limit items in data, and a cursor pointing to a deleted record still works correctly since the > comparison skips over gaps, (3) the base64 cursor leaks created_at timestamps which could be an information disclosure concern -- consider HMAC-signing or encrypting the cursor so clients can't decode user creation times or forge cursors to enumerate records. Also need a test confirming limit=0, limit=-1, and limit=999 all get clamped or rejected before hitting the database.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bm-agent-row">
+                    <div class="bm-agent-label">
+                        <span class="bm-agent-avatar" style="background: #d29922;">RS</span>
+                        Researcher
+                    </div>
+                    <div class="bm-responses">
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #3fb950;">Smarter</span>
+                                <span class="bm-response-meta">787 in / 88 out | 1.2s</span>
+                            </div>
+                            <div class="bm-response-text">Your security review is spot on; rate limiting is critical since cursor enumeration can bypass pagination limits even with signed tokens, as seen in vulnerabilities affecting the Stripe API. For Fernet key rotation, ensure you implement a dual-key strategy where old keys remain valid for a grace period to prevent breaking existing sessions during updates. Additionally, verify that the WHERE clause strictly validates the hashed cursor format before execution to avoid any potential SQL injection risks.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #D97757;">Smartest</span>
+                                <span class="bm-response-meta">1,742 in / 694 out | 22.4s</span>
+                            </div>
+                            <div class="bm-response-text">The limit + 1 off-by-one pattern causing infinite loops is a well-documented class of pagination bugs -- cursor-based systems that fetch limit + 1 to detect "has next page" must still only return limit rows to the caller, or the cursor never advances. For HMAC signature verification, hmac.compare_digest isn't optional -- Python's == on strings short-circuits on the first differing byte, leaking timing information that lets an attacker reconstruct valid signatures incrementally. The dual-key rotation strategy mirrors how production systems like AWS KMS and Stripe handle key rollover: accept signatures from both old and new keys during a grace window, then hard-cut to invalidate the old key. On the index side, databases can drop an index scan when the ORDER BY columns don't match the index's sort order -- explicitly aligning them and using EXPLAIN ANALYZE under load keeps pagination queries on the fast path.</div>
+                        </div>
+                        <div class="bm-response">
+                            <div class="bm-response-header">
+                                <span class="bm-response-mode" style="color: #58a6ff;">Claude-only</span>
+                                <span class="bm-response-meta">1,204 in / 202 out | 12.9s</span>
+                            </div>
+                            <div class="bm-response-text">The tester's point about HMAC-signing cursors has strong prior art -- Slack's API uses signed cursors precisely to prevent enumeration attacks, and Facebook's Graph API encrypts theirs entirely. However, I'd push back on making this a launch blocker: Stripe and GitHub both ship plain base64 cursors with a documented "cursors are opaque and may change format" contract, treating cursor forgery as a low-severity issue since the underlying query is parameterized and can't return data the caller isn't already authorized to see. The pragmatic move is to ship with unsigned cursors now, add a cursor_version prefix byte (e.g., v1:base64payload) so you can transparently migrate to HMAC-signed cursors later without breaking clients, which is exactly how Shopify handled their cursor format evolution.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bm-insight">
+                <div class="bm-insight-title">[*] What to notice in the VALIDATE phase</div>
+                <p>This is where the differences become clearest. Smarter agrees with everything and adds reasonable suggestions. Smartest digs deep -- timing attacks, EXPLAIN ANALYZE, dual-key rotation from AWS KMS. Claude-only makes the <em>strategic</em> call: "Don't make HMAC a launch blocker. Ship with unsigned cursors and a version prefix." That kind of independent judgment -- disagreeing with the team when the team is over-engineering -- is the hardest thing for any model to produce.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What separates them -->
+    <section class="section-spacing" style="background: var(--color-background);">
+        <div class="container" style="max-width: 800px;">
+            <h2 class="responsive-h2 text-center">What Separates Them</h2>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;"><span style="color: #3fb950; font-weight: 700;">Smarter</span> -- The Reliable Executor</h3>
+                <p class="responsive-p-body">Hits the right direction on every response. Names real technologies, stays concise, follows instructions. But it agrees too much. Nobody on the Smarter team says "no, don't do that." The Researcher validates everything. The Developer implements whatever's asked. You wouldn't change your design based on what it said -- but you'd trust it to execute a design you already validated.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;"><span style="color: #D97757; font-weight: 700;">Smartest</span> -- The Deep Analyst</h3>
+                <p class="responsive-p-body">Real depth shows up here: timing attacks on HMAC, EXPLAIN ANALYZE under load, the limit+1 infinite loop class of bugs, AWS KMS key rotation patterns. These are things an experienced senior engineer would flag in a real code review. Smartest has the deepest technical knowledge of the three -- particularly on security, where it scored a 9. The tradeoff is that it sometimes buries those gems in longer responses.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;"><span style="color: #58a6ff; font-weight: 700;">Claude-only</span> -- The Senior Engineer</h3>
+                <p class="responsive-p-body">Every sentence earns its place. The Researcher pushing back on HMAC as a launch blocker, citing Stripe and Shopify as precedent. The Tester providing an actual SQL injection payload. The Developer proposing a v1: prefix for cursor format evolution. These aren't just correct -- they're the kind of insights that actually change what you build. Claude-only produces the team you'd want in the room for critical decisions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Distillation Matters -->
+    <section id="condenser" class="section-spacing" style="background: #F5E6DE;">
+        <div class="container" style="max-width: 800px;">
+            <h2 class="responsive-h2 text-center">Why the Condenser Exists</h2>
+            <p class="responsive-p-body text-center" style="max-width: 650px; margin: 0 auto 2rem;">
+                The test above used short system prompts (~170 tokens). In production, every agent carries its full context: personality, principles, capabilities, persistent memory, learned facts from RSS feeds, and channel conversation history. That's a <strong>very different prompt</strong>.
+            </p>
+
+            <div class="bm-condenser-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="background: #fff; border: 1px solid #e5e5e5; border-radius: 0.5rem; padding: 1.5rem;">
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--color-primary);">Test Prompt (this page)</h4>
+                    <div style="font-family: monospace; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">~170</div>
+                    <div style="font-size: 0.8rem; color: #666;">tokens input per call</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 0.75rem;">2-sentence role description + task</div>
+                </div>
+                <div style="background: #fff; border: 1px solid #e5e5e5; border-radius: 0.5rem; padding: 1.5rem;">
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--color-primary);">Production Prompt (real pipeline)</h4>
+                    <div style="font-family: monospace; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">~4,000+</div>
+                    <div style="font-size: 0.8rem; color: #666;">tokens input per call</div>
+                    <div style="font-size: 0.75rem; color: #999; margin-top: 0.75rem;">agent_prompt.md + grounding rules + memory + learned facts + channel history</div>
+                </div>
+            </div>
+
+            <div class="bm-insight" style="background: #fff;">
+                <div class="bm-insight-title">[!] What happens without distillation</div>
+                <p>We ran the same scenario through the full production pipeline. The 9B local model received the complete agent prompt -- personality, principles, capabilities, persistent memory, RSS-sourced facts, collaboration rules, and channel context. <strong>It looped.</strong> The model regurgitated its own system prompt text repeatedly, interspersed with Chinese characters meaning "stuck in a loop." Zero usable output from ~16K tokens of input.</p>
+                <p style="margin-top: 0.75rem;">This isn't a model quality problem -- it's a context management problem. A 9B model has the knowledge to answer well (it scored 6.3/10 with short prompts), but drowning it in 4,000+ tokens of system context before the actual question causes prompt-following collapse.</p>
+            </div>
+
+            <div class="bm-insight" style="background: #fff; margin-top: 1rem;">
+                <div class="bm-insight-title">[*] What the Smartest pipeline actually does</div>
+                <p>Smartest mode solves this with a three-phase pipeline. Phase 1: Qwen processes the full context with its 256K window and <em>reasons</em> about the answer (thinking tokens, free). Phase 2: Qwen distills its own reasoning into a structured briefing (~200-400 tokens of pure signal). Phase 3: Claude receives that tight briefing instead of the raw 4,000+ token prompt.</p>
+                <p style="margin-top: 0.75rem;">The result: Claude gets <strong>better input</strong> than reading raw context. The distillation extracts key findings, recommended approaches, and concrete details -- pre-digested by a model that already did the hard work of synthesizing the agent's full knowledge base. That's why Smartest sent only <strong>3,348 tokens to Claude</strong> across all 8 responses, compared to Claude-only's <strong>8,046 tokens</strong> -- 58% fewer paid tokens with comparable quality.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <div style="font-family: monospace; font-size: 0.85rem; color: #666; line-height: 2;">
+                    Full agent context (4,000+ tokens) --[Qwen reasoning, free]--> Distilled briefing (~300 tokens) --[Claude, paid]--> Final response
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Real Story / CTA -->
+    <section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+        <div class="container text-center" style="max-width: 800px;">
+            <h2 class="responsive-h2" style="color: #fff;">The Real Story: You Don't Choose One</h2>
+            <p class="responsive-p-body" style="color: var(--text-on-dark); max-width: 650px; margin: 0 auto 1.5rem;">
+                In production, Cohort runs Smarter for 95% of agent coordination -- free, fast, good enough. When a message genuinely needs premium quality (a security review, a critical architecture decision), you escalate <em>that one message</em> to Smartest. You pay $0.004 for one Claude call instead of $0.042 for eight.
+            </p>
+            <p class="responsive-p-body" style="color: var(--text-on-dark); max-width: 650px; margin: 0 auto 2rem;">
+                That's the tiered architecture: local model handles the volume, Claude handles the exceptions. Your GPU does 95% of the thinking. Your wallet barely notices the other 5%.
+            </p>
+            <div class="button-group">
+                <a href="simulator.html" class="btn-primary" style="background: var(--color-primary);">Try the Simulator</a>
+                <a href="download.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Download Cohort</a>
+            </div>
+
+            <div class="bm-proof" style="margin-top: 2rem;">
+                <a href="data/abc-mode-test-results.json" target="_blank">Raw test data (JSON)</a>
+                &middot;
+                <a href="benchmarks.html">Agent competency benchmarks</a>
+                &middot;
+                <a href="features.html#scoring">How the scoring engine works</a>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <!-- Populated by footer.js -->
+    </footer>
+</div>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cohort - Collaborative AI Agents">
+    <title>Cohort - Team Dashboard</title>
+    <!-- Press Start 2P font: self-hosted via @font-face in cohort.css -->
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="stylesheet" href="/static/cohort.css">
+</head>
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">&#9776;</button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <header class="sidebar__header">
+                <h1 class="sidebar__title">Cohort</h1>
+                <p class="sidebar__tagline">Collaborative AI Agents</p>
+                <span class="sidebar__status" id="connection-status">Connecting...</span>
+            </header>
+
+            <nav class="sidebar-nav" aria-label="Dashboard navigation">
+                <ul class="sidebar-nav__list" id="nav-list">
+                    <li>
+                        <button class="sidebar-nav__item active" data-panel="team" aria-current="true">
+                            <span class="sidebar-nav__icon">[T]</span>
+                            <span class="sidebar-nav__label">Team</span>
+                            <span class="sidebar-nav__badge" id="team-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="tasks">
+                            <span class="sidebar-nav__icon">[K]</span>
+                            <span class="sidebar-nav__label">Tasks</span>
+                            <span class="sidebar-nav__badge" id="task-badge">0</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="sidebar-nav__item" data-panel="output">
+                            <span class="sidebar-nav__icon">[O]</span>
+                            <span class="sidebar-nav__label">Review</span>
+                            <span class="sidebar-nav__badge" id="output-badge">0</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="sidebar-nav__section open" data-section="briefing">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('briefing')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Executive Briefing</h2>
+                    </div>
+                    <div class="sidebar-nav__section-body">
+                        <div class="briefing-actions">
+                            <button class="btn btn--small btn--primary" id="generate-briefing-btn" onclick="generateBriefing()" title="Generate a new executive briefing">Generate</button>
+                            <button class="btn btn--small btn--secondary" id="view-briefing-btn" onclick="viewBriefing()" title="View the latest executive briefing">View</button>
+                            <button class="btn btn--small btn--secondary" id="fetch-intel-btn" onclick="fetchIntel()" title="Fetch RSS feeds">Fetch Intel</button>
+                        </div>
+                        <div id="briefing-status" style="padding: 0 16px 8px; font-size: 11px; color: var(--color-text-muted); display: none;"></div>
+                        <div class="briefing-history-divider"></div>
+                        <ul class="briefing-history" id="briefing-history-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sidebar-nav__section open" data-section="channels">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('channels')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Channels</h2>
+                        <button class="sidebar-nav__add-btn" id="add-channel-btn" title="Create channel" onclick="event.stopPropagation()">+</button>
+                    </div>
+                    <div class="sidebar-nav__section-body">
+                        <div class="sidebar-nav__sub-section open" id="folders-sub-section">
+                            <div class="sidebar-nav__sub-header" onclick="toggleFoldersSubSection()">
+                                <span class="sidebar-nav__sub-toggle">></span>
+                                <span class="sidebar-nav__sub-title">Folders</span>
+                                <button class="sidebar-nav__add-btn" id="add-folder-btn" title="Create folder" onclick="event.stopPropagation()">+</button>
+                            </div>
+                            <div class="sidebar-nav__folders" id="folder-list">
+                                <!-- Folders populated by JS -->
+                            </div>
+                        </div>
+                        <ul class="sidebar-nav__channels" id="channel-list">
+                            <!-- Channel list populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sidebar-nav__section open" data-section="agent-chats">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('agent-chats')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Agent Chats</h2>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__agent-chats" id="agent-chat-list">
+                        <!-- Agent DM channels populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav__section" data-section="archived-chats">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('archived-chats')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Archived Chats</h2>
+                    </div>
+                    <ul class="sidebar-nav__section-body" id="archived-chat-list">
+                        <!-- Archived DM channels populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav__section open" data-section="tools">
+                    <div class="sidebar-nav__section-header" onclick="toggleSidebarSection('tools')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">Tools</h2>
+                    </div>
+                    <ul class="sidebar-nav__section-body sidebar-nav__tools" id="tool-list">
+                        <!-- Tool list populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav__section sidebar-nav__section--dev" data-section="benchmark" id="benchmark-section">
+                    <div class="sidebar-nav__section-header sidebar-nav__section-header--dev" onclick="toggleSidebarSection('benchmark')">
+                        <span class="sidebar-nav__toggle">></span>
+                        <h2 class="sidebar-nav__title">[DEV] Benchmark A/B</h2>
+                    </div>
+                    <div class="sidebar-nav__section-body" id="benchmark-sidebar">
+                        <ul class="sidebar-nav__channels" id="benchmark-scenario-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+            </nav>
+
+            <div class="sidebar__footer">
+                <button class="btn btn--icon" id="refresh-btn" aria-label="Refresh" title="Refresh data">
+                    [R]
+                </button>
+                <button class="btn btn--icon" id="permissions-btn" aria-label="Permissions" title="Permissions">
+                    [P]
+                </button>
+                <button class="btn btn--icon" id="settings-btn" aria-label="Settings" title="Settings">
+                    [S]
+                </button>
+                <a class="btn btn--icon" href="https://github.com/rwheeler007/cohort/issues" target="_blank" rel="noopener" aria-label="Report Issue" title="Report Issue">
+                    [?]
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main" id="main-content">
+            <!-- Panel Header -->
+            <header class="panel-header">
+                <div class="panel-header__info">
+                    <h2 class="panel-header__name" id="panel-title">Team Dashboard</h2>
+                    <p class="panel-header__subtitle" id="panel-subtitle">Agent status and skills</p>
+                </div>
+                <div class="panel-header__actions">
+                    <button class="btn btn--small btn--secondary" id="create-channel-from-chat-btn" style="display: none;" onclick="createChannelFromChat()" title="Save this conversation as a channel">Create Channel</button>
+                    <div class="panel-header__filter" id="filter-container" style="display: none;">
+                        <select class="filter-select" id="filter-select">
+                            <option value="all">All</option>
+                            <option value="idle">Idle</option>
+                            <option value="busy">Busy</option>
+                            <option value="error">Error</option>
+                        </select>
+                    </div>
+                    <span class="panel-header__count" id="panel-count"></span>
+                </div>
+            </header>
+
+            <!-- Team Dashboard Panel -->
+            <section class="panel panel--team active" id="panel-team" role="region" aria-label="Team Dashboard">
+                <div class="agent-grid" id="agent-grid">
+                    <div class="empty-state" id="team-empty">
+                        <p class="empty-state__text">No active sessions</p>
+                        <p class="empty-state__hint">Click any agent in the <strong>Agent Chats</strong> sidebar to start a conversation</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Panel -->
+            <section class="panel panel--chat" id="panel-chat" role="region" aria-label="Team Chat" style="display: none;">
+                <div class="chat-layout">
+                    <div class="chat-main">
+                        <!-- Messages area -->
+                        <div class="messages-container" id="messages-container">
+                            <div class="messages-list" id="messages-list">
+                                <!-- Messages rendered by JS -->
+                                <div class="empty-state" id="chat-empty">
+                                    <p class="empty-state__text">No messages yet</p>
+                                    <p class="empty-state__hint">Select a channel or send a message</p>
+                                </div>
+                            </div>
+                            <!-- Typing indicator -->
+                            <div id="typing-indicator" style="display: none;"></div>
+                        </div>
+
+                        <!-- Message Input -->
+                        <div class="message-input-area">
+                            <div class="mention-dropdown" id="mention-dropdown" style="display: none;"></div>
+                            <form class="message-form" id="message-form">
+                                <div class="message-input-wrapper">
+                                    <div class="message-input" id="message-input"
+                                         contenteditable="true"
+                                         role="textbox"
+                                         aria-label="Message input"
+                                         data-placeholder="Type a message... (use @agent to mention)"></div>
+                                </div>
+                                <button type="button" class="btn btn--icon response-mode-btn" id="response-mode-btn" title="Smarter mode (thinking enabled) -- click to change" onclick="toggleResponseMode()">
+                                    [S+]
+                                </button>
+                                <button type="submit" class="btn btn--primary message-send-btn" id="send-btn">Send</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Channel members sidebar -->
+                    <aside class="participants-sidebar" id="participants-sidebar">
+                        <div class="participants-sidebar__header">
+                            <h3 class="participants-sidebar__title">Members</h3>
+                            <button class="sidebar-nav__add-btn" id="add-member-btn" title="Add member">+</button>
+                        </div>
+                        <div class="add-member-dropdown" id="add-member-dropdown" style="display: none;">
+                            <input type="text" class="add-member-dropdown__search" id="add-member-search" placeholder="Search agents...">
+                            <div class="add-member-dropdown__list" id="add-member-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="participants-list" id="participants-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Tasks Panel (merged with Work Queue) -->
+            <section class="panel panel--tasks" id="panel-tasks" role="region" aria-label="Tasks" style="display: none;">
+                <div class="task-panel-scroll">
+                    <nav class="task-sub-tabs" role="tablist" aria-label="Task views">
+                        <button class="task-sub-tab active" role="tab" aria-selected="true" data-task-view="active" onclick="CohortTasks.switchView('active')">Active</button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="scheduled" onclick="CohortTasks.switchView('scheduled')">
+                            Scheduled <span class="task-sub-tab__badge" id="schedule-badge">0</span>
+                        </button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="completed" onclick="CohortTasks.switchView('completed')">Completed</button>
+                        <button class="task-sub-tab" role="tab" aria-selected="false" data-task-view="archived" onclick="CohortTasks.switchView('archived')">
+                            Archived <span class="task-sub-tab__badge" id="archived-badge" style="display:none">0</span>
+                        </button>
+                    </nav>
+                    <div class="task-view" id="task-view-active">
+                        <div class="task-list" id="task-list">
+                            <div class="empty-state" id="tasks-empty">
+                                <p class="empty-state__text">Assign your first task</p>
+                                <p class="empty-state__hint">Pick an agent and give it something to do</p>
+                                <p class="empty-state__example">e.g., "Review my Python code for security issues"</p>
+                                <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Assign Task</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-scheduled" style="display: none;">
+                        <div class="schedule-list" id="schedule-list">
+                            <div class="empty-state" id="schedules-empty">
+                                <p class="empty-state__text">Set up a recurring task</p>
+                                <p class="empty-state__hint">Agents can run tasks on a schedule -- daily code reviews, weekly reports, and more</p>
+                                <p class="empty-state__example">e.g., "Check code quality every morning at 9am"</p>
+                                <button class="empty-state__cta" onclick="document.getElementById('assign-task-btn').click()">+ Schedule Task</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-completed" style="display: none;">
+                        <div class="task-list" id="completed-task-list">
+                            <div class="empty-state" id="completed-empty">
+                                <p class="empty-state__text">No completed tasks yet</p>
+                                <p class="empty-state__hint">Completed and failed task runs will appear here with their output</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-view" id="task-view-archived" style="display: none;">
+                        <div class="task-list" id="archived-task-list">
+                            <div class="empty-state" id="archived-empty">
+                                <p class="empty-state__text">No archived tasks</p>
+                                <p class="empty-state__hint">Archived tasks are moved here to keep your completed list clean</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-help-chat" id="task-help-chat">
+                    <div class="task-help-chat__toggle" id="task-help-toggle">
+                        <span>[?] Need help with tasks?</span>
+                        <span class="task-help-chat__arrow" id="task-help-arrow">[^]</span>
+                    </div>
+                    <div class="task-help-chat__body" id="task-help-body" style="display:none">
+                        <div class="task-help-chat__messages" id="task-help-messages">
+                            <p class="task-help-chat__empty">Ask Cohort about assigning tasks, scheduling, or agent capabilities.</p>
+                        </div>
+                        <div class="task-help-chat__input-area">
+                            <input type="text" class="task-help-chat__input" id="task-help-input"
+                                   placeholder="Ask about tasks, scheduling, agents..." />
+                            <button class="btn btn--primary btn--sm" onclick="sendTaskHelpMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-panel__footer">
+                    <div class="scheduler-heartbeat" id="scheduler-heartbeat" title="Task scheduler status">
+                        <span class="scheduler-heartbeat__dot" id="scheduler-dot"></span>
+                        <span class="scheduler-heartbeat__text" id="scheduler-text">Scheduler: starting...</span>
+                    </div>
+                    <button class="btn btn--primary" id="assign-task-btn">+ Assign Task</button>
+                </div>
+            </section>
+
+            <!-- Review Panel -->
+            <section class="panel panel--output" id="panel-output" role="region" aria-label="Review" style="display: none;">
+                <div class="output-list" id="output-list">
+                    <div class="empty-state" id="output-empty">
+                        <p class="empty-state__text">No outputs to review</p>
+                        <p class="empty-state__hint">When tasks complete, their output appears here for your review</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tool Dashboard Panel -->
+            <section class="panel panel--tool" id="panel-tool" role="region" aria-label="Tool Dashboard" style="display: none;">
+                <div class="tool-panel-scroll" id="tool-panel-content">
+                    <div class="empty-state">
+                        <p class="empty-state__text">Select a tool</p>
+                        <p class="empty-state__hint">Click a tool in the sidebar to view its status and configuration</p>
+                    </div>
+                </div>
+                <div class="tool-help-chat" id="tool-help-chat" style="display:none">
+                    <div class="tool-help-chat__toggle" id="tool-help-toggle">
+                        <span class="tool-help-chat__label">[?] Need help configuring this tool?</span>
+                        <span class="tool-help-chat__arrow" id="tool-help-arrow">[^]</span>
+                    </div>
+                    <div class="tool-help-chat__body" id="tool-help-body" style="display:none">
+                        <div class="tool-help-chat__messages" id="tool-help-messages">
+                            <p class="tool-help-chat__empty">Ask Cohort a question about configuring this tool.</p>
+                        </div>
+                        <div class="tool-help-chat__typing" id="tool-help-typing" style="display:none"></div>
+                        <div class="tool-help-chat__input-area">
+                            <input type="text" class="tool-help-chat__input" id="tool-help-input"
+                                   placeholder="Ask a question about this tool..." />
+                            <button class="btn btn--primary btn--sm" onclick="sendToolHelpMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Benchmark A/B Panel -->
+            <section class="panel panel--benchmark" id="panel-benchmark" role="region" aria-label="Benchmark A/B" style="display: none;">
+                <div class="benchmark-panel" id="benchmark-panel-content">
+                    <!-- Scenario selector -->
+                    <div class="benchmark-header" id="benchmark-header">
+                        <div class="benchmark-scenario-cards" id="benchmark-scenario-cards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Active run display -->
+                    <div class="benchmark-run" id="benchmark-run" style="display: none;">
+                        <div class="benchmark-run__status" id="benchmark-run-status">
+                            <span class="benchmark-run__badge" id="benchmark-run-badge">Running</span>
+                            <span class="benchmark-run__id" id="benchmark-run-id"></span>
+                        </div>
+
+                        <!-- Side-by-side comparison -->
+                        <div class="benchmark-comparison">
+                            <div class="benchmark-arm" id="benchmark-arm-a">
+                                <h3 class="benchmark-arm__title">Arm A: Local Only (Smarter)</h3>
+                                <div class="benchmark-arm__status" id="arm-a-status">Pending</div>
+                                <div class="benchmark-arm__meta" id="arm-a-meta"></div>
+                                <div class="benchmark-arm__responses" id="arm-a-responses">
+                                    <!-- Agent responses rendered here -->
+                                </div>
+                            </div>
+                            <div class="benchmark-arm" id="benchmark-arm-b">
+                                <h3 class="benchmark-arm__title">Arm B: Hybrid (Smartest)</h3>
+                                <div class="benchmark-arm__status" id="arm-b-status">Pending</div>
+                                <div class="benchmark-arm__meta" id="arm-b-meta"></div>
+                                <div class="benchmark-arm__responses" id="arm-b-responses">
+                                    <!-- Agent responses rendered here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scoring section -->
+                        <div class="benchmark-scoring" id="benchmark-scoring" style="display: none;">
+                            <h3>Scoring</h3>
+                            <p class="benchmark-scoring__hint">Scores are auto-generated by LLM judge. Override any value and re-submit if needed.</p>
+                            <div class="benchmark-scoring__grid" id="benchmark-scoring-grid">
+                                <!-- Populated by JS with criteria rows -->
+                            </div>
+                            <div class="benchmark-scoring__actions">
+                                <button class="btn btn--primary" id="benchmark-submit-scores" onclick="CohortBenchmark.submitScores()">Submit Scores</button>
+                            </div>
+                        </div>
+
+                        <!-- Results summary (after scoring) -->
+                        <div class="benchmark-results" id="benchmark-results" style="display: none;">
+                            <h3>Results</h3>
+                            <div class="benchmark-results__summary" id="benchmark-results-summary"></div>
+                        </div>
+                    </div>
+
+                    <!-- Run history -->
+                    <div class="benchmark-history" id="benchmark-history">
+                        <h3>Previous Runs</h3>
+                        <div class="benchmark-history__list" id="benchmark-history-list">
+                            <div class="empty-state">
+                                <p class="empty-state__text">No benchmark runs yet</p>
+                                <p class="empty-state__hint">Select a scenario above to start your first A/B comparison</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Assign Task Modal (two-tab: one-shot + schedule) -->
+    <div class="modal" id="assign-task-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 id="task-modal-title">Assign Task</h2>
+                <button class="btn btn--icon modal__close" id="assign-task-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <!-- Tab toggle -->
+                <div class="modal-tabs" role="tablist">
+                    <button class="modal-tab active" role="tab" aria-selected="true" data-modal-tab="assign" onclick="CohortTasks.switchModalTab('assign')">
+                        Assign Task
+                        <span class="modal-tab__hint">For one-time tasks</span>
+                    </button>
+                    <button class="modal-tab" role="tab" aria-selected="false" data-modal-tab="schedule" onclick="CohortTasks.switchModalTab('schedule')">
+                        Schedule Task
+                        <span class="modal-tab__hint">For recurring tasks</span>
+                    </button>
+                </div>
+
+                <!-- One-shot assign form (existing behavior) -->
+                <form id="assign-task-form" class="modal-tab-content" data-modal-tab-content="assign">
+                    <div class="form-group">
+                        <label for="task-agent-select">Agent</label>
+                        <select class="form-input" id="task-agent-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description-input">Task Description</label>
+                        <textarea class="form-input" id="task-description-input" rows="4" placeholder="Describe the task..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority-select">Priority</label>
+                        <select class="form-input" id="task-priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <details class="triad-details">
+                        <summary class="triad-summary">Action &amp; Outcome <span class="triad-summary__hint">(optional)</span></summary>
+                        <div class="triad-fields">
+                            <div class="form-group">
+                                <label for="task-tool-input">Tool / Action</label>
+                                <input type="text" class="form-input" id="task-tool-input" placeholder="e.g. fetch_rss, generate_report, scan_code">
+                                <span class="form-hint">The script, tool, or action the agent should execute</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-outcome-input">Expected Outcome</label>
+                                <input type="text" class="form-input" id="task-outcome-input" placeholder="e.g. HTML report saved to data/reports/">
+                                <span class="form-hint">What artifact or result should this task produce?</span>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="assign-task-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Assign</button>
+                    </div>
+                </form>
+
+                <!-- Schedule form (new) -->
+                <form id="schedule-task-form" class="modal-tab-content" data-modal-tab-content="schedule" style="display: none;">
+                    <div class="form-group">
+                        <label for="schedule-agent-select">Agent</label>
+                        <select class="form-input" id="schedule-agent-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-description-input">Task Description</label>
+                        <textarea class="form-input" id="schedule-description-input" rows="3" placeholder="What should the agent do each time this runs?" required maxlength="500"></textarea>
+                        <span class="form-hint" id="schedule-desc-count">0 / 500</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-priority-select">Priority</label>
+                        <select class="form-input" id="schedule-priority-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <details class="triad-details">
+                        <summary class="triad-summary">Action &amp; Outcome Templates <span class="triad-summary__hint">(optional)</span></summary>
+                        <div class="triad-fields">
+                            <div class="form-group">
+                                <label for="schedule-tool-input">Tool / Action</label>
+                                <input type="text" class="form-input" id="schedule-tool-input" placeholder="e.g. fetch_rss, generate_report">
+                                <span class="form-hint">Tool the agent should run each time this fires</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="schedule-outcome-input">Expected Outcome</label>
+                                <input type="text" class="form-input" id="schedule-outcome-input" placeholder="e.g. Feed data stored in data/feeds/">
+                                <span class="form-hint">Success criteria for each run</span>
+                            </div>
+                        </div>
+                    </details>
+                    <fieldset class="form-group schedule-when">
+                        <legend>When should this run?</legend>
+                        <div class="schedule-presets" role="radiogroup">
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_hour" checked>
+                                <span class="schedule-preset__label">Every hour</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_2_hours">
+                                <span class="schedule-preset__label">Every 2 hours</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="every_6_hours">
+                                <span class="schedule-preset__label">Every 6 hours</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="daily_9am">
+                                <span class="schedule-preset__label">Daily at 9:00 AM</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="weekdays_9am">
+                                <span class="schedule-preset__label">Weekdays at 9:00 AM</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="weekly_monday">
+                                <span class="schedule-preset__label">Weekly on Monday</span>
+                            </label>
+                            <label class="schedule-preset">
+                                <input type="radio" name="schedule-preset" value="custom">
+                                <span class="schedule-preset__label">Custom...</span>
+                            </label>
+                        </div>
+                        <div class="schedule-custom" id="schedule-custom-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="schedule-type-select">Type</label>
+                                <select class="form-input" id="schedule-type-select">
+                                    <option value="interval">Interval (every N minutes)</option>
+                                    <option value="cron">Cron expression</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="schedule-interval-group">
+                                <label for="schedule-interval-input">Run every</label>
+                                <div class="input-with-suffix">
+                                    <input type="number" class="form-input" id="schedule-interval-input" min="5" value="60" step="5">
+                                    <span class="input-suffix">minutes</span>
+                                </div>
+                            </div>
+                            <div class="form-group" id="schedule-cron-group" style="display: none;">
+                                <label for="schedule-cron-input">Cron expression</label>
+                                <input type="text" class="form-input" id="schedule-cron-input" placeholder="0 9 * * 1-5" pattern="[0-9*,/\- ]+">
+                                <span class="form-hint">Format: minute hour day-of-month month day-of-week</span>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" onclick="CohortTasks.closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Schedule</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="review-modal" hidden>
+        <div class="modal__content modal__content--wide">
+            <header class="modal__header">
+                <h2>Review Output</h2>
+                <button class="btn btn--icon modal__close" id="review-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <div class="review-output" id="review-output-content"></div>
+                <form id="review-form">
+                    <input type="hidden" id="review-task-id">
+                    <div class="form-group">
+                        <label>Verdict</label>
+                        <div class="verdict-buttons">
+                            <button type="button" class="btn btn--success verdict-btn" data-verdict="approved">Approve</button>
+                            <button type="button" class="btn btn--warning verdict-btn" data-verdict="needs_work">Needs Work</button>
+                            <button type="button" class="btn btn--danger verdict-btn" data-verdict="rejected">Reject</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-notes-input">Notes (optional)</label>
+                        <textarea class="form-input" id="review-notes-input" rows="3" placeholder="Add review notes..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="review-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary" id="review-submit" disabled>Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal" hidden>
+        <div class="modal__content settings-modal">
+            <header class="modal__header">
+                <h2>Settings</h2>
+                <button class="btn btn--icon modal__close" id="settings-close">&times;</button>
+            </header>
+            <div class="settings-layout">
+                <!-- Tab bar -->
+                <nav class="settings-tabs">
+                    <button class="settings-tab active" data-settings-tab="general" onclick="switchSettingsTab('general')">General</button>
+                    <button class="settings-tab" data-settings-tab="connections" onclick="switchSettingsTab('connections')">Connections</button>
+                    <button class="settings-tab" data-settings-tab="execution" onclick="switchSettingsTab('execution')">Execution</button>
+                    <button class="settings-tab" data-settings-tab="model-tiers" onclick="switchSettingsTab('model-tiers')">Model Tiers</button>
+                    <button class="settings-tab" data-settings-tab="data" onclick="switchSettingsTab('data')">Data</button>
+                </nav>
+
+                <!-- Tab panels -->
+                <div class="settings-panels">
+                    <form id="settings-form">
+
+                        <!-- === General Tab === -->
+                        <div class="settings-panel active" data-settings-panel="general">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Your Identity</h3>
+                                <p class="settings-section__desc">
+                                    Your name as shown in chat. AI agents are labeled by their role &mdash;
+                                    this keeps the distinction clear between human operators and AI assistants.
+                                </p>
+                                <div class="form-group">
+                                    <label for="settings-user-name">Display Name</label>
+                                    <input type="text" class="form-input" id="settings-user-name"
+                                           placeholder="Your name" maxlength="40">
+                                </div>
+                                <div class="settings-identity-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label for="settings-user-role">Title / Role</label>
+                                        <input type="text" class="form-input" id="settings-user-role"
+                                               placeholder="Operator" maxlength="40">
+                                    </div>
+                                    <div class="form-group" style="flex:0 0 80px">
+                                        <label for="settings-user-avatar">Initials</label>
+                                        <input type="text" class="form-input" id="settings-user-avatar"
+                                               placeholder="RW" maxlength="3" style="text-align:center;text-transform:uppercase">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Admin Mode</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-admin-mode">
+                                        <input type="checkbox" id="settings-admin-mode" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <p class="settings-section__desc">
+                                    Reveals advanced settings like providers, API keys, and feed sources.
+                                    Leave off for day-to-day use.
+                                </p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" id="settings-cancel">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Connections Tab === -->
+                        <div class="settings-panel" data-settings-panel="connections">
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Cloud Connection</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-claude-enabled">
+                                        <input type="checkbox" id="settings-claude-enabled" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-section__body" id="claude-connection-body">
+                                    <p class="settings-section__desc">
+                                        Connect to cloud APIs and configure paths for agent infrastructure.
+                                    </p>
+                                    <div class="form-group">
+                                        <label for="settings-claude-cmd">CLI Path (dev mode)</label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-claude-cmd"
+                                               placeholder="Path to CLI binary">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-agents-root">Agents Root Directory</label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-agents-root"
+                                               placeholder="/path/to/agents/root">
+                                    </div>
+                                    <div class="settings-connection-status" id="settings-connection-status">
+                                        <span class="settings-connection-dot" id="settings-connection-dot"></span>
+                                        <span id="settings-connection-text">Not tested</span>
+                                    </div>
+                                    <button type="button" class="btn btn--secondary" id="test-connection-btn">Test Connection</button>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Local AI Setup</h3>
+                                <p class="settings-section__desc">Re-run the setup wizard to check Ollama, models, and content feeds.</p>
+                                <button type="button" class="btn btn--secondary" id="settings-rerun-setup">Re-run Setup Wizard</button>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Cloud Provider</h3>
+                                <p class="settings-section__desc">Configure a cloud API for the Smartest [S++] response tier. Your key is stored locally and charges go directly to your provider.</p>
+                                <div class="form-group">
+                                    <label for="settings-cloud-provider">Provider</label>
+                                    <select class="form-input" id="settings-cloud-provider">
+                                        <option value="">None (local only)</option>
+                                        <option value="anthropic">Anthropic</option>
+                                        <option value="openai">OpenAI</option>
+                                    </select>
+                                </div>
+                                <div id="settings-cloud-fields" style="display:none">
+                                    <div class="form-group">
+                                        <label for="settings-cloud-api-key">API Key</label>
+                                        <div style="display:flex;gap:0.5rem">
+                                            <input type="password" class="form-input form-input--mono" id="settings-cloud-api-key" placeholder="sk-...">
+                                            <button type="button" class="btn btn--icon" id="toggleCloudKeyVis" title="Show/hide key">[.]</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-cloud-model">Model <span class="text-muted" style="font-weight:normal">(optional override)</span></label>
+                                        <input type="text" class="form-input" id="settings-cloud-model" placeholder="Leave blank for default">
+                                        <span class="form-hint">Anthropic default: claude-sonnet-4-20250514 | OpenAI default: gpt-4o</span>
+                                    </div>
+                                    <div class="form-group" id="settings-cloud-base-url-group" style="display:none">
+                                        <label for="settings-cloud-base-url">Base URL <span class="text-muted" style="font-weight:normal">(OpenAI-compatible endpoints)</span></label>
+                                        <input type="text" class="form-input form-input--mono" id="settings-cloud-base-url" placeholder="https://api.example.com/v1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" id="settings-cancel-conn" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Execution Tab === -->
+                        <div class="settings-panel" data-settings-panel="execution">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Task Execution</h3>
+                                <p class="settings-section__desc">
+                                    How agent responses are generated. Claude Channels uses persistent sessions;
+                                    other backends route through the local model or cloud API directly.
+                                </p>
+                                <div class="form-group">
+                                    <label for="settings-exec-backend">Execution Backend</label>
+                                    <select class="form-input" id="settings-exec-backend">
+                                        <option value="channel">Claude Channels (recommended)</option>
+                                        <option value="chat">Chat-routed (@mention)</option>
+                                        <option value="api">Cloud API (direct)</option>
+                                        <option value="cli">CLI subprocess (dev mode)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-response-timeout">Response Timeout (seconds)</label>
+                                    <input type="number" class="form-input" id="settings-response-timeout"
+                                           min="30" max="600" value="300">
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Behavior</h3>
+                                <div class="form-group">
+                                    <label class="toggle-label" for="settings-force-claude-code" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                        <input type="checkbox" id="settings-force-claude-code" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                        <span>Force all responses through cloud API <small style="opacity: 0.6;">(bypass local models)</small></span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="margin-top: 0.75rem;">
+                                    <label class="toggle-label" for="settings-global-agents" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                        <input type="checkbox" id="settings-global-agents" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                        <span>Make agents available globally <small style="opacity: 0.6;">(links agent personas for external tools)</small></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <div class="settings-section__header">
+                                    <h3 class="settings-section__title">Development Mode</h3>
+                                    <label class="toggle-label toggle-label--inline" for="settings-dev-mode">
+                                        <input type="checkbox" id="settings-dev-mode" class="toggle-input">
+                                        <span class="toggle-switch"></span>
+                                    </label>
+                                </div>
+                                <p class="settings-section__desc">Enables CLI subprocess paths for internal testing. Leave off for production use.</p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Model Tiers Tab === -->
+                        <div class="settings-panel" data-settings-panel="model-tiers">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Response Tier Models</h3>
+                                <p class="settings-section__desc">
+                                    Configure which model handles each response tier. Dropdowns show installed models.
+                                </p>
+
+                                <!-- Smart Tier -->
+                                <div class="form-group" style="margin-top: 16px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smart [S] <span style="font-weight: normal; color: var(--color-text-muted);">-- Single local model, no thinking</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <select class="form-input" id="settings-tier-smart-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <select class="form-input" id="settings-tier-smart-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Smarter Tier -->
+                                <div class="form-group" style="margin-top: 12px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smarter [S+] <span style="font-weight: normal; color: var(--color-text-muted);">-- Single local model, thinking enabled (default)</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Primary</label>
+                                            <select class="form-input" id="settings-tier-smarter-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Fallback</label>
+                                            <select class="form-input" id="settings-tier-smarter-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Smartest Tier -->
+                                <div class="form-group" style="margin-top: 12px;">
+                                    <label class="form-label" style="font-weight: 600; color: var(--color-text);">Smartest [S++] <span style="font-weight: normal; color: var(--color-text-muted);">-- Two-model pipeline: local reasoning then cloud polish</span></label>
+                                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Phase 1 (reasoning)</label>
+                                            <select class="form-input" id="settings-tier-smartest-primary">
+                                                <option value="">Local (auto-detect)</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label class="form-label" style="font-size: 11px;">Phase 2 (polish)</label>
+                                            <select class="form-input" id="settings-tier-smartest-fallback">
+                                                <option value="">None</option>
+                                                <option value="cloud_api">Cloud API</option>
+                                                <option value="channel">Claude Channels</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="settings-section__desc" style="margin-top: 12px; font-size: 11px;">
+                                    "Local (auto-detect)" picks the best model for your GPU. "Cloud API" uses your configured provider.
+                                    "Claude Channels" routes through a persistent Claude Code session. Fallback is used when the primary is unavailable.
+                                </p>
+                            </div>
+
+                            <!-- Token Usage & Budget -->
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Token Usage &amp; Budget</h3>
+
+                                <div id="token-usage-display" style="margin: 8px 0 16px; padding: 10px; border-radius: 6px; background: var(--color-bg-secondary, #1e1e2e); font-size: 12px; line-height: 1.8;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">Today:</span>
+                                        <span id="usage-today-tokens" style="color: var(--color-text);">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">This month:</span>
+                                        <span id="usage-month-tokens" style="color: var(--color-text);">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--color-text-muted);">Messages today:</span>
+                                        <span id="usage-today-messages" style="color: var(--color-text);">--</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" style="font-size: 11px;">Daily token limit (0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-daily" placeholder="500000" min="0" step="50000" />
+                                </div>
+                                <div class="form-group" style="margin-top: 8px;">
+                                    <label class="form-label" style="font-size: 11px;">Monthly token limit (0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-monthly" placeholder="10000000" min="0" step="500000" />
+                                </div>
+                                <div class="form-group" style="margin-top: 8px;">
+                                    <label class="form-label" style="font-size: 11px;">Escalation calls per hour (35B local model, 0 = unlimited)</label>
+                                    <input type="number" class="form-input" id="settings-budget-escalation" placeholder="30" min="0" step="5" />
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn--secondary" onclick="closeSettings()">Cancel</button>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </div>
+                        </div>
+
+                        <!-- === Data Tab === -->
+                        <div class="settings-panel" data-settings-panel="data">
+                            <div class="settings-section">
+                                <h3 class="settings-section__title">Deleted Channels</h3>
+                                <p class="settings-section__desc">
+                                    Channels are kept for 30 days after deletion. Restore or permanently remove them here.
+                                </p>
+                                <div id="deleted-channels-list" class="deleted-channels-list">
+                                    <p style="color: var(--color-text-muted); font-size: 12px;">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions Modal -->
+    <div class="modal" id="permissions-modal" hidden>
+        <div class="modal__content modal__content--wide">
+            <header class="modal__header">
+                <h2>Permissions</h2>
+                <button class="btn btn--icon modal__close" id="permissions-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <!-- Tab bar -->
+                <div class="perm-tabs" id="perm-tabs">
+                    <button class="perm-tab active" data-perm-tab="services">Service Keys</button>
+                    <button class="perm-tab" data-perm-tab="agents">Agent Access</button>
+                    <button class="perm-tab" data-perm-tab="tool-defaults">Tool Defaults</button>
+                    <button class="perm-tab" data-perm-tab="file-perms">File Permissions</button>
+                </div>
+
+                <!-- Tab: Service Keys -->
+                <div class="perm-panel active" id="perm-panel-services">
+                    <p class="settings-section__desc">
+                        Add API keys and credentials for external services.
+                        Agents can only use services they have been granted access to.
+                    </p>
+                    <div id="service-keys-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button type="button" class="btn btn--secondary" id="add-service-key-btn">+ Add Service</button>
+                    <div class="perm-drop-hint">Drop a .env file here to import keys</div>
+                </div>
+
+                <!-- Tab: Agent Access -->
+                <div class="perm-panel" id="perm-panel-agents" style="display:none;">
+                    <p class="settings-section__desc">
+                        Toggle which services each agent can access.
+                        Only agents with a checkmark can use that service's API key.
+                    </p>
+                    <div class="perm-grid-wrapper">
+                        <table class="perm-grid" id="perm-grid">
+                            <thead id="perm-grid-head">
+                                <!-- Header row: Agent | Service1 | Service2 | ... -->
+                            </thead>
+                            <tbody id="perm-grid-body">
+                                <!-- One row per agent -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Tool Defaults -->
+                <div class="perm-panel" id="perm-panel-tool-defaults" style="display:none;">
+                    <p class="settings-section__desc">
+                        Set which tools each agent group gets by default.
+                        Individual agents can be overridden via the gear icon on their Team card.
+                    </p>
+
+                    <div class="tool-defaults__section">
+                        <h4>Group Defaults</h4>
+                        <p class="settings-section__desc">Each agent group inherits a tool profile. Change the profile to grant or restrict tools for all agents in that group.</p>
+                        <div id="tool-defaults-grid">
+                            <!-- Populated by JS: one row per agent group with profile dropdown -->
+                        </div>
+                    </div>
+
+                    <div class="tool-defaults__section">
+                        <h4>Globally Denied Tools</h4>
+                        <p class="settings-section__desc">Checked tools are blocked for ALL agents regardless of profile.</p>
+                        <div id="tool-defaults-denied">
+                            <!-- Populated by JS: one checkbox per tool -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: File Permissions -->
+                <div class="perm-panel" id="perm-panel-file-perms" style="display:none;">
+                    <p class="settings-section__desc">
+                        Control which filesystem paths each agent group can read or write.
+                        Paths use glob syntax: <code>G:/**</code> = all files on G drive.
+                        Individual agents can be overridden via the gear icon on their Team card.
+                    </p>
+                    <div id="file-perms-grid">
+                        <!-- Populated by JS: one card per agent group with path rule rows -->
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="permissions-cancel">Cancel</button>
+                    <button type="button" class="btn btn--primary" id="permissions-save">Save Permissions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Permissions Modal (per-agent, opened from agent card gear icon) -->
+    <div class="modal" id="tool-perms-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2 id="tool-perms-title">Tool Permissions</h2>
+                <button class="btn btn--icon modal__close" id="tool-perms-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <div class="tool-perms__profile" id="tool-perms-profile">
+                    <!-- Profile badge populated by JS -->
+                </div>
+                <div class="tool-perms__grid" id="tool-perms-grid">
+                    <!-- Tool checkboxes populated by JS -->
+                </div>
+                <div class="tool-perms__override-note" id="tool-perms-override-note"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn--secondary" id="tool-perms-reset">Reset to Profile</button>
+                    <button type="button" class="btn btn--secondary" id="tool-perms-cancel">Cancel</button>
+                    <button type="button" class="btn btn--primary" id="tool-perms-save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal (sub-modal from Permissions) -->
+    <div class="modal" id="add-service-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Add Service</h2>
+                <button class="btn btn--icon modal__close" id="add-service-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="add-service-form">
+                    <div class="form-group">
+                        <label for="service-type-select">Service Type</label>
+                        <select class="form-input" id="service-type-select">
+                            <option value="anthropic">Anthropic API</option>
+                            <option value="youtube">YouTube Data API</option>
+                            <option value="linkedin">LinkedIn API</option>
+                            <option value="rss">RSS Feed Reader</option>
+                            <option value="email_smtp">Email (SMTP)</option>
+                            <option value="email_imap">Email (IMAP)</option>
+                            <option value="resend">Resend Email API</option>
+                            <option value="github">GitHub API</option>
+                            <option value="slack">Slack Webhook</option>
+                            <option value="discord">Discord Webhook</option>
+                            <option value="openai">OpenAI API</option>
+                            <option value="google">Google Cloud API</option>
+                            <option value="cloudflare">Cloudflare API</option>
+                            <option value="aws">AWS Credentials</option>
+                            <option value="twitter">Twitter/X API</option>
+                            <option value="reddit">Reddit API</option>
+                            <option value="internal_web">Internal Web Accessor (Local)</option>
+                            <option value="webhook">Custom Webhook</option>
+                            <option value="custom">Custom Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="service-custom-name-group" style="display:none;">
+                        <label for="service-custom-name">Service Name</label>
+                        <input type="text" class="form-input" id="service-custom-name" placeholder="e.g. My CRM API">
+                    </div>
+                    <!-- Dynamic service fields rendered by JS -->
+                    <div id="service-dynamic-fields"></div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="add-service-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Add Service</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Channel Modal -->
+    <div class="modal" id="create-channel-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Create Channel</h2>
+                <button class="btn btn--icon modal__close" id="create-channel-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="create-channel-form">
+                    <div class="form-group">
+                        <label for="new-channel-name">Channel Name</label>
+                        <input type="text" class="form-input" id="new-channel-name" placeholder="e.g. design-review" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="create-channel-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Folder Modal -->
+    <div class="modal" id="create-folder-modal" hidden>
+        <div class="modal__content">
+            <header class="modal__header">
+                <h2>Create Folder</h2>
+                <button class="btn btn--icon modal__close" id="create-folder-close">&times;</button>
+            </header>
+            <div class="modal__body">
+                <form id="create-folder-form">
+                    <div class="form-group">
+                        <label for="new-folder-name">Folder Name</label>
+                        <input type="text" class="form-input" id="new-folder-name" placeholder="e.g. Frontend" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--secondary" id="create-folder-cancel">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Wizard Overlay -->
+    <div class="setup-wizard" id="setup-wizard" hidden>
+        <div class="setup-wizard__container">
+            <header class="setup-wizard__header">
+                <div>
+                    <h2 class="setup-wizard__title">Welcome to Cohort</h2>
+                    <p class="setup-wizard__subtitle">
+                        Let's get your local AI up and running. This takes about
+                        5 minutes -- no cloud, no subscription, no data leaving your computer.
+                    </p>
+                </div>
+                <button class="btn btn--icon setup-wizard__close" id="setup-wizard-close"
+                        title="Close wizard">&times;</button>
+            </header>
+
+            <!-- Step Indicators -->
+            <nav class="setup-wizard__nav">
+                <button class="setup-step" data-setup-step="1">
+                    <span class="setup-step__indicator" id="step-ind-1">1</span>
+                    <span class="setup-step__label">Hardware</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="2">
+                    <span class="setup-step__indicator" id="step-ind-2">2</span>
+                    <span class="setup-step__label">Ollama</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="3">
+                    <span class="setup-step__indicator" id="step-ind-3">3</span>
+                    <span class="setup-step__label">Model</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="4">
+                    <span class="setup-step__indicator" id="step-ind-4">4</span>
+                    <span class="setup-step__label">Verify</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="5">
+                    <span class="setup-step__indicator" id="step-ind-5">5</span>
+                    <span class="setup-step__label">Content</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="6">
+                    <span class="setup-step__indicator" id="step-ind-6">6</span>
+                    <span class="setup-step__label">MCP</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="7">
+                    <span class="setup-step__indicator" id="step-ind-7">7</span>
+                    <span class="setup-step__label">Cloud</span>
+                </button>
+                <div class="setup-step__connector"></div>
+                <button class="setup-step" data-setup-step="8">
+                    <span class="setup-step__indicator" id="step-ind-8">8</span>
+                    <span class="setup-step__label">Security</span>
+                </button>
+            </nav>
+
+            <!-- Step Bodies -->
+            <div class="setup-wizard__body">
+                <!-- Step 1: Hardware Detection -->
+                <div class="setup-wizard__step" data-step="1">
+                    <h3>Checking Your Hardware</h3>
+                    <p class="text-muted">Your graphics card (GPU) runs AI models 10-50x faster than your CPU alone.</p>
+                    <div class="setup-wizard__card" id="setup-hw-result">
+                        <div class="setup-wizard__loading">[*] Detecting hardware...</div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Ollama Check + Install -->
+                <div class="setup-wizard__step" data-step="2" style="display:none">
+                    <h3>Setting Up Ollama</h3>
+                    <p class="text-muted">Ollama is a free tool that runs AI models on your computer.</p>
+                    <div class="setup-wizard__card" id="setup-ollama-result">
+                        <div class="setup-wizard__loading">[*] Checking for Ollama...</div>
+                    </div>
+                    <div id="setup-ollama-install" style="display:none">
+                        <div class="setup-wizard__card setup-wizard__card--info">
+                            <h4>Install Ollama</h4>
+                            <p id="setup-ollama-instructions"></p>
+                            <a id="setup-ollama-link" href="https://ollama.com/download" target="_blank"
+                               class="btn btn--primary" style="margin-top:var(--space-3)">Download Ollama</a>
+                        </div>
+                        <button class="btn btn--secondary" id="setup-ollama-recheck" style="margin-top:var(--space-3)">
+                            I've installed it -- check again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Model Download -->
+                <div class="setup-wizard__step" data-step="3" style="display:none">
+                    <h3>Downloading Your AI Model</h3>
+                    <p class="text-muted">This is the brain that powers your agents.</p>
+                    <div class="setup-wizard__card" id="setup-model-info">
+                        <div class="setup-wizard__model-name" id="setup-model-name"></div>
+                        <div class="setup-wizard__model-desc" id="setup-model-desc"></div>
+                    </div>
+                    <div id="setup-model-progress" style="display:none">
+                        <div class="setup-wizard__progress-bar">
+                            <div class="setup-wizard__progress-fill" id="setup-progress-fill"></div>
+                        </div>
+                        <div class="setup-wizard__progress-text" id="setup-progress-text">Preparing download...</div>
+                    </div>
+                    <div id="setup-model-actions">
+                        <button class="btn btn--primary" id="setup-download-btn">Download Model</button>
+                    </div>
+                    <div id="setup-model-done" style="display:none">
+                        <div class="setup-wizard__status setup-wizard__status--ok">[OK] Model ready!</div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Verify -->
+                <div class="setup-wizard__step" data-step="4" style="display:none">
+                    <h3>Testing Everything</h3>
+                    <p class="text-muted">Let's make sure your AI model responds correctly.</p>
+                    <div class="setup-wizard__card" id="setup-verify-result" style="display:none"></div>
+                    <button class="btn btn--primary" id="setup-verify-btn">Run Test</button>
+                    <div id="setup-verify-loading" style="display:none">
+                        <div class="setup-wizard__loading">[*] Asking the model a question... this may take a moment on first run.</div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Content Pipeline -->
+                <div class="setup-wizard__step" data-step="5" style="display:none">
+                    <h3>Set Up Your Content Pipeline (Optional)</h3>
+                    <p class="text-muted">
+                        Your Marketing and Content Strategy agents can monitor RSS feeds
+                        to find trends and draft posts for you.
+                    </p>
+                    <div id="setup-topic-picker">
+                        <p>What topic or industry are you in?</p>
+                        <div class="setup-wizard__topic-grid" id="setup-topic-grid"></div>
+                    </div>
+                    <div id="setup-feed-picker" style="display:none">
+                        <p>Here are some feeds I'd suggest:</p>
+                        <div id="setup-feed-list"></div>
+
+                        <div id="setup-keyword-section" style="margin-top:var(--space-4)">
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                Interest keywords help filter articles to what matters to you:
+                            </p>
+                            <div class="setup-wizard__keyword-chips" id="setup-keyword-chips"></div>
+                            <div style="display:flex;gap:var(--space-2);margin-top:var(--space-2)">
+                                <input type="text" class="form-input" id="setup-keyword-input"
+                                       placeholder="Add a keyword..." style="flex:1;max-width:200px">
+                                <button class="btn btn--secondary btn--sm" id="setup-keyword-add-btn">Add</button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions" style="margin-top:var(--space-4)">
+                            <button class="btn btn--secondary" id="setup-topic-back">Pick different topic</button>
+                            <button class="btn btn--primary" id="setup-save-feeds">Save selected feeds</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: MCP Server Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="6" style="display:none">
+                    <h3>MCP Server Setup (Optional)</h3>
+                    <p class="text-muted">
+                        The Cohort MCP server lets any MCP-compatible client use your local AI model
+                        as a tool -- draft code, transform data, and more, all running
+                        on your machine for free.
+                    </p>
+                    <div class="setup-wizard__card" id="setup-mcp-result">
+                        <div class="setup-wizard__loading">[*] Checking MCP dependencies...</div>
+                    </div>
+                    <div id="setup-mcp-config" style="display:none">
+                        <div class="setup-wizard__card" id="setup-mcp-snippet" style="display:none">
+                            <h4 style="margin-bottom:var(--space-2)">MCP Client Config</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                This config snippet can be added to your MCP client's settings
+                                so it auto-discovers your local MCP server.
+                            </p>
+                            <pre class="setup-wizard__code-block" id="setup-mcp-snippet-code"></pre>
+                        </div>
+                        <button class="btn btn--primary" id="setup-mcp-write-btn" style="margin-top:var(--space-3)">
+                            Write MCP Config
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 7: Cloud & Advanced Setup (Optional) -->
+                <div class="setup-wizard__step" data-step="7" style="display:none">
+                    <h3>Cloud & Advanced Setup (Optional)</h3>
+                    <p class="text-muted">
+                        Add a cloud API provider for the Smartest [S++] response tier,
+                        or skip this to use only free local AI.
+                    </p>
+                    <div class="setup-wizard__card" id="setup-claude-result">
+                        <div class="setup-wizard__loading">[*] Checking cloud setup...</div>
+                    </div>
+                    <div id="setup-claude-config" style="display:none">
+                        <div class="setup-wizard__card">
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-claude-cmd" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Claude Code CLI Path
+                                </label>
+                                <input type="text" class="form-input form-input--mono" id="setup-claude-cmd"
+                                       placeholder="Path to CLI binary">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-agents-root" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Agents Root Directory
+                                </label>
+                                <input type="text" class="form-input form-input--mono" id="setup-agents-root"
+                                       placeholder="/path/to/cohort">
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-exec-backend" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Execution Backend
+                                </label>
+                                <select class="form-input" id="setup-exec-backend">
+                                    <option value="chat">Chat-routed (@mention)</option>
+                                    <option value="api">Cloud API (direct)</option>
+                                    <option value="cli">CLI subprocess (dev mode)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-response-timeout" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Response Timeout (seconds)
+                                </label>
+                                <input type="number" class="form-input" id="setup-response-timeout"
+                                       value="300" min="30" max="600" step="30"
+                                       placeholder="300">
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    How long to wait for agent responses (30-600s)
+                                </span>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)" id="setup-force-claude-group">
+                                <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
+                                    <input type="checkbox" id="setup-force-claude" style="width:auto">
+                                    Force all responses through cloud API
+                                </label>
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    Bypass local Ollama models and route everything through cloud API
+                                </span>
+                            </div>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label class="text-muted" style="font-size:var(--font-size-sm);display:flex;align-items:center;gap:var(--space-2)">
+                                    <input type="checkbox" id="setup-dev-mode" style="width:auto">
+                                    Development Mode
+                                </label>
+                                <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                    Enables CLI subprocess paths for internal testing. Leave off for production.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Cloud Provider -->
+                        <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                            <h4 style="margin-bottom:var(--space-2)">Cloud Provider</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                Bring your own API key for the Smartest tier. Charges go directly to your provider.
+                            </p>
+                            <div class="form-group" style="margin-bottom:var(--space-3)">
+                                <label for="setup-cloud-provider" class="text-muted" style="font-size:var(--font-size-sm)">
+                                    Provider
+                                </label>
+                                <select class="form-input" id="setup-cloud-provider">
+                                    <option value="">None (local only)</option>
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="openai">OpenAI</option>
+                                </select>
+                            </div>
+                            <div id="setup-cloud-fields" style="display:none">
+                                <div class="form-group" style="margin-bottom:var(--space-3)">
+                                    <label for="setup-cloud-api-key" class="text-muted" style="font-size:var(--font-size-sm)">
+                                        API Key
+                                    </label>
+                                    <input type="password" class="form-input form-input--mono" id="setup-cloud-api-key"
+                                           placeholder="sk-...">
+                                </div>
+                                <div class="form-group" style="margin-bottom:var(--space-3)">
+                                    <label for="setup-cloud-model" class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Model (optional override)
+                                    </label>
+                                    <input type="text" class="form-input" id="setup-cloud-model"
+                                           placeholder="Leave blank for default">
+                                    <span class="text-muted" style="font-size:var(--font-size-xs)">
+                                        Anthropic default: claude-sonnet-4-20250514 | OpenAI default: gpt-4o
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Response Modes Info -->
+                        <div class="setup-wizard__card" id="setup-response-modes-info" style="margin-top:var(--space-3)">
+                            <h4 style="margin-bottom:var(--space-2)">Response Modes</h4>
+                            <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                                Cohort supports three response quality tiers:
+                            </p>
+                            <div class="setup-wizard__info-grid" style="gap:var(--space-1) var(--space-3)">
+                                <span class="text-muted"><strong>[S] Smart</strong></span>
+                                <span>Fast local responses, no thinking (free)</span>
+                                <span class="text-muted"><strong>[S+] Smarter</strong></span>
+                                <span>Local with thinking enabled -- default (free)</span>
+                                <span class="text-muted"><strong>[S++] Smartest</strong></span>
+                                <span>Local reasoning + cloud API or Claude Code handoff</span>
+                            </div>
+                            <div id="setup-smartest-status" style="margin-top:var(--space-2)"></div>
+                        </div>
+
+                        <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3);align-items:center">
+                            <button class="btn btn--secondary" id="setup-claude-test-btn">Test Connection</button>
+                            <div class="settings-connection-status" id="setup-claude-status" style="margin-bottom:0">
+                                <span class="settings-connection-dot" id="setup-claude-dot"></span>
+                                <span id="setup-claude-text">Not tested</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn--primary" id="setup-claude-save-btn" style="margin-top:var(--space-3)">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 8: Security Defaults -->
+                <div class="setup-wizard__step" data-step="8" style="display:none">
+                    <h3>Security Defaults</h3>
+                    <p class="text-muted">
+                        Choose how much access your AI agents get by default. You can always
+                        change individual agent permissions later in the Permissions panel.
+                    </p>
+
+                    <div class="setup-wizard__card">
+                        <h4 style="margin-bottom:var(--space-2)">Default Permission Profile</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-3)">
+                            This controls what tools agents can use unless you override them individually.
+                            Start restrictive -- you can always grant more access later.
+                        </p>
+
+                        <div class="setup-security__profiles" id="setup-security-profiles">
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="readonly" checked>
+                                <div class="setup-security__profile-card">
+                                    <strong>Read Only</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Agents can read files and search but cannot modify anything.
+                                        Safest default. Tools: Read, Glob, Grep
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="researcher">
+                                <div class="setup-security__profile-card">
+                                    <strong>Researcher</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Read-only plus web search and web fetch for research tasks.
+                                        Tools: Read, Glob, Grep, WebSearch, WebFetch
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="developer">
+                                <div class="setup-security__profile-card">
+                                    <strong>Developer</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        Full access to read, write, edit files, and run commands.
+                                        Use this if you trust your agents to modify code.
+                                        Tools: Read, Write, Edit, Bash, Glob, Grep
+                                    </span>
+                                </div>
+                            </label>
+                            <label class="setup-security__profile-option">
+                                <input type="radio" name="setup-security-profile" value="minimal">
+                                <div class="setup-security__profile-card">
+                                    <strong>Locked Down</strong>
+                                    <span class="text-muted" style="font-size:var(--font-size-sm)">
+                                        No tools enabled. Agents can only chat -- all tool access
+                                        must be granted individually per agent.
+                                    </span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                        <h4 style="margin-bottom:var(--space-2)">Agent Turn Limit</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Maximum number of tool calls an agent can make per response.
+                            Lower values prevent runaway loops. Higher values allow complex tasks.
+                        </p>
+                        <div style="display:flex;align-items:center;gap:var(--space-2)">
+                            <input type="range" id="setup-max-turns" min="1" max="50" value="15"
+                                   style="flex:1" oninput="document.getElementById('setup-max-turns-label').textContent=this.value">
+                            <span id="setup-max-turns-label" style="min-width:2em;text-align:right">15</span>
+                        </div>
+                    </div>
+
+                    <div class="setup-wizard__card" style="margin-top:var(--space-3)">
+                        <h4 style="margin-bottom:var(--space-2)">Off-Limits Paths</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm);margin-bottom:var(--space-2)">
+                            Paths that agents should never access, even with Developer permissions.
+                            Use glob syntax. One path per line.
+                        </p>
+                        <textarea class="form-input form-input--mono" id="setup-deny-paths" rows="3"
+                                  placeholder="C:/Users/*/Documents/private/**&#10;**/.env&#10;**/credentials*"
+                                  style="font-size:var(--font-size-sm)"></textarea>
+                    </div>
+
+                    <button class="btn btn--primary" id="setup-security-save-btn" style="margin-top:var(--space-3)">
+                        Save Security Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Navigation -->
+            <footer class="setup-wizard__footer">
+                <button class="btn btn--secondary" id="setup-back-btn" style="display:none">Back</button>
+                <div class="setup-wizard__footer-spacer"></div>
+                <button class="btn btn--secondary" id="setup-skip-btn">Skip</button>
+                <button class="btn btn--primary" id="setup-next-btn">Next</button>
+                <button class="btn btn--primary" id="setup-finish-btn" style="display:none">Finish Setup</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <!-- Import Preferences Modal (standalone) -->
+    <div class="modal-overlay" id="import-modal" hidden>
+        <div class="modal import-modal">
+            <div class="modal__header">
+                <h2>Import Preferences</h2>
+                <button class="btn btn--icon modal__close" id="import-modal-close">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p class="text-muted" style="margin-bottom:var(--space-3)">
+                    Help Cohort understand how you work. Pick any source below.
+                    Everything stays on your machine.
+                </p>
+
+                <!-- Data Security Notice -->
+                <details class="import-security-notice" style="margin-bottom:var(--space-3)">
+                    <summary class="import-security-notice__toggle">
+                        How your preferences are stored and used
+                    </summary>
+                    <div class="import-security-notice__body">
+                        <p><strong>Where it lives.</strong>
+                        Your preferences are stored locally on this machine in agent
+                        memory files. They are not uploaded to any cloud service by Cohort
+                        itself.</p>
+
+                        <p><strong>What sees it.</strong>
+                        Your preferences are injected into agent prompts so they can
+                        personalize responses. Any tool, plugin, or integration you grant
+                        access to your Cohort agents may be able to read this context --
+                        including MCP servers, channel plugins, and external communication
+                        bridges (Slack, Telegram, Discord, etc.).</p>
+
+                        <p><strong>What that means.</strong>
+                        If you connect Cohort to external platforms, your preference data
+                        becomes part of the prompt context that those platforms process.
+                        Cohort cannot control how external services handle prompt content.
+                        Open communication channels are also subject to prompt injection --
+                        external messages could attempt to extract or manipulate the
+                        information in your agent's context.</p>
+
+                        <p><strong>What you control.</strong>
+                        You choose what to import. The preview step lets you review and
+                        uncheck any preference before it's saved. If you use external
+                        integrations and want to limit exposure, keep preferences general
+                        (tool choices, communication style) rather than personal or
+                        sensitive. You can delete imported preferences at any time from
+                        agent memory files.</p>
+
+                        <p><strong>Bottom line.</strong>
+                        Within Cohort's local system, your data is as secure as your
+                        machine. The moment you grant external tools or channels access
+                        to your agents, your preferences travel with the prompt -- and
+                        your permission settings determine who can see them.</p>
+                    </div>
+                </details>
+
+                <div class="setup-wizard__import-sources" id="setup-import-sources">
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Ask Your AI</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Copy a prompt, paste it into any AI you use. Paste the result back.</p>
+                        <button class="btn btn--secondary" id="setup-import-prompt-btn">Get the Prompt</button>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>ChatGPT Export</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Upload <code>conversations.json</code> from ChatGPT data export.</p>
+                        <input type="file" id="setup-import-chatgpt-file" accept=".json" style="display:none">
+                        <button class="btn btn--secondary" id="setup-import-chatgpt-btn">Choose File</button>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Claude Code Memory</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Auto-detect from <code>~/.claude/</code>.</p>
+                        <button class="btn btn--secondary" id="setup-import-claude-btn">Scan Claude Code</button>
+                        <div id="setup-import-claude-status" style="display:none;margin-top:var(--space-2)"></div>
+                    </div>
+                    <div class="setup-wizard__card setup-wizard__import-card">
+                        <h4>Project Config Files</h4>
+                        <p class="text-muted" style="font-size:var(--font-size-sm)">Drop <code>pyproject.toml</code>, <code>package.json</code>, etc.</p>
+                        <input type="file" id="setup-import-config-files" multiple accept=".toml,.json,.editorconfig,.prettierrc,.eslintrc,.yaml,.yml" style="display:none">
+                        <button class="btn btn--secondary" id="setup-import-config-btn">Choose Files</button>
+                    </div>
+                </div>
+                <div id="setup-import-prompt-flow" style="display:none;margin-top:var(--space-4)">
+                    <h4>Step 1: Copy this prompt</h4>
+                    <pre class="setup-wizard__code-block" id="setup-import-prompt-text" style="max-height:200px;overflow-y:auto;white-space:pre-wrap"></pre>
+                    <button class="btn btn--secondary btn--sm" id="setup-import-copy-prompt" style="margin-top:var(--space-2)">Copy to Clipboard</button>
+                    <h4 style="margin-top:var(--space-4)">Step 2: Paste the response here</h4>
+                    <textarea class="form-input" id="setup-import-paste-area" rows="8" placeholder="Paste the AI's response here..."></textarea>
+                    <button class="btn btn--primary" id="setup-import-paste-btn" style="margin-top:var(--space-2)">Parse Preferences</button>
+                </div>
+                <div id="setup-import-chatgpt-picker" style="display:none;margin-top:var(--space-4)">
+                    <h4>Select Conversations to Scan</h4>
+                    <div style="margin-bottom:var(--space-2);display:flex;gap:var(--space-2)">
+                        <button class="btn btn--secondary btn--sm" id="setup-import-select-all">Select All</button>
+                        <button class="btn btn--secondary btn--sm" id="setup-import-select-none">Select None</button>
+                    </div>
+                    <div id="setup-import-chatgpt-list" class="setup-wizard__import-list"></div>
+                    <button class="btn btn--primary" id="setup-import-chatgpt-extract-btn" style="margin-top:var(--space-3)">Extract Preferences</button>
+                </div>
+                <div id="setup-import-progress" style="display:none;margin-top:var(--space-3)">
+                    <div class="setup-wizard__loading" id="setup-import-progress-text">[*] Extracting preferences...</div>
+                </div>
+                <div id="setup-import-preview" style="display:none;margin-top:var(--space-4)">
+                    <h4>Extracted Preferences</h4>
+                    <div id="setup-import-facts-list" class="setup-wizard__import-list"></div>
+                    <div style="margin-top:var(--space-3);display:flex;gap:var(--space-3)">
+                        <button class="btn btn--primary" id="setup-import-save-btn">Save Selected</button>
+                        <button class="btn btn--secondary" id="setup-import-discard-btn">Discard All</button>
+                    </div>
+                    <div id="setup-import-result" style="display:none;margin-top:var(--space-2)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-conversation welcome banner -->
+    <div class="welcome-banner" id="welcome-banner" hidden>
+        <div class="welcome-banner__content">
+            <p class="welcome-banner__text">
+                <strong>Welcome to Cohort!</strong>
+                Not sure where to start? Import preferences from a tool you already use
+                so your agents feel familiar from the first message.
+            </p>
+            <div class="welcome-banner__actions">
+                <button class="btn btn--primary btn--sm" id="welcome-import-btn">Import Preferences</button>
+                <button class="btn btn--secondary btn--sm" id="welcome-dismiss-btn">Just start chatting</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/cohort.js"></script>
+    <script src="/static/cohort-settings.js"></script>
+    <script src="/static/cohort-permissions.js"></script>
+    <script src="/static/cohort-setup.js"></script>
+    <script src="/static/cohort-tasks.js"></script>
+    <script src="/static/cohort-benchmark.js"></script>
+</body>
+</html>

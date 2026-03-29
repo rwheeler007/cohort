@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="{{ language | default('en') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ page.title }} | {{ product_name }}{% endblock %}</title>
+    <meta name="description" content="{{ page.meta_description | default(seo.site_description) }}">
+    {% if page.meta_keywords or seo.keywords %}
+    <meta name="keywords" content="{{ (page.meta_keywords or seo.keywords) | join(', ') }}">
+    {% endif %}
+    {% if brand.primary_color is defined %}<meta name="theme-color" content="{{ brand.primary_color }}">{% endif %}
+
+    {% if favicon %}
+    <link rel="icon" href="{{ favicon }}">
+    {% endif %}
+
+    {% if seo.canonical_base %}
+    <link rel="canonical" href="{{ seo.canonical_base }}/{{ page.slug }}.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ seo.canonical_base }}/{{ page.slug }}.html">
+    <meta property="og:title" content="{{ page.title }} | {{ product_name }}">
+    <meta property="og:description" content="{{ page.meta_description | default(seo.site_description) }}">
+    {% if seo.og_image %}
+    <meta property="og:image" content="{{ seo.og_image }}">
+    {% endif %}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    {% if seo.twitter_handle %}
+    <meta name="twitter:site" content="{{ seo.twitter_handle }}">
+    {% endif %}
+    <meta name="twitter:title" content="{{ page.title }} | {{ product_name }}">
+    <meta name="twitter:description" content="{{ page.meta_description | default(seo.site_description) }}">
+    {% if seo.og_image %}<meta name="twitter:image" content="{{ seo.og_image }}">{% endif %}
+    {% endif %}
+
+    {% if seo.ga_measurement_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ seo.ga_measurement_id }}"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ seo.ga_measurement_id }}');</script>
+    {% endif %}
+
+    {% if brand.google_fonts is defined and brand.google_fonts %}
+    {# Generic Google Fonts loader -- list font families in site_brief.yaml #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {% for gf in brand.google_fonts %}
+    <link href="https://fonts.googleapis.com/css2?family={{ gf | replace(' ', '+') }}&display=swap" rel="stylesheet">
+    {% endfor %}
+    {% endif %}
+    <link rel="stylesheet" href="styles.css">
+    {% if jsonld %}
+    <script type="application/ld+json">{{ jsonld }}</script>
+    {% endif %}
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+                {% if logo %}<img src="{{ logo }}" alt="{{ product_name }}" style="height:2rem;">
+                {% else %}{{ product_name }}{% endif %}
+            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                {% for item in nav_items %}
+                <li><a href="{{ item.href }}"{% if item.external %} target="_blank" rel="noopener"{% endif %}>{{ item.label }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">{{ product_name }}</h4>
+                    <p>{{ tagline }}</p>
+                </div>
+                {% if footer_links %}
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        {% for link in footer_links %}
+                        <li style="margin-bottom:0.5rem;"><a href="{{ link.href }}">{{ link.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if contact.email or contact.social_links %}
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    {% if contact.email %}
+                    <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                    {% endif %}
+                    {% for social in contact.social_links %}
+                    <a href="{{ social.url }}" target="_blank" rel="noopener" style="margin-right:1rem;">{{ social.label | default(social.platform) }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="footer-bottom">
+                <p>{{ footer_text | default('&copy; ' ~ product_name ~ '. All rights reserved.') }}</p>
+                {% if built_with_cohort %}
+                <div class="cohort-badge">[*] Built with Cohort</div>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+    <script src="nav.js"></script>
+    <script src="footer.js"></script>
+    {% block body_scripts %}{% endblock %}
+</body>
+</html>

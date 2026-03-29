@@ -1,0 +1,39 @@
+{# Alternating Feature/Image: Text and image sections that alternate left/right layout.
+   Tags: conventional, formal
+   Variables: block.features [{title, description, image, bullets}]
+#}
+<section class="bg-white py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24">
+    {% for feature in block.features %}
+    <div class="flex flex-col lg:flex-row{% if loop.index is even %}-reverse{% endif %} items-center gap-8 lg:gap-16">
+      {# Text column #}
+      <div class="flex-1 lg:max-w-lg">
+        <h3 class="text-2xl sm:text-3xl font-bold mb-4" style="font-family: var(--font-heading);">{{ feature.title }}</h3>
+        <p class="text-muted leading-relaxed mb-6">{{ feature.description }}</p>
+        {% if feature.bullets %}
+        <ul class="space-y-3" role="list">
+          {% for bullet in feature.bullets %}
+          <li class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-muted">{{ bullet }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      {# Image column #}
+      <div class="flex-1 w-full">
+        <img
+          src="{{ feature.image }}"
+          alt="{{ feature.title }}"
+          loading="lazy"
+          class="w-full rounded-theme shadow-sm"
+        >
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>

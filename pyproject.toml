@@ -1,0 +1,57 @@
+[project]
+name = "cohort"
+version = "0.4.15"
+description = "Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Ryan Wheeler"},
+]
+dependencies = []
+readme = "README.md"
+keywords = ["multi-agent", "orchestration", "llm", "ai-agents", "mcp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://github.com/rwheeler007/cohort"
+Repository = "https://github.com/rwheeler007/cohort"
+Issues = "https://github.com/rwheeler007/cohort/issues"
+Changelog = "https://github.com/rwheeler007/cohort/releases"
+
+[project.optional-dependencies]
+server = ["starlette>=0.37,<1.0.0", "uvicorn>=0.27", "python-socketio>=5.10"]
+mcp = ["httpx>=0.27", "fastmcp>=0.1"]
+e2e = ["playwright>=1.40"]
+dev = ["pytest", "pytest-asyncio", "pytest-cov", "ruff", "mypy"]
+all = ["cohort[server,mcp,e2e,dev]"]
+
+[project.scripts]
+cohort = "cohort.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 140
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E402", "E501", "E741", "N806", "N801", "N814"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

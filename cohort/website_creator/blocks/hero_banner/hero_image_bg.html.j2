@@ -1,0 +1,37 @@
+{# Hero: Full background image with text overlay.
+   Tags: bold, warm
+   Variables: block.headline, block.subheadline, block.cta_primary_text, block.cta_primary_href,
+              block.cta_secondary_text, block.cta_secondary_href, block.hero_image
+#}
+<section class="relative min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden">
+  {# Background image #}
+  {% if block.hero_image %}
+  <img src="{{ block.hero_image }}" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover">
+  {% endif %}
+  {# Dark overlay #}
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  {# Content #}
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center text-white">
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight" style="font-family: var(--font-heading);">
+      {{ block.headline }}
+    </h1>
+    {% if block.subheadline %}
+    <p class="mt-6 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+      {{ block.subheadline }}
+    </p>
+    {% endif %}
+    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+      {% if block.cta_primary_text %}
+      <a href="{{ block.cta_primary_href | default('#') }}" class="btn-primary px-8 py-3 text-base font-semibold w-full sm:w-auto text-center">
+        {{ block.cta_primary_text }}
+      </a>
+      {% endif %}
+      {% if block.cta_secondary_text %}
+      <a href="{{ block.cta_secondary_href | default('#') }}" class="inline-block px-8 py-3 text-base font-semibold border border-white text-white rounded-theme hover:bg-white/10 transition-colors w-full sm:w-auto text-center">
+        {{ block.cta_secondary_text }}
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>

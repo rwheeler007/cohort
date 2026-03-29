@@ -1,0 +1,32 @@
+{# Announcement: Bottom-fixed notification bar. Sticks to the bottom of the viewport.
+   Full-width, edge-to-edge with a top border. Optional dismiss button.
+   Tags: bottom, fixed, sticky, notification
+   Variables: block.text, block.link_text, block.link_href, block.dismiss (boolean)
+#}
+<div
+  {% if block.dismiss %}
+  class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between px-4 py-2"
+  {% else %}
+  class="fixed inset-x-0 bottom-0 z-50 px-4 py-2"
+  {% endif %}
+  style="background: var(--color-accent); color: var(--color-text); border-top: 1px solid var(--color-border);"
+>
+  {% if block.dismiss %}
+  <span>{# spacer for centering #}</span>
+  {% endif %}
+
+  <p class="text-center font-medium text-sm">
+    {{ block.text }}
+    {% if block.link_text %}
+    <a href="{{ block.link_href | default('#') }}" class="inline-block underline" style="color: var(--color-primary);">{{ block.link_text }}</a>
+    {% endif %}
+  </p>
+
+  {% if block.dismiss %}
+  <button type="button" aria-label="Dismiss" class="rounded p-1.5 shadow-sm transition-colors" style="border: 1px solid var(--color-border); background: var(--color-bg);" onclick="this.closest('div').remove()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+  </button>
+  {% endif %}
+</div>

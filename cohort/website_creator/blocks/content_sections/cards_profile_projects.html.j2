@@ -1,0 +1,69 @@
+{# Cards: Dark profile cards with avatar, social links, and nested project list.
+   Tags: dark, profile, team
+   Variables: block.items [{image, title, links, projects}]
+   - links: list of {label, href} for social links (e.g. [{label: "Twitter", href: "#"}])
+   - projects: list of {title, excerpt, href} for project sub-cards
+#}
+<section class="section-spacing py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for item in block.items %}
+      <article class="rounded-xl p-4" style="background: var(--color-surface-dark, #1f2937); border: 1px solid var(--color-border-dark, #374151);">
+        <div class="flex items-center gap-4">
+          {% if item.image | default('') %}
+          <img
+            src="{{ item.image }}"
+            alt="{{ item.title }}"
+            class="size-16 rounded-full object-cover"
+            loading="lazy"
+          />
+          {% endif %}
+
+          <div>
+            <h3 class="text-lg font-medium text-white" style="font-family: var(--font-heading);">
+              {{ item.title }}
+            </h3>
+
+            {% if item.links %}
+            <div class="flow-root">
+              <ul class="-m-1 flex flex-wrap">
+                {% for link in item.links %}
+                <li class="p-1 leading-none">
+                  <a href="{{ link.href | default('#') }}" class="text-xs font-medium" style="color: var(--color-text-muted-dark, #d1d5db);">
+                    {{ link.label }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if item.projects %}
+        <ul class="mt-4 space-y-2">
+          {% for project in item.projects %}
+          <li>
+            <a href="{{ project.href | default('#') }}"
+               class="block h-full rounded-lg border p-4 transition"
+               style="border-color: var(--color-border-dark, #374151);"
+               onmouseover="this.style.borderColor='var(--color-primary)'"
+               onmouseout="this.style.borderColor='var(--color-border-dark, #374151)'"
+            >
+              <strong class="font-medium text-white">{{ project.title }}</strong>
+
+              {% if project.excerpt %}
+              <p class="mt-1 text-xs font-medium" style="color: var(--color-text-muted-dark, #d1d5db);">
+                {{ project.excerpt }}
+              </p>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

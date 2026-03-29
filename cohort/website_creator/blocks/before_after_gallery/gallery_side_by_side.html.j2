@@ -1,0 +1,43 @@
+{# Before/After Gallery: Side-by-side comparison, 2-column grid per project.
+   Tags: conventional, formal
+   Variables: block.section_headline,
+              block.projects [{before_image, after_image, title, description}]
+#}
+<section class="py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if block.section_headline %}
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold" style="font-family: var(--font-heading);">{{ block.section_headline }}</h2>
+    </div>
+    {% endif %}
+
+    <div class="space-y-12 sm:space-y-16">
+      {% for project in block.projects %}
+      <figure class="border border-theme rounded-theme overflow-hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-2">
+          {# Before #}
+          <div class="relative">
+            <img src="{{ project.before_image }}" alt="Before: {{ project.title }}" class="w-full h-64 sm:h-72 lg:h-80 object-cover" loading="lazy">
+            <span class="absolute top-3 left-3 bg-black/60 text-white text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-theme" aria-hidden="true">Before</span>
+          </div>
+          {# After #}
+          <div class="relative">
+            <img src="{{ project.after_image }}" alt="After: {{ project.title }}" class="w-full h-64 sm:h-72 lg:h-80 object-cover" loading="lazy">
+            <span class="absolute top-3 left-3 bg-primary text-white text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-theme" aria-hidden="true">After</span>
+          </div>
+        </div>
+        {% if project.title or project.description %}
+        <figcaption class="bg-white p-5 sm:p-6">
+          {% if project.title %}
+          <h3 class="text-lg font-semibold mb-1" style="font-family: var(--font-heading);">{{ project.title }}</h3>
+          {% endif %}
+          {% if project.description %}
+          <p class="text-muted leading-relaxed">{{ project.description }}</p>
+          {% endif %}
+        </figcaption>
+        {% endif %}
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>

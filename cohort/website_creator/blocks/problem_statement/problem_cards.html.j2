@@ -1,0 +1,38 @@
+{# Problem Statement: Pain point section with headline and card grid.
+   Tags: conventional, bold
+   Variables: block.headline, block.subheadline,
+              block.pain_points [{icon, title, description}]
+#}
+<section class="bg-white py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {# Section header #}
+    {% if block.headline %}
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold mb-4" style="font-family: var(--font-heading);">{{ block.headline }}</h2>
+      {% if block.subheadline %}
+      <p class="text-lg text-muted leading-relaxed">{{ block.subheadline }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {# Pain point cards #}
+    <div class="grid grid-cols-1 md:grid-cols-2 {% if block.pain_points | length == 3 %}lg:grid-cols-3{% endif %} gap-8">
+      {% for point in block.pain_points %}
+      <div class="section-alt border border-theme rounded-theme p-6 sm:p-8">
+        {# Icon #}
+        <div class="w-12 h-12 flex items-center justify-center rounded-theme mb-5" style="background-color: rgba(239, 68, 68, 0.1);">
+          {% if point.icon %}
+          <img src="{{ point.icon }}" alt="" aria-hidden="true" class="w-6 h-6">
+          {% else %}
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #ef4444;" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+          {% endif %}
+        </div>
+        <h3 class="text-lg font-semibold mb-2" style="font-family: var(--font-heading);">{{ point.title }}</h3>
+        <p class="text-muted leading-relaxed">{{ point.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

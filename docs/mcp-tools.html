@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Tools | COHORT</title>
+    <meta name="description" content="31 MCP tools for LLM integration -- channels, agents, tasks, discussions, search, briefings, and web access. All included in the open source tier.">
+    <meta name="keywords" content="MCP tools, Claude API, LLM integration, model context protocol, AI agent tools, multi-agent orchestration, cohort MCP server">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/mcp-tools.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/mcp-tools.html">
+    <meta property="og:title" content="MCP Tools | COHORT">
+    <meta property="og:description" content="31 MCP tools for LLM integration -- channels, agents, tasks, discussions, search, briefings, and web access.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MCP Tools | COHORT">
+    <meta name="twitter:description" content="31 MCP tools for LLM integration -- channels, agents, tasks, discussions, search, briefings, and web access.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tier-badge {
+            display: inline-block;
+            font-family: var(--font-heading);
+            font-size: 0.55rem;
+            padding: 0.2rem 0.45rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+            font-weight: 700;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .tier-free { background: var(--color-success); color: #fff; }
+        .tier-pro { background: var(--color-primary); color: #fff; }
+        .tier-enterprise { background: #d29922; color: #fff; }
+        .tool-card {
+            background: var(--color-code-bg);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .tool-name {
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .tool-desc {
+            font-size: 0.85rem;
+            color: #C8C8C8;
+            margin-top: 0.35rem;
+            line-height: 1.5;
+        }
+        .tool-meta {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .tool-tag {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .tag-read { background: #2D2D2D; border: 1px solid var(--color-success); color: var(--color-success); }
+        .tag-write { background: #2D2D2D; border: 1px solid var(--color-warning); color: var(--color-warning); }
+        .tag-action { background: rgba(217,119,87,0.15); border: 1px solid #D97757; color: #D97757; }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .category-count {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .tool-card { cursor: pointer; transition: background 0.15s; }
+        .tool-card:hover { background: rgba(255,255,255,0.06); }
+        .tool-card details summary { list-style: none; }
+        .tool-card details summary::-webkit-details-marker { display: none; }
+        .tool-card details summary::after {
+            content: "Click to expand";
+            font-size: 0.7rem;
+            color: #666;
+            float: right;
+            margin-top: 0.1rem;
+        }
+        .tool-card details[open] summary::after { content: ""; }
+        .tool-detail {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #444;
+        }
+        .tool-detail p {
+            font-size: 0.82rem;
+            color: #bbb;
+            line-height: 1.6;
+            margin: 0 0 0.5rem;
+        }
+        .param-table {
+            width: 100%;
+            font-size: 0.78rem;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+        .param-table th {
+            text-align: left;
+            color: #999;
+            font-weight: 600;
+            padding: 0.3rem 0.5rem;
+            border-bottom: 1px solid #444;
+        }
+        .param-table td {
+            padding: 0.3rem 0.5rem;
+            color: #ccc;
+            border-bottom: 1px solid #333;
+            vertical-align: top;
+        }
+        .param-table code {
+            background: #2D2D2D;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: var(--color-primary);
+        }
+        .param-required { color: var(--color-danger); font-size: 0.65rem; font-weight: 700; }
+        .param-optional { color: var(--color-success); font-size: 0.65rem; }
+        .tool-returns {
+            font-size: 0.78rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+        .tool-returns code { background: #2D2D2D; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.75rem; color: var(--color-info); }
+        .example-output {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #444;
+        }
+        .example-output-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .example-output-label .label-badge {
+            font-size: 0.6rem;
+            background: var(--color-success);
+            color: #fff;
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .example-output-label .label-badge-sample {
+            font-size: 0.6rem;
+            background: #666;
+            color: #fff;
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .example-output pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace;
+            font-size: 0.75rem;
+            line-height: 1.55;
+            color: #c9d1d9;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container text-center">
+        <h1 class="responsive-h1">MCP Tools</h1>
+        <p class="responsive-p-large">31 tools. 7 categories. Full LLM integration via the Model Context Protocol.</p>
+        <p class="responsive-p-body" style="margin-top: 0.5rem;">Every tool ships with <code style="background: rgba(0,0,0,0.08); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Two modes: <strong>Full</strong> (HTTP to running Cohort server) and <strong>Lite</strong> (file-backed, standalone).</p>
+    </div>
+</section>
+
+<!-- At a Glance -->
+<section class="section-spacing">
+    <div class="container">
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">31</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">MCP Tools</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);">7</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Categories</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-info);">2</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">Operating Modes</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">Full + Lite</div>
+            </div>
+            <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.25rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);">$0</div>
+                <div style="font-size: 0.85rem; color: #C8C8C8;">All Tiers</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">Open source, forever</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tier Legend -->
+<section style="padding: 0 1rem;">
+    <div class="container" style="max-width: 800px;">
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.85rem; color: #C8C8C8;">
+            <strong style="color: #fff;">Tier legend:</strong>
+            <span><span class="tier-badge tier-free">Free</span> Included in open source</span>
+            <span><span class="tier-badge tier-pro">Pro</span> Requires Pro subscription</span>
+            <span><span class="tier-badge tier-enterprise">Enterprise</span> Enterprise only</span>
+        </div>
+    </div>
+</section>
+
+<!-- Tool categories rendered from data/mcp-tools.json -->
+<div id="tool-categories"></div>
+
+<!-- Setup -->
+<section class="section-spacing" style="background: var(--color-light-bg);">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="responsive-h2 text-center">Quick Setup</h2>
+        <div style="background: var(--color-code-bg); border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.85rem; line-height: 2; color: #C8C8C8; margin-top: 1.5rem;">
+            <div style="color: var(--text-muted);"># Install</div>
+            <div><code><span style="color: var(--color-success);">$</span> pip install "cohort[server]"</code></div>
+            <div style="margin-top: 1rem; color: var(--text-muted);"># Add to your MCP client config</div>
+            <div style="color: var(--color-warning);">{</div>
+            <div style="padding-left: 1.5rem; color: var(--color-warning);">"mcpServers": {</div>
+            <div style="padding-left: 3rem; color: var(--color-warning);">"cohort": {</div>
+            <div style="padding-left: 4.5rem;">"command": <span style="color: var(--color-success);">"python"</span>,</div>
+            <div style="padding-left: 4.5rem;">"args": <span style="color: var(--color-success);">["-m", "cohort.mcp.server"]</span></div>
+            <div style="padding-left: 3rem; color: var(--color-warning);">}</div>
+            <div style="padding-left: 1.5rem; color: var(--color-warning);">}</div>
+            <div style="color: var(--color-warning);">}</div>
+            <div style="margin-top: 1rem; color: var(--text-muted);"># Or use the setup wizard</div>
+            <div><span style="color: var(--color-success);">$</span> python -m cohort setup</div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; font-style: italic; text-align: center;">Auto-detects between Full mode (HTTP to running Cohort server) and Lite mode (file-backed storage). No configuration needed.</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: var(--color-dark-bg); color: #fff;">
+    <div class="container text-center">
+        <h2 class="responsive-h2" style="color: #fff;">31 Tools. Zero API Cost.</h2>
+        <p class="responsive-p-large" style="color: rgba(255,255,255,0.9);">Every MCP tool ships with <code style="background: rgba(255,255,255,0.15); padding: 0.1rem 0.4rem; border-radius: 4px;">pip install cohort</code>. Open source, forever.</p>
+        <div class="button-group">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="tools.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">Tools Overview</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: var(--text-on-dark-muted);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+<script>
+(function() {
+    const TAG_CLASSES = {
+        'read-only': 'tag-read',
+        'write': 'tag-write',
+        'action': 'tag-action'
+    };
+
+    const CATEGORY_ORDER = [
+        'Channel Management',
+        'Task Management',
+        'Agent Management',
+        'Collaboration & Discussion',
+        'Search & Retrieval',
+        'Briefing & Analysis',
+        'Web Access'
+    ];
+
+    function renderParam(p) {
+        const req = p.required
+            ? '<span class="param-required">required</span>'
+            : '<span class="param-optional">optional</span>';
+        const def = p.default ? ` <code>${p.default}</code>` : '';
+        return `<tr>
+            <td><code>${p.name}</code></td>
+            <td>${p.type}</td>
+            <td>${req}${def}</td>
+            <td>${p.desc}</td>
+        </tr>`;
+    }
+
+    function renderCard(tool) {
+        const tierClass = 'tier-' + tool.tier;
+        const tierLabel = tool.tier.charAt(0).toUpperCase() + tool.tier.slice(1);
+        const tagClass = TAG_CLASSES[tool.tag] || 'tag-read';
+
+        let paramsHtml = '';
+        if (tool.params && tool.params.length > 0) {
+            paramsHtml = `
+                <table class="param-table">
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                    <tbody>${tool.params.map(renderParam).join('')}</tbody>
+                </table>`;
+        } else {
+            paramsHtml = '<p style="font-size:0.8rem;color: var(--text-muted);font-style:italic;">No parameters.</p>';
+        }
+
+        var exampleHtml = '';
+        if (tool.example_output) {
+            var escaped = tool.example_output
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            var isLive = tool.example_source === 'live';
+            var badgeText = isLive ? 'Live Output' : 'Sample';
+            var badgeClass = isLive ? 'label-badge' : 'label-badge-sample';
+            exampleHtml = `
+                <div class="example-output">
+                    <div class="example-output-label">Example Output <span class="${badgeClass}">${badgeText}</span></div>
+                    <pre>${escaped}</pre>
+                </div>`;
+        }
+
+        return `<div class="tool-card">
+            <details>
+                <summary>
+                    <div><span class="tool-name">${tool.name}</span><span class="tier-badge ${tierClass}">${tierLabel}</span></div>
+                    <div class="tool-desc">${tool.short}</div>
+                    <div class="tool-meta"><span class="tool-tag ${tagClass}">${tool.tag}</span></div>
+                </summary>
+                <div class="tool-detail">
+                    <p>${tool.detail}</p>
+                    ${paramsHtml}
+                    <div class="tool-returns"><strong>Returns:</strong> <code>${tool.returns}</code></div>
+                    ${exampleHtml}
+                </div>
+            </details>
+        </div>`;
+    }
+
+    function renderCategories(tools) {
+        const grouped = {};
+        tools.forEach(function(t) {
+            if (!grouped[t.category]) grouped[t.category] = [];
+            grouped[t.category].push(t);
+        });
+
+        let html = '';
+        CATEGORY_ORDER.forEach(function(cat, idx) {
+            const catTools = grouped[cat];
+            if (!catTools) return;
+            const bg = idx % 2 === 1 ? ' style="background: var(--color-light-bg);"' : '';
+            const toolWord = catTools.length === 1 ? 'tool' : 'tools';
+            html += `<section class="section-spacing"${bg}>
+                <div class="container" style="max-width: 800px;">
+                    <div class="category-header">
+                        <h2 class="responsive-h2" style="margin: 0;">${cat}</h2>
+                        <span class="category-count">${catTools.length} ${toolWord}</span>
+                    </div>
+                    ${catTools.map(renderCard).join('\n')}
+                </div>
+            </section>`;
+        });
+
+        document.getElementById('tool-categories').innerHTML = html;
+    }
+
+    fetch('data/mcp-tools.json')
+        .then(function(r) { return r.json(); })
+        .then(renderCategories)
+        .catch(function(err) {
+            console.error('Failed to load MCP tools data:', err);
+            document.getElementById('tool-categories').innerHTML =
+                '<section class="section-spacing"><div class="container" style="max-width:800px;">' +
+                '<p style="color: var(--text-muted);text-align:center;">Tool data could not be loaded.</p></div></section>';
+        });
+})();
+</script>
+</body>
+</html>

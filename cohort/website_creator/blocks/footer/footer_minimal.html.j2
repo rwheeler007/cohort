@@ -1,0 +1,45 @@
+{# Footer: Centered logo, one row of links, copyright.
+   Tags: minimal, creative
+   Variables: block.product_name, block.tagline, block.footer_columns [{title, links: [{label, href}]}],
+              block.social_links [{platform, url}], block.copyright_text
+#}
+<footer class="bg-white border-t border-theme">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+    {# Brand #}
+    <div class="text-xl font-bold text-primary" style="font-family: var(--font-heading);">{{ block.product_name }}</div>
+    {% if block.tagline %}
+    <p class="mt-2 text-sm text-muted">{{ block.tagline }}</p>
+    {% endif %}
+
+    {# Links row - flattened from all columns #}
+    {% set all_links = [] %}
+    {% for col in block.footer_columns %}
+    {% for link in col.links %}
+    {% if all_links.append(link) %}{% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% if all_links %}
+    <nav class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2" aria-label="Footer navigation">
+      {% for link in all_links %}
+      <a href="{{ link.href }}" class="text-sm text-muted hover:text-primary transition-colors">{{ link.label }}</a>
+      {% endfor %}
+    </nav>
+    {% endif %}
+
+    {# Social #}
+    {% if block.social_links %}
+    <div class="mt-6 flex items-center justify-center gap-4">
+      {% for link in block.social_links %}
+      <a href="{{ link.url }}" class="text-muted hover:text-primary transition-colors" aria-label="{{ link.platform }}">
+        <span class="text-sm">{{ link.platform }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Copyright #}
+    {% if block.copyright_text %}
+    <div class="mt-8 text-xs text-gray-400">{{ block.copyright_text }}</div>
+    {% endif %}
+  </div>
+</footer>

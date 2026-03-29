@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQBVRM7Z58"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FQBVRM7Z58');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Channels Integration | COHORT</title>
+    <meta name="description" content="Claude uses your tools. Your agents use Claude. Bidirectional AI at a fixed monthly cost -- not open API metering. This changes everything.">
+    <meta name="keywords" content="Claude Code Channels, Anthropic, multi-agent orchestration, Claude Code integration, MCP, agent sessions, fixed cost AI, bidirectional tools">
+
+    <link rel="canonical" href="https://rwheeler007.github.io/cohort/channels.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rwheeler007.github.io/cohort/channels.html">
+    <meta property="og:title" content="Claude Code Channels | COHORT">
+    <meta property="og:description" content="Claude uses your tools. Your agents use Claude. Bidirectional AI at a fixed monthly cost. This changes everything.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Claude Code Channels | COHORT">
+    <meta name="twitter:description" content="Claude uses your tools. Your agents use Claude. Bidirectional AI at a fixed monthly cost. This changes everything.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Skip to content -->
+    <a href="#main" class="sr-only">Skip to main content</a>
+
+    <!-- Navigation -->
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="index.html" class="nav-brand" style="font-weight:400; font-size:1.15rem; font-family: var(--font-heading); letter-spacing:1px; color: var(--color-primary);">
+COHORT            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                &#9776;
+            </button>
+            <ul class="nav-links">
+                <!-- Populated by nav.js -->
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+<!-- Hero -->
+<section style="background: #0d1117; color: #fff; padding: 4rem 0 3rem;">
+    <div class="container" style="max-width: 850px;">
+        <p style="color: #3fb950; font-family: monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.25rem;">Paradigm Shift</p>
+        <h1 style="font-family: var(--font-body); font-weight: 700; font-size: 2.25rem; color: #fff; margin-bottom: 1.25rem; line-height: 1.25;">Claude uses your tools.<br>Your agents use Claude.</h1>
+        <p style="color: rgba(255,255,255,0.8); font-size: 1.15rem; line-height: 1.7; margin-bottom: 0.75rem;">Claude Code Channels makes AI tools bidirectional for the first time. Claude can call your local tools, your agents can call Claude -- and it all runs at a <strong style="color: #fff;">fixed monthly cost</strong> you choose, not open API metering that could hit $2,000 in a bad month.</p>
+        <p style="color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.7;">Cohort was the first third-party integration. Three hours from protocol to working agents. One week from integration to open-source launch. 3 AM to 3 AM.</p>
+    </div>
+</section>
+
+<!-- The Before/After -->
+<section class="section-spacing" style="background: var(--color-background);">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #2B2D31; margin-bottom: 1.5rem; text-align: center;">What just changed</h2>
+
+        <div class="grid-2" style="gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="background: rgba(248,81,73,0.06); border: 1px solid rgba(248,81,73,0.2); border-radius: 8px; padding: 1.5rem;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #f85149; font-weight: 700; margin-bottom: 0.75rem;">Before Channels</div>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; line-height: 2; color: #555;">
+                    <li>Claude is a text box. You type, it responds.</li>
+                    <li>Your tools can't call Claude. Claude can't call your tools.</li>
+                    <li>API access means open metering: $800-2,000+/mo.</li>
+                    <li>Every API call is a new cold start. No persistent context.</li>
+                    <li>You pay per token. More agents = more cost.</li>
+                </ul>
+            </div>
+            <div style="background: rgba(63,185,80,0.06); border: 1px solid rgba(63,185,80,0.2); border-radius: 8px; padding: 1.5rem;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #3fb950; font-weight: 700; margin-bottom: 0.75rem;">After Channels</div>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem; line-height: 2; color: #555;">
+                    <li><strong>Claude calls your tools.</strong> Your agents call Claude.</li>
+                    <li>Bidirectional: one protocol, interchangeable access.</li>
+                    <li>Fixed cost: $100 or $200/mo. You know the number.</li>
+                    <li>Persistent sessions. Claude keeps context across tasks.</li>
+                    <li>Cohort manages the spend intelligently for you.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="background: #F5E6DE; border-radius: 8px; padding: 1.5rem; text-align: center;">
+            <p style="font-size: 1.05rem; line-height: 1.7; margin: 0; font-weight: 600; color: #2B2D31;">The API model charged you per token and you had no idea what the bill would be.<br>The Channels model gives you a fixed budget and Cohort makes every dollar count.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Bidirectional Tool Use -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #fff; margin-bottom: 1rem;">Bidirectional tool use</h2>
+        <p style="color: rgba(255,255,255,0.75); font-size: 1rem; line-height: 1.7; margin-bottom: 2rem;">This is the part that's genuinely unprecedented. Claude Code can call any tool your system exposes. And your system can push work into Claude Code's session. Same protocol. Same session. No API keys, no token counting, no surprise bills.</p>
+
+        <div style="display: grid; gap: 1.5rem;">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.5rem;">
+                <h3 style="color: #D97757; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem;">Claude calls your tools</h3>
+                <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.7; margin: 0 0 1rem;">Through Cohort's MCP integration, Claude Code gains access to your entire agent ecosystem. Need a security review? Claude calls the security agent. Need content strategy? Claude calls the content strategist. Each agent brings persistent memory, domain expertise, and contribution scoring -- capabilities Claude doesn't have alone.</p>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.8;">
+                    <span style="color: #888;">// Claude Code, mid-task, decides it needs security review:</span><br>
+                    <span style="color: #58a6ff;">Tool call:</span> <span style="color: #D97757;">cohort_roundtable</span>(<span style="color: #3fb950;">"Review this auth flow for vulnerabilities"</span>,<br>
+                    &nbsp;&nbsp;agents: [<span style="color: #3fb950;">"security"</span>, <span style="color: #3fb950;">"python_dev"</span>])<br>
+                    <span style="color: #888;">// Security agent responds with findings from its persistent memory</span><br>
+                    <span style="color: #888;">// Claude applies the fixes, in the same session, with full file context</span>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.5rem;">
+                <h3 style="color: #3fb950; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem;">Your agents call Claude</h3>
+                <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.7; margin: 0 0 1rem;">Cohort's local agents run at 104 tok/s on your GPU for free. But some tasks need frontier reasoning -- complex refactors, multi-file architectural changes, nuanced code review. Your agents escalate those tasks to Claude Code through the Channel, and Claude executes them in a persistent session with your repo fully loaded.</p>
+                <div style="background: rgba(0,0,0,0.2); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.8;">
+                    <span style="color: #888;">// Cohort's coding orchestrator encounters a complex refactor:</span><br>
+                    <span style="color: #58a6ff;">Escalate to Claude Code:</span> <span style="color: #3fb950;">"Refactor auth middleware to support</span><br>
+                    <span style="color: #3fb950;">&nbsp;&nbsp;both JWT and session tokens. 14 files affected."</span><br>
+                    <span style="color: #888;">// Claude Code receives the brief with channel context</span><br>
+                    <span style="color: #888;">// Executes the refactor across all 14 files</span><br>
+                    <span style="color: #888;">// Reports back with structured results + diff</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fixed Cost -->
+<section class="section-spacing" style="background: var(--color-background);">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #2B2D31; margin-bottom: 1rem; text-align: center;">Fixed cost, not open metering</h2>
+        <p class="responsive-p-body text-center" style="max-width: 700px; margin: 0 auto 2rem;">The API model was a blank check. You paid per token, per call, per agent turn. A busy week could cost $500. A runaway loop could cost thousands. Channels changes the economics entirely.</p>
+
+        <div class="mobile-stack" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="background: #2B2D31; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #3fb950;">$0</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: #C8C8C8; margin-bottom: 0.5rem;">Cohort Local</div>
+                <p style="font-size: 0.78rem; color: rgba(255,255,255,0.5); margin: 0; line-height: 1.5;">23 agents, roundtables, briefings, code queue. All on your GPU. Channels-ready.</p>
+            </div>
+            <div style="background: #2B2D31; border-radius: 8px; padding: 1.5rem; text-align: center; border: 2px solid var(--color-primary);">
+                <div style="font-size: 2rem; font-weight: 700; color: #D97757;">$100-200</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: #C8C8C8; margin-bottom: 0.5rem;">Claude Code Subscription</div>
+                <p style="font-size: 0.78rem; color: rgba(255,255,255,0.5); margin: 0; line-height: 1.5;">Fixed monthly cost. You pick the plan. Cohort manages the spend intelligently.</p>
+            </div>
+            <div style="background: #2B2D31; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2rem; font-weight: 700; color: #f85149;">$800-2,000+</div>
+                <div style="font-size: 0.85rem; font-weight: 600; color: #C8C8C8; margin-bottom: 0.5rem;">Open API (the old way)</div>
+                <p style="font-size: 0.78rem; color: rgba(255,255,255,0.5); margin: 0; line-height: 1.5;">Per-token billing. Unpredictable. Every agent turn costs money. Every runaway loop costs more.</p>
+            </div>
+        </div>
+
+        <div style="background: #2B2D31; border-radius: 8px; padding: 1.75rem;">
+            <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; color: #fff; margin-bottom: 1rem;">How Cohort manages your fixed budget</h3>
+            <div style="display: grid; gap: 1rem;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(63,185,80,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #3fb950; font-size: 0.7rem; font-weight: 700;">1</div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.6; margin: 0;"><strong style="color: #fff;">Local-first triage.</strong> 95% of agent work runs on your GPU at zero cost. Only tasks that genuinely need frontier reasoning get escalated to Claude Code.</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(63,185,80,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #3fb950; font-size: 0.7rem; font-weight: 700;">2</div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.6; margin: 0;"><strong style="color: #fff;">Context distillation.</strong> Before escalating to Claude, local models pre-process and condense the context. Claude gets a structured briefing instead of raw data -- so every interaction uses minimal capacity.</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(63,185,80,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #3fb950; font-size: 0.7rem; font-weight: 700;">3</div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.6; margin: 0;"><strong style="color: #fff;">Session persistence.</strong> Claude Code keeps context across tasks. No cold starts. No re-reading your entire repo for each request. One session handles many tasks efficiently.</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(63,185,80,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #3fb950; font-size: 0.7rem; font-weight: 700;">4</div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.6; margin: 0;"><strong style="color: #fff;">Safeguards.</strong> Unified 3-tier response gate (emergency rate limits, heuristic scoring, session-aware orchestrator gating), meeting mode stakeholder controls, and graceful degradation back to local models. Your fixed spend stays fixed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #2B2D31; margin-bottom: 1.5rem;">How it works under the hood</h2>
+
+        <div style="background: #2D2D2D; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; font-family: monospace; font-size: 0.82rem; line-height: 1.9; color: rgba(255,255,255,0.75);">
+            <div style="color: #888; margin-bottom: 0.75rem;">// The lifecycle of a Channels task</div>
+            <div><span style="color: #D97757;">1.</span> Cohort agent enqueues a task brief <span style="color: #888;">--> in-memory request queue (per-channel)</span></div>
+            <div><span style="color: #D97757;">2.</span> Channel plugin polls Cohort HTTP API <span style="color: #888;">--> claims the request</span></div>
+            <div><span style="color: #D97757;">3.</span> Plugin pushes task as channel event <span style="color: #888;">--> Claude Code receives it</span></div>
+            <div><span style="color: #D97757;">4.</span> Claude reads the brief, executes the work <span style="color: #888;">--> your files, your repo</span></div>
+            <div><span style="color: #D97757;">5.</span> Claude calls reply tools (complete/progress/error) <span style="color: #888;">--> structured results</span></div>
+            <div><span style="color: #D97757;">6.</span> Plugin posts back to Cohort <span style="color: #888;">--> triggers self-review, agent reviews</span></div>
+            <div><span style="color: #D97757;">7.</span> Waiting agent gets the response <span style="color: #888;">--> continues execution</span></div>
+        </div>
+
+        <div class="grid-2" style="gap: 1.5rem;">
+            <div>
+                <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem;">Per-channel session isolation</h3>
+                <p class="responsive-p-body" style="max-width: none;">Each Cohort channel gets its own independent Claude Code session. A security audit in <code>#security-review</code> doesn't share context with a website build in <code>#web-project</code>. Up to 5 simultaneous sessions, with priority eviction when you need a 6th.</p>
+            </div>
+            <div>
+                <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem;">Context hydration</h3>
+                <p class="responsive-p-body" style="max-width: none;">When a new Claude Code session starts for a channel, Cohort summarizes the channel's recent discussion using your local LLM and injects it as a structured briefing. Claude joins the conversation mid-stream without anyone having to catch it up.</p>
+            </div>
+            <div>
+                <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem;">Auto-launch and idle reaping</h3>
+                <p class="responsive-p-body" style="max-width: none;">Sessions start on demand when work arrives and shut down automatically after 10 minutes idle. No manual process management. If a session dies, its claimed requests are automatically failed and re-queued.</p>
+            </div>
+            <div>
+                <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem;">Three-tier context degradation</h3>
+                <p class="responsive-p-body" style="max-width: none;"><strong>Tier A:</strong> Local LLM summarizes last 50 messages into ~1000 tokens. <strong>Tier B:</strong> Heuristic filter, ~4000 chars. <strong>Tier C:</strong> Last 20 messages as-is. Each tier falls back to the next if the local model is unavailable.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Side by Side in VS Code -->
+<section class="section-spacing" style="background: #0d1117; color: #fff;">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #fff; margin-bottom: 1rem; text-align: center;">One IDE. Both systems. Zero switching.</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 1rem; line-height: 1.7; text-align: center; margin-bottom: 2.5rem;">Claude Code runs in the VS Code terminal. Cohort's agent team runs in the VS Code sidebar. They share the same repo, the same MCP tools, and the same channel sessions. You never leave the editor.</p>
+
+        <!-- VS Code mockup -->
+        <div style="background: #1e1e1e; border: 1px solid #333; border-radius: 10px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5);">
+            <!-- Title bar -->
+            <div style="background: #323233; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #f85149;"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #d29922;"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #3fb950;"></div>
+                <span style="color: #888; font-size: 0.75rem; margin-left: 0.5rem;">my-project -- Visual Studio Code</span>
+            </div>
+            <!-- IDE layout -->
+            <div style="display: grid; grid-template-columns: 280px 1fr; min-height: 340px;">
+                <!-- Cohort sidebar -->
+                <div style="background: #252526; border-right: 1px solid #333; padding: 1rem; font-size: 0.75rem;">
+                    <div style="color: #D97757; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Cohort Agents</div>
+
+                    <div style="background: #1e1e1e; border-radius: 4px; padding: 0.6rem; margin-bottom: 0.75rem; border-left: 3px solid #3fb950;">
+                        <div style="color: #3fb950; font-weight: 600; font-size: 0.7rem;">#security-review</div>
+                        <div style="color: #888; font-size: 0.65rem; margin-top: 0.25rem;">Meeting: ACTIVE (3 agents)</div>
+                        <div style="color: #666; font-size: 0.6rem; margin-top: 0.15rem;">Phase: VALIDATE | Turn 6/15</div>
+                    </div>
+
+                    <div style="background: #1e1e1e; border-radius: 4px; padding: 0.6rem; margin-bottom: 0.75rem; border-left: 3px solid #58a6ff;">
+                        <div style="color: #58a6ff; font-weight: 600; font-size: 0.7rem;">#api-redesign</div>
+                        <div style="color: #888; font-size: 0.65rem; margin-top: 0.25rem;">Discussion: 5 agents, compiled</div>
+                    </div>
+
+                    <div style="background: #1e1e1e; border-radius: 4px; padding: 0.6rem; margin-bottom: 1rem; border-left: 3px solid #d29922;">
+                        <div style="color: #d29922; font-weight: 600; font-size: 0.7rem;">#code-queue</div>
+                        <div style="color: #888; font-size: 0.65rem; margin-top: 0.25rem;">2 tasks queued, 1 in review</div>
+                    </div>
+
+                    <div style="color: #888; font-size: 0.6rem; border-top: 1px solid #333; padding-top: 0.75rem; line-height: 1.8;">
+                        <div>security_agent <span style="color: #3fb950;">ACTIVE</span></div>
+                        <div>python_developer <span style="color: #3fb950;">ACTIVE</span></div>
+                        <div>qa_agent <span style="color: #3fb950;">ACTIVE</span></div>
+                        <div>ceo <span style="color: #888;">SILENT</span></div>
+                    </div>
+                </div>
+
+                <!-- Claude Code terminal -->
+                <div style="background: #1a1d21; padding: 1rem; font-family: monospace; font-size: 0.72rem; line-height: 1.9; color: rgba(255,255,255,0.6);">
+                    <div style="color: #888; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem;">Terminal -- Claude Code</div>
+
+                    <div><span style="color: #D97757;">claude&gt;</span> <span style="color: #fff;">Reviewing auth middleware changes from #security-review...</span></div>
+                    <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">Tool:</span> <span style="color: #D97757;">cohort_meeting_next_speaker</span>(session: <span style="color: #3fb950;">"s_sec_review"</span>)</div>
+                    <div style="color: #888;">  Recommended: qa_agent (score: 0.82, phase: VALIDATE)</div>
+                    <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">Tool:</span> <span style="color: #D97757;">post_message</span>(channel: <span style="color: #3fb950;">"security-review"</span>)</div>
+                    <div style="color: #888;">  "Auth flow reviewed. 2 issues found: missing rate limit</div>
+                    <div style="color: #888;">   on /token endpoint, JWT expiry not validated server-side.</div>
+                    <div style="color: #888;">   @qa_agent please verify the fixes in auth_middleware.py"</div>
+                    <div style="margin-top: 0.5rem;"><span style="color: #58a6ff;">Tool:</span> <span style="color: #D97757;">cohort_meeting_demote</span>(agent: <span style="color: #3fb950;">"security_agent"</span>, to: <span style="color: #3fb950;">"silent"</span>)</div>
+                    <div style="color: #888;">  [OK] security_agent -> SILENT (work complete, yielding floor)</div>
+
+                    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #333;">
+                        <div style="color: #3fb950;">3 files modified, 0 issues remaining.</div>
+                        <div style="color: #888;">Session active | Meeting mode ON | Next: qa_agent</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p style="text-align: center; color: rgba(255,255,255,0.35); font-size: 0.8rem; margin-top: 1rem; font-style: italic;">Cohort's agent sidebar (left) and Claude Code's terminal (right), sharing the same channel session.</p>
+
+        <!-- Three-column callouts below the mockup -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2.5rem;" class="mobile-stack">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #D97757; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">Claude writes code</div>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.6; margin: 0;">Claude Code edits files, runs tests, and commits -- using Cohort's MCP tools to consult agents, check scores, and manage meeting dynamics.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #3fb950; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">Agents coordinate</div>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.6; margin: 0;">Stakeholder gating controls who speaks. Phase detection tracks progress. The 3-tier response gate prevents loops. All visible in the sidebar.</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #58a6ff; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">You stay in flow</div>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.6; margin: 0;">No browser tabs. No terminal switching. Channels, meetings, tasks, and reviews -- all in the same VS Code window you're already coding in.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container" style="max-width: 850px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #fff; margin-bottom: 1rem; text-align: center;">First integration, day one</h2>
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.95rem; text-align: center; margin-bottom: 2rem;">Anthropic shipped the protocol at 3 AM. By end of day, Cohort had full session management running through it.</p>
+
+        <div style="font-family: monospace; font-size: 0.82rem; line-height: 2.4; color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem 1.5rem;">
+            <div><span style="color: #D97757;">03:00 AM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> Anthropic ships Claude Code Channels (research preview)</div>
+            <div><span style="color: #D97757;">06:03 AM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> Cohort integration committed. Agent pipeline operational.</div>
+            <div><span style="color: #D97757;">06:45 AM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> Working checkpoint. CLI module, agent enrichment, context hydration.</div>
+            <div><span style="color: #D97757;">07:11 AM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> First multi-round agent roundtable via Channels.</div>
+            <div><span style="color: #D97757;">05:38 PM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> Per-channel session management with auto-launch and idle reaping.</div>
+            <div><span style="color: #D97757;">10:06 PM MT</span> <span style="color: rgba(255,255,255,0.3);">--</span> VS Code extension panel for session management shipped.</div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <span style="color: #D97757;">03:00 AM MT, one week later</span> <span style="color: rgba(255,255,255,0.3);">--</span> Open-source launch. Full platform public.
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <h3 style="font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; color: #fff; margin-bottom: 1rem;">Why it took three hours, not three weeks</h3>
+            <div style="display: grid; gap: 1rem;">
+                <div style="border-left: 3px solid var(--color-primary); padding-left: 1.25rem;">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin: 0;"><strong style="color: #fff;">MCP-native architecture.</strong> Cohort's entire tool surface is already MCP. Channels are MCP servers. The plugin was a thin bridge -- no architecture changes needed.</p>
+                </div>
+                <div style="border-left: 3px solid #3fb950; padding-left: 1.25rem;">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin: 0;"><strong style="color: #fff;">Request/response queue already existed.</strong> Cohort's code queue has a full lifecycle state machine. The Channel plugin just polls it. No new infrastructure.</p>
+                </div>
+                <div style="border-left: 3px solid #58a6ff; padding-left: 1.25rem;">
+                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin: 0;"><strong style="color: #fff;">Agent orchestration was done.</strong> Unified 3-tier response gate, meeting mode with stakeholder gating, compiled roundtables, deliverables preprocessing -- all production-tested. Channels needed a transport layer, not new logic.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What Claude Gets -->
+<section class="section-spacing" style="background: var(--color-background);">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #2B2D31; margin-bottom: 1rem; text-align: center;">What Claude Code gets through Cohort</h2>
+        <p class="responsive-p-body text-center" style="margin-bottom: 2rem;">When Claude Code runs with Cohort's channel plugin, it gains access to the full ecosystem via MCP tools:</p>
+
+        <div class="grid-3" style="gap: 1rem; margin-bottom: 2rem;">
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.5rem;">23</div>
+                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Specialist Agents</div>
+                <p style="font-size: 0.8rem; color: #666; margin: 0;">Security, QA, Python dev, web dev, content strategy, documentation, analytics, marketing -- each with persistent memory</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 1.75rem; font-weight: 700; color: #3fb950; margin-bottom: 0.5rem;">73</div>
+                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">CLI Commands</div>
+                <p style="font-size: 0.8rem; color: #666; margin: 0;">Queue management, meeting control, health checks, model settings, rate limits, agent decisions -- all available as slash commands</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 1.75rem; font-weight: 700; color: #58a6ff; margin-bottom: 0.5rem;">104</div>
+                <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">Local tok/s</div>
+                <p style="font-size: 0.8rem; color: #666; margin: 0;">Claude can delegate bulk work to your local GPU via <code>/delegate</code>. Your hardware does the heavy lifting; Claude does the thinking.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Full Tool Catalog -->
+<section class="section-spacing" style="background: #0d1117; color: #fff;">
+    <div class="container" style="max-width: 1000px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #fff; margin-bottom: 0.75rem; text-align: center;">57 tools Claude Code gains through Cohort</h2>
+        <p style="color: rgba(255,255,255,0.55); font-size: 0.95rem; text-align: center; margin-bottom: 2rem;">Every tool available via MCP the moment a Channel session starts. 54 from the Cohort API server + 3 from the Channel plugin.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;" class="mobile-stack">
+
+            <!-- Row 1: Agents (9) | Channels & Messages (8) -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #3fb950; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Agents (9)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #3fb950;">cohort_list_agents</span> <span style="color: #555;">-- List all agents</span></div>
+                    <div><span style="color: #3fb950;">cohort_get_agent</span> <span style="color: #555;">-- Full agent config</span></div>
+                    <div><span style="color: #3fb950;">cohort_get_agent_memory</span> <span style="color: #555;">-- Read agent memory</span></div>
+                    <div><span style="color: #3fb950;">cohort_create_agent</span> <span style="color: #555;">-- Create a new agent</span></div>
+                    <div><span style="color: #3fb950;">cohort_clean_memory</span> <span style="color: #555;">-- Prune stale facts</span></div>
+                    <div><span style="color: #3fb950;">cohort_add_fact</span> <span style="color: #555;">-- Inject knowledge</span></div>
+                    <div><span style="color: #3fb950;">cohort_adopt_persona</span> <span style="color: #555;">-- Load agent identity</span></div>
+                    <div><span style="color: #3fb950;">cohort_find_agents</span> <span style="color: #555;">-- Search by capability</span></div>
+                    <div><span style="color: #3fb950;">cohort_partnership_graph</span> <span style="color: #555;">-- Agent collaboration map</span></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #58a6ff; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Channels & Messages (8)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #58a6ff;">read_channel</span> <span style="color: #555;">-- Read messages</span></div>
+                    <div><span style="color: #58a6ff;">post_message</span> <span style="color: #555;">-- Send a message</span></div>
+                    <div><span style="color: #58a6ff;">list_channels</span> <span style="color: #555;">-- List all channels</span></div>
+                    <div><span style="color: #58a6ff;">cohort_create_channel</span> <span style="color: #555;">-- Create a channel</span></div>
+                    <div><span style="color: #58a6ff;">channel_summary</span> <span style="color: #555;">-- AI summary of channel</span></div>
+                    <div><span style="color: #58a6ff;">condense_channel</span> <span style="color: #555;">-- Condense old messages</span></div>
+                    <div><span style="color: #58a6ff;">cohort_search_messages</span> <span style="color: #555;">-- Search across channels</span></div>
+                    <div><span style="color: #58a6ff;">cohort_get_mentions</span> <span style="color: #555;">-- Get @mentions for agent</span></div>
+                </div>
+            </div>
+
+            <!-- Row 2: Meeting Sessions (8) | Meeting Scoring & Participants (9) -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #d29922; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Meeting Sessions (8)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #d29922;">cohort_discussion</span> <span style="color: #555;">-- Multi-agent discussion</span></div>
+                    <div><span style="color: #d29922;">cohort_compiled_discussion</span> <span style="color: #555;">-- Single-call roundtable</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_start</span> <span style="color: #555;">-- Start session</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_stop</span> <span style="color: #555;">-- End session</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_pause</span> <span style="color: #555;">-- Pause session</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_resume</span> <span style="color: #555;">-- Resume session</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_extend</span> <span style="color: #555;">-- Add turns</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_status</span> <span style="color: #555;">-- Session state</span></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #d29922; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Meeting Scoring & Participants (9)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #d29922;">cohort_meeting_promote</span> <span style="color: #555;">-- Agent -> ACTIVE</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_demote</span> <span style="color: #555;">-- Agent -> silent/observer</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_add_participant</span> <span style="color: #555;">-- Add agent</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_remove_participant</span> <span style="color: #555;">-- Remove agent</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_next_speaker</span> <span style="color: #555;">-- Scored recommendation</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_score</span> <span style="color: #555;">-- 5-dimension breakdown</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_phase</span> <span style="color: #555;">-- Detect phase</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_enable</span> <span style="color: #555;">-- Lightweight gating</span></div>
+                    <div><span style="color: #d29922;">cohort_meeting_disable</span> <span style="color: #555;">-- Disable gating</span></div>
+                </div>
+            </div>
+
+            <!-- Row 3: Work Queue (8) | Review + Checklists (7) -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #f0883e; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Work Queue & Tasks (8)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #f0883e;">cohort_get_work_queue</span> <span style="color: #555;">-- View queue</span></div>
+                    <div><span style="color: #f0883e;">cohort_get_tasks</span> <span style="color: #555;">-- List tasks</span></div>
+                    <div><span style="color: #f0883e;">cohort_enqueue_item</span> <span style="color: #555;">-- Add work item</span></div>
+                    <div><span style="color: #f0883e;">cohort_claim_next</span> <span style="color: #555;">-- Claim next item</span></div>
+                    <div><span style="color: #f0883e;">cohort_get_outputs</span> <span style="color: #555;">-- Read task outputs</span></div>
+                    <div><span style="color: #f0883e;">cohort_assign_task</span> <span style="color: #555;">-- Assign to agent</span></div>
+                    <div><span style="color: #f0883e;">cohort_route_task</span> <span style="color: #555;">-- Auto-route by capability</span></div>
+                    <div><span style="color: #f0883e;">cohort_requeue_item</span> <span style="color: #555;">-- Re-queue failed item</span></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #bc8cff; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Review & Approvals (4)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #bc8cff;">cohort_submit_for_review</span> <span style="color: #555;">-- Submit work for review</span></div>
+                    <div><span style="color: #bc8cff;">cohort_get_pending_reviews</span> <span style="color: #555;">-- See review queue</span></div>
+                    <div><span style="color: #bc8cff;">cohort_submit_review</span> <span style="color: #555;">-- Approve/reject</span></div>
+                    <div><span style="color: #bc8cff;">cohort_get_approval_status</span> <span style="color: #555;">-- Check approval state</span></div>
+                </div>
+                <div style="color: #79c0ff; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">Checklists & Deliverables (3)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #79c0ff;">get_checklist</span> <span style="color: #555;">-- Read channel checklist</span></div>
+                    <div><span style="color: #79c0ff;">update_checklist</span> <span style="color: #555;">-- Update checklist items</span></div>
+                    <div><span style="color: #79c0ff;">cohort_set_deliverables</span> <span style="color: #555;">-- Define task deliverables</span></div>
+                </div>
+            </div>
+
+            <!-- Row 4: Intelligence & Web (5) | Channel Plugin + Discussions (5) -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #7ee787; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Intelligence & Web (5)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #7ee787;">cohort_generate_briefing</span> <span style="color: #555;">-- Executive briefing</span></div>
+                    <div><span style="color: #7ee787;">internal_web_search</span> <span style="color: #555;">-- Web search</span></div>
+                    <div><span style="color: #7ee787;">internal_web_fetch</span> <span style="color: #555;">-- Fetch URL content</span></div>
+                    <div><span style="color: #7ee787;">browser_action</span> <span style="color: #555;">-- Browser automation</span></div>
+                    <div><span style="color: #7ee787;">browser_status</span> <span style="color: #555;">-- Browser session state</span></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem;">
+                <div style="color: #D97757; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Channel Plugin (3)</div>
+                <div style="font-family: monospace; font-size: 0.75rem; line-height: 2.1; color: rgba(255,255,255,0.7);">
+                    <div><span style="color: #D97757;">cohort_respond</span> <span style="color: #555;">-- Reply to a channel request</span></div>
+                    <div><span style="color: #D97757;">cohort_post</span> <span style="color: #555;">-- Post to any channel</span></div>
+                    <div><span style="color: #D97757;">cohort_error</span> <span style="color: #555;">-- Report an error</span></div>
+                </div>
+                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06); line-height: 1.6;">These three are the reply tools -- how Claude Code sends results back through the Channel. The other 54 tools are how Claude Code talks <em>to</em> your agent team.</div>
+            </div>
+
+        </div>
+
+        <p style="text-align: center; color: rgba(255,255,255,0.35); font-size: 0.8rem; margin-top: 1.5rem;">All tools are available via MCP. No API keys required for local tools. Claude Code discovers them automatically when the Channel session starts.</p>
+    </div>
+</section>
+
+<!-- Official Docs Links -->
+<section class="section-spacing" style="background: #F5E6DE;">
+    <div class="container" style="max-width: 900px;">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #2B2D31; margin-bottom: 1.5rem;">Learn more</h2>
+
+        <div class="grid-2" style="gap: 1.5rem;">
+            <a href="https://code.claude.com/docs/en/channels" target="_blank" rel="noopener" class="card" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Channels overview (Anthropic)</div>
+                <p style="font-size: 0.85rem; color: #555; line-height: 1.6; margin: 0;">Official docs. What Channels are, how to set up Telegram and Discord, security model, enterprise controls.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">code.claude.com &rarr;</span>
+            </a>
+            <a href="https://code.claude.com/docs/en/channels-reference" target="_blank" rel="noopener" class="card" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Channels reference (build your own)</div>
+                <p style="font-size: 0.85rem; color: #555; line-height: 1.6; margin: 0;">Protocol spec for building custom channel plugins. MCP capabilities, notification format, reply tools.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">code.claude.com &rarr;</span>
+            </a>
+            <a href="https://github.com/rwheeler007/cohort" class="card" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Cohort source (the integration)</div>
+                <p style="font-size: 0.85rem; color: #555; line-height: 1.6; margin: 0;">Full source. Channel bridge, context hydration, session management, code queue pipeline. Apache 2.0 license.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">GitHub &rarr;</span>
+            </a>
+            <a href="features.html" class="card" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">How Cohort works</div>
+                <p style="font-size: 0.85rem; color: #555; line-height: 1.6; margin: 0;">Agent roundtables, contribution scoring, local inference, response tiers, safeguards. The system Channels plugs into.</p>
+                <span style="display: inline-block; margin-top: 0.75rem; color: var(--color-primary); font-size: 0.85rem; font-weight: 600;">Features &rarr;</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section-spacing" style="background: #2B2D31; color: #fff;">
+    <div class="container text-center">
+        <h2 style="font-family: var(--font-body); font-weight: 700; font-size: 1.75rem; color: #fff;">Fixed cost. Bidirectional tools. Your data stays local.</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 2rem;">23 agents on your GPU. Claude Code when you need it. No surprise bills.</p>
+        <div class="button-group">
+            <a href="https://github.com/rwheeler007/cohort" class="btn-primary" style="background: var(--color-primary);">Get Started</a>
+            <a href="features.html" class="btn-secondary" style="border-color: #fff; color: #fff; background: rgba(255,255,255,0.1);">How It Works</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">COHORT</h4>
+                    <p>AI Team Coordination. Your agents, thinking together.</p>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Links</h4>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li style="margin-bottom:0.5rem;"><a href="https://github.com/rwheeler007/cohort">GitHub</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="docs.html">Documentation</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="use-cases.html">Use Cases</a></li>
+                        <li style="margin-bottom:0.5rem;"><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color:#fff; margin-bottom:1rem;">Connect</h4>
+                    <p><a href="mailto:hello@cohort.dev">hello@cohort.dev</a></p>
+                    <a href="https://github.com/rwheeler007/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">GitHub</a>
+                    <a href="https://twitter.com/cohort_dev" target="_blank" rel="noopener" style="margin-right:1rem;">Twitter/X</a>
+                    <a href="https://discord.gg/cohort" target="_blank" rel="noopener" style="margin-right:1rem;">Discord</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cohort. Open source under <a href="https://github.com/rwheeler007/cohort/blob/main/LICENSE" style="color: rgba(255,255,255,0.7);">Apache 2.0 License</a>.</p>
+                <div class="cohort-badge">[*] Built with Cohort</div>
+            </div>
+        </div>
+    </footer>
+<script src="nav.js"></script>
+<script src="footer.js"></script>
+</body>
+</html>

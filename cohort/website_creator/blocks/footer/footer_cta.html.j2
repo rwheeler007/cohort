@@ -1,0 +1,76 @@
+{# Footer: Centered call-to-action heading with button, legal links, social icons.
+   Adapted from HyperUI (MIT).
+   Tags: creative, cta, centered
+   Variables: block.product_name, block.cta_heading, block.cta_button_text, block.cta_button_url,
+              block.footer_columns [{title, links: [{label, href}]}],
+              block.social_links [{platform, url}], block.copyright_text
+#}
+<footer style="background: var(--color-bg, #fff);">
+  <div class="mx-auto max-w-7xl px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-24">
+    {# CTA section #}
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold sm:text-5xl" style="color: var(--color-text);">
+        {{ block.cta_heading | default('Ready to get started?') }}
+      </h2>
+
+      {% if block.tagline %}
+      <p class="mx-auto mt-4 max-w-sm" style="color: var(--color-text); opacity: 0.6;">
+        {{ block.tagline }}
+      </p>
+      {% endif %}
+
+      <a
+        href="{{ block.cta_button_url | default('#') }}"
+        class="mt-8 inline-block rounded-full px-12 py-3 text-sm font-medium transition hover:opacity-90"
+        style="border: 2px solid var(--color-primary); color: var(--color-primary);"
+      >
+        {{ block.cta_button_text | default('Get Started') }}
+      </a>
+    </div>
+
+    {# Bottom bar: legal + social #}
+    <div
+      class="mt-16 pt-8 sm:flex sm:items-center sm:justify-between lg:mt-24"
+      style="border-top: 1px solid var(--color-border, #e5e7eb);"
+    >
+      {# Legal links (flattened from columns) #}
+      {% set legal_links = [] %}
+      {% for col in block.footer_columns %}
+        {% for link in col.links %}
+          {% if legal_links.append(link) %}{% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% if legal_links %}
+      <ul class="flex flex-wrap justify-center gap-4 text-xs lg:justify-end">
+        {% for link in legal_links %}
+        <li>
+          <a href="{{ link.href }}" class="transition hover:opacity-75" style="color: var(--color-text); opacity: 0.5;">
+            {{ link.label }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {# Social links #}
+      {% if block.social_links %}
+      <ul class="mt-8 flex justify-center gap-6 sm:mt-0 lg:justify-end">
+        {% for social in block.social_links %}
+        <li>
+          <a
+            href="{{ social.url }}"
+            rel="noreferrer"
+            target="_blank"
+            class="transition hover:opacity-75"
+            style="color: var(--color-text); opacity: 0.7;"
+            aria-label="{{ social.platform }}"
+          >
+            <span class="text-sm">{{ social.platform }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</footer>

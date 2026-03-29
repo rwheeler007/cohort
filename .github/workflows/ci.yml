@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint, type-check, and test across the Python version matrix
+  # ---------------------------------------------------------------------------
+  ci:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with dev extras
+        run: pip install -e '.[dev]'
+
+      - name: Lint with ruff
+        run: ruff check .
+
+      - name: Type-check with mypy
+        run: mypy cohort/
+
+      - name: Verify no web framework imports in core
+        run: |
+          if grep -rn "from starlette\|from socketio\|from fastapi\|import uvicorn" cohort/ --include="*.py"; then
+            echo "FAIL: Web framework imports found in core package"
+            exit 1
+          fi
+          echo "OK: No web framework imports in core"
+
+      - name: Run tests with coverage
+        run: pytest --cov
+
+  # ---------------------------------------------------------------------------
+  # Build and publish to PyPI on version tags (v*)
+  # ---------------------------------------------------------------------------
+  publish:
+    name: Publish to PyPI
+    needs: ci
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # required for trusted publishing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build tools
+        run: pip install --no-cache-dir build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Publish to PyPI (trusted publisher)
+        uses: pypa/gh-action-pypi-publish@release/v1

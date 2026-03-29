@@ -1,0 +1,44 @@
+{# Services: List layout with prominent pricing. Name + description left, price right.
+   Tags: bold, dense
+   Variables: block.section_headline,
+              block.services [{name, description, price_range, cta_text, cta_href, icon}]
+#}
+<section class="py-16 sm:py-20 lg:py-24">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if block.section_headline %}
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold" style="font-family: var(--font-heading);">{{ block.section_headline }}</h2>
+    </div>
+    {% endif %}
+
+    <div class="divide-y border-theme">
+      {% for service in block.services %}
+      <div class="py-6 sm:py-8 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+        {# Left: name + description #}
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2">
+            {% if service.icon %}
+            <img src="{{ service.icon }}" alt="" aria-hidden="true" class="w-5 h-5 shrink-0">
+            {% endif %}
+            <h3 class="text-lg font-semibold" style="font-family: var(--font-heading);">{{ service.name }}</h3>
+          </div>
+          <p class="text-muted leading-relaxed">{{ service.description }}</p>
+          {% if service.cta_text %}
+          <a href="{{ service.cta_href | default('#') }}" class="inline-block mt-3 text-sm font-semibold text-primary hover:underline">
+            {{ service.cta_text }}
+            <span aria-hidden="true"> &rarr;</span>
+          </a>
+          {% endif %}
+        </div>
+
+        {# Right: price #}
+        {% if service.price_range %}
+        <div class="sm:text-right shrink-0">
+          <span class="text-xl sm:text-2xl font-bold text-primary">{{ service.price_range }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

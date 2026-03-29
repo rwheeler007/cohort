@@ -1,0 +1,8 @@
+{
+  "name": "cohort-channel",
+  "description": "Cohort agent response integration - polls for requests, pushes prompts to Claude Code, delivers responses via reply tools",
+  "version": "0.1.0",
+  "author": {
+    "name": "Cohort Project"
+  }
+}

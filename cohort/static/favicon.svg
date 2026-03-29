@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Speech bubble body -->
+  <rect x="3" y="4" width="26" height="18" rx="3" fill="#D97757"/>
+  <!-- Speech bubble tail -->
+  <polygon points="8,22 14,22 10,28" fill="#D97757"/>
+  <!-- Pixel-style "CO" text -->
+  <text x="16" y="17" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="14" fill="#1a1d21">CO</text>
+</svg>

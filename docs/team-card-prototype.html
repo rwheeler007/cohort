@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Card Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ---- Team Card ---- */
+        .team-card {
+            background: var(--color-background);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            width: 280px;
+            cursor: pointer;
+        }
+        .team-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .team-card-img {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--color-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .team-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .team-card-img .placeholder-avatar {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+        .team-card-body {
+            padding: 1.25rem;
+        }
+        .team-card-name {
+            font-family: var(--font-heading);
+            font-size: 0.6rem;
+            color: var(--color-primary);
+            margin: 0 0 0.4rem 0;
+            line-height: 1.6;
+        }
+        .team-card-role {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0 0 0.6rem 0;
+        }
+        .team-card-personality {
+            font-size: 0.8rem;
+            color: rgba(43,45,49,0.65);
+            margin: 0 0 0.75rem 0;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .team-card-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .team-card-score {
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            background: var(--color-secondary);
+            color: #fff;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius);
+        }
+        .team-card-tier {
+            font-family: var(--font-heading);
+            font-size: 0.35rem;
+            padding: 0.2rem 0.4rem;
+            border-radius: var(--radius);
+            text-transform: uppercase;
+        }
+        .team-card-img .team-card-tier {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .team-card-img .team-card-score {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .tier-pro {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        .tier-enterprise {
+            background: #9B59B6;
+            color: #fff;
+        }
+
+        /* ---- Group headings ---- */
+        .team-group-heading {
+            font-family: var(--font-heading);
+            font-size: 0.65rem;
+            color: var(--color-primary);
+            margin: 2.5rem 0 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+        .team-group-heading:first-child {
+            margin-top: 0;
+        }
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        /* ---- Expanded Detail Panel ---- */
+        .team-detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .team-detail-overlay.open {
+            display: flex;
+        }
+        .team-detail {
+            background: var(--color-background);
+            border-radius: var(--radius);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            max-width: 700px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .team-detail-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--color-secondary);
+            color: #fff;
+            border: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .team-detail-close:hover {
+            background: var(--color-primary);
+        }
+        .team-detail-header {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .team-detail-avatar {
+            width: 100px;
+            height: 100px;
+            min-width: 100px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .team-detail-avatar .placeholder-avatar {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        .team-detail-intro h2 {
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            margin: 0 0 0.35rem 0;
+            line-height: 1.6;
+        }
+        .team-detail-intro .role {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+        .team-detail-intro .personality {
+            font-size: 0.85rem;
+            color: rgba(43,45,49,0.65);
+            font-style: italic;
+            margin: 0 0 0.6rem 0;
+            line-height: 1.5;
+        }
+        .team-detail-intro .badges {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .bench-link {
+            font-family: var(--font-heading);
+            font-size: 0.4rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--color-primary);
+            border-radius: var(--radius);
+            transition: background 0.2s, color 0.2s;
+        }
+        .bench-link:hover {
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        /* Review section */
+        .team-detail-review {
+            padding: 1.25rem 2rem;
+            background: var(--color-accent);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .team-detail-review h3 {
+            font-family: var(--font-heading);
+            font-size: 0.5rem;
+            color: var(--color-primary);
+            margin: 0 0 0.6rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .team-detail-review p {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        /* Detail sections */
+        .team-detail-sections {
+            padding: 1.5rem 2rem 2rem;
+        }
+        .team-detail-section {
+            margin-bottom: 1.5rem;
+        }
+        .team-detail-section:last-child {
+            margin-bottom: 0;
+        }
+        .team-detail-section h3 {
+            font-family: var(--font-heading);
+            font-size: 0.5rem;
+            color: var(--color-primary);
+            margin: 0 0 0.75rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Skill bars */
+        .skill-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.45rem;
+        }
+        .skill-label {
+            font-size: 0.8rem;
+            min-width: 140px;
+            color: var(--color-text);
+        }
+        .skill-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(0,0,0,0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .skill-bar-fill {
+            height: 100%;
+            background: var(--color-primary);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+        .skill-value {
+            font-family: var(--font-heading);
+            font-size: 0.4rem;
+            color: rgba(43,45,49,0.55);
+            min-width: 2.5rem;
+            text-align: right;
+        }
+
+        /* Tag chips */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .tag {
+            font-size: 0.75rem;
+            background: var(--color-accent);
+            color: var(--color-text);
+            padding: 0.3rem 0.65rem;
+            border-radius: var(--radius);
+        }
+        .tag-partner {
+            background: var(--color-secondary);
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .team-card { width: 100%; }
+            .team-detail-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .team-detail-intro .badges { justify-content: center; }
+            .skill-label { min-width: 100px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <main id="main">
+        <section class="section-spacing" style="background: var(--color-accent);">
+            <div class="container text-center">
+                <h1 class="responsive-h1">The Team</h1>
+                <p class="responsive-p-large">22 specialist agents. Each trained, benchmarked, and reviewed.</p>
+            </div>
+        </section>
+
+        <section class="section-spacing">
+            <div class="container" id="team-container">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Expanded Detail Overlay -->
+    <div class="team-detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+        <div class="team-detail" id="detail-panel">
+            <button class="team-detail-close" onclick="closeDetail()">&times;</button>
+            <div class="team-detail-header" id="detail-header"></div>
+            <div class="team-detail-review" id="detail-review"></div>
+            <div class="team-detail-sections" id="detail-sections"></div>
+        </div>
+    </div>
+
+    <script src="team-data.js"></script>
+    <script>
+    // Build all cards from TEAM_DATA
+    (function() {
+        var container = document.getElementById('team-container');
+        if (!container || typeof TEAM_DATA === 'undefined') return;
+
+        TEAM_DATA.forEach(function(group) {
+            var heading = document.createElement('h2');
+            heading.className = 'team-group-heading';
+            heading.textContent = group.group;
+            container.appendChild(heading);
+
+            var grid = document.createElement('div');
+            grid.className = 'team-grid';
+
+            group.agents.forEach(function(agent) {
+                var card = document.createElement('div');
+                card.className = 'team-card';
+                card.onclick = function() { openDetail(agent); };
+
+                var scoreHtml = agent.score ? '<span class="team-card-score">' + agent.score + '%</span>' : '';
+                var tierHtml = '';
+                if (agent.tier === 'pro') tierHtml = '<span class="team-card-tier tier-pro">Pro</span>';
+                if (agent.tier === 'enterprise') tierHtml = '<span class="team-card-tier tier-enterprise">Enterprise</span>';
+
+                var imgContent = agent.image
+                    ? '<img src="' + agent.image + '" alt="' + agent.name + '">'
+                    : '<span class="placeholder-avatar" style="color:rgba(255,255,255,0.25)">' + agent.avatar + '</span>';
+                card.innerHTML =
+                    '<div class="team-card-img" style="background:' + agent.color + '">' +
+                        imgContent + scoreHtml + tierHtml +
+                    '</div>' +
+                    '<div class="team-card-body">' +
+                        '<h3 class="team-card-name">' + agent.name + '</h3>' +
+                        '<p class="team-card-role">' + agent.role + '</p>' +
+                        '<p class="team-card-personality">"' + agent.personality + '"</p>' +
+                    '</div>';
+
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        });
+    })();
+
+    // Open detail panel
+    function openDetail(agent) {
+        var header = document.getElementById('detail-header');
+        var review = document.getElementById('detail-review');
+        var sections = document.getElementById('detail-sections');
+
+        var scoreHtml = agent.score ? '<span class="team-card-score">' + agent.score + '%</span>' : '';
+        var tierHtml = '';
+        if (agent.tier === 'pro') tierHtml = '<span class="team-card-tier tier-pro">Pro</span>';
+        if (agent.tier === 'enterprise') tierHtml = '<span class="team-card-tier tier-enterprise">Enterprise</span>';
+        var benchHtml = agent.score ? '<a class="bench-link" href="benchmarks.html#bench-' + agent.id + '">View Benchmarks</a>' : '';
+
+        var detailImg = agent.image
+            ? '<img src="' + agent.image + '" alt="' + agent.name + '" style="width:100%;height:100%;object-fit:cover;">'
+            : '<span class="placeholder-avatar" style="color:rgba(255,255,255,0.3)">' + agent.avatar + '</span>';
+        header.innerHTML =
+            '<div class="team-detail-avatar" style="background:' + agent.color + '">' +
+                detailImg +
+            '</div>' +
+            '<div class="team-detail-intro">' +
+                '<h2>' + agent.name + '</h2>' +
+                '<p class="role">' + agent.role + '</p>' +
+                '<p class="personality">"' + agent.personality + '"</p>' +
+                '<div class="badges">' + scoreHtml + tierHtml + benchHtml + '</div>' +
+            '</div>';
+
+        review.innerHTML =
+            '<h3>Claude\'s Review</h3>' +
+            '<p>' + agent.review + '</p>';
+
+        var skillsHtml = agent.skills.map(function(s) {
+            return '<div class="skill-row">' +
+                '<span class="skill-label">' + s.label + '</span>' +
+                '<div class="skill-bar"><div class="skill-bar-fill" style="width:' + (s.value * 10) + '%"></div></div>' +
+                '<span class="skill-value">' + s.value + '/10</span>' +
+            '</div>';
+        }).join('');
+
+        var domainsHtml = agent.domains.map(function(d) {
+            return '<span class="tag">' + d + '</span>';
+        }).join('');
+
+        var partnersHtml = agent.partners.map(function(p) {
+            return '<span class="tag tag-partner">' + p + '</span>';
+        }).join('');
+
+        sections.innerHTML =
+            '<div class="team-detail-section">' +
+                '<h3>Skill Levels</h3>' + skillsHtml +
+            '</div>' +
+            '<div class="team-detail-section">' +
+                '<h3>Domain Expertise</h3>' +
+                '<div class="tag-list">' + domainsHtml + '</div>' +
+            '</div>' +
+            '<div class="team-detail-section">' +
+                '<h3>Collaborates With</h3>' +
+                '<div class="tag-list">' + partnersHtml + '</div>' +
+            '</div>';
+
+        document.getElementById('detail-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+        document.getElementById('detail-overlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDetail();
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{# Footer: Colored CTA banner with button, 4 link columns below.
+   Adapted from HyperUI (MIT).
+   Tags: creative, cta, banner, dense
+   Variables: block.product_name, block.cta_heading, block.cta_button_text, block.cta_button_url,
+              block.footer_columns [{title, links: [{label, href}]}],
+              block.social_links [{platform, url}], block.copyright_text
+#}
+<footer style="background: var(--color-bg, #fff);">
+  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    {# CTA banner #}
+    <div
+      class="flex flex-col items-center gap-4 rounded-lg p-6 shadow-lg sm:flex-row sm:justify-between"
+      style="background: var(--color-primary);"
+    >
+      <strong class="text-xl text-white sm:text-xl">
+        {{ block.cta_heading | default('Make Your Next Move!') }}
+      </strong>
+
+      <a
+        class="inline-flex items-center gap-2 rounded-full border border-white px-8 py-3 text-white transition hover:opacity-90"
+        style="background: transparent;"
+        href="{{ block.cta_button_url | default('#') }}"
+      >
+        <span class="text-sm font-medium">
+          {{ block.cta_button_text | default("Let's Get Started") }}
+        </span>
+
+        <svg
+          class="size-5 rtl:rotate-180"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
+      </a>
+    </div>
+
+    {# Link columns #}
+    <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {% for col in block.footer_columns %}
+      <div class="text-center sm:text-left">
+        <p class="text-lg font-medium" style="color: var(--color-text);">{{ col.title }}</p>
+
+        <ul class="mt-8 space-y-4 text-sm">
+          {% for link in col.links %}
+          <li>
+            <a href="{{ link.href }}" class="transition hover:opacity-75" style="color: var(--color-text); opacity: 0.7;">
+              {{ link.label }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+
+    {# Social + copyright bar #}
+    <div class="mt-16 pt-8" style="border-top: 1px solid var(--color-border, #e5e7eb);">
+      <div class="sm:flex sm:items-center sm:justify-between">
+        <p class="text-xs" style="color: var(--color-text); opacity: 0.5;">
+          {{ block.copyright_text | default('All rights reserved.') }}
+        </p>
+
+        {% if block.social_links %}
+        <ul class="mt-8 flex justify-center gap-6 sm:mt-0 sm:justify-end">
+          {% for social in block.social_links %}
+          <li>
+            <a
+              href="{{ social.url }}"
+              rel="noreferrer"
+              target="_blank"
+              class="transition hover:opacity-75"
+              style="color: var(--color-text); opacity: 0.7;"
+              aria-label="{{ social.platform }}"
+            >
+              <span class="text-sm">{{ social.platform }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</footer>

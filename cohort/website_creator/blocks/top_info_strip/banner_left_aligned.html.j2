@@ -1,0 +1,34 @@
+{# Banner: Left-aligned hero banner with headline, description, and dual CTAs.
+   Asymmetric layout for editorial or startup landing pages.
+   Tags: left-aligned, editorial, hero
+   Variables: block.text, block.description, block.link_text, block.link_href, block.secondary_link_text, block.secondary_link_href
+#}
+<section style="background: var(--color-bg);">
+  <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
+    <div class="max-w-prose text-left">
+      <h1 class="text-4xl font-bold sm:text-5xl" style="color: var(--color-text); font-family: var(--font-heading);">
+        {{ block.text }}
+      </h1>
+
+      {% if block.description %}
+      <p class="mt-4 text-base sm:text-lg" style="color: var(--color-muted);">
+        {{ block.description }}
+      </p>
+      {% endif %}
+
+      <div class="mt-4 flex gap-4 sm:mt-6">
+        {% if block.link_text %}
+        <a href="{{ block.link_href | default('#') }}" class="btn-primary inline-block rounded px-5 py-3 font-medium text-white shadow-sm transition-colors">
+          {{ block.link_text }}
+        </a>
+        {% endif %}
+
+        {% if block.secondary_link_text %}
+        <a href="{{ block.secondary_link_href | default('#') }}" class="inline-block rounded px-5 py-3 font-medium shadow-sm transition-colors" style="border: 1px solid var(--color-border); color: var(--color-muted);">
+          {{ block.secondary_link_text }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

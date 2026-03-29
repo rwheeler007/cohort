@@ -1,0 +1,39 @@
+{# Cards: Portfolio-style cards with asymmetric rounded image, title, and subtitle.
+   Tags: portfolio, minimal, creative
+   Variables: block.items [{image, title, subtitle, href}]
+   - subtitle: category or tagline (e.g. "Branding / Signage")
+#}
+<section class="section-spacing py-16 sm:py-20 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for item in block.items %}
+      <a href="{{ item.href | default('#') }}" class="block">
+        {% if item.image | default('') %}
+        <img
+          src="{{ item.image }}"
+          alt="{{ item.title }}"
+          class="h-56 w-full rounded-se-3xl rounded-es-3xl object-cover sm:h-64 lg:h-72"
+          loading="lazy"
+        />
+        {% else %}
+        <div class="h-56 w-full rounded-se-3xl rounded-es-3xl flex items-center justify-center sm:h-64 lg:h-72"
+             style="background: var(--color-accent-light, #f3f4f6);">
+          <span class="text-sm" style="color: var(--color-text-muted);">Image</span>
+        </div>
+        {% endif %}
+
+        <div class="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+          <strong class="font-medium" style="color: var(--color-text); font-family: var(--font-heading);">
+            {{ item.title }}
+          </strong>
+
+          {% if item.subtitle %}
+          <span class="hidden sm:block sm:h-px sm:w-8" style="background: var(--color-accent, #eab308);"></span>
+          <p class="mt-0.5 opacity-50 sm:mt-0" style="color: var(--color-text);">{{ item.subtitle }}</p>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

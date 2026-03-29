@@ -1,0 +1,119 @@
+{# Footer: Logo + tagline + social left, 4 link columns right including contact details with email/phone/address.
+   Adapted from HyperUI (MIT).
+   Tags: conventional, contact, dense
+   Variables: block.product_name, block.tagline,
+              block.footer_columns [{title, links: [{label, href}]}],
+              block.social_links [{platform, url}], block.copyright_text,
+              block.contact_email, block.contact_phone, block.contact_address
+#}
+<footer style="background: var(--color-bg, #fff);">
+  <div class="mx-auto max-w-7xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      {# Brand column: logo + tagline + social #}
+      <div>
+        <div class="flex justify-center sm:justify-start" style="color: var(--color-primary);">
+          <span class="text-xl font-bold" style="font-family: var(--font-heading);">{{ block.product_name }}</span>
+        </div>
+
+        {% if block.tagline %}
+        <p
+          class="mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left"
+          style="color: var(--color-text); opacity: 0.6;"
+        >
+          {{ block.tagline }}
+        </p>
+        {% endif %}
+
+        {% if block.social_links %}
+        <ul class="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
+          {% for social in block.social_links %}
+          <li>
+            <a
+              href="{{ social.url }}"
+              rel="noreferrer"
+              target="_blank"
+              class="transition hover:opacity-75"
+              style="color: var(--color-primary);"
+              aria-label="{{ social.platform }}"
+            >
+              <span class="text-sm">{{ social.platform }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      {# Link columns + contact column #}
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
+        {% for col in block.footer_columns %}
+        <div class="text-center sm:text-left">
+          <p class="text-lg font-medium" style="color: var(--color-text);">{{ col.title }}</p>
+
+          <ul class="mt-8 space-y-4 text-sm">
+            {% for link in col.links %}
+            <li>
+              <a href="{{ link.href }}" class="transition hover:opacity-75" style="color: var(--color-text); opacity: 0.7;">
+                {{ link.label }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+
+        {# Contact details column #}
+        {% if block.contact_email or block.contact_phone or block.contact_address %}
+        <div class="text-center sm:text-left">
+          <p class="text-lg font-medium" style="color: var(--color-text);">Contact Us</p>
+
+          <ul class="mt-8 space-y-4 text-sm">
+            {% if block.contact_email %}
+            <li>
+              <a
+                class="flex items-center justify-center gap-1.5 sm:justify-start"
+                href="mailto:{{ block.contact_email }}"
+              >
+                <span style="color: var(--color-text); opacity: 0.7;">{{ block.contact_email }}</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {% if block.contact_phone %}
+            <li>
+              <a
+                class="flex items-center justify-center gap-1.5 sm:justify-start"
+                href="tel:{{ block.contact_phone }}"
+              >
+                <span style="color: var(--color-text); opacity: 0.7;">{{ block.contact_phone }}</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {% if block.contact_address %}
+            <li class="flex items-start justify-center gap-1.5 sm:justify-start">
+              <address class="-mt-0.5 not-italic" style="color: var(--color-text); opacity: 0.7;">
+                {{ block.contact_address }}
+              </address>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Copyright bar with legal links #}
+    <div class="mt-12 pt-6" style="border-top: 1px solid var(--color-border, #e5e7eb);">
+      <div class="text-center sm:flex sm:justify-between sm:text-left">
+        <p class="text-sm" style="color: var(--color-text); opacity: 0.5;">
+          <span class="block sm:inline">{{ block.copyright_text | default('All rights reserved.') }}</span>
+        </p>
+
+        <p class="mt-4 text-sm sm:order-first sm:mt-0" style="color: var(--color-text); opacity: 0.5;">
+          &copy; {{ block.product_name }}
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,421 @@
+# Freelance Demo -- Apex Roofing Co.
+# Simulated client: mid-tier residential roofing company in Denver, CO
+# Target: $3,500 "5-Day Business Launch" package
+
+product_name: Apex Roofing
+tagline: Denver's Storm Damage Specialists
+description: >-
+  Family-owned roofing company serving the Denver metro area since 2011.
+  We specialize in storm damage repair, full roof replacements, and insurance claim
+  assistance. Licensed, bonded, and insured with a lifetime workmanship warranty.
+logo: ""
+favicon: ""
+language: en
+status: draft
+
+brand:
+  primary_color: "#1B4D3E"
+  secondary_color: "#0D2818"
+  accent_color: "#E8F0EC"
+  background_color: "#FAFBFA"
+  text_color: "#1A1A1A"
+  font_heading: "'Outfit', sans-serif"
+  font_heading_weight: "700"
+  font_body: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+  border_radius: "0.5rem"
+  google_fonts:
+    - "Outfit:wght@400;600;700"
+    - "Inter:wght@400;500;600"
+  primary_hover: "#163D32"
+
+nav_items:
+  - label: Services
+    href: services.html
+  - label: About
+    href: about.html
+  - label: Gallery
+    href: gallery.html
+  - label: Reviews
+    href: reviews.html
+  - label: FAQ
+    href: faq.html
+  - label: Contact
+    href: contact.html
+
+hero:
+  headline: "Your Roof. Our Reputation."
+  subheadline: >-
+    From hail damage to full replacements, Apex Roofing has protected Denver
+    homes for over 14 years. Free inspections. Insurance claim experts. Lifetime warranty.
+  cta_primary_text: "Get a Free Inspection"
+  cta_primary_href: "contact.html"
+  cta_secondary_text: "See Our Work"
+  cta_secondary_href: "gallery.html"
+  background_style: gradient
+
+features:
+  - title: "Storm Damage Repair"
+    description: >-
+      Hail, wind, and storm damage repaired fast. We work directly with your insurance
+      company to make the process painless.
+    icon: ""
+  - title: "Full Roof Replacement"
+    description: >-
+      GAF-certified installations with industry-leading materials. Most jobs completed
+      in 1-2 days with zero disruption to your daily life.
+    icon: ""
+  - title: "Insurance Claim Help"
+    description: >-
+      We handle the paperwork, meet with your adjuster, and make sure you get every
+      dollar your policy covers. No out-of-pocket surprises.
+    icon: ""
+  - title: "Gutters & Siding"
+    description: >-
+      Complete exterior protection. Seamless gutters, soffit, fascia, and vinyl or
+      James Hardie siding installed by our own crews.
+    icon: ""
+
+steps:
+  - number: 1
+    title: "Free Inspection"
+    description: "We inspect your roof top to bottom with drone photography and a detailed written report."
+    icon: ""
+  - number: 2
+    title: "Transparent Quote"
+    description: "You get an itemized estimate — no hidden fees, no pressure. We explain every line."
+    icon: ""
+  - number: 3
+    title: "Expert Installation"
+    description: "Our crews handle everything. Most roofs done in a day. Lifetime workmanship warranty included."
+    icon: ""
+
+testimonials:
+  - quote: "After the big hailstorm last July, Apex was at our door within 24 hours. They handled everything with the insurance company and our new roof looks incredible."
+    name: "Mark & Julie P."
+    title: "Homeowners, Lakewood"
+  - quote: "Three other companies gave us the runaround on our insurance claim. Apex got it approved in a week and the crew was professional from start to finish."
+    name: "David R."
+    title: "Homeowner, Arvada"
+  - quote: "We've referred Apex to everyone on our block. Fair pricing, great communication, and they actually showed up when they said they would."
+    name: "Sarah T."
+    title: "Homeowner, Highlands Ranch"
+
+pain_points:
+  - title: "Storm Damage Ignored"
+    description: "Small leaks become big problems. A free inspection catches damage before it costs you thousands."
+    cost_range: "$5,000-$15,000 in water damage"
+  - title: "Insurance Claim Denied"
+    description: "Most homeowners don't know what their policy covers. We've gotten hundreds of claims approved."
+    cost_range: "$8,000-$25,000 left on the table"
+  - title: "Unreliable Contractors"
+    description: "Storm chasers take your deposit and vanish. We've been in Denver since 2011 and we're not going anywhere."
+    cost_range: "Your time, money, and trust"
+
+pricing_tiers:
+  - name: "Repair"
+    price: "From $500"
+    period: ""
+    description: "Storm damage patches, leak repair, and small fixes."
+    features:
+      - "Same-week scheduling"
+      - "Insurance-ready documentation"
+      - "5-year repair warranty"
+    cta_text: "Get a Quote"
+    cta_href: "contact.html"
+  - name: "Full Replacement"
+    price: "From $8,500"
+    period: ""
+    description: "Complete tear-off and re-roof with GAF-certified materials."
+    features:
+      - "1-2 day installation"
+      - "Lifetime workmanship warranty"
+      - "GAF Golden Pledge eligible"
+      - "Drone inspection included"
+      - "Insurance claim assistance"
+    cta_text: "Schedule Inspection"
+    cta_href: "contact.html"
+    highlighted: true
+    badge: "Most Popular"
+  - name: "Full Exterior"
+    price: "Custom"
+    period: ""
+    description: "Roof + gutters + siding — one crew, one project, one warranty."
+    features:
+      - "Everything in Full Replacement"
+      - "Seamless aluminum gutters"
+      - "Soffit & fascia repair"
+      - "James Hardie or vinyl siding"
+      - "Single project manager"
+    cta_text: "Request Consultation"
+    cta_href: "contact.html"
+
+contact:
+  email: "info@apexroofingdenver.com"
+  phone: "(720) 555-0187"
+  address: "4821 S Santa Fe Dr, Littleton, CO 80120"
+  form_action: "https://formspree.io/f/demo"
+  form_fields:
+    - name: name
+      label: "Your Name"
+      type: text
+      required: true
+    - name: email
+      label: "Email"
+      type: email
+      required: true
+    - name: phone
+      label: "Phone"
+      type: tel
+      required: true
+    - name: address
+      label: "Property Address"
+      type: text
+      required: true
+    - name: service
+      label: "What do you need?"
+      type: select
+      required: true
+      options:
+        - "Free Roof Inspection"
+        - "Storm Damage Repair"
+        - "Full Roof Replacement"
+        - "Gutters & Siding"
+        - "Insurance Claim Help"
+        - "Other"
+    - name: message
+      label: "Anything else we should know?"
+      type: textarea
+      required: false
+  social_links:
+    - platform: Google
+      url: "https://g.co/kgs/apexroofing"
+      label: "Google Reviews"
+    - platform: Facebook
+      url: "https://facebook.com/apexroofingdenver"
+      label: "Facebook"
+    - platform: Instagram
+      url: "https://instagram.com/apexroofingdenver"
+      label: "Instagram"
+
+seo:
+  site_title: "Apex Roofing | Denver's Storm Damage Specialists"
+  site_description: >-
+    Denver roofing contractor specializing in storm damage repair, full roof replacements,
+    and insurance claim assistance. Free inspections. Lifetime warranty. Family-owned since 2011.
+  keywords:
+    - denver roofing
+    - storm damage repair
+    - roof replacement denver
+    - hail damage roof
+    - insurance claim roofing
+    - roofing contractor littleton
+  canonical_base: "https://apexroofingdenver.com"
+  og_image: ""
+  ga_measurement_id: ""
+
+pages:
+  - slug: index
+    title: "Denver Roofing Contractor"
+    template: hero
+    meta_description: "Denver's trusted roofing contractor. Storm damage repair, full replacements, insurance claim help. Free inspections. Call (720) 555-0187."
+    content:
+      cta_heading: "Protect What Matters Most"
+      cta_subheading: "Schedule your free roof inspection today. No pressure, no obligation."
+  - slug: services
+    title: "Our Roofing Services"
+    template: solution
+    meta_description: "Storm damage repair, full roof replacement, gutters, siding, and insurance claim assistance from Denver's most trusted roofer."
+    content:
+      headline: "Roofing Services Built Around You"
+      subheadline: "Every home is different. Here's how we help."
+      cta_heading: "Not Sure What You Need?"
+      cta_text: "Get a Free Inspection"
+      cta_href: "contact.html"
+  - slug: about
+    title: "About Apex Roofing"
+    template: team
+    meta_description: "Family-owned Denver roofing company since 2011. GAF-certified, BBB A+ rated, and locally operated."
+    content:
+      headline: "Built on Handshakes, Not Hard Sells"
+      subheadline: "Family-owned. Locally operated. Here to stay."
+      story_heading: "Our Story"
+      story: >-
+        Apex Roofing started in 2011 when founder Mike Reeves got tired of watching storm chasers
+        take advantage of his neighbors after a bad hailstorm. He grabbed a ladder, a truck, and a
+        commitment to do things right. Fourteen years later, we've replaced over 3,000 roofs across
+        the Denver metro area. We're GAF Master Elite certified (top 2% of roofers nationwide), BBB
+        A+ rated, and every one of our installers is a full-time Apex employee — not a subcontractor.
+        We live here. Our kids go to school here. When we put our name on your roof, it means something.
+      core_values:
+        - title: "Honesty First"
+          description: "We'll tell you if your roof doesn't need replacing. We'd rather earn your trust than a quick sale."
+        - title: "Local Commitment"
+          description: "We've been in Denver since 2011. We sponsor Little League teams, not billboard campaigns."
+        - title: "Workmanship Guarantee"
+          description: "Lifetime warranty on every install. If something goes wrong, we fix it. Period."
+      team_members:
+        - name: "Mike Reeves"
+          role: "Founder & Lead Estimator"
+          bio: "14 years in Denver roofing. GAF Master Elite certified. Coaches his daughter's soccer team."
+        - name: "Lisa Reeves"
+          role: "Operations Manager"
+          bio: "Keeps the crews running, the schedule tight, and the customers happy. Also Mike's better half."
+        - name: "Carlos Gutierrez"
+          role: "Senior Crew Lead"
+          bio: "10 years with Apex. Specializes in complex repairs and historic home preservation."
+        - name: "Amanda Chen"
+          role: "Insurance Claims Specialist"
+          bio: "Former adjuster turned homeowner advocate. Knows every clause in your policy."
+      stats:
+        - value: "3,000+"
+          label: "Roofs Completed"
+        - value: "14"
+          label: "Years in Denver"
+        - value: "4.9"
+          label: "Google Rating"
+        - value: "98%"
+          label: "Insurance Approval Rate"
+      certifications:
+        - name: "GAF Master Elite"
+        - name: "BBB A+ Rating"
+        - name: "Owens Corning Preferred"
+        - name: "CO Licensed & Insured"
+      cta_heading: "Ready to Work With Us?"
+      cta_text: "Schedule Your Free Inspection"
+      cta_href: "contact.html"
+  - slug: gallery
+    title: "Our Work"
+    template: gallery
+    meta_description: "See completed roofing projects across Denver, Lakewood, Arvada, and Highlands Ranch."
+    content:
+      headline: "Recent Projects"
+      subheadline: "Browse our latest residential and commercial roofing work across the Denver metro area."
+      categories:
+        - "Storm Repair"
+        - "Full Replacement"
+        - "Gutters & Siding"
+      projects:
+        - title: "Lakewood Hail Damage"
+          description: "Complete tear-off and GAF Timberline HDZ install after July 2025 hailstorm."
+          category: "Storm Repair"
+          tags: ["Hail Damage", "Insurance Claim", "GAF"]
+        - title: "Highlands Ranch Colonial"
+          description: "Full replacement with architectural shingles and new seamless gutters."
+          category: "Full Replacement"
+          tags: ["Architectural", "Gutters", "2-Day Install"]
+        - title: "Arvada Ranch Home"
+          description: "Emergency tarp and repair after wind damage lifted 40 shingles."
+          category: "Storm Repair"
+          tags: ["Wind Damage", "Emergency", "Same-Day"]
+        - title: "Littleton Craftsman"
+          description: "James Hardie siding, soffit, fascia, and roof — complete exterior refresh."
+          category: "Gutters & Siding"
+          tags: ["James Hardie", "Full Exterior", "Siding"]
+        - title: "Denver Tech Center Flat Roof"
+          description: "Commercial TPO membrane installation. 15-year warranty."
+          category: "Full Replacement"
+          tags: ["Commercial", "TPO", "Flat Roof"]
+        - title: "Parker Split-Level"
+          description: "Insurance-funded full replacement after baseball-sized hail."
+          category: "Storm Repair"
+          tags: ["Hail Damage", "Insurance", "CertainTeed"]
+      cta_heading: "Like What You See?"
+      cta_text: "Get a Free Estimate"
+      cta_href: "contact.html"
+  - slug: reviews
+    title: "Customer Reviews"
+    template: reviews
+    meta_description: "Read what Denver homeowners say about Apex Roofing. 4.9 stars on Google with 200+ reviews."
+    content:
+      headline: "What Denver Says About Us"
+      subheadline: "Real reviews from real homeowners."
+      rating: "4.9"
+      review_count: "217"
+      featured_review:
+        quote: "After the big hailstorm last July, Apex was at our door within 24 hours. They handled everything with the insurance company and our new roof looks incredible. Mike personally walked us through every step."
+        name: "Mark & Julie P."
+        title: "Homeowners, Lakewood"
+      platforms:
+        - name: "Google"
+          url: "https://g.co/kgs/apexroofing"
+          rating: "4.9"
+          count: "217"
+        - name: "Facebook"
+          url: "https://facebook.com/apexroofingdenver"
+          rating: "4.8"
+          count: "89"
+        - name: "BBB"
+          url: "https://bbb.org/apex-roofing"
+          rating: "A+"
+          count: "34"
+      cta_heading: "Join Our Happy Customers"
+      cta_text: "Get Your Free Inspection"
+      cta_href: "contact.html"
+  - slug: faq
+    title: "FAQ"
+    template: faq
+    nav_label: ""
+    in_nav: false
+    meta_description: "Answers to common roofing questions from Denver's Apex Roofing. Insurance claims, cost, timeline, and more."
+    content:
+      headline: "Roofing Questions, Answered"
+      subheadline: "Everything you need to know before, during, and after your roofing project."
+      faqs:
+        - question: "How much does a new roof cost?"
+          answer: "Most residential roofs in the Denver metro range from $8,500 to $18,000 depending on size, pitch, and materials. We provide free, itemized estimates with no hidden fees."
+        - question: "Will my insurance cover storm damage?"
+          answer: "In most cases, yes. Colorado homeowner policies typically cover hail and wind damage. Our insurance specialist Amanda handles the entire claims process — from filing to adjuster meetings to final payment."
+        - question: "How long does a roof replacement take?"
+          answer: "Most residential roofs are completed in 1-2 days. We remove all old materials, inspect the decking, and install your new roof. You can stay in your home during the work."
+        - question: "Do you offer financing?"
+          answer: "Yes. We partner with GreenSky for 0% interest financing options on qualifying projects. We also work with your insurance company's payment schedule."
+        - question: "What warranty do you offer?"
+          answer: "Every Apex installation comes with a lifetime workmanship warranty. Our GAF Master Elite status also qualifies homeowners for GAF's Golden Pledge warranty — the strongest in the industry."
+        - question: "How do I know if my roof needs replacing?"
+          answer: "Common signs include missing or curling shingles, granules in your gutters, daylight visible in the attic, and your roof being 20+ years old. We offer free inspections — no obligation, just honest answers."
+        - question: "What brands do you install?"
+          answer: "We're certified installers for GAF, CertainTeed, and Owens Corning. We recommend the best option based on your budget, aesthetic preference, and warranty goals."
+        - question: "Are your crews employees or subcontractors?"
+          answer: "All Apex crews are full-time employees — not subcontractors. They're background-checked, drug-tested, and trained to our standards. You'll see the same faces from start to finish."
+      cta_heading: "Still Have Questions?"
+      cta_subheading: "We're happy to help. Give us a call or fill out our contact form."
+      cta_text: "Contact Us"
+      cta_href: "contact.html"
+  - slug: contact
+    title: "Contact Us"
+    template: contact
+    meta_description: "Get a free roof inspection from Apex Roofing. Call (720) 555-0187 or fill out our form."
+    content:
+      headline: "Let's Talk About Your Roof"
+      subheadline: "Free inspections. No pressure. Just honest answers."
+
+footer_text: ""
+footer_columns:
+  - heading: Services
+    links:
+      - label: Storm Damage Repair
+        href: services.html
+      - label: Roof Replacement
+        href: services.html
+      - label: Gutters & Siding
+        href: services.html
+      - label: Insurance Claims
+        href: services.html
+  - heading: Company
+    links:
+      - label: About Us
+        href: about.html
+      - label: Our Work
+        href: gallery.html
+      - label: Reviews
+        href: reviews.html
+  - heading: Contact
+    links:
+      - label: "(720) 555-0187"
+        href: "tel:+17205550187"
+      - label: info@apexroofingdenver.com
+        href: "mailto:info@apexroofingdenver.com"
+      - label: "4821 S Santa Fe Dr, Littleton, CO 80120"
+        href: "https://maps.google.com/?q=4821+S+Santa+Fe+Dr+Littleton+CO+80120"
+        external: true
+built_with_cohort: false

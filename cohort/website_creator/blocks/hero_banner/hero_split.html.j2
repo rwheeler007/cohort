@@ -1,0 +1,45 @@
+{# Hero: Split. Text left, image right (50/50).
+   Tags: modern, balanced
+   Variables: block.headline, block.subheadline, block.cta_primary_text, block.cta_primary_href,
+              block.cta_secondary_text, block.cta_secondary_href, block.hero_image
+#}
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {# Text side #}
+      <div>
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight" style="font-family: var(--font-heading);">
+          {{ block.headline }}
+        </h1>
+        {% if block.subheadline %}
+        <p class="mt-6 text-lg text-muted leading-relaxed">
+          {{ block.subheadline }}
+        </p>
+        {% endif %}
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          {% if block.cta_primary_text %}
+          <a href="{{ block.cta_primary_href | default('#') }}" class="btn-primary px-8 py-3 text-base font-semibold text-center">
+            {{ block.cta_primary_text }}
+          </a>
+          {% endif %}
+          {% if block.cta_secondary_text %}
+          <a href="{{ block.cta_secondary_href | default('#') }}" class="btn-secondary px-8 py-3 text-base font-semibold text-center">
+            {{ block.cta_secondary_text }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Image side #}
+      <div class="relative">
+        {% if block.hero_image %}
+        <img src="{{ block.hero_image }}" alt="{{ block.headline }}" class="w-full h-auto rounded-theme object-cover shadow-lg">
+        {% else %}
+        <div class="w-full aspect-[4/3] bg-alt rounded-theme flex items-center justify-center">
+          <span class="text-muted text-sm">Hero image</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
