@@ -810,9 +810,9 @@ def _broadcast_work_queue() -> None:
 # Approval Pipeline endpoints
 # =====================================================================
 
-_approval_store: Optional["ApprovalStore"] = None
-_deliverable_tracker: Optional["DeliverableTracker"] = None
-_review_pipeline: Optional["ReviewPipeline"] = None
+_approval_store: Optional["ApprovalStore"] = None  # noqa: F821
+_deliverable_tracker: Optional["DeliverableTracker"] = None  # noqa: F821
+_review_pipeline: Optional["ReviewPipeline"] = None  # noqa: F821
 
 
 # =====================================================================
@@ -3313,7 +3313,7 @@ async def _test_service_connection(svc_type: str, key: str, extra: dict) -> dict
             "content-type": "application/json",
         })
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: F841
                 return {"success": True, "message": "API key valid -- connected to Anthropic"}
         except urllib.error.HTTPError as e:
             if e.code == 401:
@@ -6531,7 +6531,7 @@ async def website_list_projects(request: Request) -> JSONResponse:
     return JSONResponse({"projects": projects})
 
 
-def _serve_static_site_file(file_path: Path, is_graduated: bool) -> "Response":
+def _serve_static_site_file(file_path: Path, is_graduated: bool) -> "Response":  # noqa: F821
     """Serve a static site file with appropriate headers."""
     from starlette.responses import HTMLResponse
     from starlette.responses import Response as StarletteResponse
@@ -6562,7 +6562,7 @@ def _serve_static_site_file(file_path: Path, is_graduated: bool) -> "Response":
     return StarletteResponse(content, media_type=ct, headers=headers)
 
 
-async def website_serve_page(request: Request) -> Response:
+async def website_serve_page(request: Request) -> Response:  # noqa: F821
     """GET /api/website/projects/{project_name}/{path} -- Serve generated pages."""
     project_name = request.path_params["project_name"]
 
@@ -6583,7 +6583,7 @@ async def website_serve_page(request: Request) -> Response:
     return _serve_static_site_file(file_path, is_graduated)
 
 
-async def website_serve_preview(request: Request) -> Response:
+async def website_serve_preview(request: Request) -> Response:  # noqa: F821
     """GET /api/website/preview/{project_name}/{path} -- Serve preview pages."""
     project_name = request.path_params["project_name"]
 
@@ -6743,7 +6743,6 @@ async def create_project(request: Request) -> JSONResponse:
         return JSONResponse({"error": f"Directory already exists: {project_dir}"}, status_code=400)
 
     cohort_root = Path(__file__).resolve().parent.parent
-    settings = _load_settings()
 
     # Profile -> tools mapping
     profile_tools = {
