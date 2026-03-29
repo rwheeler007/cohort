@@ -7,8 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from cohort.cli._base import agent_not_found, format_output, resolve_agents_dir
-
+from cohort.cli._base import format_output, resolve_agents_dir
 
 # ---------------------------------------------------------------------------
 # Paths

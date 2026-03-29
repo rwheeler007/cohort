@@ -8,7 +8,6 @@ import sys
 
 from cohort.cli._base import format_output, require_ollama
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -190,7 +189,7 @@ def _cmd_model_tier(args: argparse.Namespace) -> int:
 
 def _cmd_model_budget(args: argparse.Namespace) -> int:
     """Show or set token budget limits."""
-    from cohort.local.config import get_budget_limits, TIER_SETTINGS_PATH
+    from cohort.local.config import TIER_SETTINGS_PATH, get_budget_limits
 
     budget_sub = getattr(args, "budget_command", None)
 

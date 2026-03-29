@@ -39,7 +39,6 @@ COHORT_ROOT = COMMS_DIR.parent.parent  # G:\cohort
 
 from calendar_integration import CalendarManager
 from email_drafts import EmailDraftManager
-from rate_limiter import RateLimiter
 from email_receiver import EmailReceiver
 from email_router import EmailRouter
 from models import (
@@ -62,13 +61,16 @@ from models import (
     SocialPostApproval,
     SocialPostCreate,
     SocialPostListResponse,
+    SocialPostOptimizedVariant,
     SocialPostOptimizeRequest,
+    SocialPostOptimizeResponse,
     SocialPostRejection,
     SocialPostStatsResponse,
     SocialPostStatus,
     SocialPostUpdate,
     WebhookConfig,
 )
+from rate_limiter import RateLimiter
 from social_media import SocialMediaManager
 from webhook_manager import WebhookManager
 
@@ -876,10 +878,10 @@ async def create_project(
     color: str = Body(...)
 ):
     """Create a new project."""
-    from project_settings import ProjectConfig, ProjectCalendarConfig, ProjectSocialConfig
-
     # Validate project_id format
     import re
+
+    from project_settings import ProjectCalendarConfig, ProjectConfig, ProjectSocialConfig
     if not re.match(r'^[a-z0-9_]+$', project_id):
         raise HTTPException(
             status_code=400,

@@ -7,7 +7,6 @@ import sys
 
 from cohort.cli._base import format_output
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -93,7 +92,7 @@ def _cmd_service_check(args: argparse.Namespace) -> int:
 
 def _cmd_service_start(args: argparse.Namespace) -> int:
     """Start a service."""
-    from cohort.health_monitor import start_service, get_service_entry
+    from cohort.health_monitor import get_service_entry, start_service
 
     entry = get_service_entry(args.service)
     if not entry:
@@ -118,7 +117,7 @@ def _cmd_service_start(args: argparse.Namespace) -> int:
 
 def _cmd_service_stop(args: argparse.Namespace) -> int:
     """Stop a service."""
-    from cohort.health_monitor import stop_service, get_service_entry
+    from cohort.health_monitor import get_service_entry, stop_service
 
     entry = get_service_entry(args.service)
     if not entry:
@@ -142,7 +141,7 @@ def _cmd_service_stop(args: argparse.Namespace) -> int:
 
 def _cmd_service_restart(args: argparse.Namespace) -> int:
     """Restart a service."""
-    from cohort.health_monitor import restart_service, get_service_entry
+    from cohort.health_monitor import get_service_entry, restart_service
 
     entry = get_service_entry(args.service)
     if not entry:

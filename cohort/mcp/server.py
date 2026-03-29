@@ -35,7 +35,7 @@ from typing import Any, List, Optional
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, ConfigDict, Field
 
-from cohort.mcp.client import CohortClient, DEFAULT_URL, _request
+from cohort.mcp.client import DEFAULT_URL, CohortClient, _request
 
 logger = logging.getLogger(__name__)
 
@@ -1791,8 +1791,8 @@ async def cohort_find_agents(params: FindAgentsInput) -> str:
     Unlike route_task (which picks the best one), this returns all
     agents above the score threshold for roundtable composition.
     """
-    from cohort.capability_router import find_agents_for_topic
     from cohort.agent import AgentConfig
+    from cohort.capability_router import find_agents_for_topic
 
     raw = await _client.list_agents()
     if not raw:
@@ -1836,8 +1836,8 @@ async def cohort_partnership_graph(params: PartnershipGraphInput) -> str:
     Shows consultation protocols between agents. Only includes
     partnerships where both agents exist in the current deployment.
     """
-    from cohort.capability_router import build_partnership_graph, get_partnerships
     from cohort.agent import AgentConfig
+    from cohort.capability_router import build_partnership_graph, get_partnerships
 
     raw = await _client.list_agents()
     if not raw:
@@ -2571,7 +2571,6 @@ async def internal_web_fetch(params: InternalWebFetchInput) -> str:
             "Set COHORT_TIER=local to enable outbound network access."
         )
 
-    import asyncio
     import hashlib
     import importlib
     import logging
@@ -2830,7 +2829,6 @@ async def browser_action(params: BrowserActionInput) -> str:
 
     Use action="help" to see the full action catalog.
     """
-    from cohort.mcp.browser_backend import check_browser_permission
 
     action = params.action.lower().strip()
 
@@ -2985,7 +2983,7 @@ async def browser_status(params: BrowserStatusInput) -> str:
     backend = _get_browser_backend()
     available = await backend.is_available()
     lines.append(f"  Backend: {'running' if available else 'not started (starts on first use)'}")
-    lines.append(f"  Type: PlaywrightDirectBackend")
+    lines.append("  Type: PlaywrightDirectBackend")
     lines.append(f"  Max contexts: {backend._max_contexts}")
     lines.append(f"  Allow local network: {backend._allow_local}")
 
@@ -3266,7 +3264,7 @@ async def cohort_get_approval_status(params: GetApprovalStatusInput) -> str:
         s = a.get("status", "unknown")
         by_status[s] = by_status.get(s, 0) + 1
 
-    lines = [f"## Approval Pipeline Status"]
+    lines = ["## Approval Pipeline Status"]
     lines.append(f"Pending: **{pending_count}** | Total: {len(approvals)}")
     for status, count in sorted(by_status.items()):
         lines.append(f"- {status}: {count}")

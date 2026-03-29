@@ -17,30 +17,26 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from cohort.chat import Channel, ChatManager, Message
+from cohort.chat import ChatManager, Message
 from cohort.file_transport import JsonlFileStorage
 from cohort.meeting import (
+    RELEVANCE_DIMENSIONS,
     SCORING_WEIGHTS,
     STAKEHOLDER_THRESHOLDS,
-    RELEVANCE_DIMENSIONS,
     StakeholderStatus,
     calculate_composite_relevance,
     calculate_contribution_score,
     calculate_expertise_relevance,
-    calculate_novelty,
     detect_current_phase,
-    detect_topic_shift,
     extract_keywords,
     initialize_meeting_context,
     should_agent_speak,
 )
-
 
 # =====================================================================
 # Agent definitions with full scoring metadata
@@ -353,7 +349,7 @@ class LiveScenarioRunner:
                         "type": "gate_event",
                         "agent": agent_id,
                         "decision": "SILENT",
-                        "reason": f"Score below threshold for current phase",
+                        "reason": "Score below threshold for current phase",
                     })
                     continue
 
@@ -566,7 +562,7 @@ def main():
     args = parser.parse_args()
 
     print(f"[*] Running LIVE conversation through Cohort + qwen3.5:9b (port {args.port})...")
-    print(f"[*] This will make real LLM calls. Expect ~30-60 seconds.\n")
+    print("[*] This will make real LLM calls. Expect ~30-60 seconds.\n")
 
     runner = LiveScenarioRunner(args.port)
     scenario = runner.run()

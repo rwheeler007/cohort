@@ -28,7 +28,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from cohort.local.config import DEFAULT_MODEL, ROUNDTABLE_MODEL_PREFERENCES
+from cohort.local.config import ROUNDTABLE_MODEL_PREFERENCES
 
 logger = logging.getLogger(__name__)
 

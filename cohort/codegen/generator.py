@@ -15,10 +15,9 @@ from __future__ import annotations
 import logging
 import re
 import time
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
-from cohort.codegen.models import CodegenTask, FileChange
+from cohort.codegen.models import FileChange
 from cohort.codegen.planner import CodegenPlan, FileContext
 
 logger = logging.getLogger(__name__)

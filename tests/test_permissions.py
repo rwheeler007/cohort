@@ -1,6 +1,5 @@
 """Tests for cohort.permissions -- tier detection, gating, and browser config."""
 
-import os
 
 import pytest
 

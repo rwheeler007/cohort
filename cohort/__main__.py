@@ -10,12 +10,16 @@ Usage::
     python -m cohort tutorial
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:
+    from cohort.project_manifest import CohortManifest
 
 # =====================================================================
 # CLI command handlers
@@ -348,7 +352,7 @@ def _review_permissions(manifest: "CohortManifest", project_dir: Path) -> "Cohor
 
     # --- Allow paths (additional) ---
     print()
-    print(f"  Allow paths (agents may read/write here).")
+    print("  Allow paths (agents may read/write here).")
     print(f"  Current: {p.allow_paths or [str(project_dir)]}")
     raw_allow = input("  Add more? (comma-separated paths, or Enter to keep): ").strip()
     new_allow = list(p.allow_paths) or [str(project_dir)]
@@ -360,7 +364,7 @@ def _review_permissions(manifest: "CohortManifest", project_dir: Path) -> "Cohor
 
     # --- Deny paths ---
     print()
-    print(f"  Deny paths (agents must NEVER touch these).")
+    print("  Deny paths (agents must NEVER touch these).")
     print(f"  Current: {p.deny_paths or ['(none)']}")
     raw_deny = input("  Add more? (comma-separated paths, or Enter to keep): ").strip()
     new_deny = list(p.deny_paths)
@@ -403,22 +407,22 @@ def _write_housekeeping(project_dir: Path, *, skip_gitignore: bool = False) -> N
             gitignore.write_text(existing.rstrip() + "\n" + "\n".join(additions) + "\n", encoding="utf-8")
             print(f"  [OK] Updated .gitignore ({len(additions)} entries added)")
         else:
-            print(f"  [*] .gitignore already complete")
+            print("  [*] .gitignore already complete")
     elif not skip_gitignore:
         gitignore.write_text(_GITIGNORE_TEMPLATE, encoding="utf-8")
-        print(f"  [OK] Created .gitignore")
+        print("  [OK] Created .gitignore")
 
     # .env.example -- always write if missing
     env_example = project_dir / ".env.example"
     if not env_example.exists():
         env_example.write_text(_ENV_EXAMPLE_TEMPLATE, encoding="utf-8")
-        print(f"  [OK] Created .env.example")
+        print("  [OK] Created .env.example")
 
     # .env -- create empty if missing (gitignored)
     env_file = project_dir / ".env"
     if not env_file.exists():
         env_file.write_text("# Project secrets -- do not commit\n", encoding="utf-8")
-        print(f"  [OK] Created .env (empty, gitignored)")
+        print("  [OK] Created .env (empty, gitignored)")
 
 
 def _open_in_vscode(project_dir: Path) -> None:
@@ -442,6 +446,7 @@ def _open_in_vscode(project_dir: Path) -> None:
 def _cmd_new(args: argparse.Namespace) -> int:
     """Create a new project directory linked to Cohort."""
     import subprocess as _sp
+
     from cohort.project_manifest import CohortManifest, load_cohort_settings
 
     parent = (Path(args.dir) if args.dir else Path.cwd()).resolve()
@@ -472,7 +477,7 @@ def _cmd_new(args: argparse.Namespace) -> int:
                 ["git", "init", str(project_dir)],
                 check=True, capture_output=True, text=True,
             )
-            print(f"  [OK] Initialized git repository")
+            print("  [OK] Initialized git repository")
             git_ok = True
         except (_sp.CalledProcessError, FileNotFoundError) as exc:
             print(f"  [!] git init skipped: {exc}")
@@ -502,7 +507,7 @@ def _cmd_new(args: argparse.Namespace) -> int:
     print(f"  [OK] Created working memory directory: {manifest.working_memory_path}")
 
     print()
-    print(f"  Project ready.")
+    print("  Project ready.")
     print()
 
     # Open in VS Code
@@ -515,7 +520,7 @@ def _cmd_new(args: argparse.Namespace) -> int:
 
 def _cmd_link(args: argparse.Namespace) -> int:
     """Add a .cohort manifest to an existing project."""
-    from cohort.project_manifest import CohortManifest, load_cohort_settings, MANIFEST_FILENAME
+    from cohort.project_manifest import MANIFEST_FILENAME, CohortManifest, load_cohort_settings
 
     project_dir = (Path(args.dir) if args.dir else Path.cwd()).resolve()
 
@@ -526,7 +531,7 @@ def _cmd_link(args: argparse.Namespace) -> int:
     manifest_path = project_dir / MANIFEST_FILENAME
     if manifest_path.exists():
         print(f"  [*] Project already linked: {manifest_path}")
-        print(f"  [*] Delete .cohort and re-run to reset the manifest.")
+        print("  [*] Delete .cohort and re-run to reset the manifest.")
         return 0
 
     cohort_root = Path(__file__).resolve().parent.parent
@@ -841,17 +846,47 @@ def main() -> None:
     launch_parser.add_argument("--force-setup", action="store_true", help="Force the setup wizard")
 
     # -- new CLI modules (cohort/cli/) ----------------------------------
-    from cohort.cli import agents_cmd, channels_cmd, queue_cmd, health_cmd
-    from cohort.cli import discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd
-    from cohort.cli import route_cmd, search_cmd, schedule_cmd, secret_cmd
-    from cohort.cli import youtube_cmd, website_cmd, migrate_cmd
-    from cohort.cli import briefing_cmd, intel_cmd, tools_cmd, profile_cmd, web_cmd
-    from cohort.cli import sessions_cmd, model_cmd, config_cmd
-    from cohort.cli import benchmark_cmd, learn_cmd, analyze_cmd, meet_cmd
-    from cohort.cli import test_cmd
-    from cohort.cli import service_cmd, cloud_cmd, context_cmd, import_cmd, assess_cmd
-    from cohort.cli import hydrate_cmd, quiz_cmd, inject_cmd, overnight_cmd
-    from cohort.cli import scan_cmd, inventory_cmd
+    from cohort.cli import (
+        agents_cmd,
+        analyze_cmd,
+        assess_cmd,
+        benchmark_cmd,
+        briefing_cmd,
+        channels_cmd,
+        cloud_cmd,
+        config_cmd,
+        context_cmd,
+        discuss_cmd,
+        hardware_cmd,
+        health_cmd,
+        hydrate_cmd,
+        import_cmd,
+        inject_cmd,
+        intel_cmd,
+        inventory_cmd,
+        learn_cmd,
+        meet_cmd,
+        memory_cmd,
+        migrate_cmd,
+        model_cmd,
+        overnight_cmd,
+        profile_cmd,
+        queue_cmd,
+        quiz_cmd,
+        route_cmd,
+        scan_cmd,
+        schedule_cmd,
+        search_cmd,
+        secret_cmd,
+        service_cmd,
+        sessions_cmd,
+        tasks_cmd,
+        test_cmd,
+        tools_cmd,
+        web_cmd,
+        website_cmd,
+        youtube_cmd,
+    )
 
     for mod in (agents_cmd, channels_cmd, queue_cmd, health_cmd,
                 discuss_cmd, memory_cmd, tasks_cmd, hardware_cmd,

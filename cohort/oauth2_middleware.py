@@ -30,17 +30,13 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any
 
 import jwt
-from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.base import BaseHTTPMiddleware
-
 
 logger = logging.getLogger("cohort.oauth2_middleware")
 
@@ -182,7 +178,7 @@ class OAuth2Middleware(BaseHTTPMiddleware):
         # Check expiration first (fast path)
         try:
             payload = jwt.get_unverified_claims(token)
-        except jwt.ExpiredSignatureError as exc:
+        except jwt.ExpiredSignatureError:
             logger.warning("[TOKEN-EXPIRED] Token expired for client %s", client_id)
             self._raise_error("token_expired")
         except jwt.InvalidTokenError as exc:
@@ -383,7 +379,7 @@ class OAuth2Middleware(BaseHTTPMiddleware):
                 logger.debug("[AUTH-OK] Token validated for client %s", client_id)
             except HTTPException:
                 raise
-            except Exception as exc:
+            except Exception:
                 logger.exception("[AUTH-ERROR] Unexpected error validating token")
                 if self.token_config.debug:
                     self._raise_error("invalid_token")

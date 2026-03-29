@@ -6,11 +6,10 @@ in-memory sliding windows. Thread-safe for async FastAPI usage.
 """
 
 import asyncio
-import time
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
-
 import logging
+import time
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 

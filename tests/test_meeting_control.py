@@ -4,18 +4,15 @@ Tests the new methods added to orchestrator.py and meeting.py for
 the CLI-first meeting mode control surface.
 """
 
-import pytest
 
-from cohort.chat import Channel, ChatManager, Message
+from cohort.chat import ChatManager
 from cohort.meeting import (
     StakeholderStatus,
-    enable_meeting_mode,
     disable_meeting_mode,
-    extract_keywords,
+    enable_meeting_mode,
 )
 from cohort.orchestrator import Orchestrator, SessionState
 from cohort.registry import JsonFileStorage
-
 
 # =====================================================================
 # Helpers
@@ -276,17 +273,11 @@ class TestCLIDispatch:
     """Test that the CLI handler dispatch table is complete."""
 
     def test_all_commands_in_dispatch(self):
-        from cohort.cli.meet_cmd import handle
         import argparse
 
+        from cohort.cli.meet_cmd import handle
+
         # All expected subcommands
-        expected = {
-            "stakeholders", "relevance",
-            "start", "stop", "pause", "resume", "status",
-            "promote", "demote", "add", "remove",
-            "next", "score", "phase", "extend",
-            "enable", "disable", "context",
-        }
         # The handle function's dispatch dict should cover all
         # (we test by checking the function exists and handles None)
         args = argparse.Namespace(meet_command=None, json=False)
@@ -294,8 +285,9 @@ class TestCLIDispatch:
         assert result == 0  # prints usage, returns 0
 
     def test_unknown_command_returns_1(self):
-        from cohort.cli.meet_cmd import handle
         import argparse
+
+        from cohort.cli.meet_cmd import handle
 
         args = argparse.Namespace(meet_command="bogus", json=False)
         result = handle(args)

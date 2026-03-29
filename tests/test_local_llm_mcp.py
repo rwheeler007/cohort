@@ -5,13 +5,12 @@ Uses mocking -- no real Ollama or GPU required.
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
 from cohort.local.detect import HardwareInfo
 from cohort.local.ollama import GenerateResult
-
 
 # =====================================================================
 # Helpers
@@ -46,7 +45,7 @@ def _make_list_models_input():
 
 class TestLocalLLMGenerate:
     def test_generate_with_valid_model(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         mock_result = GenerateResult(
             text="def hello(): print('Hello!')",
@@ -66,7 +65,7 @@ class TestLocalLLMGenerate:
         assert "Tokens: 20/10" in result
 
     def test_generate_auto_selects_model(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         hw = HardwareInfo(
             gpu_name="RTX 3080",
@@ -103,7 +102,7 @@ class TestLocalLLMGenerate:
         assert "No GPU" in result
 
     def test_generate_ollama_down_returns_error(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         with patch.object(_client, "health_check", return_value=False):
             result = local_llm_generate(_make_generate_input())
@@ -112,7 +111,7 @@ class TestLocalLLMGenerate:
         assert "not running" in result
 
     def test_generate_model_not_installed_returns_error(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         with patch.object(_client, "health_check", return_value=True), \
              patch.object(_client, "list_models", return_value=["phi3:mini"]):
@@ -123,7 +122,7 @@ class TestLocalLLMGenerate:
         assert "phi3:mini" in result
 
     def test_generate_failure_returns_error(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         with patch.object(_client, "health_check", return_value=True), \
              patch.object(_client, "list_models", return_value=["qwen3:8b"]), \
@@ -134,7 +133,7 @@ class TestLocalLLMGenerate:
         assert "failed" in result
 
     def test_generate_task_type_adjusts_temperature(self):
-        from cohort.mcp.local_llm_server import local_llm_generate, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_generate
 
         mock_result = GenerateResult(
             text="code output", model="qwen3:8b",
@@ -158,7 +157,7 @@ class TestLocalLLMGenerate:
 
 class TestLocalLLMModels:
     def test_list_models_returns_formatted(self):
-        from cohort.mcp.local_llm_server import local_llm_models, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_models
 
         with patch.object(_client, "health_check", return_value=True), \
              patch.object(_client, "list_models", return_value=["qwen3:8b", "qwen3:30b-a3b"]):
@@ -169,7 +168,7 @@ class TestLocalLLMModels:
         assert "qwen3:30b-a3b" in result
 
     def test_list_models_ollama_down(self):
-        from cohort.mcp.local_llm_server import local_llm_models, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_models
 
         with patch.object(_client, "health_check", return_value=False):
             result = local_llm_models(_make_list_models_input())
@@ -178,7 +177,7 @@ class TestLocalLLMModels:
         assert "not running" in result
 
     def test_list_models_empty(self):
-        from cohort.mcp.local_llm_server import local_llm_models, _client
+        from cohort.mcp.local_llm_server import _client, local_llm_models
 
         with patch.object(_client, "health_check", return_value=True), \
              patch.object(_client, "list_models", return_value=[]):
@@ -194,15 +193,17 @@ class TestLocalLLMModels:
 
 class TestInputValidation:
     def test_generate_empty_prompt_rejected(self):
-        from cohort.mcp.local_llm_server import GenerateInput
         from pydantic import ValidationError
+
+        from cohort.mcp.local_llm_server import GenerateInput
 
         with pytest.raises(ValidationError):
             GenerateInput(prompt="")
 
     def test_generate_temperature_bounds(self):
-        from cohort.mcp.local_llm_server import GenerateInput
         from pydantic import ValidationError
+
+        from cohort.mcp.local_llm_server import GenerateInput
 
         with pytest.raises(ValidationError):
             GenerateInput(prompt="test", temperature=-0.1)

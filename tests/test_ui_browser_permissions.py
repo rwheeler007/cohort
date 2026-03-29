@@ -90,6 +90,7 @@ def live_server(test_data_dir, test_agents_dir):
     Uses uvicorn in a background thread. Yields the base URL.
     """
     import socket
+
     import uvicorn
 
     # Find a free port

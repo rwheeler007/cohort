@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 from typing import Any, Callable
 
-
 # ---------------------------------------------------------------------------
 # Data directory resolution
 # ---------------------------------------------------------------------------
@@ -68,8 +67,8 @@ def truncation_notice(shown: int, total: int) -> str:
 
 def require_ollama(host: str = "http://localhost:11434") -> bool:
     """Check Ollama is reachable.  Print error and return False if not."""
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     try:
         req = urllib.request.Request(f"{host}/api/tags", method="GET")
@@ -86,8 +85,8 @@ def require_ollama(host: str = "http://localhost:11434") -> bool:
 
 def require_server(port: int = 5100) -> bool:
     """Check Cohort server is reachable.  Print error and return False if not."""
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     try:
         req = urllib.request.Request(f"http://localhost:{port}/api/health", method="GET")

@@ -8,12 +8,12 @@ Metadata (model, tokens, latency) is loaded from conversation-meta.json
 and displayed as badges on each conversation, matching the SMACK UI style.
 """
 
-import json
 import html as html_mod
-import re
-import requests
-
+import json
 import os
+import re
+
+import requests
 
 COHORT_API = "http://localhost:5100"
 

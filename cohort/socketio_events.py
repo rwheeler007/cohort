@@ -354,7 +354,7 @@ async def create_schedule(sid: str, data: dict) -> dict:
     # Resolve preset if provided
     if preset:
         try:
-            from cohort.cron import resolve_preset, compute_next_run
+            from cohort.cron import compute_next_run, resolve_preset
             schedule_type, schedule_expr = resolve_preset(preset)
         except ValueError as exc:
             return {"error": str(exc)}
@@ -363,8 +363,9 @@ async def create_schedule(sid: str, data: dict) -> dict:
         return {"error": "Missing schedule_type/schedule_expr or preset"}
 
     try:
-        from cohort.cron import compute_next_run
         from datetime import datetime, timezone
+
+        from cohort.cron import compute_next_run
         next_run = compute_next_run(schedule_type, schedule_expr, datetime.now(timezone.utc))
 
         # Build triad templates from optional fields

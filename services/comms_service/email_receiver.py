@@ -7,17 +7,12 @@ import hashlib
 import hmac
 import json
 import os
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-import uuid
 
-from models import (
-    ReceivedEmail,
-    EmailAttachment,
-    ReceivedEmailStatus,
-    Priority
-)
+from models import EmailAttachment, ReceivedEmail, ReceivedEmailStatus
 
 
 class EmailReceiver:
@@ -385,7 +380,7 @@ class EmailReceiver:
                         received_at = datetime.fromisoformat(data["received_at"].replace("Z", "+00:00"))
                         if received_at.date() == today:
                             received_today += 1
-                    except:
+                    except Exception:
                         pass
 
         stats["received_today"] = received_today

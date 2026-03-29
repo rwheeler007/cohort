@@ -7,14 +7,13 @@ import sys
 
 from cohort.cli._base import format_output
 
-
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
 
 def _cmd_cloud_providers(args: argparse.Namespace) -> int:
     """List supported cloud LLM providers."""
-    from cohort.local.cloud import list_providers, _DEFAULT_MODELS
+    from cohort.local.cloud import _DEFAULT_MODELS, list_providers
 
     providers = list_providers()
     json_flag = getattr(args, "json", False)
@@ -33,7 +32,7 @@ def _cmd_cloud_providers(args: argparse.Namespace) -> int:
 
 def _cmd_cloud_check(args: argparse.Namespace) -> int:
     """Check cloud API configuration."""
-    from cohort.local.cloud import check_cloud_available, list_providers
+    from cohort.local.cloud import list_providers
 
     # Load settings from cohort_settings.json
     try:

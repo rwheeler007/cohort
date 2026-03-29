@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 from cohort.cli._base import format_output, resolve_agents_dir
-
 
 # ---------------------------------------------------------------------------
 # Formatters
@@ -143,7 +141,7 @@ def _cmd_graph(args: argparse.Namespace) -> int:
         print("  " + "-" * 55)
         for agent_id in sorted(active):
             edges = active[agent_id]
-            partners = ", ".join(
+            ", ".join(
                 f"{e.get('partner', '?')} ({e.get('relationship', 'partner')})"
                 for e in edges
             )

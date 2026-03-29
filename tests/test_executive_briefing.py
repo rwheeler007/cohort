@@ -7,14 +7,12 @@ components).
 
 from __future__ import annotations
 
-import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import httpx
 import pytest
-import pytest_asyncio
 
 from cohort.chat import ChatManager
 from cohort.executive_briefing import (
@@ -23,7 +21,6 @@ from cohort.executive_briefing import (
     ExecutiveBriefing,
 )
 from cohort.registry import JsonFileStorage
-
 
 # =====================================================================
 # Fixtures

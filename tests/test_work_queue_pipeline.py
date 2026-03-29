@@ -7,8 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cohort.work_queue import WorkQueue, WorkItem
-
+from cohort.work_queue import WorkItem, WorkQueue
 
 # =====================================================================
 # Fixtures

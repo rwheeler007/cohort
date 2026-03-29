@@ -7,15 +7,14 @@ import sys
 
 from cohort.cli._base import format_output
 
-
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
 
 def _cmd_web_fetch(args: argparse.Namespace) -> int:
     """Fetch and display a web page."""
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     url = args.url
     timeout = getattr(args, "timeout", 10)

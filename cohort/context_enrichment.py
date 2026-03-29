@@ -180,8 +180,8 @@ def _call_local_llm(prompt: str) -> str:
 
     # Fallback: direct Ollama HTTP call
     try:
-        import urllib.request
         import json
+        import urllib.request
 
         data = json.dumps({
             "model": "qwen3.5:9b",

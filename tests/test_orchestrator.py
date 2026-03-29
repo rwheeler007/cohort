@@ -1,11 +1,9 @@
 """Tests for cohort.orchestrator -- session management and proactive synthesis."""
 
-import pytest
 
-from cohort.chat import ChatManager, Message
-from cohort.orchestrator import Orchestrator, SessionState, TurnMode
+from cohort.chat import ChatManager
+from cohort.orchestrator import Orchestrator, SessionState
 from cohort.registry import JsonFileStorage
-
 
 # =====================================================================
 # Helpers

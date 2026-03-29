@@ -8,13 +8,11 @@ IMPORTANT: No Unicode emojis - Windows cp1252 encoding only.
 Use [OK], [!], [X], [*], [>>] for status indicators.
 """
 
-import json
 import logging
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from models import SocialPlatform, SocialPostDraft
+from models import SocialPostDraft
 
 logger = logging.getLogger(__name__)
 

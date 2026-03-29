@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from datetime import datetime, timezone
 
 from cohort.cli._base import agent_not_found, format_output, resolve_agents_dir, truncation_notice
-
 
 # ---------------------------------------------------------------------------
 # Formatters

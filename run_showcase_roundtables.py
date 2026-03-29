@@ -5,9 +5,9 @@ the agent responses as individual messages to the channels via the API.
 Metadata (model, tokens, latency) is stored per-channel for display.
 """
 
-import sys
 import json
-import time
+import sys
+
 import requests
 
 sys.path.insert(0, "G:/cohort")
@@ -158,7 +158,7 @@ def run_scenario(scenario: dict) -> dict | None:
     # Post synthesis if available
     if result.synthesis:
         post_message(ch, "cohort_orchestrator", f"**Synthesis:**\n\n{result.synthesis}")
-        print(f"  [OK] Synthesis posted")
+        print("  [OK] Synthesis posted")
 
     return {
         "channel": ch,

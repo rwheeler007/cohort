@@ -143,7 +143,7 @@ def wait_for_worker(proc, fh, logfile, bank: str):
             time.sleep(30)
 
     except KeyboardInterrupt:
-        print(f"\n\n  [!] Detached from monitoring. Worker continues in background.")
+        print("\n\n  [!] Detached from monitoring. Worker continues in background.")
         print(f"  PID: {proc.pid}")
         print(f"  Log: {logfile}")
         try:
@@ -232,7 +232,7 @@ def run_overnight(banks: list[str], limit: int | None = None, dry_run: bool = Fa
             })
 
             print(f"  PID: {proc.pid}")
-            print(f"  (Ctrl+C to detach -- worker continues in background)\n")
+            print("  (Ctrl+C to detach -- worker continues in background)\n")
 
             exit_code = wait_for_worker(proc, fh, logfile, bank)
             summary["bank_results"].append({
@@ -250,7 +250,7 @@ def run_overnight(banks: list[str], limit: int | None = None, dry_run: bool = Fa
                 print(f"\n  [OK] {bank.upper()} complete. {remaining} bank(s) remaining.")
 
     except KeyboardInterrupt:
-        print(f"\n  [!] Detached. Remaining banks will NOT start.")
+        print("\n  [!] Detached. Remaining banks will NOT start.")
         print(f"  Logs: {LOG_DIR}")
         summary["interrupted_at"] = datetime.now().isoformat()
         with open(manifest_file, "w", encoding="utf-8") as f:

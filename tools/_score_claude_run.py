@@ -115,7 +115,7 @@ with open(f"{out_dir}/combined_results.json", "w") as f:
 # Print
 print(f"{'=' * 60}")
 print(f"  python_developer -- {score_pct}% -- {'PASSED' if score_pct >= 70 else 'FAILED'}")
-print(f"  Backend: Claude Code (Opus 4.6, in-context)")
+print("  Backend: Claude Code (Opus 4.6, in-context)")
 print(f"  {correct}/{total} correct, {wrong} wrong, {errors} errors")
 print(f"{'=' * 60}")
 

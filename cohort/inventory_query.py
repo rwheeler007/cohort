@@ -161,8 +161,8 @@ def _resolve_inventory(
 def _fetch_from_server(server_url: str) -> list[dict[str, Any]]:
     """Fetch inventory from Cohort's /api/inventory endpoint."""
     try:
-        import urllib.request
         import json
+        import urllib.request
         url = f"{server_url}/api/inventory"
         req = urllib.request.Request(url, method="GET")
         with urllib.request.urlopen(req, timeout=5) as resp:

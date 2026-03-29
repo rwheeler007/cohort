@@ -18,12 +18,10 @@ Usage::
 from __future__ import annotations
 
 import logging
-import os
 import sys
 import threading
 import time
 import webbrowser
-from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -94,6 +92,7 @@ class _ServerThread(threading.Thread):
     def run(self) -> None:
         try:
             import uvicorn
+
             from cohort.server import create_app
 
             app = create_app(data_dir=self.data_dir)

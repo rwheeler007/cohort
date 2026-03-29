@@ -4,7 +4,6 @@ Cross-Platform Campaign Example - Social Media Optimizer
 Demonstrates automatic platform optimization, scheduling, and cross-posting.
 """
 
-from datetime import datetime
 from tools.comms_service.comms_client import get_client
 
 

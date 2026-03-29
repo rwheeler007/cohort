@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
-from cohort.agent import AgentConfig, AgentMemory
+from cohort.agent import AgentMemory
 from cohort.agent_creator import AgentCreator, AgentSpec, AgentType, _to_snake_case
 from cohort.agent_store import AgentStore
 

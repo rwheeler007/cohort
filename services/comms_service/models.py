@@ -8,7 +8,6 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
-
 # --- Enums ---
 
 class DraftStatus(str, Enum):

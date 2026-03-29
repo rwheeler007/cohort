@@ -11,7 +11,6 @@ Usage:
 IMPORTANT: No Unicode emojis - Windows cp1252 encoding only.
 """
 
-import json
 import sys
 from pathlib import Path
 

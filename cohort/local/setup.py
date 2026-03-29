@@ -596,7 +596,7 @@ def _step_detect_hardware() -> HardwareInfo:
             _print_info("No dedicated graphics card detected -- and that's perfectly fine!")
         print()
         print(f"      Computer:  {plat_name}")
-        print(f"      Mode:      CPU-only")
+        print("      Mode:      CPU-only")
         print()
         print("  Your computer will run AI using its main processor instead of")
         print("  a graphics card. It's like driving a reliable sedan instead of")
@@ -708,7 +708,7 @@ def _install_ollama_windows() -> bool:
             _print_info(f"Download the installer from: {OLLAMA_DOWNLOAD_URL}")
     else:
         print()
-        print(f"  No problem. Download the installer from:")
+        print("  No problem. Download the installer from:")
         print(f"    {OLLAMA_DOWNLOAD_URL}")
         print()
         print("  Install it, then come back here.")
@@ -724,7 +724,7 @@ def _install_ollama_macos() -> bool:
         print()
         print("    brew install ollama")
     else:
-        print(f"  Download the installer from:")
+        print("  Download the installer from:")
         print(f"    {OLLAMA_DOWNLOAD_URL}")
 
     print()
@@ -1140,7 +1140,7 @@ def _create_global_agent_links(cohort_root: Path) -> None:
 
         try:
             if plat == "Windows":
-                result = subprocess.run(
+                subprocess.run(
                     ["cmd", "/c", "mklink", "/J", str(link), str(source)],
                     check=True, capture_output=True, text=True,
                 )
@@ -1322,7 +1322,7 @@ def _print_success(hw: HardwareInfo, model: str) -> None:
         gb = hw.vram_mb / 1024
         print(f"    Hardware:  {hw.gpu_name} ({gb:.0f} GB VRAM)")
 
-    print(f"    Engine:    Ollama (running on localhost:11434)")
+    print("    Engine:    Ollama (running on localhost:11434)")
     print(f"    Model:     {model}")
     print()
 
@@ -1340,9 +1340,9 @@ def _print_success(hw: HardwareInfo, model: str) -> None:
         print(f"    Claude:    Connected ({settings.get('execution_backend', 'cli')} mode)")
         print(f"    Timeout:   {settings.get('response_timeout', 300)}s")
         if settings.get("force_to_claude_code"):
-            print(f"    Routing:   All responses forced through Claude Code")
+            print("    Routing:   All responses forced through Claude Code")
     else:
-        print(f"    Claude:    Not configured (local-only mode)")
+        print("    Claude:    Not configured (local-only mode)")
 
     print()
     print("  Response Modes:")

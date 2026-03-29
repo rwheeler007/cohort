@@ -4,9 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-
 # =====================================================================
 # Context enrichment tests
 # =====================================================================
@@ -54,8 +51,8 @@ class TestTranscriptBudget:
 
     def test_transcript_truncated_at_budget(self):
         from cohort.context_enrichment import (
-            _filter_messages,
             MAX_TRANSCRIPT_CHARS,
+            _filter_messages,
         )
 
         # Create messages that exceed the budget

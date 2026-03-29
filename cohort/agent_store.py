@@ -130,7 +130,7 @@ class AgentStore:
     def _sync_from_gateway(self) -> None:
         """Fetch curated agents from the Gateway, upgrading existing configs."""
         try:
-            import httpx  # noqa: F811
+            import httpx  # noqa: F401
         except ImportError:
             return
         synced = 0

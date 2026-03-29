@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import time
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,11 +9,8 @@ import pytest
 from cohort.response_gate import (
     EMERGENCY_MAX_CONVERSATION_DEPTH,
     EMERGENCY_MAX_RESPONSES_PER_MINUTE,
-    GATE_CACHE_TTL_SECONDS,
-    GateDecision,
-    GateState,
     TIER1_ALLOW_THRESHOLD,
-    TIER1_BLOCK_THRESHOLD,
+    GateDecision,
     _gate_cache,
     _state,
     _tier1_heuristic_gate,
@@ -237,7 +233,7 @@ class TestFullFlow:
 
     def test_cache_works(self):
         # First call populates cache
-        r1 = should_allow_response("ch", "agent_a", "hello")
+        should_allow_response("ch", "agent_a", "hello")
         # Second call should be cached
         r2 = should_allow_response("ch", "agent_a", "hello")
         if r2.tier_used == 1:

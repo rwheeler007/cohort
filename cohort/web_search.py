@@ -79,9 +79,9 @@ def _search_external(
     google_cx: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Search using an external API provider (Google, SerpAPI, Serper)."""
-    import urllib.request
-    import urllib.parse
     import json as _json
+    import urllib.parse
+    import urllib.request
 
     results: List[Dict[str, Any]] = []
 

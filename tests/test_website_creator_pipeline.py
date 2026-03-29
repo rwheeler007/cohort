@@ -7,10 +7,10 @@ Covers:
 
 from __future__ import annotations
 
-import pytest
 from pathlib import Path
 from unittest.mock import patch
 
+from cohort.website_creator.block_renderer import BlockRenderer
 from cohort.website_creator.decision_engine import (
     DecisionEngine,
     EngineConfig,
@@ -21,8 +21,6 @@ from cohort.website_creator.roundtable_bridge import (
     BlockSiteSpec,
     BusinessInfo,
 )
-from cohort.website_creator.block_renderer import BlockRenderer
-
 
 # =====================================================================
 # Helpers
@@ -290,7 +288,6 @@ class TestDryRunNoLLMCalls:
         """Running with dry_run=True must not make any httpx calls."""
         import httpx as real_httpx
 
-        original_client = real_httpx.Client
 
         calls = []
 

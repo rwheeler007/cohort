@@ -19,10 +19,9 @@ from cohort.local.config import (
     get_model_for_vram,
     get_temperature,
 )
-from cohort.local.detect import GPUInfo, HardwareInfo, detect_hardware
+from cohort.local.detect import HardwareInfo, detect_hardware
 from cohort.local.ollama import GenerateResult, OllamaClient
 from cohort.local.router import LocalRouter, RouteResult
-
 
 # =====================================================================
 # Hardware Detection Tests

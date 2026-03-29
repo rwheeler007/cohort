@@ -1,9 +1,13 @@
 """Lightweight agent list endpoint with optional full config."""
 
-from typing import Optional, List
+from datetime import datetime
+from typing import List, Optional
+
+from db import db
+from fastapi import APIRouter, HTTPException, Query
+from models.agent import AgentFull, AgentSummary
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from fastapi import APIRouter, Query, HTTPException
-from models.agent import AgentSummary, AgentFull
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 

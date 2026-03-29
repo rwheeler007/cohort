@@ -7,7 +7,6 @@ import sys
 
 from cohort.cli._base import format_output, resolve_agents_dir
 
-
 # ---------------------------------------------------------------------------
 # Formatters
 # ---------------------------------------------------------------------------
@@ -60,8 +59,9 @@ def _format_detect(info: dict) -> str:
 
 def _cmd_import_detect(args: argparse.Namespace) -> int:
     """Detect available preference sources."""
-    from cohort.import_seed import detect_claude_dir
     from pathlib import Path
+
+    from cohort.import_seed import detect_claude_dir
 
     info = {}
 
@@ -88,7 +88,7 @@ def _cmd_import_detect(args: argparse.Namespace) -> int:
 
 def _cmd_import_claude(args: argparse.Namespace) -> int:
     """Import preferences from Claude Code memory."""
-    from cohort.import_seed import parse_claude_memory, detect_claude_dir
+    from cohort.import_seed import detect_claude_dir, parse_claude_memory
 
     info = detect_claude_dir()
     if not info.get("exists"):
@@ -103,8 +103,8 @@ def _cmd_import_claude(args: argparse.Namespace) -> int:
     else:
         print(_format_facts(facts, "Claude Code"))
         if facts and not getattr(args, "dry_run", False):
-            print(f"\n  Use --dry-run to preview without committing.")
-            print(f"  To commit: python -m cohort import claude --commit")
+            print("\n  Use --dry-run to preview without committing.")
+            print("  To commit: python -m cohort import claude --commit")
 
     if getattr(args, "commit", False) and facts:
         from cohort.agent_store import AgentStore
@@ -119,8 +119,9 @@ def _cmd_import_claude(args: argparse.Namespace) -> int:
 
 def _cmd_import_config(args: argparse.Namespace) -> int:
     """Import preferences from config files (pyproject.toml, .editorconfig, etc.)."""
-    from cohort.import_seed import extract_from_config_files
     from pathlib import Path
+
+    from cohort.import_seed import extract_from_config_files
 
     project_root = Path(getattr(args, "project_root", "."))
     config_files = {}

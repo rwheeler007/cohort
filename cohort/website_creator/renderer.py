@@ -13,7 +13,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from cohort.website_creator.site_brief import SiteBrief
 
-
 # Map template names to template files
 TEMPLATE_MAP = {
     "hero": "hero.html.j2",
@@ -274,7 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {{
 
     def _render_footer_js(self, brief: SiteBrief, output_dir: Path) -> None:
         """Generate footer.js from the brief's footer config."""
-        import dataclasses
 
         # Build footer config from structured columns or legacy flat links
         footer_cfg = {
@@ -395,11 +393,11 @@ document.addEventListener("DOMContentLoaded", function () {{
             else:
                 slug = ""
             priority = "1.0" if slug == "index" else "0.8"
-            lines.append(f"  <url>")
+            lines.append("  <url>")
             lines.append(f"    <loc>{base}/{slug}.html</loc>")
             lines.append(f"    <lastmod>{today}</lastmod>")
             lines.append(f"    <priority>{priority}</priority>")
-            lines.append(f"  </url>")
+            lines.append("  </url>")
         lines.append("</urlset>")
         (output_dir / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -414,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function () {{
     def _render_404(self, brief: SiteBrief, output_dir: Path) -> None:
         """Generate a branded 404 page for static hosts."""
         import dataclasses
-        brand = dataclasses.asdict(brief.brand)
+        dataclasses.asdict(brief.brand)
         name = brief.product_name or "Site"
         lang = brief.language or "en"
         html = f"""\

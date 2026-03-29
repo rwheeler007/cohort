@@ -16,7 +16,6 @@ from typing import Any
 
 from cohort.chat import ChatManager, Message
 from cohort.meeting import (
-    STAKEHOLDER_THRESHOLDS,
     TOPIC_SHIFT_THRESHOLD,
     StakeholderStatus,
     calculate_composite_relevance,

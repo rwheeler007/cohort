@@ -6,7 +6,6 @@ from the project's content strategy config, not from baked-in constants.
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 

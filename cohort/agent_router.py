@@ -11,26 +11,30 @@ Pipeline flow:
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import os
 import subprocess
+import sys
+import tempfile
 import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import json
-import sys
-import tempfile
-
-from cohort.api import (
-    parse_mentions, AgentStore, truncate_context, load_persona,
-    resolve_permissions, get_central_permissions, ResolvedPermissions,
-)
-from cohort.local.config import classify_confidence
 from cohort.agent_context import load_agent_context, load_project_memory, load_user_profile_block
-from cohort.inventory_query import should_query_inventory, query_inventory_block
+from cohort.api import (
+    AgentStore,
+    ResolvedPermissions,
+    get_central_permissions,
+    load_persona,
+    parse_mentions,
+    resolve_permissions,
+    truncate_context,
+)
+from cohort.inventory_query import query_inventory_block, should_query_inventory
+from cohort.local.config import classify_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -748,7 +752,7 @@ def enqueue_agent_channel_request(
     channel_context = build_channel_context(channel_id)
     thread_context = _build_thread_context(thread_id, channel_id) if thread_id else ""
     agent_cfg = _agent_store.get(agent_id) if _agent_store else None
-    perms = resolve_permissions(agent_id, agent_cfg, get_central_permissions())
+    resolve_permissions(agent_id, agent_cfg, get_central_permissions())
     # NOTE: tool_awareness is no longer injected into the prompt for this
     # path.  Channel requests go to Claude Code sessions which auto-discover
     # MCP tools; repeating them in text wastes ~130 tokens per invocation.
@@ -1050,13 +1054,13 @@ def _invoke_smartest_pipeline(
         phase3_model = "cloud"
 
         # Read tier settings to determine Phase 3 model order
-        from cohort.local.config import get_smartest_model, get_smartest_fallback
+        from cohort.local.config import get_smartest_fallback, get_smartest_model
         smartest_primary = get_smartest_model()
         smartest_fallback = get_smartest_fallback()
 
         # Channel as Phase 3 primary: route through channel bridge
         if smartest_primary == "channel" and not response_text:
-            from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+            from cohort.channel_bridge import await_channel_response, enqueue_channel_request
             if _ensure_channel_with_toast("smartest"):
                 try:
                     logger.info("[>>] Smartest Phase 3 (channel/primary): %s", agent_id)
@@ -1153,8 +1157,8 @@ def _invoke_smartest_pipeline(
             if _ensure_channel_with_toast("smartest"):
                 try:
                     from cohort.channel_bridge import (
-                        enqueue_channel_request,
                         await_channel_response,
+                        enqueue_channel_request,
                     )
 
                     logger.info("[>>] Smartest Phase 3 (channel): %s", agent_id)
@@ -1465,8 +1469,8 @@ def _invoke_agent_sync(item: dict) -> None:
 
     # Smartest pipeline: Qwen reasoning -> distill -> Cloud API (or CLI in dev mode)
     elif response_mode == "smartest":
-        from cohort.local.cloud import check_cloud_available
         from cohort.channel_bridge import channel_mode_active as _ch_active
+        from cohort.local.cloud import check_cloud_available
         _smartest_available = (
             check_cloud_available(_cloud_settings)
             or _ch_active()
@@ -1541,7 +1545,7 @@ def _invoke_agent_sync(item: dict) -> None:
         from cohort.local.config import get_tier_model
         _tier_model = get_tier_model(response_mode)
         if _tier_model == "channel":
-            from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+            from cohort.channel_bridge import await_channel_response, enqueue_channel_request
             if _ensure_channel_with_toast(channel_id):
                 try:
                     logger.info("[>>] Tier %s routed to channel for %s in #%s",
@@ -1675,11 +1679,10 @@ def _invoke_agent_sync(item: dict) -> None:
             if channel_mode_active():
                 try:
                     from cohort.channel_bridge import (
-                        enqueue_channel_request,
                         await_channel_response,
+                        enqueue_channel_request,
+                        get_pressure_tier,
                     )
-
-                    from cohort.channel_bridge import get_pressure_tier
                     _prompt_tier = get_pressure_tier(channel_id)
                     logger.info("[>>] Channel mode for %s in #%s (tier=%s)", agent_id, channel_id, _prompt_tier)
                     ch_t0 = time.monotonic()
@@ -1863,8 +1866,7 @@ def _invoke_agent_sync(item: dict) -> None:
     # Record to agent memory (if store is available)
     if _agent_store is not None:
         try:
-            from cohort.api import WorkingMemoryEntry
-            from cohort.api import MemoryManager
+            from cohort.api import MemoryManager, WorkingMemoryEntry
 
             mm = MemoryManager(_agent_store)
             mm.add_working_memory(agent_id, WorkingMemoryEntry(
@@ -1952,7 +1954,7 @@ def _route_roundtable_to_channel(
     The channel session's system prompt contains roundtable orchestration
     patterns (round structure, cross-pollination, convergence, synthesis).
     """
-    from cohort.channel_bridge import enqueue_channel_request, await_channel_response
+    from cohort.channel_bridge import await_channel_response, enqueue_channel_request
 
     channel_id = getattr(message, "channel_id", "")
     message_content = getattr(message, "content", "")

@@ -8,7 +8,6 @@ resolution, and backward compatibility.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -19,7 +18,6 @@ from cohort.tool_permissions import (
     reload_central_permissions,
     resolve_permissions,
 )
-
 
 # =====================================================================
 # Fixtures

@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 from cohort.cli._base import agent_not_found, format_output, resolve_agents_dir
-
 
 # ---------------------------------------------------------------------------
 # Formatters
@@ -72,7 +70,7 @@ def _format_agent_detail(agent) -> str:
 
     skills = getattr(agent, "education", None)
     if skills and getattr(skills, "skill_levels", None):
-        lines.append(f"\n  Skill Levels:")
+        lines.append("\n  Skill Levels:")
         for skill, level in sorted(skills.skill_levels.items(), key=lambda x: -x[1]):
             lvl = min(level, 10)
             bar = "#" * lvl + "." * (10 - lvl)
@@ -80,14 +78,14 @@ def _format_agent_detail(agent) -> str:
 
     partnerships = getattr(agent, "partnerships", {})
     if partnerships:
-        lines.append(f"\n  Partnerships:")
+        lines.append("\n  Partnerships:")
         for partner, info in partnerships.items():
             rel = info.get("relationship", "collaborator") if isinstance(info, dict) else str(info)
             lines.append(f"    - {partner}: {rel}")
 
     pitfalls = getattr(agent, "common_pitfalls", [])
     if pitfalls:
-        lines.append(f"\n  Common Pitfalls:")
+        lines.append("\n  Common Pitfalls:")
         for p in pitfalls[:5]:
             if isinstance(p, dict):
                 issue = p.get("issue", p.get("mistake", p.get("pitfall", "")))

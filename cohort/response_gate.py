@@ -269,12 +269,11 @@ def _tier1_heuristic_gate(
 
     try:
         from cohort.meeting import (
-            extract_keywords,
-            calculate_novelty,
-            is_directly_questioned,
             calculate_expertise_relevance,
+            calculate_novelty,
+            extract_keywords,
+            is_directly_questioned,
         )
-        from cohort.chat import Message
 
         recent_messages = _get_recent_messages(channel_id, limit=8, chat=chat)
 

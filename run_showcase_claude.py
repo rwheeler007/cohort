@@ -6,8 +6,9 @@ Uses the same prompt building as compiled_roundtable.py but sends to
 
 import json
 import subprocess
-import time
 import sys
+import time
+
 import requests
 
 sys.path.insert(0, "G:/cohort")
@@ -15,7 +16,6 @@ sys.path.insert(0, "G:/cohort")
 from cohort.compiled_roundtable import (
     build_compiled_prompt,
     parse_compiled_response,
-    CompiledResult,
 )
 
 COHORT_API = "http://localhost:5100"
@@ -98,7 +98,7 @@ def run_via_claude(scenario: dict) -> dict | None:
     full_prompt = f"{system_prompt}\n\n---\n\n{user_prompt}"
 
     print(f"  [*] Prompt: ~{token_est} tokens estimated")
-    print(f"  [*] Calling claude -p - ...")
+    print("  [*] Calling claude -p - ...")
 
     start = time.time()
     try:

@@ -12,11 +12,10 @@ import logging
 import shutil
 import time
 from pathlib import Path
-from typing import Any
 
-from cohort.website_creator.site_brief import SiteBrief
+from cohort.website_creator.intake import SiteAnalysis, scrape_site
 from cohort.website_creator.renderer import TemplateRenderer
-from cohort.website_creator.intake import scrape_site, SiteAnalysis
+from cohort.website_creator.site_brief import SiteBrief
 
 log = logging.getLogger("cohort.website_creator")
 

@@ -20,7 +20,6 @@ import subprocess
 import sys
 import tempfile
 import time
-from collections import defaultdict
 from pathlib import Path
 
 COHORT_ROOT = Path(__file__).parent.parent
@@ -41,6 +40,7 @@ CLAUDE_TIMEOUT = 60  # seconds per question -- Claude is fast
 
 # Find claude CLI
 import shutil
+
 CLAUDE_CMD = shutil.which("claude")
 if not CLAUDE_CMD:
     # Common Windows locations

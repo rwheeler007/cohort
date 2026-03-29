@@ -3,11 +3,8 @@
 from __future__ import annotations
 
 import argparse
-import sys
-from pathlib import Path
 
-from cohort.cli._base import format_output, require_ollama, resolve_data_dir
-
+from cohort.cli._base import format_output, resolve_data_dir
 
 # ---------------------------------------------------------------------------
 # Formatters
@@ -112,8 +109,8 @@ def _cmd_health(args: argparse.Namespace) -> int:
 
 def _cmd_status(args: argparse.Namespace) -> int:
     """Show combined system status."""
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     data_dir = resolve_data_dir(args)
     status: dict = {}
@@ -183,8 +180,8 @@ def _cmd_status(args: argparse.Namespace) -> int:
 def _cmd_doctor(args: argparse.Namespace) -> int:
     """Run diagnostic checks."""
     import shutil
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     results: list[dict] = []
 

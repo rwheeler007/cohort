@@ -1,18 +1,18 @@
 """Tests for cohort.compiled_roundtable -- single-call multi-persona discussions."""
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from cohort.compiled_roundtable import (
     MAX_AGENTS,
     CompiledResult,
+    _estimate_tokens,
+    _load_persona,
     build_compiled_prompt,
     parse_compiled_response,
     run_compiled_roundtable,
-    _estimate_tokens,
-    _load_persona,
 )
-
 
 # =====================================================================
 # Fixtures

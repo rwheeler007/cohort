@@ -10,7 +10,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -93,7 +92,7 @@ def _run_e2e(args: argparse.Namespace) -> int:
     env["COHORT_E2E_PORT"] = str(port)
     env["COHORT_E2E_DATA_DIR"] = data_dir
 
-    print(f"  [>>] Running E2E tests")
+    print("  [>>] Running E2E tests")
     print(f"       Port: {port}")
     print(f"       Data: {data_dir} (isolated)")
     if tag:
@@ -143,7 +142,7 @@ def _run_unit(args: argparse.Namespace) -> int:
     if keyword:
         cmd.extend(["-k", keyword])
 
-    print(f"  [>>] Running unit tests")
+    print("  [>>] Running unit tests")
     print()
 
     result = subprocess.run(cmd)

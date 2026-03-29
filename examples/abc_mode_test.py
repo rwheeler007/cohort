@@ -23,33 +23,19 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from cohort.chat import Channel, ChatManager, Message
-from cohort.file_transport import JsonlFileStorage
-from cohort.meeting import (
-    SCORING_WEIGHTS,
-    STAKEHOLDER_THRESHOLDS,
-    RELEVANCE_DIMENSIONS,
-    StakeholderStatus,
-    calculate_composite_relevance,
-    calculate_contribution_score,
-    calculate_expertise_relevance,
-    calculate_novelty,
-    detect_current_phase,
-    detect_topic_shift,
-    extract_keywords,
-    initialize_meeting_context,
-    should_agent_speak,
-)
-
 # Re-use agent definitions from the live exporter
 from export_live_scenario import AGENTS, PHASE_SEEDS
 
+from cohort.chat import ChatManager
+from cohort.file_transport import JsonlFileStorage
+from cohort.meeting import (
+    initialize_meeting_context,
+)
 
 # =====================================================================
 # Claude CLI path
@@ -423,9 +409,9 @@ def main():
     parser.add_argument("--output", "-o", default="examples/abc-mode-test-results.json")
     args = parser.parse_args()
 
-    print(f"[*] A/B/C Mode Test -- Cohort Response Mode Comparison")
+    print("[*] A/B/C Mode Test -- Cohort Response Mode Comparison")
     print(f"[*] llama-server port: {args.port}")
-    print(f"[*] This will make ~24 LLM calls (8 per arm). Expect ~3-5 minutes.\n")
+    print("[*] This will make ~24 LLM calls (8 per arm). Expect ~3-5 minutes.\n")
 
     runner = ABCTestRunner(args.port)
     results = runner.run()

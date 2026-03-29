@@ -130,7 +130,7 @@ def setup_twitter():
         "code_challenge_method": "plain",
     })
 
-    print(f"[>>] Opening browser for authorization...")
+    print("[>>] Opening browser for authorization...")
     print(f"[*]  If browser doesn't open, visit: {auth_url}")
     print()
     webbrowser.open(auth_url)
@@ -214,7 +214,7 @@ def setup_linkedin():
         "state": "linkedin_oauth_state",
     })
 
-    print(f"[>>] Opening browser for authorization...")
+    print("[>>] Opening browser for authorization...")
     print(f"[*]  If browser doesn't open, visit: {auth_url}")
     print()
     webbrowser.open(auth_url)
@@ -305,7 +305,7 @@ def setup_facebook():
         "state": "facebook_oauth_state",
     })
 
-    print(f"[>>] Opening browser for authorization...")
+    print("[>>] Opening browser for authorization...")
     print(f"[*]  If browser doesn't open, visit: {auth_url}")
     print()
     webbrowser.open(auth_url)
@@ -374,7 +374,7 @@ def setup_facebook():
             }
             save_tokens(tokens)
 
-            print(f"[OK] Facebook authorization successful!")
+            print("[OK] Facebook authorization successful!")
             print(f"[*]  Authorized to post to: {selected_page['name']}")
 
     except httpx.HTTPStatusError as exc:

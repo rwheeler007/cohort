@@ -7,15 +7,14 @@ import sys
 
 from cohort.cli._base import channel_not_found, format_output, resolve_data_dir
 
-
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
 
 def _build_chat(data_dir):
     """Construct a ChatManager from data_dir."""
-    from cohort.registry import create_storage
     from cohort.chat import ChatManager
+    from cohort.registry import create_storage
 
     storage = create_storage(data_dir)
     return ChatManager(storage)

@@ -40,10 +40,9 @@ if boss_root_str not in sys.path:
 from cohort.desktop.backend import DesktopBackend
 from cohort.desktop.config import DesktopConfig, load_config
 from cohort.desktop.safety import (
-    DESKTOP_PERMISSION_TIERS,
     check_desktop_permission,
 )
-from cohort.desktop.types import DesktopActionInput, DesktopResult
+from cohort.desktop.types import DesktopResult
 
 # ---------------------------------------------------------------------------
 # MCP Server

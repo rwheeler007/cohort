@@ -1,6 +1,6 @@
 [project]
 name = "cohort"
-version = "0.4.6"
+version = "0.4.15"
 description = "Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -43,10 +43,11 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 target-version = "py311"
-line-length = 100
+line-length = 140
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]
+ignore = ["E402", "E501", "E741", "N806", "N801", "N814"]
 
 [tool.mypy]
 python_version = "3.11"

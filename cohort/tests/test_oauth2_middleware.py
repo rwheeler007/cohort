@@ -15,23 +15,20 @@ Coverage targets:
 
 from __future__ import annotations
 
-import json
 import time
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any
 
 import jwt
 import pytest
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from httpx import AsyncClient
 
 from cohort.oauth2_middleware import (
     OAuth2Middleware,
-    TokenConfig,
     RateLimitState,
+    TokenConfig,
 )
-
 
 # ---------------------------------------------------------------------------
 # Test Fixtures
@@ -382,7 +379,7 @@ class TestRateLimiting:
     @pytest.mark.asyncio
     async def test_rate_limit_enabled(self, app: FastAPI) -> None:
         """Test that rate limiting works when enabled."""
-        middleware = OAuth2Middleware(
+        OAuth2Middleware(
             app=app,
             token_config=TokenConfig(
                 issuer="https://auth.example.com",
@@ -425,7 +422,7 @@ class TestRateLimiting:
     @pytest.mark.asyncio
     async def test_rate_limit_resets(self, app: FastAPI) -> None:
         """Test that rate limit resets after window expires."""
-        middleware = OAuth2Middleware(
+        OAuth2Middleware(
             app=app,
             token_config=TokenConfig(
                 issuer="https://auth.example.com",
@@ -552,7 +549,7 @@ class TestBasicAuthHandling:
     @pytest.mark.asyncio
     async def test_basic_auth_extracted(self, app: FastAPI) -> None:
         """Test that client ID can be extracted from Basic auth."""
-        middleware = OAuth2Middleware(
+        OAuth2Middleware(
             app=app,
             token_config=TokenConfig(
                 issuer="https://auth.example.com",

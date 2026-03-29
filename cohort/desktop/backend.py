@@ -13,7 +13,6 @@ import os
 import shlex
 import subprocess
 import time
-from datetime import datetime
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -26,7 +25,6 @@ from cohort.desktop.config import DesktopConfig
 from cohort.desktop.safety import (
     check_app_allowed,
     check_coordinates_in_bounds,
-    check_desktop_permission,
     check_key_combo_allowed,
     check_window_allowed,
     log_audit_entry,
@@ -280,7 +278,7 @@ class DesktopBackend:
         self, session_id: str, title_pattern: str,
     ) -> DesktopResult:
         """Capture a specific window by title pattern."""
-        session = await self._get_or_create_session(session_id)
+        await self._get_or_create_session(session_id)
 
         if not self._rate_limit_ok(session_id):
             return DesktopResult(

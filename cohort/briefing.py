@@ -12,7 +12,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-
 # =====================================================================
 # Briefing directive (injected into agent's system prompt)
 # =====================================================================

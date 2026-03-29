@@ -17,7 +17,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-
 # =====================================================================
 # Stop words (shared with meeting.py -- duplicated to avoid circular import)
 # =====================================================================

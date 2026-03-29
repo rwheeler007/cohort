@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
-from cohort.agent import AgentConfig, AgentMemory, LearnedFact, WorkingMemoryEntry
+from cohort.agent import AgentMemory, LearnedFact, WorkingMemoryEntry
 from cohort.agent_store import AgentStore
 from cohort.memory_manager import MemoryManager
 
@@ -113,7 +112,7 @@ class TestCleanAgent:
 
     def test_archive_file_created(self, setup):
         mm, _, archive_dir = setup
-        result = mm.clean_agent("test_agent")
+        mm.clean_agent("test_agent")
         assert archive_dir.exists()
         archives = list(archive_dir.glob("test_agent_archive_*.txt"))
         assert len(archives) == 1

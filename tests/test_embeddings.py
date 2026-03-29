@@ -6,7 +6,6 @@ from cohort.agent import AgentConfig, AgentEducation
 from cohort.capability_router import score_agent_for_topic
 from cohort.embeddings import EmbeddingCache, _cosine_similarity
 
-
 # =====================================================================
 # Cosine similarity math
 # =====================================================================

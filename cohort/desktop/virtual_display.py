@@ -20,7 +20,6 @@ import logging
 import struct
 import threading
 import time
-from contextlib import contextmanager
 from ctypes import POINTER, Structure, byref, c_byte, c_ulong, c_wchar, sizeof, windll
 from pathlib import Path
 from typing import Optional
