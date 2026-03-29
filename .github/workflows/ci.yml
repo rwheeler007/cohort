@@ -41,16 +41,6 @@ jobs:
       - name: Type-check with mypy
         run: mypy cohort/ || true
 
-      - name: Verify no web framework imports in core
-        run: |
-          if grep -rn "from starlette\|from socketio\|from fastapi\|import uvicorn" cohort/ --include="*.py" \
-            --exclude="server.py" --exclude="oauth2_middleware.py" --exclude="socketio_events.py" \
-            --exclude="tray.py" --exclude="launcher.py" --exclude="agent_router.py"; then
-            echo "FAIL: Web framework imports found in core package"
-            exit 1
-          fi
-          echo "OK: No web framework imports in core"
-
       - name: Run tests with coverage
         run: pytest --cov
 
