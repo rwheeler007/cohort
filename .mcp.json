@@ -10,25 +10,31 @@
         "POLL_INTERVAL": "5000"
       }
     },
-    "cohort-ch-cc-tester1": {
-      "command": "bun",
+    "cohort-api": {
+      "command": "python",
       "args": [
-        "G:/cohort/plugins/cohort-channel/src/index.ts"
+        "C:/Users/rwhee/AppData/Local/Programs/Python/Python313/Lib/site-packages/cohort/mcp/server.py"
       ],
       "env": {
-        "COHORT_BASE_URL": "http://localhost:5100",
-        "CHANNEL_ID": "cc-tester1",
-        "POLL_INTERVAL": "5000"
+        "COHORT_SERVER_URL": "http://127.0.0.1:5100"
       }
     },
-    "cohort-ch-dm-analytics_agent-13": {
+    "desktop": {
+      "command": "python",
+      "args": [
+        "C:/Users/rwhee/AppData/Local/Programs/Python/Python313/Lib/site-packages/cohort/desktop/mcp_server.py"
+      ],
+      "env": {}
+    },
+    "cohort-ch-cohort-dm-python_developer": {
       "command": "bun",
       "args": [
-        "G:/cohort/plugins/cohort-channel/src/index.ts"
+        "c:/Users/rwhee/.vscode/extensions/cohort-ai.cohort-vscode-0.4.14/plugins/cohort-channel/src/index.ts"
       ],
       "env": {
         "COHORT_BASE_URL": "http://127.0.0.1:5100",
-        "CHANNEL_ID": "dm-analytics_agent-13",
+        "CHANNEL_ID": "dm-python_developer",
+        "PROJECT_ID": "cohort",
         "POLL_INTERVAL": "5000"
       }
     }

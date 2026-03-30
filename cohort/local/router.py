@@ -148,6 +148,8 @@ class LocalRouter:
         temperature: float | None = None,
         response_mode: str = "smarter",
         system: str | None = None,
+        model_override: str | None = None,
+        keep_alive: str | None = None,
     ) -> RouteResult | None:
         """Route prompt to local Ollama model.
 
@@ -158,13 +160,18 @@ class LocalRouter:
             response_mode: "smart" (no thinking), "smarter" (thinking enabled),
                            or "smartest" (handled by caller, uses smarter params here)
             system: Optional system prompt (grounding rules, etc.)
+            model_override: Explicit model name, skipping VRAM-based selection
+                            and hardware gating. Caller takes responsibility for
+                            ensuring the model fits.
+            keep_alive: Override keep_alive duration (e.g. "0" to unload after
+                        use). None = use response_mode default.
 
         Returns:
             RouteResult with text and metadata, or None on failure.
 
         Never raises exceptions. Returns None if:
         - Ollama server is down
-        - Hardware detection failed (CPU-only)
+        - Hardware detection failed (CPU-only, unless model_override set)
         - Model not installed
         - Generation failed
 
@@ -179,18 +186,22 @@ class LocalRouter:
             if not self._ensure_client():
                 return None
 
-            # Detect hardware to select model
-            hw_info = self._detect_hardware()
-            if hw_info.cpu_only:
-                return None
+            if model_override:
+                # Caller explicitly requested a model -- skip hardware gating
+                model = model_override
+            else:
+                # Detect hardware to select model
+                hw_info = self._detect_hardware()
+                if hw_info.cpu_only:
+                    return None
 
-            # Skip local inference if free VRAM is too low (avoid glacial CPU offload)
-            if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
-                logger.info("[!] Low free VRAM (%d MB), skipping local inference", hw_info.total_vram_free_mb)
-                return None
+                # Skip local inference if free VRAM is too low (avoid glacial CPU offload)
+                if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
+                    logger.info("[!] Low free VRAM (%d MB), skipping local inference", hw_info.total_vram_free_mb)
+                    return None
 
-            # Select model based on VRAM
-            model = get_model_for_vram(hw_info.vram_mb)
+                # Select model based on VRAM
+                model = get_model_for_vram(hw_info.vram_mb)
 
             # Verify model is installed
             if self._client is None:
@@ -215,7 +226,7 @@ class LocalRouter:
                 temperature=temp,
                 system=system,
                 think=mode_params["think"],
-                keep_alive=mode_params["keep_alive"],
+                keep_alive=keep_alive or mode_params["keep_alive"],
                 options={"num_predict": mode_params["num_predict"]},
             )
 

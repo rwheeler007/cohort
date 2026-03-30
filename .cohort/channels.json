@@ -1,19 +1,15 @@
 {
   "channels": [
     {
-      "channel_id": "cc-t",
+      "channel_id": "general",
       "auto_launch": false,
-      "added_at": "2026-03-23T09:32:12.598Z"
+      "added_at": "2026-03-30T02:53:45.650Z",
+      "workspace_path": "g:\\cohort"
     },
     {
-      "channel_id": "cc-tester1",
+      "channel_id": "dm-python_developer",
       "auto_launch": false,
-      "added_at": "2026-03-23T09:49:11.331Z"
-    },
-    {
-      "channel_id": "dm-analytics_agent-13",
-      "auto_launch": false,
-      "added_at": "2026-03-23T10:04:16.129Z"
+      "added_at": "2026-03-30T06:49:30.179Z"
     }
   ]
 }
