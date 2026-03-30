@@ -667,7 +667,7 @@ function renderMessages() {
         const isSystem = (message.message_type || 'chat') === 'system';
         const actionsHtml = isSystem ? '' : `
             <div class="message__actions">
-                <button class="message__action-btn" onclick="replyToMessage('${message.id}', '${escapeHtml(profile.nickname)}')" title="Reply">Reply</button>
+                <button class="message__action-btn" onclick="replyToMessage('${message.id}', '${escapeHtml(message.sender)}', '${escapeHtml(profile.nickname)}')" title="Reply">Reply</button>
                 <button class="message__action-btn" onclick="copyMessage('${message.id}')" title="Copy">Copy</button>
                 <button class="message__action-btn" onclick="resendMessage('${message.id}')" title="Resend">Resend</button>
                 <button class="message__action-btn message__action-btn--danger" onclick="deleteMessage('${message.id}')" title="Delete">Delete</button>
@@ -898,15 +898,16 @@ window.confirmRoundtableSetup = confirmRoundtableSetup;
 // Message action handlers (reply, copy, resend, delete)
 // =====================================================================
 
-function replyToMessage(messageId, senderNickname) {
+function replyToMessage(messageId, senderId, senderNickname) {
     state.replyingTo = messageId;
-    showReplyIndicator(messageId, senderNickname);
+    showReplyIndicator(messageId, senderNickname || senderId);
 
-    // Auto-tag the sender
+    // Auto-tag the sender using agent ID (e.g. @python_developer),
+    // not display name (e.g. @Python Developer) which breaks mention parsing.
     const input = dom.messageInput;
     if (!input) return;
     const current = input.textContent || '';
-    const mention = `@${senderNickname}`;
+    const mention = `@${senderId}`;
     if (!current.includes(mention)) {
         input.textContent = current ? `${mention} ${current}` : `${mention} `;
     }
