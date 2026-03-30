@@ -269,16 +269,34 @@ def ensure_channel_session(channel_id: str) -> str:
     return ""
 
 
-def _add_to_launch_queue(channel_id: str) -> None:
+def _get_channel_workspace(channel_id: str) -> Optional[str]:
+    """Look up workspace_path from channel metadata."""
+    try:
+        from cohort.agent_router import _chat
+        if _chat:
+            ch = _chat.get_channel(channel_id)
+            if ch:
+                return ch.metadata.get("workspace_path")
+    except Exception:
+        pass
+    return None
+
+
+def _add_to_launch_queue(channel_id: str, workspace_path: Optional[str] = None) -> None:
     """Add a channel to the launch queue if not already queued."""
     with _launch_lock:
         for item in _launch_queue:
             if item["channel_id"] == channel_id:
                 return  # Already queued
-        _launch_queue.append({
+        entry: Dict[str, Any] = {
             "channel_id": channel_id,
             "queued_at": time.time(),
-        })
+        }
+        # Include workspace so the extension knows where to launch
+        wp = workspace_path or _get_channel_workspace(channel_id)
+        if wp:
+            entry["workspace_path"] = wp
+        _launch_queue.append(entry)
     logger.info("[>>] Added #%s to launch queue for VS Code extension", channel_id)
 
 

@@ -164,6 +164,7 @@ class ChatManager:
         members: list[str] | None = None,
         is_private: bool = False,
         topic: str = "",
+        metadata: dict[str, Any] | None = None,
     ) -> Channel:
         channel = Channel(
             id=name,
@@ -173,6 +174,7 @@ class ChatManager:
             members=members or [],
             is_private=is_private,
             topic=topic,
+            metadata=metadata or {},
         )
         self._channels[name] = channel
         self._storage.save_channel(name, channel.to_dict())
