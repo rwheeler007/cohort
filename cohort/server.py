@@ -354,6 +354,11 @@ async def create_channel_endpoint(request: Request) -> JSONResponse:
     members = body.get("members", [])
     is_private = body.get("is_private", False)
     topic = body.get("topic", "")
+    workspace_path = body.get("workspace_path")
+
+    metadata: dict[str, Any] = {}
+    if workspace_path:
+        metadata["workspace_path"] = workspace_path
 
     try:
         chat = _get_chat()
@@ -372,6 +377,7 @@ async def create_channel_endpoint(request: Request) -> JSONResponse:
             members=members,
             is_private=is_private,
             topic=topic,
+            metadata=metadata,
         )
         logger.info("Created channel: %s", name)
         return JSONResponse({
@@ -1670,11 +1676,13 @@ async def channel_ensure_session(request: Request) -> JSONResponse:
     if not channel_id:
         return JSONResponse({"error": "Missing channel_id"}, status_code=400)
 
+    workspace_path = body.get("workspace_path")
+
     from cohort.channel_bridge import _add_to_launch_queue, channel_mode_active
     if channel_mode_active(channel_id):
         return JSONResponse({"ok": True, "already_alive": True, "channel_id": channel_id})
 
-    _add_to_launch_queue(channel_id)
+    _add_to_launch_queue(channel_id, workspace_path=workspace_path)
     return JSONResponse({"ok": True, "already_alive": False, "channel_id": channel_id})
 
 
@@ -1685,7 +1693,7 @@ async def channel_invoke(request: Request) -> JSONResponse:
     healthy via /api/channel/status.  Bypasses the global channel_mode_enabled
     flag -- the extension decides channel mode per-channel.
 
-    Expects JSON: {agent_id, channel_id, message, thread_id?, project_path?}
+    Expects JSON: {agent_id, channel_id, message, thread_id?, workspace_path?, project_path?}
     """
     try:
         body = await request.json()
@@ -1696,7 +1704,7 @@ async def channel_invoke(request: Request) -> JSONResponse:
     channel_id = body.get("channel_id", "")
     message = body.get("message", "")
     thread_id = body.get("thread_id")
-    project_path = body.get("project_path")
+    project_path = body.get("workspace_path") or body.get("project_path")
     reply_channel = body.get("reply_channel")  # Where to post the response (if different from channel_id)
 
     if not raw_agent_id or not channel_id or not message:
