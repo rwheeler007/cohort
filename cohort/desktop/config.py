@@ -39,7 +39,7 @@ class VirtualDisplayConfig(BaseModel):
 class DesktopConfig(BaseModel):
     """Validated configuration for the desktop computer use server."""
     enabled: bool = False
-    permission_tier: str = "desktop_interact"
+    permission_tier: str = "desktop_advanced"
 
     virtual_display: VirtualDisplayConfig = Field(
         default_factory=VirtualDisplayConfig,
