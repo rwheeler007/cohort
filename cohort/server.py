@@ -494,9 +494,11 @@ async def send_message(request: Request) -> JSONResponse:
 
         # Auto-create channel if it doesn't exist
         if chat.get_channel(channel) is None:
+            ws_path = body.get("workspace_path")
             chat.create_channel(
                 name=channel,
                 description=f"Auto-created channel: {channel}",
+                metadata={"workspace_path": ws_path} if ws_path else None,
             )
             logger.info("Auto-created channel: %s", channel)
 

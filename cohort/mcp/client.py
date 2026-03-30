@@ -98,18 +98,22 @@ class CohortClient:
         members: list[str] | None = None,
         is_private: bool = False,
         topic: str = "",
+        workspace_path: str | None = None,
     ) -> dict[str, Any] | None:
         """POST /api/channels -> create a new channel."""
+        body: dict[str, Any] = {
+            "name": name,
+            "description": description,
+            "members": members or [],
+            "is_private": is_private,
+            "topic": topic,
+        }
+        if workspace_path:
+            body["workspace_path"] = workspace_path
         return await _request(
             "POST",
             f"{self.base_url}/api/channels",
-            json_body={
-                "name": name,
-                "description": description,
-                "members": members or [],
-                "is_private": is_private,
-                "topic": topic,
-            },
+            json_body=body,
         )
 
     async def delete_channel(self, channel_id: str) -> dict[str, Any] | None:

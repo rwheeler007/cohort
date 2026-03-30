@@ -373,6 +373,9 @@ class CreateChannelInput(BaseModel):
     topic: str = Field(
         "", description="Channel topic.",
     )
+    workspace_path: str = Field(
+        "", description="Workspace path that owns this channel (for multi-workspace scoping).",
+    )
 
 
 @mcp.tool(
@@ -393,6 +396,7 @@ async def cohort_create_channel(params: CreateChannelInput) -> str:
         members=params.members,
         is_private=params.is_private,
         topic=params.topic,
+        workspace_path=params.workspace_path or None,
     )
     if result is None:
         return _error_msg(service_down=True)
