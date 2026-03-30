@@ -1583,8 +1583,10 @@ def _invoke_agent_sync(item: dict) -> None:
                 response_content = _ch_text
                 response_metadata = {"pipeline": "channel", "model": _ch_model}
 
-    # Standard local routing (smart / smarter modes)
-    if not response_content and not _force_claude_code:
+    # Standard local routing (smart / smarter modes).
+    # Also serves as last-resort fallback when force_to_claude_code is on
+    # but all Claude Code paths (channel bridge, cloud API, CLI) failed.
+    if not response_content:
         try:
             from cohort.api import LocalRouter
 
@@ -1651,7 +1653,7 @@ def _invoke_agent_sync(item: dict) -> None:
                                 route_result.tokens_in, route_result.tokens_out)
         except Exception:
             # Local routing failed -- fall through to Claude CLI
-            logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)
+            logger.warning("[!] Local router failed for %s, falling through to CLI", agent_id, exc_info=True)
 
     # Fallback: cloud API (distribution) or CLI subprocess (dev mode)
     if not response_content:
