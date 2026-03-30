@@ -1584,9 +1584,8 @@ def _invoke_agent_sync(item: dict) -> None:
                 response_metadata = {"pipeline": "channel", "model": _ch_model}
 
     # Standard local routing (smart / smarter modes).
-    # Also serves as last-resort fallback when force_to_claude_code is on
-    # but all Claude Code paths (channel bridge, cloud API, CLI) failed.
-    if not response_content:
+    # Skip when force_to_claude_code is enabled -- let channel/cloud/CLI handle it.
+    if not response_content and not _force_claude_code:
         try:
             from cohort.api import LocalRouter
 
