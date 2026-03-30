@@ -584,9 +584,11 @@ async def join_channel(sid: str, data: dict | None = None) -> None:
     # Auto-create channel if it doesn't exist (e.g. dm-<agent> from Chat button)
     is_new = _chat.get_channel(channel_id) is None
     if is_new:
+        ws_path = data.get("workspace_path")
         _chat.create_channel(
             name=channel_id,
             description=f"Auto-created channel: {channel_id}",
+            metadata={"workspace_path": ws_path} if ws_path else None,
         )
 
         # Post a greeting from the agent in DM channels
@@ -625,9 +627,11 @@ async def send_message(sid: str, data: dict) -> dict:
 
     # Auto-create channel if needed
     if _chat.get_channel(channel_id) is None:
+        ws_path = data.get("workspace_path")
         _chat.create_channel(
             name=channel_id,
             description=f"Auto-created channel: {channel_id}",
+            metadata={"workspace_path": ws_path} if ws_path else None,
         )
 
     thread_id = data.get("thread_id")
@@ -758,7 +762,12 @@ async def create_channel_from_chat(sid: str, data: dict) -> dict:
     description = data.get("description", f"Created from chat: {source_id}")
 
     # Create the new channel (id = slug, then rename to display name)
-    _chat.create_channel(name=channel_id, description=description)
+    ws_path = data.get("workspace_path")
+    _chat.create_channel(
+        name=channel_id,
+        description=description,
+        metadata={"workspace_path": ws_path} if ws_path else None,
+    )
     _chat.rename_channel(channel_id, channel_name)
 
     # Copy messages from the source DM (skip system "channel created" messages)

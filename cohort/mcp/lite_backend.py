@@ -113,6 +113,7 @@ class LiteBackend:
         members: list[str] | None = None,
         is_private: bool = False,
         topic: str = "",
+        workspace_path: str | None = None,
     ) -> dict[str, Any] | None:
         try:
             ch = self._chat.create_channel(
@@ -121,6 +122,7 @@ class LiteBackend:
                 members=members,
                 is_private=is_private,
                 topic=topic,
+                metadata={"workspace_path": workspace_path} if workspace_path else None,
             )
             return {"success": True, "channel": ch.to_dict()}
         except Exception as exc:
