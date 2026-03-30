@@ -33,6 +33,7 @@ from enum import Enum
 from typing import Any, List, Optional
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from cohort.mcp.client import DEFAULT_URL, CohortClient, _request
@@ -247,13 +248,13 @@ class UpdateChecklistInput(BaseModel):
 
 @mcp.tool(
     name="read_channel",
-    annotations={
-        "title": "Read Channel Messages",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Read Channel Messages",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def read_channel(params: ReadChannelInput) -> str:
     """Read recent messages from a channel with compact output."""
@@ -291,13 +292,13 @@ async def read_channel(params: ReadChannelInput) -> str:
 
 @mcp.tool(
     name="post_message",
-    annotations={
-        "title": "Post Message to Channel",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Post Message to Channel",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def post_message(params: PostMessageInput) -> str:
     """Post a message to a channel."""
@@ -315,13 +316,13 @@ async def post_message(params: PostMessageInput) -> str:
 
 @mcp.tool(
     name="list_channels",
-    annotations={
-        "title": "List Channels",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="List Channels",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def list_channels(params: ListChannelsInput) -> str:
     """List all channels with compact output."""
@@ -380,13 +381,13 @@ class CreateChannelInput(BaseModel):
 
 @mcp.tool(
     name="cohort_create_channel",
-    annotations={
-        "title": "Create Channel",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Create Channel",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_create_channel(params: CreateChannelInput) -> str:
     """Create a new chat channel with optional members and topic."""
@@ -417,13 +418,13 @@ async def cohort_create_channel(params: CreateChannelInput) -> str:
 
 @mcp.tool(
     name="channel_summary",
-    annotations={
-        "title": "Channel Activity Summary",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Channel Activity Summary",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def channel_summary(params: ChannelSummaryInput) -> str:
     """Get a compact summary of recent channel activity."""
@@ -463,13 +464,13 @@ async def channel_summary(params: ChannelSummaryInput) -> str:
 
 @mcp.tool(
     name="condense_channel",
-    annotations={
-        "title": "Condense Channel",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Condense Channel",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def condense_channel(params: CondenseChannelInput) -> str:
     """Condense a channel: summarise old messages and archive originals."""
@@ -495,13 +496,13 @@ async def condense_channel(params: CondenseChannelInput) -> str:
 
 @mcp.tool(
     name="get_checklist",
-    annotations={
-        "title": "Get Checklist",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Checklist",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def get_checklist(params: GetChecklistInput) -> str:
     """Read the to-do checklist with optional filtering."""
@@ -544,13 +545,13 @@ async def get_checklist(params: GetChecklistInput) -> str:
 
 @mcp.tool(
     name="update_checklist",
-    annotations={
-        "title": "Update Checklist",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Update Checklist",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def update_checklist(params: UpdateChecklistInput) -> str:
     """Add, complete, or remove a task on the to-do checklist."""
@@ -624,13 +625,13 @@ class ListAgentsInput(BaseModel):
 
 @mcp.tool(
     name="cohort_list_agents",
-    annotations={
-        "title": "List Agents",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="List Agents",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_list_agents(params: ListAgentsInput) -> str:
     """List all agents with ID, role, status, and skills."""
@@ -680,13 +681,13 @@ class GetAgentInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_agent",
-    annotations={
-        "title": "Get Agent Details",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Agent Details",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_agent(params: GetAgentInput) -> str:
     """Get full agent configuration by ID or alias."""
@@ -735,13 +736,13 @@ class GetAgentMemoryInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_agent_memory",
-    annotations={
-        "title": "Get Agent Memory",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Agent Memory",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_agent_memory(params: GetAgentMemoryInput) -> str:
     """Get an agent's memory (working memory, learned facts)."""
@@ -802,13 +803,13 @@ class CreateAgentInput(BaseModel):
 
 @mcp.tool(
     name="cohort_create_agent",
-    annotations={
-        "title": "Create Agent",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Create Agent",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_create_agent(params: CreateAgentInput) -> str:
     """Create a new agent with directory structure, config, prompt, and memory."""
@@ -844,13 +845,13 @@ class CleanMemoryInput(BaseModel):
 
 @mcp.tool(
     name="cohort_clean_memory",
-    annotations={
-        "title": "Clean Agent Memory",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Clean Agent Memory",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_clean_memory(params: CleanMemoryInput) -> str:
     """Trim an agent's working memory, archiving old entries."""
@@ -897,13 +898,13 @@ class AddFactInput(BaseModel):
 
 @mcp.tool(
     name="cohort_add_fact",
-    annotations={
-        "title": "Add Learned Fact",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Add Learned Fact",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_add_fact(params: AddFactInput) -> str:
     """Add a learned fact to an agent's memory."""
@@ -942,13 +943,13 @@ class SearchMessagesInput(BaseModel):
 
 @mcp.tool(
     name="cohort_search_messages",
-    annotations={
-        "title": "Search Messages",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Search Messages",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_search_messages(params: SearchMessagesInput) -> str:
     """Search messages across channels by keyword."""
@@ -997,13 +998,13 @@ class GetMentionsInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_mentions",
-    annotations={
-        "title": "Get Agent Mentions",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Agent Mentions",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_mentions(params: GetMentionsInput) -> str:
     """Get messages where an agent was @mentioned."""
@@ -1048,13 +1049,13 @@ class GetWorkQueueInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_work_queue",
-    annotations={
-        "title": "Get Work Queue",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Work Queue",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_work_queue(params: GetWorkQueueInput) -> str:
     """Read the sequential work queue.
@@ -1115,13 +1116,13 @@ class GetTasksInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_tasks",
-    annotations={
-        "title": "Get Agent Tasks",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Agent Tasks",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_tasks(params: GetTasksInput) -> str:
     """Read agent tasks (parallel, lifecycle-driven).
@@ -1194,13 +1195,13 @@ class EnqueueItemInput(BaseModel):
 
 @mcp.tool(
     name="cohort_enqueue_item",
-    annotations={
-        "title": "Enqueue Work Item",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Enqueue Work Item",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_enqueue_item(params: EnqueueItemInput) -> str:
     """Add an item to the sequential work queue.
@@ -1235,13 +1236,13 @@ async def cohort_enqueue_item(params: EnqueueItemInput) -> str:
 
 @mcp.tool(
     name="cohort_claim_next",
-    annotations={
-        "title": "Claim Next Work Item",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Claim Next Work Item",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_claim_next() -> str:
     """Claim the next item from the sequential work queue.
@@ -1289,13 +1290,13 @@ class CompleteItemInput(BaseModel):
 
 @mcp.tool(
     name="cohort_complete_item",
-    annotations={
-        "title": "Complete Work Item",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Complete Work Item",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_complete_item(params: CompleteItemInput) -> str:
     """Mark an active work queue item as completed.
@@ -1328,13 +1329,13 @@ class CancelItemInput(BaseModel):
 
 @mcp.tool(
     name="cohort_cancel_item",
-    annotations={
-        "title": "Cancel Work Item",
-        "readOnlyHint": False,
-        "destructiveHint": True,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Cancel Work Item",
+        readOnlyHint=False,
+        destructiveHint=True,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_cancel_item(params: CancelItemInput) -> str:
     """Cancel a queued, active, or reviewing work queue item.
@@ -1355,13 +1356,13 @@ async def cohort_cancel_item(params: CancelItemInput) -> str:
 
 @mcp.tool(
     name="cohort_get_outputs",
-    annotations={
-        "title": "Get Outputs for Review",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Outputs for Review",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_outputs() -> str:
     """Get completed tasks awaiting human review.
@@ -1446,13 +1447,13 @@ class AssignTaskInput(BaseModel):
 
 @mcp.tool(
     name="cohort_assign_task",
-    annotations={
-        "title": "Assign Task",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Assign Task",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_assign_task(params: AssignTaskInput) -> str:
     """Assign a task to an agent via the Work Queue.
@@ -1521,13 +1522,13 @@ RoundtableInput = DiscussionInput
 
 @mcp.tool(
     name="cohort_discussion",
-    annotations={
-        "title": "Multi-Agent Discussion",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Multi-Agent Discussion",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_discussion(params: DiscussionInput) -> str:
     """Run a discussion across multiple agents.
@@ -1621,13 +1622,13 @@ class AdoptPersonaInput(BaseModel):
 
 @mcp.tool(
     name="cohort_adopt_persona",
-    annotations={
-        "title": "Adopt Agent Persona",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Adopt Agent Persona",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_adopt_persona(params: AdoptPersonaInput) -> str:
     """Load an agent persona for use in the current conversation.
@@ -1938,13 +1939,13 @@ CompiledRoundtableInput = CompiledDiscussionInput
 
 @mcp.tool(
     name="cohort_compiled_discussion",
-    annotations={
-        "title": "Compiled Discussion (Single-Call)",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="Compiled Discussion (Single-Call)",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=True,
+    ),
 )
 async def cohort_compiled_discussion(params: CompiledDiscussionInput) -> str:
     """Run a compiled discussion: all agent personas in a single LLM call.
@@ -2032,7 +2033,7 @@ class MeetingStartInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_start",
-    annotations={"title": "Start Meeting Session", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Start Meeting Session", readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False),
 )
 async def cohort_meeting_start(params: MeetingStartInput) -> str:
     """Start a meeting session with stakeholder gating on a channel."""
@@ -2058,7 +2059,7 @@ class MeetingStopInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_stop",
-    annotations={"title": "End Meeting Session", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="End Meeting Session", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_stop(params: MeetingStopInput) -> str:
     """End a meeting session and generate summary."""
@@ -2078,7 +2079,7 @@ class MeetingStatusInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_status",
-    annotations={"title": "Meeting Session Status", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Meeting Session Status", readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_status(params: MeetingStatusInput) -> str:
     """Get the current status of a meeting session."""
@@ -2108,7 +2109,7 @@ class MeetingPauseInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_pause",
-    annotations={"title": "Pause Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Pause Meeting", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_pause(params: MeetingPauseInput) -> str:
     """Pause a meeting session."""
@@ -2125,7 +2126,7 @@ class MeetingResumeInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_resume",
-    annotations={"title": "Resume Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Resume Meeting", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_resume(params: MeetingResumeInput) -> str:
     """Resume a paused meeting session."""
@@ -2143,7 +2144,7 @@ class MeetingPromoteInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_promote",
-    annotations={"title": "Promote Agent", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Promote Agent", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_promote(params: MeetingPromoteInput) -> str:
     """Promote an agent to ACTIVE stakeholder status in a meeting."""
@@ -2162,7 +2163,7 @@ class MeetingDemoteInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_demote",
-    annotations={"title": "Demote Agent", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Demote Agent", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_demote(params: MeetingDemoteInput) -> str:
     """Demote an agent's stakeholder status in a meeting."""
@@ -2180,7 +2181,7 @@ class MeetingAddInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_add_participant",
-    annotations={"title": "Add Meeting Participant", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Add Meeting Participant", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_add_participant(params: MeetingAddInput) -> str:
     """Add a participant to an active meeting session."""
@@ -2198,7 +2199,7 @@ class MeetingRemoveInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_remove_participant",
-    annotations={"title": "Remove Meeting Participant", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Remove Meeting Participant", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_remove_participant(params: MeetingRemoveInput) -> str:
     """Remove a participant from a meeting session."""
@@ -2215,7 +2216,7 @@ class MeetingNextSpeakerInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_next_speaker",
-    annotations={"title": "Next Speaker Recommendation", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Next Speaker Recommendation", readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_next_speaker(params: MeetingNextSpeakerInput) -> str:
     """Get the recommended next speaker with relevance scores."""
@@ -2244,7 +2245,7 @@ class MeetingScoreInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_score",
-    annotations={"title": "Agent Relevance Score", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Agent Relevance Score", readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_score(params: MeetingScoreInput) -> str:
     """Get the full 5-dimension composite relevance breakdown for an agent."""
@@ -2271,7 +2272,7 @@ class MeetingPhaseInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_phase",
-    annotations={"title": "Detect Discussion Phase", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Detect Discussion Phase", readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_phase(params: MeetingPhaseInput) -> str:
     """Detect the current discussion phase (DISCOVER/PLAN/EXECUTE/VALIDATE)."""
@@ -2296,7 +2297,7 @@ class MeetingExtendInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_extend",
-    annotations={"title": "Extend Meeting", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Extend Meeting", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_extend(params: MeetingExtendInput) -> str:
     """Add more turns to a meeting session."""
@@ -2315,7 +2316,7 @@ class MeetingEnableInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_enable",
-    annotations={"title": "Enable Meeting Mode", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Enable Meeting Mode", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_enable(params: MeetingEnableInput) -> str:
     """Enable stakeholder gating on a channel without a full session."""
@@ -2334,7 +2335,7 @@ class MeetingDisableInput(BaseModel):
 
 @mcp.tool(
     name="cohort_meeting_disable",
-    annotations={"title": "Disable Meeting Mode", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+    annotations=ToolAnnotations(title="Disable Meeting Mode", readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=False),
 )
 async def cohort_meeting_disable(params: MeetingDisableInput) -> str:
     """Disable stakeholder gating on a channel."""
@@ -2375,13 +2376,13 @@ class GenerateBriefingInput(BaseModel):
 
 @mcp.tool(
     name="cohort_generate_briefing",
-    annotations={
-        "title": "Generate Executive Briefing",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Generate Executive Briefing",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_generate_briefing(params: GenerateBriefingInput) -> str:
     """Generate an executive briefing for this Cohort deployment.
@@ -2456,13 +2457,13 @@ class InternalWebSearchInput(BaseModel):
 
 @mcp.tool(
     name="internal_web_search",
-    annotations={
-        "title": "Internal Web Search",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="Internal Web Search",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 async def internal_web_search(params: InternalWebSearchInput) -> str:
     """Search the web locally using DuckDuckGo (no API cost).
@@ -2551,13 +2552,13 @@ class InternalWebFetchInput(BaseModel):
 
 @mcp.tool(
     name="internal_web_fetch",
-    annotations={
-        "title": "Internal Web Fetch",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="Internal Web Fetch",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 async def internal_web_fetch(params: InternalWebFetchInput) -> str:
     """Fetch and render a web page locally using Playwright (no API cost).
@@ -2815,13 +2816,13 @@ class BrowserActionInput(BaseModel):
 
 @mcp.tool(
     name="browser_action",
-    annotations={
-        "title": "Browser Automation",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": True,
-    },
+    annotations=ToolAnnotations(
+        title="Browser Automation",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=True,
+    ),
 )
 async def browser_action(params: BrowserActionInput) -> str:
     """Automate a headless browser via Playwright. Each agent_id gets isolated browser state.
@@ -2964,13 +2965,13 @@ class BrowserStatusInput(BaseModel):
 
 @mcp.tool(
     name="browser_status",
-    annotations={
-        "title": "Browser Status",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Browser Status",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def browser_status(params: BrowserStatusInput) -> str:
     """Check browser automation backend availability and active sessions."""
@@ -3022,13 +3023,13 @@ class SubmitForReviewInput(BaseModel):
 
 @mcp.tool(
     name="cohort_submit_for_review",
-    annotations={
-        "title": "Submit For Review",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Submit For Review",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_submit_for_review(params: SubmitForReviewInput) -> str:
     """Submit a completed task or active work item for multi-stakeholder review."""
@@ -3054,13 +3055,13 @@ class GetPendingReviewsInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_pending_reviews",
-    annotations={
-        "title": "Get Pending Reviews",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Pending Reviews",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_pending_reviews(params: GetPendingReviewsInput) -> str:
     """List approval requests awaiting review."""
@@ -3109,13 +3110,13 @@ class SubmitReviewInput(BaseModel):
 
 @mcp.tool(
     name="cohort_submit_review",
-    annotations={
-        "title": "Submit Review Verdict",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Submit Review Verdict",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_submit_review(params: SubmitReviewInput) -> str:
     """Submit an approve/deny verdict for a pending approval request."""
@@ -3154,13 +3155,13 @@ class SetDeliverablesInput(BaseModel):
 
 @mcp.tool(
     name="cohort_set_deliverables",
-    annotations={
-        "title": "Set Deliverables",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Set Deliverables",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_set_deliverables(params: SetDeliverablesInput) -> str:
     """Set or append acceptance criteria (deliverables) on a task or work item."""
@@ -3209,13 +3210,13 @@ class RequeueItemInput(BaseModel):
 
 @mcp.tool(
     name="cohort_requeue_item",
-    annotations={
-        "title": "Requeue Item",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Requeue Item",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_requeue_item(params: RequeueItemInput) -> str:
     """Requeue a rejected/failed task or work item with feedback."""
@@ -3242,13 +3243,13 @@ class GetApprovalStatusInput(BaseModel):
 
 @mcp.tool(
     name="cohort_get_approval_status",
-    annotations={
-        "title": "Get Approval Status",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Get Approval Status",
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_get_approval_status(params: GetApprovalStatusInput) -> str:
     """Get an overview of approval pipeline status."""
@@ -3305,13 +3306,13 @@ class CohortReadyInput(BaseModel):
 
 @mcp.tool(
     name="cohort_ready",
-    annotations={
-        "title": "Signal Session Ready",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Signal Session Ready",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 async def cohort_ready(params: CohortReadyInput) -> str:
     """Signal to the WQ dispatcher that this session is alive and ready.
@@ -3358,13 +3359,13 @@ class CohortRespondInput(BaseModel):
 
 @mcp.tool(
     name="cohort_respond",
-    annotations={
-        "title": "Complete Item and Respond",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Complete Item and Respond",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_respond(params: CohortRespondInput) -> str:
     """Complete a WQ item and post the result to the channel in one call.
@@ -3417,13 +3418,13 @@ class CohortPostInput(BaseModel):
 
 @mcp.tool(
     name="cohort_post",
-    annotations={
-        "title": "Post as Agent",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Post as Agent",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_post(params: CohortPostInput) -> str:
     """Post a message to a channel as a specific agent.
@@ -3467,13 +3468,13 @@ class CohortErrorInput(BaseModel):
 
 @mcp.tool(
     name="cohort_error",
-    annotations={
-        "title": "Fail Item and Report Error",
-        "readOnlyHint": False,
-        "destructiveHint": False,
-        "idempotentHint": False,
-        "openWorldHint": False,
-    },
+    annotations=ToolAnnotations(
+        title="Fail Item and Report Error",
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    ),
 )
 async def cohort_error(params: CohortErrorInput) -> str:
     """Mark a WQ item as failed and post an error notice to the channel.

@@ -747,3 +747,84 @@ class LiteBackend:
         except Exception as exc:
             logger.debug("[!] lite backend: checklist write error - %s", exc)
             return False
+
+    # -- stubs for features that require the full Cohort server -----------
+    # These match CohortClient signatures so server.py type-checks cleanly.
+
+    _LITE_MSG = {"error": "Not available in lite mode -- start the Cohort server."}
+
+    base_url: str = ""
+
+    async def end_session(self, session_id: str) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def pause_session(self, session_id: str) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def resume_session(self, session_id: str) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def extend_session(
+        self, session_id: str, turns: int = 10,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def add_participant(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def remove_participant(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def update_participant_status(
+        self, session_id: str, agent_id: str, status: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def score_agent(
+        self, session_id: str, agent_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def get_next_speaker(
+        self, session_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def detect_phase(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def enable_meeting_mode(
+        self, channel_id: str, agents: list[str], topic: str = "",
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def disable_meeting_mode(
+        self, channel_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def submit_for_review(
+        self, item_type: str, item_id: str,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def list_approvals(
+        self, status: str | None = None, item_type: str | None = None,
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def resolve_approval(
+        self, approval_id: str, action: str, resolved_by: str = "human", notes: str = "",
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
+
+    async def requeue_item(
+        self, item_type: str, item_id: str, feedback: str = "",
+    ) -> dict[str, Any] | None:
+        return self._LITE_MSG
