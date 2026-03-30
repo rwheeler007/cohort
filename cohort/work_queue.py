@@ -38,6 +38,12 @@ TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled"})
 MAX_REQUEUE_COUNT = 3
 VALID_PRIORITIES = frozenset({"critical", "high", "medium", "low"})
 PRIORITY_RANK: Dict[str, int] = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+PRIORITY_TIMEOUT: Dict[str, int] = {
+    "critical": 300,    # 5 minutes
+    "high": 600,        # 10 minutes
+    "medium": 900,      # 15 minutes
+    "low": 1800,        # 30 minutes
+}
 
 
 def _now_iso() -> str:
@@ -422,6 +428,56 @@ class WorkQueue:
             self._save_to_disk()
         logger.info("[!] %s stale-bounced: %s", item_id, reason)
         return item
+
+    def expire_timed_out(self) -> List[str]:
+        """Fail active items that exceed their priority-based timeout.
+
+        Timed-out items are marked ``failed`` then requeued (up to
+        ``MAX_REQUEUE_COUNT``).  Returns list of timed-out item IDs.
+        """
+        timed_out: List[str] = []
+        with self._lock:
+            self._ensure_loaded()
+            now = datetime.now(timezone.utc)
+            for item in self._items.values():
+                if item.status != "active" or not item.claimed_at:
+                    continue
+                claimed = datetime.fromisoformat(
+                    item.claimed_at.replace("Z", "+00:00"),
+                )
+                elapsed = (now - claimed).total_seconds()
+                timeout_s = PRIORITY_TIMEOUT.get(item.priority, 900)
+                if elapsed > timeout_s:
+                    item.status = "failed"
+                    item.completed_at = _now_iso()
+                    item.result = (
+                        f"Timed out after {elapsed:.0f}s "
+                        f"(limit: {timeout_s}s for {item.priority} priority)"
+                    )
+                    logger.warning(
+                        "[!] Work item %s timed out after %.0fs "
+                        "(priority=%s, limit=%ds)",
+                        item.id, elapsed, item.priority, timeout_s,
+                    )
+                    timed_out.append(item.id)
+            if timed_out:
+                self._save_to_disk()
+
+        # Requeue outside lock (requeue() acquires its own lock)
+        for item_id in timed_out:
+            new_item = self.requeue(item_id, feedback="Auto-requeued after timeout")
+            if new_item:
+                logger.info(
+                    "[+] Timed-out %s requeued as %s (count %d)",
+                    item_id, new_item.id, new_item.requeue_count,
+                )
+            else:
+                logger.warning(
+                    "[!] Timed-out %s could NOT be requeued (max retries reached)",
+                    item_id,
+                )
+
+        return timed_out
 
     # -- internal -------------------------------------------------------
 
