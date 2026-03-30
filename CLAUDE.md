@@ -102,7 +102,7 @@ E2E tests auto-create an isolated Cohort server on port 5199 with a temp data di
 | Memory manager | `cohort/memory_manager.py` |
 | Web search | `cohort/web_search.py` |
 | Socket.IO events | `cohort/socketio_events.py` |
-| Website creator | `cohort/website_creator/` |
+| Website creator | `cohort/website_creator/` (private, not in public builds) |
 | CI/CD | `.github/workflows/ci.yml` |
 | QA playbook | `QA_PLAYBOOK.md` |
 

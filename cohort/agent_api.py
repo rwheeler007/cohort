@@ -1,9 +1,8 @@
 """Cohort Agent API -- Agent-as-a-Service server.
 
 A FastAPI service that serves agent intelligence (configs, prompts, learned
-facts) to cohort users over HTTP. This is the monetization layer: 5 hardcover
-agents ship with pip install, free-tier users get 7 more from the Agent Store
-(12 total), Pro-tier users get the full 22+ roster.
+facts) to cohort users over HTTP. 5 hardcover agents ship with pip install;
+all 22 agents are available to free-tier users during the launch promotion.
 
 This server runs on YOUR infrastructure (not the user's machine). The local
 cohort server (server.py) is the user-facing UI server. This is the agent
@@ -91,12 +90,10 @@ HARDCOVER_AGENTS: set[str] = {
     "python_developer",         # code development
 }
 
-# Free-tier agent IDs -- available from the Agent Store at no cost.
-# Combined with hardcover agents, free users get 12 agents total.
+# Free-tier agent IDs -- all non-enterprise agents are included (launch promo).
 FREE_TIER_AGENTS: set[str] = {
-    # Hardcover (also listed here for visibility checks)
     *HARDCOVER_AGENTS,
-    # Free Agent Store agents
+    # Full agent team (launch promo — formerly pro-only)
     "web_developer",
     "javascript_developer",
     "security_agent",
@@ -104,6 +101,16 @@ FREE_TIER_AGENTS: set[str] = {
     "documentation_agent",
     "code_archaeologist",
     "setup_guide",
+    "brand_design_agent",
+    "campaign_orchestrator",
+    "coding_orchestrator",
+    "database_developer",
+    "email_agent",
+    "hardware_agent",
+    "linkedin",
+    "media_production_agent",
+    "reddit",
+    "system_coder",
 }
 
 # Enterprise-only agents (factory layer -- not visible to free or pro)
@@ -457,19 +464,19 @@ async def get_tiers():
         tiers=[
             TierInfo(
                 tier="free",
-                description="5 hardcover agents + 7 free from Agent Store (12 total). Includes roundtables, work queue, executive briefings, local inference.",
+                description="Full agent team (22 agents). Content pipeline, roundtables, work queue, briefings, local inference.",
                 agents=free_agents,
                 agent_count=len(free_agents),
             ),
             TierInfo(
                 tier="pro",
-                description="Full Agent Store access (22+ agents). Website Creator, content pipeline, cloud model fallback. $49/mo.",
+                description="Website Creator, cloud model fallback, priority support. Coming soon.",
                 agents=all_non_enterprise,
                 agent_count=len(all_non_enterprise),
             ),
             TierInfo(
                 tier="enterprise",
-                description="Agent Factory, assessment & training, cron scheduling, SSO, SLA. Starting at $299/mo.",
+                description="Agent Factory, assessment & training, SSO, SLA. Coming soon.",
                 agents=all_non_enterprise + enterprise_agents,
                 agent_count=len(all_non_enterprise) + len(enterprise_agents),
             ),

@@ -44,8 +44,8 @@ jobs:
           mkdir -p _public/.github/workflows
           cp .github/workflows/ci.yml _public/.github/workflows/
 
-          # Core package (excluding website)
-          rsync -a --exclude='website/' cohort/ _public/cohort/
+          # Core package (excluding website and website_creator)
+          rsync -a --exclude='website/' --exclude='website_creator/' cohort/ _public/cohort/
 
           # Public extras
           for dir in examples plugins services tests; do

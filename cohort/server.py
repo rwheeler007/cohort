@@ -6440,7 +6440,10 @@ async def website_create(request: Request) -> JSONResponse:
 
     import tempfile
 
-    from cohort.website_creator.pipeline import WebsiteCreator
+    try:
+        from cohort.website_creator.pipeline import WebsiteCreator
+    except ImportError:
+        return JSONResponse({"error": "Website Creator is not available in this build"}, status_code=501)
 
     output_base = Path(__file__).parent / "website_creator" / "output"
     creator = WebsiteCreator(output_base=output_base)
@@ -6490,7 +6493,10 @@ async def website_create(request: Request) -> JSONResponse:
 
 async def website_worksheet(request: Request) -> JSONResponse:
     """GET /api/website/worksheet -- Return the 20 intake questions."""
-    from cohort.website_creator.intake import get_worksheet_questions
+    try:
+        from cohort.website_creator.intake import get_worksheet_questions
+    except ImportError:
+        return JSONResponse({"error": "Website Creator is not available in this build"}, status_code=501)
     return JSONResponse({"questions": get_worksheet_questions()})
 
 
