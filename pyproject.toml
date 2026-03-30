@@ -1,6 +1,6 @@
 [project]
 name = "cohort"
-version = "0.4.21"
+version = "0.4.22"
 description = "Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -40,6 +40,10 @@ cohort = "cohort.__main__:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel.force-include]
+"cohort/secret_store.py" = "cohort/secret_store.py"
+"cohort/cli/secret_cmd.py" = "cohort/cli/secret_cmd.py"
 
 [tool.ruff]
 target-version = "py311"
