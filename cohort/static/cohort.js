@@ -6913,7 +6913,18 @@ function connectSocket() {
             state.messages[message.channel_id] = [];
         }
         if (state.messages[message.channel_id].some(m => m.id === message.id)) return;
-        state.messages[message.channel_id].push(message);
+
+        // Replace optimistic (pending) message if this is the server echo.
+        // Match by sender + content to find the corresponding pending entry.
+        const msgs = state.messages[message.channel_id];
+        const pendingIdx = msgs.findIndex(m =>
+            m._optimistic && m.sender === message.sender && m.content === message.content
+        );
+        if (pendingIdx !== -1) {
+            msgs[pendingIdx] = message;
+        } else {
+            msgs.push(message);
+        }
 
         // Auto-add sender and @mentioned agents as channel members
         autoAddMembersFromMessage(message.channel_id, message);
@@ -7418,6 +7429,30 @@ function init() {
                 // Remove archived banner
                 const banner = document.querySelector('.archived-banner');
                 if (banner) banner.remove();
+            }
+
+            // Optimistic UI: render user message immediately instead of
+            // waiting for the server echo via new_message broadcast.
+            // This prevents the message from appearing "lost" if the
+            // broadcast is delayed or the socket is briefly disconnected.
+            const pendingId = '_pending-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+            const optimistic = {
+                id: pendingId,
+                channel_id: state.currentChannel,
+                sender: sender,
+                content: content,
+                timestamp: new Date().toISOString(),
+                message_type: 'chat',
+                metadata: {},
+                _optimistic: true,
+            };
+            if (!state.messages[state.currentChannel]) {
+                state.messages[state.currentChannel] = [];
+            }
+            state.messages[state.currentChannel].push(optimistic);
+            if (outgoing.channel_id === state.currentChannel) {
+                renderMessages();
+                scrollToBottom();
             }
 
             state.socket.emit('send_message', outgoing);
