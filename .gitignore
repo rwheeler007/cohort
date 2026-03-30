@@ -18,6 +18,8 @@ build/
 *.pfx
 *credentials*
 *secret*
+!cohort/secret_store.py
+!cohort/cli/secret_cmd.py
 *.token
 
 # Runtime output (regenerated, not source)
