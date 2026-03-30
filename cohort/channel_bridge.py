@@ -387,7 +387,8 @@ def enqueue_channel_request(
     # Uses force=True to bypass the auto_launch gate -- this is a real
     # request that needs a session, not a proactive startup launch.
     if not channel_mode_active(channel_id=channel_id):
-        request_session(channel_id, force=True)
+        _ws = (metadata or {}).get("workspace_path")
+        request_session(channel_id, force=True, workspace_path=_ws)
 
     logger.info(
         "[>>] Channel request enqueued: %s for %s in #%s",
@@ -1104,7 +1105,7 @@ def _check_and_rotate(channel_id: str) -> None:
 # Auto-launch and priority eviction
 # =====================================================================
 
-def request_session(channel_id: str, *, force: bool = False) -> Dict[str, Any]:
+def request_session(channel_id: str, *, force: bool = False, workspace_path: Optional[str] = None) -> Dict[str, Any]:
     """Request a session for a channel.
 
     Args:
@@ -1113,6 +1114,9 @@ def request_session(channel_id: str, *, force: bool = False) -> Dict[str, Any]:
                launches (e.g. @mention triggers agent response and needs a
                session).  The auto_launch setting only gates proactive/startup
                launches.
+        workspace_path: Explicit workspace for the session.  Passed through to
+               the launch queue so the VS Code extension launches in the
+               correct directory.
 
     If auto-launch is enabled (or force=True) and we're under the session
     limit, adds the channel to the launch queue.  If at the limit, attempts
@@ -1146,7 +1150,7 @@ def request_session(channel_id: str, *, force: bool = False) -> Dict[str, Any]:
                 evicted, channel_id,
             )
 
-    _add_to_launch_queue(channel_id)
+    _add_to_launch_queue(channel_id, workspace_path=workspace_path)
     logger.info("[>>] Session launch queued for #%s", channel_id)
     return {"queued": True, "channel_id": channel_id}
 

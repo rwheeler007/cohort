@@ -801,6 +801,7 @@ def enqueue_agent_channel_request(
         channel_id=channel_id,
         thread_id=thread_id,
         response_mode="channel",
+        metadata={"workspace_path": project_path} if project_path else None,
     )
     logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
 
@@ -1556,6 +1557,7 @@ def _invoke_agent_sync(item: dict) -> None:
                     "thread_id": thread_id or "",
                     "source": "route_mentions",
                     "response_mode": "channel",
+                    "workspace_path": item.get("project_path", ""),
                 },
             )
             logger.info("[>>] Work queue item %s enqueued for %s (source=#%s)",
