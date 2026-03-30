@@ -9,7 +9,6 @@ from pathlib import Path
 
 from cohort.cli._base import format_output
 
-
 # ---------------------------------------------------------------------------
 # Provider registry: documents what fields each provider needs
 # ---------------------------------------------------------------------------
@@ -177,7 +176,7 @@ def _cmd_secret_list(args: argparse.Namespace) -> int:
         # Show extra fields (masked)
         if extra_raw:
             # Might be encoded or plaintext JSON
-            from cohort.secret_store import is_encoded, decode_secret
+            from cohort.secret_store import is_encoded
             if is_encoded(extra_raw):
                 entry["extra"] = "[encoded]"
             elif isinstance(extra_raw, str) and extra_raw.strip().startswith("{"):
@@ -201,7 +200,6 @@ def _cmd_secret_list(args: argparse.Namespace) -> int:
             print(f"\n  Configured Secrets ({len(secrets)})")
             print("  " + "-" * 55)
             for s in secrets:
-                display = s.get("display_name", s["name"])
                 key_preview = s.get("key", s.get("preview", ""))
                 print(f"  {s['name']:28s}  key: {key_preview}")
                 if "extra" in s:
@@ -217,7 +215,7 @@ def _cmd_secret_list(args: argparse.Namespace) -> int:
 
 def _cmd_secret_set(args: argparse.Namespace) -> int:
     """Set a secret value."""
-    from cohort.secret_store import encode_secret, _encrypt_extra
+    from cohort.secret_store import _encrypt_extra, encode_secret
 
     settings = _load_settings()
     name = args.name
@@ -267,7 +265,7 @@ def _cmd_secret_set(args: argparse.Namespace) -> int:
         if pinfo and pinfo["extra_fields"] and not extra_json:
             fields = ", ".join(pinfo["extra_fields"])
             print(f"  [*] {provider} also supports extra fields: {fields}")
-            print(f"      Use --extra '{{\"field\": \"value\"}}' to set them.")
+            print("      Use --extra '{\"field\": \"value\"}' to set them.")
     else:
         print(f"[X] Unknown secret name: {name}", file=sys.stderr)
         print("    Valid names: api_key, cloud_api_key, service:<provider>", file=sys.stderr)
