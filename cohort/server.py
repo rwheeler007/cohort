@@ -7522,8 +7522,25 @@ def create_app(data_dir: str = "data") -> Starlette:
             except Exception:
                 logger.exception("[!] Channel reaper error")
 
+    # Start work-queue timeout reaper (background daemon)
+    def _wq_timeout_reaper() -> None:
+        import time as _time
+        while True:
+            _time.sleep(30)
+            try:
+                timed_out = _work_queue.expire_timed_out()
+                if timed_out:
+                    logger.info(
+                        "[*] Work queue: timed out %d item(s): %s",
+                        len(timed_out), timed_out,
+                    )
+                    _broadcast_work_queue()
+            except Exception:
+                logger.exception("[!] Work queue timeout reaper error")
+
     import threading
     threading.Thread(target=_channel_idle_reaper, daemon=True, name="channel-reaper").start()
+    threading.Thread(target=_wq_timeout_reaper, daemon=True, name="wq-timeout-reaper").start()
 
     return app
 
