@@ -105,7 +105,7 @@ class AgentStore:
         "content_strategy_agent",
         "analytics_agent",
         "python_developer",
-        # Free Store agents (available at no cost from Agent Store)
+        # Agent Store agents (all included in launch promo)
         "web_developer",
         "javascript_developer",
         "security_agent",
@@ -113,7 +113,6 @@ class AgentStore:
         "documentation_agent",
         "code_archaeologist",
         "setup_guide",
-        # Pro Store agents ($49/mo)
         "system_coder",
         "database_developer",
         "brand_design_agent",

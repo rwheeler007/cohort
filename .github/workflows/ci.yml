@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
 
@@ -44,6 +45,32 @@ jobs:
         run: pytest --cov || true
 
   # ---------------------------------------------------------------------------
-  # PyPI publish runs on the PUBLIC repo (rwheeler007/cohort) only.
-  # Tags are synced there by sync-public.yml which triggers the publish job.
+  # Build and publish to PyPI on version tags (v*)
+  # This job is synced to the public repo where tags are pushed.
   # ---------------------------------------------------------------------------
+  publish:
+    name: Publish to PyPI
+    needs: ci
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build tools
+        run: pip install --no-cache-dir build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Publish to PyPI (trusted publisher)
+        uses: pypa/gh-action-pypi-publish@release/v1
