@@ -68,10 +68,10 @@ let currentRequestId: string | null = null;
 let currentRequestClaimedAt: number | null = null;
 let requestCount: number = 0;
 
-// Ready-gate: poll loop blocks until Claude calls cohort_ready, proving the
-// channel is bidirectional and Claude is actually listening for notifications.
+// Ready-gate for channel sessions: Claude must call cohort_ready to prove
+// the notification path works before prompts are dispatched.
+// The WQ worker skips this gate entirely.
 let resolveReady: (() => void) | null = null;
-let startupPingTimer: ReturnType<typeof setInterval> | null = null;
 const claudeReady = new Promise<void>((resolve) => {
   resolveReady = resolve;
 });
@@ -199,7 +199,13 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
   switch (name) {
     case "cohort_respond": {
       const requestId = (args as { request_id: string }).request_id;
-      const content = (args as { content: string }).content;
+      const content = (args as { content?: string; response?: string }).content
+        ?? (args as { response?: string }).response
+        ?? "";
+
+      if (!content) {
+        return { content: [{ type: "text", text: `Error: No content provided for ${requestId}. Pass a 'content' string.` }] };
+      }
 
       try {
         const elapsed = currentRequestClaimedAt
@@ -282,7 +288,6 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       if (resolveReady) {
         resolveReady();
         resolveReady = null;
-        if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; }
         log("INFO", "Claude signaled ready -- prompt delivery unblocked");
       }
       return {
@@ -302,52 +307,41 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
 // Poll Loop -- checks Cohort for pending requests, pushes prompts to Claude
 // ---------------------------------------------------------------------------
 
-const READY_TIMEOUT_MS = 90_000; // 90s -- covers slow resume sessions
-const STARTUP_PING_INTERVAL_MS = 4_000; // re-ping if Claude hasn't called cohort_ready yet
+const STARTUP_PING_INTERVAL_MS = 4_000;
 
 async function pollLoop(): Promise<void> {
-  // Claude won't spontaneously call cohort_ready -- it needs a prompt.
-  // Send a startup ping every few seconds until it responds.
-  log("INFO", "Sending startup ping to Claude...");
-
-  // Once the notification is successfully injected, mark it consumed so the
-  // retry interval doesn't duplicate it while Claude is still processing the
-  // first one (schema fetch + tool call can take several seconds).
-  let startupInjected = false;
-
-  const sendStartupPing = async () => {
-    try {
-      await mcp.notification({
-        method: "notifications/claude/channel",
-        params: {
-          content: "Session started. Your first action must be to call `cohort_ready` with no arguments.",
-          meta: { request_id: "startup", type: "startup" },
-        },
-      });
-      startupInjected = true; // Consumed -- don't re-send unless this failed
-    } catch { /* best-effort */ }
-  };
-
-  // Wait for Claude Code to finish initializing its channel listener.
-  // The MCP handshake completes before Claude is ready to receive
-  // notifications, so firing immediately gets swallowed silently.
-  await new Promise((r) => setTimeout(r, 2000));
-  await sendStartupPing();
-  startupPingTimer = setInterval(async () => {
-    if (resolveReady === null) { if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; } return; }
-    // Keep retrying -- even if the send "succeeded" (no throw), Claude may
-    // not have been listening yet.  Only stop when cohort_ready arrives.
-    log("INFO", "Re-sending startup ping (waiting for cohort_ready)...");
+  if (channelId) {
+    // Channel sessions wait for Claude to prove it's listening before
+    // dispatching prompts. The WQ worker skips this -- it's the queue
+    // controller, not a conversational session.
+    log("INFO", "Channel session -- sending startup ping, waiting for cohort_ready...");
+    const sendStartupPing = async () => {
+      try {
+        await mcp.notification({
+          method: "notifications/claude/channel",
+          params: {
+            content: "Session started. Your first action must be to call `cohort_ready` with no arguments.",
+            meta: { request_id: "startup", type: "startup" },
+          },
+        });
+      } catch { /* best-effort */ }
+    };
+    await new Promise((r) => setTimeout(r, 2000));
     await sendStartupPing();
-  }, STARTUP_PING_INTERVAL_MS);
-
-  // Block until Claude calls cohort_ready, proving the channel is live.
-  const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error("Claude ready timeout after 90s")), READY_TIMEOUT_MS)
-  );
-  await Promise.race([claudeReady, timeout]);
-  if (startupPingTimer) { clearInterval(startupPingTimer); startupPingTimer = null; }
-  log("INFO", "Claude is ready -- starting poll loop");
+    const pingTimer = setInterval(async () => {
+      if (resolveReady === null) { clearInterval(pingTimer); return; }
+      log("INFO", "Re-sending startup ping (waiting for cohort_ready)...");
+      await sendStartupPing();
+    }, STARTUP_PING_INTERVAL_MS);
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Claude ready timeout after 90s")), 90_000)
+    );
+    await Promise.race([claudeReady, timeout]);
+    clearInterval(pingTimer);
+    log("INFO", "Claude is ready -- starting poll loop");
+  } else {
+    log("INFO", "WQ worker -- starting poll loop (no ready gate)");
+  }
 
   let consecutiveFailures = 0;
   const MAX_BACKOFF_MS = 30_000;
@@ -501,10 +495,9 @@ function releaseLock(): void {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  // Only acquire lock and start poll/heartbeat when spawned for a specific channel.
-  // Normal Claude Code sessions (no CHANNEL_ID) get the MCP tools but don't poll.
   const isChannelSession = !!channelId;
 
+  // Per-channel sessions use a lockfile to prevent duplicates.
   if (isChannelSession) {
     if (!acquireLock()) {
       log("WARN", `Another ${SERVER_NAME} instance is already running. Exiting.`);
@@ -521,34 +514,32 @@ async function main(): Promise<void> {
 
   log("INFO", `Session ${config.session_id} connected (PID ${process.pid}). Log: ${LOG_FILE}`);
 
-  if (isChannelSession) {
-    // Register with the server so ensure-session knows we're alive
-    try {
-      const regResult = await client.register();
-      if (!regResult.ok) {
-        log("FATAL", `Registration rejected: ${regResult.error} (limit=${regResult.limit}, active=${regResult.active})`);
-        process.exit(1);
-      }
-      if (regResult.warn) {
-        log("WARN", `Session count at warning threshold (${regResult.active}/${regResult.limit})`);
-      }
-      log("INFO", `Registered with server (active=${regResult.active}/${regResult.limit})`);
-    } catch (e) {
-      log("WARN", `Registration failed: ${(e as Error).message} -- continuing anyway`);
+  // Register with the server so ensure-session knows we're alive
+  try {
+    const regResult = await client.register();
+    if (!regResult.ok) {
+      log("FATAL", `Registration rejected: ${regResult.error} (limit=${regResult.limit}, active=${regResult.active})`);
+      process.exit(1);
     }
-
-    // Start background loops -- only for spawned channel sessions
-    pollLoop().catch((e) =>
-      log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
-    );
-    heartbeatLoop().catch((e) =>
-      log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
-    );
-
-    log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (channel=#${channelId})`);
-  } else {
-    log("INFO", "Passive mode -- tools available but no poll/heartbeat (no CHANNEL_ID set)");
+    if (regResult.warn) {
+      log("WARN", `Session count at warning threshold (${regResult.active}/${regResult.limit})`);
+    }
+    log("INFO", `Registered with server (active=${regResult.active}/${regResult.limit})`);
+  } catch (e) {
+    log("WARN", `Registration failed: ${(e as Error).message} -- continuing anyway`);
   }
+
+  // Always poll and heartbeat -- WQ worker polls all channels,
+  // channel sessions poll only their assigned channel.
+  pollLoop().catch((e) =>
+    log("FATAL", `Poll loop crashed: ${(e as Error).message}`)
+  );
+  heartbeatLoop().catch((e) =>
+    log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
+  );
+
+  const scope = channelId ? `#${channelId}` : "all channels";
+  log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (scope: ${scope})`);
 }
 
 main().catch((e) => {

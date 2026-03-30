@@ -195,13 +195,14 @@ async def poll_loop():
             agent_id = item.get("agent_id") or meta.get("agent_id")
             source_channel = meta.get("channel", channel)
             thread_id = meta.get("thread_id", "")
+            workspace_path = meta.get("workspace_path", "")
             original_message = item.get("description", "")
 
             if agent_id:
                 # Use /api/channel/invoke for full prompt building + session launch.
                 # channel_id = agent's DM channel (where the session runs)
                 # reply_channel = source channel (where the response gets posted)
-                result = await cohort_post("/api/channel/invoke", json={
+                invoke_payload: dict = {
                     "agent_id": agent_id,
                     "channel_id": channel,
                     "message": original_message,
@@ -211,7 +212,10 @@ async def poll_loop():
                         "wq_item_id": item_id,
                         "source": "wq_dispatcher",
                     },
-                })
+                }
+                if workspace_path:
+                    invoke_payload["workspace_path"] = workspace_path
+                result = await cohort_post("/api/channel/invoke", json=invoke_payload)
             else:
                 # No agent -- fall back to posting as a message
                 message = build_channel_message(item)

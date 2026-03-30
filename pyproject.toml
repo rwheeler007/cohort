@@ -1,6 +1,6 @@
 [project]
 name = "cohort"
-version = "0.4.23"
+version = "0.4.24"
 description = "Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -29,7 +29,7 @@ Changelog = "https://github.com/rwheeler007/cohort/releases"
 
 [project.optional-dependencies]
 server = ["starlette>=0.37,<1.0.0", "uvicorn>=0.27", "python-socketio>=5.10"]
-mcp = ["httpx>=0.27", "fastmcp>=0.1"]
+mcp = ["httpx>=0.27", "mcp>=1.25"]
 e2e = ["playwright>=1.40"]
 dev = ["pytest", "pytest-asyncio", "pytest-cov", "ruff", "mypy", "httpx>=0.27"]
 all = ["cohort[server,mcp,e2e,dev]"]

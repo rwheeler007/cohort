@@ -801,6 +801,7 @@ def enqueue_agent_channel_request(
         channel_id=channel_id,
         thread_id=thread_id,
         response_mode="channel",
+        metadata={"workspace_path": project_path} if project_path else None,
     )
     logger.info("[>>] Channel request enqueued via direct path: %s for %s in #%s (tier=%s)", request_id, agent_id, channel_id, _prompt_tier)
 
@@ -946,6 +947,126 @@ def _build_thread_context(thread_id: str, channel_id: str) -> str:
     return "\n".join(parts)
 
 
+# =====================================================================
+# Backend dispatch helpers
+# =====================================================================
+# Each returns (text, tokens_in, tokens_out, model_name).
+# Returns (None, 0, 0, "") on failure. Never raises.
+
+_BACKEND_EMPTY: tuple[None, int, int, str] = (None, 0, 0, "")
+
+
+def _try_channel(
+    prompt: str,
+    agent_id: str,
+    channel_id: str,
+    response_mode: str = "smartest",
+    thread_id: str | None = None,
+    timeout: int = RESPONSE_TIMEOUT,
+    label: str = "channel",
+) -> tuple[str | None, int, int, str]:
+    """Try channel bridge backend (enqueue request, await response)."""
+    try:
+        if not _ensure_channel_with_toast(channel_id):
+            return _BACKEND_EMPTY
+        from cohort.channel_bridge import await_channel_response, enqueue_channel_request
+
+        logger.info("[>>] %s: %s in #%s", label, agent_id, channel_id)
+        request_id = enqueue_channel_request(
+            prompt=prompt,
+            agent_id=agent_id,
+            channel_id=channel_id,
+            thread_id=thread_id,
+            response_mode=response_mode,
+        )
+        ch_content, _ch_meta = await_channel_response(request_id, timeout=timeout)
+        if ch_content:
+            logger.info("[OK] %s: %s in #%s", label, agent_id, channel_id)
+            return ch_content, len(prompt) // 4, len(ch_content) // 4, "claude_code_channel"
+        return _BACKEND_EMPTY
+    except Exception:
+        logger.exception("[!] %s failed for %s", label, agent_id)
+        return _BACKEND_EMPTY
+
+
+def _try_cloud(
+    system_prompt: str,
+    user_message: str,
+    agent_id: str,
+    label: str = "cloud",
+) -> tuple[str | None, int, int, str]:
+    """Try cloud API backend with budget check."""
+    try:
+        # Budget check
+        if _chat is not None and hasattr(_chat, "check_token_budget"):
+            try:
+                from cohort.local.config import get_budget_limits
+                _limits = get_budget_limits()
+                _allowed, _remaining, _reason = _chat.check_token_budget(
+                    daily_limit=_limits["daily_token_limit"],
+                    monthly_limit=_limits["monthly_token_limit"],
+                )
+                if not _allowed:
+                    logger.warning("[!] Cloud API budget exceeded for %s: %s", agent_id, _reason)
+                    return _BACKEND_EMPTY
+            except Exception:
+                pass  # Budget check failure should not block the call
+
+        from cohort.local.cloud import get_cloud_backend
+        cloud = get_cloud_backend(_cloud_settings)
+        if cloud is None:
+            return _BACKEND_EMPTY
+
+        logger.info("[>>] %s: %s", label, agent_id)
+        cr = cloud.complete(system_prompt, user_message)
+        if cr.text.strip():
+            logger.info("[OK] %s for %s (%s, %d/%d tok)", label, agent_id, cr.model, cr.tokens_in, cr.tokens_out)
+            return cr.text.strip(), cr.tokens_in, cr.tokens_out, cr.model
+        return _BACKEND_EMPTY
+    except Exception:
+        logger.exception("[!] %s failed for %s", label, agent_id)
+        return _BACKEND_EMPTY
+
+
+def _try_local(
+    prompt: str,
+    agent_id: str,
+    model: str,
+    temperature: float = 0.3,
+    system: str | None = None,
+    response_mode: str = "smartest",
+    check_escalation: bool = True,
+) -> tuple[str | None, int, int, str]:
+    """Try local Ollama model via LocalRouter public API."""
+    try:
+        if check_escalation:
+            _esc_allowed, _esc_reason = _check_escalation_rate()
+            if not _esc_allowed:
+                logger.warning("[!] %s -- skipping local escalation for %s", _esc_reason, agent_id)
+                return _BACKEND_EMPTY
+        from cohort.api import LocalRouter
+
+        router = LocalRouter()
+        logger.info("[>>] Local %s: %s", model, agent_id)
+        result = router.route(
+            prompt=prompt,
+            temperature=temperature,
+            response_mode=response_mode,
+            system=system,
+            model_override=model,
+            keep_alive="0",
+        )
+        if result is not None and result.text.strip():
+            if check_escalation:
+                _record_escalation_call()
+            logger.info("[OK] Local %s: %s (%d/%d tok)", model, agent_id, result.tokens_in, result.tokens_out)
+            return result.text.strip(), result.tokens_in, result.tokens_out, model
+        return _BACKEND_EMPTY
+    except Exception:
+        logger.exception("[!] Local %s failed for %s", model, agent_id)
+        return _BACKEND_EMPTY
+
+
 def _invoke_smartest_pipeline(
     agent_id: str,
     user_message: str,
@@ -1058,127 +1179,38 @@ def _invoke_smartest_pipeline(
         smartest_primary = get_smartest_model()
         smartest_fallback = get_smartest_fallback()
 
-        # Channel as Phase 3 primary: route through channel bridge
-        if smartest_primary == "channel" and not response_text:
-            from cohort.channel_bridge import await_channel_response, enqueue_channel_request
-            if _ensure_channel_with_toast("smartest"):
-                try:
-                    logger.info("[>>] Smartest Phase 3 (channel/primary): %s", agent_id)
-                    request_id = enqueue_channel_request(
-                        prompt=claude_prompt,
-                        agent_id=agent_id,
-                        channel_id="smartest",
-                        response_mode="smartest",
-                    )
-                    ch_content, ch_meta = await_channel_response(
-                        request_id, timeout=RESPONSE_TIMEOUT,
-                    )
-                    if ch_content:
-                        response_text = ch_content
-                        actual_tokens_in = len(claude_prompt) // 4
-                        actual_tokens_out = len(response_text) // 4
-                        phase3_model = "claude_code_channel"
-                        logger.info("[OK] Smartest Phase 3 (channel/primary): %s", agent_id)
-                except Exception:
-                    logger.exception("[!] Smartest Phase 3 channel/primary failed for %s", agent_id)
+        # Build ordered backend dispatch list from config
+        _p3_prompt = f"{system_prompt}\n\n{phase3_user_message}"
+        backends: list[tuple[str, Any]] = []
 
-        # Try local 35B model first (if configured as primary)
-        if smartest_primary not in ("cloud_api", "local", "channel") and not response_text:
-            _esc_allowed, _esc_reason = _check_escalation_rate()
-            if not _esc_allowed:
-                logger.warning("[!] %s -- skipping local escalation for %s", _esc_reason, agent_id)
-            try:
-                from cohort.api import LocalRouter
-                _p3_router = LocalRouter()
-                if _esc_allowed and _p3_router._ensure_client():
-                    _p3_prompt = f"{system_prompt}\n\n{phase3_user_message}"
-                    _p3_result = _p3_router._client.generate(
-                        model=smartest_primary,
-                        prompt=_p3_prompt,
-                        temperature=0.3,
-                        think=True,
-                        keep_alive="0",
-                        options={"num_predict": 8192},
-                    )
-                    if _p3_result is not None and _p3_result.text.strip():
-                        response_text = _p3_result.text.strip()
-                        actual_tokens_in = _p3_result.tokens_in
-                        actual_tokens_out = _p3_result.tokens_out
-                        phase3_model = smartest_primary
-                        _record_escalation_call()
-                        logger.info("[OK] Smartest Phase 3 (local/%s): %s", smartest_primary, agent_id)
-            except Exception:
-                logger.exception("[!] Smartest Phase 3 local %s failed for %s", smartest_primary, agent_id)
+        # Primary backend
+        if smartest_primary == "channel":
+            backends.append(("P3 channel/primary",
+                lambda: _try_channel(claude_prompt, agent_id, "smartest", label="P3 channel/primary")))
+        elif smartest_primary not in ("cloud_api", "local"):
+            # Named local model (e.g. "qwen3.5:35b-a3b")
+            backends.append(("P3 local/" + smartest_primary,
+                lambda: _try_local(_p3_prompt, agent_id, model=smartest_primary, system=system_prompt)))
 
-        # Try cloud API (if configured as primary or fallback, and not yet resolved)
-        _try_cloud = (
-            not response_text
-            and (smartest_primary == "cloud_api" or smartest_fallback == "cloud_api")
-        )
-        if _try_cloud:
-            # Budget check: query accumulated token spend before allowing cloud call
-            _cloud_allowed = True
-            if _chat is not None and hasattr(_chat, "check_token_budget"):
-                try:
-                    from cohort.local.config import get_budget_limits
-                    _limits = get_budget_limits()
-                    _cloud_allowed, _remaining, _budget_reason = _chat.check_token_budget(
-                        daily_limit=_limits["daily_token_limit"],
-                        monthly_limit=_limits["monthly_token_limit"],
-                    )
-                    if not _cloud_allowed:
-                        logger.warning("[!] Cloud API budget exceeded for %s: %s", agent_id, _budget_reason)
-                except Exception:
-                    pass  # Budget check failure should not block the call
+        # Cloud API (as primary or fallback)
+        if smartest_primary == "cloud_api" or smartest_fallback == "cloud_api":
+            backends.append(("P3 cloud",
+                lambda: _try_cloud(system_prompt, phase3_user_message, agent_id, label="P3 cloud")))
 
-            if not _cloud_allowed:
-                logger.info("[*] Skipping cloud API (budget limit) -- will use Qwen draft for %s", agent_id)
-            else:
-                from cohort.local.cloud import get_cloud_backend
-                cloud = get_cloud_backend(_cloud_settings)
-                if cloud is not None:
-                    try:
-                        cr = cloud.complete(system_prompt, phase3_user_message)
-                        response_text = cr.text.strip()
-                        actual_tokens_in = cr.tokens_in
-                        actual_tokens_out = cr.tokens_out
-                        phase3_model = cr.model
-                        logger.info("[OK] Smartest Phase 3 (cloud/%s): %s", cr.model, agent_id)
-                    except Exception:
-                        logger.exception("[!] Smartest Phase 3 cloud failed for %s", agent_id)
+        # Channel fallback (explicit config or global channel mode)
+        if smartest_fallback == "channel" or _channel_mode_enabled:
+            backends.append(("P3 channel/fallback",
+                lambda: _try_channel(claude_prompt, agent_id, "smartest", label="P3 channel/fallback")))
 
-        # Channel mode: persistent Claude Code session via MCP Channels
-        # Triggers when channel_mode is globally enabled OR when tier fallback is "channel"
-        _try_channel_p3 = (
-            not response_text
-            and (smartest_fallback == "channel" or _channel_mode_enabled)
-        )
-        if _try_channel_p3:
-            if _ensure_channel_with_toast("smartest"):
-                try:
-                    from cohort.channel_bridge import (
-                        await_channel_response,
-                        enqueue_channel_request,
-                    )
-
-                    logger.info("[>>] Smartest Phase 3 (channel): %s", agent_id)
-                    request_id = enqueue_channel_request(
-                        prompt=claude_prompt,
-                        agent_id=agent_id,
-                        channel_id="smartest",
-                        response_mode="smartest",
-                    )
-                    ch_content, ch_meta = await_channel_response(
-                        request_id, timeout=RESPONSE_TIMEOUT,
-                    )
-                    if ch_content:
-                        response_text = ch_content
-                        actual_tokens_in = len(claude_prompt) // 4
-                        actual_tokens_out = len(response_text) // 4
-                        phase3_model = "claude_code_channel"
-                        logger.info("[OK] Smartest Phase 3 (channel): %s", agent_id)
-                except Exception:
-                    logger.exception("[!] Smartest Phase 3 channel failed for %s", agent_id)
+        # Dispatch: try each backend in order until one succeeds
+        for _label, attempt in backends:
+            text, tok_in, tok_out, model_name = attempt()
+            if text:
+                response_text = text
+                actual_tokens_in = tok_in
+                actual_tokens_out = tok_out
+                phase3_model = model_name
+                break
 
         # Dev mode: CLI subprocess with response harvesting (internal testing)
         if not response_text and _dev_mode and check_claude_cli_available():
@@ -1525,6 +1557,7 @@ def _invoke_agent_sync(item: dict) -> None:
                     "thread_id": thread_id or "",
                     "source": "route_mentions",
                     "response_mode": "channel",
+                    "workspace_path": item.get("project_path", ""),
                 },
             )
             logger.info("[>>] Work queue item %s enqueued for %s (source=#%s)",
@@ -1540,39 +1573,20 @@ def _invoke_agent_sync(item: dict) -> None:
 
     # Tier-aware channel intercept: if the tier's primary model is "channel",
     # route through the channel bridge instead of local inference.
-    # This handles smart/smarter tiers configured to use Claude Channels.
     if not response_content and response_mode in ("smart", "smarter"):
         from cohort.local.config import get_tier_model
         _tier_model = get_tier_model(response_mode)
         if _tier_model == "channel":
-            from cohort.channel_bridge import await_channel_response, enqueue_channel_request
-            if _ensure_channel_with_toast(channel_id):
-                try:
-                    logger.info("[>>] Tier %s routed to channel for %s in #%s",
-                                response_mode, agent_id, channel_id)
-                    request_id = enqueue_channel_request(
-                        prompt=_local_prompt,
-                        agent_id=agent_id,
-                        channel_id=channel_id,
-                        thread_id=thread_id,
-                        response_mode=response_mode,
-                    )
-                    ch_content, ch_meta = await_channel_response(
-                        request_id, timeout=RESPONSE_TIMEOUT,
-                    )
-                    if ch_content:
-                        response_content = ch_content
-                        response_metadata = ch_meta or {}
-                        response_metadata["pipeline"] = "channel"
-                        response_metadata["model"] = "claude_code_channel"
-                        logger.info("[OK] Tier %s channel: %s in #%s", response_mode, agent_id, channel_id)
-                except Exception:
-                    logger.exception("[!] Tier %s channel failed for %s, falling back to local",
-                                     response_mode, agent_id)
-            else:
-                logger.warning("[!] Could not start channel session for #%s, falling back to local", channel_id)
+            _ch_text, _ch_tin, _ch_tout, _ch_model = _try_channel(
+                _local_prompt, agent_id, channel_id, response_mode, thread_id,
+                label=f"Tier {response_mode} channel",
+            )
+            if _ch_text:
+                response_content = _ch_text
+                response_metadata = {"pipeline": "channel", "model": _ch_model}
 
-    # Standard local routing (smart / smarter modes)
+    # Standard local routing (smart / smarter modes).
+    # Skip when force_to_claude_code is enabled -- let channel/cloud/CLI handle it.
     if not response_content and not _force_claude_code:
         try:
             from cohort.api import LocalRouter
@@ -1640,7 +1654,7 @@ def _invoke_agent_sync(item: dict) -> None:
                                 route_result.tokens_in, route_result.tokens_out)
         except Exception:
             # Local routing failed -- fall through to Claude CLI
-            logger.debug("[*] Local router unavailable for %s, using Claude CLI", agent_id)
+            logger.warning("[!] Local router failed for %s, falling through to CLI", agent_id, exc_info=True)
 
     # Fallback: cloud API (distribution) or CLI subprocess (dev mode)
     if not response_content:
@@ -1649,96 +1663,54 @@ def _invoke_agent_sync(item: dict) -> None:
         mcp_config_path: Path | None = None
 
         # Try cloud API first (distribution path)
-        from cohort.local.cloud import get_cloud_backend
-        cloud = get_cloud_backend(_cloud_settings)
-        if cloud is not None:
-            try:
-                # Split prompt into system/user for cloud API
-                cr = cloud.complete(
-                    system_prompt="You are a helpful AI assistant.",
-                    user_message=_local_prompt,
-                )
-                if cr.text.strip():
-                    response_content = cr.text.strip()
-                    response_metadata = {
-                        "tier": 5,
-                        "model": cr.model,
-                        "confidence": "high",
-                        "elapsed_seconds": cr.elapsed_seconds,
-                        "tokens_in": cr.tokens_in,
-                        "tokens_out": cr.tokens_out,
-                    }
-                    logger.info("[OK] Cloud fallback for %s (%s, %d/%d tok)",
-                                agent_id, cr.model, cr.tokens_in, cr.tokens_out)
-            except Exception:
-                logger.exception("[!] Cloud fallback failed for %s", agent_id)
+        _cl_text, _cl_tin, _cl_tout, _cl_model = _try_cloud(
+            "You are a helpful AI assistant.", _local_prompt, agent_id, label="Cloud fallback",
+        )
+        if _cl_text:
+            response_content = _cl_text
+            response_metadata = {
+                "tier": 5,
+                "model": _cl_model,
+                "confidence": "high",
+                "tokens_in": _cl_tin,
+                "tokens_out": _cl_tout,
+            }
 
         # Channel mode: persistent Claude Code session via MCP Channels
         if not response_content and _channel_mode_enabled:
             from cohort.channel_bridge import channel_mode_active
             if channel_mode_active():
-                try:
-                    from cohort.channel_bridge import (
-                        await_channel_response,
-                        enqueue_channel_request,
-                        get_pressure_tier,
+                from cohort.channel_bridge import get_pressure_tier
+                _prompt_tier = get_pressure_tier(channel_id)
+                logger.info("[*] Channel mode prompt tier=%s for %s in #%s", _prompt_tier, agent_id, channel_id)
+                # Tiered prompt: at higher pressure, send less context
+                # since the session already has prior turns in memory.
+                if _prompt_tier == "minimal":
+                    _channel_prompt = (
+                        f"[Request for {agent_id}]\n"
+                        f"{thread_context}"
+                        f"Now respond to this message:\n{message_content}"
                     )
-                    _prompt_tier = get_pressure_tier(channel_id)
-                    logger.info("[>>] Channel mode for %s in #%s (tier=%s)", agent_id, channel_id, _prompt_tier)
-                    ch_t0 = time.monotonic()
-                    # Channel session already has conversation history in
-                    # its context window -- strip channel context to avoid
-                    # double-loading (saves ~2-15K tokens per request).
-                    # Tiered prompt: at higher pressure, send less context
-                    # since the session already has prior turns in memory.
-                    if _prompt_tier == "minimal":
-                        # Session knows the persona from prior turns --
-                        # just send the message and agent identity.
-                        _channel_prompt = (
-                            f"[Request for {agent_id}]\n"
-                            f"{thread_context}"
-                            f"Now respond to this message:\n{message_content}"
-                        )
-                    elif _prompt_tier == "condensed":
-                        # Skip inventory, trim to essentials
-                        _channel_prompt = (
-                            f"You are responding as the {agent_id} agent.\n\n"
-                            f"{_agent_memory_block}\n"
-                            f"{thread_context}"
-                            f"Now respond to this message in #{channel_id}:\n"
-                            f"{message_content}"
-                        )
-                    else:
-                        _channel_prompt = _base_prompt + (
-                            f"Now respond to this message in #{channel_id}:\n"
-                            f"{message_content}"
-                        )
-                    request_id = enqueue_channel_request(
-                        prompt=_channel_prompt,
-                        agent_id=agent_id,
-                        channel_id=channel_id,
-                        thread_id=thread_id,
-                        response_mode=response_mode,
+                elif _prompt_tier == "condensed":
+                    _channel_prompt = (
+                        f"You are responding as the {agent_id} agent.\n\n"
+                        f"{_agent_memory_block}\n"
+                        f"{thread_context}"
+                        f"Now respond to this message in #{channel_id}:\n"
+                        f"{message_content}"
                     )
-                    ch_content, ch_meta = await_channel_response(
-                        request_id, timeout=RESPONSE_TIMEOUT,
+                else:
+                    _channel_prompt = _base_prompt + (
+                        f"Now respond to this message in #{channel_id}:\n"
+                        f"{message_content}"
                     )
-                    if ch_content:
-                        response_content = ch_content
-                        ch_elapsed = round(time.monotonic() - ch_t0, 1)
-                        response_metadata = ch_meta or {}
-                        response_metadata.setdefault("elapsed_seconds", ch_elapsed)
-                        logger.info(
-                            "[OK] Channel response for %s in #%s (%.1fs)",
-                            agent_id, channel_id, ch_elapsed,
-                        )
-                    else:
-                        logger.warning(
-                            "[!] Channel mode returned empty for %s: %s",
-                            agent_id, ch_meta.get("error", "unknown"),
-                        )
-                except Exception:
-                    logger.exception("[!] Channel mode failed for %s", agent_id)
+                _cm_text, _cm_tin, _cm_tout, _cm_model = _try_channel(
+                    _channel_prompt, agent_id, channel_id, response_mode, thread_id,
+                    label="Channel mode",
+                )
+                if _cm_text:
+                    response_content = _cm_text
+                    response_metadata = {"pipeline": "channel", "model": _cm_model}
             else:
                 logger.debug("[*] Channel session not active, skipping for %s", agent_id)
 
