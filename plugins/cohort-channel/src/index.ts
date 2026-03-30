@@ -199,7 +199,13 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
   switch (name) {
     case "cohort_respond": {
       const requestId = (args as { request_id: string }).request_id;
-      const content = (args as { content: string }).content;
+      const content = (args as { content?: string; response?: string }).content
+        ?? (args as { response?: string }).response
+        ?? "";
+
+      if (!content) {
+        return { content: [{ type: "text", text: `Error: No content provided for ${requestId}. Pass a 'content' string.` }] };
+      }
 
       try {
         const elapsed = currentRequestClaimedAt
