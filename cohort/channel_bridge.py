@@ -1382,10 +1382,16 @@ def _spawn_channel_session(channel_id: str) -> bool:
     env["COHORT_BASE_URL"] = COHORT_BASE_URL
     env["CHANNEL_NAME"] = f"cohort-ch-{channel_id}"
 
-    cohort_root = Path(__file__).parent.parent
+    # Use the workspace root (AGENTS_ROOT) so channel sessions run in the
+    # user's project directory, not the Cohort package directory.
+    try:
+        from cohort.agent_router import AGENTS_ROOT
+        workspace_root = AGENTS_ROOT or Path(__file__).parent.parent
+    except ImportError:
+        workspace_root = Path(__file__).parent.parent
 
     popen_kwargs: dict = dict(
-        cwd=str(cohort_root),
+        cwd=str(workspace_root),
         env=env,
     )
     if sys.platform == "win32":
