@@ -30,7 +30,7 @@ from cohort.desktop.safety import (
     log_audit_entry,
     make_audit_entry,
 )
-from cohort.desktop.types import (
+from cohort.desktop.desktop_types import (
     DesktopResult,
     DesktopSession,
     DisplayBounds,

@@ -42,7 +42,7 @@ from cohort.desktop.config import DesktopConfig, load_config
 from cohort.desktop.safety import (
     check_desktop_permission,
 )
-from cohort.desktop.types import DesktopResult
+from cohort.desktop.desktop_types import DesktopResult
 
 # ---------------------------------------------------------------------------
 # MCP Server
