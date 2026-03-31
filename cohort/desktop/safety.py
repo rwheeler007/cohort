@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from cohort.desktop.types import (
+from cohort.desktop.desktop_types import (
     AuditEntry,
     DisplayBounds,
     WindowInfo,
