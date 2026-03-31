@@ -1,6 +1,6 @@
 [project]
 name = "cohort"
-version = "0.4.24"
+version = "0.4.25"
 description = "Multi-agent orchestration with loop prevention, contribution scoring, and MCP integration"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
