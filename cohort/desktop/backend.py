@@ -22,6 +22,12 @@ import pyperclip
 from PIL import Image
 
 from cohort.desktop.config import DesktopConfig
+from cohort.desktop.desktop_types import (
+    DesktopResult,
+    DesktopSession,
+    DisplayBounds,
+    WindowInfo,
+)
 from cohort.desktop.safety import (
     check_app_allowed,
     check_coordinates_in_bounds,
@@ -29,12 +35,6 @@ from cohort.desktop.safety import (
     check_window_allowed,
     log_audit_entry,
     make_audit_entry,
-)
-from cohort.desktop.desktop_types import (
-    DesktopResult,
-    DesktopSession,
-    DisplayBounds,
-    WindowInfo,
 )
 
 log = logging.getLogger(__name__)
