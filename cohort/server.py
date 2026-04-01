@@ -7548,9 +7548,69 @@ def create_app(data_dir: str = "data") -> Starlette:
             except Exception:
                 logger.exception("[!] Work queue timeout reaper error")
 
+    # Work-queue dispatch thread -- claims items and routes to channel sessions.
+    # Replaces the standalone wq_worker.py service.
+    _wq_dispatch_interval = int(os.environ.get("COHORT_WQ_POLL_INTERVAL", "3"))
+
+    def _wq_dispatch_loop() -> None:
+        import time as _time
+        logger.info("[OK] WQ dispatch thread started (poll every %ds)", _wq_dispatch_interval)
+        while True:
+            _time.sleep(_wq_dispatch_interval)
+            try:
+                if _work_queue is None:
+                    continue
+                item = _work_queue.claim()
+                if item is None:
+                    continue
+
+                item_id = item.id
+                meta = item.metadata or {}
+                agent_id = item.agent_id or meta.get("agent_id")
+                description = item.description or ""
+
+                if not agent_id:
+                    # No agent -- post as plain message to the source channel
+                    channel = meta.get("target_channel") or meta.get("channel", "general")
+                    chat = _get_chat()
+                    if chat:
+                        chat.post_message(
+                            channel_id=channel,
+                            sender="wq-dispatcher",
+                            content=f"[Work Queue] {item_id}\n\n{description}",
+                            metadata={"wq_item_id": item_id, "source": "wq_dispatcher"},
+                        )
+                    logger.info("[OK] WQ %s posted to #%s (no agent)", item_id, channel)
+                    continue
+
+                # Route to agent via channel invoke (same path as /api/channel/invoke)
+                source_channel = meta.get("channel", "general")
+                thread_id = meta.get("thread_id")
+
+                from cohort.agent_router import enqueue_agent_channel_request, resolve_agent_id
+                resolved = resolve_agent_id(agent_id) or agent_id
+
+                import threading as _thr
+                _thr.Thread(
+                    target=enqueue_agent_channel_request,
+                    kwargs=dict(
+                        agent_id=resolved,
+                        channel_id=source_channel,
+                        message=description,
+                        thread_id=thread_id,
+                        reply_channel=source_channel,
+                    ),
+                    daemon=True,
+                ).start()
+                logger.info("[OK] WQ %s dispatched to %s in #%s", item_id, resolved, source_channel)
+
+            except Exception:
+                logger.exception("[!] WQ dispatch error")
+
     import threading
     threading.Thread(target=_channel_idle_reaper, daemon=True, name="channel-reaper").start()
     threading.Thread(target=_wq_timeout_reaper, daemon=True, name="wq-timeout-reaper").start()
+    threading.Thread(target=_wq_dispatch_loop, daemon=True, name="wq-dispatcher").start()
 
     return app
 
