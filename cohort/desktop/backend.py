@@ -965,6 +965,7 @@ class DesktopBackend:
         # Save
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
+        img = self._stamp_screenshot(img, session_id, filename)
         path = self._config.screenshot_dir / filename
         img.save(path, "JPEG", quality=90)
 
@@ -1114,6 +1115,7 @@ class DesktopBackend:
 
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
+        canvas = self._stamp_screenshot(canvas, session_id, filename)
         path = self._config.screenshot_dir / filename
         canvas.save(path, "JPEG", quality=90)
 
@@ -1144,7 +1146,7 @@ class DesktopBackend:
         grid_label_color = (255, 255, 255, 140)  # white, semi-transparent feel
         grid_label_shadow = (0, 120, 35)
         try:
-            font_grid = ImageFont.truetype("consola.ttf", 10)
+            font_grid = ImageFont.truetype("consola.ttf", 13)
         except (OSError, IOError):
             font_grid = ImageFont.load_default()
         for x in range(100, width, 100):
@@ -1167,14 +1169,14 @@ class DesktopBackend:
         _font_dir = Path(__file__).parent
         _ps2p = str(_font_dir / "PressStart2P-Regular.ttf")
         try:
-            font_brand = ImageFont.truetype(_ps2p, 36)
+            font_brand = ImageFont.truetype(_ps2p, 47)
         except (OSError, IOError):
             try:
                 font_brand = ImageFont.truetype("consolab.ttf", 56)
             except (OSError, IOError):
                 font_brand = ImageFont.load_default()
         try:
-            font_sub = ImageFont.truetype("consola.ttf", 24)
+            font_sub = ImageFont.truetype("consolab.ttf", 36)
             font_serial = ImageFont.truetype("consola.ttf", 16)
         except (OSError, IOError):
             font_sub = ImageFont.load_default()
@@ -1205,19 +1207,72 @@ class DesktopBackend:
         draw.text((vx + 1, vy + 1), vd_label, fill=shadow_color, font=font_sub)
         draw.text((vx, vy), vd_label, fill=white, font=font_sub)
 
-        # -- Resolution (bottom-left corner, mirroring serial in bottom-right) --
-        res = f"{width}\u00d7{height}"
-        rb = draw.textbbox((0, 0), res, font=font_serial)
-        rh = rb[3] - rb[1]
-        draw.text((12, height - rh - 10), res, fill=light_green, font=font_serial)
+        # -- Bottom info (larger) --
+        try:
+            font_bottom = ImageFont.truetype("consolab.ttf", 32)
+        except (OSError, IOError):
+            font_bottom = font_serial
 
-        # -- Serial number (bottom-right corner) --
+        # Resolution (bottom-left)
+        res = f"{width}\u00d7{height}"
+        draw.text((14, height - 42), res, fill=light_green, font=font_bottom)
+
+        # Serial number (bottom-right)
         serial = self._next_vdd_serial()
-        sb = draw.textbbox((0, 0), serial, font=font_serial)
-        sw, sh = sb[2] - sb[0], sb[3] - sb[1]
-        draw.text((width - sw - 12, height - sh - 10), serial, fill=light_green, font=font_serial)
+        sb = draw.textbbox((0, 0), serial, font=font_bottom)
+        sw = sb[2] - sb[0]
+        draw.text((width - sw - 14, height - 42), serial, fill=light_green, font=font_bottom)
 
         return canvas
+
+    _screenshot_counter: int = 0
+
+    def _stamp_screenshot(self, img: Image.Image, session_id: str, filename: str) -> Image.Image:
+        """Wrap a screenshot with a red border and metadata bar.
+
+        The original content pixels are untouched — the border and bar
+        expand the canvas outward so nothing is covered.
+        """
+        from PIL import ImageDraw, ImageFont
+        import datetime
+
+        DesktopBackend._screenshot_counter += 1
+        ref = f"CAP-{DesktopBackend._screenshot_counter:05d}"
+        ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+        border = 2
+        w, h = img.size
+
+        # Metadata font
+        try:
+            font_meta = ImageFont.truetype("consolab.ttf", 12)
+        except (OSError, IOError):
+            font_meta = ImageFont.load_default()
+
+        meta = f"{filename}  |  {ts}  |  {session_id}  |  {ref}"
+        mb = ImageDraw.Draw(img).textbbox((0, 0), meta, font=font_meta)
+        bar_h = (mb[3] - mb[1]) + 8  # text height + padding
+
+        # New canvas: original + border on all sides + metadata bar below
+        framed_w = w + border * 2
+        framed_h = h + border * 2 + bar_h
+        framed = Image.new("RGB", (framed_w, framed_h), (255, 0, 0))  # red fill = border
+
+        # Paste original content inside the border
+        framed.paste(img, (border, border))
+
+        # Black metadata bar at the bottom
+        draw = ImageDraw.Draw(framed)
+        bar_y = h + border * 2
+        draw.rectangle([(0, bar_y), (framed_w, framed_h)], fill=(38, 38, 38))
+
+        # Metadata text centered in the bar
+        mw = mb[2] - mb[0]
+        mx = (framed_w - mw) // 2
+        my = bar_y + 4
+        draw.text((mx, my), meta, fill=(220, 220, 220), font=font_meta)
+
+        return framed
 
     def _downscale(self, img: Image.Image) -> Image.Image:
         """Downscale to max_dimension (Lanczos). 1024x768 already fits."""
