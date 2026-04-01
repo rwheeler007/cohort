@@ -98,6 +98,11 @@ E2E tests auto-create an isolated Cohort server on port 5199 with a temp data di
 | Briefings | `cohort/briefing.py`, `cohort/executive_briefing.py` |
 | Agent routing | `cohort/agent_router.py`, `cohort/capability_router.py` |
 | Health monitor | `cohort/health_monitor.py` |
+| Desktop automation | `cohort/desktop/` (MCP server, backend, VDD, config, safety) |
+| Desktop MCP server | `cohort/desktop/mcp_server.py` (stdio transport) |
+| Desktop HTTP endpoints | `cohort/desktop/http_endpoints.py` (mounted in server) |
+| Desktop VDD driver | `cohort/desktop/virtual_display.py` (Parsec VDD) |
+| Desktop config | `config/desktop_computer_use.yaml` |
 | Learning system | `cohort/learning.py` |
 | Memory manager | `cohort/memory_manager.py` |
 | Web search | `cohort/web_search.py` |
@@ -170,6 +175,31 @@ All write operations are audit-logged to `data/skill_audit.jsonl`.
 - **Meeting system**: Structured multi-agent discussions with stakeholder gating, 5-dimension relevance scoring, phase detection, and dynamic participant management
 - **Response gate**: 3-tier gating system for channel bridge responses
 - **Channel bridge**: Routes @mentions to agents, demand-driven session launch, force flag support
+- **Desktop computer use**: Windows desktop automation via Parsec VDD virtual displays or real monitor
+- **Health monitor**: Service registry with start/stop/restart, `CREATE_NEW_CONSOLE` on Windows for visible terminals
+
+### Desktop Computer Use
+
+Desktop automation subsystem in `cohort/desktop/`. Agents can screenshot, click, type, and manage windows.
+
+**Two transports:**
+- **MCP server** (`mcp_server.py`) — stdio, launched per-channel session by the VS Code extension. Provides `desktop_action` / `desktop_status` tools.
+- **HTTP endpoints** (`http_endpoints.py`) — `POST /api/desktop/action`, `GET /api/desktop/status`, mounted inside `cohort serve`. Used by pytest and REST clients.
+
+**Display profiles** (set `profile` key in `config/desktop_computer_use.yaml`):
+- `virtual` — Parsec VDD isolated monitor (1024x768), `desktop_advanced` tier, no window restrictions. Safe for autonomous work.
+- `main_display` — Real primary monitor, `desktop_interact` tier, window allowlist enforced. For demos and visual verification.
+
+**Key env var:** `COHORT_DESKTOP_CONFIG` — override path to `desktop_computer_use.yaml`. Set automatically by the VS Code extension in `.mcp.json`.
+
+### Health Monitor & Service Management
+
+`cohort/health_monitor.py` tracks services and can start/stop/restart them.
+
+- **Service registry** — `.cohort/data/services/health_monitor/service_registry.json` defines services with `start_command`, `port`, `health_endpoint`, `controllable`.
+- **`_launch_service()`** — On Windows uses `subprocess.CREATE_NEW_CONSOLE` to spawn in a visible console window. On Unix, detached subprocess.
+- **API** — `POST /api/health-monitor/{start|stop|restart}/{service_key}`
+- **VS Code extension** — Dashboard health panel shows Start/Stop/Restart buttons for controllable services.
 
 ---
 
@@ -288,6 +318,11 @@ This project is managed by [Cohort](https://github.com/anthropics/cohort) — a 
 | `cohort_meeting_phase` | Detect current discussion phase |
 | `cohort_meeting_extend` | Add more turns to a meeting |
 | `cohort_meeting_enable/disable` | Toggle stakeholder gating on a channel |
+
+**Desktop:**
+
+- `desktop_action` — Desktop automation (screenshot, click, type, window management)
+- `desktop_status` — Check desktop backend status and VDD state
 
 **Browser & Web:**
 
