@@ -303,8 +303,8 @@ def _prune_stale_sessions() -> None:
         ch_sessions = _channel_sessions[channel_id]
         stale = [
             sid for sid, info in ch_sessions.items()
-            if (now - info.get("last_heartbeat", 0)) > cutoff
-            and info.get("last_heartbeat") is not None
+            if info.get("last_heartbeat") is not None
+            and (now - info["last_heartbeat"]) > cutoff
         ]
         for sid in stale:
             del ch_sessions[sid]
@@ -1257,6 +1257,13 @@ def request_session(channel_id: str, *, force: bool = False, workspace_path: Opt
                 evicted, channel_id,
             )
 
+    # In server-managed mode, spawn directly instead of waiting for VS Code
+    if _state_file is not None:
+        logger.info("[>>] Server-managed mode — direct spawn for #%s", channel_id)
+        if _spawn_channel_session(channel_id):
+            return {"queued": True, "channel_id": channel_id, "method": "direct"}
+        return {"queued": False, "reason": "direct_spawn_failed"}
+
     _add_to_launch_queue(channel_id, workspace_path=workspace_path)
     logger.info("[>>] Session launch queued for #%s", channel_id)
     return {"queued": True, "channel_id": channel_id}
@@ -1540,9 +1547,28 @@ def _ensure_mcp_entry(cohort_root: Path, server_key: str, channel_id: str) -> No
     import shutil
 
     mcp_path = cohort_root / ".mcp.json"
-    plugin_entry = str(cohort_root / "plugins" / "cohort-channel" / "src" / "index.ts")
-    # Forward slashes for cross-platform compat
-    plugin_entry = plugin_entry.replace("\\", "/")
+
+    # Find the cohort-channel plugin -- check multiple locations
+    plugin_entry: Optional[str] = None
+    _candidates = [
+        cohort_root / "plugins" / "cohort-channel" / "src" / "index.ts",
+    ]
+    # VS Code extension dirs
+    _vscode_ext = Path.home() / ".vscode" / "extensions"
+    if _vscode_ext.exists():
+        for d in sorted(_vscode_ext.glob("cohort-ai.cohort-vscode-*"), reverse=True):
+            _candidates.append(d / "plugins" / "cohort-channel" / "src" / "index.ts")
+    # Cohort repo checkout
+    _candidates.append(Path(__file__).parent.parent / "plugins" / "cohort-channel" / "src" / "index.ts")
+
+    for candidate in _candidates:
+        if candidate.exists():
+            plugin_entry = str(candidate).replace("\\", "/")
+            break
+
+    if not plugin_entry:
+        logger.warning("[!] cohort-channel plugin not found, cannot write MCP config")
+        return
 
     try:
         data = _json.loads(mcp_path.read_text("utf-8")) if mcp_path.exists() else {}
@@ -1599,14 +1625,37 @@ def _spawn_channel_session(channel_id: str) -> bool:
     """
     logger.info("[>>] Spawning channel session for #%s", channel_id)
 
+    # Resolve workspace: channel metadata > state file parent > AGENTS_ROOT > fallback
+    workspace_root = _get_channel_workspace(channel_id)
+    if not workspace_root and _state_file is not None:
+        # data dir is .cohort/data/ → workspace is two levels up
+        ws_candidate = _state_file.parent.parent.parent
+        if ws_candidate.exists() and ws_candidate != Path("."):
+            workspace_root = str(ws_candidate)
+    if not workspace_root:
+        try:
+            from cohort.agent_router import AGENTS_ROOT
+            if AGENTS_ROOT and str(AGENTS_ROOT) != ".":
+                workspace_root = str(AGENTS_ROOT)
+        except ImportError:
+            pass
+    if not workspace_root:
+        workspace_root = str(Path(__file__).parent.parent)
+
+    # Build MCP server key and ensure .mcp.json exists in workspace
+    ws_path = Path(workspace_root)
+    project_id = ws_path.name.lower().replace(" ", "-")
+    server_key = f"cohort-ch-{project_id}-{channel_id}"
+    _ensure_mcp_entry(ws_path, server_key, channel_id)
+
     system_prompt = _get_system_prompt()
 
     cmd = [
         CLAUDE_CMD,
-        "--dangerously-load-development-channels", "server:cohort-wq",
+        "--dangerously-load-development-channels", f"server:{server_key}",
         "--dangerously-skip-permissions",
         "--allowedTools",
-        "mcp__cohort-wq__cohort_respond,mcp__cohort-wq__cohort_error,mcp__cohort-wq__cohort_post,mcp__cohort-wq__cohort_ready",
+        f"mcp__{server_key}__cohort_respond,mcp__{server_key}__cohort_error,mcp__{server_key}__cohort_post,mcp__{server_key}__cohort_ready",
         "--model", CHANNEL_MODEL,
         "--system-prompt", system_prompt,
     ]
@@ -1614,18 +1663,7 @@ def _spawn_channel_session(channel_id: str) -> bool:
     env = {k: v for k, v in os.environ.items() if not k.startswith("CLAUDECODE")}
     env["CHANNEL_ID"] = channel_id
     env["COHORT_BASE_URL"] = COHORT_BASE_URL
-    env["CHANNEL_NAME"] = f"cohort-ch-{channel_id}"
-
-    # Resolve workspace: channel metadata > AGENTS_ROOT > fallback
-    workspace_root = _get_channel_workspace(channel_id)
-    if not workspace_root:
-        try:
-            from cohort.agent_router import AGENTS_ROOT
-            workspace_root = str(AGENTS_ROOT) if AGENTS_ROOT else None
-        except ImportError:
-            pass
-    if not workspace_root:
-        workspace_root = str(Path(__file__).parent.parent)
+    env["CHANNEL_NAME"] = server_key
 
     popen_kwargs: dict = dict(
         cwd=str(workspace_root),
