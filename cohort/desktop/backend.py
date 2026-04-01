@@ -1080,13 +1080,18 @@ class DesktopBackend:
         Instead, we enumerate windows within the display bounds and
         capture each via PrintWindow, then composite onto a blank canvas.
         """
-        canvas = Image.new("RGB", (bounds.width, bounds.height), (0, 0, 0))
+        canvas = self._vdd_background(bounds.width, bounds.height)
 
         # Get all windows, sorted back-to-front (reverse Z-order)
         windows = self._enumerate_windows()
-        # Filter to windows overlapping the virtual display
+        # Filter to windows overlapping the virtual display.
+        # Skip desktop shell windows (Progman, WorkerW) — they span all
+        # monitors and would paint a black rectangle over our VDD background.
+        _SHELL_CLASSES = {"Progman", "WorkerW"}
         vd_windows = []
         for win in windows:
+            if win.class_name in _SHELL_CLASSES:
+                continue
             # Check if window overlaps the virtual display bounds
             if (win.x < bounds.x + bounds.width and
                     win.x + win.width > bounds.x and
@@ -1115,6 +1120,52 @@ class DesktopBackend:
         self._last_screenshot[session_id] = time.time()
         self._prune_screenshots()
         return path
+
+    @staticmethod
+    def _vdd_background(width: int, height: int) -> Image.Image:
+        """Green-screen background for the virtual display canvas.
+
+        Makes it immediately obvious in screenshots that the capture
+        is from the Parsec VDD rather than the real desktop.
+        """
+        from PIL import ImageDraw, ImageFont
+
+        bg_color = (0, 177, 64)  # chroma-key green
+        canvas = Image.new("RGB", (width, height), bg_color)
+        draw = ImageDraw.Draw(canvas)
+
+        label = "COHORT  VIRTUAL  DISPLAY"
+        sub = f"{width}\u00d7{height}"
+
+        # Use a large built-in font; fall back gracefully
+        try:
+            font_lg = ImageFont.truetype("consola.ttf", 36)
+            font_sm = ImageFont.truetype("consola.ttf", 20)
+        except (OSError, IOError):
+            font_lg = ImageFont.load_default()
+            font_sm = font_lg
+
+        text_color = (255, 255, 255)
+        shadow_color = (0, 100, 30)
+
+        # Center the label
+        bbox = draw.textbbox((0, 0), label, font=font_lg)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        lx = (width - tw) // 2
+        ly = (height - th) // 2 - 15
+
+        # Shadow then text
+        draw.text((lx + 2, ly + 2), label, fill=shadow_color, font=font_lg)
+        draw.text((lx, ly), label, fill=text_color, font=font_lg)
+
+        # Sub-label (resolution)
+        bbox2 = draw.textbbox((0, 0), sub, font=font_sm)
+        sw = bbox2[2] - bbox2[0]
+        sx = (width - sw) // 2
+        sy = ly + th + 12
+        draw.text((sx, sy), sub, fill=(220, 255, 220), font=font_sm)
+
+        return canvas
 
     def _downscale(self, img: Image.Image) -> Image.Image:
         """Downscale to max_dimension (Lanczos). 1024x768 already fits."""
