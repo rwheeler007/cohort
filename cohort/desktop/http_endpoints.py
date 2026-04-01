@@ -16,6 +16,7 @@ The backend is lazily initialised on the first request.
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Optional
 
@@ -140,6 +141,37 @@ async def _dispatch(backend: DesktopBackend, action: str, params: dict):
     if action == "run_command":
         return await backend.run_command(sid, params.get("command", ""))
 
+    # Observer mode
+    if action == "start_observer":
+        from cohort.desktop.observer import start_observer
+        result_dict = start_observer(
+            user_goal=params.get("text", ""),
+            desktop_session_id=sid,
+        )
+        return DesktopResult(
+            success="error" not in result_dict,
+            data=json.dumps(result_dict),
+            action=action,
+        )
+    if action == "stop_observer":
+        from cohort.desktop.observer import stop_observer
+        return DesktopResult(success=True, data=json.dumps(stop_observer()), action=action)
+    if action == "pause_observer":
+        from cohort.desktop.observer import pause_observer
+        return DesktopResult(success=True, data=json.dumps(pause_observer()), action=action)
+    if action == "resume_observer":
+        from cohort.desktop.observer import resume_observer
+        return DesktopResult(success=True, data=json.dumps(resume_observer()), action=action)
+    if action == "set_observer_goal":
+        from cohort.desktop.observer import set_goal
+        return DesktopResult(success=True, data=json.dumps(set_goal(params.get("text", ""))), action=action)
+    if action == "get_observer_status":
+        from cohort.desktop.observer import get_status
+        return DesktopResult(success=True, data=json.dumps(get_status()), action=action)
+    if action == "get_observer_guidance":
+        from cohort.desktop.observer import get_history
+        return DesktopResult(success=True, data=json.dumps(get_history()), action=action)
+
     return DesktopResult(
         success=False,
         error=f"Unknown action: '{action}'. Valid actions: screenshot, list_windows, click, press_key, ...",
@@ -224,6 +256,68 @@ async def desktop_status_endpoint(request: Request) -> JSONResponse:
 
 
 # ---------------------------------------------------------------------------
+# Observer Mode REST endpoints
+# ---------------------------------------------------------------------------
+
+async def observer_start_endpoint(request: Request) -> JSONResponse:
+    """POST /api/desktop/observer/start — start observer mode."""
+    from cohort.desktop.observer import start_observer
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    result = start_observer(
+        user_goal=body.get("user_goal", ""),
+        desktop_session_id=body.get("desktop_session_id", "default"),
+    )
+    status = 200 if "error" not in result else 409
+    return JSONResponse(result, status_code=status)
+
+
+async def observer_stop_endpoint(request: Request) -> JSONResponse:
+    """POST /api/desktop/observer/stop — stop observer mode."""
+    from cohort.desktop.observer import stop_observer
+    return JSONResponse(stop_observer())
+
+
+async def observer_pause_endpoint(request: Request) -> JSONResponse:
+    """POST /api/desktop/observer/pause — pause observer mode."""
+    from cohort.desktop.observer import pause_observer
+    return JSONResponse(pause_observer())
+
+
+async def observer_resume_endpoint(request: Request) -> JSONResponse:
+    """POST /api/desktop/observer/resume — resume observer mode."""
+    from cohort.desktop.observer import resume_observer
+    return JSONResponse(resume_observer())
+
+
+async def observer_goal_endpoint(request: Request) -> JSONResponse:
+    """POST /api/desktop/observer/goal — update observer goal."""
+    from cohort.desktop.observer import set_goal
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    result = set_goal(body.get("user_goal", ""))
+    status = 200 if "error" not in result else 400
+    return JSONResponse(result, status_code=status)
+
+
+async def observer_status_endpoint(request: Request) -> JSONResponse:
+    """GET /api/desktop/observer/status — observer session state."""
+    from cohort.desktop.observer import get_status
+    return JSONResponse(get_status())
+
+
+async def observer_history_endpoint(request: Request) -> JSONResponse:
+    """GET /api/desktop/observer/history — recent guidance items."""
+    from cohort.desktop.observer import get_history
+    limit = int(request.query_params.get("limit", "20"))
+    return JSONResponse({"guidance": get_history(limit)})
+
+
+# ---------------------------------------------------------------------------
 # Route factory
 # ---------------------------------------------------------------------------
 
@@ -232,4 +326,12 @@ def desktop_routes():
     return [
         Route("/api/desktop/action", desktop_action_endpoint, methods=["POST"]),
         Route("/api/desktop/status", desktop_status_endpoint, methods=["GET"]),
+        # Observer mode
+        Route("/api/desktop/observer/start", observer_start_endpoint, methods=["POST"]),
+        Route("/api/desktop/observer/stop", observer_stop_endpoint, methods=["POST"]),
+        Route("/api/desktop/observer/pause", observer_pause_endpoint, methods=["POST"]),
+        Route("/api/desktop/observer/resume", observer_resume_endpoint, methods=["POST"]),
+        Route("/api/desktop/observer/goal", observer_goal_endpoint, methods=["POST"]),
+        Route("/api/desktop/observer/status", observer_status_endpoint, methods=["GET"]),
+        Route("/api/desktop/observer/history", observer_history_endpoint, methods=["GET"]),
     ]

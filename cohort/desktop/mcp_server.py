@@ -125,6 +125,15 @@ ADVANCED (session management, apps):
   maximize_window         -- Maximize. Params: window_title
   run_command             -- Shell command (disabled by default). Params: command
 
+OBSERVER (AI watches screen and provides guidance, never acts):
+  start_observer          -- Start observer mode. Params: text (goal)
+  stop_observer           -- Stop observer mode
+  pause_observer          -- Pause observation
+  resume_observer         -- Resume observation
+  set_observer_goal       -- Update what the user is working on. Params: text
+  get_observer_status     -- Get observer state and latest guidance
+  get_observer_guidance   -- Get recent guidance history
+
 All coordinates are relative to the virtual display (0,0 = top-left).
 Sessions auto-create on first action if not explicitly started.
 """.strip()
@@ -366,6 +375,37 @@ async def _dispatch(
         return await backend.maximize_window(session_id, kwargs["window_title"])
     if action == "run_command":
         return await backend.run_command(session_id, kwargs["command"])
+
+    # Observer mode
+    if action == "start_observer":
+        from cohort.desktop.observer import start_observer
+        import json as _json
+        r = start_observer(user_goal=kwargs.get("text", ""), desktop_session_id=session_id)
+        return DesktopResult(success="error" not in r, data=_json.dumps(r), action=action)
+    if action == "stop_observer":
+        from cohort.desktop.observer import stop_observer
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(stop_observer()), action=action)
+    if action == "pause_observer":
+        from cohort.desktop.observer import pause_observer
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(pause_observer()), action=action)
+    if action == "resume_observer":
+        from cohort.desktop.observer import resume_observer
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(resume_observer()), action=action)
+    if action == "set_observer_goal":
+        from cohort.desktop.observer import set_goal
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(set_goal(kwargs.get("text", ""))), action=action)
+    if action == "get_observer_status":
+        from cohort.desktop.observer import get_status
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(get_status()), action=action)
+    if action == "get_observer_guidance":
+        from cohort.desktop.observer import get_history
+        import json as _json
+        return DesktopResult(success=True, data=_json.dumps(get_history()), action=action)
 
     return DesktopResult(
         success=False,

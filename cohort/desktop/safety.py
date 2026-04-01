@@ -35,6 +35,14 @@ DESKTOP_PERMISSION_TIERS = {
     "get_clipboard": "desktop_observe",
     "accessibility_tree": "desktop_observe",
     "help": "desktop_observe",
+    # Observer mode (read-only guidance)
+    "start_observer": "desktop_observe",
+    "stop_observer": "desktop_observe",
+    "pause_observer": "desktop_observe",
+    "resume_observer": "desktop_observe",
+    "set_observer_goal": "desktop_observe",
+    "get_observer_status": "desktop_observe",
+    "get_observer_guidance": "desktop_observe",
 
     # desktop_interact (mouse/keyboard)
     "click": "desktop_interact",

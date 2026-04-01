@@ -36,6 +36,18 @@ class VirtualDisplayConfig(BaseModel):
     refresh_rate: int = 60
 
 
+class ObserverConfig(BaseModel):
+    """Configuration for Observer Mode — AI watches and guides, never acts."""
+    enabled: bool = True
+    interval_seconds: int = 5
+    change_threshold: float = 5.0
+    context_window_size: int = 5
+    max_guidance_history: int = 50
+    max_tokens: int = 1024
+    auto_toast: bool = True
+    auto_toast_threshold: float = 0.8
+
+
 class DesktopConfig(BaseModel):
     """Validated configuration for the desktop computer use server."""
     enabled: bool = False
@@ -64,6 +76,8 @@ class DesktopConfig(BaseModel):
 
     run_command_enabled: bool = False
     allowed_commands: List[str] = Field(default_factory=list)
+
+    observer: ObserverConfig = Field(default_factory=ObserverConfig)
 
 
 # ---------------------------------------------------------------------------

@@ -61,3 +61,15 @@ session_timeout_seconds: 600  # Auto-teardown after 10 min idle
 # Command execution (run_command action)
 run_command_enabled: false
 allowed_commands: []
+
+# Observer Mode
+# AI watches your screen and provides guidance — never acts on your behalf.
+observer:
+  enabled: true
+  interval_seconds: 5            # Capture cadence (LLM call adds 2-5s on top)
+  change_threshold: 5.0          # Min % pixel change to trigger LLM analysis
+  context_window_size: 5         # Rolling history of past observations in prompt
+  max_guidance_history: 50       # Guidance items retained in memory
+  max_tokens: 1024               # Max tokens per LLM guidance response
+  auto_toast: true               # Show toast for high-confidence guidance
+  auto_toast_threshold: 0.8      # Confidence cutoff for auto-toast
