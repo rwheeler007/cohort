@@ -1139,22 +1139,29 @@ class DesktopBackend:
         canvas = Image.new("RGB", (width, height), bg_color)
         draw = ImageDraw.Draw(canvas)
 
-        # Fonts — bold for COHORT, regular for the rest
+        # Fonts — Press Start 2P for COHORT brand, Consolas for the rest
+        _font_dir = Path(__file__).parent
+        _ps2p = str(_font_dir / "PressStart2P-Regular.ttf")
         try:
-            font_brand = ImageFont.truetype("consolab.ttf", 56)
+            font_brand = ImageFont.truetype(_ps2p, 36)
+        except (OSError, IOError):
+            try:
+                font_brand = ImageFont.truetype("consolab.ttf", 56)
+            except (OSError, IOError):
+                font_brand = ImageFont.load_default()
+        try:
             font_sub = ImageFont.truetype("consola.ttf", 24)
             font_serial = ImageFont.truetype("consola.ttf", 16)
         except (OSError, IOError):
-            font_brand = ImageFont.load_default()
-            font_sub = font_brand
-            font_serial = font_brand
+            font_sub = ImageFont.load_default()
+            font_serial = font_sub
 
         cohort_color = (227, 155, 81)   # copper/orange from dashboard
         shadow_color = (0, 100, 30)
         white = (255, 255, 255)
         light_green = (200, 240, 200)
 
-        # -- COHORT (large, bold, copper) --
+        # -- COHORT (Press Start 2P pixel font, copper) --
         brand = "COHORT"
         bb = draw.textbbox((0, 0), brand, font=font_brand)
         bw, bh = bb[2] - bb[0], bb[3] - bb[1]
