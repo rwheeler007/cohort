@@ -7462,6 +7462,16 @@ def create_app(data_dir: str = "data") -> Starlette:
         _bench.set_emit(sio.emit, loop)
         logger.info("[OK] Benchmark runner wired to Socket.IO")
 
+        # Initialize channel bridge state persistence
+        try:
+            from cohort.channel_bridge import set_data_dir, load_session_state
+            set_data_dir(_resolved_data_dir)
+            recovered = load_session_state()
+            if recovered:
+                logger.info("[OK] Re-adopted %d channel session(s) from prior run", recovered)
+        except Exception as exc:
+            logger.warning("[!] Channel session recovery failed: %s", exc)
+
         # Load ecosystem inventory cache (best-effort, non-blocking)
         try:
             _load_inventory_cache()

@@ -94,6 +94,106 @@ _reaper_started: bool = False
 
 _GLOBAL_KEY = "_global"  # Key for unscoped MCP work-queue sessions
 
+# Session state persistence
+_state_file: Optional[Path] = None
+_resume_ids: Dict[str, str] = {}  # channel_id -> last known resume_id
+
+
+def set_data_dir(data_dir: str) -> None:
+    """Set the data directory for session state persistence."""
+    global _state_file  # noqa: PLW0603
+    _state_file = Path(data_dir) / "channel_sessions.json"
+
+
+def _save_session_state() -> None:
+    """Persist session registry to disk for server restart recovery."""
+    if _state_file is None:
+        return
+    import json as _json
+    entries = []
+    with _sessions_lock:
+        for ch_id, sessions in _channel_sessions.items():
+            for sid, info in sessions.items():
+                entries.append({
+                    "channel_id": ch_id,
+                    "session_id": sid,
+                    "pid": info.get("pid"),
+                    "resume_id": _resume_ids.get(ch_id),
+                    "workspace_path": info.get("workspace_path"),
+                    "spawned_at": info.get("registered_at"),
+                    "last_heartbeat": info.get("last_heartbeat"),
+                })
+    try:
+        _state_file.parent.mkdir(parents=True, exist_ok=True)
+        _state_file.write_text(_json.dumps(entries, indent=2) + "\n", "utf-8")
+    except Exception:
+        logger.exception("[!] Failed to save session state to %s", _state_file)
+
+
+def load_session_state() -> int:
+    """Load session state from disk and re-adopt living sessions.
+
+    Returns the number of sessions re-adopted.
+    """
+    if _state_file is None or not _state_file.exists():
+        return 0
+    import json as _json
+    try:
+        entries = _json.loads(_state_file.read_text("utf-8"))
+    except Exception:
+        logger.exception("[!] Failed to load session state from %s", _state_file)
+        return 0
+
+    adopted = 0
+    for entry in entries:
+        ch_id = entry.get("channel_id")
+        sid = entry.get("session_id")
+        pid = entry.get("pid")
+        resume_id = entry.get("resume_id")
+
+        if not ch_id or not pid:
+            continue
+
+        # Preserve resume_id for future spawns regardless of PID liveness
+        if resume_id:
+            _resume_ids[ch_id] = resume_id
+
+        # Check if PID is still alive
+        alive = False
+        try:
+            if sys.platform == "win32":
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                handle = kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+                if handle:
+                    kernel32.CloseHandle(handle)
+                    alive = True
+            else:
+                os.kill(pid, 0)
+                alive = True
+        except (OSError, ProcessLookupError):
+            pass
+
+        if alive:
+            with _sessions_lock:
+                if ch_id not in _channel_sessions:
+                    _channel_sessions[ch_id] = {}
+                _channel_sessions[ch_id][sid or f"recovered-{pid}"] = {
+                    "session_id": sid,
+                    "pid": pid,
+                    "last_heartbeat": None,  # Will be refreshed on next heartbeat
+                    "last_activity": time.time(),
+                    "registered_at": entry.get("spawned_at"),
+                    "workspace_path": entry.get("workspace_path"),
+                    "process": None,  # We don't have the Popen handle
+                }
+            adopted += 1
+            logger.info("[OK] Re-adopted session %s (PID %d) for #%s", sid, pid, ch_id)
+        else:
+            logger.info("[*] Session %s (PID %d) for #%s is dead — resume_id preserved", sid, pid, ch_id)
+
+    return adopted
+
 
 def _get_system_prompt() -> str:
     global _system_prompt_cache
@@ -752,6 +852,7 @@ def register_channel_session(
         active_count += 1
 
     touch_channel_activity(channel_id)  # Seed idle reaper timestamp
+    _save_session_state()
     logger.info(
         "[OK] Registered session %s for #%s (pid=%s, %d/%d active)",
         session_id, channel_id, pid, active_count, _session_limit,
@@ -775,6 +876,7 @@ def unregister_channel_session(channel_id: str, session_id: str) -> bool:
             if not ch_sessions:
                 del _channel_sessions[channel_id]
             logger.info("[OK] Unregistered session %s from #%s", session_id, channel_id)
+            _save_session_state()
             return True
     return False
 
@@ -1330,6 +1432,8 @@ def reap_idle_sessions(max_idle_seconds: Optional[float] = None) -> int:
             _channel_sessions.pop(ch_id, None)
         reaped += 1
 
+    if reaped:
+        _save_session_state()
     return reaped
 
 
@@ -1474,6 +1578,7 @@ def _spawn_channel_session(channel_id: str) -> bool:
             info = (_channel_sessions.get(channel_id, {}).get(spawn_session_id))
             if info and info.get("last_heartbeat") is not None:
                 logger.info("[OK] Channel session for #%s connected (PID %d)", channel_id, process.pid)
+                _save_session_state()
                 return True
 
     logger.error("[X] Channel session for #%s timed out waiting for heartbeat", channel_id)
