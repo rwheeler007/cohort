@@ -999,6 +999,7 @@ def _try_cloud(
     user_message: str,
     agent_id: str,
     label: str = "cloud",
+    temperature: float | None = None,
 ) -> tuple[str | None, int, int, str]:
     """Try cloud API backend with budget check."""
     try:
@@ -1023,7 +1024,7 @@ def _try_cloud(
             return _BACKEND_EMPTY
 
         logger.info("[>>] %s: %s", label, agent_id)
-        cr = cloud.complete(system_prompt, user_message)
+        cr = cloud.complete(system_prompt, user_message, temperature=temperature)
         if cr.text.strip():
             logger.info("[OK] %s for %s (%s, %d/%d tok)", label, agent_id, cr.model, cr.tokens_in, cr.tokens_out)
             return cr.text.strip(), cr.tokens_in, cr.tokens_out, cr.model
@@ -1200,7 +1201,7 @@ def _invoke_smartest_pipeline(
         # Cloud API (as primary or fallback)
         if smartest_primary == "cloud_api" or smartest_fallback == "cloud_api":
             backends.append(("P3 cloud",
-                lambda: _try_cloud(system_prompt, phase3_user_message, agent_id, label="P3 cloud")))
+                lambda: _try_cloud(system_prompt, phase3_user_message, agent_id, label="P3 cloud", temperature=agent_temperature)))
 
         # Channel fallback (explicit config or global channel mode)
         if smartest_fallback == "channel" or _channel_mode_enabled:

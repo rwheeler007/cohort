@@ -51,7 +51,7 @@ class CloudBackend:
         self.model = model
         self.base_url = base_url
 
-    def complete(self, system_prompt: str, user_message: str) -> CloudResponse:
+    def complete(self, system_prompt: str, user_message: str, temperature: float | None = None) -> CloudResponse:
         raise NotImplementedError
 
 
@@ -59,17 +59,20 @@ class CloudBackend:
 class AnthropicBackend(CloudBackend):
     """Anthropic Messages API."""
 
-    def complete(self, system_prompt: str, user_message: str) -> CloudResponse:
+    def complete(self, system_prompt: str, user_message: str, temperature: float | None = None) -> CloudResponse:
         import anthropic
 
         client = anthropic.Anthropic(api_key=self.api_key)
         t0 = time.monotonic()
-        response = client.messages.create(
-            model=self.model,
-            max_tokens=4096,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_message}],
-        )
+        kwargs: dict[str, Any] = {
+            "model": self.model,
+            "max_tokens": 4096,
+            "system": system_prompt,
+            "messages": [{"role": "user", "content": user_message}],
+        }
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        response = client.messages.create(**kwargs)
         elapsed = round(time.monotonic() - t0, 1)
         return CloudResponse(
             text=response.content[0].text,
@@ -84,23 +87,26 @@ class AnthropicBackend(CloudBackend):
 class OpenAIBackend(CloudBackend):
     """OpenAI Chat Completions API (also works for any compatible endpoint)."""
 
-    def complete(self, system_prompt: str, user_message: str) -> CloudResponse:
+    def complete(self, system_prompt: str, user_message: str, temperature: float | None = None) -> CloudResponse:
         import openai
 
-        kwargs: dict[str, Any] = {"api_key": self.api_key}
+        client_kwargs: dict[str, Any] = {"api_key": self.api_key}
         if self.base_url:
-            kwargs["base_url"] = self.base_url
+            client_kwargs["base_url"] = self.base_url
 
-        client = openai.OpenAI(**kwargs)
+        client = openai.OpenAI(**client_kwargs)
         t0 = time.monotonic()
-        response = client.chat.completions.create(
-            model=self.model,
-            max_tokens=4096,
-            messages=[
+        req_kwargs: dict[str, Any] = {
+            "model": self.model,
+            "max_tokens": 4096,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message},
             ],
-        )
+        }
+        if temperature is not None:
+            req_kwargs["temperature"] = temperature
+        response = client.chat.completions.create(**req_kwargs)
         elapsed = round(time.monotonic() - t0, 1)
         choice = response.choices[0]
         usage = response.usage
