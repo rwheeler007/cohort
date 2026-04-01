@@ -1121,12 +1121,17 @@ class DesktopBackend:
         self._prune_screenshots()
         return path
 
-    @staticmethod
-    def _vdd_background(width: int, height: int) -> Image.Image:
-        """Green-screen background for the virtual display canvas.
+    _vdd_serial: int = 0
 
-        Makes it immediately obvious in screenshots that the capture
-        is from the Parsec VDD rather than the real desktop.
+    def _next_vdd_serial(self) -> str:
+        DesktopBackend._vdd_serial += 1
+        return f"VDD-{DesktopBackend._vdd_serial:04d}"
+
+    def _vdd_background(self, width: int, height: int) -> Image.Image:
+        """Branded green-screen background for the virtual display.
+
+        Shows the COHORT logo in copper/orange above 'VIRTUAL DISPLAY',
+        the resolution, and a unique serial number per instance.
         """
         from PIL import ImageDraw, ImageFont
 
@@ -1134,36 +1139,54 @@ class DesktopBackend:
         canvas = Image.new("RGB", (width, height), bg_color)
         draw = ImageDraw.Draw(canvas)
 
-        label = "COHORT  VIRTUAL  DISPLAY"
-        sub = f"{width}\u00d7{height}"
-
-        # Use a large built-in font; fall back gracefully
+        # Fonts — bold for COHORT, regular for the rest
         try:
-            font_lg = ImageFont.truetype("consola.ttf", 36)
-            font_sm = ImageFont.truetype("consola.ttf", 20)
+            font_brand = ImageFont.truetype("consolab.ttf", 56)
+            font_sub = ImageFont.truetype("consola.ttf", 24)
+            font_serial = ImageFont.truetype("consola.ttf", 16)
         except (OSError, IOError):
-            font_lg = ImageFont.load_default()
-            font_sm = font_lg
+            font_brand = ImageFont.load_default()
+            font_sub = font_brand
+            font_serial = font_brand
 
-        text_color = (255, 255, 255)
+        cohort_color = (227, 155, 81)   # copper/orange from dashboard
         shadow_color = (0, 100, 30)
+        white = (255, 255, 255)
+        light_green = (200, 240, 200)
 
-        # Center the label
-        bbox = draw.textbbox((0, 0), label, font=font_lg)
-        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        lx = (width - tw) // 2
-        ly = (height - th) // 2 - 15
+        # -- COHORT (large, bold, copper) --
+        brand = "COHORT"
+        bb = draw.textbbox((0, 0), brand, font=font_brand)
+        bw, bh = bb[2] - bb[0], bb[3] - bb[1]
+        bx = (width - bw) // 2
+        cy = height // 2 - bh - 30  # above center
 
-        # Shadow then text
-        draw.text((lx + 2, ly + 2), label, fill=shadow_color, font=font_lg)
-        draw.text((lx, ly), label, fill=text_color, font=font_lg)
+        draw.text((bx + 2, cy + 2), brand, fill=shadow_color, font=font_brand)
+        draw.text((bx, cy), brand, fill=cohort_color, font=font_brand)
 
-        # Sub-label (resolution)
-        bbox2 = draw.textbbox((0, 0), sub, font=font_sm)
-        sw = bbox2[2] - bbox2[0]
-        sx = (width - sw) // 2
-        sy = ly + th + 12
-        draw.text((sx, sy), sub, fill=(220, 255, 220), font=font_sm)
+        # -- VIRTUAL DISPLAY (below COHORT) --
+        vd_label = "VIRTUAL  DISPLAY"
+        vb = draw.textbbox((0, 0), vd_label, font=font_sub)
+        vw, vh = vb[2] - vb[0], vb[3] - vb[1]
+        vx = (width - vw) // 2
+        vy = cy + bh + 12
+
+        draw.text((vx + 1, vy + 1), vd_label, fill=shadow_color, font=font_sub)
+        draw.text((vx, vy), vd_label, fill=white, font=font_sub)
+
+        # -- Resolution --
+        res = f"{width}\u00d7{height}"
+        rb = draw.textbbox((0, 0), res, font=font_serial)
+        rw = rb[2] - rb[0]
+        rx = (width - rw) // 2
+        ry = vy + vh + 10
+        draw.text((rx, ry), res, fill=light_green, font=font_serial)
+
+        # -- Serial number (bottom-right corner) --
+        serial = self._next_vdd_serial()
+        sb = draw.textbbox((0, 0), serial, font=font_serial)
+        sw, sh = sb[2] - sb[0], sb[3] - sb[1]
+        draw.text((width - sw - 12, height - sh - 10), serial, fill=light_green, font=font_serial)
 
         return canvas
 
