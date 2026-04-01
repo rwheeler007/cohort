@@ -1653,6 +1653,17 @@ async def channel_launch_ack(request: Request) -> JSONResponse:
     return JSONResponse({"ok": ok})
 
 
+async def channel_capabilities(request: Request) -> JSONResponse:
+    """GET /api/channel/capabilities -- report server session management features."""
+    from cohort.channel_bridge import _session_limit
+    return JSONResponse({
+        "server_managed_sessions": True,
+        "session_limit": _session_limit,
+        "wq_dispatch": "internal",
+        "version": "0.4.33",
+    })
+
+
 async def channel_sessions(request: Request) -> JSONResponse:
     """GET /api/channel/sessions -- detailed session status for VS Code panel."""
     from cohort.channel_bridge import get_all_sessions_status
@@ -7268,6 +7279,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         # Channel (Claude Code Channels integration)
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
+        Route("/api/channel/capabilities", channel_capabilities, methods=["GET"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
         Route("/api/channel/sessions", channel_sessions, methods=["GET"]),
         Route("/api/channel/ensure-session", channel_ensure_session, methods=["POST"]),
