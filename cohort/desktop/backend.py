@@ -1155,7 +1155,7 @@ class DesktopBackend:
         center_x, center_y = width // 2, height // 2
         for x in range(100, width, 100):
             for y in range(100, height, 100):
-                if abs(x - center_x) < 200 and abs(y - center_y) < 80:
+                if abs(x - center_x) < 100 and abs(y - center_y) < 60:
                     continue  # don't overlap branding
                 label = f"{x},{y}"
                 lb = draw.textbbox((0, 0), label, font=font_grid)
