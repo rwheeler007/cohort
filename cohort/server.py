@@ -7109,11 +7109,13 @@ def create_app(data_dir: str = "data") -> Starlette:
         os.environ.get("COHORT_AGENTS_API_KEY")
         or saved_settings.get("agents_api_key", "")
     )
+    # [DEPRECATED] Remote Gateway sync disabled — using local disk agents only.
+    # Reactivate by uncommenting remote_url/api_key when the Gateway API is live.
     _agent_store = AgentStore(
         agents_dir=agents_dir if agents_dir.is_dir() else None,
         fallback_registry=_LEGACY_REGISTRY,
-        remote_url=remote_url,
-        api_key=api_key,
+        # remote_url=remote_url,
+        # api_key=api_key,
     )
     set_store(_agent_store)
     set_global_store(_agent_store)

@@ -947,8 +947,11 @@ def get_session_status(channel_id: Optional[str] = None) -> Dict[str, Any]:
                 "queue_depth": sum(1 for r in queue if r["status"] == "pending"),
             }
 
-        # Aggregate across all sessions
-        any_healthy = channel_mode_active()
+        # Aggregate across all sessions (inline to avoid re-acquiring _sessions_lock)
+        any_healthy = any(
+            _get_any_alive_session(ch_id) is not None
+            for ch_id in _channel_sessions
+        )
         all_info = [
             info
             for ch_sessions in _channel_sessions.values()
