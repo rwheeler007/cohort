@@ -620,11 +620,10 @@ def _self_post_response(
             sender=agent_id,
             content=content,
             thread_id=thread_id,
+            metadata=metadata,
         )
         if response_msg:
-            msg_dict = response_msg.to_dict()
-            msg_dict["metadata"] = metadata
-            _emit_sync("new_message", msg_dict)
+            _emit_sync("new_message", response_msg.to_dict())
             logger.info("[OK] Self-posted late response to #%s by %s", channel_id, agent_id)
     except Exception:
         logger.exception("[X] Failed to self-post late response for %s in #%s", agent_id, channel_id)

@@ -3382,12 +3382,36 @@ async def cohort_respond(params: CohortRespondInput) -> str:
     if "error" in complete_result:
         return f"Error completing item: {complete_result['error']}"
 
+    # Build metadata from completed item timing
+    meta: dict[str, Any] = {
+        "wq_item_id": params.item_id,
+        "source": "wq_response",
+        "tier": 5,
+        "model": "claude_code_channel",
+        "confidence": "high",
+        "pipeline": "channel",
+    }
+    item_data = complete_result.get("item", {})
+    claimed_at = item_data.get("claimed_at")
+    completed_at = item_data.get("completed_at")
+    if claimed_at and completed_at:
+        try:
+            from datetime import datetime
+            t0 = datetime.fromisoformat(claimed_at.replace("Z", "+00:00"))
+            t1 = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
+            meta["elapsed_seconds"] = round((t1 - t0).total_seconds(), 2)
+        except (TypeError, ValueError, AttributeError):
+            pass
+    prompt_len = len(item_data.get("description", ""))
+    meta["tokens_in"] = prompt_len // 4
+    meta["tokens_out"] = len(params.response) // 4
+
     # Post result to channel
     post_result = await _client.post_message(
         params.channel,
         params.sender,
         params.response,
-        metadata={"wq_item_id": params.item_id, "source": "wq_response"},
+        metadata=meta,
     )
     if post_result is None:
         return f"Completed {params.item_id} but could not post to channel."
