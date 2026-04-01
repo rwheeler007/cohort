@@ -1,14 +1,19 @@
 {
   "smart": {
-    "primary": "",
-    "fallback": ""
+    "primary": "qwen3.5:9b",
+    "fallback": null
   },
   "smarter": {
-    "primary": "",
-    "fallback": ""
+    "primary": "qwen3.5:9b",
+    "fallback": null
   },
   "smartest": {
-    "primary": "",
-    "fallback": ""
+    "primary": "qwen3.5:35b-a3b",
+    "fallback": "cloud_api"
+  },
+  "budget": {
+    "daily_token_limit": 0,
+    "monthly_token_limit": 0,
+    "escalation_per_hour": 0
   }
 }

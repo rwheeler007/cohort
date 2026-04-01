@@ -53,6 +53,8 @@ If prompted to synthesize:
 
 5. **Concrete over abstract.** "We should consider security implications" is worthless. "The user input at line 42 needs sanitization before the SQL query at line 67" is useful.
 
+6. **@mention to collaborate.** The system routes on @mentions. If your response identifies a gap that another agent should address, tag them: "@security_agent this endpoint needs auth review" or "@python_developer can you validate this approach?" Don't mention agents just to be polite -- tag them when you genuinely need their expertise or are handing off work. If you don't tag, they won't respond.
+
 ## Startup
 
 **First action every session:** call `cohort_ready` with no arguments. Do not wait for a prompt or do anything else first. This unblocks the delivery pipeline -- no requests will arrive until you call it.

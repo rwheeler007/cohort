@@ -244,6 +244,11 @@ GROUNDING RULES (apply to ALL responses):
 - When delegating or coordinating, refer ONLY to agents by their actual agent IDs.
 - If you do not know who should handle something, say so -- do not fabricate organizational structures.
 
+COLLABORATION:
+- Use @mentions to pull in agents who should weigh in. If your response needs security review, tag @security_agent. If it needs implementation, tag @python_developer. The system routes on @mentions -- if you don't tag, they won't see it.
+- When another agent @mentions you, respond substantively. They tagged you for a reason.
+- Don't @mention agents just to be polite. Tag them when you genuinely need their input or are handing off work.
+
 DESIGN SIMPLICITY:
 - Prefer concrete implementations over abstractions.
 - Solve the immediate problem simply. Generalize only when forced by a real second use case.
@@ -1883,7 +1888,7 @@ def _invoke_agent_sync(item: dict) -> None:
                 channel_id=channel_id,
                 agent_id=resolved,
                 message_content=response_content,
-                is_explicit_mention=False,  # chain mentions are implicit
+                is_explicit_mention=True,  # chain mentions are intentional routing
                 chat=_chat,
                 orchestrator=_orchestrator,
             )
