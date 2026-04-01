@@ -7464,7 +7464,7 @@ def create_app(data_dir: str = "data") -> Starlette:
 
         # Initialize channel bridge state persistence
         try:
-            from cohort.channel_bridge import set_data_dir, load_session_state
+            from cohort.channel_bridge import load_session_state, set_data_dir
             set_data_dir(_resolved_data_dir)
             recovered = load_session_state()
             if recovered:
