@@ -7434,6 +7434,16 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/website/preview/{project_name:path}", website_serve_preview, methods=["GET"]),
     ]
 
+    # Desktop automation endpoints (lazy-init, no impact if desktop extras not installed)
+    try:
+        from cohort.desktop.http_endpoints import desktop_routes
+        routes += desktop_routes()
+        logger.info("[OK] Desktop automation endpoints registered (/api/desktop/*)")
+    except ImportError:
+        logger.debug("Desktop automation endpoints not available (missing extras)")
+    except Exception as exc:
+        logger.warning("[!] Desktop endpoints failed to register: %s", exc)
+
     # Only mount static files if the directory exists (dashboard is optional)
     if _STATIC_DIR.is_dir():
         routes.append(Mount("/static", app=StaticFiles(directory=str(_STATIC_DIR)), name="static"))

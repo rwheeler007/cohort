@@ -965,6 +965,7 @@ class DesktopBackend:
         # Save
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
+        img = self._stamp_screenshot(img, session_id, filename)
         path = self._config.screenshot_dir / filename
         img.save(path, "JPEG", quality=90)
 
@@ -1080,13 +1081,18 @@ class DesktopBackend:
         Instead, we enumerate windows within the display bounds and
         capture each via PrintWindow, then composite onto a blank canvas.
         """
-        canvas = Image.new("RGB", (bounds.width, bounds.height), (0, 0, 0))
+        canvas = self._vdd_background(bounds.width, bounds.height)
 
         # Get all windows, sorted back-to-front (reverse Z-order)
         windows = self._enumerate_windows()
-        # Filter to windows overlapping the virtual display
+        # Filter to windows overlapping the virtual display.
+        # Skip desktop shell windows (Progman, WorkerW) — they span all
+        # monitors and would paint a black rectangle over our VDD background.
+        _SHELL_CLASSES = {"Progman", "WorkerW"}
         vd_windows = []
         for win in windows:
+            if win.class_name in _SHELL_CLASSES:
+                continue
             # Check if window overlaps the virtual display bounds
             if (win.x < bounds.x + bounds.width and
                     win.x + win.width > bounds.x and
@@ -1109,12 +1115,164 @@ class DesktopBackend:
 
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
+        canvas = self._stamp_screenshot(canvas, session_id, filename)
         path = self._config.screenshot_dir / filename
         canvas.save(path, "JPEG", quality=90)
 
         self._last_screenshot[session_id] = time.time()
         self._prune_screenshots()
         return path
+
+    _vdd_serial: int = 0
+
+    def _next_vdd_serial(self) -> str:
+        DesktopBackend._vdd_serial += 1
+        return f"VDD-{DesktopBackend._vdd_serial:04d}"
+
+    def _vdd_background(self, width: int, height: int) -> Image.Image:
+        """Branded green-screen background for the virtual display.
+
+        Shows the COHORT logo in copper/orange above 'VIRTUAL DISPLAY',
+        the resolution, and a unique serial number per instance.
+        """
+        from PIL import ImageDraw, ImageFont
+
+        bg_color = (0, 177, 64)  # chroma-key green
+        canvas = Image.new("RGB", (width, height), bg_color)
+        draw = ImageDraw.Draw(canvas)
+
+        # 100px coordinate grid — light lines with readable labels
+        grid_color = (0, 200, 80)       # lighter green for visibility
+        grid_label_color = (255, 255, 255, 140)  # white, semi-transparent feel
+        grid_label_shadow = (0, 120, 35)
+        try:
+            font_grid = ImageFont.truetype("consola.ttf", 13)
+        except (OSError, IOError):
+            font_grid = ImageFont.load_default()
+        for x in range(100, width, 100):
+            draw.line([(x, 0), (x, height)], fill=grid_color, width=1)
+        for y in range(100, height, 100):
+            draw.line([(0, y), (width, y)], fill=grid_color, width=1)
+        # Labels at every grid intersection — no exclusion, branding draws on top
+        for x in range(100, width, 100):
+            for y in range(100, height, 100):
+                label = f"{x},{y}"
+                lb = draw.textbbox((0, 0), label, font=font_grid)
+                lw, lh = lb[2] - lb[0], lb[3] - lb[1]
+                # Bottom-right of the cell (just inside the gridline)
+                lx = x - lw - 3
+                ly = y - lh - 2
+                draw.text((lx + 1, ly + 1), label, fill=grid_label_shadow, font=font_grid)
+                draw.text((lx, ly), label, fill=(220, 255, 220), font=font_grid)
+
+        # Fonts — Press Start 2P for COHORT brand, Consolas for the rest
+        _font_dir = Path(__file__).parent
+        _ps2p = str(_font_dir / "PressStart2P-Regular.ttf")
+        try:
+            font_brand = ImageFont.truetype(_ps2p, 47)
+        except (OSError, IOError):
+            try:
+                font_brand = ImageFont.truetype("consolab.ttf", 56)
+            except (OSError, IOError):
+                font_brand = ImageFont.load_default()
+        try:
+            font_sub = ImageFont.truetype("consolab.ttf", 36)
+            font_serial = ImageFont.truetype("consola.ttf", 16)
+        except (OSError, IOError):
+            font_sub = ImageFont.load_default()
+            font_serial = font_sub
+
+        cohort_color = (227, 155, 81)   # copper/orange from dashboard
+        shadow_color = (0, 100, 30)
+        white = (255, 255, 255)
+        light_green = (200, 240, 200)
+
+        # -- COHORT (Press Start 2P pixel font, copper) — centered in the 300 row --
+        brand = "COHORT"
+        bb = draw.textbbox((0, 0), brand, font=font_brand)
+        bw, bh = bb[2] - bb[0], bb[3] - bb[1]
+        bx = (width - bw) // 2
+        cy = 300 + (100 - bh) // 2  # vertically centered in the 300-400 row
+
+        draw.text((bx + 2, cy + 2), brand, fill=shadow_color, font=font_brand)
+        draw.text((bx, cy), brand, fill=cohort_color, font=font_brand)
+
+        # -- VIRTUAL DISPLAY — centered in the 400 row --
+        vd_label = "VIRTUAL  DISPLAY"
+        vb = draw.textbbox((0, 0), vd_label, font=font_sub)
+        vw, vh = vb[2] - vb[0], vb[3] - vb[1]
+        vx = (width - vw) // 2
+        vy = 400 + (100 - vh) // 2  # vertically centered in the 400-500 row
+
+        draw.text((vx + 1, vy + 1), vd_label, fill=shadow_color, font=font_sub)
+        draw.text((vx, vy), vd_label, fill=white, font=font_sub)
+
+        # -- Bottom info (larger) --
+        try:
+            font_bottom = ImageFont.truetype("consolab.ttf", 32)
+        except (OSError, IOError):
+            font_bottom = font_serial
+
+        # Resolution (bottom-left)
+        res = f"{width}\u00d7{height}"
+        draw.text((14, height - 42), res, fill=light_green, font=font_bottom)
+
+        # Serial number (bottom-right)
+        serial = self._next_vdd_serial()
+        sb = draw.textbbox((0, 0), serial, font=font_bottom)
+        sw = sb[2] - sb[0]
+        draw.text((width - sw - 14, height - 42), serial, fill=light_green, font=font_bottom)
+
+        return canvas
+
+    _screenshot_counter: int = 0
+
+    def _stamp_screenshot(self, img: Image.Image, session_id: str, filename: str) -> Image.Image:
+        """Wrap a screenshot with a red border and metadata bar.
+
+        The original content pixels are untouched — the border and bar
+        expand the canvas outward so nothing is covered.
+        """
+        from PIL import ImageDraw, ImageFont
+        import datetime
+
+        DesktopBackend._screenshot_counter += 1
+        ref = f"CAP-{DesktopBackend._screenshot_counter:05d}"
+        ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+        border = 2
+        w, h = img.size
+
+        # Metadata font
+        try:
+            font_meta = ImageFont.truetype("consolab.ttf", 12)
+        except (OSError, IOError):
+            font_meta = ImageFont.load_default()
+
+        meta = f"{filename}  |  {ts}  |  {session_id}  |  {ref}"
+        mb = ImageDraw.Draw(img).textbbox((0, 0), meta, font=font_meta)
+        bar_h = (mb[3] - mb[1]) + 8  # text height + padding
+
+        # New canvas: original + border on all sides + metadata bar below
+        framed_w = w + border * 2
+        framed_h = h + border * 2 + bar_h
+        framed = Image.new("RGB", (framed_w, framed_h), (255, 0, 0))  # red fill = border
+
+        # Paste original content inside the border
+        framed.paste(img, (border, border))
+
+        # Black metadata bar at the bottom
+        draw = ImageDraw.Draw(framed)
+        bar_y = h + border * 2
+        draw.rectangle([(0, bar_y), (framed_w, framed_h)], fill=(38, 38, 38))
+
+        # Metadata text centered in the bar
+        mw = mb[2] - mb[0]
+        mx = (framed_w - mw) // 2
+        my = bar_y + 4
+        draw.text((mx, my), meta, fill=(220, 220, 220), font=font_meta)
+
+        return framed
 
     def _downscale(self, img: Image.Image) -> Image.Image:
         """Downscale to max_dimension (Lanczos). 1024x768 already fits."""
