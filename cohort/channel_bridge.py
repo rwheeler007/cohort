@@ -851,13 +851,38 @@ def register_channel_session(
             _channel_sessions[channel_id] = {}
 
         now = time.time()
-        _channel_sessions[channel_id][session_id] = {
-            "pid": pid,
-            "registered_at": now,
-            "last_heartbeat": now,
-            "last_activity": now,
-            "process": None,
-        }
+
+        # Adopt a pending spawned session for this channel if one exists.
+        # The spawn records a placeholder session_id and captures cmd.exe's
+        # PID, which won't match the plugin's PID.  Detect by checking for
+        # an entry with last_heartbeat=None (never heartbeated = waiting).
+        adopted_spawn = False
+        for old_sid, old_info in list(_channel_sessions[channel_id].items()):
+            if old_info.get("last_heartbeat") is None:
+                # Transfer the spawned entry: keep "process" handle, update
+                # session_id, pid, and timestamps.
+                old_info["session_id"] = session_id
+                old_info["last_heartbeat"] = now
+                old_info["last_activity"] = now
+                old_info["registered_at"] = now
+                if pid is not None:
+                    old_info["pid"] = pid
+                # Re-key if session_id changed
+                if old_sid != session_id:
+                    _channel_sessions[channel_id][session_id] = old_info
+                    del _channel_sessions[channel_id][old_sid]
+                adopted_spawn = True
+                logger.info("[*] Adopted spawned session %s -> %s for #%s", old_sid, session_id, channel_id)
+                break
+
+        if not adopted_spawn:
+            _channel_sessions[channel_id][session_id] = {
+                "pid": pid,
+                "registered_at": now,
+                "last_heartbeat": now,
+                "last_activity": now,
+                "process": None,
+            }
         active_count += 1
 
     touch_channel_activity(channel_id)  # Seed idle reaper timestamp
@@ -1719,19 +1744,26 @@ def _spawn_channel_session(channel_id: str) -> bool:
             return False
 
         with _sessions_lock:
-            info = (_channel_sessions.get(channel_id, {}).get(spawn_session_id))
+            # Check by spawn_session_id first, then any session with a
+            # heartbeat (register_channel_session may have re-keyed it).
+            info = _channel_sessions.get(channel_id, {}).get(spawn_session_id)
             if info and info.get("last_heartbeat") is not None:
                 logger.info("[OK] Channel session for #%s connected (PID %d)", channel_id, process.pid)
                 _save_session_state()
                 return True
+            # Check if the spawn was adopted under a new session_id
+            for sid, sinfo in _channel_sessions.get(channel_id, {}).items():
+                if sid != spawn_session_id and sinfo.get("last_heartbeat") is not None:
+                    logger.info("[OK] Channel session for #%s connected as %s (PID %s)", channel_id, sid, sinfo.get("pid"))
+                    _save_session_state()
+                    return True
 
-    logger.error("[X] Channel session for #%s timed out waiting for heartbeat", channel_id)
-    process.terminate()
-    with _sessions_lock:
-        ch = _channel_sessions.get(channel_id, {})
-        ch.pop(spawn_session_id, None)
-        if not ch:
-            _channel_sessions.pop(channel_id, None)
+    # Don't terminate — the MCP plugin may still be starting up (especially
+    # on Windows where Claude Code launches through cmd.exe + .cmd wrapper).
+    # Leave the session entry so register_channel_session() can adopt it.
+    # The stale-session reaper will clean it up if it never connects.
+    logger.warning("[!] Channel session for #%s still waiting for heartbeat after %ds — leaving alive", channel_id, SPAWN_WAIT_TIMEOUT_S)
+    _save_session_state()
     return False
 
 
