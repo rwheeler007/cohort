@@ -256,16 +256,13 @@ def ensure_channel_session(channel_id: str) -> str:
                 logger.info("[OK] Channel session for #%s came alive via VS Code", channel_id)
                 return "vscode"
 
-    # VS Code didn't spawn it in time.  Direct spawn is disabled because
-    # standalone console windows crash with isRawModeSupported (no PTY).
-    # The VS Code extension eagerly launches cohort-wq on startup — if it
-    # didn't pick up the request, the session isn't available yet.
-    logger.warning(
-        "[X] VS Code didn't launch #%s in %ds. Direct spawn disabled "
-        "(isRawModeSupported crash). Ensure VS Code extension is running "
-        "with channel_mode enabled.",
+    # VS Code didn't pick it up — try direct spawn as fallback
+    logger.info(
+        "[*] VS Code didn't launch #%s in %ds — attempting direct spawn",
         channel_id, _vscode_wait,
     )
+    if _spawn_channel_session(channel_id):
+        return "direct"
     return ""
 
 
@@ -1347,6 +1344,7 @@ def _ensure_mcp_entry(cohort_root: Path, server_key: str, channel_id: str) -> No
     entries untouched.
     """
     import json as _json
+    import shutil
 
     mcp_path = cohort_root / ".mcp.json"
     plugin_entry = str(cohort_root / "plugins" / "cohort-channel" / "src" / "index.ts")
@@ -1362,12 +1360,17 @@ def _ensure_mcp_entry(cohort_root: Path, server_key: str, channel_id: str) -> No
     if server_key in servers:
         return  # Already configured
 
+    bun_cmd = shutil.which("bun") or "bun"
+    project_id = cohort_root.name.lower().replace(" ", "-")
+
     servers[server_key] = {
-        "command": "bun",
+        "command": bun_cmd,
         "args": [plugin_entry],
         "env": {
             "COHORT_BASE_URL": COHORT_BASE_URL,
             "CHANNEL_ID": channel_id,
+            "PROJECT_ID": project_id,
+            "CHANNEL_NAME": server_key,
             "POLL_INTERVAL": "5000",
         },
     }
@@ -1403,13 +1406,16 @@ def _spawn_channel_session(channel_id: str) -> bool:
     env["COHORT_BASE_URL"] = COHORT_BASE_URL
     env["CHANNEL_NAME"] = f"cohort-ch-{channel_id}"
 
-    # Use the workspace root (AGENTS_ROOT) so channel sessions run in the
-    # user's project directory, not the Cohort package directory.
-    try:
-        from cohort.agent_router import AGENTS_ROOT
-        workspace_root = AGENTS_ROOT or Path(__file__).parent.parent
-    except ImportError:
-        workspace_root = Path(__file__).parent.parent
+    # Resolve workspace: channel metadata > AGENTS_ROOT > fallback
+    workspace_root = _get_channel_workspace(channel_id)
+    if not workspace_root:
+        try:
+            from cohort.agent_router import AGENTS_ROOT
+            workspace_root = str(AGENTS_ROOT) if AGENTS_ROOT else None
+        except ImportError:
+            pass
+    if not workspace_root:
+        workspace_root = str(Path(__file__).parent.parent)
 
     popen_kwargs: dict = dict(
         cwd=str(workspace_root),
@@ -1417,7 +1423,14 @@ def _spawn_channel_session(channel_id: str) -> bool:
     )
     if sys.platform == "win32":
         cmd = ["cmd", "/c"] + cmd
-        popen_kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
+        _visible = os.environ.get("COHORT_SESSION_VISIBLE", "").lower() in ("1", "true", "yes")
+        flags = subprocess.CREATE_NEW_CONSOLE | subprocess.CREATE_NEW_PROCESS_GROUP
+        popen_kwargs["creationflags"] = flags
+        if not _visible:
+            si = subprocess.STARTUPINFO()
+            si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            si.wShowWindow = 0  # SW_HIDE
+            popen_kwargs["startupinfo"] = si
     else:
         popen_kwargs["stdin"] = subprocess.PIPE
         popen_kwargs["stdout"] = subprocess.DEVNULL
