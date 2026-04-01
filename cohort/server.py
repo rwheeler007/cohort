@@ -7575,14 +7575,17 @@ def create_app(data_dir: str = "data") -> Starlette:
             try:
                 if _work_queue is None:
                     continue
-                item = _work_queue.claim()
-                if item is None:
+                result = _work_queue.claim_next()
+                if not result or "error" in result:
+                    continue
+                item_data = result.get("item")
+                if item_data is None:
                     continue
 
-                item_id = item.id
-                meta = item.metadata or {}
-                agent_id = item.agent_id or meta.get("agent_id")
-                description = item.description or ""
+                item_id = item_data.get("id", "unknown")
+                meta = item_data.get("metadata") or {}
+                agent_id = item_data.get("agent_id") or meta.get("agent_id")
+                description = item_data.get("description") or ""
 
                 if not agent_id:
                     # No agent -- post as plain message to the source channel
