@@ -962,11 +962,15 @@ class DesktopBackend:
         img = self._capture_screen_bitblt(x, y, w, h)
         img = self._downscale(img)
 
-        # Save
+        # Save into date-based subdirectory
+        import datetime as _dt
+        day_dir = self._config.screenshot_dir / _dt.date.today().isoformat()
+        day_dir.mkdir(parents=True, exist_ok=True)
+
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
         img = self._stamp_screenshot(img, session_id, filename)
-        path = self._config.screenshot_dir / filename
+        path = day_dir / filename
         img.save(path, "JPEG", quality=90)
 
         self._last_screenshot[session_id] = time.time()
@@ -1113,10 +1117,14 @@ class DesktopBackend:
 
         canvas = self._downscale(canvas)
 
+        import datetime as _dt
+        day_dir = self._config.screenshot_dir / _dt.date.today().isoformat()
+        day_dir.mkdir(parents=True, exist_ok=True)
+
         ts = int(time.time() * 1000)
         filename = f"{session_id}_{ts}.jpg"
         canvas = self._stamp_screenshot(canvas, session_id, filename)
-        path = self._config.screenshot_dir / filename
+        path = day_dir / filename
         canvas.save(path, "JPEG", quality=90)
 
         self._last_screenshot[session_id] = time.time()
@@ -1294,13 +1302,19 @@ class DesktopBackend:
         """Remove oldest screenshots if over retention limit."""
         max_count = self._config.max_screenshots_retained
         screenshots = sorted(
-            self._config.screenshot_dir.glob("*.jpg"),
+            self._config.screenshot_dir.rglob("*.jpg"),
             key=lambda p: p.stat().st_mtime,
         )
         if len(screenshots) > max_count:
             for old in screenshots[: len(screenshots) - max_count]:
                 try:
                     old.unlink()
+                    # Remove empty date directories
+                    if old.parent != self._config.screenshot_dir:
+                        try:
+                            old.parent.rmdir()  # only succeeds if empty
+                        except OSError:
+                            pass
                 except OSError:
                     pass
 
