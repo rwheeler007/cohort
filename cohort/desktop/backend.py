@@ -1151,12 +1151,9 @@ class DesktopBackend:
             draw.line([(x, 0), (x, height)], fill=grid_color, width=1)
         for y in range(100, height, 100):
             draw.line([(0, y), (width, y)], fill=grid_color, width=1)
-        # Labels at grid intersections (skip center area to avoid brand clash)
-        center_x, center_y = width // 2, height // 2
+        # Labels at every grid intersection — no exclusion, branding draws on top
         for x in range(100, width, 100):
             for y in range(100, height, 100):
-                if abs(x - center_x) < 100 and y in (400, 500):
-                    continue  # don't overlap branding
                 label = f"{x},{y}"
                 lb = draw.textbbox((0, 0), label, font=font_grid)
                 lw, lh = lb[2] - lb[0], lb[3] - lb[1]
