@@ -958,7 +958,7 @@ def _build_thread_context(thread_id: str, channel_id: str) -> str:
 # Each returns (text, tokens_in, tokens_out, model_name).
 # Returns (None, 0, 0, "") on failure. Never raises.
 
-_BACKEND_EMPTY: tuple[None, int, int, str] = (None, 0, 0, "")
+_BACKEND_EMPTY: tuple[None, int, int, str, dict] = (None, 0, 0, "", {})
 
 
 def _try_channel(
@@ -969,7 +969,7 @@ def _try_channel(
     thread_id: str | None = None,
     timeout: int = RESPONSE_TIMEOUT,
     label: str = "channel",
-) -> tuple[str | None, int, int, str]:
+) -> tuple[str | None, int, int, str, dict]:
     """Try channel bridge backend (enqueue request, await response)."""
     try:
         if not _ensure_channel_with_toast(channel_id):
@@ -984,10 +984,10 @@ def _try_channel(
             thread_id=thread_id,
             response_mode=response_mode,
         )
-        ch_content, _ch_meta = await_channel_response(request_id, timeout=timeout)
+        ch_content, ch_meta = await_channel_response(request_id, timeout=timeout)
         if ch_content:
             logger.info("[OK] %s: %s in #%s", label, agent_id, channel_id)
-            return ch_content, len(prompt) // 4, len(ch_content) // 4, "claude_code_channel"
+            return ch_content, len(prompt) // 4, len(ch_content) // 4, "claude_code_channel", ch_meta
         return _BACKEND_EMPTY
     except Exception:
         logger.exception("[!] %s failed for %s", label, agent_id)
@@ -1209,7 +1209,7 @@ def _invoke_smartest_pipeline(
 
         # Dispatch: try each backend in order until one succeeds
         for _label, attempt in backends:
-            text, tok_in, tok_out, model_name = attempt()
+            text, tok_in, tok_out, model_name, *_ = attempt()
             if text:
                 response_text = text
                 actual_tokens_in = tok_in
@@ -1582,13 +1582,13 @@ def _invoke_agent_sync(item: dict) -> None:
         from cohort.local.config import get_tier_model
         _tier_model = get_tier_model(response_mode)
         if _tier_model == "channel":
-            _ch_text, _ch_tin, _ch_tout, _ch_model = _try_channel(
+            _ch_text, _ch_tin, _ch_tout, _ch_model, _ch_meta = _try_channel(
                 _local_prompt, agent_id, channel_id, response_mode, thread_id,
                 label=f"Tier {response_mode} channel",
             )
             if _ch_text:
                 response_content = _ch_text
-                response_metadata = {"pipeline": "channel", "model": _ch_model}
+                response_metadata = _ch_meta if _ch_meta else {"pipeline": "channel", "model": _ch_model}
 
     # Standard local routing (smart / smarter modes).
     # Skip when force_to_claude_code is enabled -- let channel/cloud/CLI handle it.
@@ -1709,13 +1709,13 @@ def _invoke_agent_sync(item: dict) -> None:
                         f"Now respond to this message in #{channel_id}:\n"
                         f"{message_content}"
                     )
-                _cm_text, _cm_tin, _cm_tout, _cm_model = _try_channel(
+                _cm_text, _cm_tin, _cm_tout, _cm_model, _cm_meta = _try_channel(
                     _channel_prompt, agent_id, channel_id, response_mode, thread_id,
                     label="Channel mode",
                 )
                 if _cm_text:
                     response_content = _cm_text
-                    response_metadata = {"pipeline": "channel", "model": _cm_model}
+                    response_metadata = _cm_meta if _cm_meta else {"pipeline": "channel", "model": _cm_model}
             else:
                 logger.debug("[*] Channel session not active, skipping for %s", agent_id)
 
