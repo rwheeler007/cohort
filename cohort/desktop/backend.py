@@ -1155,7 +1155,7 @@ class DesktopBackend:
         center_x, center_y = width // 2, height // 2
         for x in range(100, width, 100):
             for y in range(100, height, 100):
-                if abs(x - center_x) < 100 and abs(y - center_y) < 50:
+                if abs(x - center_x) < 100 and y in (400, 500):
                     continue  # don't overlap branding
                 label = f"{x},{y}"
                 lb = draw.textbbox((0, 0), label, font=font_grid)
@@ -1188,22 +1188,22 @@ class DesktopBackend:
         white = (255, 255, 255)
         light_green = (200, 240, 200)
 
-        # -- COHORT (Press Start 2P pixel font, copper) --
+        # -- COHORT (Press Start 2P pixel font, copper) — centered in the 300 row --
         brand = "COHORT"
         bb = draw.textbbox((0, 0), brand, font=font_brand)
         bw, bh = bb[2] - bb[0], bb[3] - bb[1]
         bx = (width - bw) // 2
-        cy = height // 2 - bh - 30  # above center
+        cy = 300 + (100 - bh) // 2  # vertically centered in the 300-400 row
 
         draw.text((bx + 2, cy + 2), brand, fill=shadow_color, font=font_brand)
         draw.text((bx, cy), brand, fill=cohort_color, font=font_brand)
 
-        # -- VIRTUAL DISPLAY (below COHORT) --
+        # -- VIRTUAL DISPLAY — centered in the 400 row --
         vd_label = "VIRTUAL  DISPLAY"
         vb = draw.textbbox((0, 0), vd_label, font=font_sub)
         vw, vh = vb[2] - vb[0], vb[3] - vb[1]
         vx = (width - vw) // 2
-        vy = cy + bh + 12
+        vy = 400 + (100 - vh) // 2  # vertically centered in the 400-500 row
 
         draw.text((vx + 1, vy + 1), vd_label, fill=shadow_color, font=font_sub)
         draw.text((vx, vy), vd_label, fill=white, font=font_sub)
