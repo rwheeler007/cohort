@@ -340,6 +340,14 @@ def ensure_channel_session(channel_id: str) -> str:
             touch_channel_activity(channel_id)
             return "existing"
 
+    # When the server manages sessions (set_data_dir was called),
+    # skip the 30s VS Code wait and spawn directly.
+    if _state_file is not None:
+        logger.info("[>>] Server-managed mode — direct spawn for #%s", channel_id)
+        if _spawn_channel_session(channel_id):
+            return "direct"
+        return ""
+
     # Add to launch queue for VS Code extension to pick up
     _add_to_launch_queue(channel_id)
 
