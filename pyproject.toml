@@ -56,3 +56,6 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "desktop_e2e: Desktop automation end-to-end tests (require running server + desktop)",
+]
