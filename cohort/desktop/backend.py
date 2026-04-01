@@ -1155,7 +1155,7 @@ class DesktopBackend:
         center_x, center_y = width // 2, height // 2
         for x in range(100, width, 100):
             for y in range(100, height, 100):
-                if abs(x - center_x) < 100 and abs(y - center_y) < 60:
+                if abs(x - center_x) < 100 and abs(y - center_y) < 50:
                     continue  # don't overlap branding
                 label = f"{x},{y}"
                 lb = draw.textbbox((0, 0), label, font=font_grid)
@@ -1208,13 +1208,11 @@ class DesktopBackend:
         draw.text((vx + 1, vy + 1), vd_label, fill=shadow_color, font=font_sub)
         draw.text((vx, vy), vd_label, fill=white, font=font_sub)
 
-        # -- Resolution --
+        # -- Resolution (bottom-left corner, mirroring serial in bottom-right) --
         res = f"{width}\u00d7{height}"
         rb = draw.textbbox((0, 0), res, font=font_serial)
-        rw = rb[2] - rb[0]
-        rx = (width - rw) // 2
-        ry = vy + vh + 10
-        draw.text((rx, ry), res, fill=light_green, font=font_serial)
+        rh = rb[3] - rb[1]
+        draw.text((12, height - rh - 10), res, fill=light_green, font=font_serial)
 
         # -- Serial number (bottom-right corner) --
         serial = self._next_vdd_serial()
