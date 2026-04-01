@@ -1139,6 +1139,33 @@ class DesktopBackend:
         canvas = Image.new("RGB", (width, height), bg_color)
         draw = ImageDraw.Draw(canvas)
 
+        # 100px coordinate grid — light lines with readable labels
+        grid_color = (0, 200, 80)       # lighter green for visibility
+        grid_label_color = (255, 255, 255, 140)  # white, semi-transparent feel
+        grid_label_shadow = (0, 120, 35)
+        try:
+            font_grid = ImageFont.truetype("consola.ttf", 10)
+        except (OSError, IOError):
+            font_grid = ImageFont.load_default()
+        for x in range(100, width, 100):
+            draw.line([(x, 0), (x, height)], fill=grid_color, width=1)
+        for y in range(100, height, 100):
+            draw.line([(0, y), (width, y)], fill=grid_color, width=1)
+        # Labels at grid intersections (skip center area to avoid brand clash)
+        center_x, center_y = width // 2, height // 2
+        for x in range(100, width, 100):
+            for y in range(100, height, 100):
+                if abs(x - center_x) < 200 and abs(y - center_y) < 80:
+                    continue  # don't overlap branding
+                label = f"{x},{y}"
+                lb = draw.textbbox((0, 0), label, font=font_grid)
+                lw, lh = lb[2] - lb[0], lb[3] - lb[1]
+                # Bottom-right of the cell (just inside the gridline)
+                lx = x - lw - 3
+                ly = y - lh - 2
+                draw.text((lx + 1, ly + 1), label, fill=grid_label_shadow, font=font_grid)
+                draw.text((lx, ly), label, fill=(220, 255, 220), font=font_grid)
+
         # Fonts — Press Start 2P for COHORT brand, Consolas for the rest
         _font_dir = Path(__file__).parent
         _ps2p = str(_font_dir / "PressStart2P-Regular.ttf")
