@@ -1437,6 +1437,86 @@ def reap_idle_sessions(max_idle_seconds: Optional[float] = None) -> int:
     return reaped
 
 
+# Rate-limit respawns: max 3 per channel per 10 minutes
+_respawn_history: Dict[str, List[float]] = {}  # channel_id -> [timestamps]
+_RESPAWN_MAX = 3
+_RESPAWN_WINDOW_S = 600  # 10 minutes
+
+
+def recover_crashed_sessions() -> int:
+    """Detect sessions with dead PIDs and auto-respawn.
+
+    Called periodically by the reaper loop.  Rate-limited to prevent
+    crash loops (max 3 respawns per channel per 10 minutes).
+
+    Returns number of sessions respawned.
+    """
+    now = time.time()
+    dead: list[tuple[str, str, Dict[str, Any]]] = []
+
+    with _sessions_lock:
+        for ch_id, ch_sessions in list(_channel_sessions.items()):
+            if ch_id == _GLOBAL_KEY:
+                continue
+            for sid, info in list(ch_sessions.items()):
+                pid = info.get("pid")
+                if not pid:
+                    continue
+                proc = info.get("process")
+                # Check if process is dead
+                is_dead = False
+                if proc is not None:
+                    is_dead = proc.poll() is not None
+                else:
+                    try:
+                        if sys.platform == "win32":
+                            import ctypes
+                            kernel32 = ctypes.windll.kernel32
+                            handle = kernel32.OpenProcess(0x1000, False, pid)
+                            if handle:
+                                kernel32.CloseHandle(handle)
+                            else:
+                                is_dead = True
+                        else:
+                            os.kill(pid, 0)
+                    except (OSError, ProcessLookupError):
+                        is_dead = True
+
+                if is_dead:
+                    dead.append((ch_id, sid, info))
+
+    respawned = 0
+    for ch_id, sid, info in dead:
+        # Remove dead session
+        with _sessions_lock:
+            ch = _channel_sessions.get(ch_id, {})
+            ch.pop(sid, None)
+            if not ch:
+                _channel_sessions.pop(ch_id, None)
+
+        logger.warning("[!] Session %s (PID %s) for #%s is dead", sid, info.get("pid"), ch_id)
+
+        # Rate-limit check
+        history = _respawn_history.setdefault(ch_id, [])
+        history[:] = [t for t in history if now - t < _RESPAWN_WINDOW_S]
+        if len(history) >= _RESPAWN_MAX:
+            logger.warning(
+                "[X] #%s hit respawn limit (%d in %ds) — skipping auto-respawn",
+                ch_id, _RESPAWN_MAX, _RESPAWN_WINDOW_S,
+            )
+            continue
+
+        # Auto-respawn
+        logger.info("[>>] Auto-respawning session for #%s", ch_id)
+        if _spawn_channel_session(ch_id):
+            history.append(now)
+            respawned += 1
+
+    if dead:
+        _save_session_state()
+    return respawned
+
+
 # =====================================================================
 # MCP config helper
 # =====================================================================

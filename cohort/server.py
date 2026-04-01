@@ -7537,10 +7537,13 @@ def create_app(data_dir: str = "data") -> Starlette:
         while True:
             _time.sleep(60)
             try:
-                from cohort.channel_bridge import reap_idle_sessions
+                from cohort.channel_bridge import reap_idle_sessions, recover_crashed_sessions
                 reaped = reap_idle_sessions()
                 if reaped:
                     logger.info("[*] Reaped %d idle channel session(s)", reaped)
+                recovered = recover_crashed_sessions()
+                if recovered:
+                    logger.info("[OK] Auto-respawned %d crashed session(s)", recovered)
             except Exception:
                 logger.exception("[!] Channel reaper error")
 
