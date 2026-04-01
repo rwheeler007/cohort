@@ -103,6 +103,7 @@ def set_data_dir(data_dir: str) -> None:
     """Set the data directory for session state persistence."""
     global _state_file  # noqa: PLW0603
     _state_file = Path(data_dir) / "channel_sessions.json"
+    logger.info("[OK] Session state file: %s", _state_file)
 
 
 def _save_session_state() -> None:
@@ -1549,25 +1550,42 @@ def _ensure_mcp_entry(cohort_root: Path, server_key: str, channel_id: str) -> No
         data = {}
 
     servers = data.setdefault("mcpServers", {})
-    if server_key in servers:
-        return  # Already configured
 
     bun_cmd = shutil.which("bun") or "bun"
     project_id = cohort_root.name.lower().replace(" ", "-")
 
-    servers[server_key] = {
-        "command": bun_cmd,
-        "args": [plugin_entry],
-        "env": {
-            "COHORT_BASE_URL": COHORT_BASE_URL,
-            "CHANNEL_ID": channel_id,
-            "PROJECT_ID": project_id,
-            "CHANNEL_NAME": server_key,
-            "POLL_INTERVAL": "5000",
-        },
-    }
-    mcp_path.write_text(_json.dumps(data, indent=2) + "\n", "utf-8")
-    logger.info("[*] Added MCP entry '%s' to %s", server_key, mcp_path)
+    changed = False
+
+    if server_key not in servers:
+        servers[server_key] = {
+            "command": bun_cmd,
+            "args": [plugin_entry],
+            "env": {
+                "COHORT_BASE_URL": COHORT_BASE_URL,
+                "CHANNEL_ID": channel_id,
+                "PROJECT_ID": project_id,
+                "CHANNEL_NAME": server_key,
+                "POLL_INTERVAL": "5000",
+            },
+        }
+        changed = True
+    else:
+        # Always update COHORT_BASE_URL on existing entries (server may have moved)
+        entry_env = servers[server_key].setdefault("env", {})
+        if entry_env.get("COHORT_BASE_URL") != COHORT_BASE_URL:
+            entry_env["COHORT_BASE_URL"] = COHORT_BASE_URL
+            changed = True
+
+    # Also ensure cohort-api MCP server points to current server
+    if "cohort-api" in servers:
+        api_env = servers["cohort-api"].setdefault("env", {})
+        if api_env.get("COHORT_SERVER_URL") != COHORT_BASE_URL:
+            api_env["COHORT_SERVER_URL"] = COHORT_BASE_URL
+            changed = True
+
+    if changed:
+        mcp_path.write_text(_json.dumps(data, indent=2) + "\n", "utf-8")
+        logger.info("[*] Updated MCP config in %s (server=%s)", mcp_path, COHORT_BASE_URL)
 
 
 # =====================================================================
