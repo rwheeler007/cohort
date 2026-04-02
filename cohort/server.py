@@ -1657,7 +1657,7 @@ async def channel_capabilities(request: Request) -> JSONResponse:
     """GET /api/channel/capabilities -- report server session management features."""
     from cohort.channel_bridge import _session_limit
     return JSONResponse({
-        "server_managed_sessions": True,
+        "server_managed_sessions": False,
         "session_limit": _session_limit,
         "wq_dispatch": "internal",
         "version": "0.4.33",
