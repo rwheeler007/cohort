@@ -7101,11 +7101,11 @@ def create_app(data_dir: str = "data") -> Starlette:
     if not agents_dir.is_dir():
         agents_dir.mkdir(parents=True, exist_ok=True)
         logger.info("[OK] Created agents_dir: %s", agents_dir)
-    remote_url = (
+    (
         os.environ.get("COHORT_AGENTS_API_URL")
         or saved_settings.get("agents_api_url", "")
     )
-    api_key = (
+    (
         os.environ.get("COHORT_AGENTS_API_KEY")
         or saved_settings.get("agents_api_key", "")
     )

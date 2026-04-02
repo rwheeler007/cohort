@@ -146,7 +146,7 @@ def draw_annotations(screenshot_path: str, annotations: List[Dict[str, Any]]) ->
     img = Image.open(screenshot_path).convert("RGBA")
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    font = _get_font(14)
+    _get_font(14)
     font_lg = _get_font(16)
 
     for ann in annotations:

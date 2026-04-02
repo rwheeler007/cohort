@@ -1151,7 +1151,6 @@ class DesktopBackend:
 
         # 100px coordinate grid — light lines with readable labels
         grid_color = (0, 200, 80)       # lighter green for visibility
-        grid_label_color = (255, 255, 255, 140)  # white, semi-transparent feel
         grid_label_shadow = (0, 120, 35)
         try:
             font_grid = ImageFont.truetype("consola.ttf", 13)
@@ -1241,8 +1240,9 @@ class DesktopBackend:
         The original content pixels are untouched — the border and bar
         expand the canvas outward so nothing is covered.
         """
-        from PIL import ImageDraw, ImageFont
         import datetime
+
+        from PIL import ImageDraw, ImageFont
 
         DesktopBackend._screenshot_counter += 1
         ref = f"CAP-{DesktopBackend._screenshot_counter:05d}"

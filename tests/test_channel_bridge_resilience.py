@@ -18,11 +18,9 @@ import threading
 import time
 from collections import deque
 from pathlib import Path
-from typing import Any, Dict
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -373,7 +371,7 @@ class TestPluginCrash:
         """
         # Set up a session and enqueue a request
         old_time = time.time() - bridge.CLAIMED_STALE_TIMEOUT_S - 10
-        now = time.time()
+        time.time()
 
         with bridge._sessions_lock:
             bridge._channel_sessions["general"] = {
