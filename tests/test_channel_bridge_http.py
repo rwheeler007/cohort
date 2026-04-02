@@ -107,8 +107,9 @@ class TestChannelRegister:
 
     async def test_register_adopts_pending_spawn_via_http(self, client):
         """CRITICAL: The full HTTP path must adopt pending spawns."""
-        import cohort.channel_bridge as cb
         from unittest.mock import MagicMock
+
+        import cohort.channel_bridge as cb
 
         with cb._sessions_lock:
             cb._channel_sessions["general"] = {
@@ -135,8 +136,9 @@ class TestChannelRegister:
 
     async def test_register_429_at_limit(self, client):
         """Returns 429 when session limit reached and no idle to evict."""
-        import cohort.channel_bridge as cb
         from collections import deque
+
+        import cohort.channel_bridge as cb
         cb._session_limit = 1
         now = time.time()
 

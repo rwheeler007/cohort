@@ -16,7 +16,6 @@ import threading
 import time
 from collections import deque
 from pathlib import Path
-from typing import Any, Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -525,7 +524,7 @@ class TestEnqueueChannelRequest:
         bridge._session_handoffs["general"] = "HANDOFF: previous context here"
 
         with patch.object(bridge, "request_session"):
-            req_id = bridge.enqueue_channel_request("New task", "py", "general")
+            bridge.enqueue_channel_request("New task", "py", "general")
 
         with bridge._channel_lock:
             req = bridge._channel_queues["general"][0]

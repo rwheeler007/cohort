@@ -257,7 +257,7 @@ class TestDesktopE2E:
         )
 
         # Step 2: Ensure a session is ready
-        ensure_resp = await http_client.post(
+        await http_client.post(
             f"{_BASE}/api/channel/ensure-session",
             json={"channel_id": _CHANNEL},
         )
