@@ -161,6 +161,41 @@ mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "cohort_post_and_continue",
+      description:
+        "Post a message as one agent, then immediately continue the thread " +
+        "as a different agent. Use this when an agent's response contains an " +
+        "@mention with an open question or handoff directed at another agent. " +
+        "This posts the message and signals you to keep going as the next agent " +
+        "-- do NOT stop or wait for external routing.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          channel: {
+            type: "string",
+            description: "The channel ID to post to",
+          },
+          sender: {
+            type: "string",
+            description: "The agent ID posting this message",
+          },
+          content: {
+            type: "string",
+            description: "The message content (in the sender agent's voice)",
+          },
+          next_agent: {
+            type: "string",
+            description: "The agent ID that should respond next (the @mentioned agent)",
+          },
+          thread_id: {
+            type: "string",
+            description: "Optional thread ID to post as a reply",
+          },
+        },
+        required: ["channel", "sender", "content", "next_agent"],
+      },
+    },
+    {
       name: "cohort_error",
       description:
         "Report that you cannot complete the request. Call this if the " +
@@ -254,6 +289,41 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
             {
               type: "text",
               text: `Posted as ${sender} to #${channel}. Message ID: ${result.message_id}`,
+            },
+          ],
+        };
+      } catch (e) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Failed to post: ${(e as Error).message}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+    }
+
+    case "cohort_post_and_continue": {
+      const channel = (args as { channel: string }).channel;
+      const sender = (args as { sender: string }).sender;
+      const postContent = (args as { content: string }).content;
+      const nextAgent = (args as { next_agent: string }).next_agent;
+      const threadId = (args as { thread_id?: string }).thread_id;
+
+      try {
+        const result = await client.postMessage(channel, sender, postContent, threadId);
+        log("INFO", `Posted as ${sender} to #${channel} (msg=${result.message_id}), continuing as ${nextAgent}`);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Posted as ${sender} to #${channel}. Message ID: ${result.message_id}\n\n` +
+                `CONTINUE: Now respond as @${nextAgent}. Load their agent profile, ` +
+                `adopt their expertise and voice, and address the open question or ` +
+                `handoff from ${sender}. Do NOT stop or wait -- post their response ` +
+                `using cohort_post (or cohort_post_and_continue if the chain continues).`,
             },
           ],
         };
