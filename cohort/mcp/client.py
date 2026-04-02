@@ -157,6 +157,12 @@ class CohortClient:
         body: dict[str, Any] = {"channel": channel, "sender": sender, "message": message}
         if metadata:
             body["metadata"] = metadata
+            # The server's /api/send reads these at the top level, not from
+            # inside metadata.  Hoist them so the agent router gets the
+            # correct response_mode and project context.
+            for key in ("response_mode", "project_path", "workspace_path"):
+                if key in metadata:
+                    body[key] = metadata[key]
         return await _request(
             "POST",
             f"{self.base_url}/api/send",

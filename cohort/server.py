@@ -1657,7 +1657,7 @@ async def channel_capabilities(request: Request) -> JSONResponse:
     """GET /api/channel/capabilities -- report server session management features."""
     from cohort.channel_bridge import _session_limit
     return JSONResponse({
-        "server_managed_sessions": True,
+        "server_managed_sessions": False,
         "session_limit": _session_limit,
         "wq_dispatch": "internal",
         "version": "0.4.33",
@@ -7514,24 +7514,6 @@ def create_app(data_dir: str = "data") -> Starlette:
             logger.info("[OK] Initial health checks completed")
         except Exception as exc:
             logger.warning("[!] Initial health checks failed (will retry on first request): %s", exc)
-
-        # Auto-start the work-queue dispatcher if registered and not already running
-        try:
-            from cohort.api import start_service
-            from cohort.health_monitor import check_health, get_service_entry
-            wq = get_service_entry("wq_worker")
-            if wq and wq.get("start_command"):
-                port = wq.get("port", 8102)
-                ok, _, _ = check_health(f"http://127.0.0.1:{port}/health")
-                if not ok:
-                    await asyncio.get_event_loop().run_in_executor(
-                        None, start_service, "wq_worker"
-                    )
-                    logger.info("[OK] Work-queue dispatcher auto-started on port %d", port)
-                else:
-                    logger.info("[OK] Work-queue dispatcher already running on port %d", port)
-        except Exception as exc:
-            logger.warning("[!] WQ dispatcher auto-start failed (can start manually): %s", exc)
 
     starlette_app = Starlette(
         routes=routes,

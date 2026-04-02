@@ -341,14 +341,6 @@ def ensure_channel_session(channel_id: str) -> str:
             touch_channel_activity(channel_id)
             return "existing"
 
-    # When the server manages sessions (set_data_dir was called),
-    # skip the 30s VS Code wait and spawn directly.
-    if _state_file is not None:
-        logger.info("[>>] Server-managed mode — direct spawn for #%s", channel_id)
-        if _spawn_channel_session(channel_id):
-            return "direct"
-        return ""
-
     # Add to launch queue for VS Code extension to pick up
     _add_to_launch_queue(channel_id)
 
@@ -365,13 +357,7 @@ def ensure_channel_session(channel_id: str) -> str:
                 logger.info("[OK] Channel session for #%s came alive via VS Code", channel_id)
                 return "vscode"
 
-    # VS Code didn't pick it up — try direct spawn as fallback
-    logger.info(
-        "[*] VS Code didn't launch #%s in %ds — attempting direct spawn",
-        channel_id, _vscode_wait,
-    )
-    if _spawn_channel_session(channel_id):
-        return "direct"
+    logger.warning("[!] No session for #%s after %ds — extension may not be running", channel_id, _vscode_wait)
     return ""
 
 
@@ -1285,13 +1271,11 @@ def request_session(channel_id: str, *, force: bool = False, workspace_path: Opt
                 evicted, channel_id,
             )
 
-    # In server-managed mode, spawn directly instead of waiting for VS Code
-    if _state_file is not None:
-        logger.info("[>>] Server-managed mode — direct spawn for #%s", channel_id)
-        if _spawn_channel_session(channel_id):
-            return {"queued": True, "channel_id": channel_id, "method": "direct"}
-        return {"queued": False, "reason": "direct_spawn_failed"}
-
+    # Add to launch queue for the VS Code extension to pick up.
+    # The extension's ChannelSessionLauncher polls this queue and spawns
+    # proper interactive terminals with the correct workspace context.
+    # Direct spawn (_spawn_channel_session) is disabled because it resolves
+    # the workspace incorrectly when running from site-packages.
     _add_to_launch_queue(channel_id, workspace_path=workspace_path)
     logger.info("[>>] Session launch queued for #%s", channel_id)
     return {"queued": True, "channel_id": channel_id}
