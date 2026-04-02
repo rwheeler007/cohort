@@ -263,6 +263,9 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
           ],
         };
       } catch (e) {
+        // Clear the active request even on failure so the poll loop isn't stuck
+        currentRequestId = null;
+        currentRequestClaimedAt = null;
         return {
           content: [
             {
@@ -280,6 +283,12 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       const sender = (args as { sender: string }).sender;
       const postContent = (args as { content: string }).content;
       const threadId = (args as { thread_id?: string }).thread_id;
+
+      // If this post is for the active channel, treat it as completing the request
+      if (currentRequestId && channel === channelId) {
+        currentRequestId = null;
+        currentRequestClaimedAt = null;
+      }
 
       try {
         const result = await client.postMessage(channel, sender, postContent, threadId);
@@ -420,10 +429,21 @@ async function pollLoop(): Promise<void> {
 
   while (true) {
     try {
-      // Don't poll while a request is active
+      // Don't poll while a request is active — but force-clear after 5 minutes
+      // to prevent the session from getting permanently stuck if Claude never
+      // calls cohort_respond (e.g., uses cohort_post instead, or errors out).
       if (currentRequestId !== null) {
-        await new Promise((r) => setTimeout(r, config.poll_interval_ms));
-        continue;
+        const activeSeconds = currentRequestClaimedAt
+          ? (Date.now() - currentRequestClaimedAt) / 1000
+          : 0;
+        if (activeSeconds > 300) {
+          log("WARN", `Request ${currentRequestId} stuck for ${Math.round(activeSeconds)}s — force-clearing`);
+          currentRequestId = null;
+          currentRequestClaimedAt = null;
+        } else {
+          await new Promise((r) => setTimeout(r, config.poll_interval_ms));
+          continue;
+        }
       }
 
       const pollResult = await client.poll();
