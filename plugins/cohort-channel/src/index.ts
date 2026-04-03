@@ -284,8 +284,12 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       const postContent = (args as { content: string }).content;
       const threadId = (args as { thread_id?: string }).thread_id;
 
-      // If this post is for the active channel, treat it as completing the request
-      if (currentRequestId && channel === channelId) {
+      // If this post is for the active channel, formally close the server-side
+      // request so it transitions out of "claimed" state.  Without this, the
+      // server thinks the request is still in-flight and may refuse to enqueue
+      // the next message for this channel.
+      const closingRequestId = (currentRequestId && channel === channelId) ? currentRequestId : null;
+      if (closingRequestId) {
         currentRequestId = null;
         currentRequestClaimedAt = null;
       }
@@ -293,6 +297,17 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       try {
         const result = await client.postMessage(channel, sender, postContent, threadId);
         log("INFO", `Posted as ${sender} to #${channel} (msg=${result.message_id})`);
+
+        // Close the server-side request so the next message can be enqueued
+        if (closingRequestId) {
+          try {
+            await client.respond(closingRequestId, postContent);
+            log("INFO", `Closed request ${closingRequestId} via cohort_post (server notified)`);
+          } catch (e) {
+            log("WARN", `Failed to close request ${closingRequestId}: ${(e as Error).message}`);
+          }
+        }
+
         return {
           content: [
             {
@@ -302,6 +317,11 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
           ],
         };
       } catch (e) {
+        // Restore request tracking if the post itself failed
+        if (closingRequestId) {
+          currentRequestId = closingRequestId;
+          currentRequestClaimedAt = Date.now();
+        }
         return {
           content: [
             {
