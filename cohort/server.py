@@ -1761,7 +1761,9 @@ async def channel_nudge(request: Request):
     Polling remains the safety net; this just cuts latency.
     """
     import asyncio
+
     from starlette.responses import StreamingResponse
+
     from cohort.channel_bridge import subscribe_nudge, unsubscribe_nudge
 
     channel_id = request.query_params.get("channel_id")
