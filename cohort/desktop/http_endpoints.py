@@ -25,7 +25,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from cohort.desktop.backend import DesktopBackend
-from cohort.desktop.config import DesktopConfig, load_config, _DATA_DIR
+from cohort.desktop.config import _DATA_DIR, DesktopConfig, load_config
 from cohort.desktop.safety import check_desktop_permission
 
 logger = logging.getLogger(__name__)
@@ -279,7 +279,8 @@ async def desktop_status_endpoint(request: Request) -> JSONResponse:
 
 async def observer_start_endpoint(request: Request) -> JSONResponse:
     """POST /api/desktop/observer/start — start observer mode."""
-    from cohort.desktop.observer import configure as observer_configure, start_observer
+    from cohort.desktop.observer import configure as observer_configure
+    from cohort.desktop.observer import start_observer
     try:
         body = await request.json()
     except Exception:
