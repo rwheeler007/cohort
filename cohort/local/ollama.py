@@ -123,6 +123,19 @@ class OllamaClient:
         except Exception:
             return []
 
+    def list_running_models(self) -> set[str]:
+        """Return the set of model names currently loaded in VRAM."""
+        try:
+            req = urllib.request.Request(
+                f"{self.base_url}/api/ps",
+                method="GET",
+            )
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                return {m.get("name", "") for m in data.get("models", []) if m.get("name")}
+        except Exception:
+            return set()
+
     def embed(
         self,
         model: str,

@@ -15,6 +15,11 @@ let errors: ConsoleErrorCollector;
 test.beforeEach(async ({ page }) => {
   errors = new ConsoleErrorCollector();
   errors.attach(page);
+  // Reset setup_completed so the wizard always appears, even when
+  // another parallel worker already completed it on the shared server.
+  await page.request.post("/api/settings", {
+    data: { setup_completed: false },
+  });
   await page.goto("/");
 });
 

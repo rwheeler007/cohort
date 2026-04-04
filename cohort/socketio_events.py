@@ -599,7 +599,7 @@ async def join_channel(sid: str, data: dict | None = None) -> None:
             _post_agent_greeting(agent_id, channel_id)
 
     # Join the Socket.IO room for this channel
-    sio.enter_room(sid, channel_id)
+    await sio.enter_room(sid, channel_id)
 
     # Send messages for this channel
     messages = _chat.get_channel_messages(channel_id, limit=100)

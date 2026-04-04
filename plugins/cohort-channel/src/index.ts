@@ -14,7 +14,7 @@
  *   claude --dangerously-load-development-channels server:cohort-wq
  *
  * Environment:
- *   COHORT_BASE_URL  -- Cohort server URL (default: http://localhost:5100)
+ *   COHORT_BASE_URL  -- Cohort server URL (default: http://127.0.0.1:5100)
  *   POLL_INTERVAL    -- Poll interval in ms (default: 5000)
  */
 
@@ -54,7 +54,7 @@ const projectId = process.env.PROJECT_ID ?? "default";
 console.error(`[cohort-wq] ENV: CHANNEL_ID=${channelId ?? "(unset)"} PROJECT_ID=${projectId} COHORT_BASE_URL=${process.env.COHORT_BASE_URL ?? "(unset)"}`);
 
 const config: ChannelConfig = {
-  cohort_base_url: process.env.COHORT_BASE_URL ?? "http://localhost:5100",
+  cohort_base_url: process.env.COHORT_BASE_URL ?? "http://127.0.0.1:5100",
   poll_interval_ms: parseInt(process.env.POLL_INTERVAL ?? "5000", 10),
   heartbeat_interval_ms: 1_000,
   session_id: `${SERVER_NAME}-${Date.now()}`,
@@ -67,6 +67,11 @@ const client = new CohortClient(config);
 let currentRequestId: string | null = null;
 let currentRequestClaimedAt: number | null = null;
 let requestCount: number = 0;
+
+// Nudge system: event-driven wakeup for the poll loop.
+// When set, the poll loop skips its sleep and immediately re-polls.
+let pollNow = false;
+let pollNowResolve: (() => void) | null = null;
 
 // Ready-gate for channel sessions: Claude must call cohort_ready to prove
 // the notification path works before prompts are dispatched.
@@ -254,6 +259,9 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
         });
         currentRequestId = null;
         currentRequestClaimedAt = null;
+        // Immediately re-poll instead of sleeping -- catch queued messages fast
+        pollNow = true;
+        if (pollNowResolve) pollNowResolve();
         return {
           content: [
             {
@@ -290,8 +298,14 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       // the next message for this channel.
       const closingRequestId = (currentRequestId && channel === channelId) ? currentRequestId : null;
       if (closingRequestId) {
+        log("INFO", `cohort_post closing active request ${closingRequestId} (channel=#${channel})`);
         currentRequestId = null;
         currentRequestClaimedAt = null;
+        // Wake the poll loop so we pick up any queued follow-up messages
+        pollNow = true;
+        if (pollNowResolve) pollNowResolve();
+      } else {
+        log("INFO", `cohort_post to #${channel} as ${sender} (no active request to close, currentRequestId=${currentRequestId}, channelId=${channelId})`);
       }
 
       try {
@@ -302,9 +316,9 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
         if (closingRequestId) {
           try {
             await client.respond(closingRequestId, postContent);
-            log("INFO", `Closed request ${closingRequestId} via cohort_post (server notified)`);
+            log("INFO", `Closed request ${closingRequestId} via cohort_post -- server-side status=completed`);
           } catch (e) {
-            log("WARN", `Failed to close request ${closingRequestId}: ${(e as Error).message}`);
+            log("ERR", `FAILED to close request ${closingRequestId} via cohort_post: ${(e as Error).message} -- server still thinks request is claimed, next enqueue may stall`);
           }
         }
 
@@ -319,8 +333,11 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       } catch (e) {
         // Restore request tracking if the post itself failed
         if (closingRequestId) {
+          log("WARN", `cohort_post failed, restoring request ${closingRequestId} as active`);
           currentRequestId = closingRequestId;
           currentRequestClaimedAt = Date.now();
+          // Undo the pollNow since we're back to processing this request
+          pollNow = false;
         }
         return {
           content: [
@@ -375,6 +392,8 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       await client.error(requestId, errorMsg);
       currentRequestId = null;
       currentRequestClaimedAt = null;
+      pollNow = true;
+      if (pollNowResolve) pollNowResolve();
       return {
         content: [
           {
@@ -403,6 +422,75 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
       };
   }
 });
+
+// ---------------------------------------------------------------------------
+// Interruptible sleep -- returns early when pollNow is signaled
+// ---------------------------------------------------------------------------
+
+function interruptibleSleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      pollNowResolve = null;
+      resolve();
+    }, ms);
+
+    // Allow the nudge listener to break us out early
+    pollNowResolve = () => {
+      clearTimeout(timer);
+      pollNowResolve = null;
+      resolve();
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// SSE nudge listener -- server pushes an event when a new request is enqueued
+// ---------------------------------------------------------------------------
+
+function startNudgeListener(): void {
+  const scope = channelId ? `?channel_id=${encodeURIComponent(channelId)}` : "";
+  const url = `${config.cohort_base_url}/api/channel/nudge${scope}`;
+
+  const connect = () => {
+    log("INFO", `Nudge listener connecting: ${url}`);
+
+    // Use raw fetch with streaming body for SSE (no EventSource in Bun/Node)
+    const controller = new AbortController();
+    fetch(url, { signal: controller.signal })
+      .then(async (res) => {
+        if (!res.ok || !res.body) {
+          log("WARN", `Nudge endpoint returned ${res.status} -- retrying in 10s`);
+          setTimeout(connect, 10_000);
+          return;
+        }
+        log("INFO", "Nudge listener connected");
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const text = decoder.decode(value, { stream: true });
+          if (text.includes("data: nudge")) {
+            log("INFO", "Nudge received -- waking poll loop");
+            pollNow = true;
+            if (pollNowResolve) pollNowResolve();
+          }
+        }
+        // Stream ended (server restart, etc.) -- reconnect
+        log("INFO", "Nudge stream ended -- reconnecting in 2s");
+        setTimeout(connect, 2_000);
+      })
+      .catch((e) => {
+        const msg = (e as Error).message;
+        if (!msg.includes("abort")) {
+          log("WARN", `Nudge listener error: ${msg} -- reconnecting in 10s`);
+        }
+        setTimeout(connect, 10_000);
+      });
+  };
+
+  connect();
+}
 
 // ---------------------------------------------------------------------------
 // Poll Loop -- checks Cohort for pending requests, pushes prompts to Claude
@@ -461,10 +549,14 @@ async function pollLoop(): Promise<void> {
           currentRequestId = null;
           currentRequestClaimedAt = null;
         } else {
-          await new Promise((r) => setTimeout(r, config.poll_interval_ms));
+          await interruptibleSleep(config.poll_interval_ms);
           continue;
         }
       }
+
+      // Consume the fast-path flag (set by cohort_respond/cohort_error/nudge)
+      const wasNudged = pollNow;
+      pollNow = false;
 
       const pollResult = await client.poll();
       if (consecutiveFailures > 0) {
@@ -474,7 +566,7 @@ async function pollLoop(): Promise<void> {
 
       if (pollResult.request) {
         const requestId = pollResult.request.id;
-        log("INFO", `Request found: ${requestId}`);
+        log("INFO", `Poll hit: ${requestId}${wasNudged ? " (nudged)" : ""}`);
 
         // Claim the request (get the full prompt)
         const claim = await client.claim(requestId);
@@ -525,11 +617,17 @@ async function pollLoop(): Promise<void> {
         config.poll_interval_ms * Math.pow(2, consecutiveFailures - 1),
         MAX_BACKOFF_MS
       );
-      await new Promise((r) => setTimeout(r, backoff));
+      await interruptibleSleep(backoff);
       continue;
     }
 
-    await new Promise((r) => setTimeout(r, config.poll_interval_ms));
+    // If pollNow was set during this iteration (nudge arrived while we
+    // were processing), skip the sleep and re-poll immediately.
+    if (pollNow) {
+      log("INFO", "pollNow set during iteration -- re-polling immediately");
+      continue;
+    }
+    await interruptibleSleep(config.poll_interval_ms);
   }
 }
 
@@ -649,6 +747,10 @@ async function main(): Promise<void> {
   heartbeatLoop().catch((e) =>
     log("FATAL", `Heartbeat loop crashed: ${(e as Error).message}`)
   );
+
+  // SSE nudge listener -- fast-path wakeup when new requests arrive.
+  // Polling remains the safety net; nudge just cuts the latency.
+  startNudgeListener();
 
   const scope = channelId ? `#${channelId}` : "all channels";
   log("INFO", `Polling ${config.cohort_base_url} every ${config.poll_interval_ms}ms (scope: ${scope})`);

@@ -7440,7 +7440,7 @@ function init() {
             const optimistic = {
                 id: pendingId,
                 channel_id: state.currentChannel,
-                sender: sender,
+                sender: outgoing.sender,
                 content: content,
                 timestamp: new Date().toISOString(),
                 message_type: 'chat',

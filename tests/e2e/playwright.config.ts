@@ -80,6 +80,8 @@ export default defineConfig({
     timeout: 30_000,
     env: {
       COHORT_DATA_DIR: E2E_DATA_DIR,
+      // Point to real agents so @mention routing works in tests
+      COHORT_AGENTS_DIR: path.resolve(__dirname, "../../agents"),
     },
   },
 });

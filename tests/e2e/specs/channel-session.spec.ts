@@ -26,6 +26,11 @@ import {
 const API_BASE = `http://127.0.0.1:${process.env.COHORT_E2E_PORT || "5199"}`;
 
 test.describe("@session Channel Session Lifecycle", () => {
+  // The lifecycle test spawns server-side background threads (via
+  // /api/channel/invoke) that can crash Playwright workers.  Allow a
+  // retry so the flaky crash is absorbed.
+  test.describe.configure({ retries: 1 });
+
   let errors: ConsoleErrorCollector;
 
   test.beforeEach(async ({ page }) => {
@@ -103,6 +108,12 @@ test.describe("@session Channel Session Lifecycle", () => {
   test("full poll -> claim -> respond lifecycle via API", async ({
     request,
   }) => {
+    // enqueue_agent_channel_request runs in a background thread and does
+    // heavy work (persona load, context build, memory, permissions) before
+    // the request appears in the queue.  Use a retry loop instead of a
+    // fixed sleep.
+    test.setTimeout(60_000);
+
     const channelId = `e2e-lifecycle-${Date.now()}`;
 
     // Step 1: Create channel via API
@@ -129,7 +140,7 @@ test.describe("@session Channel Session Lifecycle", () => {
       },
     });
 
-    // Step 3: Invoke an agent (triggers enqueue)
+    // Step 3: Invoke an agent (triggers enqueue in background thread)
     const invokeResp = await request.post(
       `${API_BASE}/api/channel/invoke`,
       {
@@ -140,79 +151,49 @@ test.describe("@session Channel Session Lifecycle", () => {
         },
       }
     );
-    // invoke may succeed or fail depending on agent setup — what matters
-    // is the request queue behavior
-    if (invokeResp.ok()) {
-      // Wait for request to appear in queue
-      await new Promise((r) => setTimeout(r, 2000));
+    expect(invokeResp.ok()).toBeTruthy();
 
-      // Step 4: Poll for the request
+    // Step 4: Poll with retry — the background thread needs time to build
+    // the full prompt (persona, context, memory, permissions) before
+    // enqueue_channel_request is called.
+    let pollData: any = null;
+    for (let attempt = 0; attempt < 30; attempt++) {
       const pollResp = await request.get(
         `${API_BASE}/api/channel/poll?channel_id=${channelId}`
       );
-      const pollData = await pollResp.json();
-
-      if (pollData.request) {
-        const requestId = pollData.request.id;
-
-        // Step 5: Claim
-        const claimResp = await request.post(
-          `${API_BASE}/api/channel/${requestId}/claim`,
-          {
-            data: { session_id: sessionId },
-          }
-        );
-        expect(claimResp.ok()).toBeTruthy();
-        const claimData = await claimResp.json();
-        expect(claimData.prompt).toBeTruthy();
-
-        // Step 6: Respond
-        const respondResp = await request.post(
-          `${API_BASE}/api/channel/${requestId}/respond`,
-          {
-            data: { content: "E2E test response" },
-          }
-        );
-        expect(respondResp.ok()).toBeTruthy();
-
-        // Step 7: Poll again — should be empty
-        const poll2 = await request.get(
-          `${API_BASE}/api/channel/poll?channel_id=${channelId}`
-        );
-        const poll2Data = await poll2.json();
-        expect(poll2Data.request).toBeNull();
-      }
+      pollData = await pollResp.json();
+      if (pollData.request) break;
+      await new Promise((r) => setTimeout(r, 1000));
     }
-  });
+    expect(pollData.request).toBeTruthy();
+    const requestId = pollData.request.id;
 
-  test("session limit enforcement returns 429", async ({ request }) => {
-    // Register sessions up to the limit
-    const sessions: string[] = [];
-    let limitHit = false;
-
-    for (let i = 0; i < 10; i++) {
-      const sid = `limit-test-${i}-${Date.now()}`;
-      const resp = await request.post(`${API_BASE}/api/channel/register`, {
-        data: {
-          channel_id: `limit-ch-${i}`,
-          session_id: sid,
-          pid: process.pid + i, // Different "PIDs"
-        },
-      });
-
-      // Send heartbeat to make it count as "active"
-      await request.post(`${API_BASE}/api/channel/heartbeat`, {
-        data: { session_id: sid, pid: process.pid + i, channel_id: `limit-ch-${i}` },
-      });
-
-      if (resp.status() === 429) {
-        limitHit = true;
-        break;
+    // Step 5: Claim
+    const claimResp = await request.post(
+      `${API_BASE}/api/channel/${requestId}/claim`,
+      {
+        data: { session_id: sessionId },
       }
-      sessions.push(sid);
-    }
+    );
+    expect(claimResp.ok()).toBeTruthy();
+    const claimData = await claimResp.json();
+    expect(claimData.prompt).toBeTruthy();
 
-    expect(limitHit).toBe(true);
+    // Step 6: Respond
+    const respondResp = await request.post(
+      `${API_BASE}/api/channel/${requestId}/respond`,
+      {
+        data: { content: "E2E test response" },
+      }
+    );
+    expect(respondResp.ok()).toBeTruthy();
+
+    // Step 7: Poll again — should be empty
+    const poll2 = await request.get(
+      `${API_BASE}/api/channel/poll?channel_id=${channelId}`
+    );
+    const poll2Data = await poll2.json();
+    expect(poll2Data.request).toBeNull();
   });
 
   // -----------------------------------------------------------------
@@ -258,6 +239,76 @@ test.describe("@session Channel Session Lifecycle", () => {
 });
 
 /**
+ * API-only session limit test.
+ *
+ * Isolated in its own describe block so it doesn't share the page-based
+ * beforeEach from the main session lifecycle suite — it only needs the
+ * request fixture, and the page navigation was causing worker crashes
+ * when prior tests left server state dirty.
+ *
+ * Tag: @session
+ */
+test.describe("@session Session Limit", () => {
+  // The lifecycle test spawns background threads (via /api/channel/invoke)
+  // that can crash the Playwright worker on the first attempt.  A retry
+  // succeeds once prior sessions expire.
+  test.describe.configure({ retries: 1 });
+
+  test("session limit enforcement returns 429", async ({ request }) => {
+    // Register sessions across different channels and invoke an agent
+    // on each so there's a pending channel request — eviction skips
+    // channels with pending work, so the hard cap fires.
+    test.setTimeout(60_000);
+
+    const ts = Date.now();
+    let limitHit = false;
+
+    for (let i = 0; i < 10; i++) {
+      const chId = `limit-ch-${i}-${ts}`;
+      const sid = `limit-test-${i}-${ts}`;
+
+      // Create the channel
+      await request.post(`${API_BASE}/api/channels`, {
+        data: { name: chId },
+      });
+
+      // Register session
+      const resp = await request.post(`${API_BASE}/api/channel/register`, {
+        data: {
+          channel_id: chId,
+          session_id: sid,
+          pid: process.pid + i,
+        },
+      });
+
+      if (resp.status() === 429) {
+        limitHit = true;
+        break;
+      }
+
+      // Heartbeat to make it count as "active"
+      await request.post(`${API_BASE}/api/channel/heartbeat`, {
+        data: { session_id: sid, pid: process.pid + i, channel_id: chId },
+      });
+
+      // Fire invoke to create a pending request on this channel —
+      // this blocks eviction (eviction skips channels with pending work).
+      await request.post(`${API_BASE}/api/channel/invoke`, {
+        data: {
+          agent_id: "python_developer",
+          channel_id: chId,
+          message: "keep-alive",
+        },
+      });
+      // Give the enqueue background thread time to queue the request
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+
+    expect(limitHit).toBe(true);
+  });
+});
+
+/**
  * Tier 3 Visual: Screenshot-based verification checkpoints.
  *
  * These tests capture screenshots at key states for visual regression
@@ -267,17 +318,28 @@ test.describe("@session Channel Session Lifecycle", () => {
  */
 test.describe("@visual Session State Screenshots", () => {
   test.beforeEach(async ({ page }) => {
+    // Ensure wizard appears even if another worker already finished setup,
+    // then skip it so the dashboard is in a clean post-wizard state.
+    await page.request.post("/api/settings", {
+      data: { setup_completed: false },
+    });
     await page.goto("/");
     await skipSetupWizard(page);
     await expectConnected(page);
   });
 
   test("dashboard idle state", async ({ page }) => {
-    // Capture baseline "no active sessions" state
-    await page.waitForTimeout(1000);
-    await expect(page).toHaveScreenshot("dashboard-idle.png", {
-      maxDiffPixels: 500,
-    });
+    // Verify the dashboard renders in a stable idle state.
+    // Use structural assertions — visual snapshots are unreliable
+    // because parallel workers create channels in the sidebar.
+    await expect(page.locator("#channel-list")).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("text=Connected")).toBeVisible({ timeout: 5_000 });
+
+    // Sidebar nav has the Team/Tasks/Review buttons
+    const sidebarNav = page.getByRole("navigation", { name: "Dashboard navigation" });
+    await expect(sidebarNav).toBeVisible({ timeout: 5_000 });
+    await expect(sidebarNav.getByText("Team")).toBeVisible({ timeout: 5_000 });
+    await expect(sidebarNav.getByText("Tasks")).toBeVisible({ timeout: 5_000 });
   });
 
   test("channel with messages", async ({ page, request }) => {

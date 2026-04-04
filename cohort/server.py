@@ -144,8 +144,11 @@ def _seed_from_global_defaults() -> dict[str, Any]:
         defaults.setdefault("execution_backend", "channel")
         defaults.setdefault("claude_enabled", True)
 
-    # Mark setup as complete since machine is already configured
-    defaults["setup_completed"] = True
+    # Seed useful defaults but do NOT mark setup as complete -- the
+    # wizard should still run so the user can review / customise settings
+    # for this workspace.  (Setting setup_completed here broke E2E tests
+    # that rely on fresh data dirs showing the wizard.)
+    defaults.pop("setup_completed", None)
 
     _save_settings(defaults)
     logger.info("[OK] Seeded workspace settings from global defaults (%d keys)",
@@ -1657,10 +1660,10 @@ async def channel_capabilities(request: Request) -> JSONResponse:
     """GET /api/channel/capabilities -- report server session management features."""
     from cohort.channel_bridge import _session_limit
     return JSONResponse({
-        "server_managed_sessions": False,
+        "server_managed_sessions": True,
         "session_limit": _session_limit,
         "wq_dispatch": "internal",
-        "version": "0.4.33",
+        "version": "0.4.44",
     })
 
 
@@ -1748,6 +1751,49 @@ async def channel_invoke(request: Request) -> JSONResponse:
     except Exception as exc:
         logger.exception("channel_invoke failed for %s in #%s", agent_id, channel_id)
         return JSONResponse({"error": str(exc)}, status_code=500)
+
+
+async def channel_nudge(request: Request):
+    """GET /api/channel/nudge -- SSE stream that fires when new requests arrive.
+
+    Plugins connect once and receive ``data: nudge`` events whenever a
+    request is enqueued for their channel (or any channel if no scope).
+    Polling remains the safety net; this just cuts latency.
+    """
+    import asyncio
+    from starlette.responses import StreamingResponse
+    from cohort.channel_bridge import subscribe_nudge, unsubscribe_nudge
+
+    channel_id = request.query_params.get("channel_id")
+    event, entry = subscribe_nudge(channel_id)
+
+    async def event_stream():
+        try:
+            # Initial keepalive so the client knows the connection is alive
+            yield ": connected\n\n"
+            while True:
+                # Wait for a nudge (or periodic keepalive every 30s)
+                try:
+                    await asyncio.wait_for(event.wait(), timeout=30.0)
+                    event.clear()
+                    yield "data: nudge\n\n"
+                except asyncio.TimeoutError:
+                    # Keepalive comment to prevent proxy/client timeouts
+                    yield ": keepalive\n\n"
+        except asyncio.CancelledError:
+            pass
+        finally:
+            unsubscribe_nudge(entry)
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 async def channel_register(request: Request) -> JSONResponse:
@@ -3026,6 +3072,8 @@ async def post_settings(request: Request) -> JSONResponse:
             settings["channel_idle_timeout"] = val
     if "channel_auto_launch" in body:
         settings["channel_auto_launch"] = bool(body["channel_auto_launch"])
+    if "setup_completed" in body:
+        settings["setup_completed"] = bool(body["setup_completed"])
 
     _save_settings(settings)
 
@@ -4139,6 +4187,56 @@ async def setup_global_agents(request: Request) -> JSONResponse:
     if warnings:
         return JSONResponse({"success": False, "warnings": warnings})
     return JSONResponse({"success": True})
+
+
+# -----------------------------------------------------------------------
+# Import preferences endpoints
+# -----------------------------------------------------------------------
+
+async def setup_import_chatgpt_titles(request: Request) -> JSONResponse:
+    """POST /api/setup/import-chatgpt-titles -- parse conversations.json titles."""
+    from cohort.import_seed import parse_chatgpt_titles
+
+    body = await request.json()
+    conversations = body.get("conversations")
+
+    if not isinstance(conversations, list):
+        return JSONResponse({"error": "conversations must be an array"}, status_code=400)
+    if len(conversations) == 0:
+        return JSONResponse({"error": "conversations must not be empty"}, status_code=400)
+
+    titles = parse_chatgpt_titles(conversations)
+    return JSONResponse({"titles": titles, "total": len(titles)})
+
+
+async def setup_import_claude_detect(request: Request) -> JSONResponse:
+    """POST /api/setup/import-claude-detect -- detect Claude Code memory."""
+    from cohort.import_seed import detect_claude_dir, parse_claude_memory
+
+    info = detect_claude_dir()
+    facts: list[dict] = []
+    if info.get("exists"):
+        facts = parse_claude_memory()
+
+    return JSONResponse({
+        "exists": info.get("exists", False),
+        "facts": facts,
+        "count": len(facts),
+    })
+
+
+async def setup_import_commit(request: Request) -> JSONResponse:
+    """POST /api/setup/import-commit -- store user-approved facts."""
+    from cohort.import_seed import commit_facts
+
+    body = await request.json()
+    facts = body.get("facts", [])
+
+    if not isinstance(facts, list) or len(facts) == 0:
+        return JSONResponse({"stored": 0})
+
+    stored = commit_facts(facts, _agent_store)
+    return JSONResponse({"stored": stored})
 
 
 async def setup_detect_claude(request: Request) -> JSONResponse:
@@ -7280,6 +7378,7 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/review-pipeline/config", put_review_pipeline_config, methods=["PUT"]),
         # Channel (Claude Code Channels integration)
         Route("/api/channel/poll", channel_poll, methods=["GET"]),
+        Route("/api/channel/nudge", channel_nudge, methods=["GET"]),
         Route("/api/channel/heartbeat", channel_heartbeat, methods=["POST"]),
         Route("/api/channel/capabilities", channel_capabilities, methods=["GET"]),
         Route("/api/channel/status", channel_status, methods=["GET"]),
@@ -7322,6 +7421,9 @@ def create_app(data_dir: str = "data") -> Starlette:
         Route("/api/setup/check-mcp", setup_check_mcp, methods=["POST"]),
         Route("/api/setup/write-mcp-config", setup_write_mcp_config, methods=["POST"]),
         Route("/api/setup/global-agents", setup_global_agents, methods=["POST"]),
+        Route("/api/setup/import-chatgpt-titles", setup_import_chatgpt_titles, methods=["POST"]),
+        Route("/api/setup/import-claude-detect", setup_import_claude_detect, methods=["POST"]),
+        Route("/api/setup/import-commit", setup_import_commit, methods=["POST"]),
         # Session endpoints (canonical)
         Route("/api/sessions", list_sessions_endpoint, methods=["GET"]),
         Route("/api/sessions/setup-parse", session_setup_parse, methods=["POST"]),

@@ -216,6 +216,43 @@ _channel_lock = threading.Lock()
 _channel_cv = threading.Condition(_channel_lock)
 
 # =====================================================================
+# Nudge subscribers -- SSE connections waiting for new-request events.
+# Each subscriber is an asyncio.Event scoped to a channel (or None=all).
+# =====================================================================
+
+_nudge_subscribers: List[Dict[str, Any]] = []
+_nudge_lock = threading.Lock()
+
+
+def subscribe_nudge(channel_id: Optional[str] = None):
+    """Register an SSE subscriber. Returns (event, entry) to await/cleanup."""
+    import asyncio
+    event = asyncio.Event()
+    entry = {"channel_id": channel_id, "event": event}
+    with _nudge_lock:
+        _nudge_subscribers.append(entry)
+    return event, entry
+
+
+def unsubscribe_nudge(entry: Dict[str, Any]) -> None:
+    """Remove an SSE subscriber."""
+    with _nudge_lock:
+        try:
+            _nudge_subscribers.remove(entry)
+        except ValueError:
+            pass
+
+
+def _fire_nudge(channel_id: str) -> None:
+    """Wake all SSE subscribers watching this channel (or all channels)."""
+    with _nudge_lock:
+        for sub in _nudge_subscribers:
+            scope = sub["channel_id"]
+            if scope is None or scope == channel_id:
+                sub["event"].set()
+
+
+# =====================================================================
 # Per-channel session registry (nested: channel_id -> session_id -> info)
 # =====================================================================
 
@@ -472,6 +509,9 @@ def enqueue_channel_request(
 
         _channel_queues[channel_id].append(request)
         _channel_cv.notify_all()
+
+    # Nudge SSE subscribers so channel plugins re-poll immediately
+    _fire_nudge(channel_id)
 
     touch_channel_activity(channel_id)
 

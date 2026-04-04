@@ -51,6 +51,7 @@ test.describe("@chat Message Flow", () => {
   });
 
   test("message with @mention triggers agent response", async ({ page }) => {
+    test.setTimeout(120_000); // LLM inference can be slow on first request
     await createChannel(page, `${TEST_CHANNEL}-mention`);
     await switchToChannel(page, `${TEST_CHANNEL}-mention`);
 

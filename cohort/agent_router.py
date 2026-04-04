@@ -1562,22 +1562,26 @@ def _invoke_agent_sync(item: dict) -> None:
     # the VS Code extension's launch queue poller.  _collect_and_post in
     # enqueue_agent_channel_request handles posting the response back.
     if response_mode == "channel" and not response_content:
-        try:
-            enqueue_agent_channel_request(
-                agent_id=agent_id,
-                channel_id=channel_id,
-                message=_local_prompt,
-                thread_id=thread_id,
-                project_path=item.get("project_path"),
-                reply_channel=channel_id,
-            )
-            logger.info("[>>] Channel request enqueued directly for %s in #%s (skipped WQ)",
-                        agent_id, channel_id)
-            _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
-            return
-        except Exception:
-            logger.exception("[!] Channel enqueue failed for %s, degrading to smarter", agent_id)
-            response_mode = "smarter"
+        from cohort.channel_bridge import channel_mode_active
+        if channel_mode_active():
+            try:
+                enqueue_agent_channel_request(
+                    agent_id=agent_id,
+                    channel_id=channel_id,
+                    message=_local_prompt,
+                    thread_id=thread_id,
+                    project_path=item.get("project_path"),
+                    reply_channel=channel_id,
+                )
+                logger.info("[>>] Channel request enqueued directly for %s in #%s (skipped WQ)",
+                            agent_id, channel_id)
+                _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
+                return
+            except Exception:
+                logger.exception("[!] Channel enqueue failed for %s, degrading to smarter", agent_id)
+        else:
+            logger.info("[*] Channel mode not active, degrading to smarter for %s", agent_id)
+        response_mode = "smarter"
 
     # Tier-aware channel intercept: if the tier's primary model is "channel",
     # route through the channel bridge instead of local inference.
@@ -1594,8 +1598,10 @@ def _invoke_agent_sync(item: dict) -> None:
                 response_metadata = _ch_meta if _ch_meta else {"pipeline": "channel", "model": _ch_model}
 
     # Standard local routing (smart / smarter modes).
-    # Skip when force_to_claude_code is enabled -- let channel/cloud/CLI handle it.
-    if not response_content and not _force_claude_code:
+    # When force_to_claude_code is set we still fall back to local inference
+    # if the channel/cloud/CLI paths all failed — a degraded answer beats
+    # no answer.
+    if not response_content:
         try:
             from cohort.api import LocalRouter
 
@@ -1823,8 +1829,12 @@ def _invoke_agent_sync(item: dict) -> None:
     _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
 
     if not response_content:
-        logger.warning("[!] Empty response from %s, skipping post", agent_id)
-        return
+        logger.warning("[!] No backend produced a response for %s in #%s", agent_id, channel_id)
+        response_content = (
+            f"[!] {agent_id} could not respond -- no inference backend is available. "
+            f"Check that Ollama is running or a cloud API key is configured."
+        )
+        response_metadata = {"pipeline": "unavailable"}
 
     # Post agent response back to chat
     if _chat is None:

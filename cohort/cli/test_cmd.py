@@ -92,9 +92,16 @@ def _run_e2e(args: argparse.Namespace) -> int:
     env["COHORT_E2E_PORT"] = str(port)
     env["COHORT_E2E_DATA_DIR"] = data_dir
 
+    # Inference mode for conversation tests (local/channel/cloud)
+    mode = getattr(args, "mode", None)
+    if mode:
+        env["COHORT_E2E_MODE"] = mode
+
     print("  [>>] Running E2E tests")
     print(f"       Port: {port}")
     print(f"       Data: {data_dir} (isolated)")
+    if mode:
+        print(f"       Mode: {mode}")
     if tag:
         print(f"       Tag:  {tag_filter}")
     if spec:
@@ -219,6 +226,8 @@ def register(subparsers: argparse._SubParsersAction) -> None:
     e2e_parser.add_argument("--port", type=int, default=5199, help="Test server port (default: 5199)")
     e2e_parser.add_argument("--reporter", default="list", help="Playwright reporter (default: list)")
     e2e_parser.add_argument("--workers", type=int, help="Number of parallel workers")
+    e2e_parser.add_argument("--mode", choices=["local", "channel", "cloud"],
+                            help="Inference mode for conversation tests (default: local)")
 
     # cohort test unit
     unit_parser = test_sub.add_parser("unit", help="Run pytest unit tests")

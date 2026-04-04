@@ -195,13 +195,23 @@ class LocalRouter:
                 if hw_info.cpu_only:
                     return None
 
-                # Skip local inference if free VRAM is too low (avoid glacial CPU offload)
-                if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
-                    logger.info("[!] Low free VRAM (%d MB), skipping local inference", hw_info.total_vram_free_mb)
-                    return None
-
                 # Select model based on VRAM
                 model = get_model_for_vram(hw_info.vram_mb)
+
+                # Skip local inference if free VRAM is too low, UNLESS the
+                # target model is already loaded (serving an already-loaded
+                # model uses no extra VRAM).
+                if hw_info.total_vram_free_mb > 0 and hw_info.total_vram_free_mb < 2048:
+                    loaded = set()
+                    if self._client is not None:
+                        try:
+                            loaded = self._client.list_running_models()
+                        except Exception:
+                            pass
+                    if model not in loaded:
+                        logger.info("[!] Low free VRAM (%d MB) and %s not loaded, skipping",
+                                    hw_info.total_vram_free_mb, model)
+                        return None
 
             # Verify model is installed
             if self._client is None:
