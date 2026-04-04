@@ -7602,6 +7602,18 @@ def create_app(data_dir: str = "data") -> Starlette:
                 from cohort.agent_router import enqueue_agent_channel_request, resolve_agent_id
                 resolved = resolve_agent_id(agent_id) or agent_id
 
+                def _wq_on_complete(success: bool, detail: str | None, _wq_id: str = item_id, _ch: str = source_channel) -> None:
+                    """Callback: close the WQ item when channel response arrives."""
+                    try:
+                        if success:
+                            _work_queue.complete(_wq_id, result=f"Response posted to #{_ch}")
+                            logger.info("[OK] WQ %s completed", _wq_id)
+                        else:
+                            _work_queue.fail(_wq_id, reason=f"Channel response failed: {detail}")
+                            logger.warning("[!] WQ %s failed: %s", _wq_id, detail)
+                    except Exception:
+                        logger.exception("[!] WQ completion callback error for %s", _wq_id)
+
                 import threading as _thr
                 _thr.Thread(
                     target=enqueue_agent_channel_request,
@@ -7611,6 +7623,7 @@ def create_app(data_dir: str = "data") -> Starlette:
                         message=description,
                         thread_id=thread_id,
                         reply_channel=source_channel,
+                        on_complete=_wq_on_complete,
                     ),
                     daemon=True,
                 ).start()

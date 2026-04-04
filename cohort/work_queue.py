@@ -171,20 +171,67 @@ class WorkQueue:
         if priority not in VALID_PRIORITIES:
             raise ValueError(f"Invalid priority: {priority}")
 
-        item = WorkItem(
-            id=f"wq_{uuid.uuid4().hex[:8]}",
-            description=description,
-            requester=requester,
-            priority=priority,
-            status="queued",
-            created_at=_now_iso(),
-            agent_id=agent_id,
-            depends_on=depends_on or [],
-            metadata=metadata or {},
-        )
-
         with self._lock:
             self._ensure_loaded()
+
+            # Dedup: skip if this agent already has a queued/active item
+            # for the same channel.  If the existing item is active but stuck
+            # past its timeout, cancel it and let the new one through.
+            if agent_id and metadata and metadata.get("channel"):
+                target_channel = metadata["channel"]
+                for existing in list(self._items.values()):
+                    if (
+                        existing.agent_id == agent_id
+                        and existing.metadata.get("channel") == target_channel
+                        and existing.status in ("queued", "active")
+                    ):
+                        # If active, check whether it's stuck past timeout
+                        if existing.status == "active" and existing.claimed_at:
+                            claimed = datetime.fromisoformat(
+                                existing.claimed_at.replace("Z", "+00:00"),
+                            )
+                            now = datetime.now(timezone.utc)
+                            elapsed = (now - claimed).total_seconds()
+                            timeout_s = PRIORITY_TIMEOUT.get(existing.priority, 900)
+                            if elapsed > timeout_s:
+                                # Stuck — cancel it and allow the new item
+                                existing.status = "cancelled"
+                                existing.completed_at = _now_iso()
+                                existing.result = (
+                                    f"Cancelled: stuck for {elapsed:.0f}s "
+                                    f"(limit {timeout_s}s), superseded by new mention"
+                                )
+                                logger.warning(
+                                    "[!] Cancelled stuck item %s for %s in #%s (%.0fs > %ds)",
+                                    existing.id, agent_id, target_channel, elapsed, timeout_s,
+                                )
+                                self._save_to_disk()
+                                break  # Allow new item to be created
+                            # Active but not yet timed out — let it finish
+                            logger.info(
+                                "[*] Skipping: %s is active for #%s (%s, %.0fs elapsed)",
+                                agent_id, target_channel, existing.id, elapsed,
+                            )
+                            return existing
+                        # Queued — just dedup
+                        logger.info(
+                            "[*] Skipping duplicate: %s already queued for #%s (%s)",
+                            agent_id, target_channel, existing.id,
+                        )
+                        return existing
+
+            item = WorkItem(
+                id=f"wq_{uuid.uuid4().hex[:8]}",
+                description=description,
+                requester=requester,
+                priority=priority,
+                status="queued",
+                created_at=_now_iso(),
+                agent_id=agent_id,
+                depends_on=depends_on or [],
+                metadata=metadata or {},
+            )
+
             self._items[item.id] = item
             self._save_to_disk()
 
