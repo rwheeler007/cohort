@@ -21,7 +21,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from cohort.agent_context import load_agent_context, load_project_memory, load_user_profile_block
 from cohort.api import (
@@ -720,6 +720,7 @@ def enqueue_agent_channel_request(
     thread_id: str | None = None,
     project_path: str | None = None,
     reply_channel: str | None = None,
+    on_complete: Callable[[bool, str | None], None] | None = None,
 ) -> str:
     """Build the full agent prompt and enqueue it for a channel session to claim.
 
@@ -732,6 +733,8 @@ def enqueue_agent_channel_request(
         reply_channel: If set, the response is posted to this channel instead
             of ``channel_id``.  Used by the wq_worker when the agent session
             runs on a DM channel but the response belongs in the source channel.
+        on_complete: Optional callback fired after the channel response is
+            collected (or fails).  Signature: ``(success: bool, detail: str | None)``.
 
     Returns the enqueued request_id.
     """
@@ -823,8 +826,16 @@ def enqueue_agent_channel_request(
                 _chat.post_message(_reply_to, agent_id, response_content,
                                    metadata=response_metadata or {})
                 logger.info("[OK] Channel response posted to #%s by %s", _reply_to, agent_id)
+                if on_complete:
+                    on_complete(True, None)
+            else:
+                err = (response_metadata or {}).get("error", "no_response")
+                if on_complete:
+                    on_complete(False, err)
         except Exception:
             logger.exception("[!] Failed to collect/post channel response for %s", request_id)
+            if on_complete:
+                on_complete(False, "exception")
 
     threading.Thread(target=_collect_and_post, daemon=True).start()
 
@@ -1501,9 +1512,11 @@ def _invoke_agent_sync(item: dict) -> None:
         if agent_cfg and agent_cfg.model_params:
             agent_temperature = agent_cfg.model_params.get("temperature")
 
-    # Skip local router entirely when force_to_claude_code is enabled
+    # Force Claude Code: override response_mode to channel so the work queue
+    # dispatches to a Claude Code channel session instead of local inference.
     if _force_claude_code:
-        logger.info("[>>] Force Claude Code enabled, skipping local router for %s", agent_id)
+        logger.info("[>>] Force Claude Code enabled, routing %s via channel mode", agent_id)
+        response_mode = "channel"
 
     # Smartest pipeline: Qwen reasoning -> distill -> Cloud API (or CLI in dev mode)
     elif response_mode == "smartest":
@@ -1544,37 +1557,26 @@ def _invoke_agent_sync(item: dict) -> None:
                            agent_id)
             response_mode = "smarter"
 
-    # Channel mode: route through work queue -> wq_worker -> agent channel.
-    # The wq_worker dispatches items to agent-specific channels where the
-    # VS Code extension launches Claude Code sessions on demand.
+    # Channel mode: route directly to channel bridge, bypassing the work queue.
+    # The channel bridge enqueues the request and triggers session launch via
+    # the VS Code extension's launch queue poller.  _collect_and_post in
+    # enqueue_agent_channel_request handles posting the response back.
     if response_mode == "channel" and not response_content:
         try:
-            from cohort.server import _work_queue as _wq
-            if _wq is None:
-                raise RuntimeError("Work queue not initialised")
-            wq_item = _wq.enqueue(
-                description=_local_prompt,
-                requester=f"mention:{channel_id}",
-                priority="medium",
+            enqueue_agent_channel_request(
                 agent_id=agent_id,
-                metadata={
-                    "channel": channel_id,
-                    "agent_id": agent_id,
-                    "thread_id": thread_id or "",
-                    "source": "route_mentions",
-                    "response_mode": "channel",
-                    "workspace_path": item.get("project_path", ""),
-                },
+                channel_id=channel_id,
+                message=_local_prompt,
+                thread_id=thread_id,
+                project_path=item.get("project_path"),
+                reply_channel=channel_id,
             )
-            logger.info("[>>] Work queue item %s enqueued for %s (source=#%s)",
-                        wq_item.id, agent_id, channel_id)
-            # Response will be posted back to the channel by the wq_worker
-            # after the agent's channel session completes.  Return now --
-            # the rest of _invoke_agent_sync is synchronous fallbacks.
+            logger.info("[>>] Channel request enqueued directly for %s in #%s (skipped WQ)",
+                        agent_id, channel_id)
             _emit_sync("user_typing", {"sender": agent_id, "typing": False, "channel_id": channel_id})
             return
         except Exception:
-            logger.exception("[!] Work queue enqueue failed for %s, degrading to smarter", agent_id)
+            logger.exception("[!] Channel enqueue failed for %s, degrading to smarter", agent_id)
             response_mode = "smarter"
 
     # Tier-aware channel intercept: if the tier's primary model is "channel",

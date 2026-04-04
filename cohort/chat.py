@@ -280,6 +280,20 @@ class ChatManager:
                 metadata = {}
             metadata.setdefault("mentions", mentions)
 
+        # Auto-add sender and @mentioned agents to channel members
+        ch = self.get_channel(channel_id)
+        if ch is not None:
+            new_members = set()
+            if sender and sender != "system":
+                new_members.add(sender)
+            if mentions:
+                new_members.update(mentions)
+            existing = set(ch.members)
+            added = new_members - existing
+            if added:
+                ch.members = list(existing | new_members)
+                self._storage.save_channel(channel_id, ch.to_dict())
+
         msg_id = str(uuid.uuid4())
         msg = Message(
             id=msg_id,
