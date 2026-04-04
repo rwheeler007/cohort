@@ -11,29 +11,29 @@
       }
     },
     "cohort-api": {
-      "command": "python",
+      "command": "C:\\Users\\rwhee\\.cohort\\venv\\Scripts\\python.exe",
       "args": [
-        "C:/Users/rwhee/AppData/Local/Programs/Python/Python313/Lib/site-packages/cohort/mcp/server.py"
+        "C:/Users/rwhee/.cohort/venv/Lib/site-packages/cohort/mcp/server.py"
       ],
       "env": {
         "COHORT_SERVER_URL": "http://127.0.0.1:5100"
       }
     },
     "desktop": {
-      "command": "python",
+      "command": "C:\\Users\\rwhee\\.cohort\\venv\\Scripts\\python.exe",
       "args": [
-        "C:/Users/rwhee/AppData/Local/Programs/Python/Python313/Lib/site-packages/cohort/desktop/mcp_server.py"
+        "C:/Users/rwhee/.cohort/venv/Lib/site-packages/cohort/desktop/mcp_server.py"
       ],
       "env": {}
     },
-    "cohort-ch-cohort-dm-python_developer": {
-      "command": "bun",
+    "cohort-ch-cohort-general": {
+      "command": "C:/Users/rwhee/AppData/Roaming/npm/bun",
       "args": [
-        "c:/Users/rwhee/.vscode/extensions/cohort-ai.cohort-vscode-0.4.14/plugins/cohort-channel/src/index.ts"
+        "c:/Users/rwhee/.vscode/extensions/cohort-ai.cohort-vscode-0.4.78/plugins/cohort-channel/src/index.ts"
       ],
       "env": {
         "COHORT_BASE_URL": "http://127.0.0.1:5100",
-        "CHANNEL_ID": "dm-python_developer",
+        "CHANNEL_ID": "general",
         "PROJECT_ID": "cohort",
         "POLL_INTERVAL": "5000"
       }

@@ -17,5 +17,7 @@
       "Grep"
     ],
     "max_turns": 15
-  }
+  },
+  "scaffolded_version": "0.4.78",
+  "min_cohort_python": "0.4.43"
 }

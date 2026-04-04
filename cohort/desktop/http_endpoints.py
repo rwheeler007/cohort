@@ -25,7 +25,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from cohort.desktop.backend import DesktopBackend
-from cohort.desktop.config import DesktopConfig, load_config
+from cohort.desktop.config import DesktopConfig, load_config, _DATA_DIR
 from cohort.desktop.safety import check_desktop_permission
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,24 @@ logger = logging.getLogger(__name__)
 
 _backend: Optional[DesktopBackend] = None
 _config: Optional[DesktopConfig] = None
+
+
+def _load_cloud_settings() -> dict:
+    """Load Cohort settings.json for cloud LLM access (observer needs this)."""
+    settings_path = _DATA_DIR / "settings.json"
+    if settings_path.exists():
+        try:
+            with open(settings_path, encoding="utf-8") as f:
+                settings = json.load(f)
+            # Decrypt secrets if the helper is available
+            try:
+                from cohort.secret_store import decrypt_settings_secrets
+                return decrypt_settings_secrets(settings)
+            except ImportError:
+                return settings
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning("Failed to load settings for observer: %s", exc)
+    return {}
 
 
 def _get_config() -> DesktopConfig:
@@ -261,11 +279,19 @@ async def desktop_status_endpoint(request: Request) -> JSONResponse:
 
 async def observer_start_endpoint(request: Request) -> JSONResponse:
     """POST /api/desktop/observer/start — start observer mode."""
-    from cohort.desktop.observer import start_observer
+    from cohort.desktop.observer import configure as observer_configure, start_observer
     try:
         body = await request.json()
     except Exception:
         body = {}
+
+    # Ensure the observer has access to the desktop backend and cloud settings.
+    # configure() is idempotent — safe to call on every start request.
+    backend = await _get_backend()
+    cfg = _get_config()
+    cloud_settings = _load_cloud_settings()
+    observer_configure(backend=backend, config=cfg, cloud_settings=cloud_settings)
+
     result = start_observer(
         user_goal=body.get("user_goal", ""),
         desktop_session_id=body.get("desktop_session_id", "default"),
@@ -332,6 +358,6 @@ def desktop_routes():
         Route("/api/desktop/observer/pause", observer_pause_endpoint, methods=["POST"]),
         Route("/api/desktop/observer/resume", observer_resume_endpoint, methods=["POST"]),
         Route("/api/desktop/observer/goal", observer_goal_endpoint, methods=["POST"]),
-        Route("/api/desktop/observer/status", observer_status_endpoint, methods=["GET"]),
+        Route("/api/desktop/observer/status", observer_status_endpoint, methods=["GET", "POST"]),
         Route("/api/desktop/observer/history", observer_history_endpoint, methods=["GET"]),
     ]
